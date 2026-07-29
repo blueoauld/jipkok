@@ -1,16 +1,9 @@
-import { Redirect, Stack } from 'expo-router';
-
-import { useSession } from '@/features/auth/session';
+import { Stack } from 'expo-router';
 
 export default function SetupLayout() {
-  const { status } = useSession();
-
-  if (status === 'signedOut') {
-    return <Redirect href="/login" />;
-  }
-  if (status === 'signedIn') {
-    return <Redirect href="/" />;
-  }
-
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="setup" options={{ headerShown: true, title: '프로필 설정' }} />
+    </Stack>
+  );
 }
