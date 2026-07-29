@@ -1,12 +1,18 @@
-import { Tabs } from 'expo-router';
+import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="main" options={{ title: 'Main' }} />
-      <Tabs.Screen name="chat" options={{ title: 'Chat' }} />
-      <Tabs.Screen name="rank" options={{ title: 'Rank' }} />
-      <Tabs.Screen name="setting" options={{ title: 'Setting' }} />
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: "minimal",
+      }}
+    >
+      <Tabs.Screen name="main" options={{ title: "메인" }} />
+      <Tabs.Screen name="chat" options={{ title: "채팅" }} />
+      <Tabs.Screen name="rank" options={{ title: "순위" }} />
+      <Tabs.Screen name="setting" options={{ title: "설정" }} />
     </Tabs>
   );
 }
