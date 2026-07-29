@@ -17,6 +17,10 @@ export default function AuthLayout() {
         name="signup"
         options={{ headerShown: true, title: "회원가입" }}
       />
+      <Stack.Screen
+        name="setup"
+        options={{ headerShown: true, title: "프로필 설정" }}
+      />
     </Stack>
   );
 }

@@ -5,6 +5,7 @@ import { Button, H2, YStack } from "tamagui";
 const ROUTES: { href: Href; label: string }[] = [
   { href: "/login", label: "로그인" },
   { href: "/signup", label: "회원가입" },
+  { href: "/setup", label: "프로필 설정" },
   { href: "/main", label: "메인" },
 ];
 

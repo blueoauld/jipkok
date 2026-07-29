@@ -10,7 +10,7 @@ import { Button, Input, Text, XStack, YStack } from "tamagui";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
-export default function SignupScreen() {
+export default function SetupScreen() {
   const insets = useSafeAreaInsets();
 
   return (
@@ -23,46 +23,35 @@ export default function SignupScreen() {
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <YStack gap="$2">
-            <XStack gap="$2">
-              <Input flex={1} size="$4" placeholder="휴대폰 번호" />
-              <Button size="$4" theme="gray">
-                전송
-              </Button>
+            <Input size="$4" placeholder="닉네임" />
+            <Text theme="red" color="$color10">
+              닉네임이 올바르지 않습니다.
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Input size="$4" placeholder="출생연도" />
+            <Text theme="red" color="$color10">
+              출생연도가 올바르지 않습니다.
+            </Text>
+          </YStack>
+
+          <YStack gap="$2">
+            <Input
+              multiline
+              size="$4"
+              rows={7}
+              textAlignVertical="top"
+              placeholder="자기소개"
+            />
+            <XStack justify="space-between">
+              <Text theme="red" color="$color10">
+                부적절한 내용이 포함되어있습니다.
+              </Text>
+              <Text theme="gray" color="$color10">
+                1 / 1000
+              </Text>
             </XStack>
-            <Text theme="red" color="$color10">
-              휴대폰 번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
-
-          <YStack gap="$2">
-            <Input size="$4" placeholder="인증 번호" />
-            <Text theme="red" color="$color10">
-              인증 번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
-
-          <YStack gap="$2">
-            <YStack gap="$2">
-              <Input size="$4" placeholder="비밀번호" secureTextEntry />
-              <Input size="$4" placeholder="비밀번호 확인" secureTextEntry />
-            </YStack>
-            <Text theme="red" color="$color10">
-              비밀번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
-
-          <YStack gap="$2">
-            <XStack gap="$2">
-              <Button flex={1} size="$4" theme="gray">
-                남자
-              </Button>
-              <Button flex={1} size="$4" theme="gray">
-                여자
-              </Button>
-            </XStack>
-            <Text theme="red" color="$color10">
-              성별을 선택해주시길 바랍니다.
-            </Text>
           </YStack>
         </YStack>
       </KeyboardAwareScrollView>
@@ -70,7 +59,7 @@ export default function SignupScreen() {
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
           <Button size="$4" theme="blue">
-            회원가입
+            들어가기
           </Button>
         </YStack>
       </KeyboardStickyView>
