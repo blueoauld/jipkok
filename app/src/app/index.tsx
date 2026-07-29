@@ -1,6 +1,6 @@
 import { Link, type Href } from "expo-router";
-import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, H2, YStack } from "tamagui";
 
 const ROUTES: { href: Href; label: string }[] = [
   { href: "/login", label: "로그인" },
@@ -10,20 +10,20 @@ const ROUTES: { href: Href; label: string }[] = [
 
 export default function IndexScreen() {
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1 justify-center gap-3 px-6">
-        <Text className="mb-2 text-center text-2xl font-bold">화면 이동</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <YStack flex={1} justify="center" gap="$3" px="$6" bg="$background">
+        <H2 mb="$2" text="center">
+          화면 이동
+        </H2>
 
         {ROUTES.map((route) => (
           <Link key={route.label} href={route.href} asChild>
-            <Pressable className="rounded-xl bg-blue-500 py-4">
-              <Text className="text-center text-base font-semibold text-white">
-                {route.label}
-              </Text>
-            </Pressable>
+            <Button size="$5" theme="blue">
+              {route.label}
+            </Button>
           </Link>
         ))}
-      </View>
+      </YStack>
     </SafeAreaView>
   );
 }

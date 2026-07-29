@@ -1,11 +1,18 @@
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
+import { TamaguiProvider } from "tamagui";
 
-import "@/global.css";
-
-function RootNavigator() {
-  return <Stack screenOptions={{ headerShown: false }} />;
-}
+import { tamaguiConfig } from "@/tamagui.config";
 
 export default function RootLayout() {
-  return <RootNavigator />;
+  const colorScheme = useColorScheme();
+
+  return (
+    <TamaguiProvider
+      config={tamaguiConfig}
+      defaultTheme={colorScheme === "dark" ? "dark" : "light"}
+    >
+      <Stack screenOptions={{ headerShown: false }} />
+    </TamaguiProvider>
+  );
 }
