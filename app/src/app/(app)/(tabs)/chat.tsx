@@ -1,10 +1,45 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { YStack } from "tamagui";
+import { useState } from "react";
+import { FlatList } from "react-native";
+import { getTokens, YStack } from "tamagui";
+
+import { Chat, ChatRow } from "@/components/ChatRow";
+import { SegmentedControl } from "@/components/SegmentedControl";
+
+const FILTERS = ["전체", "안읽음"] as const;
+type Filter = (typeof FILTERS)[number];
+
+const USERS: Chat[] = Array.from({ length: 100 }, (_, index) => ({
+  id: String(index),
+  nickname: `닉네임 ${index}`,
+  unreadCount: index * 2,
+}));
 
 export default function ChatScreen() {
+  const space = getTokens().space;
+  const [filter, setFilter] = useState<Filter>("전체");
+
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-      <YStack flex={1} bg="$background" />
-    </SafeAreaView>
+    <YStack flex={1}>
+      <YStack px="$4" pt="$4" pb="$2">
+        <SegmentedControl
+          values={FILTERS}
+          value={filter}
+          onChange={setFilter}
+        />
+      </YStack>
+
+      <FlatList
+        data={USERS}
+        keyExtractor={(user) => user.id}
+        renderItem={({ item }) => <ChatRow chat={item} />}
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{
+          paddingTop: space.$3.val,
+          paddingBottom: space.$4.val,
+          paddingHorizontal: space.$4.val,
+          gap: space.$4.val,
+        }}
+      />
+    </YStack>
   );
 }
