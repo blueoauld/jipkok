@@ -17,11 +17,23 @@ export default function LoginScreen() {
         <YStack flex={1} justify="space-between" p="$4">
           <YStack gap="$4">
             <FormField error="휴대폰 번호가 올바르지 않습니다.">
-              <FormInput placeholder="휴대폰 번호" />
+              <FormInput
+                placeholder="휴대폰 번호"
+                keyboardType="number-pad"
+                textContentType="telephoneNumber"
+                autoComplete="tel"
+                maxLength={11}
+              />
             </FormField>
 
             <FormField error="비밀번호가 올바르지 않습니다.">
-              <FormInput placeholder="비밀번호" secureTextEntry />
+              <FormInput
+                placeholder="비밀번호"
+                secureTextEntry
+                textContentType="password"
+                autoComplete="current-password"
+                autoCapitalize="none"
+              />
             </FormField>
 
             <Link href="/signup" asChild>

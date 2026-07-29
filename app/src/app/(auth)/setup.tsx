@@ -26,11 +26,21 @@ export default function SetupScreen() {
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <FormField error="닉네임이 올바르지 않습니다.">
-            <FormInput placeholder="닉네임" />
+            <FormInput
+              placeholder="닉네임"
+              maxLength={10}
+              textContentType="nickname"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
           </FormField>
 
           <FormField error="출생연도가 올바르지 않습니다.">
-            <FormInput placeholder="출생연도" />
+            <FormInput
+              placeholder="출생연도"
+              keyboardType="number-pad"
+              maxLength={4}
+            />
           </FormField>
 
           <FormField
@@ -46,6 +56,7 @@ export default function SetupScreen() {
               rows={7}
               textAlignVertical="top"
               placeholder="자기소개"
+              maxLength={1000}
             />
           </FormField>
         </YStack>
