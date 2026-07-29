@@ -1,18 +1,51 @@
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useMemo, type ReactNode } from "react";
 import { useColorScheme } from "react-native";
-import { TamaguiProvider } from "tamagui";
+import { KeyboardProvider } from "react-native-keyboard-controller";
+import { TamaguiProvider, useTheme } from "tamagui";
 
 import { tamaguiConfig } from "@/tamagui.config";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
   return (
-    <TamaguiProvider
-      config={tamaguiConfig}
-      defaultTheme={colorScheme === "dark" ? "dark" : "light"}
-    >
-      <Stack screenOptions={{ headerShown: false }} />
-    </TamaguiProvider>
+    <KeyboardProvider>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
+        <NavigationTheme scheme={scheme}>
+          <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+          <Stack screenOptions={{ headerShown: false }} />
+        </NavigationTheme>
+      </TamaguiProvider>
+    </KeyboardProvider>
   );
+}
+
+function NavigationTheme({
+  scheme,
+  children,
+}: {
+  scheme: "light" | "dark";
+  children: ReactNode;
+}) {
+  const theme = useTheme();
+  const base = scheme === "dark" ? DarkTheme : DefaultTheme;
+
+  const navigationTheme = useMemo(
+    () => ({
+      ...base,
+      colors: {
+        ...base.colors,
+        primary: theme.accentBackground.val,
+        background: theme.background.val,
+        card: theme.background.val,
+        text: theme.color.val,
+        border: theme.borderColor.val,
+      },
+    }),
+    [base, theme],
+  );
+
+  return <ThemeProvider value={navigationTheme}>{children}</ThemeProvider>;
 }
