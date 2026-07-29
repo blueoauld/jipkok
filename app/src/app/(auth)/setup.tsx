@@ -6,7 +6,10 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Input, Text, XStack, YStack } from "tamagui";
+import { Button, Text, YStack } from "tamagui";
+
+import { FormField } from "@/components/FormField";
+import { FormInput } from "@/components/FormInput";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
@@ -22,52 +25,29 @@ export default function SetupScreen() {
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
-          <YStack gap="$2">
-            <Input
-              size="$4"
-              theme="gray"
-              bg="$color4"
-              placeholder="닉네임"
-              borderWidth="$0"
-            />
-            <Text theme="red" color="$color10">
-              닉네임이 올바르지 않습니다.
-            </Text>
-          </YStack>
+          <FormField error="닉네임이 올바르지 않습니다.">
+            <FormInput placeholder="닉네임" />
+          </FormField>
 
-          <YStack gap="$2">
-            <Input
-              size="$4"
-              theme="gray"
-              bg="$color4"
-              placeholder="출생연도"
-              borderWidth="$0"
-            />
-            <Text theme="red" color="$color10">
-              출생연도가 올바르지 않습니다.
-            </Text>
-          </YStack>
+          <FormField error="출생연도가 올바르지 않습니다.">
+            <FormInput placeholder="출생연도" />
+          </FormField>
 
-          <YStack gap="$2">
-            <Input
-              multiline
-              size="$4"
-              rows={7}
-              textAlignVertical="top"
-              placeholder="자기소개"
-              borderWidth="$0"
-              theme="gray"
-              bg="$color4"
-            />
-            <XStack justify="space-between">
-              <Text theme="red" color="$color10">
-                부적절한 내용이 포함되어있습니다.
-              </Text>
+          <FormField
+            error="부적절한 내용이 포함되어있습니다."
+            right={
               <Text theme="gray" color="$color10">
                 1 / 1000
               </Text>
-            </XStack>
-          </YStack>
+            }
+          >
+            <FormInput
+              multiline
+              rows={7}
+              textAlignVertical="top"
+              placeholder="자기소개"
+            />
+          </FormField>
         </YStack>
       </KeyboardAwareScrollView>
 

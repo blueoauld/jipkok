@@ -6,7 +6,11 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Input, Text, XStack, YStack } from "tamagui";
+import { Button, XStack, YStack } from "tamagui";
+
+import { FormButton } from "@/components/FormButton";
+import { FormField } from "@/components/FormField";
+import { FormInput } from "@/components/FormInput";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
@@ -22,75 +26,30 @@ export default function SignupScreen() {
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
-          <YStack gap="$2">
+          <FormField error="휴대폰 번호가 올바르지 않습니다.">
             <XStack gap="$2">
-              <Input
-                flex={1}
-                size="$4"
-                theme="gray"
-                bg="$color4"
-                placeholder="휴대폰 번호"
-                borderWidth="$0"
-              />
-              <Button size="$4" theme="gray" bg="$color4">
-                전송
-              </Button>
+              <FormInput flex={1} placeholder="휴대폰 번호" />
+              <FormButton>전송</FormButton>
             </XStack>
-            <Text theme="red" color="$color10">
-              휴대폰 번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
+          </FormField>
 
-          <YStack gap="$2">
-            <Input
-              size="$4"
-              theme="gray"
-              bg="$color4"
-              placeholder="인증 번호"
-              borderWidth="$0"
-            />
-            <Text theme="red" color="$color10">
-              인증 번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
+          <FormField error="인증 번호가 올바르지 않습니다.">
+            <FormInput placeholder="인증 번호" />
+          </FormField>
 
-          <YStack gap="$2">
+          <FormField error="비밀번호가 올바르지 않습니다.">
             <YStack gap="$2">
-              <Input
-                size="$4"
-                placeholder="비밀번호"
-                borderWidth="$0"
-                theme="gray"
-                bg="$color4"
-                secureTextEntry
-              />
-              <Input
-                size="$4"
-                placeholder="비밀번호 확인"
-                borderWidth="$0"
-                theme="gray"
-                bg="$color4"
-                secureTextEntry
-              />
+              <FormInput placeholder="비밀번호" secureTextEntry />
+              <FormInput placeholder="비밀번호 확인" secureTextEntry />
             </YStack>
-            <Text theme="red" color="$color10">
-              비밀번호가 올바르지 않습니다.
-            </Text>
-          </YStack>
+          </FormField>
 
-          <YStack gap="$2">
+          <FormField error="성별을 선택해주시길 바랍니다.">
             <XStack gap="$2">
-              <Button flex={1} size="$4" theme="gray" bg="$color4">
-                남자
-              </Button>
-              <Button flex={1} size="$4" theme="gray" bg="$color4">
-                여자
-              </Button>
+              <FormButton flex={1}>남자</FormButton>
+              <FormButton flex={1}>여자</FormButton>
             </XStack>
-            <Text theme="red" color="$color10">
-              성별을 선택해주시길 바랍니다.
-            </Text>
-          </YStack>
+          </FormField>
         </YStack>
       </KeyboardAwareScrollView>
 
