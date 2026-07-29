@@ -14,14 +14,27 @@ export default function LoginScreen() {
         <YStack flex={1} justify="space-between" p="$4">
           <YStack gap="$4">
             <YStack gap="$2">
-              <Input size="$4" placeholder="휴대폰 번호" />
+              <Input
+                theme="gray"
+                bg="$color4"
+                size="$4"
+                placeholder="휴대폰 번호"
+                borderWidth="$0"
+              />
               <Text theme="red" color="$color10">
                 휴대폰 번호가 올바르지 않습니다.
               </Text>
             </YStack>
 
             <YStack gap="$2">
-              <Input size="$4" placeholder="비밀번호" secureTextEntry />
+              <Input
+                theme="gray"
+                bg="$color4"
+                size="$4"
+                placeholder="비밀번호"
+                borderWidth="$0"
+                secureTextEntry
+              />
               <Text theme="red" color="$color10">
                 비밀번호가 올바르지 않습니다.
               </Text>

@@ -23,14 +23,26 @@ export default function SetupScreen() {
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <YStack gap="$2">
-            <Input size="$4" placeholder="닉네임" />
+            <Input
+              size="$4"
+              theme="gray"
+              bg="$color4"
+              placeholder="닉네임"
+              borderWidth="$0"
+            />
             <Text theme="red" color="$color10">
               닉네임이 올바르지 않습니다.
             </Text>
           </YStack>
 
           <YStack gap="$2">
-            <Input size="$4" placeholder="출생연도" />
+            <Input
+              size="$4"
+              theme="gray"
+              bg="$color4"
+              placeholder="출생연도"
+              borderWidth="$0"
+            />
             <Text theme="red" color="$color10">
               출생연도가 올바르지 않습니다.
             </Text>
@@ -43,6 +55,9 @@ export default function SetupScreen() {
               rows={7}
               textAlignVertical="top"
               placeholder="자기소개"
+              borderWidth="$0"
+              theme="gray"
+              bg="$color4"
             />
             <XStack justify="space-between">
               <Text theme="red" color="$color10">

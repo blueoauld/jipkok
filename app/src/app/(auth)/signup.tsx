@@ -24,8 +24,15 @@ export default function SignupScreen() {
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <YStack gap="$2">
             <XStack gap="$2">
-              <Input flex={1} size="$4" placeholder="휴대폰 번호" />
-              <Button size="$4" theme="gray">
+              <Input
+                flex={1}
+                size="$4"
+                theme="gray"
+                bg="$color4"
+                placeholder="휴대폰 번호"
+                borderWidth="$0"
+              />
+              <Button size="$4" theme="gray" bg="$color4">
                 전송
               </Button>
             </XStack>
@@ -35,7 +42,13 @@ export default function SignupScreen() {
           </YStack>
 
           <YStack gap="$2">
-            <Input size="$4" placeholder="인증 번호" />
+            <Input
+              size="$4"
+              theme="gray"
+              bg="$color4"
+              placeholder="인증 번호"
+              borderWidth="$0"
+            />
             <Text theme="red" color="$color10">
               인증 번호가 올바르지 않습니다.
             </Text>
@@ -43,8 +56,22 @@ export default function SignupScreen() {
 
           <YStack gap="$2">
             <YStack gap="$2">
-              <Input size="$4" placeholder="비밀번호" secureTextEntry />
-              <Input size="$4" placeholder="비밀번호 확인" secureTextEntry />
+              <Input
+                size="$4"
+                placeholder="비밀번호"
+                borderWidth="$0"
+                theme="gray"
+                bg="$color4"
+                secureTextEntry
+              />
+              <Input
+                size="$4"
+                placeholder="비밀번호 확인"
+                borderWidth="$0"
+                theme="gray"
+                bg="$color4"
+                secureTextEntry
+              />
             </YStack>
             <Text theme="red" color="$color10">
               비밀번호가 올바르지 않습니다.
@@ -53,10 +80,10 @@ export default function SignupScreen() {
 
           <YStack gap="$2">
             <XStack gap="$2">
-              <Button flex={1} size="$4" theme="gray">
+              <Button flex={1} size="$4" theme="gray" bg="$color4">
                 남자
               </Button>
-              <Button flex={1} size="$4" theme="gray">
+              <Button flex={1} size="$4" theme="gray" bg="$color4">
                 여자
               </Button>
             </XStack>
