@@ -7,7 +7,6 @@ import {
   GearIcon,
   HouseIcon,
   MagnifyingGlassIcon,
-  NotePencilIcon,
   TrophyIcon,
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,13 +40,7 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
-  {
-    name: "feed",
-    title: "피드",
-    icon: FireIcon,
-    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
-    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
-  },
+  { name: "feed", title: "피드", icon: FireIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   { name: "setting", title: "설정", icon: GearIcon },
 ];

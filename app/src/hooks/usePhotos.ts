@@ -22,6 +22,38 @@ async function pickPhotos(remaining: number) {
   return result.canceled ? [] : result.assets.map((asset) => asset.uri);
 }
 
+export async function pickSinglePhoto() {
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (!permission.granted) {
+    Alert.alert("사진 접근 권한이 필요합니다.");
+    return null;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    quality: 0.8,
+  });
+
+  return result.canceled ? null : result.assets[0].uri;
+}
+
+export async function takePhoto() {
+  const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+  if (!permission.granted) {
+    Alert.alert("카메라 권한이 필요합니다.");
+    return null;
+  }
+
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ["images"],
+    quality: 0.8,
+  });
+
+  return result.canceled ? null : result.assets[0].uri;
+}
+
 export function usePhotos() {
   const [photos, setPhotos] = useState<string[]>([]);
 

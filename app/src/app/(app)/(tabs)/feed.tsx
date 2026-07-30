@@ -1,13 +1,36 @@
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { router } from "expo-router";
-import { HeartIcon, SirenIcon } from "phosphor-react-native";
-import { useState } from "react";
+import { router, Tabs } from "expo-router";
+import type { Icon } from "phosphor-react-native";
+import {
+  BellIcon,
+  CameraIcon,
+  HeartIcon,
+  ImagesIcon,
+  NotePencilIcon,
+  SirenIcon,
+  XIcon,
+} from "phosphor-react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, type ViewStyle } from "react-native";
 
+import {
+  Avatar,
+  Button,
+  Dialog,
+  getTokens,
+  Text,
+  useTheme,
+  XStack,
+  YStack,
+} from "tamagui";
+
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { FormField } from "@/components/FormField";
+import { FormInput } from "@/components/FormInput";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { Avatar, getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 
 const CARD_RATIO = 2;
 
@@ -20,6 +43,8 @@ const BOTTOM_GRADIENT: ViewStyle = {
   experimental_backgroundImage:
     "linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent)",
 };
+
+const CAPTION_MAX_LENGTH = 50;
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -159,13 +184,166 @@ function TodayButton() {
   );
 }
 
+function PickerTile({
+  icon: Icon,
+  onPress,
+}: {
+  icon: Icon;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+
+  return (
+    <YStack
+      flex={1}
+      aspectRatio={1}
+      rounded="$7"
+      bg="$gray4"
+      items="center"
+      justify="center"
+      pressStyle={{ opacity: 0.6 }}
+      onPress={onPress}
+    >
+      <Icon size={36} color={theme.gray9.val} />
+    </YStack>
+  );
+}
+
+function ComposeForm({
+  onSubmit,
+}: {
+  onSubmit: (photo: string, caption: string) => void;
+}) {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const captionRef = useRef("");
+  const [length, setLength] = useState(0);
+
+  const choose = async (pick: () => Promise<string | null>) => {
+    const picked = await pick();
+
+    if (picked) {
+      setPhoto(picked);
+    }
+  };
+
+  return (
+    <>
+      <Dialog.Title fontSize="$6">피드</Dialog.Title>
+
+      {photo ? (
+        <YStack aspectRatio={CARD_RATIO} rounded="$7" overflow="hidden">
+          <Image source={photo} contentFit="cover" style={{ flex: 1 }} />
+
+          <XStack
+            position="absolute"
+            t="$3"
+            r="$3"
+            width={24}
+            height={24}
+            rounded={9999}
+            bg="$red10"
+            items="center"
+            justify="center"
+            pressStyle={{ opacity: 0.6 }}
+            onPress={() => setPhoto(null)}
+          >
+            <XIcon size={14} weight="bold" color="white" />
+          </XStack>
+        </YStack>
+      ) : (
+        <XStack gap="$2">
+          <PickerTile
+            icon={ImagesIcon}
+            onPress={() => choose(pickSinglePhoto)}
+          />
+          <PickerTile icon={CameraIcon} onPress={() => choose(takePhoto)} />
+        </XStack>
+      )}
+
+      <FormField
+        right={
+          <Text theme="gray" color="$color10">
+            {`${length} / ${CAPTION_MAX_LENGTH}`}
+          </Text>
+        }
+      >
+        <FormInput
+          onChangeText={(text) => {
+            captionRef.current = text;
+            setLength(text.length);
+          }}
+          placeholder="내용 입력"
+          maxLength={CAPTION_MAX_LENGTH}
+          autoFocusNative
+        />
+      </FormField>
+
+      <XStack gap="$2">
+        <Dialog.Close asChild>
+          <Button flex={1} size="$4" rounded="$7">
+            닫기
+          </Button>
+        </Dialog.Close>
+
+        <Button
+          flex={1}
+          size="$4"
+          theme="blue"
+          rounded="$7"
+          disabled={!photo}
+          onPress={() => photo && onSubmit(photo, captionRef.current)}
+        >
+          작성
+        </Button>
+      </XStack>
+    </>
+  );
+}
+
+function ComposeDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Dialog modal open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay opacity={0.6} />
+
+        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-110}>
+          <ComposeForm
+            key={String(open)}
+            onSubmit={() => onOpenChange(false)}
+          />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog>
+  );
+}
+
 export default function FeedScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("전체");
   const [reportId, setReportId] = useState<string | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const openCompose = useCallback(() => setComposeOpen(true), []);
+
+  const screenOptions = useMemo(
+    () => ({
+      headerLeft: () => <HeaderIconButton icon={BellIcon} />,
+      headerRight: () => (
+        <HeaderIconButton icon={NotePencilIcon} onPress={openCompose} />
+      ),
+    }),
+    [openCompose],
+  );
 
   return (
     <YStack flex={1}>
+      <Tabs.Screen options={screenOptions} />
+
       <YStack px="$4" pt="$4" pb="$2">
         <SegmentedControl
           values={FILTERS}
@@ -192,6 +370,8 @@ export default function FeedScreen() {
       <XStack position="absolute" b="$4" l={0} r={0} justify="center">
         <TodayButton />
       </XStack>
+
+      <ComposeDialog open={composeOpen} onOpenChange={setComposeOpen} />
 
       <ConfirmDialog
         open={reportId !== null}
