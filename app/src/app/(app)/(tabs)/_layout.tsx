@@ -50,7 +50,12 @@ const TABS: Tab[] = [
     name: "chat",
     title: "채팅",
     icon: ChatCircleIcon,
-    headerLeft: () => <HeaderIconButton icon={MagnifyingGlassIcon} />,
+    headerLeft: () => (
+      <HeaderIconButton
+        icon={MagnifyingGlassIcon}
+        onPress={() => router.push("/chat/search")}
+      />
+    ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
