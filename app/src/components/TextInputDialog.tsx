@@ -99,7 +99,7 @@ export function TextInputDialog({
       <Dialog.Portal>
         <Dialog.Overlay opacity={0.6} />
 
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-40}>
+        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-45}>
           <DialogForm
             key={String(open)}
             title={title}

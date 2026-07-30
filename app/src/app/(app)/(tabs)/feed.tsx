@@ -312,7 +312,7 @@ function ComposeDialog({
       <Dialog.Portal>
         <Dialog.Overlay opacity={0.6} />
 
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-110}>
+        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-120}>
           <ComposeForm
             key={String(open)}
             onSubmit={() => onOpenChange(false)}
