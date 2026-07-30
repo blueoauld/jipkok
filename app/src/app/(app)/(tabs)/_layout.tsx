@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   BellIcon,
@@ -33,7 +33,12 @@ const TABS: Tab[] = [
     name: "main",
     title: "메인",
     icon: HouseIcon,
-    headerLeft: () => <HeaderIconButton icon={MagnifyingGlassIcon} />,
+    headerLeft: () => (
+      <HeaderIconButton
+        icon={MagnifyingGlassIcon}
+        onPress={() => router.push("/member/search")}
+      />
+    ),
     headerRight: () => (
       <XStack>
         <HeaderIconButton icon={FunnelSimpleIcon} />
