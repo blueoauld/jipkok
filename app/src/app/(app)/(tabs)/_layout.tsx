@@ -1,23 +1,60 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
+  BellIcon,
   ChatCircleIcon,
+  FunnelSimpleIcon,
   GearIcon,
   HouseIcon,
+  MagnifyingGlassIcon,
+  NotePencilIcon,
+  SignOutIcon,
   TrophyIcon,
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "tamagui";
+import { useTheme, XStack } from "tamagui";
+
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 
 const ICON_SIZE = 30;
 const ICON_TOP_OFFSET = 6;
 const TAB_BAR_HEIGHT = ICON_SIZE + 10 + 15 + ICON_TOP_OFFSET;
 
-const TABS: { name: string; title: string; icon: Icon }[] = [
-  { name: "main", title: "메인", icon: HouseIcon },
-  { name: "chat", title: "채팅", icon: ChatCircleIcon },
+type Tab = {
+  name: string;
+  title: string;
+  icon: Icon;
+  headerLeft?: () => React.ReactNode;
+  headerRight?: () => React.ReactNode;
+};
+
+const TABS: Tab[] = [
+  {
+    name: "main",
+    title: "메인",
+    icon: HouseIcon,
+    headerLeft: () => <HeaderIconButton icon={MagnifyingGlassIcon} />,
+    headerRight: () => (
+      <XStack>
+        <HeaderIconButton icon={FunnelSimpleIcon} />
+        <HeaderIconButton icon={NotePencilIcon} />
+      </XStack>
+    ),
+  },
+  {
+    name: "chat",
+    title: "채팅",
+    icon: ChatCircleIcon,
+    headerLeft: () => <HeaderIconButton icon={MagnifyingGlassIcon} />,
+    headerRight: () => <HeaderIconButton icon={BellIcon} />,
+  },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
-  { name: "setting", title: "설정", icon: GearIcon },
+  {
+    name: "setting",
+    title: "설정",
+    icon: GearIcon,
+    headerRight: () => <HeaderIconButton icon={SignOutIcon} />,
+  },
 ];
 
 export default function TabsLayout() {
@@ -41,12 +78,14 @@ export default function TabsLayout() {
         },
       }}
     >
-      {TABS.map(({ name, title, icon: Icon }) => (
+      {TABS.map(({ name, title, icon: Icon, headerLeft, headerRight }) => (
         <Tabs.Screen
           key={name}
           name={name}
           options={{
             title,
+            headerLeft,
+            headerRight,
             tabBarIcon: ({ color, focused }) => (
               <Icon
                 color={color as string}
