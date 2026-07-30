@@ -11,9 +11,10 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Sheet, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 
@@ -54,48 +55,10 @@ function ActionBar() {
   );
 }
 
-const MENU_ITEMS: { label: string; destructive?: boolean }[] = [
+const MENU_ITEMS: MenuSheetItem[] = [
   { label: "비밀 사진 공개" },
   { label: "신고하기", destructive: true },
 ];
-
-function MoreMenuSheet({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Sheet
-      modal
-      open={open}
-      onOpenChange={onOpenChange}
-      snapPointsMode="fit"
-      dismissOnSnapToBottom
-    >
-      <Sheet.Overlay opacity={0.6} />
-      <Sheet.Handle bg="$color3" />
-
-      <Sheet.Frame bg="$color3" p="$4" pb="$6" gap="$2">
-        {MENU_ITEMS.map(({ label, destructive }) => (
-          <XStack
-            key={label}
-            items="center"
-            p="$3"
-            rounded="$5"
-            pressStyle={{ bg: "$color4" }}
-            onPress={() => onOpenChange(false)}
-          >
-            <Text fontSize="$4" color={destructive ? "$red10" : "$color"}>
-              {label}
-            </Text>
-          </XStack>
-        ))}
-      </Sheet.Frame>
-    </Sheet>
-  );
-}
 
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -171,7 +134,11 @@ export default function MemberProfileScreen() {
 
       <ActionBar />
 
-      <MoreMenuSheet open={menuOpen} onOpenChange={setMenuOpen} />
+      <MenuSheet
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        items={MENU_ITEMS}
+      />
     </SafeAreaView>
   );
 }

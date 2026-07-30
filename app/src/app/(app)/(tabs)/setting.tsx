@@ -1,4 +1,4 @@
-import { router, type Href } from "expo-router";
+import { router, Tabs, type Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   CalendarCheckIcon,
@@ -13,14 +13,24 @@ import {
   MonitorPlayIcon,
   ProhibitIcon,
   ShieldCheckIcon,
+  SignOutIcon,
   StarIcon,
   TrayArrowDownIcon,
   UserIcon,
 } from "phosphor-react-native";
+import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+
 const ICON_SIZE = 22;
+
+const ACCOUNT_MENU: MenuSheetItem[] = [
+  { label: "로그아웃" },
+  { label: "회원탈퇴", destructive: true },
+];
 
 type SettingItem = { label: string; icon: Icon; href?: Href };
 
@@ -29,11 +39,19 @@ const SECTIONS: SettingItem[][] = [
   [
     { label: "좋아요 목록", icon: HeartIcon, href: "/activity/like" },
     { label: "즐겨찾기 목록", icon: StarIcon, href: "/activity/favorite" },
-    { label: "비밀 사진 목록", icon: ImagesIcon, href: "/activity/secret-photo" },
+    {
+      label: "비밀 사진 목록",
+      icon: ImagesIcon,
+      href: "/activity/secret-photo",
+    },
     { label: "차단 목록", icon: ProhibitIcon, href: "/activity/block" },
   ],
   [
-    { label: "받은 좋아요 목록", icon: HandHeartIcon, href: "/activity/like-received" },
+    {
+      label: "받은 좋아요 목록",
+      icon: HandHeartIcon,
+      href: "/activity/like-received",
+    },
     {
       label: "받은 즐겨찾기 목록",
       icon: TrayArrowDownIcon,
@@ -81,6 +99,17 @@ function SettingRow({ item }: { item: SettingItem }) {
 
 export default function SettingScreen() {
   const space = getTokens().space;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+
+  const screenOptions = useMemo(
+    () => ({
+      headerRight: () => (
+        <HeaderIconButton icon={SignOutIcon} onPress={openMenu} />
+      ),
+    }),
+    [openMenu],
+  );
 
   return (
     <ScrollView
@@ -103,6 +132,14 @@ export default function SettingScreen() {
           </YStack>
         ))}
       </YStack>
+
+      <Tabs.Screen options={screenOptions} />
+
+      <MenuSheet
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        items={ACCOUNT_MENU}
+      />
     </ScrollView>
   );
 }

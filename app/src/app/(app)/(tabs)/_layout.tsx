@@ -9,7 +9,6 @@ import {
   HouseIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
-  SignOutIcon,
   TrophyIcon,
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -71,12 +70,7 @@ const TABS: Tab[] = [
     ),
   },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
-  {
-    name: "setting",
-    title: "설정",
-    icon: GearIcon,
-    headerRight: () => <HeaderIconButton icon={SignOutIcon} />,
-  },
+  { name: "setting", title: "설정", icon: GearIcon },
 ];
 
 export default function TabsLayout() {
