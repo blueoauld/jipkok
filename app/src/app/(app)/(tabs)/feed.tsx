@@ -381,7 +381,7 @@ export default function FeedScreen() {
             setReportId(null);
           }
         }}
-        title="피드 신고"
+        title="피드"
         description="신고한 피드는 검토 후 조치됩니다."
         confirmLabel="신고"
         destructive

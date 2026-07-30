@@ -18,9 +18,9 @@ import {
 } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
 import {
-  ChatScrollToBottom,
   CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE,
   CHAT_SCROLL_TO_BOTTOM_STYLE,
+  ChatScrollToBottom,
 } from "@/components/ChatScrollToBottom";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
@@ -131,13 +131,13 @@ export default function ChatRoomScreen() {
 
   const menuItems: MenuSheetItem[] = [
     {
+      label: "나가기",
+      onPress: () => setLeaveOpen(true),
+    },
+    {
       label: "신고하기",
       destructive: true,
       onPress: () => setReportOpen(true),
-    },
-    {
-      label: "나가기",
-      onPress: () => setLeaveOpen(true),
     },
   ];
 
@@ -179,8 +179,8 @@ export default function ChatRoomScreen() {
       <ConfirmDialog
         open={reportOpen}
         onOpenChange={setReportOpen}
-        title="채팅방 신고"
-        description="신고한 채팅방은 검토 후 조치됩니다."
+        title="채팅"
+        description="신고한 채팅은 검토 후 조치됩니다."
         confirmLabel="신고"
         destructive
       />
@@ -188,10 +188,9 @@ export default function ChatRoomScreen() {
       <ConfirmDialog
         open={leaveOpen}
         onOpenChange={setLeaveOpen}
-        title="채팅방 나가기"
+        title="채팅"
         description="나가면 주고받은 대화 내역이 모두 사라지고 목록에서도 삭제됩니다."
         confirmLabel="나가기"
-        destructive
         onConfirm={() => router.back()}
       />
 

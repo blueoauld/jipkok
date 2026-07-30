@@ -12,7 +12,7 @@ export function ProfileSection({
       <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
         {title}
       </Text>
-      <Text fontSize="$4" bg="$gray4" rounded="$5" p="$4">
+      <Text fontSize="$4" bg="$gray4" rounded="$5" p="$3">
         {body}
       </Text>
     </YStack>
