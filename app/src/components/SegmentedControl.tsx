@@ -10,7 +10,7 @@ export function SegmentedControl<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <XStack bg="$gray4" rounded="$4" p="$1" gap="$1">
+    <XStack bg="$gray4" rounded="$7" p="$1" gap="$1">
       {values.map((item) => {
         const selected = item === value;
 
@@ -19,7 +19,7 @@ export function SegmentedControl<T extends string>({
             key={item}
             flex={1}
             size="$2"
-            rounded="$3"
+            rounded="$6"
             borderWidth={0}
             bg={selected ? "$gray1" : "transparent"}
             pressStyle={{ bg: selected ? "$gray1" : "$gray5" }}
