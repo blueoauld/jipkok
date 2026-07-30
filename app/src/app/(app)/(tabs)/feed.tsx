@@ -2,20 +2,29 @@ import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { HeartIcon, SirenIcon } from "phosphor-react-native";
-import { FlatList } from "react-native";
+import { useState } from "react";
+import { FlatList, type ViewStyle } from "react-native";
+
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { Avatar, getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
-const CARD_RATIO = 2.5;
+const CARD_RATIO = 2;
 
-const OVERLAY_TEXT_SHADOW = {
-  textShadowColor: "rgba(0, 0, 0, 0.45)",
-  textShadowOffset: { width: 0, height: 1 },
-  textShadowRadius: 6,
-} as const;
+const GRADIENT_HEIGHT = "35%";
+const TOP_GRADIENT: ViewStyle = {
+  experimental_backgroundImage:
+    "linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent)",
+};
+const BOTTOM_GRADIENT: ViewStyle = {
+  experimental_backgroundImage:
+    "linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent)",
+};
+
+const FILTERS = ["전체", "남자", "여자"] as const;
+type Filter = (typeof FILTERS)[number];
 
 type Post = {
   id: string;
-  /** 게시물 id와 별개로 작성자 프로필로 이동할 때 쓴다 */
   authorId: string;
   nickname: string;
   time: string;
@@ -48,6 +57,26 @@ function FeedCard({ post }: { post: Post }) {
     >
       <Image source={post.photo} contentFit="cover" style={{ flex: 1 }} />
 
+      <YStack
+        position="absolute"
+        t={0}
+        l={0}
+        r={0}
+        height={GRADIENT_HEIGHT}
+        pointerEvents="none"
+        style={TOP_GRADIENT}
+      />
+
+      <YStack
+        position="absolute"
+        b={0}
+        l={0}
+        r={0}
+        height={GRADIENT_HEIGHT}
+        pointerEvents="none"
+        style={BOTTOM_GRADIENT}
+      />
+
       <XStack
         position="absolute"
         t="$3"
@@ -68,40 +97,38 @@ function FeedCard({ post }: { post: Post }) {
           color="white"
           fontSize="$3"
           fontWeight="600"
-          style={OVERLAY_TEXT_SHADOW}
         >
           {post.nickname}
         </Text>
       </XStack>
 
-      <YStack position="absolute" b="$2" r="$2" items="center">
-        <XStack p="$2" pressStyle={{ opacity: 0.6 }}>
-          <SirenIcon size={28} weight="fill" color="white" />
-        </XStack>
+      <XStack
+        position="absolute"
+        t="$2"
+        r="$2"
+        p="$2"
+        pressStyle={{ opacity: 0.6 }}
+      >
+        <SirenIcon size={28} weight="bold" color="white" />
+      </XStack>
 
-        <XStack p="$2" pressStyle={{ opacity: 0.6 }}>
-          <HeartIcon size={28} weight="bold" color="white" />
-        </XStack>
-      </YStack>
+      <XStack
+        position="absolute"
+        b="$2"
+        r="$2"
+        p="$2"
+        pressStyle={{ opacity: 0.6 }}
+      >
+        <HeartIcon size={28} weight="bold" color="white" />
+      </XStack>
 
       <YStack fullscreen items="center" justify="center" px="$4">
-        <Text
-          color="white"
-          fontSize="$9"
-          fontWeight="800"
-          style={OVERLAY_TEXT_SHADOW}
-        >
+        <Text color="white" fontSize="$9" fontWeight="800">
           {post.time}
         </Text>
 
         {post.caption && (
-          <Text
-            numberOfLines={1}
-            color="white"
-            fontSize="$5"
-            fontWeight="600"
-            style={OVERLAY_TEXT_SHADOW}
-          >
+          <Text numberOfLines={1} color="white" fontSize="$5" fontWeight="600">
             {post.caption}
           </Text>
         )}
@@ -132,16 +159,27 @@ function TodayButton() {
 
 export default function FeedScreen() {
   const space = getTokens().space;
+  const [filter, setFilter] = useState<Filter>("전체");
 
   return (
     <YStack flex={1}>
+      <YStack px="$4" pt="$4" pb="$2">
+        <SegmentedControl
+          values={FILTERS}
+          value={filter}
+          onChange={setFilter}
+        />
+      </YStack>
+
       <FlatList
         data={POSTS}
         keyExtractor={(post) => post.id}
         renderItem={({ item }) => <FeedCard post={item} />}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{
-          padding: space.$4.val,
+          paddingTop: space.$3.val,
+          paddingBottom: space.$4.val,
+          paddingHorizontal: space.$4.val,
           gap: space.$2.val,
         }}
       />

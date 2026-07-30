@@ -59,7 +59,13 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
-  { name: "feed", title: "피드", icon: FireIcon },
+  {
+    name: "feed",
+    title: "피드",
+    icon: FireIcon,
+    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
+    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
+  },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   {
     name: "setting",
