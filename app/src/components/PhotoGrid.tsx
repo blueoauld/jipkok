@@ -12,6 +12,8 @@ import { MAX_PHOTOS } from "@/hooks/usePhotos";
 
 const COLUMNS = 3;
 
+const PHOTO_TRANSITION = 200;
+
 const OVERLAY_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 
 type Cell =
@@ -111,10 +113,12 @@ export function PhotoGrid({
                 aspectRatio={1}
                 rounded="$7"
                 overflow="hidden"
+                bg="$gray4"
               >
                 <Image
                   source={cell.uri}
                   contentFit="cover"
+                  transition={PHOTO_TRANSITION}
                   style={{ width: "100%", height: "100%" }}
                 />
 

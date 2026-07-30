@@ -29,6 +29,8 @@ import { XStack, YStack } from "tamagui";
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
 
+const PHOTO_TRANSITION = 200;
+
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
 
@@ -171,6 +173,7 @@ export function PhotoViewer({
                         <Image
                           source={item}
                           contentFit="contain"
+                          transition={PHOTO_TRANSITION}
                           style={{ width: screen.width, height: screen.height }}
                         />
                       </Zoom>

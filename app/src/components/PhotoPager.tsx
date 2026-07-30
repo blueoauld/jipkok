@@ -7,6 +7,8 @@ import { PhotoViewer } from "@/components/PhotoViewer";
 
 const PHOTO_RATIO = 0.8;
 
+const PHOTO_TRANSITION = 200;
+
 export function PhotoPager({ photos }: { photos: string[] }) {
   const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -26,10 +28,15 @@ export function PhotoPager({ photos }: { photos: string[] }) {
           setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
         }
         renderItem={({ item }) => (
-          <XStack pressStyle={{ opacity: 0.8 }} onPress={openViewer}>
+          <XStack
+            bg="$gray4"
+            pressStyle={{ opacity: 0.8 }}
+            onPress={openViewer}
+          >
             <Image
               source={item}
               contentFit="cover"
+              transition={PHOTO_TRANSITION}
               style={{ width, height: width * PHOTO_RATIO }}
             />
           </XStack>
