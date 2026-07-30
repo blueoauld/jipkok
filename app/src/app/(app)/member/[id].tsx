@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   ChatCircleIcon,
@@ -55,10 +55,16 @@ function ActionBar() {
   );
 }
 
-const MENU_ITEMS: MenuSheetItem[] = [
-  { label: "비밀 사진 공개" },
-  { label: "신고하기", destructive: true },
-];
+function buildMenuItems(id: string): MenuSheetItem[] {
+  return [
+    { label: "비밀 사진 공개" },
+    {
+      label: "신고하기",
+      destructive: true,
+      onPress: () => router.push(`/report/${id}?type=member`),
+    },
+  ];
+}
 
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -137,7 +143,7 @@ export default function MemberProfileScreen() {
       <MenuSheet
         open={menuOpen}
         onOpenChange={setMenuOpen}
-        items={MENU_ITEMS}
+        items={buildMenuItems(id)}
       />
     </SafeAreaView>
   );
