@@ -1,7 +1,7 @@
+import { Image } from "expo-image";
 import { XIcon } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
 import {
-  Image,
   Modal,
   StatusBar,
   StyleSheet,
@@ -59,11 +59,7 @@ export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
     cancelAnimation(translateY);
     translateY.value = 0;
     setOpen(true);
-
-    if (!size) {
-      Image.getSize(uri, (width, height) => setSize({ width, height }));
-    }
-  }, [uri, size, translateY]);
+  }, [translateY]);
 
   const closeViewer = useCallback(() => setOpen(false), []);
 
@@ -120,7 +116,7 @@ export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
   return (
     <>
       <XStack pressStyle={{ opacity: 0.8 }} onPress={openViewer}>
-        <Image source={{ uri }} style={style} resizeMode="cover" />
+        <Image source={uri} style={style} contentFit="cover" transition={150} />
       </XStack>
 
       <Modal
@@ -156,9 +152,15 @@ export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
                 <Animated.View style={[styles.content, contentStyle]}>
                   <Zoom>
                     <Image
-                      source={{ uri }}
+                      source={uri}
                       style={imageSize}
-                      resizeMode="contain"
+                      contentFit="contain"
+                      onLoad={({ source }) =>
+                        setSize({
+                          width: source.width,
+                          height: source.height,
+                        })
+                      }
                     />
                   </Zoom>
                 </Animated.View>
