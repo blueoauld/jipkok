@@ -12,6 +12,7 @@ import { Button, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { PhotoGrid } from "@/components/PhotoGrid";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const NICKNAME_MAX_LENGTH = 10;
@@ -42,6 +43,20 @@ export default function MemberEditScreen() {
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+          <YStack gap="$2">
+            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+              공개 사진
+            </Text>
+            <PhotoGrid photos={[]} />
+          </YStack>
+
+          <YStack gap="$2">
+            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+              비밀 사진
+            </Text>
+            <PhotoGrid photos={[]} />
+          </YStack>
+
           <FormField>
             <FormInput
               defaultValue={PROFILE.nickname}
