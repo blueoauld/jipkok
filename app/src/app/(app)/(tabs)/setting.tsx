@@ -27,10 +27,10 @@ type SettingItem = { label: string; icon: Icon; href?: Href };
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
   [
-    { label: "좋아요 목록", icon: HeartIcon },
-    { label: "즐겨찾기 목록", icon: StarIcon },
-    { label: "비밀 사진 목록", icon: ImagesIcon },
-    { label: "차단 목록", icon: ProhibitIcon },
+    { label: "좋아요 목록", icon: HeartIcon, href: "/activity/like" },
+    { label: "즐겨찾기 목록", icon: StarIcon, href: "/activity/favorite" },
+    { label: "비밀 사진 목록", icon: ImagesIcon, href: "/activity/secret-photo" },
+    { label: "차단 목록", icon: ProhibitIcon, href: "/activity/block" },
   ],
   [
     { label: "받은 좋아요 목록", icon: HandHeartIcon },
