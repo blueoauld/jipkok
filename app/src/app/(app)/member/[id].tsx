@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 
@@ -76,7 +76,7 @@ export default function MemberProfileScreen() {
         options={{
           title: "프로필",
           headerRight: () => (
-            <HeaderIconButton icon={DotsThreeIcon} weight="bold" />
+            <HeaderCircleIconButton icon={DotsThreeIcon} weight="bold" />
           ),
         }}
       />
