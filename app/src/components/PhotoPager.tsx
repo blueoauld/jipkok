@@ -3,11 +3,16 @@ import { useState } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
 import { XStack, YStack } from "tamagui";
 
+import { PhotoViewer } from "@/components/PhotoViewer";
+
 const PHOTO_RATIO = 0.8;
 
 export function PhotoPager({ photos }: { photos: string[] }) {
   const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  const [viewerOpen, setViewerOpen] = useState(false);
+
+  const openViewer = () => setViewerOpen(true);
 
   return (
     <YStack>
@@ -21,11 +26,13 @@ export function PhotoPager({ photos }: { photos: string[] }) {
           setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
         }
         renderItem={({ item }) => (
-          <Image
-            source={item}
-            contentFit="cover"
-            style={{ width, height: width * PHOTO_RATIO }}
-          />
+          <XStack pressStyle={{ opacity: 0.8 }} onPress={openViewer}>
+            <Image
+              source={item}
+              contentFit="cover"
+              style={{ width, height: width * PHOTO_RATIO }}
+            />
+          </XStack>
         )}
       />
 
@@ -41,6 +48,13 @@ export function PhotoPager({ photos }: { photos: string[] }) {
           />
         ))}
       </XStack>
+
+      <PhotoViewer
+        photos={photos}
+        initialIndex={index}
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+      />
     </YStack>
   );
 }
