@@ -17,19 +17,24 @@ import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
+import { TextInputDialog } from "@/components/TextInputDialog";
 
 const ACTION_ICON_SIZE = 30;
 const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 
-const ACTIONS: { key: string; icon: Icon }[] = [
+const NOTE_MAX_LENGTH = 100;
+
+type ActionKey = "like" | "favorite" | "note" | "secretPhoto" | "block";
+
+const ACTIONS: { key: ActionKey; icon: Icon }[] = [
   { key: "like", icon: HeartIcon },
   { key: "favorite", icon: StarIcon },
-  { key: "chat", icon: ChatCircleIcon },
+  { key: "note", icon: ChatCircleIcon },
   { key: "secretPhoto", icon: ImageIcon },
   { key: "block", icon: ProhibitIcon },
 ];
 
-function ActionBar() {
+function ActionBar({ onPress }: { onPress: (key: ActionKey) => void }) {
   const theme = useTheme();
 
   return (
@@ -47,6 +52,7 @@ function ActionBar() {
           items="center"
           justify="center"
           pressStyle={{ opacity: 0.6 }}
+          onPress={() => onPress(key)}
         >
           <Icon size={ACTION_ICON_SIZE} color={theme.color10.val} />
         </XStack>
@@ -69,6 +75,13 @@ function buildMenuItems(id: string): MenuSheetItem[] {
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+
+  const handleAction = (key: ActionKey) => {
+    if (key === "note") {
+      setNoteOpen(true);
+    }
+  };
   const openMenu = useCallback(() => setMenuOpen(true), []);
 
   const screenOptions = useMemo(
@@ -138,7 +151,17 @@ export default function MemberProfileScreen() {
         </YStack>
       </ScrollView>
 
-      <ActionBar />
+      <ActionBar onPress={handleAction} />
+
+      <TextInputDialog
+        open={noteOpen}
+        onOpenChange={setNoteOpen}
+        title="쪽지"
+        placeholder="내용 입력"
+        maxLength={NOTE_MAX_LENGTH}
+        submitLabel="전송"
+        onSubmit={() => {}}
+      />
 
       <MenuSheet
         open={menuOpen}

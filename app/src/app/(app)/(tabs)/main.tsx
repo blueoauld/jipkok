@@ -4,15 +4,14 @@ import {
   MagnifyingGlassIcon,
   NotePencilIcon,
 } from "phosphor-react-native";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList } from "react-native";
-import { Button, Dialog, getTokens, Text, XStack, YStack } from "tamagui";
+import { getTokens, XStack, YStack } from "tamagui";
 
-import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { SegmentedControl } from "@/components/SegmentedControl";
+import { TextInputDialog } from "@/components/TextInputDialog";
 import { UserRow, type User } from "@/components/UserRow";
 
 const FILTERS = ["최근", "거리"] as const;
@@ -27,90 +26,6 @@ const USERS: User[] = Array.from({ length: 100 }, (_, index) => ({
   id: String(index),
   nickname: `닉네임 ${index}`,
 }));
-
-function CommentForm({
-  defaultValue,
-  onSubmit,
-}: {
-  defaultValue: string;
-  onSubmit: (value: string) => void;
-}) {
-  const valueRef = useRef(defaultValue);
-  const [length, setLength] = useState(defaultValue.length);
-
-  return (
-    <>
-      <Dialog.Title fontSize="$6">코멘트</Dialog.Title>
-
-      <FormField
-        right={
-          <Text theme="gray" color="$color10">
-            {`${length} / ${COMMENT_MAX_LENGTH}`}
-          </Text>
-        }
-      >
-        <FormInput
-          defaultValue={defaultValue}
-          onChangeText={(text) => {
-            valueRef.current = text;
-            setLength(text.length);
-          }}
-          placeholder="내용 입력"
-          maxLength={COMMENT_MAX_LENGTH}
-          autoFocusNative
-        />
-      </FormField>
-
-      <XStack gap="$2">
-        <Dialog.Close asChild>
-          <Button flex={1} size="$4" rounded="$7">
-            닫기
-          </Button>
-        </Dialog.Close>
-
-        <Dialog.Close asChild>
-          <Button
-            flex={1}
-            size="$4"
-            theme="blue"
-            rounded="$7"
-            onPress={() => onSubmit(valueRef.current)}
-          >
-            작성
-          </Button>
-        </Dialog.Close>
-      </XStack>
-    </>
-  );
-}
-
-function CommentDialog({
-  open,
-  onOpenChange,
-  defaultValue,
-  onSubmit,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  defaultValue: string;
-  onSubmit: (value: string) => void;
-}) {
-  return (
-    <Dialog modal open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay opacity={0.6} />
-
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-40}>
-          <CommentForm
-            key={String(open)}
-            defaultValue={defaultValue}
-            onSubmit={onSubmit}
-          />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
-  );
-}
 
 export default function MainScreen() {
   const space = getTokens().space;
@@ -166,9 +81,12 @@ export default function MainScreen() {
         }}
       />
 
-      <CommentDialog
+      <TextInputDialog
         open={commentOpen}
         onOpenChange={setCommentOpen}
+        title="코멘트"
+        placeholder="내용 입력"
+        maxLength={COMMENT_MAX_LENGTH}
         defaultValue={comment}
         onSubmit={setComment}
       />
