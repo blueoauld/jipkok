@@ -11,7 +11,7 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { AlertDialog, Button, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
@@ -76,10 +76,16 @@ export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [menuOpen, setMenuOpen] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
+  const [blockOpen, setBlockOpen] = useState(false);
 
   const handleAction = (key: ActionKey) => {
+    // TODO: 좋아요·즐겨찾기·비밀사진 동작 연결
     if (key === "note") {
       setNoteOpen(true);
+    }
+
+    if (key === "block") {
+      setBlockOpen(true);
     }
   };
   const openMenu = useCallback(() => setMenuOpen(true), []);
@@ -152,6 +158,35 @@ export default function MemberProfileScreen() {
       </ScrollView>
 
       <ActionBar onPress={handleAction} />
+
+      <AlertDialog modal open={blockOpen} onOpenChange={setBlockOpen}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay opacity={0.6} />
+
+          <AlertDialog.Content width="85%" maxW={400} p="$4" gap="$3">
+            <AlertDialog.Title fontSize="$6">차단</AlertDialog.Title>
+
+            <AlertDialog.Description theme="gray" color="$color11">
+              차단하면 상대방의 목록에 내가 표시되지 않고, 주고받은 대화 내역도
+              모두 사라집니다.
+            </AlertDialog.Description>
+
+            <XStack gap="$2" mt="$2">
+              <AlertDialog.Cancel asChild>
+                <Button flex={1} size="$4" rounded="$7">
+                  닫기
+                </Button>
+              </AlertDialog.Cancel>
+
+              <AlertDialog.Action asChild>
+                <Button flex={1} size="$4" theme="red" rounded="$7">
+                  확인
+                </Button>
+              </AlertDialog.Action>
+            </XStack>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog>
 
       <TextInputDialog
         open={noteOpen}
