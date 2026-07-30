@@ -8,6 +8,7 @@ import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatBubble } from "@/components/ChatBubble";
+import { ChatDay } from "@/components/ChatDay";
 import {
   ChatActions,
   ChatComposer,
@@ -21,6 +22,29 @@ const ME = { _id: "me" };
 
 const MESSAGE_MAX_LENGTH = 1000;
 
+const MESSAGE_COUNT = 100;
+
+const SAMPLE_TEXTS = [
+  "안녕하세요.",
+  "반갑습니다.",
+  "프로필 보고 연락드렸어요.",
+  "오늘 하루는 어떠셨어요?",
+  "저도 사진 찍는 거 좋아해서 반가웠어요. 요즘은 주로 어디 다니세요?",
+  "네 맞아요.",
+  "주말에는 보통 뭐 하세요?",
+  "저는 집 근처 카페에서 책 읽는 걸 좋아해요.",
+  "괜찮으시면 이번 주말에 커피 한잔 어떠세요?",
+  "좋아요.",
+  "토요일 저녁도 괜찮으세요?",
+  "그럼 그때 뵈어요.",
+];
+
+// 보내는 사람 패턴. 연속 메시지 묶음이 섞이도록 길이를 다르게 뒀다.
+const IS_MINE = [true, true, false, false, false, true, false];
+
+// 메시지 사이 간격(분). 누적되면 100개가 대략 5일치가 된다.
+const GAP_MINUTES = [3, 6, 11, 27, 55, 140, 8, 320];
+
 function createInitialMessages(id: string, nickname: string): IMessage[] {
   const partner = {
     _id: id,
@@ -29,54 +53,22 @@ function createInitialMessages(id: string, nickname: string): IMessage[] {
   };
 
   const now = Date.now();
-  const minutesAgo = (minutes: number) => new Date(now - minutes * 60 * 1000);
+  let minutesBefore = 0;
 
   // TODO: 서버 연동 시 실제 대화 내역으로 교체
   // 최신 메시지가 앞에 온다.
-  return [
-    {
-      _id: "7",
-      text: "토요일 저녁은 어떠세요?",
-      createdAt: minutesAgo(1),
-      user: partner,
-    },
-    {
-      _id: "6",
-      text: "좋아요. 저도 이번 주말은 괜찮아요.",
-      createdAt: minutesAgo(3),
-      user: ME,
-    },
-    {
-      _id: "5",
-      text: "혹시 이번 주말에 시간 되시나요?",
-      createdAt: minutesAgo(5),
-      user: partner,
-    },
-    {
-      _id: "4",
-      text: "저도 사진 찍는 거 좋아해서 반가웠어요. 요즘은 주로 어디 다니세요?",
-      createdAt: minutesAgo(5),
-      user: partner,
-    },
-    {
-      _id: "3",
-      text: "프로필 보고 연락드렸어요.",
-      createdAt: minutesAgo(6),
-      user: partner,
-    },
-    {
-      _id: "2",
-      text: "반갑습니다.",
-      createdAt: minutesAgo(6),
-      user: partner,
-    },
-    {
-      _id: "1",
-      text: "안녕하세요.",
-      createdAt: minutesAgo(8),
-      user: ME,
-    },
-  ];
+  return Array.from({ length: MESSAGE_COUNT }, (_, index) => {
+    const message: IMessage = {
+      _id: String(MESSAGE_COUNT - index),
+      text: SAMPLE_TEXTS[index % SAMPLE_TEXTS.length],
+      createdAt: new Date(now - minutesBefore * 60 * 1000),
+      user: IS_MINE[index % IS_MINE.length] ? ME : partner,
+    };
+
+    minutesBefore += GAP_MINUTES[index % GAP_MINUTES.length];
+
+    return message;
+  });
 }
 
 export default function ChatRoomScreen() {
@@ -125,13 +117,13 @@ export default function ChatRoomScreen() {
         locale="ko"
         colorScheme={scheme}
         isAvatarOnTop
-        dateFormat="M월 D일"
-        dateFormatCalendar={{ sameDay: "[오늘]", lastDay: "[어제]" }}
+        isDayAnimationEnabled={false}
         keyboardAvoidingViewProps={{ keyboardVerticalOffset: headerHeight }}
         textInputProps={{
           placeholder: "메시지 입력",
           maxLength: MESSAGE_MAX_LENGTH,
         }}
+        renderDay={(props) => <ChatDay {...props} />}
         renderMessage={(props) => <ChatMessage {...props} />}
         renderBubble={(props) => <ChatBubble {...props} />}
         renderInputToolbar={(props) => <ChatInputToolbar {...props} />}

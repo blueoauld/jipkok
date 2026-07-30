@@ -8,7 +8,8 @@ import { Text, useTheme, XStack } from "tamagui";
 
 const TIME_FORMAT = "A h:mm";
 
-const RADIUS = 18;
+// 프로필 화면의 본문 박스($5)와 같은 값.
+const RADIUS = 10;
 
 const TEXT_LINE_HEIGHT = 22;
 
