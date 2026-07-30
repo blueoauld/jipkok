@@ -9,7 +9,6 @@ import { Text, useTheme, XStack } from "tamagui";
 
 const TIME_FORMAT = "A h:mm";
 
-// 프로필 화면의 본문 박스($5)와 같은 값.
 const RADIUS = 10;
 
 const TEXT_LINE_HEIGHT = 22;
@@ -35,7 +34,6 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
   const isRight = position === "right";
   const time = dayjs(currentMessage.createdAt).locale("ko").format(TIME_FORMAT);
 
-  // 사진만 보낸 메시지는 버블 없이 사진만 보여준다.
   const isImageOnly = !!currentMessage.image && !currentMessage.text;
   const wrapperColor = (color: string) => (isImageOnly ? "transparent" : color);
 

@@ -2,7 +2,8 @@ import "dayjs/locale/ko";
 
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
-import { useCallback, useState } from "react";
+import { DotsThreeIcon } from "phosphor-react-native";
+import { useCallback, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";
 import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +17,14 @@ import {
   ChatSend,
 } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
+import {
+  ChatScrollToBottom,
+  CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE,
+  CHAT_SCROLL_TO_BOTTOM_STYLE,
+} from "@/components/ChatScrollToBottom";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 
 const ME = { _id: "me" };
@@ -39,10 +48,7 @@ const SAMPLE_TEXTS = [
   "그럼 그때 뵈어요.",
 ];
 
-// 보내는 사람 패턴. 연속 메시지 묶음이 섞이도록 길이를 다르게 뒀다.
 const IS_MINE = [true, true, false, false, false, true, false];
-
-// 메시지 사이 간격(분). 누적되면 100개가 대략 5일치가 된다.
 const GAP_MINUTES = [3, 6, 11, 27, 55, 140, 8, 320];
 
 function createInitialMessages(id: string, nickname: string): IMessage[] {
@@ -55,8 +61,6 @@ function createInitialMessages(id: string, nickname: string): IMessage[] {
   const now = Date.now();
   let minutesBefore = 0;
 
-  // TODO: 서버 연동 시 실제 대화 내역으로 교체
-  // 최신 메시지가 앞에 온다.
   return Array.from({ length: MESSAGE_COUNT }, (_, index) => {
     const message: IMessage = {
       _id: String(MESSAGE_COUNT - index),
@@ -81,9 +85,11 @@ export default function ChatRoomScreen() {
   const [messages, setMessages] = useState<IMessage[]>(() =>
     createInitialMessages(id, nickname),
   );
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   const handleSend = useCallback((sent: IMessage[]) => {
-    // TODO: 서버로 전송 연결
     setMessages((previous) => GiftedChat.append(previous, sent));
   }, []);
 
@@ -96,7 +102,6 @@ export default function ChatRoomScreen() {
 
     const now = Date.now();
 
-    // TODO: 업로드 후 서버 이미지 주소로 교체
     const photos: IMessage[] = uris.map((uri, index) => ({
       _id: `${now}-${index}`,
       text: "",
@@ -105,13 +110,40 @@ export default function ChatRoomScreen() {
       image: uri,
     }));
 
-    // 목록이 역순이라 마지막에 고른 사진이 앞에 와야 고른 순서대로 보인다.
     handleSend(photos.reverse());
   }, [handleSend]);
 
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+
+  const screenOptions = useMemo(
+    () => ({
+      title: nickname,
+      headerRight: () => (
+        <HeaderCircleIconButton
+          icon={DotsThreeIcon}
+          weight="bold"
+          onPress={openMenu}
+        />
+      ),
+    }),
+    [nickname, openMenu],
+  );
+
+  const menuItems: MenuSheetItem[] = [
+    {
+      label: "신고하기",
+      destructive: true,
+      onPress: () => setReportOpen(true),
+    },
+    {
+      label: "나가기",
+      onPress: () => setLeaveOpen(true),
+    },
+  ];
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: nickname }} />
+      <Stack.Screen options={screenOptions} />
 
       <GiftedChat
         messages={messages}
@@ -121,6 +153,10 @@ export default function ChatRoomScreen() {
         colorScheme={scheme}
         isAvatarOnTop
         isDayAnimationEnabled={false}
+        isScrollToBottomEnabled
+        scrollToBottomStyle={CHAT_SCROLL_TO_BOTTOM_STYLE}
+        scrollToBottomContentStyle={CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE}
+        scrollToBottomComponent={() => <ChatScrollToBottom />}
         keyboardAvoidingViewProps={{
           behavior: "padding",
           keyboardVerticalOffset: headerHeight,
@@ -139,6 +175,27 @@ export default function ChatRoomScreen() {
         onPressActionButton={handlePickPhotos}
         onPressAvatar={() => router.push(`/member/${id}`)}
       />
+
+      <ConfirmDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        title="채팅방 신고"
+        description="신고한 채팅방은 검토 후 조치됩니다."
+        confirmLabel="신고"
+        destructive
+      />
+
+      <ConfirmDialog
+        open={leaveOpen}
+        onOpenChange={setLeaveOpen}
+        title="채팅방 나가기"
+        description="나가면 주고받은 대화 내역이 모두 사라지고 목록에서도 삭제됩니다."
+        confirmLabel="나가기"
+        destructive
+        onConfirm={() => router.back()}
+      />
+
+      <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
     </SafeAreaView>
   );
 }
