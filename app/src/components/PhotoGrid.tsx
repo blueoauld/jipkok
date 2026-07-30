@@ -87,18 +87,18 @@ export function PhotoGrid({
 
                 <XStack
                   position="absolute"
-                  t="$1"
-                  r="$1"
+                  t="$2"
+                  r="$2"
                   width={24}
                   height={24}
                   rounded={9999}
-                  bg="$gray12"
+                  bg="$red10"
                   items="center"
                   justify="center"
                   pressStyle={{ opacity: 0.6 }}
                   onPress={() => onRemove?.(cell.index)}
                 >
-                  <XIcon size={14} weight="bold" color={theme.gray1.val} />
+                  <XIcon size={14} weight="bold" color="white" />
                 </XStack>
               </YStack>
             );
