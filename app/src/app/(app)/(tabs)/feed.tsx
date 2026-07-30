@@ -1,7 +1,7 @@
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { HeartIcon } from "phosphor-react-native";
+import { HeartIcon, SirenIcon } from "phosphor-react-native";
 import { FlatList } from "react-native";
 import { Avatar, getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -17,6 +17,7 @@ type Post = {
   id: string;
   /** 게시물 id와 별개로 작성자 프로필로 이동할 때 쓴다 */
   authorId: string;
+  nickname: string;
   time: string;
   caption?: string;
   photo: string;
@@ -32,6 +33,7 @@ const POSTS: Post[] = [
 ].map((post) => ({
   ...post,
   authorId: post.id,
+  nickname: `닉네임 ${post.id}`,
   photo: `https://picsum.photos/seed/feed-${post.id}/1000/400`,
   avatar: `https://picsum.photos/seed/user-${post.id}/100`,
 }));
@@ -46,10 +48,12 @@ function FeedCard({ post }: { post: Post }) {
     >
       <Image source={post.photo} contentFit="cover" style={{ flex: 1 }} />
 
-      <YStack
+      <XStack
         position="absolute"
         t="$3"
         l="$3"
+        items="center"
+        gap="$2"
         pressStyle={{ opacity: 0.6 }}
         onPress={() => router.push(`/member/${post.authorId}`)}
       >
@@ -57,17 +61,28 @@ function FeedCard({ post }: { post: Post }) {
           <Avatar.Image src={post.avatar} />
           <Avatar.Fallback theme="gray" bg="$color5"></Avatar.Fallback>
         </Avatar>
-      </YStack>
 
-      <XStack
-        position="absolute"
-        b="$2"
-        r="$2"
-        p="$2"
-        pressStyle={{ opacity: 0.6 }}
-      >
-        <HeartIcon size={28} weight="bold" color="white" />
+        <Text
+          numberOfLines={1}
+          maxW="60%"
+          color="white"
+          fontSize="$3"
+          fontWeight="600"
+          style={OVERLAY_TEXT_SHADOW}
+        >
+          {post.nickname}
+        </Text>
       </XStack>
+
+      <YStack position="absolute" b="$2" r="$2" items="center">
+        <XStack p="$2" pressStyle={{ opacity: 0.6 }}>
+          <SirenIcon size={28} weight="fill" color="white" />
+        </XStack>
+
+        <XStack p="$2" pressStyle={{ opacity: 0.6 }}>
+          <HeartIcon size={28} weight="bold" color="white" />
+        </XStack>
+      </YStack>
 
       <YStack fullscreen items="center" justify="center" px="$4">
         <Text
