@@ -29,7 +29,7 @@ export function ActivityRow({
   onDelete,
 }: {
   member: ActivityMember;
-  onDelete: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <XStack gap="$3" items="center">
@@ -50,7 +50,7 @@ export function ActivityRow({
         </Text>
       </YStack>
 
-      <DeleteButton onPress={onDelete} />
+      {onDelete && <DeleteButton onPress={onDelete} />}
     </XStack>
   );
 }

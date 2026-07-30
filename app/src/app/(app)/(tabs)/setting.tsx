@@ -33,9 +33,17 @@ const SECTIONS: SettingItem[][] = [
     { label: "차단 목록", icon: ProhibitIcon, href: "/activity/block" },
   ],
   [
-    { label: "받은 좋아요 목록", icon: HandHeartIcon },
-    { label: "받은 즐겨찾기 목록", icon: TrayArrowDownIcon },
-    { label: "공개된 비밀 사진 목록", icon: EyeIcon },
+    { label: "받은 좋아요 목록", icon: HandHeartIcon, href: "/activity/like-received" },
+    {
+      label: "받은 즐겨찾기 목록",
+      icon: TrayArrowDownIcon,
+      href: "/activity/favorite-received",
+    },
+    {
+      label: "공개된 비밀 사진 목록",
+      icon: EyeIcon,
+      href: "/activity/secret-photo-opened",
+    },
   ],
   [
     { label: "포인트 내역", icon: CoinsIcon },
