@@ -3,6 +3,7 @@ import type { Icon } from "phosphor-react-native";
 import {
   BellIcon,
   ChatCircleIcon,
+  FireIcon,
   FunnelSimpleIcon,
   GearIcon,
   HouseIcon,
@@ -58,6 +59,7 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
+  { name: "feed", title: "피드", icon: FireIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   {
     name: "setting",
