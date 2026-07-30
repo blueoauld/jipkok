@@ -8,8 +8,9 @@ import {
 } from "phosphor-react-native";
 import { useTheme, XStack, YStack, type XStackProps } from "tamagui";
 
+import { MAX_PHOTOS } from "@/hooks/usePhotos";
+
 const COLUMNS = 3;
-const MAX_PHOTOS = 6;
 
 const OVERLAY_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 

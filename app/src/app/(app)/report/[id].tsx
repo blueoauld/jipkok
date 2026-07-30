@@ -13,6 +13,8 @@ import { Button, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { PhotoGrid } from "@/components/PhotoGrid";
+import { usePhotos } from "@/hooks/usePhotos";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const DETAIL_MAX_LENGTH = 1000;
@@ -62,6 +64,7 @@ export default function ReportScreen() {
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<string | null>(null);
   const [detail, setDetail] = useState("");
+  const photos = usePhotos();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -74,6 +77,18 @@ export default function ReportScreen() {
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+          <YStack gap="$2">
+            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+              증거 사진
+            </Text>
+            <PhotoGrid
+              photos={photos.photos}
+              onAdd={photos.add}
+              onRemove={photos.remove}
+              onMove={photos.move}
+            />
+          </YStack>
+
           <YStack bg="$gray4" rounded="$7" overflow="hidden">
             {REASONS.map((label) => (
               <ReasonRow

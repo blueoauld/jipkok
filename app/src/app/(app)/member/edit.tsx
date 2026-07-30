@@ -1,7 +1,5 @@
-import * as ImagePicker from "expo-image-picker";
 import { Stack } from "expo-router";
-import { useCallback, useRef, useState } from "react";
-import { Alert } from "react-native";
+import { useRef, useState } from "react";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -15,63 +13,17 @@ import { Button, Text, YStack } from "tamagui";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { usePhotos } from "@/hooks/usePhotos";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const NICKNAME_MAX_LENGTH = 10;
 const BIO_MAX_LENGTH = 1000;
-const MAX_PHOTOS = 6;
 
 const PROFILE = {
   nickname: "닉네임",
   birthYear: "2006",
   bio: "자기소개 내용",
 };
-
-async function pickPhotos(remaining: number) {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-  if (!permission.granted) {
-    Alert.alert("사진 접근 권한이 필요합니다.");
-    return [];
-  }
-
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ["images"],
-    allowsMultipleSelection: true,
-    selectionLimit: remaining,
-    quality: 0.8,
-  });
-
-  return result.canceled ? [] : result.assets.map((asset) => asset.uri);
-}
-
-function usePhotos() {
-  const [photos, setPhotos] = useState<string[]>([]);
-
-  const add = useCallback(async () => {
-    const picked = await pickPhotos(MAX_PHOTOS - photos.length);
-    setPhotos((current) => [...current, ...picked].slice(0, MAX_PHOTOS));
-  }, [photos.length]);
-
-  const remove = useCallback((index: number) => {
-    setPhotos((current) => current.filter((_, i) => i !== index));
-  }, []);
-
-  const move = useCallback((from: number, to: number) => {
-    setPhotos((current) => {
-      if (to < 0 || to >= current.length) {
-        return current;
-      }
-
-      const next = [...current];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    });
-  }, []);
-
-  return { photos, add, remove, move };
-}
 
 export default function MemberEditScreen() {
   const insets = useSafeAreaInsets();
