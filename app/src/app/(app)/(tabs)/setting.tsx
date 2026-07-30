@@ -22,15 +22,15 @@ import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 
 const ICON_SIZE = 22;
 
-const ACCOUNT_MENU: MenuSheetItem[] = [
-  { label: "로그아웃" },
-  { label: "회원탈퇴", destructive: true },
-];
+const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
+const WITHDRAW_DESCRIPTION =
+  "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.";
 
 type SettingItem = { label: string; icon: Icon; href?: Href };
 
@@ -100,6 +100,17 @@ function SettingRow({ item }: { item: SettingItem }) {
 export default function SettingScreen() {
   const space = getTokens().space;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+
+  const accountMenu: MenuSheetItem[] = [
+    { label: "로그아웃", onPress: () => setLogoutOpen(true) },
+    {
+      label: "회원탈퇴",
+      destructive: true,
+      onPress: () => setWithdrawOpen(true),
+    },
+  ];
   const openMenu = useCallback(() => setMenuOpen(true), []);
 
   const screenOptions = useMemo(
@@ -138,7 +149,24 @@ export default function SettingScreen() {
       <MenuSheet
         open={menuOpen}
         onOpenChange={setMenuOpen}
-        items={ACCOUNT_MENU}
+        items={accountMenu}
+      />
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="로그아웃"
+        description={LOGOUT_DESCRIPTION}
+        confirmLabel="확인"
+      />
+
+      <ConfirmDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        title="회원탈퇴"
+        description={WITHDRAW_DESCRIPTION}
+        confirmLabel="탈퇴"
+        destructive
       />
     </ScrollView>
   );

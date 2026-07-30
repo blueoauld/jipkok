@@ -11,8 +11,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AlertDialog, Button, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
@@ -159,34 +160,14 @@ export default function MemberProfileScreen() {
 
       <ActionBar onPress={handleAction} />
 
-      <AlertDialog modal open={blockOpen} onOpenChange={setBlockOpen}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay opacity={0.6} />
-
-          <AlertDialog.Content width="85%" maxW={400} p="$4" gap="$3">
-            <AlertDialog.Title fontSize="$6">차단</AlertDialog.Title>
-
-            <AlertDialog.Description theme="gray" color="$color11">
-              차단하면 상대방의 목록에 내가 표시되지 않고, 주고받은 대화 내역도
-              모두 사라집니다.
-            </AlertDialog.Description>
-
-            <XStack gap="$2" mt="$2">
-              <AlertDialog.Cancel asChild>
-                <Button flex={1} size="$4" rounded="$7">
-                  닫기
-                </Button>
-              </AlertDialog.Cancel>
-
-              <AlertDialog.Action asChild>
-                <Button flex={1} size="$4" theme="red" rounded="$7">
-                  확인
-                </Button>
-              </AlertDialog.Action>
-            </XStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+      <ConfirmDialog
+        open={blockOpen}
+        onOpenChange={setBlockOpen}
+        title="차단"
+        description="차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다."
+        confirmLabel="확인"
+        destructive
+      />
 
       <TextInputDialog
         open={noteOpen}
