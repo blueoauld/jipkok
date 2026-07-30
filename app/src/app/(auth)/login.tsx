@@ -48,7 +48,7 @@ export default function LoginScreen() {
             </Link>
           </YStack>
 
-          <Button size="$4" theme="blue">
+          <Button size="$4" theme="blue" rounded="$7">
             로그인
           </Button>
         </YStack>

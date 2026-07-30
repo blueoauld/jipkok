@@ -64,7 +64,7 @@ export default function SetupScreen() {
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button size="$4" theme="blue">
+          <Button size="$4" theme="blue" rounded="$7">
             들어가기
           </Button>
         </YStack>

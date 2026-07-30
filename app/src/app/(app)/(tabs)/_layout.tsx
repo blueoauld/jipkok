@@ -7,6 +7,7 @@ import {
   TrophyIcon,
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "tamagui";
 
 const ICON_SIZE = 30;
 const ICON_TOP_OFFSET = 6;
@@ -21,6 +22,7 @@ const TABS: { name: string; title: string; icon: Icon }[] = [
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
     <Tabs
@@ -29,6 +31,8 @@ export default function TabsLayout() {
         headerShadowVisible: false,
         headerBackButtonDisplayMode: "minimal",
         tabBarShowLabel: false,
+        tabBarActiveTintColor: theme.color10.val,
+        tabBarInactiveTintColor: theme.color10.val,
         tabBarStyle: { height: TAB_BAR_HEIGHT + insets.bottom },
         tabBarIconStyle: {
           width: ICON_SIZE,
