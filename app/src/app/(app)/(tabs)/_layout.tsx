@@ -29,7 +29,30 @@ type Tab = {
   headerRight?: () => React.ReactNode;
 };
 
+export const unstable_settings = {
+  initialRouteName: "main",
+};
+
 const TABS: Tab[] = [
+  {
+    name: "feed",
+    title: "피드",
+    icon: FireIcon,
+    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
+    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
+  },
+  {
+    name: "chat",
+    title: "채팅",
+    icon: ChatCircleIcon,
+    headerLeft: () => (
+      <HeaderIconButton
+        icon={MagnifyingGlassIcon}
+        onPress={() => router.push("/chat/search")}
+      />
+    ),
+    headerRight: () => <HeaderIconButton icon={BellIcon} />,
+  },
   {
     name: "main",
     title: "메인",
@@ -46,25 +69,6 @@ const TABS: Tab[] = [
         <HeaderIconButton icon={NotePencilIcon} />
       </XStack>
     ),
-  },
-  {
-    name: "chat",
-    title: "채팅",
-    icon: ChatCircleIcon,
-    headerLeft: () => (
-      <HeaderIconButton
-        icon={MagnifyingGlassIcon}
-        onPress={() => router.push("/chat/search")}
-      />
-    ),
-    headerRight: () => <HeaderIconButton icon={BellIcon} />,
-  },
-  {
-    name: "feed",
-    title: "피드",
-    icon: FireIcon,
-    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
-    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
   },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   {

@@ -8,9 +8,10 @@ import {
   ProhibitIcon,
   StarIcon,
 } from "phosphor-react-native";
+import { useCallback, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { Sheet, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoPager } from "@/components/PhotoPager";
@@ -53,8 +54,67 @@ function ActionBar() {
   );
 }
 
+const MENU_ITEMS: { label: string; destructive?: boolean }[] = [
+  { label: "비밀 사진 공개" },
+  { label: "신고하기", destructive: true },
+];
+
+function MoreMenuSheet({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Sheet
+      modal
+      open={open}
+      onOpenChange={onOpenChange}
+      snapPointsMode="fit"
+      dismissOnSnapToBottom
+    >
+      <Sheet.Overlay opacity={0.6} />
+      <Sheet.Handle bg="$color3" />
+
+      <Sheet.Frame bg="$color3" p="$4" pb="$6" gap="$2">
+        {MENU_ITEMS.map(({ label, destructive }) => (
+          <XStack
+            key={label}
+            items="center"
+            p="$3"
+            rounded="$5"
+            pressStyle={{ bg: "$color4" }}
+            onPress={() => onOpenChange(false)}
+          >
+            <Text fontSize="$4" color={destructive ? "$red10" : "$color"}>
+              {label}
+            </Text>
+          </XStack>
+        ))}
+      </Sheet.Frame>
+    </Sheet>
+  );
+}
+
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+
+  const screenOptions = useMemo(
+    () => ({
+      title: "프로필",
+      headerRight: () => (
+        <HeaderCircleIconButton
+          icon={DotsThreeIcon}
+          weight="bold"
+          onPress={openMenu}
+        />
+      ),
+    }),
+    [openMenu],
+  );
 
   const profile = {
     nickname: `닉네임 ${id}`,
@@ -72,14 +132,7 @@ export default function MemberProfileScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen
-        options={{
-          title: "프로필",
-          headerRight: () => (
-            <HeaderCircleIconButton icon={DotsThreeIcon} weight="bold" />
-          ),
-        }}
-      />
+      <Stack.Screen options={screenOptions} />
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <PhotoPager photos={profile.photos} />
@@ -117,6 +170,8 @@ export default function MemberProfileScreen() {
       </ScrollView>
 
       <ActionBar />
+
+      <MoreMenuSheet open={menuOpen} onOpenChange={setMenuOpen} />
     </SafeAreaView>
   );
 }
