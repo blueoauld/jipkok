@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { router, Tabs } from "expo-router";
+import {
+  FunnelSimpleIcon,
+  MagnifyingGlassIcon,
+  NotePencilIcon,
+} from "phosphor-react-native";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, YStack } from "tamagui";
+import { getTokens, XStack, YStack } from "tamagui";
 
+import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { MenuSheet } from "@/components/MenuSheet";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserRow, type User } from "@/components/UserRow";
 
 const FILTERS = ["최근", "거리"] as const;
 type Filter = (typeof FILTERS)[number];
+
+const GENDERS = ["전체", "남자", "여자"] as const;
+type Gender = (typeof GENDERS)[number];
 
 const USERS: User[] = Array.from({ length: 100 }, (_, index) => ({
   id: String(index),
@@ -16,9 +27,33 @@ const USERS: User[] = Array.from({ length: 100 }, (_, index) => ({
 export default function MainScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("최근");
+  const [gender, setGender] = useState<Gender>("전체");
+  const [genderOpen, setGenderOpen] = useState(false);
+
+  const openGender = useCallback(() => setGenderOpen(true), []);
+
+  const screenOptions = useMemo(
+    () => ({
+      headerLeft: () => (
+        <HeaderIconButton
+          icon={MagnifyingGlassIcon}
+          onPress={() => router.push("/member/search")}
+        />
+      ),
+      headerRight: () => (
+        <XStack>
+          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openGender} />
+          <HeaderIconButton icon={NotePencilIcon} />
+        </XStack>
+      ),
+    }),
+    [openGender],
+  );
 
   return (
     <YStack flex={1}>
+      <Tabs.Screen options={screenOptions} />
+
       <YStack px="$4" pt="$4" pb="$2">
         <SegmentedControl
           values={FILTERS}
@@ -38,6 +73,16 @@ export default function MainScreen() {
           paddingHorizontal: space.$4.val,
           gap: space.$4.val,
         }}
+      />
+
+      <MenuSheet
+        open={genderOpen}
+        onOpenChange={setGenderOpen}
+        items={GENDERS.map((label) => ({
+          label,
+          selected: label === gender,
+          onPress: () => setGender(label),
+        }))}
       />
     </YStack>
   );

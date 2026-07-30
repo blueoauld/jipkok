@@ -1,8 +1,10 @@
-import { Sheet, Text, XStack } from "tamagui";
+import { CheckIcon } from "phosphor-react-native";
+import { Sheet, Text, useTheme, XStack } from "tamagui";
 
 export type MenuSheetItem = {
   label: string;
   destructive?: boolean;
+  selected?: boolean;
   onPress?: () => void;
 };
 
@@ -15,6 +17,8 @@ export function MenuSheet({
   onOpenChange: (open: boolean) => void;
   items: MenuSheetItem[];
 }) {
+  const theme = useTheme();
+
   return (
     <Sheet
       modal
@@ -27,10 +31,12 @@ export function MenuSheet({
       <Sheet.Handle bg="$color3" />
 
       <Sheet.Frame bg="$color3" p="$4" pb="$6" gap="$2">
-        {items.map(({ label, destructive, onPress }) => (
+        {items.map(({ label, destructive, selected, onPress }) => (
           <XStack
             key={label}
             items="center"
+            justify="space-between"
+            gap="$2"
             p="$3"
             rounded="$5"
             pressStyle={{ bg: "$color4" }}
@@ -39,9 +45,18 @@ export function MenuSheet({
               onPress?.();
             }}
           >
-            <Text fontSize="$4" color={destructive ? "$red10" : "$color"}>
+            <Text
+              flex={1}
+              numberOfLines={1}
+              fontSize="$4"
+              color={destructive ? "$red10" : "$color"}
+            >
               {label}
             </Text>
+
+            <XStack opacity={selected ? 1 : 0}>
+              <CheckIcon size={20} weight="bold" color={theme.color.val} />
+            </XStack>
           </XStack>
         ))}
       </Sheet.Frame>

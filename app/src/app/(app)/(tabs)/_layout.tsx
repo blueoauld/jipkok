@@ -4,15 +4,14 @@ import {
   BellIcon,
   ChatCircleIcon,
   FireIcon,
-  FunnelSimpleIcon,
   GearIcon,
   HouseIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
-  TrophyIcon,
+  TrophyIcon
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme, XStack } from "tamagui";
+import { useTheme } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 
@@ -52,23 +51,7 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
-  {
-    name: "main",
-    title: "메인",
-    icon: HouseIcon,
-    headerLeft: () => (
-      <HeaderIconButton
-        icon={MagnifyingGlassIcon}
-        onPress={() => router.push("/member/search")}
-      />
-    ),
-    headerRight: () => (
-      <XStack>
-        <HeaderIconButton icon={FunnelSimpleIcon} />
-        <HeaderIconButton icon={NotePencilIcon} />
-      </XStack>
-    ),
-  },
+  { name: "main", title: "메인", icon: HouseIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   { name: "setting", title: "설정", icon: GearIcon },
 ];

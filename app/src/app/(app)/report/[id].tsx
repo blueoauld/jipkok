@@ -65,7 +65,7 @@ export default function ReportScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "신고하기" }} />
+      <Stack.Screen options={{ title: "신고하기 (홍길동)" }} />
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
