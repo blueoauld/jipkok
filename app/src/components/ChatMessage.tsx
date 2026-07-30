@@ -7,11 +7,12 @@ import {
   type MessageProps,
 } from "react-native-gifted-chat";
 
+import { UserAvatar } from "@/components/UserAvatar";
+
 const AVATAR_SIZE = 38;
 
 const MAX_WIDTH = "80%";
 
-// 입력 툴바와 같은 값(기본값은 8).
 const SIDE_MARGIN = 12;
 
 const AVATAR_STYLE: ImageStyle = {
@@ -33,6 +34,13 @@ export function ChatMessage(props: MessageProps<IMessage>) {
         right: { maxWidth: MAX_WIDTH, marginRight: SIDE_MARGIN },
       }}
       imageStyle={{ left: AVATAR_STYLE, right: AVATAR_STYLE }}
+      renderAvatar={({ currentMessage }) => (
+        <UserAvatar
+          id={String(currentMessage.user._id)}
+          size={AVATAR_SIZE}
+          circular
+        />
+      )}
     />
   );
 }

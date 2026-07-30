@@ -15,7 +15,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, type ViewStyle } from "react-native";
 
 import {
-  Avatar,
   Button,
   Dialog,
   getTokens,
@@ -30,9 +29,14 @@ import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
+import { UserAvatar } from "@/components/UserAvatar";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 
 const CARD_RATIO = 2;
+
+const AVATAR_SIZE = 36;
+
+const PHOTO_TRANSITION = 200;
 
 const GRADIENT_HEIGHT = "35%";
 const TOP_GRADIENT: ViewStyle = {
@@ -56,7 +60,6 @@ type Post = {
   time: string;
   caption?: string;
   photo: string;
-  avatar: string;
 };
 
 const POSTS: Post[] = [
@@ -70,7 +73,6 @@ const POSTS: Post[] = [
   authorId: post.id,
   nickname: `닉네임 ${post.id}`,
   photo: `https://picsum.photos/seed/feed-${post.id}/1000/400`,
-  avatar: `https://picsum.photos/seed/user-${post.id}/100`,
 }));
 
 function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
@@ -80,8 +82,15 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
       aspectRatio={CARD_RATIO}
       rounded="$7"
       overflow="hidden"
+      bg="$gray4"
     >
-      <Image source={post.photo} contentFit="cover" style={{ flex: 1 }} />
+      <Image
+        source={post.photo}
+        recyclingKey={post.id}
+        contentFit="cover"
+        transition={PHOTO_TRANSITION}
+        style={{ flex: 1 }}
+      />
 
       <YStack
         position="absolute"
@@ -112,10 +121,7 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
         pressStyle={{ opacity: 0.6 }}
         onPress={() => router.push(`/member/${post.authorId}`)}
       >
-        <Avatar circular size="$3">
-          <Avatar.Image src={post.avatar} />
-          <Avatar.Fallback theme="gray" bg="$color5"></Avatar.Fallback>
-        </Avatar>
+        <UserAvatar id={post.authorId} size={AVATAR_SIZE} circular />
 
         <Text
           numberOfLines={1}

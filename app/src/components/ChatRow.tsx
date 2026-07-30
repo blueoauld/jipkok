@@ -1,5 +1,7 @@
 import { router } from "expo-router";
-import { Avatar, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
+
+import { UserAvatar } from "@/components/UserAvatar";
 
 export type Chat = {
   id: string;
@@ -38,10 +40,7 @@ export function ChatRow({ chat }: { chat: Chat }) {
       pressStyle={{ opacity: 0.6 }}
       onPress={() => router.push(`/chat/${chat.id}`)}
     >
-      <Avatar size="$6" rounded="$7">
-        <Avatar.Image src="http://picsum.photos/200/300" />
-        <Avatar.Fallback theme="gray" bg="$color5"></Avatar.Fallback>
-      </Avatar>
+      <UserAvatar id={chat.id} />
 
       <YStack flex={1} gap="$2">
         <XStack items="center" justify="space-between" gap="$2">

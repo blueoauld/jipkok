@@ -52,11 +52,7 @@ const IS_MINE = [true, true, false, false, false, true, false];
 const GAP_MINUTES = [3, 6, 11, 27, 55, 140, 8, 320];
 
 function createInitialMessages(id: string, nickname: string): IMessage[] {
-  const partner = {
-    _id: id,
-    name: nickname,
-    avatar: `https://picsum.photos/seed/${id}-0/200/200`,
-  };
+  const partner = { _id: id, name: nickname };
 
   const now = Date.now();
   let minutesBefore = 0;

@@ -1,5 +1,7 @@
 import { TrashIcon } from "phosphor-react-native";
-import { Avatar, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
+
+import { UserAvatar } from "@/components/UserAvatar";
 
 export type ActivityMember = {
   id: string;
@@ -33,10 +35,7 @@ export function ActivityRow({
 }) {
   return (
     <XStack gap="$3" items="center">
-      <Avatar size="$6" rounded="$7">
-        <Avatar.Image src={`https://picsum.photos/seed/${member.id}/200`} />
-        <Avatar.Fallback bg="$gray5" />
-      </Avatar>
+      <UserAvatar id={member.id} />
 
       <YStack flex={1} gap="$1">
         <Text numberOfLines={1} fontSize="$4" fontWeight="600">
