@@ -1,6 +1,6 @@
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   BellIcon,
@@ -31,6 +31,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
+import { pushOnce } from "@/lib/router";
 
 const CARD_RATIO = 2;
 
@@ -119,7 +120,7 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
         items="center"
         gap="$2"
         pressStyle={{ opacity: 0.6 }}
-        onPress={() => router.push(`/member/${post.authorId}`)}
+        onPress={() => pushOnce(`/member/${post.authorId}`)}
       >
         <UserAvatar id={post.authorId} size={AVATAR_SIZE} circular />
 

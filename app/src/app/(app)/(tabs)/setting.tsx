@@ -1,4 +1,4 @@
-import { router, Tabs, type Href } from "expo-router";
+import { Tabs, type Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   CalendarCheckIcon,
@@ -25,6 +25,7 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 22;
 
@@ -87,7 +88,7 @@ function SettingRow({ item }: { item: SettingItem }) {
       px="$4"
       py="$3"
       pressStyle={{ bg: "$gray5" }}
-      onPress={href ? () => router.push(href) : undefined}
+      onPress={href ? () => pushOnce(href) : undefined}
     >
       <Icon size={ICON_SIZE} color={theme.color10.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">

@@ -1,4 +1,4 @@
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { PencilSimpleIcon } from "phosphor-react-native";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +7,7 @@ import { Text, YStack } from "tamagui";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
+import { pushOnce } from "@/lib/router";
 
 const PROFILE = {
   nickname: "닉네임",
@@ -32,7 +33,7 @@ export default function MyProfileScreen() {
             headerRight: () => (
               <HeaderCircleIconButton
                 icon={PencilSimpleIcon}
-                onPress={() => router.push("/member/edit")}
+                onPress={() => pushOnce("/member/edit")}
               />
             ),
           }}

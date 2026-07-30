@@ -1,4 +1,4 @@
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   ChatCircleIcon,
@@ -19,6 +19,7 @@ import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
 const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
@@ -68,7 +69,7 @@ function buildMenuItems(id: string): MenuSheetItem[] {
     {
       label: "신고하기",
       destructive: true,
-      onPress: () => router.push(`/report/${id}?type=member`),
+      onPress: () => pushOnce(`/report/${id}?type=member`),
     },
   ];
 }

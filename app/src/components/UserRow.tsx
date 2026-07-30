@@ -1,7 +1,7 @@
-import { router } from "expo-router";
 import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
+import { pushOnce } from "@/lib/router";
 
 export type User = {
   id: string;
@@ -14,7 +14,7 @@ export function UserRow({ user }: { user: User }) {
       gap="$3"
       items="center"
       pressStyle={{ opacity: 0.6 }}
-      onPress={() => router.push(`/member/${user.id}`)}
+      onPress={() => pushOnce(`/member/${user.id}`)}
     >
       <UserAvatar id={user.id} />
 

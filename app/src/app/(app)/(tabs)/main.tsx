@@ -1,4 +1,4 @@
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import {
   FunnelSimpleIcon,
   MagnifyingGlassIcon,
@@ -13,6 +13,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { UserRow, type User } from "@/components/UserRow";
+import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -43,7 +44,7 @@ export default function MainScreen() {
       headerLeft: () => (
         <HeaderIconButton
           icon={MagnifyingGlassIcon}
-          onPress={() => router.push("/member/search")}
+          onPress={() => pushOnce("/member/search")}
         />
       ),
       headerRight: () => (

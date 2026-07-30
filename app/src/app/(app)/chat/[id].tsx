@@ -26,6 +26,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
+import { pushOnce } from "@/lib/router";
 
 const ME = { _id: "me" };
 
@@ -169,7 +170,7 @@ export default function ChatRoomScreen() {
         renderSend={(props) => <ChatSend {...props} />}
         renderActions={(props) => <ChatActions {...props} />}
         onPressActionButton={handlePickPhotos}
-        onPressAvatar={() => router.push(`/member/${id}`)}
+        onPressAvatar={() => pushOnce(`/member/${id}`)}
       />
 
       <ConfirmDialog

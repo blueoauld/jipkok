@@ -1,7 +1,7 @@
-import { router } from "expo-router";
 import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
+import { pushOnce } from "@/lib/router";
 
 export type Chat = {
   id: string;
@@ -38,7 +38,7 @@ export function ChatRow({ chat }: { chat: Chat }) {
       gap="$3"
       items="center"
       pressStyle={{ opacity: 0.6 }}
-      onPress={() => router.push(`/chat/${chat.id}`)}
+      onPress={() => pushOnce(`/chat/${chat.id}`)}
     >
       <UserAvatar id={chat.id} />
 

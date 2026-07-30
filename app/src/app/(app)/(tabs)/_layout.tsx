@@ -1,4 +1,4 @@
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   BellIcon,
@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
 const ICON_TOP_OFFSET = 6;
@@ -35,7 +36,7 @@ const TABS: Tab[] = [
     headerLeft: () => (
       <HeaderIconButton
         icon={MagnifyingGlassIcon}
-        onPress={() => router.push("/chat/search")}
+        onPress={() => pushOnce("/chat/search")}
       />
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
