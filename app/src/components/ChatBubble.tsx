@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import {
   Bubble,
+  MessageImage,
   type BubbleProps,
   type IMessage,
 } from "react-native-gifted-chat";
@@ -13,6 +14,15 @@ const RADIUS = 10;
 
 const TEXT_LINE_HEIGHT = 22;
 
+const IMAGE_SIZE = 200;
+
+const IMAGE_STYLE = {
+  width: IMAGE_SIZE,
+  height: IMAGE_SIZE,
+  borderRadius: RADIUS,
+  margin: 0,
+};
+
 const BOTTOM_STYLE = { paddingHorizontal: 0, paddingBottom: 0 };
 
 export function ChatBubble(props: BubbleProps<IMessage>) {
@@ -24,6 +34,10 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
 
   const isRight = position === "right";
   const time = dayjs(currentMessage.createdAt).locale("ko").format(TIME_FORMAT);
+
+  // 사진만 보낸 메시지는 버블 없이 사진만 보여준다.
+  const isImageOnly = !!currentMessage.image && !currentMessage.text;
+  const wrapperColor = (color: string) => (isImageOnly ? "transparent" : color);
 
   const meta = (
     <Text shrink={0} pb={2} theme="gray" color="$color10" fontSize={11}>
@@ -38,9 +52,18 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
       renderTicks={() => null}
       containerStyle={{ left: { flexShrink: 1 }, right: { flexShrink: 1 } }}
       wrapperStyle={{
-        left: { backgroundColor: theme.gray4.val, borderRadius: RADIUS },
-        right: { backgroundColor: theme.blue10.val, borderRadius: RADIUS },
+        left: {
+          backgroundColor: wrapperColor(theme.gray4.val),
+          borderRadius: RADIUS,
+        },
+        right: {
+          backgroundColor: wrapperColor(theme.blue10.val),
+          borderRadius: RADIUS,
+        },
       }}
+      renderMessageImage={(imageProps) => (
+        <MessageImage {...imageProps} imageStyle={IMAGE_STYLE} />
+      )}
       textStyle={{
         left: { color: theme.color.val, lineHeight: TEXT_LINE_HEIGHT },
         right: { color: "white", lineHeight: TEXT_LINE_HEIGHT },

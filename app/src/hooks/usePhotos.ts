@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 
 export const MAX_PHOTOS = 6;
 
-async function pickPhotos(remaining: number) {
+export async function pickPhotos(remaining: number) {
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (!permission.granted) {

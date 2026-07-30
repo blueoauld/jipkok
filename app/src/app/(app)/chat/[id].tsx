@@ -16,7 +16,7 @@ import {
   ChatSend,
 } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
-import { pickSinglePhoto } from "@/hooks/usePhotos";
+import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 
 const ME = { _id: "me" };
 
@@ -87,23 +87,26 @@ export default function ChatRoomScreen() {
     setMessages((previous) => GiftedChat.append(previous, sent));
   }, []);
 
-  const handlePickPhoto = useCallback(async () => {
-    const uri = await pickSinglePhoto();
+  const handlePickPhotos = useCallback(async () => {
+    const uris = await pickPhotos(MAX_PHOTOS);
 
-    if (!uri) {
+    if (uris.length === 0) {
       return;
     }
 
+    const now = Date.now();
+
     // TODO: 업로드 후 서버 이미지 주소로 교체
-    handleSend([
-      {
-        _id: `${Date.now()}`,
-        text: "",
-        createdAt: new Date(),
-        user: ME,
-        image: uri,
-      },
-    ]);
+    const photos: IMessage[] = uris.map((uri, index) => ({
+      _id: `${now}-${index}`,
+      text: "",
+      createdAt: new Date(now + index),
+      user: ME,
+      image: uri,
+    }));
+
+    // 목록이 역순이라 마지막에 고른 사진이 앞에 와야 고른 순서대로 보인다.
+    handleSend(photos.reverse());
   }, [handleSend]);
 
   return (
@@ -133,7 +136,7 @@ export default function ChatRoomScreen() {
         renderComposer={(props) => <ChatComposer {...props} />}
         renderSend={(props) => <ChatSend {...props} />}
         renderActions={(props) => <ChatActions {...props} />}
-        onPressActionButton={handlePickPhoto}
+        onPressActionButton={handlePickPhotos}
         onPressAvatar={() => router.push(`/member/${id}`)}
       />
     </SafeAreaView>
