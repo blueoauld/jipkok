@@ -7,12 +7,14 @@ import { useColorScheme } from "react-native";
 import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { ChatBubble } from "@/components/ChatBubble";
 import {
   ChatActions,
   ChatComposer,
   ChatInputToolbar,
   ChatSend,
 } from "@/components/ChatInput";
+import { ChatMessage } from "@/components/ChatMessage";
 import { pickSinglePhoto } from "@/hooks/usePhotos";
 
 const ME = { _id: "me" };
@@ -26,21 +28,53 @@ function createInitialMessages(id: string, nickname: string): IMessage[] {
     avatar: `https://picsum.photos/seed/${id}-0/200/200`,
   };
 
+  const now = Date.now();
+  const minutesAgo = (minutes: number) => new Date(now - minutes * 60 * 1000);
+
   // TODO: 서버 연동 시 실제 대화 내역으로 교체
+  // 최신 메시지가 앞에 온다.
   return [
+    {
+      _id: "7",
+      text: "토요일 저녁은 어떠세요?",
+      createdAt: minutesAgo(1),
+      user: partner,
+    },
+    {
+      _id: "6",
+      text: "좋아요. 저도 이번 주말은 괜찮아요.",
+      createdAt: minutesAgo(3),
+      user: ME,
+    },
+    {
+      _id: "5",
+      text: "혹시 이번 주말에 시간 되시나요?",
+      createdAt: minutesAgo(5),
+      user: partner,
+    },
+    {
+      _id: "4",
+      text: "저도 사진 찍는 거 좋아해서 반가웠어요. 요즘은 주로 어디 다니세요?",
+      createdAt: minutesAgo(5),
+      user: partner,
+    },
+    {
+      _id: "3",
+      text: "프로필 보고 연락드렸어요.",
+      createdAt: minutesAgo(6),
+      user: partner,
+    },
     {
       _id: "2",
       text: "반갑습니다.",
-      createdAt: new Date(),
+      createdAt: minutesAgo(6),
       user: partner,
     },
     {
       _id: "1",
       text: "안녕하세요.",
-      createdAt: new Date(),
+      createdAt: minutesAgo(8),
       user: ME,
-      sent: true,
-      received: true,
     },
   ];
 }
@@ -90,7 +124,7 @@ export default function ChatRoomScreen() {
         user={ME}
         locale="ko"
         colorScheme={scheme}
-        timeFormat="A h:mm"
+        isAvatarOnTop
         dateFormat="M월 D일"
         dateFormatCalendar={{ sameDay: "[오늘]", lastDay: "[어제]" }}
         keyboardAvoidingViewProps={{ keyboardVerticalOffset: headerHeight }}
@@ -98,6 +132,8 @@ export default function ChatRoomScreen() {
           placeholder: "메시지 입력",
           maxLength: MESSAGE_MAX_LENGTH,
         }}
+        renderMessage={(props) => <ChatMessage {...props} />}
+        renderBubble={(props) => <ChatBubble {...props} />}
         renderInputToolbar={(props) => <ChatInputToolbar {...props} />}
         renderComposer={(props) => <ChatComposer {...props} />}
         renderSend={(props) => <ChatSend {...props} />}

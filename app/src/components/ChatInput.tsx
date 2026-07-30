@@ -67,7 +67,7 @@ export function ChatComposer({ text = "", textInputProps }: ComposerProps) {
   const theme = useTheme();
 
   return (
-    <YStack flex={1} bg="$gray4" rounded="$7" px="$3.5">
+    <YStack flex={1} bg="$gray4" rounded="$7" px="$3">
       <TextInput
         value={text}
         multiline
