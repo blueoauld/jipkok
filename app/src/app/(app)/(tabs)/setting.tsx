@@ -1,3 +1,4 @@
+import { router, type Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   CalendarCheckIcon,
@@ -21,10 +22,10 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 const ICON_SIZE = 22;
 
-type SettingItem = { label: string; icon: Icon };
+type SettingItem = { label: string; icon: Icon; href?: Href };
 
 const SECTIONS: SettingItem[][] = [
-  [{ label: "내 프로필", icon: UserIcon }],
+  [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
   [
     { label: "좋아요 목록", icon: HeartIcon },
     { label: "즐겨찾기 목록", icon: StarIcon },
@@ -51,7 +52,7 @@ const SECTIONS: SettingItem[][] = [
 
 function SettingRow({ item }: { item: SettingItem }) {
   const theme = useTheme();
-  const { label, icon: Icon } = item;
+  const { label, icon: Icon, href } = item;
 
   return (
     <XStack
@@ -59,7 +60,8 @@ function SettingRow({ item }: { item: SettingItem }) {
       gap="$3"
       px="$4"
       py="$3"
-      pressStyle={{ bg: "$color4" }}
+      pressStyle={{ bg: "$gray5" }}
+      onPress={href ? () => router.push(href) : undefined}
     >
       <Icon size={ICON_SIZE} color={theme.color10.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
@@ -83,7 +85,7 @@ export default function SettingScreen() {
           <YStack
             key={items[0].label}
             mx="$4"
-            bg="$color3"
+            bg="$gray4"
             rounded="$7"
             overflow="hidden"
           >
