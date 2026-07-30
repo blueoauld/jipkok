@@ -274,6 +274,7 @@ function ComposeForm({
           }}
           placeholder="내용 입력"
           maxLength={CAPTION_MAX_LENGTH}
+          submitBehavior="submit"
           autoFocusNative
         />
       </FormField>

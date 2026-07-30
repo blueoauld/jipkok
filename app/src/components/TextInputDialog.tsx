@@ -46,6 +46,7 @@ function DialogForm({
           multiline={rows !== undefined}
           rows={rows}
           textAlignVertical={rows === undefined ? undefined : "top"}
+          submitBehavior={rows === undefined ? "submit" : undefined}
           autoFocusNative
         />
       </FormField>
