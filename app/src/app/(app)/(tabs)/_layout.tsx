@@ -8,7 +8,7 @@ import {
   HouseIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
-  TrophyIcon
+  TrophyIcon,
 } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
@@ -27,18 +27,8 @@ type Tab = {
   headerRight?: () => React.ReactNode;
 };
 
-export const unstable_settings = {
-  initialRouteName: "main",
-};
-
 const TABS: Tab[] = [
-  {
-    name: "feed",
-    title: "피드",
-    icon: FireIcon,
-    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
-    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
-  },
+  { name: "main", title: "메인", icon: HouseIcon },
   {
     name: "chat",
     title: "채팅",
@@ -51,7 +41,13 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <HeaderIconButton icon={BellIcon} />,
   },
-  { name: "main", title: "메인", icon: HouseIcon },
+  {
+    name: "feed",
+    title: "피드",
+    icon: FireIcon,
+    headerLeft: () => <HeaderIconButton icon={BellIcon} />,
+    headerRight: () => <HeaderIconButton icon={NotePencilIcon} />,
+  },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   { name: "setting", title: "설정", icon: GearIcon },
 ];
