@@ -1,8 +1,10 @@
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
+import { PencilSimpleIcon } from "phosphor-react-native";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, YStack } from "tamagui";
 
+import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 
@@ -24,7 +26,17 @@ export default function MyProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Stack.Screen options={{ title: "내 프로필" }} />
+        <Stack.Screen
+          options={{
+            title: "내 프로필",
+            headerRight: () => (
+              <HeaderCircleIconButton
+                icon={PencilSimpleIcon}
+                onPress={() => router.push("/member/edit")}
+              />
+            ),
+          }}
+        />
 
         <PhotoPager photos={photos} />
 
