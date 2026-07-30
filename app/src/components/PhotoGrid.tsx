@@ -1,9 +1,17 @@
 import { Image } from "expo-image";
-import { PlusIcon, XIcon } from "phosphor-react-native";
-import { useTheme, XStack, YStack } from "tamagui";
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  CrownSimpleIcon,
+  PlusIcon,
+  XIcon,
+} from "phosphor-react-native";
+import { useTheme, XStack, YStack, type XStackProps } from "tamagui";
 
 const COLUMNS = 3;
 const MAX_PHOTOS = 6;
+
+const OVERLAY_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 
 type Cell =
   | { kind: "photo"; uri: string; index: number }
@@ -33,14 +41,38 @@ function toRows(photos: string[]): Cell[][] {
   return rows;
 }
 
+function OverlayButton({
+  children,
+  ...rest
+}: { children: React.ReactNode } & XStackProps) {
+  return (
+    <XStack
+      position="absolute"
+      width={24}
+      height={24}
+      rounded={9999}
+      items="center"
+      justify="center"
+      pressStyle={{ opacity: 0.6 }}
+      {...rest}
+    >
+      {children}
+    </XStack>
+  );
+}
+
 export function PhotoGrid({
   photos,
   onAdd,
   onRemove,
+  onMove,
+  showPrimaryBadge,
 }: {
   photos: string[];
   onAdd?: () => void;
   onRemove?: (index: number) => void;
+  onMove?: (from: number, to: number) => void;
+  showPrimaryBadge?: boolean;
 }) {
   const theme = useTheme();
 
@@ -85,21 +117,52 @@ export function PhotoGrid({
                   style={{ width: "100%", height: "100%" }}
                 />
 
-                <XStack
-                  position="absolute"
+                {showPrimaryBadge && cell.index === 0 && (
+                  <XStack
+                    position="absolute"
+                    t="$2"
+                    l="$2"
+                    width={24}
+                    height={24}
+                    rounded={9999}
+                    bg="$blue10"
+                    items="center"
+                    justify="center"
+                  >
+                    <CrownSimpleIcon size={14} weight="fill" color="white" />
+                  </XStack>
+                )}
+
+                <OverlayButton
                   t="$2"
                   r="$2"
-                  width={24}
-                  height={24}
-                  rounded={9999}
                   bg="$red10"
-                  items="center"
-                  justify="center"
-                  pressStyle={{ opacity: 0.6 }}
                   onPress={() => onRemove?.(cell.index)}
                 >
                   <XIcon size={14} weight="bold" color="white" />
-                </XStack>
+                </OverlayButton>
+
+                {cell.index > 0 && (
+                  <OverlayButton
+                    b="$2"
+                    l="$2"
+                    bg={OVERLAY_BUTTON_BG}
+                    onPress={() => onMove?.(cell.index, cell.index - 1)}
+                  >
+                    <CaretLeftIcon size={14} weight="bold" color="white" />
+                  </OverlayButton>
+                )}
+
+                {cell.index < photos.length - 1 && (
+                  <OverlayButton
+                    b="$2"
+                    r="$2"
+                    bg={OVERLAY_BUTTON_BG}
+                    onPress={() => onMove?.(cell.index, cell.index + 1)}
+                  >
+                    <CaretRightIcon size={14} weight="bold" color="white" />
+                  </OverlayButton>
+                )}
               </YStack>
             );
           })}

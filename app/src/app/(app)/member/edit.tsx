@@ -57,7 +57,20 @@ function usePhotos() {
     setPhotos((current) => current.filter((_, i) => i !== index));
   }, []);
 
-  return { photos, add, remove };
+  const move = useCallback((from: number, to: number) => {
+    setPhotos((current) => {
+      if (to < 0 || to >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }, []);
+
+  return { photos, add, remove, move };
 }
 
 export default function MemberEditScreen() {
@@ -89,6 +102,8 @@ export default function MemberEditScreen() {
               photos={publicPhotos.photos}
               onAdd={publicPhotos.add}
               onRemove={publicPhotos.remove}
+              onMove={publicPhotos.move}
+              showPrimaryBadge
             />
           </YStack>
 
@@ -100,6 +115,7 @@ export default function MemberEditScreen() {
               photos={secretPhotos.photos}
               onAdd={secretPhotos.add}
               onRemove={secretPhotos.remove}
+              onMove={secretPhotos.move}
             />
           </YStack>
 
