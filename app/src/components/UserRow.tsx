@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { Avatar, Text, XStack, YStack } from "tamagui";
 
 export type User = {
@@ -7,7 +8,12 @@ export type User = {
 
 export function UserRow({ user }: { user: User }) {
   return (
-    <XStack gap="$3" items="center">
+    <XStack
+      gap="$3"
+      items="center"
+      pressStyle={{ opacity: 0.6 }}
+      onPress={() => router.push(`/member/${user.id}`)}
+    >
       <Avatar size="$6" rounded="$7">
         <Avatar.Image src="http://picsum.photos/200/300" />
         <Avatar.Fallback theme="gray" bg="$color5"></Avatar.Fallback>
