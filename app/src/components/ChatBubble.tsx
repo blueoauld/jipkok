@@ -1,11 +1,13 @@
 import dayjs from "dayjs";
+import type { ImageStyle } from "react-native";
 import {
   Bubble,
-  MessageImage,
   type BubbleProps,
   type IMessage,
 } from "react-native-gifted-chat";
 import { Text, useTheme, XStack } from "tamagui";
+
+import { ChatImage } from "@/components/ChatImage";
 
 const TIME_FORMAT = "A h:mm";
 
@@ -15,11 +17,10 @@ const TEXT_LINE_HEIGHT = 22;
 
 const IMAGE_SIZE = 200;
 
-const IMAGE_STYLE = {
+const IMAGE_STYLE: ImageStyle = {
   width: IMAGE_SIZE,
   height: IMAGE_SIZE,
   borderRadius: RADIUS,
-  margin: 0,
 };
 
 const BOTTOM_STYLE = { paddingHorizontal: 0, paddingBottom: 0 };
@@ -59,9 +60,11 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
           borderRadius: RADIUS,
         },
       }}
-      renderMessageImage={(imageProps) => (
-        <MessageImage {...imageProps} imageStyle={IMAGE_STYLE} />
-      )}
+      renderMessageImage={({ currentMessage: message }) =>
+        message.image ? (
+          <ChatImage uri={message.image} style={IMAGE_STYLE} />
+        ) : null
+      }
       textStyle={{
         left: { color: theme.color.val, lineHeight: TEXT_LINE_HEIGHT },
         right: { color: "white", lineHeight: TEXT_LINE_HEIGHT },
