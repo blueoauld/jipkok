@@ -8,6 +8,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { Button, Dialog, getTokens, Text, XStack, YStack } from "tamagui";
 
+import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -41,21 +42,24 @@ function CommentForm({
     <>
       <Dialog.Title fontSize="$6">코멘트</Dialog.Title>
 
-      <YStack gap="$2">
+      <FormField
+        right={
+          <Text theme="gray" color="$color10">
+            {`${length} / ${COMMENT_MAX_LENGTH}`}
+          </Text>
+        }
+      >
         <FormInput
           defaultValue={defaultValue}
           onChangeText={(text) => {
             valueRef.current = text;
             setLength(text.length);
           }}
-          placeholder={`최대 ${COMMENT_MAX_LENGTH}자`}
+          placeholder="내용 입력"
           maxLength={COMMENT_MAX_LENGTH}
           autoFocusNative
         />
-        <Text self="flex-end" theme="gray" color="$color10">
-          {`${length} / ${COMMENT_MAX_LENGTH}`}
-        </Text>
-      </YStack>
+      </FormField>
 
       <XStack gap="$2">
         <Dialog.Close asChild>
@@ -96,7 +100,7 @@ function CommentDialog({
       <Dialog.Portal>
         <Dialog.Overlay opacity={0.6} />
 
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4">
+        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-40}>
           <CommentForm
             key={String(open)}
             defaultValue={defaultValue}
