@@ -118,7 +118,10 @@ export default function ChatRoomScreen() {
         colorScheme={scheme}
         isAvatarOnTop
         isDayAnimationEnabled={false}
-        keyboardAvoidingViewProps={{ keyboardVerticalOffset: headerHeight }}
+        keyboardAvoidingViewProps={{
+          behavior: "padding",
+          keyboardVerticalOffset: headerHeight,
+        }}
         textInputProps={{
           placeholder: "메시지 입력",
           maxLength: MESSAGE_MAX_LENGTH,

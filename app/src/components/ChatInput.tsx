@@ -11,7 +11,9 @@ import {
 } from "react-native-gifted-chat";
 import { useTheme, XStack, YStack } from "tamagui";
 
-const INPUT_HEIGHT = 40;
+const PILL_PADDING = 6;
+const BUTTON_SIZE = 36;
+const PILL_HEIGHT = BUTTON_SIZE + PILL_PADDING * 2;
 
 const COMPOSER_LINE_HEIGHT = 20;
 const COMPOSER_MAX_HEIGHT = 120;
@@ -32,9 +34,12 @@ export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
       }}
       primaryStyle={{
         alignItems: "flex-end",
-        gap: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 12,
+        backgroundColor: theme.gray4.val,
+        borderRadius: PILL_HEIGHT / 2,
+        gap: 4,
+        marginHorizontal: 12,
+        marginVertical: 12,
+        padding: PILL_PADDING,
       }}
     />
   );
@@ -45,10 +50,10 @@ export function ChatActions({ onPressActionButton }: ActionsProps) {
 
   return (
     <XStack
-      width={INPUT_HEIGHT}
-      height={INPUT_HEIGHT}
+      width={BUTTON_SIZE}
+      height={BUTTON_SIZE}
       rounded={9999}
-      bg="$gray4"
+      bg="$gray2"
       items="center"
       justify="center"
       pressStyle={{ opacity: 0.6 }}
@@ -67,7 +72,7 @@ export function ChatComposer({ text = "", textInputProps }: ComposerProps) {
   const theme = useTheme();
 
   return (
-    <YStack flex={1} bg="$gray4" rounded="$7" px="$3">
+    <YStack flex={1}>
       <TextInput
         value={text}
         multiline
@@ -85,8 +90,8 @@ export function ChatSend({ text, onSend }: SendProps<IMessage>) {
 
   return (
     <XStack
-      width={INPUT_HEIGHT}
-      height={INPUT_HEIGHT}
+      width={BUTTON_SIZE}
+      height={BUTTON_SIZE}
       rounded={9999}
       bg={disabled ? "$gray7" : "$blue10"}
       items="center"
@@ -101,9 +106,10 @@ export function ChatSend({ text, onSend }: SendProps<IMessage>) {
 
 const styles = StyleSheet.create({
   composer: {
-    minHeight: INPUT_HEIGHT,
+    minHeight: BUTTON_SIZE,
     maxHeight: COMPOSER_MAX_HEIGHT,
-    paddingVertical: (INPUT_HEIGHT - COMPOSER_LINE_HEIGHT) / 2,
+    paddingVertical: (BUTTON_SIZE - COMPOSER_LINE_HEIGHT) / 2,
+    paddingHorizontal: 4,
     fontSize: 16,
     lineHeight: COMPOSER_LINE_HEIGHT,
   },
