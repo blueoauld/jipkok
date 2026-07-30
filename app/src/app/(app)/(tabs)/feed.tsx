@@ -5,6 +5,7 @@ import { HeartIcon, SirenIcon } from "phosphor-react-native";
 import { useState } from "react";
 import { FlatList, type ViewStyle } from "react-native";
 
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { Avatar, getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -47,7 +48,7 @@ const POSTS: Post[] = [
   avatar: `https://picsum.photos/seed/user-${post.id}/100`,
 }));
 
-function FeedCard({ post }: { post: Post }) {
+function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
   return (
     <YStack
       width="100%"
@@ -108,6 +109,7 @@ function FeedCard({ post }: { post: Post }) {
         r="$2"
         p="$2"
         pressStyle={{ opacity: 0.6 }}
+        onPress={onReport}
       >
         <SirenIcon size={28} weight="bold" color="white" />
       </XStack>
@@ -160,6 +162,7 @@ function TodayButton() {
 export default function FeedScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("전체");
+  const [reportId, setReportId] = useState<string | null>(null);
 
   return (
     <YStack flex={1}>
@@ -174,7 +177,9 @@ export default function FeedScreen() {
       <FlatList
         data={POSTS}
         keyExtractor={(post) => post.id}
-        renderItem={({ item }) => <FeedCard post={item} />}
+        renderItem={({ item }) => (
+          <FeedCard post={item} onReport={() => setReportId(item.id)} />
+        )}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{
           paddingTop: space.$3.val,
@@ -187,6 +192,19 @@ export default function FeedScreen() {
       <XStack position="absolute" b="$4" l={0} r={0} justify="center">
         <TodayButton />
       </XStack>
+
+      <ConfirmDialog
+        open={reportId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReportId(null);
+          }
+        }}
+        title="피드 신고"
+        description="신고한 피드는 검토 후 조치됩니다."
+        confirmLabel="신고"
+        destructive
+      />
     </YStack>
   );
 }
