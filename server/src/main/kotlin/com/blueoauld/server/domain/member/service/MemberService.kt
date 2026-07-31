@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
@@ -7,7 +8,6 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.security.JwtProvider
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,8 +18,8 @@ class MemberService(
 
     private val memberRepository: MemberRepository,
     private val verificationCodeService: VerificationCodeService,
+    private val authService: AuthService,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtProvider: JwtProvider,
 ) {
 
     @Transactional
@@ -43,8 +43,9 @@ class MemberService(
                 birthYear = DEFAULT_BIRTH_YEAR,
             ),
         )
+        val tokens = authService.issueTokens(member)
 
-        return SignupResponse(member.id, jwtProvider.createAccessToken(member.id, member.role.name))
+        return SignupResponse(member.id, tokens.accessToken, tokens.refreshToken)
     }
 
     private fun encodePassword(rawPassword: String) = checkNotNull(passwordEncoder.encode(rawPassword)) {

@@ -20,6 +20,11 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
   jackson:
     default-property-inclusion: non_null
 
@@ -34,6 +39,7 @@ server:
 jwt:
   secret: ${JWT_SECRET:local-development-only-secret-key-please-change-me}
   access-token-validity: 1h
+  refresh-token-validity: 14d
 
 logging:
   level:

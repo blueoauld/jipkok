@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.dto.response.TokenResponse
+import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.entity.Member
@@ -7,7 +9,6 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.security.JwtProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -26,13 +27,13 @@ class MemberServiceTest {
 
     private val passwordEncoder = mockk<PasswordEncoder>()
 
-    private val jwtProvider = mockk<JwtProvider>()
+    private val authService = mockk<AuthService>()
 
     private val memberService = MemberService(
         memberRepository,
         verificationCodeService,
+        authService,
         passwordEncoder,
-        jwtProvider,
     )
 
     @BeforeEach
@@ -40,7 +41,7 @@ class MemberServiceTest {
         every { memberRepository.existsByPhoneNumber(PHONE_NUMBER) } returns false
         every { memberRepository.save(any()) } answers { firstArg() }
         every { passwordEncoder.encode(PASSWORD) } returns ENCODED_PASSWORD
-        every { jwtProvider.createAccessToken(any(), any()) } returns ACCESS_TOKEN
+        every { authService.issueTokens(any()) } returns TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN)
     }
 
     @Test
@@ -57,6 +58,7 @@ class MemberServiceTest {
         assertThat(saved.captured.phoneNumber).isEqualTo(PHONE_NUMBER)
         assertThat(saved.captured.gender).isEqualTo(Gender.MALE)
         assertThat(response.accessToken).isEqualTo(ACCESS_TOKEN)
+        assertThat(response.refreshToken).isEqualTo(REFRESH_TOKEN)
     }
 
     @Test
@@ -165,5 +167,6 @@ class MemberServiceTest {
         private const val PASSWORD = "password1234"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val ACCESS_TOKEN = "access-token"
+        private const val REFRESH_TOKEN = "refresh-token"
     }
 }

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface MemberRepository : JpaRepository<Member, Long> {
 
     fun existsByPhoneNumber(phoneNumber: String): Boolean
+
+    fun findByPhoneNumber(phoneNumber: String): Member?
 }

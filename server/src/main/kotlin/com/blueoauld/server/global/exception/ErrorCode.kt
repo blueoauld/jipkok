@@ -36,6 +36,10 @@ enum class ErrorCode(
         "인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 요청해주시길 바랍니다.",
     ),
 
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_008", "휴대폰 번호 또는 비밀번호가 올바르지 않습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_009", "다시 로그인해주시길 바랍니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_010", "로그인이 필요합니다."),
+
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),
 }
