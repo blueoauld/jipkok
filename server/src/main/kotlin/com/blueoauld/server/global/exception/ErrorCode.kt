@@ -22,4 +22,9 @@ enum class ErrorCode(
         "AUTH_002",
         "인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     ),
+    VERIFICATION_CODE_IP_LIMIT_EXCEEDED(
+        HttpStatus.TOO_MANY_REQUESTS,
+        "AUTH_003",
+        "인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+    ),
 }

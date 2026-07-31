@@ -21,24 +21,29 @@ class VerificationCodeService(
     private val random = SecureRandom()
 
     @Transactional
-    fun send(phoneNumber: String) {
+    fun send(phoneNumber: String, ipAddress: String) {
         val now = clock.instant()
+        val since = now.minus(SEND_LIMIT_WINDOW)
 
         val latest = phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber)
         if (latest != null && now.isBefore(latest.issuedAt.plus(RESEND_COOLDOWN))) {
             throw BusinessException(ErrorCode.VERIFICATION_CODE_RESEND_TOO_SOON)
         }
 
-        val issuedCount = phoneVerificationRepository.countByPhoneNumberAndIssuedAtGreaterThanEqual(
-            phoneNumber,
-            now.minus(SEND_LIMIT_WINDOW),
-        )
-        if (issuedCount >= HOURLY_SEND_LIMIT) {
+        if (phoneVerificationRepository.countByPhoneNumberAndIssuedAtGreaterThanEqual(phoneNumber, since)
+            >= HOURLY_SEND_LIMIT
+        ) {
             throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_LIMIT_EXCEEDED)
         }
 
+        if (phoneVerificationRepository.countByIpAddressAndIssuedAtGreaterThanEqual(ipAddress, since)
+            >= HOURLY_IP_SEND_LIMIT
+        ) {
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_IP_LIMIT_EXCEEDED)
+        }
+
         val code = generateCode()
-        phoneVerificationRepository.save(PhoneVerification(phoneNumber, code, now))
+        phoneVerificationRepository.save(PhoneVerification(phoneNumber, code, ipAddress, now))
         verificationCodeSender.send(phoneNumber, code)
     }
 
@@ -51,6 +56,7 @@ class VerificationCodeService(
         val RESEND_COOLDOWN: Duration = Duration.ofSeconds(30)
         val SEND_LIMIT_WINDOW: Duration = Duration.ofHours(1)
         const val HOURLY_SEND_LIMIT = 5
+        const val HOURLY_IP_SEND_LIMIT = 10
 
         private const val RADIX = 10
     }

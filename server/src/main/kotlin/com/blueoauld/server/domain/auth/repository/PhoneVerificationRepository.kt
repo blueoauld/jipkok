@@ -9,4 +9,6 @@ interface PhoneVerificationRepository : JpaRepository<PhoneVerification, Long> {
     fun findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber: String): PhoneVerification?
 
     fun countByPhoneNumberAndIssuedAtGreaterThanEqual(phoneNumber: String, since: Instant): Long
+
+    fun countByIpAddressAndIssuedAtGreaterThanEqual(ipAddress: String, since: Instant): Long
 }

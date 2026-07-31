@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.auth.web
 
 import com.blueoauld.server.domain.auth.dto.request.SendVerificationCodeRequest
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +20,7 @@ class VerificationCodeController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun send(@Valid @RequestBody request: SendVerificationCodeRequest) {
-        verificationCodeService.send(request.phoneNumber)
+    fun send(@Valid @RequestBody request: SendVerificationCodeRequest, servletRequest: HttpServletRequest) {
+        verificationCodeService.send(request.phoneNumber, servletRequest.remoteAddr)
     }
 }

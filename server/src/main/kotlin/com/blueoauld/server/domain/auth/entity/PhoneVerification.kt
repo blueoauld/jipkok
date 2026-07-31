@@ -12,7 +12,10 @@ import java.time.Instant
 @Entity
 @Table(
     name = "phone_verification",
-    indexes = [Index(name = "idx_phone_verification_phone_number_issued_at", columnList = "phone_number, issued_at")],
+    indexes = [
+        Index(name = "idx_phone_verification_phone_number_issued_at", columnList = "phone_number, issued_at"),
+        Index(name = "idx_phone_verification_ip_address_issued_at", columnList = "ip_address, issued_at"),
+    ],
 )
 class PhoneVerification(
 
@@ -21,6 +24,9 @@ class PhoneVerification(
 
     @Column(name = "code", nullable = false, length = CODE_LENGTH)
     val code: String,
+
+    @Column(name = "ip_address", nullable = false, length = IP_ADDRESS_LENGTH)
+    val ipAddress: String,
 
     @Column(name = "issued_at", nullable = false)
     val issuedAt: Instant,
@@ -35,5 +41,6 @@ class PhoneVerification(
 
         const val PHONE_NUMBER_LENGTH = 11
         const val CODE_LENGTH = 6
+        const val IP_ADDRESS_LENGTH = 45
     }
 }
