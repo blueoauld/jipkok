@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.entity.Member
@@ -314,6 +315,68 @@ class MemberServiceTest {
         // when
         val exception = assertThrows(BusinessException::class.java) {
             memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
+    fun `좌표를 보내면 위치와 시각이 갱신된다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.heartbeat(MEMBER_ID, HeartbeatRequest(37.5665, 126.9780))
+
+        // then
+        assertThat(member.latitude).isEqualTo(37.5665)
+        assertThat(member.longitude).isEqualTo(126.9780)
+        assertThat(member.locatedAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `좌표 없이 보내면 기존 좌표를 지우고 시각만 갱신한다`() {
+        // given
+        val member = member()
+        member.latitude = 37.5665
+        member.longitude = 126.9780
+        stubMember(member)
+
+        // when
+        memberService.heartbeat(MEMBER_ID, HeartbeatRequest())
+
+        // then
+        assertThat(member.latitude).isNull()
+        assertThat(member.longitude).isNull()
+        assertThat(member.locatedAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `좌표를 하나만 보내면 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.heartbeat(MEMBER_ID, HeartbeatRequest(latitude = 37.5665))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_LOCATION)
+        assertThat(member.locatedAt).isNull()
+    }
+
+    @Test
+    fun `없는 회원이면 위치 갱신에 실패한다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.heartbeat(MEMBER_ID, HeartbeatRequest(37.5665, 126.9780))
         }
 
         // then

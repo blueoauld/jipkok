@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
@@ -74,6 +75,21 @@ class MemberService(
         member.nickname = nickname
         member.birthYear = request.birthYear
         member.bio = request.bio
+    }
+
+    @Transactional
+    fun heartbeat(memberId: Long, request: HeartbeatRequest) {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        if ((request.latitude == null) != (request.longitude == null)) {
+            throw BusinessException(ErrorCode.INVALID_LOCATION)
+        }
+
+        member.latitude = request.latitude
+        member.longitude = request.longitude
+        member.locatedAt = clock.instant()
     }
 
     private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year

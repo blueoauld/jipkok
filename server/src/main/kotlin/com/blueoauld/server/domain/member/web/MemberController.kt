@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.web
 
+import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
@@ -32,5 +33,14 @@ class MemberController(
         @Valid @RequestBody request: SetupProfileRequest,
     ) {
         memberService.setupProfile(memberId, request)
+    }
+
+    @PostMapping("/me/heartbeat")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun heartbeat(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: HeartbeatRequest,
+    ) {
+        memberService.heartbeat(memberId, request)
     }
 }
