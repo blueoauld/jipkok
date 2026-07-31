@@ -59,7 +59,7 @@ class MemberService(
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
 
-        val nickname = normalizeNickname(request.nickname)
+        val nickname = request.nickname.trim()
 
         if (!nickname.equals(member.nickname, ignoreCase = true) &&
             memberRepository.existsByNicknameIgnoreCase(nickname)
@@ -75,8 +75,6 @@ class MemberService(
         member.birthYear = request.birthYear
         member.bio = request.bio
     }
-
-    private fun normalizeNickname(nickname: String) = nickname.trim()
 
     private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
 

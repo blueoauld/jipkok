@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
@@ -41,7 +41,7 @@ class MemberControllerTest {
 
         // when
         val result = mockMvc.perform(
-            post("/api/members/me/setup")
+            patch("/api/members/me/profile")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)),
@@ -59,7 +59,7 @@ class MemberControllerTest {
 
         // when
         val result = mockMvc.perform(
-            post("/api/members/me/setup")
+            patch("/api/members/me/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)),
         )
@@ -77,7 +77,7 @@ class MemberControllerTest {
 
         // when
         val result = mockMvc.perform(
-            post("/api/members/me/setup")
+            patch("/api/members/me/profile")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)),
