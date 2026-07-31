@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
 import java.time.Clock
@@ -47,6 +48,28 @@ class VerificationCodeService(
         verificationCodeSender.send(phoneNumber, code)
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = [BusinessException::class])
+    fun verify(phoneNumber: String, code: String) {
+        val now = clock.instant()
+
+        val latest = phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber)
+            ?: throw BusinessException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
+
+        if (!now.isBefore(latest.issuedAt.plus(CODE_TIME_TO_LIVE))) {
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_EXPIRED)
+        }
+
+        if (latest.attemptCount >= MAX_VERIFY_ATTEMPTS) {
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_ATTEMPT_EXCEEDED)
+        }
+
+        latest.increaseAttemptCount()
+
+        if (latest.code != code) {
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_MISMATCH)
+        }
+    }
+
     private fun generateCode() = (1..PhoneVerification.CODE_LENGTH).joinToString("") {
         random.nextInt(RADIX).toString()
     }
@@ -55,8 +78,10 @@ class VerificationCodeService(
 
         val RESEND_COOLDOWN: Duration = Duration.ofSeconds(30)
         val SEND_LIMIT_WINDOW: Duration = Duration.ofHours(1)
+        val CODE_TIME_TO_LIVE: Duration = Duration.ofMinutes(3)
         const val HOURLY_SEND_LIMIT = 5
         const val HOURLY_IP_SEND_LIMIT = 10
+        const val MAX_VERIFY_ATTEMPTS = 5
 
         private const val RADIX = 10
     }

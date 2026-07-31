@@ -9,6 +9,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -140,9 +141,89 @@ class VerificationCodeServiceTest {
         verify(exactly = 1) { verificationCodeSender.send(PHONE_NUMBER, any()) }
     }
 
+    @Test
+    fun `인증번호가 일치하면 확인에 성공한다`() {
+        // given
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        stubLatest(latest)
+
+        // when
+        assertDoesNotThrow { verificationCodeService.verify(PHONE_NUMBER, CODE) }
+
+        // then
+        assertThat(latest.attemptCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `인증번호가 다르면 실패하고 입력 횟수가 올라간다`() {
+        // given
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        stubLatest(latest)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, "999999")
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_MISMATCH)
+        assertThat(latest.attemptCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `발송 이력이 없으면 확인에 실패한다`() {
+        // given
+        stubLatest(null)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, CODE)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
+    }
+
+    @Test
+    fun `유효 시간이 지났으면 확인에 실패한다`() {
+        // given
+        stubLatest(
+            PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW.minus(VerificationCodeService.CODE_TIME_TO_LIVE)),
+        )
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, CODE)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_EXPIRED)
+    }
+
+    @Test
+    fun `입력 횟수를 초과했으면 인증번호가 맞아도 확인에 실패한다`() {
+        // given
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        repeat(VerificationCodeService.MAX_VERIFY_ATTEMPTS) { latest.increaseAttemptCount() }
+        stubLatest(latest)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, CODE)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_ATTEMPT_EXCEEDED)
+    }
+
+    private fun stubLatest(phoneVerification: PhoneVerification?) {
+        every { phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER) } returns
+                phoneVerification
+    }
+
     private fun stubLatestIssuedAt(issuedAt: Instant) {
         every { phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER) } returns
-                PhoneVerification(PHONE_NUMBER, "123456", IP_ADDRESS, issuedAt)
+                PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, issuedAt)
     }
 
     private fun stubPhoneNumberIssuedCount(count: Long) {
@@ -160,6 +241,7 @@ class VerificationCodeServiceTest {
     companion object {
 
         private const val PHONE_NUMBER = "01012345678"
+        private const val CODE = "123456"
         private const val IP_ADDRESS = "127.0.0.1"
         private val NOW: Instant = Instant.parse("2026-07-31T00:00:00Z")
     }

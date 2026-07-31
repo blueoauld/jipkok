@@ -27,4 +27,15 @@ enum class ErrorCode(
         "AUTH_003",
         "인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     ),
+    VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_004", "인증번호가 올바르지 않습니다."),
+    VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "AUTH_005", "인증번호가 만료되었습니다. 다시 요청해주시길 바랍니다."),
+    VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH_006", "인증번호가 올바르지 않습니다."),
+    VERIFICATION_CODE_ATTEMPT_EXCEEDED(
+        HttpStatus.TOO_MANY_REQUESTS,
+        "AUTH_007",
+        "인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 요청해주시길 바랍니다.",
+    ),
+
+    DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
+    PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),
 }

@@ -25,12 +25,12 @@ class Member(
     @Column(name = "password", nullable = false)
     var password: String,
 
-    @Column(name = "nickname", nullable = false, unique = true, length = NICKNAME_MAX_LENGTH)
-    var nickname: String,
-
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false, updatable = false)
     val gender: Gender,
+
+    @Column(name = "nickname", nullable = false, unique = true, length = NICKNAME_MAX_LENGTH)
+    var nickname: String,
 
     @Column(name = "birth_year", nullable = false)
     var birthYear: Int,

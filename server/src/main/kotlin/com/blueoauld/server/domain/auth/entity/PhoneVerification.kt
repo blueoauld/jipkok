@@ -37,6 +37,14 @@ class PhoneVerification(
     @Column(name = "id")
     val id: Long = 0
 
+    @Column(name = "attempt_count", nullable = false)
+    var attemptCount: Int = 0
+        protected set
+
+    fun increaseAttemptCount() {
+        attemptCount++
+    }
+
     companion object {
 
         const val PHONE_NUMBER_LENGTH = 11

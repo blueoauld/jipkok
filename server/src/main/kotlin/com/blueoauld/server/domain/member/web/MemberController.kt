@@ -1,0 +1,24 @@
+package com.blueoauld.server.domain.member.web
+
+import com.blueoauld.server.domain.member.dto.request.SignupRequest
+import com.blueoauld.server.domain.member.dto.response.SignupResponse
+import com.blueoauld.server.domain.member.service.MemberService
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/members")
+class MemberController(
+
+    private val memberService: MemberService,
+) {
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
+}
