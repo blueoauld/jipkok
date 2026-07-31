@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -315,6 +316,74 @@ class MemberServiceTest {
         // when
         val exception = assertThrows(BusinessException::class.java) {
             memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
+    fun `코멘트를 앞뒤 공백까지 그대로 저장한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.updateComment(MEMBER_ID, UpdateCommentRequest("  오늘 한잔  "))
+
+        // then
+        assertThat(member.comment).isEqualTo("  오늘 한잔  ")
+    }
+
+    @Test
+    fun `코멘트를 빈 문자열로 보내면 지운다`() {
+        // given
+        val member = member()
+        member.comment = "원래 코멘트"
+        stubMember(member)
+
+        // when
+        memberService.updateComment(MEMBER_ID, UpdateCommentRequest(""))
+
+        // then
+        assertThat(member.comment).isNull()
+    }
+
+    @Test
+    fun `공백만 있는 코멘트도 그대로 저장한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.updateComment(MEMBER_ID, UpdateCommentRequest("   "))
+
+        // then
+        assertThat(member.comment).isEqualTo("   ")
+    }
+
+    @Test
+    fun `코멘트를 보내지 않으면 지운다`() {
+        // given
+        val member = member()
+        member.comment = "원래 코멘트"
+        stubMember(member)
+
+        // when
+        memberService.updateComment(MEMBER_ID, UpdateCommentRequest())
+
+        // then
+        assertThat(member.comment).isNull()
+    }
+
+    @Test
+    fun `없는 회원이면 코멘트 저장에 실패한다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.updateComment(MEMBER_ID, UpdateCommentRequest("오늘 한잔"))
         }
 
         // then

@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -75,6 +76,15 @@ class MemberService(
         member.nickname = nickname
         member.birthYear = request.birthYear
         member.bio = request.bio
+    }
+
+    @Transactional
+    fun updateComment(memberId: Long, request: UpdateCommentRequest) {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        member.comment = request.comment?.ifEmpty { null }
     }
 
     @Transactional
