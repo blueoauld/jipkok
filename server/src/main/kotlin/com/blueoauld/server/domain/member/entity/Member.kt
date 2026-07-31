@@ -13,6 +13,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
+import java.time.Instant
 
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity
@@ -44,6 +45,15 @@ class Member(
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     val role: MemberRole = MemberRole.MEMBER,
+
+    @Column(name = "latitude")
+    var latitude: Double? = null,
+
+    @Column(name = "longitude")
+    var longitude: Double? = null,
+
+    @Column(name = "located_at")
+    var locatedAt: Instant? = null,
 ) : BaseEntity() {
 
     @Id
