@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
@@ -11,6 +12,9 @@ import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -20,6 +24,7 @@ class MemberService(
     private val verificationCodeService: VerificationCodeService,
     private val authService: AuthService,
     private val passwordEncoder: PasswordEncoder,
+    private val clock: Clock,
 ) {
 
     @Transactional
@@ -48,6 +53,33 @@ class MemberService(
         return SignupResponse(member.id, tokens.accessToken, tokens.refreshToken)
     }
 
+    @Transactional
+    fun setupProfile(memberId: Long, request: SetupProfileRequest) {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        val nickname = normalizeNickname(request.nickname)
+
+        if (!nickname.equals(member.nickname, ignoreCase = true) &&
+            memberRepository.existsByNicknameIgnoreCase(nickname)
+        ) {
+            throw BusinessException(ErrorCode.DUPLICATE_NICKNAME)
+        }
+
+        if (currentYear() - request.birthYear !in MIN_AGE..MAX_AGE) {
+            throw BusinessException(ErrorCode.INVALID_BIRTH_YEAR)
+        }
+
+        member.nickname = nickname
+        member.birthYear = request.birthYear
+        member.bio = request.bio
+    }
+
+    private fun normalizeNickname(nickname: String) = nickname.trim()
+
+    private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
+
     private fun encodePassword(rawPassword: String) = checkNotNull(passwordEncoder.encode(rawPassword)) {
         "비밀번호를 해싱하지 못했다."
     }
@@ -57,5 +89,9 @@ class MemberService(
     companion object {
 
         const val DEFAULT_BIRTH_YEAR = 1998
+        const val MIN_AGE = 19
+        const val MAX_AGE = 90
+
+        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

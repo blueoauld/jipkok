@@ -1,10 +1,12 @@
 package com.blueoauld.server.domain.member.web
 
+import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.service.MemberService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,4 +23,13 @@ class MemberController(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
+
+    @PostMapping("/me/setup")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun setupProfile(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: SetupProfileRequest,
+    ) {
+        memberService.setupProfile(memberId, request)
+    }
 }

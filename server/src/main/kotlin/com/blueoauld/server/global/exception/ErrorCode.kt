@@ -42,4 +42,7 @@ enum class ErrorCode(
 
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_003", "회원을 찾을 수 없습니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_004", "이미 사용 중인 닉네임입니다."),
+    INVALID_BIRTH_YEAR(HttpStatus.BAD_REQUEST, "MEMBER_005", "만 19세 이상 90세 이하만 가입할 수 있습니다."),
 }

@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -18,6 +19,10 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
+import java.util.*
 
 class MemberServiceTest {
 
@@ -34,6 +39,7 @@ class MemberServiceTest {
         verificationCodeService,
         authService,
         passwordEncoder,
+        Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
@@ -152,6 +158,181 @@ class MemberServiceTest {
         verify(exactly = 0) { memberRepository.save(any()) }
     }
 
+    @Test
+    fun `프로필을 설정하면 닉네임과 출생연도와 자기소개가 채워진다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998, "자기소개"))
+
+        // then
+        assertThat(member.nickname).isEqualTo(NICKNAME)
+        assertThat(member.birthYear).isEqualTo(1998)
+        assertThat(member.bio).isEqualTo("자기소개")
+    }
+
+    @Test
+    fun `이미 쓰는 닉네임이면 프로필 설정에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every { memberRepository.existsByNicknameIgnoreCase(NICKNAME) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.DUPLICATE_NICKNAME)
+        assertThat(member.nickname).isNotEqualTo(NICKNAME)
+    }
+
+    @Test
+    fun `쓰던 닉네임을 그대로 보내면 중복으로 보지 않는다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every { memberRepository.existsByNicknameIgnoreCase(member.nickname) } returns true
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(member.nickname, 1998))
+
+        // then
+        assertThat(member.birthYear).isEqualTo(1998)
+    }
+
+    @Test
+    fun `닉네임 앞뒤 공백은 잘라내고 중간 공백은 그대로 둔다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest("  홍  길동  ", 1998))
+
+        // then
+        assertThat(member.nickname).isEqualTo("홍  길동")
+    }
+
+    @Test
+    fun `대소문자만 다른 닉네임은 중복으로 본다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every { memberRepository.existsByNicknameIgnoreCase("hong") } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest("hong", 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.DUPLICATE_NICKNAME)
+    }
+
+    @Test
+    fun `쓰던 닉네임의 대소문자만 바꾸는 것은 허용한다`() {
+        // given
+        val member = member()
+        member.nickname = "hong"
+        stubMember(member)
+        every { memberRepository.existsByNicknameIgnoreCase("Hong") } returns true
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest("Hong", 1998))
+
+        // then
+        assertThat(member.nickname).isEqualTo("Hong")
+    }
+
+    @Test
+    fun `만 19세가 되는 해면 프로필을 설정할 수 있다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 2007))
+
+        // then
+        assertThat(member.birthYear).isEqualTo(2007)
+    }
+
+    @Test
+    fun `만 19세가 되지 않으면 프로필 설정에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 2008))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_BIRTH_YEAR)
+        assertThat(member.nickname).isNotEqualTo(NICKNAME)
+    }
+
+    @Test
+    fun `만 90세면 프로필을 설정할 수 있다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1936))
+
+        // then
+        assertThat(member.birthYear).isEqualTo(1936)
+    }
+
+    @Test
+    fun `만 90세를 넘으면 프로필 설정에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1935))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_BIRTH_YEAR)
+        assertThat(member.nickname).isNotEqualTo(NICKNAME)
+    }
+
+    @Test
+    fun `없는 회원이면 프로필 설정에 실패한다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    private fun member() = Member(
+        phoneNumber = PHONE_NUMBER,
+        password = ENCODED_PASSWORD,
+        gender = Gender.MALE,
+        nickname = "default000",
+        birthYear = MemberService.DEFAULT_BIRTH_YEAR,
+    )
+
+    private fun stubMember(member: Member) {
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+        every { memberRepository.existsByNicknameIgnoreCase(any()) } returns false
+    }
+
     private fun signupRequest(passwordConfirm: String = PASSWORD) = SignupRequest(
         phoneNumber = PHONE_NUMBER,
         verificationCode = VERIFICATION_CODE,
@@ -168,5 +349,8 @@ class MemberServiceTest {
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val ACCESS_TOKEN = "access-token"
         private const val REFRESH_TOKEN = "refresh-token"
+        private const val MEMBER_ID = 0L
+        private const val NICKNAME = "닉네임"
+        private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")
     }
 }
