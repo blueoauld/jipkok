@@ -14,9 +14,9 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
 
+@SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity
 @Table(name = "member")
-@SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 class Member(
 
     @Column(name = "phone_number", nullable = false, unique = true, length = PHONE_NUMBER_LENGTH)
