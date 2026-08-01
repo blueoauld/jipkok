@@ -8,5 +8,7 @@ interface PhotoStorage {
 
     fun createSignedViewUrl(objectKey: String): String
 
+    fun copy(sourceKey: String, targetKey: String)
+
     fun delete(objectKeys: List<String>)
 }

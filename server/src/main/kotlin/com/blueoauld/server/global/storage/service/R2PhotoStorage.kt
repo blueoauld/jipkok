@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest
 import software.amazon.awssdk.services.s3.model.Delete
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
@@ -69,6 +70,17 @@ class R2PhotoStorage(
             .build()
 
         return presigner.presignGetObject(presignRequest).url().toString()
+    }
+
+    override fun copy(sourceKey: String, targetKey: String) {
+        client.copyObject(
+            CopyObjectRequest.builder()
+                .sourceBucket(r2Properties.bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(r2Properties.bucket)
+                .destinationKey(targetKey)
+                .build(),
+        )
     }
 
     override fun delete(objectKeys: List<String>) {

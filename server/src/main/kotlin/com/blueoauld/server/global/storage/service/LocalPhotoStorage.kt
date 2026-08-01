@@ -20,6 +20,10 @@ class LocalPhotoStorage : PhotoStorage {
 
     override fun createSignedViewUrl(objectKey: String) = "$BASE_URL/$objectKey?signed=true"
 
+    override fun copy(sourceKey: String, targetKey: String) {
+        log.info { "사진을 복사한다. sourceKey=$sourceKey, targetKey=$targetKey" }
+    }
+
     override fun delete(objectKeys: List<String>) {
         log.info { "사진을 삭제한다. objectKeys=$objectKeys" }
     }
