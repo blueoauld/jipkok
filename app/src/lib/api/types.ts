@@ -16,6 +16,7 @@ export type EditProfileRequest = Schemas["EditProfileRequest"];
 export type UpdateCommentRequest = Schemas["UpdateCommentRequest"];
 export type HeartbeatRequest = Schemas["HeartbeatRequest"];
 export type PhotoUploadUrlResponse = Schemas["PhotoUploadUrlResponse"];
+export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type PointRewardResponse = Schemas["PointRewardResponse"];

@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -369,11 +370,13 @@ class MemberServiceTest {
         val response = memberService.getMyProfile(MEMBER_ID)
 
         // then
-        assertThat(response.publicPhotoUrls).containsExactly(
-            "https://cdn.test/${photoKey("a")}",
-            "https://cdn.test/${photoKey("b")}",
+        assertThat(response.publicPhotos).containsExactly(
+            ProfilePhotoResponse(photoKey("a"), "https://cdn.test/${photoKey("a")}"),
+            ProfilePhotoResponse(photoKey("b"), "https://cdn.test/${photoKey("b")}"),
         )
-        assertThat(response.secretPhotoUrls).containsExactly("https://signed.test/${photoKey("s")}")
+        assertThat(response.secretPhotos).containsExactly(
+            ProfilePhotoResponse(photoKey("s"), "https://signed.test/${photoKey("s")}"),
+        )
         assertThat(response.nickname).isEqualTo(member.nickname)
         assertThat(response.comment).isEqualTo("코멘트")
         assertThat(response.bio).isEqualTo("자기소개")

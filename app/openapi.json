@@ -1792,8 +1792,14 @@
           "receivedLikeCount": { "type": "integer", "format": "int32" },
           "comment": { "type": ["string", "null"] },
           "bio": { "type": ["string", "null"] },
-          "publicPhotoUrls": { "type": "array", "items": { "type": "string" } },
-          "secretPhotoUrls": { "type": "array", "items": { "type": "string" } }
+          "publicPhotos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProfilePhotoResponse" }
+          },
+          "secretPhotos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProfilePhotoResponse" }
+          }
         },
         "required": [
           "age",
@@ -1801,10 +1807,18 @@
           "gender",
           "memberId",
           "nickname",
-          "publicPhotoUrls",
+          "publicPhotos",
           "receivedLikeCount",
-          "secretPhotoUrls"
+          "secretPhotos"
         ]
+      },
+      "ProfilePhotoResponse": {
+        "type": "object",
+        "properties": {
+          "objectKey": { "type": "string" },
+          "url": { "type": "string" }
+        },
+        "required": ["objectKey", "url"]
       },
       "CursorResponseMemberSummaryResponse": {
         "type": "object",

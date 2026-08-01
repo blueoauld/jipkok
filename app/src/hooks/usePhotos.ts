@@ -19,7 +19,7 @@ export async function pickPhotos(remaining: number) {
     quality: 0.8,
   });
 
-  return result.canceled ? [] : result.assets.map((asset) => asset.uri);
+  return result.canceled ? [] : result.assets;
 }
 
 export async function pickSinglePhoto() {
@@ -59,7 +59,8 @@ export function usePhotos() {
 
   const add = useCallback(async () => {
     const picked = await pickPhotos(MAX_PHOTOS - photos.length);
-    setPhotos((current) => [...current, ...picked].slice(0, MAX_PHOTOS));
+    const uris = picked.map((asset) => asset.uri);
+    setPhotos((current) => [...current, ...uris].slice(0, MAX_PHOTOS));
   }, [photos.length]);
 
   const remove = useCallback((index: number) => {

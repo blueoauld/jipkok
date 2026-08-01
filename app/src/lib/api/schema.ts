@@ -606,8 +606,12 @@ export interface components {
       receivedLikeCount: number;
       comment?: string | null;
       bio?: string | null;
-      publicPhotoUrls: string[];
-      secretPhotoUrls: string[];
+      publicPhotos: components["schemas"]["ProfilePhotoResponse"][];
+      secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
+    };
+    ProfilePhotoResponse: {
+      objectKey: string;
+      url: string;
     };
     CursorResponseMemberSummaryResponse: {
       items: components["schemas"]["MemberSummaryResponse"][];

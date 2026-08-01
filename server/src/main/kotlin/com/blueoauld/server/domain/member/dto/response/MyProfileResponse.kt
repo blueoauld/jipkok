@@ -12,6 +12,6 @@ data class MyProfileResponse(
     val receivedLikeCount: Int,
     val comment: String?,
     val bio: String?,
-    val publicPhotoUrls: List<String>,
-    val secretPhotoUrls: List<String>,
+    val publicPhotos: List<ProfilePhotoResponse>,
+    val secretPhotos: List<ProfilePhotoResponse>,
 )

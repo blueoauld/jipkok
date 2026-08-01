@@ -33,15 +33,15 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
     receivedLikeCount,
     comment,
     bio,
-    publicPhotoUrls,
-    secretPhotoUrls,
+    publicPhotos,
+    secretPhotos,
   } = profile;
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <PhotoPager
-        photos={[...publicPhotoUrls, ...secretPhotoUrls]}
-        secretFrom={publicPhotoUrls.length}
+        photos={[...publicPhotos, ...secretPhotos].map((photo) => photo.url)}
+        secretFrom={publicPhotos.length}
       />
 
       <YStack gap="$4" p="$4">

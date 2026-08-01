@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
@@ -101,8 +102,8 @@ class MemberService(
             receivedLikeCount = member.receivedLikeCount,
             comment = member.comment,
             bio = member.bio,
-            publicPhotoUrls = photoUrls(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
-            secretPhotoUrls = photoUrls(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
+            publicPhotos = profilePhotos(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
+            secretPhotos = profilePhotos(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
         )
     }
 
@@ -194,13 +195,13 @@ class MemberService(
     private fun toPhotos(memberId: Long, objectKeys: List<String>, visibility: PhotoVisibility) =
         objectKeys.mapIndexed { index, objectKey -> MemberPhoto(memberId, visibility, index, objectKey) }
 
-    private fun photoUrls(
+    private fun profilePhotos(
         photos: List<MemberPhoto>,
         visibility: PhotoVisibility,
         toUrl: (String) -> String,
     ) = photos.filter { it.visibility == visibility }
         .sortedBy { it.displayOrder }
-        .map { toUrl(it.objectKey) }
+        .map { ProfilePhotoResponse(it.objectKey, toUrl(it.objectKey)) }
 
     private fun photoKeyPrefix(memberId: Long) = "$PHOTO_KEY_ROOT/$memberId/"
 

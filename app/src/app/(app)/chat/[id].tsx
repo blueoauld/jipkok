@@ -91,7 +91,7 @@ export default function ChatRoomScreen() {
   }, []);
 
   const handlePickPhotos = useCallback(async () => {
-    const uris = await pickPhotos(MAX_PHOTOS);
+    const uris = (await pickPhotos(MAX_PHOTOS)).map((asset) => asset.uri);
 
     if (uris.length === 0) {
       return;
