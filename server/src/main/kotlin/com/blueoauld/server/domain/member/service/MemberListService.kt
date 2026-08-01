@@ -47,22 +47,27 @@ class MemberListService(
         gender: Gender?,
         cursor: Pair<Double, Long>?,
         pageSize: Int,
-    ): List<MemberListRow> = when (sort) {
-        MemberSort.RECENT -> memberListRepository.findRecent(
-            memberId = member.id,
-            gender = gender?.name,
-            latitude = member.latitude,
-            longitude = member.longitude,
-            cursorValue = cursor?.first,
-            cursorId = cursor?.second,
-            size = pageSize,
-        )
+    ): List<MemberListRow> {
+        val latitude = member.latitude
+        val longitude = member.longitude
 
-        MemberSort.DISTANCE -> memberListRepository.findByDistance(
+        if (sort == MemberSort.DISTANCE && latitude != null && longitude != null) {
+            return memberListRepository.findByDistance(
+                memberId = member.id,
+                gender = gender?.name,
+                latitude = latitude,
+                longitude = longitude,
+                cursorValue = cursor?.first,
+                cursorId = cursor?.second,
+                size = pageSize,
+            )
+        }
+
+        return memberListRepository.findRecent(
             memberId = member.id,
             gender = gender?.name,
-            latitude = member.latitude ?: throw BusinessException(ErrorCode.LOCATION_REQUIRED),
-            longitude = member.longitude ?: throw BusinessException(ErrorCode.LOCATION_REQUIRED),
+            latitude = latitude,
+            longitude = longitude,
             cursorValue = cursor?.first,
             cursorId = cursor?.second,
             size = pageSize,

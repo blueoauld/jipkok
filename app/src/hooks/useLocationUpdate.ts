@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 
-import { alertApiError, alertMessage } from "@/lib/alert";
+import { alertApiError, alertInfo } from "@/lib/alert";
 import { api } from "@/lib/api";
 
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
@@ -31,7 +31,7 @@ export function useLocationUpdate() {
       const permission = await Location.requestForegroundPermissionsAsync();
 
       if (!permission.granted) {
-        alertMessage(DENIED_MESSAGE);
+        alertInfo(DENIED_MESSAGE);
         return false;
       }
 

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "expo-router";
 import {
   FunnelSimpleIcon,
@@ -36,6 +37,8 @@ const COMMENT_MAX_LENGTH = 100;
 const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "회원이 없습니다.";
 
+const MEMBERS_KEY = ["members"];
+
 export default function MainScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("최근");
@@ -45,20 +48,22 @@ export default function MainScreen() {
   const [comment, setComment] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
+  const queryClient = useQueryClient();
   const location = useLocationUpdate();
   const feed = useMemberFeed(SORTS[filter], GENDER_VALUES[genderLabel]);
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     feed;
 
+  // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
   const changeFilter = useCallback(
     async (next: Filter) => {
-      if (next === "거리" && !(await location.update())) {
-        return;
-      }
-
       setFilter(next);
+
+      if (next === "거리" && (await location.update())) {
+        queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
+      }
     },
-    [location],
+    [location, queryClient],
   );
 
   const refresh = useCallback(async () => {

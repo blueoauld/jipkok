@@ -49,7 +49,6 @@ enum class ErrorCode(
     INVALID_LOCATION(HttpStatus.BAD_REQUEST, "MEMBER_006", "위치 정보가 올바르지 않습니다."),
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "MEMBER_007", "지원하지 않는 이미지 형식입니다."),
     INVALID_PHOTO_KEY(HttpStatus.BAD_REQUEST, "MEMBER_008", "사진 정보가 올바르지 않습니다."),
-    LOCATION_REQUIRED(HttpStatus.BAD_REQUEST, "MEMBER_009", "거리순으로 보려면 위치 정보가 필요합니다."),
 
     SELF_LIKE(HttpStatus.BAD_REQUEST, "LIKE_001", "자기 자신에게는 좋아요를 누를 수 없습니다."),
 

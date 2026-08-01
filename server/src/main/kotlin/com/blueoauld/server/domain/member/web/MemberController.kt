@@ -42,7 +42,7 @@ class MemberController(
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
 
-    @Operation(summary = "회원 목록 조회")
+    @Operation(summary = "회원 목록 조회", description = "거리순은 내 위치가 없으면 최근순으로 준다.")
     @GetMapping
     fun findMembers(
         @AuthenticationPrincipal memberId: Long,
