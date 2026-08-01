@@ -67,7 +67,7 @@ const SECTIONS: SettingItem[][] = [
     },
   ],
   [
-    { label: "포인트 내역", icon: CoinsIcon },
+    { label: "포인트 내역", icon: CoinsIcon, href: "/point/history" },
     { label: "출석 보상", icon: CalendarCheckIcon },
     { label: "광고 보상", icon: MonitorPlayIcon },
   ],
