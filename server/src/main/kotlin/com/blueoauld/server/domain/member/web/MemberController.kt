@@ -1,9 +1,12 @@
 package com.blueoauld.server.domain.member.web
 
+import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.service.MemberService
 import jakarta.validation.Valid
@@ -36,6 +39,21 @@ class MemberController(
     ) {
         memberService.setupProfile(memberId, request)
     }
+
+    @PutMapping("/me/profile")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun editProfile(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: EditProfileRequest,
+    ) {
+        memberService.editProfile(memberId, request)
+    }
+
+    @PostMapping("/me/photos/upload-url")
+    fun createPhotoUploadUrl(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
+    ): PhotoUploadUrlResponse = memberService.createPhotoUploadUrl(memberId, request)
 
     @PutMapping("/me/comment")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -65,6 +65,7 @@ class Member(
 
         const val PHONE_NUMBER_LENGTH = 11
         const val NICKNAME_MAX_LENGTH = 10
+        const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
         const val COMMENT_MAX_LENGTH = 100
         const val BIO_MAX_LENGTH = 1000
     }

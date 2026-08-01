@@ -3,12 +3,17 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -17,6 +22,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,17 +36,23 @@ class MemberServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
+
     private val verificationCodeService = mockk<VerificationCodeService>(relaxed = true)
 
     private val passwordEncoder = mockk<PasswordEncoder>()
 
     private val authService = mockk<AuthService>()
 
+    private val photoStorage = PhotoStorage { objectKey, _ -> "https://upload.test/$objectKey" }
+
     private val memberService = MemberService(
         memberRepository,
+        memberPhotoRepository,
         verificationCodeService,
         authService,
         passwordEncoder,
+        photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -323,6 +335,120 @@ class MemberServiceTest {
     }
 
     @Test
+    fun `프로필을 편집하면 공개 사진과 비밀 사진을 보낸 순서대로 저장한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        val saved = slot<List<MemberPhoto>>()
+
+        // when
+        memberService.editProfile(
+            MEMBER_ID,
+            EditProfileRequest(
+                nickname = NICKNAME,
+                birthYear = 1998,
+                publicPhotoKeys = listOf(photoKey("a"), photoKey("b")),
+                secretPhotoKeys = listOf(photoKey("c")),
+            ),
+        )
+
+        // then
+        verify { memberPhotoRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { memberPhotoRepository.saveAll(capture(saved)) }
+        assertThat(saved.captured).extracting("visibility", "displayOrder", "objectKey")
+            .containsExactly(
+                tuple(PhotoVisibility.PUBLIC, 0, photoKey("a")),
+                tuple(PhotoVisibility.PUBLIC, 1, photoKey("b")),
+                tuple(PhotoVisibility.SECRET, 0, photoKey("c")),
+            )
+    }
+
+    @Test
+    fun `사진을 비우면 기존 사진만 지운다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        val saved = slot<List<MemberPhoto>>()
+
+        // when
+        memberService.editProfile(MEMBER_ID, EditProfileRequest(NICKNAME, 1998))
+
+        // then
+        verify { memberPhotoRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { memberPhotoRepository.saveAll(capture(saved)) }
+        assertThat(saved.captured).isEmpty()
+    }
+
+    @Test
+    fun `남의 사진 키를 보내면 편집에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.editProfile(
+                MEMBER_ID,
+                EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf("members/999/other.jpg")),
+            )
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
+    }
+
+    @Test
+    fun `같은 사진 키를 공개와 비밀에 함께 보내면 편집에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.editProfile(
+                MEMBER_ID,
+                EditProfileRequest(
+                    nickname = NICKNAME,
+                    birthYear = 1998,
+                    publicPhotoKeys = listOf(photoKey("a")),
+                    secretPhotoKeys = listOf(photoKey("a")),
+                ),
+            )
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
+    }
+
+    @Test
+    fun `업로드 URL은 회원 폴더 아래 키로 발급한다`() {
+        // given
+
+        // when
+        val response = memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("image/jpeg"))
+
+        // then
+        assertThat(response.objectKey).startsWith("members/$MEMBER_ID/")
+        assertThat(response.objectKey).endsWith(".jpg")
+        assertThat(response.uploadUrl).isEqualTo("https://upload.test/${response.objectKey}")
+    }
+
+    @Test
+    fun `지원하지 않는 이미지 형식이면 업로드 URL을 주지 않는다`() {
+        // given
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("application/pdf"))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
+    }
+
+    @Test
     fun `코멘트를 앞뒤 공백까지 그대로 저장한다`() {
         // given
         val member = member()
@@ -451,6 +577,8 @@ class MemberServiceTest {
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
     }
+
+    private fun photoKey(name: String) = "members/$MEMBER_ID/$name.jpg"
 
     private fun member() = Member(
         phoneNumber = PHONE_NUMBER,
