@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.feed.dto.request.CreateFeedPhotoUploadUrlRequ
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.dto.response.FeedPhotoUploadUrlResponse
 import com.blueoauld.server.domain.feed.service.FeedPostLikeService
+import com.blueoauld.server.domain.feed.service.FeedPostReportService
 import com.blueoauld.server.domain.feed.service.FeedPostService
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
@@ -23,6 +24,7 @@ class FeedPostController(
 
     private val feedPostService: FeedPostService,
     private val feedPostLikeService: FeedPostLikeService,
+    private val feedPostReportService: FeedPostReportService,
 ) {
 
     @Operation(summary = "피드 작성", description = "한 시간대에 하나만 올릴 수 있다.")
@@ -47,6 +49,13 @@ class FeedPostController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cancelLike(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {
         feedPostLikeService.cancel(memberId, postId)
+    }
+
+    @Operation(summary = "피드 신고")
+    @PostMapping("/{postId}/reports")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun report(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {
+        feedPostReportService.report(memberId, postId)
     }
 
     @Operation(summary = "피드 사진 업로드 URL 발급")

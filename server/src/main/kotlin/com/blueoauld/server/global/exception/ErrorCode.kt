@@ -68,6 +68,7 @@ enum class ErrorCode(
 
     DUPLICATE_FEED_POST(HttpStatus.CONFLICT, "FEED_001", "이번 시간에는 이미 올렸습니다."),
     FEED_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "FEED_002", "게시물을 찾을 수 없습니다."),
+    DUPLICATE_FEED_POST_REPORT(HttpStatus.CONFLICT, "FEED_003", "이미 신고한 게시물입니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
