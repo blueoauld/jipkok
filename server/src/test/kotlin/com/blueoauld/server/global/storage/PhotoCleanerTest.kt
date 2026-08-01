@@ -1,7 +1,5 @@
-package com.blueoauld.server.domain.member.service
+package com.blueoauld.server.global.storage
 
-import com.blueoauld.server.domain.member.entity.PhotoUpload
-import com.blueoauld.server.domain.member.repository.PhotoUploadRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

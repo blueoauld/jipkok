@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.member.service
+package com.blueoauld.server.global.storage
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

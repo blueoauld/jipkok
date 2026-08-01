@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.member.entity
+package com.blueoauld.server.global.storage
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -19,7 +19,7 @@ class PhotoUpload(
     @Column(name = "member_id", nullable = false)
     val memberId: Long,
 
-    @Column(name = "object_key", nullable = false, unique = true, length = MemberPhoto.OBJECT_KEY_MAX_LENGTH)
+    @Column(name = "object_key", nullable = false, unique = true, length = OBJECT_KEY_MAX_LENGTH)
     val objectKey: String,
 
     @Column(name = "issued_at", nullable = false)
@@ -30,4 +30,9 @@ class PhotoUpload(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0
+
+    companion object {
+
+        const val OBJECT_KEY_MAX_LENGTH = 255
+    }
 }

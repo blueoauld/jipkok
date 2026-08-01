@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.member.service
+package com.blueoauld.server.global.storage
 
 import com.blueoauld.server.global.properties.R2Properties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

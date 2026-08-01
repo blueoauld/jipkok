@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.entity
 
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.global.storage.PhotoUpload
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -33,7 +34,7 @@ class MemberPhoto(
     @Column(name = "display_order", nullable = false)
     val displayOrder: Int,
 
-    @Column(name = "object_key", nullable = false, length = OBJECT_KEY_MAX_LENGTH)
+    @Column(name = "object_key", nullable = false, length = PhotoUpload.OBJECT_KEY_MAX_LENGTH)
     val objectKey: String,
 ) {
 
@@ -45,6 +46,5 @@ class MemberPhoto(
     companion object {
 
         const val MAX_COUNT_PER_VISIBILITY = 6
-        const val OBJECT_KEY_MAX_LENGTH = 255
     }
 }

@@ -1,6 +1,5 @@
-package com.blueoauld.server.domain.member.service
+package com.blueoauld.server.global.storage
 
-import com.blueoauld.server.domain.member.repository.PhotoUploadRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

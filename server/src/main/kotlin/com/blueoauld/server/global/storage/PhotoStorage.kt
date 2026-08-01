@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.member.service
+package com.blueoauld.server.global.storage
 
 interface PhotoStorage {
 

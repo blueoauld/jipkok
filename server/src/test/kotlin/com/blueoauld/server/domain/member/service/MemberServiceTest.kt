@@ -11,14 +11,16 @@ import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
-import com.blueoauld.server.domain.member.entity.PhotoUpload
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.member.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.PhotoStorage
+import com.blueoauld.server.global.storage.PhotoUploadService
+import com.blueoauld.server.global.storage.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -41,7 +43,7 @@ class MemberServiceTest {
 
     private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
 
-    private val photoUploadRepository = mockk<PhotoUploadRepository>(relaxed = true)
+    private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
 
     private val verificationCodeService = mockk<VerificationCodeService>(relaxed = true)
 
@@ -56,7 +58,7 @@ class MemberServiceTest {
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
-        photoUploadRepository,
+        photoUploadService,
         verificationCodeService,
         authService,
         passwordEncoder,
@@ -72,7 +74,9 @@ class MemberServiceTest {
         every { passwordEncoder.encode(PASSWORD) } returns ENCODED_PASSWORD
         every { authService.issueTokens(any()) } returns TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN)
         every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
-        every { photoUploadRepository.save(any()) } answers { firstArg() }
+        every { photoUploadService.createUploadUrl(any(), any(), any()) } answers {
+            IssuedPhotoUpload("https://upload.test/key", secondArg<String>() + "key.jpg")
+        }
         every { photoStorage.createUploadUrl(any(), any()) } answers { "https://upload.test/${firstArg<String>()}" }
     }
 
@@ -493,20 +497,18 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `업로드 URL은 회원 폴더 아래 키로 발급하고 발급 기록을 남긴다`() {
+    fun `업로드 URL은 회원 폴더 아래로 발급한다`() {
         // given
-        val issued = slot<PhotoUpload>()
+        val prefix = slot<String>()
+        every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
+                IssuedPhotoUpload("https://upload.test/key", "members/$MEMBER_ID/key.jpg")
 
         // when
         val response = memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("image/jpeg"))
 
         // then
-        assertThat(response.objectKey).startsWith("members/$MEMBER_ID/")
-        assertThat(response.objectKey).endsWith(".jpg")
-        assertThat(response.uploadUrl).isEqualTo("https://upload.test/${response.objectKey}")
-        verify { photoUploadRepository.save(capture(issued)) }
-        assertThat(issued.captured.objectKey).isEqualTo(response.objectKey)
-        assertThat(issued.captured.issuedAt).isEqualTo(NOW)
+        assertThat(prefix.captured).isEqualTo("members/$MEMBER_ID/")
+        assertThat(response.objectKey).isEqualTo("members/$MEMBER_ID/key.jpg")
     }
 
     @Test
@@ -563,20 +565,7 @@ class MemberServiceTest {
         )
 
         // then
-        verify { photoUploadRepository.deleteAllByObjectKeyIn(listOf(photoKey("a"))) }
-    }
-
-    @Test
-    fun `지원하지 않는 이미지 형식이면 업로드 URL을 주지 않는다`() {
-        // given
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("application/pdf"))
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
+        verify { photoUploadService.confirm(listOf(photoKey("a"))) }
     }
 
     @Test
