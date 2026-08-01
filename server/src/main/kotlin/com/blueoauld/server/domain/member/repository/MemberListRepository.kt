@@ -15,7 +15,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                m.located_at as locatedAt,
                $DISTANCE as distance
         from member m
-        where $VISIBLE
+        where $VISIBLE $GENDER
           and m.located_at is not null
           and (
             cast(:cursorValue as double precision) is null
@@ -47,7 +47,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                m.located_at as locatedAt,
                $DISTANCE as distance
         from member m
-        where $VISIBLE
+        where $VISIBLE $GENDER
           and m.latitude is not null
           and m.longitude is not null
           and (
@@ -70,17 +70,50 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         @Param("size") size: Int,
     ): List<MemberListRow>
 
+    @Query(
+        value = """
+        select m.id as memberId,
+               coalesce(extract(epoch from m.located_at), 0) as orderValue,
+               m.located_at as locatedAt,
+               cast(null as double precision) as distance
+        from member m
+        where $VISIBLE
+          and lower(m.nickname) like lower(:keyword) || '%' escape '\'
+          and (
+            cast(:cursorValue as double precision) is null
+            or coalesce(extract(epoch from m.located_at), 0) < cast(:cursorValue as double precision)
+            or (
+              coalesce(extract(epoch from m.located_at), 0) = cast(:cursorValue as double precision)
+              and m.id < cast(:cursorId as bigint)
+            )
+          )
+        order by orderValue desc, m.id desc
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findByNicknamePrefix(
+        @Param("memberId") memberId: Long,
+        @Param("keyword") keyword: String,
+        @Param("cursorValue") cursorValue: Double?,
+        @Param("cursorId") cursorId: Long?,
+        @Param("size") size: Int,
+    ): List<MemberListRow>
+
     companion object {
 
         private const val VISIBLE = """
             m.deleted_at is null
               and m.id <> :memberId
-              and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
               and not exists (
                 select 1 from member_block b
                 where (b.blocker_id = :memberId and b.blocked_member_id = m.id)
                    or (b.blocker_id = m.id and b.blocked_member_id = :memberId)
               )
+        """
+
+        private const val GENDER = """
+            and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
         """
 
         private const val DISTANCE = """

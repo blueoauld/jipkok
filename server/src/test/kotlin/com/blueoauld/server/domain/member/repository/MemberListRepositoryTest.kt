@@ -31,6 +31,8 @@ class MemberListRepositoryTest {
 
     private var farId: Long = 0
 
+    private var hongId: Long = 0
+
     @BeforeEach
     fun setUp() {
         val now = Instant.now()
@@ -38,6 +40,10 @@ class MemberListRepositoryTest {
         meId = save(member("01099990000", Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
         nearId = save(member("01099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))).id
         farId = save(member("01099990002", Gender.MALE, 37.9, 127.0, now.minusSeconds(120))).id
+        hongId = save(
+            member("01099990003", Gender.MALE, 37.5, 127.0, now.minusSeconds(180))
+                .apply { nickname = "HongGil" },
+        ).id
     }
 
     @Test
@@ -55,6 +61,7 @@ class MemberListRepositoryTest {
     @Test
     fun `거리순은 가까운 회원부터 준다`() {
         // given
+
         // when
         val rows = memberListRepository.findByDistance(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
 
@@ -65,6 +72,7 @@ class MemberListRepositoryTest {
     @Test
     fun `성별을 지정하면 해당 성별만 준다`() {
         // given
+
         // when
         val rows = memberListRepository.findRecent(
             meId,
@@ -105,6 +113,7 @@ class MemberListRepositoryTest {
     @Test
     fun `최근순에도 거리와 갱신일이 담긴다`() {
         // given
+
         // when
         val rows = memberListRepository.findRecent(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
         val near = rows.first { it.getMemberId() == nearId }
@@ -117,11 +126,57 @@ class MemberListRepositoryTest {
     @Test
     fun `내 좌표가 없으면 최근순의 거리는 비어 있다`() {
         // given
+
         // when
         val rows = memberListRepository.findRecent(meId, null, null, null, null, null, PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getDistance() }).allMatch { it == null }
+    }
+
+    @Test
+    fun `닉네임 앞부분이 같으면 대소문자와 무관하게 찾는다`() {
+        // given
+
+        // when
+        val rows = memberListRepository.findByNicknamePrefix(meId, "HONG", null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).contains(hongId)
+    }
+
+    @Test
+    fun `닉네임 중간이 같으면 찾지 않는다`() {
+        // given
+
+        // when
+        val rows = memberListRepository.findByNicknamePrefix(meId, "gil", null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(hongId)
+    }
+
+    @Test
+    fun `검색에서도 차단한 회원은 빠진다`() {
+        // given
+        memberBlockRepository.saveAndFlush(MemberBlock(meId, hongId))
+
+        // when
+        val rows = memberListRepository.findByNicknamePrefix(meId, "hong", null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(hongId)
+    }
+
+    @Test
+    fun `와일드카드를 그대로 보내면 아무나 찾히지 않는다`() {
+        // given
+
+        // when
+        val rows = memberListRepository.findByNicknamePrefix(meId, "\\%", null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows).isEmpty()
     }
 
     @Test
