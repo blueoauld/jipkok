@@ -13,8 +13,6 @@ import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class PointService(
@@ -28,10 +26,6 @@ class PointService(
     fun earn(memberId: Long, type: PointType): PointRewardResponse {
         val member = memberRepository.findById(memberId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        if (reachedDailyLimit(memberId, type)) {
-            return PointRewardResponse(earned = false, amount = 0, balance = member.pointBalance)
         }
 
         val balance = member.pointBalance + type.amount
@@ -73,23 +67,5 @@ class PointService(
             items = histories.map(PointHistoryResponse::from),
             nextCursor = histories.lastOrNull()?.id.takeIf { histories.size == pageSize },
         )
-    }
-
-    private fun reachedDailyLimit(memberId: Long, type: PointType): Boolean {
-        val dailyLimit = type.dailyLimit ?: return false
-        val earnedToday = pointHistoryRepository.countByMemberIdAndTypeAndRecordedAtGreaterThanEqual(
-            memberId,
-            type,
-            startOfToday(),
-        )
-
-        return earnedToday >= dailyLimit
-    }
-
-    private fun startOfToday() = LocalDate.now(clock.withZone(KOREA)).atStartOfDay(KOREA).toInstant()
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

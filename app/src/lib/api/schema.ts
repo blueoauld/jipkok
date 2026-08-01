@@ -73,23 +73,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/points/rewards/attendance": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** 출석 보상 받기 */
-    post: operations["earnAttendanceReward"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/points/rewards/ad": {
     parameters: {
       query?: never;
@@ -309,6 +292,23 @@ export interface paths {
     put?: never;
     /** 로그인 */
     post: operations["login"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/attendances": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** 출석 체크 */
+    post: operations["checkIn"];
     delete?: never;
     options?: never;
     head?: never;
@@ -570,6 +570,13 @@ export interface components {
     LoginRequest: {
       phoneNumber: string;
       password: string;
+    };
+    AttendanceResponse: {
+      earned: boolean;
+      /** Format: int32 */
+      amount: number;
+      /** Format: int32 */
+      balance: number;
     };
     SetupProfileRequest: {
       nickname: string;
@@ -862,53 +869,6 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["ReportPhotoUploadUrlResponse"];
-        };
-      };
-      /** @description 요청이 올바르지 않다 */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 인증이 필요하다 */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 서버에 문제가 발생했다 */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
-  earnAttendanceReward: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "*/*": components["schemas"]["PointRewardResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */
@@ -1730,6 +1690,53 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["TokenResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  checkIn: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["AttendanceResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */

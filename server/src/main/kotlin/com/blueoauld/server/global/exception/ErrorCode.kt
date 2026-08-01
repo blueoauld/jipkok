@@ -10,6 +10,7 @@ enum class ErrorCode(
 ) {
 
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_001", "요청이 올바르지 않습니다."),
+    DUPLICATE_REQUEST(HttpStatus.CONFLICT, "COMMON_002", "요청이 중복되었습니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_999", "서버에 문제가 발생했습니다."),
 
     VERIFICATION_CODE_RESEND_TOO_SOON(

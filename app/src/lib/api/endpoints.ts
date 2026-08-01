@@ -1,6 +1,7 @@
 import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
+  AttendanceResponse,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
   EditProfileRequest,
@@ -154,13 +155,13 @@ export const points = {
       method: "POST",
     }),
 
-  earnAttendanceReward: () =>
-    request<PointRewardResponse>("/api/points/rewards/attendance", {
-      method: "POST",
-    }),
-
   earnAdReward: () =>
     request<PointRewardResponse>("/api/points/rewards/ad", { method: "POST" }),
+};
+
+export const attendances = {
+  checkIn: () =>
+    request<AttendanceResponse>("/api/attendances", { method: "POST" }),
 };
 
 export const reports = {

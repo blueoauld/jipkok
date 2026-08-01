@@ -25,11 +25,6 @@ class PointController(
     fun earnAccessReward(@AuthenticationPrincipal memberId: Long): PointRewardResponse =
         pointService.earn(memberId, PointType.ACCESS_REWARD)
 
-    @Operation(summary = "출석 보상 받기")
-    @PostMapping("/rewards/attendance")
-    fun earnAttendanceReward(@AuthenticationPrincipal memberId: Long): PointRewardResponse =
-        pointService.earn(memberId, PointType.ATTENDANCE_REWARD)
-
     @Operation(summary = "광고 보상 받기")
     @PostMapping("/rewards/ad")
     fun earnAdReward(@AuthenticationPrincipal memberId: Long): PointRewardResponse =

@@ -1,0 +1,21 @@
+package com.blueoauld.server.domain.attendance.web
+
+import com.blueoauld.server.domain.attendance.dto.response.AttendanceResponse
+import com.blueoauld.server.domain.attendance.service.AttendanceService
+import io.swagger.v3.oas.annotations.Operation
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/attendances")
+class AttendanceController(
+
+    private val attendanceService: AttendanceService,
+) {
+
+    @Operation(summary = "출석 체크")
+    @PostMapping
+    fun checkIn(@AuthenticationPrincipal memberId: Long): AttendanceResponse = attendanceService.checkIn(memberId)
+}

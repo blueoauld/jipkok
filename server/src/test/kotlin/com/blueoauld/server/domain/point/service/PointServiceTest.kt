@@ -38,9 +38,6 @@ class PointServiceTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member(100))
         every { memberRepository.addPointBalance(any(), any()) } returns 1
         every { pointHistoryRepository.save(any()) } answers { firstArg() }
-        every {
-            pointHistoryRepository.countByMemberIdAndTypeAndRecordedAtGreaterThanEqual(any(), any(), any())
-        } returns 0
     }
 
     @Test
@@ -60,46 +57,6 @@ class PointServiceTest {
         assertThat(history.captured.type).isEqualTo(PointType.ACCESS_REWARD)
         assertThat(history.captured.balanceAfter).isEqualTo(130)
         assertThat(history.captured.recordedAt).isEqualTo(NOW)
-    }
-
-    @Test
-    fun `하루 한도를 채웠으면 지급하지 않는다`() {
-        // given
-        stubEarnedToday(PointType.ACCESS_REWARD, 1)
-
-        // when
-        val response = pointService.earn(MEMBER_ID, PointType.ACCESS_REWARD)
-
-        // then
-        assertThat(response.earned).isFalse()
-        assertThat(response.amount).isZero()
-        assertThat(response.balance).isEqualTo(100)
-        verify(exactly = 0) { memberRepository.addPointBalance(any(), any()) }
-        verify(exactly = 0) { pointHistoryRepository.save(any()) }
-    }
-
-    @Test
-    fun `광고 보상은 하루 다섯 번까지 받는다`() {
-        // given
-        stubEarnedToday(PointType.AD_REWARD, 4)
-
-        // when
-        val response = pointService.earn(MEMBER_ID, PointType.AD_REWARD)
-
-        // then
-        assertThat(response.earned).isTrue()
-    }
-
-    @Test
-    fun `광고 보상 다섯 번을 채우면 더 받지 못한다`() {
-        // given
-        stubEarnedToday(PointType.AD_REWARD, 5)
-
-        // when
-        val response = pointService.earn(MEMBER_ID, PointType.AD_REWARD)
-
-        // then
-        assertThat(response.earned).isFalse()
     }
 
     @Test
@@ -144,12 +101,6 @@ class PointServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
-    }
-
-    private fun stubEarnedToday(type: PointType, count: Long) {
-        every {
-            pointHistoryRepository.countByMemberIdAndTypeAndRecordedAtGreaterThanEqual(MEMBER_ID, type, any())
-        } returns count
     }
 
     private fun member(pointBalance: Int) = Member(

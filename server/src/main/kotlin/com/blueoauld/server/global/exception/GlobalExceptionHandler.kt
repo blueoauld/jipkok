@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -21,6 +22,14 @@ class GlobalExceptionHandler {
         val message = exception.bindingResult.fieldErrors.firstOrNull()?.defaultMessage ?: errorCode.message
 
         return ResponseEntity.status(errorCode.status).body(ErrorResponse.of(errorCode, message))
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleDataIntegrityViolation(exception: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
+        val errorCode = ErrorCode.DUPLICATE_REQUEST
+        log.warn(exception) { "데이터 무결성 제약을 위반했다." }
+
+        return ResponseEntity.status(errorCode.status).body(ErrorResponse.from(errorCode))
     }
 
     @ExceptionHandler(Exception::class)

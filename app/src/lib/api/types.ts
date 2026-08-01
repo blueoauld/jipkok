@@ -23,6 +23,7 @@ export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type PointRewardResponse = Schemas["PointRewardResponse"];
+export type AttendanceResponse = Schemas["AttendanceResponse"];
 export type PointHistoryResponse = Schemas["PointHistoryResponse"];
 export type PointType = PointHistoryResponse["type"];
 

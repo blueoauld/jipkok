@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs, type Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
@@ -21,11 +21,13 @@ import {
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
-import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
@@ -35,7 +37,16 @@ const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 
 const WITHDRAW_DESCRIPTION =
   "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.";
 
-type SettingItem = { label: string; icon: Icon; href?: Href };
+const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
+
+type SettingAction = "attendanceReward";
+
+type SettingItem = {
+  label: string;
+  icon: Icon;
+  href?: Href;
+  action?: SettingAction;
+};
 
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
@@ -68,7 +79,7 @@ const SECTIONS: SettingItem[][] = [
   ],
   [
     { label: "포인트 내역", icon: CoinsIcon, href: "/point/history" },
-    { label: "출석 보상", icon: CalendarCheckIcon },
+    { label: "출석 보상", icon: CalendarCheckIcon, action: "attendanceReward" },
     { label: "광고 보상", icon: MonitorPlayIcon },
   ],
   [
@@ -79,9 +90,23 @@ const SECTIONS: SettingItem[][] = [
   ],
 ];
 
-function SettingRow({ item }: { item: SettingItem }) {
+function SettingRow({
+  item,
+  pending,
+  onAction,
+}: {
+  item: SettingItem;
+  pending: boolean;
+  onAction: (action: SettingAction) => void;
+}) {
   const theme = useTheme();
-  const { label, icon: Icon, href } = item;
+  const { label, icon: Icon, href, action } = item;
+
+  const press = href
+    ? () => pushOnce(href)
+    : action
+      ? () => onAction(action)
+      : undefined;
 
   return (
     <XStack
@@ -90,23 +115,53 @@ function SettingRow({ item }: { item: SettingItem }) {
       px="$4"
       py="$3"
       pressStyle={{ bg: "$gray5" }}
-      onPress={href ? () => pushOnce(href) : undefined}
+      onPress={press}
     >
       <Icon size={ICON_SIZE} color={theme.color10.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
+      {pending && <Spinner size="small" />}
     </XStack>
   );
 }
 
 export default function SettingScreen() {
   const space = getTokens().space;
+  const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const logout = useMutation({ mutationFn: api.auth.logout });
+
+  const earnAttendanceReward = useMutation({
+    mutationFn: api.attendances.checkIn,
+    onSuccess: async (reward) => {
+      if (!reward.earned) {
+        alertMessage(ALREADY_EARNED_MESSAGE);
+        return;
+      }
+
+      queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
+      await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+      alertInfo(`${reward.amount.toLocaleString()} 포인트를 받았습니다.`);
+    },
+    onError: alertApiError,
+  });
+
+  const pendingAction: SettingAction | null = earnAttendanceReward.isPending
+    ? "attendanceReward"
+    : null;
+
+  const handleAction = useCallback(
+    (action: SettingAction) => {
+      if (action === "attendanceReward" && !earnAttendanceReward.isPending) {
+        earnAttendanceReward.mutate();
+      }
+    },
+    [earnAttendanceReward],
+  );
 
   const accountMenu: MenuSheetItem[] = [
     { label: "로그아웃", onPress: () => setLogoutOpen(true) },
@@ -143,7 +198,12 @@ export default function SettingScreen() {
             overflow="hidden"
           >
             {items.map((item) => (
-              <SettingRow key={item.label} item={item} />
+              <SettingRow
+                key={item.label}
+                item={item}
+                pending={item.action === pendingAction}
+                onAction={handleAction}
+              />
             ))}
           </YStack>
         ))}

@@ -1,10 +1,11 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import type { ReactNode } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
+import { POINT_HISTORIES_KEY, usePointBalance } from "@/hooks/usePoints";
 import {
   api,
   type PointHistoryPage,
@@ -12,9 +13,6 @@ import {
 } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
-
-const BALANCE_KEY = ["points", "balance"];
-const HISTORIES_KEY = ["points", "histories"];
 
 const ERROR_MESSAGE = "내역을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "내역이 비어있습니다.";
@@ -28,10 +26,7 @@ function Centered({ children }: { children: ReactNode }) {
 }
 
 function Balance() {
-  const { data } = useQuery({
-    queryKey: BALANCE_KEY,
-    queryFn: api.points.balance,
-  });
+  const { data } = usePointBalance();
 
   return (
     <XStack
@@ -86,7 +81,7 @@ export default function PointHistoryScreen() {
   const space = getTokens().space;
 
   const query = useInfiniteQuery({
-    queryKey: HISTORIES_KEY,
+    queryKey: POINT_HISTORIES_KEY,
     queryFn: ({ pageParam }) => api.points.histories({ cursor: pageParam }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: PointHistoryPage) => page.nextCursor,
