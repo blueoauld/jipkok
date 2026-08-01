@@ -82,7 +82,7 @@ export function ActivityList({
       }
       ListEmptyComponent={
         <Centered>
-          <Text theme="gray" color="$color10">
+          <Text theme="gray" color="$color10" fontSize="$4">
             {EMPTY_MESSAGE}
           </Text>
         </Centered>

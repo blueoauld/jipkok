@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { TrashIcon } from "phosphor-react-native";
 import { Text, XStack, YStack } from "tamagui";
 
@@ -5,10 +6,17 @@ import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
 
+const EMPTY_COMMENT = "-";
+
 const DELETE_BUTTON_SIZE = 48;
 const DELETE_ICON_SIZE = 24;
 
 function DeleteButton({ onPress }: { onPress: () => void }) {
+  const press = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  };
+
   return (
     <XStack
       shrink={0}
@@ -19,7 +27,7 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
       items="center"
       justify="center"
       pressStyle={{ opacity: 0.6 }}
-      onPress={onPress}
+      onPress={press}
     >
       <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
     </XStack>
@@ -58,11 +66,9 @@ export function ActivityRow({
             {`${genderLabel(gender)} · ${age}살 · ♥ ${receivedLikeCount}`}
           </Text>
 
-          {comment && (
-            <Text numberOfLines={1} theme="gray" color="$color10" fontSize="$3">
-              {comment}
-            </Text>
-          )}
+          <Text numberOfLines={1} theme="gray" color="$color10" fontSize="$3">
+            {comment || EMPTY_COMMENT}
+          </Text>
         </YStack>
       </XStack>
 
