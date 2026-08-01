@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   Controller,
   type Control,
@@ -14,12 +15,14 @@ type ControlledInputProps<T extends FieldValues> = InputProps & {
   control: Control<T>;
   name: FieldPath<T>;
   rules?: RegisterOptions<T, FieldPath<T>>;
+  renderRight?: (value: string) => ReactNode;
 };
 
 export function ControlledInput<T extends FieldValues>({
   control,
   name,
   rules,
+  renderRight,
   ...inputProps
 }: ControlledInputProps<T>) {
   return (
@@ -28,7 +31,10 @@ export function ControlledInput<T extends FieldValues>({
       name={name}
       rules={rules}
       render={({ field, fieldState }) => (
-        <FormField error={fieldState.error?.message}>
+        <FormField
+          error={fieldState.error?.message}
+          right={renderRight?.(field.value ?? "")}
+        >
           <FormInput
             value={field.value ?? ""}
             onChangeText={field.onChange}
