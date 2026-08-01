@@ -18,9 +18,9 @@ import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.PhotoStorage
-import com.blueoauld.server.global.storage.PhotoUploadService
-import com.blueoauld.server.global.storage.PhotosDeletedEvent
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service

@@ -10,7 +10,7 @@ import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.PhotoUploadService
+import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

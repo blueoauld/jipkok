@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.report.entity
 
-import com.blueoauld.server.global.storage.PhotoUpload
+import com.blueoauld.server.global.storage.entity.PhotoUpload
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

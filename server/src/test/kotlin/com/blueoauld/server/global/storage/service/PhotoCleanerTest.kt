@@ -1,5 +1,8 @@
-package com.blueoauld.server.global.storage
+package com.blueoauld.server.global.storage.service
 
+import com.blueoauld.server.global.storage.entity.PhotoUpload
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

@@ -1,5 +1,7 @@
-package com.blueoauld.server.global.storage
+package com.blueoauld.server.global.storage.service
 
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

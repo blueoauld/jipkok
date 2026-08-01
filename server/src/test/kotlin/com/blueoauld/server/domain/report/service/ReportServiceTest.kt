@@ -10,8 +10,8 @@ import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.IssuedPhotoUpload
-import com.blueoauld.server.global.storage.PhotoUploadService
+import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
