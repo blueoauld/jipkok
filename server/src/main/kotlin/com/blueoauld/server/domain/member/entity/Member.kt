@@ -54,6 +54,9 @@ class Member(
 
     @Column(name = "located_at")
     var locatedAt: Instant? = null,
+
+    @Column(name = "received_like_count", nullable = false)
+    var receivedLikeCount: Int = 0,
 ) : BaseEntity() {
 
     @Id

@@ -49,6 +49,8 @@ enum class ErrorCode(
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "MEMBER_007", "지원하지 않는 이미지 형식입니다."),
     INVALID_PHOTO_KEY(HttpStatus.BAD_REQUEST, "MEMBER_008", "사진 정보가 올바르지 않습니다."),
 
+    SELF_LIKE(HttpStatus.BAD_REQUEST, "LIKE_001", "자기 자신에게는 좋아요를 누를 수 없습니다."),
+
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }

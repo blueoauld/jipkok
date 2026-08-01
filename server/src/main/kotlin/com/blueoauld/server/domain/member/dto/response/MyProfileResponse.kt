@@ -9,6 +9,7 @@ data class MyProfileResponse(
     val gender: Gender,
     val birthYear: Int,
     val age: Int,
+    val receivedLikeCount: Int,
     val comment: String?,
     val bio: String?,
     val publicPhotoUrls: List<String>,

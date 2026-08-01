@@ -98,6 +98,7 @@ class MemberService(
             gender = member.gender,
             birthYear = member.birthYear,
             age = currentYear() - member.birthYear,
+            receivedLikeCount = member.receivedLikeCount,
             comment = member.comment,
             bio = member.bio,
             publicPhotoUrls = photoUrls(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
