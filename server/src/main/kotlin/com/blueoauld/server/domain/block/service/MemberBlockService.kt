@@ -1,0 +1,61 @@
+package com.blueoauld.server.domain.block.service
+
+import com.blueoauld.server.domain.block.entity.MemberBlock
+import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberSummaryService
+import com.blueoauld.server.global.exception.BusinessException
+import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.Limit
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class MemberBlockService(
+
+    private val memberBlockRepository: MemberBlockRepository,
+    private val memberRepository: MemberRepository,
+    private val memberSummaryService: MemberSummaryService,
+) {
+
+    @Transactional
+    fun block(blockerId: Long, blockedMemberId: Long) {
+        if (blockerId == blockedMemberId) {
+            throw BusinessException(ErrorCode.SELF_BLOCK)
+        }
+
+        if (!memberRepository.existsById(blockedMemberId)) {
+            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        if (memberBlockRepository.existsByBlockerIdAndBlockedMemberId(blockerId, blockedMemberId)) {
+            return
+        }
+
+        runCatching { memberBlockRepository.saveAndFlush(MemberBlock(blockerId, blockedMemberId)) }
+            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+    }
+
+    @Transactional
+    fun unblock(blockerId: Long, blockedMemberId: Long) {
+        memberBlockRepository.deleteByBlockerIdAndBlockedMemberId(blockerId, blockedMemberId)
+    }
+
+    @Transactional(readOnly = true)
+    fun findBlocked(blockerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
+        val pageSize = CursorResponse.pageSize(size)
+        val blocks = memberBlockRepository.findByBlockerIdAndIdLessThanOrderByIdDesc(
+            blockerId,
+            cursor ?: Long.MAX_VALUE,
+            Limit.of(pageSize),
+        )
+
+        return CursorResponse(
+            items = memberSummaryService.findSummaries(blocks.map { it.blockedMemberId }),
+            nextCursor = blocks.lastOrNull()?.id.takeIf { blocks.size == pageSize },
+        )
+    }
+}
