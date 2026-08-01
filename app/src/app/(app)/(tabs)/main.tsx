@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "expo-router";
 import {
   FunnelSimpleIcon,
@@ -16,7 +16,9 @@ import { TextInputDialog } from "@/components/TextInputDialog";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
-import { isApiError, type Gender, type MemberSort } from "@/lib/api";
+import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
+import { alertApiError, alertInfo } from "@/lib/alert";
+import { api, isApiError, type Gender, type MemberSort } from "@/lib/api";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import { pushOnce } from "@/lib/router";
 
@@ -46,6 +48,7 @@ const COMMENT_MAX_LENGTH = 100;
 
 const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "회원이 없습니다.";
+const COMMENT_SAVED_MESSAGE = "코멘트가 작성되었습니다.";
 
 const MEMBERS_KEY = ["members"];
 
@@ -53,7 +56,6 @@ export default function MainScreen() {
   const space = getTokens().space;
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
-  const [comment, setComment] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
@@ -63,6 +65,16 @@ export default function MainScreen() {
   const setSort = useMemberFilterStore((state) => state.setSort);
   const setGender = useMemberFilterStore((state) => state.setGender);
   const feed = useMemberFeed(sort, gender);
+  const { data: profile } = useMyProfile();
+
+  const updateComment = useMutation({
+    mutationFn: api.members.updateComment,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
+      alertInfo(COMMENT_SAVED_MESSAGE);
+    },
+    onError: alertApiError,
+  });
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     feed;
 
@@ -187,8 +199,8 @@ export default function MainScreen() {
         title="코멘트"
         placeholder="내용 입력"
         maxLength={COMMENT_MAX_LENGTH}
-        defaultValue={comment}
-        onSubmit={setComment}
+        defaultValue={profile?.comment ?? ""}
+        onSubmit={(comment) => updateComment.mutate({ comment })}
       />
 
       <MenuSheet
