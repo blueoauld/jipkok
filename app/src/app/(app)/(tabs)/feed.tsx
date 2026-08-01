@@ -49,7 +49,7 @@ const BOTTOM_GRADIENT: ViewStyle = {
     "linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent)",
 };
 
-const CAPTION_MAX_LENGTH = 50;
+const CAPTION_MAX_LENGTH = 30;
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -371,7 +371,7 @@ export default function FeedScreen() {
           paddingTop: space.$3.val,
           paddingBottom: space.$4.val,
           paddingHorizontal: space.$4.val,
-          gap: space.$2.val,
+          gap: space.$4.val,
         }}
       />
 
