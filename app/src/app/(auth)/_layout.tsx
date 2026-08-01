@@ -19,7 +19,12 @@ export default function AuthLayout() {
       />
       <Stack.Screen
         name="setup"
-        options={{ headerShown: true, title: "프로필 설정" }}
+        options={{
+          headerShown: true,
+          title: "프로필 설정",
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
       />
     </Stack>
   );

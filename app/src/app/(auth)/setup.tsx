@@ -10,11 +10,14 @@ import { Button, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
 export default function SetupScreen() {
   const insets = useSafeAreaInsets();
+
+  useBlockGoBack();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
