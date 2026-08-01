@@ -6,10 +6,15 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
+import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberSort
+import com.blueoauld.server.domain.member.service.MemberListService
 import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.global.response.ScrollResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -28,12 +34,23 @@ import org.springframework.web.bind.annotation.RestController
 class MemberController(
 
     private val memberService: MemberService,
+    private val memberListService: MemberListService,
 ) {
 
     @Operation(summary = "회원가입")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
+
+    @Operation(summary = "회원 목록 조회")
+    @GetMapping
+    fun findMembers(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestParam(defaultValue = "RECENT") sort: MemberSort,
+        @RequestParam(required = false) gender: Gender?,
+        @RequestParam(required = false) cursor: String?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): ScrollResponse<MemberListItemResponse> = memberListService.findMembers(memberId, sort, gender, cursor, size)
 
     @Operation(summary = "프로필 설정")
     @PatchMapping("/me/profile")
@@ -84,5 +101,10 @@ class MemberController(
         @Valid @RequestBody request: HeartbeatRequest,
     ) {
         memberService.heartbeat(memberId, request)
+    }
+
+    companion object {
+
+        private const val DEFAULT_PAGE_SIZE = 20
     }
 }
