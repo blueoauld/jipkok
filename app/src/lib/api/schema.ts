@@ -353,6 +353,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/members/ranking": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 좋아요 랭킹 */
+    get: operations["findRanking"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/members/me": {
     parameters: {
       query?: never;
@@ -1920,6 +1937,57 @@ export interface operations {
     parameters: {
       query: {
         keyword: string;
+        cursor?: string;
+        size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  findRanking: {
+    parameters: {
+      query?: {
+        gender?: "MALE" | "FEMALE";
         cursor?: string;
         size?: number;
       };

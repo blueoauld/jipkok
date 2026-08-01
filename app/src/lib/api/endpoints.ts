@@ -25,6 +25,12 @@ import type {
 
 type CursorParams = { cursor?: number; size?: number };
 
+type MemberRankingParams = {
+  gender?: Gender;
+  cursor?: string;
+  size?: number;
+};
+
 type MemberSearchParams = {
   keyword: string;
   cursor?: string;
@@ -87,6 +93,9 @@ export const members = {
 
   list: (params: MemberListParams = {}) =>
     request<MemberListPage>("/api/members", { query: params }),
+
+  ranking: (params: MemberRankingParams = {}) =>
+    request<MemberSearchPage>("/api/members/ranking", { query: params }),
 
   search: (params: MemberSearchParams) =>
     request<MemberSearchPage>("/api/members/search", { query: params }),

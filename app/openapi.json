@@ -1198,6 +1198,69 @@
         }
       }
     },
+    "/api/members/ranking": {
+      "get": {
+        "tags": ["member-controller"],
+        "summary": "좋아요 랭킹",
+        "operationId": "findRanking",
+        "parameters": [
+          {
+            "name": "gender",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["MALE", "FEMALE"] }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScrollResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/members/me": {
       "get": {
         "tags": ["member-controller"],
