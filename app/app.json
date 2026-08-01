@@ -49,6 +49,12 @@
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
           "iosAppId": "ca-app-pub-3940256099942544~1458002511"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "가까운 회원을 거리순으로 보기 위해 위치 접근 권한이 필요합니다."
+        }
       ]
     ],
     "experiments": {

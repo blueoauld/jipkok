@@ -5,7 +5,7 @@ import {
   NotePencilIcon,
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -13,6 +13,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { UserRow } from "@/components/UserRow";
+import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { isApiError, type Gender, type MemberSort } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
@@ -42,10 +43,34 @@ export default function MainScreen() {
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [comment, setComment] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
+  const location = useLocationUpdate();
   const feed = useMemberFeed(SORTS[filter], GENDER_VALUES[genderLabel]);
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     feed;
+
+  const changeFilter = useCallback(
+    async (next: Filter) => {
+      if (next === "거리" && !(await location.update())) {
+        return;
+      }
+
+      setFilter(next);
+    },
+    [location],
+  );
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await location.refresh();
+      await feed.refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [feed, location]);
 
   const openGender = useCallback(() => setGenderOpen(true), []);
   const openComment = useCallback(() => setCommentOpen(true), []);
@@ -76,7 +101,7 @@ export default function MainScreen() {
         <SegmentedControl
           values={FILTERS}
           value={filter}
-          onChange={setFilter}
+          onChange={changeFilter}
         />
       </YStack>
 
@@ -92,6 +117,9 @@ export default function MainScreen() {
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }
           onEndReachedThreshold={0.5}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
