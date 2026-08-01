@@ -57,6 +57,9 @@ class Member(
 
     @Column(name = "received_like_count", nullable = false)
     var receivedLikeCount: Int = 0,
+
+    @Column(name = "point_balance", nullable = false)
+    var pointBalance: Int = 0,
 ) : BaseEntity() {
 
     @Id

@@ -33,4 +33,14 @@ interface MemberRepository : JpaRepository<Member, Long> {
         """,
     )
     fun decreaseReceivedLikeCount(@Param("memberId") memberId: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        update Member m
+        set m.pointBalance = m.pointBalance + :amount
+        where m.id = :memberId and m.pointBalance + :amount >= 0
+        """,
+    )
+    fun addPointBalance(@Param("memberId") memberId: Long, @Param("amount") amount: Int): Int
 }

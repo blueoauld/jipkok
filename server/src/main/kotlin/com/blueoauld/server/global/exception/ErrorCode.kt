@@ -61,6 +61,8 @@ enum class ErrorCode(
 
     SELF_BLOCK(HttpStatus.BAD_REQUEST, "BLOCK_001", "자기 자신은 차단할 수 없습니다."),
 
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "POINT_001", "포인트가 부족합니다."),
+
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }
