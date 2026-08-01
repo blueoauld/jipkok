@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.like.web
 import com.blueoauld.server.domain.like.service.MemberLikeService
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.global.response.CursorResponse
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -21,18 +22,21 @@ class MemberLikeController(
     private val memberLikeService: MemberLikeService,
 ) {
 
+    @Operation(summary = "좋아요")
     @PostMapping("/{memberId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun like(@AuthenticationPrincipal likerId: Long, @PathVariable memberId: Long) {
         memberLikeService.like(likerId, memberId)
     }
 
+    @Operation(summary = "좋아요 취소")
     @DeleteMapping("/{memberId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cancel(@AuthenticationPrincipal likerId: Long, @PathVariable memberId: Long) {
         memberLikeService.cancel(likerId, memberId)
     }
 
+    @Operation(summary = "내가 누른 좋아요 목록")
     @GetMapping("/me/likes")
     fun findLiked(
         @AuthenticationPrincipal memberId: Long,
@@ -40,6 +44,7 @@ class MemberLikeController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<MemberSummaryResponse> = memberLikeService.findLiked(memberId, cursor, size)
 
+    @Operation(summary = "받은 좋아요 목록")
     @GetMapping("/me/likes/received")
     fun findReceived(
         @AuthenticationPrincipal memberId: Long,

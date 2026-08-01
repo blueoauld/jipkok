@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.report.dto.request.CreateReportPhotoUploadUrl
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
 import com.blueoauld.server.domain.report.dto.response.ReportPhotoUploadUrlResponse
 import com.blueoauld.server.domain.report.service.ReportService
+import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -20,6 +21,7 @@ class ReportController(
     private val reportService: ReportService,
 ) {
 
+    @Operation(summary = "회원 신고")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun report(
@@ -29,6 +31,7 @@ class ReportController(
         reportService.report(memberId, request)
     }
 
+    @Operation(summary = "사진 업로드 URL 발급")
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,

@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.service.MemberService
+import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -29,10 +30,12 @@ class MemberController(
     private val memberService: MemberService,
 ) {
 
+    @Operation(summary = "회원가입")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
 
+    @Operation(summary = "프로필 설정")
     @PatchMapping("/me/profile")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun setupProfile(
@@ -42,9 +45,11 @@ class MemberController(
         memberService.setupProfile(memberId, request)
     }
 
+    @Operation(summary = "내 프로필 조회")
     @GetMapping("/me")
     fun getMyProfile(@AuthenticationPrincipal memberId: Long): MyProfileResponse = memberService.getMyProfile(memberId)
 
+    @Operation(summary = "프로필 편집")
     @PutMapping("/me/profile")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editProfile(
@@ -54,12 +59,14 @@ class MemberController(
         memberService.editProfile(memberId, request)
     }
 
+    @Operation(summary = "사진 업로드 URL 발급")
     @PostMapping("/me/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
     ): PhotoUploadUrlResponse = memberService.createPhotoUploadUrl(memberId, request)
 
+    @Operation(summary = "코멘트 저장")
     @PutMapping("/me/comment")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun updateComment(
@@ -69,6 +76,7 @@ class MemberController(
         memberService.updateComment(memberId, request)
     }
 
+    @Operation(summary = "접속과 위치 갱신")
     @PostMapping("/me/heartbeat")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun heartbeat(

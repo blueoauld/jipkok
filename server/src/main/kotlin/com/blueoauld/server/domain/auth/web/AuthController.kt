@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.auth.dto.request.LoginRequest
 import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
+import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,12 +20,15 @@ class AuthController(
     private val authService: AuthService,
 ) {
 
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     fun login(@Valid @RequestBody request: LoginRequest): TokenResponse = authService.login(request)
 
+    @Operation(summary = "토큰 재발급")
     @PostMapping("/token/reissue")
     fun reissue(@Valid @RequestBody request: ReissueRequest): TokenResponse = authService.reissue(request)
 
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun logout(@Valid @RequestBody request: ReissueRequest) {

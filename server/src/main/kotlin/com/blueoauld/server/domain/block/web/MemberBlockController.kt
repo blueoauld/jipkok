@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.block.web
 import com.blueoauld.server.domain.block.service.MemberBlockService
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.global.response.CursorResponse
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -21,18 +22,21 @@ class MemberBlockController(
     private val memberBlockService: MemberBlockService,
 ) {
 
+    @Operation(summary = "차단")
     @PostMapping("/{memberId}/blocks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun block(@AuthenticationPrincipal blockerId: Long, @PathVariable memberId: Long) {
         memberBlockService.block(blockerId, memberId)
     }
 
+    @Operation(summary = "차단 해제")
     @DeleteMapping("/{memberId}/blocks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun unblock(@AuthenticationPrincipal blockerId: Long, @PathVariable memberId: Long) {
         memberBlockService.unblock(blockerId, memberId)
     }
 
+    @Operation(summary = "차단 목록")
     @GetMapping("/me/blocks")
     fun findBlocked(
         @AuthenticationPrincipal memberId: Long,

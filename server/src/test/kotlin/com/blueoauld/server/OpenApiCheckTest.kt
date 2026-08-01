@@ -28,5 +28,12 @@ class OpenApiCheckTest {
         result.andExpect(jsonPath("$.paths['/api/auth/login'].post").exists())
         result.andExpect(jsonPath("$.paths['/api/points/me/histories'].get").exists())
         result.andExpect(jsonPath("$.components.securitySchemes.bearerAuth.scheme").value("bearer"))
+        result.andExpect(jsonPath("$.paths['/api/auth/login'].post.summary").value("로그인"))
+        result.andExpect(
+            jsonPath("$.paths['/api/auth/login'].post.responses['401'].content['application/json'].schema.\$ref")
+                .value("#/components/schemas/ErrorResponse"),
+        )
+        result.andExpect(jsonPath("$.components.schemas.ErrorResponse").exists())
+        result.andExpect(jsonPath("$.info.description").value(org.hamcrest.Matchers.containsString("COMMON_001")))
     }
 }
