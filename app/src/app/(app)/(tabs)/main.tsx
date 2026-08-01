@@ -6,35 +6,46 @@ import {
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, XStack, YStack } from "tamagui";
+import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { UserRow, type User } from "@/components/UserRow";
+import { UserRow } from "@/components/UserRow";
+import { useMemberFeed } from "@/hooks/useMemberFeed";
+import { isApiError, type Gender, type MemberSort } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
 type Filter = (typeof FILTERS)[number];
 
+const GENDERS = ["전체", "남자", "여자"] as const;
+type GenderLabel = (typeof GENDERS)[number];
+
+const SORTS: Record<Filter, MemberSort> = { 최근: "RECENT", 거리: "DISTANCE" };
+const GENDER_VALUES: Record<GenderLabel, Gender | undefined> = {
+  전체: undefined,
+  남자: "MALE",
+  여자: "FEMALE",
+};
+
 const COMMENT_MAX_LENGTH = 100;
 
-const GENDERS = ["전체", "남자", "여자"] as const;
-type Gender = (typeof GENDERS)[number];
-
-const USERS: User[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-}));
+const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
+const EMPTY_MESSAGE = "회원이 없습니다.";
 
 export default function MainScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("최근");
-  const [gender, setGender] = useState<Gender>("전체");
+  const [genderLabel, setGenderLabel] = useState<GenderLabel>("전체");
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [comment, setComment] = useState("");
+
+  const feed = useMemberFeed(SORTS[filter], GENDER_VALUES[genderLabel]);
+  const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    feed;
 
   const openGender = useCallback(() => setGenderOpen(true), []);
   const openComment = useCallback(() => setCommentOpen(true), []);
@@ -69,18 +80,61 @@ export default function MainScreen() {
         />
       </YStack>
 
-      <FlatList
-        data={USERS}
-        keyExtractor={(user) => user.id}
-        renderItem={({ item }) => <UserRow user={item} />}
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{
-          paddingTop: space.$3.val,
-          paddingBottom: space.$4.val,
-          paddingHorizontal: space.$4.val,
-          gap: space.$4.val,
-        }}
-      />
+      {members ? (
+        <FlatList
+          data={members}
+          keyExtractor={(member) => String(member.memberId)}
+          renderItem={({ item }) => <UserRow member={item} />}
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={{
+            paddingTop: space.$3.val,
+            paddingBottom: space.$4.val,
+            paddingHorizontal: space.$4.val,
+            gap: space.$4.val,
+          }}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
+          }
+          ListEmptyComponent={
+            <YStack items="center" py="$8">
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {EMPTY_MESSAGE}
+              </Text>
+            </YStack>
+          }
+        />
+      ) : (
+        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
+          {error ? (
+            <>
+              <Text color="$gray10" fontSize="$4" text="center">
+                {isApiError(error) ? error.message : ERROR_MESSAGE}
+              </Text>
+
+              <Button
+                size="$3"
+                theme="blue"
+                rounded="$7"
+                onPress={() => feed.refetch()}
+              >
+                다시 시도
+              </Button>
+            </>
+          ) : (
+            <Spinner size="small" />
+          )}
+        </YStack>
+      )}
 
       <TextInputDialog
         open={commentOpen}
@@ -97,8 +151,8 @@ export default function MainScreen() {
         onOpenChange={setGenderOpen}
         items={GENDERS.map((label) => ({
           label,
-          selected: label === gender,
-          onPress: () => setGender(label),
+          selected: label === genderLabel,
+          onPress: () => setGenderLabel(label),
         }))}
       />
     </YStack>

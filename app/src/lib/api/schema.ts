@@ -97,7 +97,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
+    /** 회원 목록 조회 */
+    get: operations["findMembers"];
     put?: never;
     /** 회원가입 */
     post: operations["signup"];
@@ -601,6 +602,27 @@ export interface components {
       /** Format: date-time */
       recordedAt: string;
     };
+    MemberListItemResponse: {
+      /** Format: int64 */
+      memberId: number;
+      nickname: string;
+      /** @enum {string} */
+      gender: "MALE" | "FEMALE";
+      /** Format: int32 */
+      age: number;
+      /** Format: int32 */
+      receivedLikeCount: number;
+      comment?: string | null;
+      profileImageUrl?: string | null;
+      /** Format: date-time */
+      locatedAt?: string | null;
+      /** Format: double */
+      distance?: number | null;
+    };
+    ScrollResponseMemberListItemResponse: {
+      items: components["schemas"]["MemberListItemResponse"][];
+      nextCursor?: string | null;
+    };
     MyProfileResponse: {
       /** Format: int64 */
       memberId: number;
@@ -916,6 +938,58 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["PointRewardResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  findMembers: {
+    parameters: {
+      query?: {
+        sort?: "RECENT" | "DISTANCE";
+        gender?: "MALE" | "FEMALE";
+        cursor?: string;
+        size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ScrollResponseMemberListItemResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */

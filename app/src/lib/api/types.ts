@@ -1,6 +1,7 @@
-import type { components } from "./schema";
+import type { components, paths } from "./schema";
 
 type Schemas = components["schemas"];
+type Paths = paths;
 
 export type SignupRequest = Schemas["SignupRequest"];
 export type SignupResponse = Schemas["SignupResponse"];
@@ -10,6 +11,10 @@ export type ReissueRequest = Schemas["ReissueRequest"];
 
 export type MyProfileResponse = Schemas["MyProfileResponse"];
 export type MemberSummaryResponse = Schemas["MemberSummaryResponse"];
+export type MemberListItemResponse = Schemas["MemberListItemResponse"];
+export type MemberSort = NonNullable<
+  Paths["/api/members"]["get"]["parameters"]["query"]
+>["sort"];
 export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
@@ -28,6 +33,7 @@ export type PointHistoryResponse = Schemas["PointHistoryResponse"];
 export type PointType = PointHistoryResponse["type"];
 
 export type MemberSummaryPage = Schemas["CursorResponseMemberSummaryResponse"];
+export type MemberListPage = Schemas["ScrollResponseMemberListItemResponse"];
 export type PointHistoryPage = Schemas["CursorResponsePointHistoryResponse"];
 
 export type CursorPage<T> = {

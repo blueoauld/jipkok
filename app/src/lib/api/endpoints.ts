@@ -5,8 +5,11 @@ import type {
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
   EditProfileRequest,
+  Gender,
   HeartbeatRequest,
   LoginRequest,
+  MemberListPage,
+  MemberSort,
   MemberSummaryPage,
   MyProfileResponse,
   PhotoUploadUrlResponse,
@@ -20,6 +23,13 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type MemberListParams = {
+  sort?: MemberSort;
+  gender?: Gender;
+  cursor?: string;
+  size?: number;
+};
 
 export const auth = {
   sendVerificationCode: (phoneNumber: string) =>
@@ -67,6 +77,9 @@ export const members = {
 
     return response;
   },
+
+  list: (params: MemberListParams = {}) =>
+    request<MemberListPage>("/api/members", { query: params }),
 
   myProfile: () => request<MyProfileResponse>("/api/members/me"),
 

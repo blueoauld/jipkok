@@ -4,13 +4,24 @@ import { FlatList } from "react-native";
 import { getTokens, Text, YStack } from "tamagui";
 
 import { FormInput } from "@/components/FormInput";
-import { UserRow, type User } from "@/components/UserRow";
+import { UserRow } from "@/components/UserRow";
+import type { MemberListItemResponse } from "@/lib/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const USERS: User[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-}));
+const USERS: MemberListItemResponse[] = Array.from(
+  { length: 100 },
+  (_, index) => ({
+    memberId: index,
+    nickname: `닉네임 ${index}`,
+    gender: "MALE",
+    age: 20,
+    receivedLikeCount: 100,
+    comment: "코멘트",
+    profileImageUrl: null,
+    locatedAt: null,
+    distance: null,
+  }),
+);
 
 export default function MemberSearchScreen() {
   const space = getTokens().space;
@@ -40,8 +51,8 @@ export default function MemberSearchScreen() {
 
       <FlatList
         data={results}
-        keyExtractor={(user) => user.id}
-        renderItem={({ item }) => <UserRow user={item} />}
+        keyExtractor={(member) => String(member.memberId)}
+        renderItem={({ item }) => <UserRow member={item} />}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{
