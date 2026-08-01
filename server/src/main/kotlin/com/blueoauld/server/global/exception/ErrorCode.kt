@@ -66,6 +66,8 @@ enum class ErrorCode(
 
     INVALID_AD_SIGNATURE(HttpStatus.UNAUTHORIZED, "AD_001", "광고 보상 서명이 올바르지 않습니다."),
 
+    DUPLICATE_FEED_POST(HttpStatus.CONFLICT, "FEED_001", "이번 시간에는 이미 올렸습니다."),
+
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }
