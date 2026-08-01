@@ -11,10 +11,12 @@ import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
+import com.blueoauld.server.domain.member.entity.PhotoUpload
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -26,6 +28,7 @@ import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.Clock
 import java.time.Instant
@@ -38,21 +41,27 @@ class MemberServiceTest {
 
     private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
 
+    private val photoUploadRepository = mockk<PhotoUploadRepository>(relaxed = true)
+
     private val verificationCodeService = mockk<VerificationCodeService>(relaxed = true)
 
     private val passwordEncoder = mockk<PasswordEncoder>()
 
     private val authService = mockk<AuthService>()
 
-    private val photoStorage = PhotoStorage { objectKey, _ -> "https://upload.test/$objectKey" }
+    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
+        photoUploadRepository,
         verificationCodeService,
         authService,
         passwordEncoder,
         photoStorage,
+        eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -62,6 +71,9 @@ class MemberServiceTest {
         every { memberRepository.save(any()) } answers { firstArg() }
         every { passwordEncoder.encode(PASSWORD) } returns ENCODED_PASSWORD
         every { authService.issueTokens(any()) } returns TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN)
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
+        every { photoUploadRepository.save(any()) } answers { firstArg() }
+        every { photoStorage.createUploadUrl(any(), any()) } answers { "https://upload.test/${firstArg<String>()}" }
     }
 
     @Test
@@ -423,8 +435,9 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `업로드 URL은 회원 폴더 아래 키로 발급한다`() {
+    fun `업로드 URL은 회원 폴더 아래 키로 발급하고 발급 기록을 남긴다`() {
         // given
+        val issued = slot<PhotoUpload>()
 
         // when
         val response = memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("image/jpeg"))
@@ -433,6 +446,66 @@ class MemberServiceTest {
         assertThat(response.objectKey).startsWith("members/$MEMBER_ID/")
         assertThat(response.objectKey).endsWith(".jpg")
         assertThat(response.uploadUrl).isEqualTo("https://upload.test/${response.objectKey}")
+        verify { photoUploadRepository.save(capture(issued)) }
+        assertThat(issued.captured.objectKey).isEqualTo(response.objectKey)
+        assertThat(issued.captured.issuedAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `편집으로 빠진 사진은 삭제 이벤트를 발행한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 1, photoKey("b")),
+        )
+        val event = slot<PhotosDeletedEvent>()
+
+        // when
+        memberService.editProfile(
+            MEMBER_ID,
+            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
+        )
+
+        // then
+        verify { eventPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.objectKeys).containsExactly(photoKey("b"))
+    }
+
+    @Test
+    fun `그대로 둔 사진은 삭제 이벤트에 담지 않는다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
+        )
+
+        // when
+        memberService.editProfile(
+            MEMBER_ID,
+            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
+        )
+
+        // then
+        verify(exactly = 0) { eventPublisher.publishEvent(any<PhotosDeletedEvent>()) }
+    }
+
+    @Test
+    fun `확정된 사진은 발급 기록에서 지운다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.editProfile(
+            MEMBER_ID,
+            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
+        )
+
+        // then
+        verify { photoUploadRepository.deleteAllByObjectKeyIn(listOf(photoKey("a"))) }
     }
 
     @Test

@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface MemberPhotoRepository : JpaRepository<MemberPhoto, Long> {
 
+    fun findAllByMemberId(memberId: Long): List<MemberPhoto>
+
     fun deleteAllByMemberId(memberId: Long)
 }

@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.config
 
 import com.blueoauld.server.global.properties.JwtProperties
+import com.blueoauld.server.global.properties.R2Properties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
 import com.blueoauld.server.global.security.JwtAuthenticationFilter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -15,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties::class)
+@EnableConfigurationProperties(JwtProperties::class, R2Properties::class)
 class SecurityConfig(
 
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,

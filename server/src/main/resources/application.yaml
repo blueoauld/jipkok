@@ -38,6 +38,14 @@ spring:
 server:
   port: 8080
 
+r2:
+  enabled: ${R2_ENABLED:false}
+  endpoint: ${R2_ENDPOINT:}
+  access-key-id: ${R2_ACCESS_KEY_ID:}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY:}
+  bucket: ${R2_BUCKET:}
+  upload-url-validity: 10m
+
 jwt:
   secret: ${JWT_SECRET:local-development-only-secret-key-please-change-me}
   access-token-validity: 1h

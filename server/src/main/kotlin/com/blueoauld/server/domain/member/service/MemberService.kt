@@ -12,11 +12,14 @@ import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
+import com.blueoauld.server.domain.member.entity.PhotoUpload
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,10 +33,12 @@ class MemberService(
 
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val photoUploadRepository: PhotoUploadRepository,
     private val verificationCodeService: VerificationCodeService,
     private val authService: AuthService,
     private val passwordEncoder: PasswordEncoder,
     private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
@@ -93,18 +98,31 @@ class MemberService(
         member.birthYear = request.birthYear
         member.bio = request.bio
 
+        val keptKeys = request.publicPhotoKeys + request.secretPhotoKeys
+        val removedKeys = memberPhotoRepository.findAllByMemberId(memberId)
+            .map { it.objectKey }
+            .filterNot { it in keptKeys }
+
         memberPhotoRepository.deleteAllByMemberId(memberId)
         memberPhotoRepository.flush()
         memberPhotoRepository.saveAll(
             toPhotos(memberId, request.publicPhotoKeys, PhotoVisibility.PUBLIC) +
                     toPhotos(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET),
         )
+        photoUploadRepository.deleteAllByObjectKeyIn(keptKeys)
+
+        if (removedKeys.isNotEmpty()) {
+            eventPublisher.publishEvent(PhotosDeletedEvent(removedKeys))
+        }
     }
 
+    @Transactional
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse {
         val extension = IMAGE_EXTENSIONS[request.contentType]
             ?: throw BusinessException(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
         val objectKey = "${photoKeyPrefix(memberId)}${UUID.randomUUID()}.$extension"
+
+        photoUploadRepository.save(PhotoUpload(memberId, objectKey, clock.instant()))
 
         return PhotoUploadUrlResponse(photoStorage.createUploadUrl(objectKey, request.contentType), objectKey)
     }
