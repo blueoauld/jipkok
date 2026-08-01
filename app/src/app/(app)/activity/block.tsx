@@ -4,19 +4,28 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Text, YStack } from "tamagui";
 
-import { ActivityRow, type ActivityMember } from "@/components/ActivityRow";
+import { ActivityRow } from "@/components/ActivityRow";
+import type { MemberSummaryResponse } from "@/lib/api";
 
-const MEMBERS: ActivityMember[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-}));
+const MEMBERS: MemberSummaryResponse[] = Array.from(
+  { length: 100 },
+  (_, index) => ({
+    memberId: index,
+    nickname: `닉네임 ${index}`,
+    gender: "MALE",
+    age: 20,
+    receivedLikeCount: 100,
+    comment: "코멘트",
+    profileImageUrl: null,
+  }),
+);
 
 export default function BlockListScreen() {
   const space = getTokens().space;
   const [members, setMembers] = useState(MEMBERS);
 
-  const remove = (id: string) =>
-    setMembers((current) => current.filter((member) => member.id !== id));
+  const remove = (id: number) =>
+    setMembers((current) => current.filter((member) => member.memberId !== id));
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -24,9 +33,9 @@ export default function BlockListScreen() {
 
       <FlatList
         data={members}
-        keyExtractor={(member) => member.id}
+        keyExtractor={(member) => String(member.memberId)}
         renderItem={({ item }) => (
-          <ActivityRow member={item} onDelete={() => remove(item.id)} />
+          <ActivityRow member={item} onDelete={() => remove(item.memberId)} />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{

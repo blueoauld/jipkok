@@ -3,12 +3,21 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Text, YStack } from "tamagui";
 
-import { ActivityRow, type ActivityMember } from "@/components/ActivityRow";
+import { ActivityRow } from "@/components/ActivityRow";
+import type { MemberSummaryResponse } from "@/lib/api";
 
-const MEMBERS: ActivityMember[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-}));
+const MEMBERS: MemberSummaryResponse[] = Array.from(
+  { length: 100 },
+  (_, index) => ({
+    memberId: index,
+    nickname: `닉네임 ${index}`,
+    gender: "MALE",
+    age: 20,
+    receivedLikeCount: 100,
+    comment: "코멘트",
+    profileImageUrl: null,
+  }),
+);
 
 export default function ReceivedFavoriteListScreen() {
   const space = getTokens().space;
@@ -19,7 +28,7 @@ export default function ReceivedFavoriteListScreen() {
 
       <FlatList
         data={MEMBERS}
-        keyExtractor={(member) => member.id}
+        keyExtractor={(member) => String(member.memberId)}
         renderItem={({ item }) => <ActivityRow member={item} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
