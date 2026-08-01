@@ -98,6 +98,11 @@ async function runReissue() {
     auth: false,
   });
 
+  // 서버 장애는 세션이 끊긴 것이 아니므로 토큰을 지우지 않고 호출한 쪽에 실패를 알린다.
+  if (response.status >= 500) {
+    throw await toApiError(response);
+  }
+
   if (!response.ok) {
     await clearTokens();
 
