@@ -57,7 +57,11 @@ export function PhotoPager({
           setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
         }
         renderItem={({ item, index: photoIndex }) => (
-          <XStack bg="$gray4" pressStyle={{ opacity: 0.8 }} onPress={openViewer}>
+          <XStack
+            bg="$gray4"
+            pressStyle={{ opacity: 0.8 }}
+            onPress={openViewer}
+          >
             <Image
               source={item}
               contentFit="cover"
@@ -71,9 +75,9 @@ export function PhotoPager({
                 t="$3"
                 l="$3"
                 items="center"
-                gap="$1"
+                gap="$1.5"
                 px="$2"
-                py="$1"
+                py="$1.5"
                 rounded={9999}
                 bg={BADGE_BG}
               >
