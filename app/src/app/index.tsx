@@ -27,17 +27,10 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <YStack
-        flex={1}
-        justify="center"
-        items="center"
-        gap="$4"
-        p="$4"
-        bg="$background"
-      >
+      <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
         {failed ? (
           <>
-            <Text color="$color10" fontSize="$4">
+            <Text color="$gray10" fontSize="$4">
               연결에 실패했습니다.
             </Text>
 

@@ -179,19 +179,15 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 }
 
 export default function MemberEditScreen() {
-  const { data, isPending, isError, refetch } = useMyProfile();
+  const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "프로필 편집" }} />
 
-      {isPending && (
-        <Centered>
-          <Spinner size="small" />
-        </Centered>
-      )}
-
-      {isError && (
+      {data ? (
+        <EditForm profile={data} />
+      ) : isError ? (
         <Centered>
           <Text color="$gray10" fontSize="$4">
             {ERROR_MESSAGE}
@@ -201,9 +197,11 @@ export default function MemberEditScreen() {
             다시 시도
           </Button>
         </Centered>
+      ) : (
+        <Centered>
+          <Spinner size="small" />
+        </Centered>
       )}
-
-      {data && <EditForm profile={data} />}
     </SafeAreaView>
   );
 }

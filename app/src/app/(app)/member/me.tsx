@@ -71,7 +71,7 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
 }
 
 export default function MyProfileScreen() {
-  const { data, isPending, isError, refetch } = useMyProfile();
+  const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -87,13 +87,9 @@ export default function MyProfileScreen() {
         }}
       />
 
-      {isPending && (
-        <Centered>
-          <Spinner size="small" />
-        </Centered>
-      )}
-
-      {isError && (
+      {data ? (
+        <Profile profile={data} />
+      ) : isError ? (
         <Centered>
           <Text color="$gray10" fontSize="$4">
             {ERROR_MESSAGE}
@@ -103,9 +99,11 @@ export default function MyProfileScreen() {
             다시 시도
           </Button>
         </Centered>
+      ) : (
+        <Centered>
+          <Spinner size="small" />
+        </Centered>
       )}
-
-      {data && <Profile profile={data} />}
     </SafeAreaView>
   );
 }
