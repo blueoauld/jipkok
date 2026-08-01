@@ -1,12 +1,28 @@
-import { Link } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
+import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, YStack } from "tamagui";
 
-import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
+import { ControlledInput } from "@/components/ControlledInput";
+import { alertApiError } from "@/lib/alert";
+import { api, type LoginRequest } from "@/lib/api";
+
+const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
+const PASSWORD_MIN_LENGTH = 8;
 
 export default function LoginScreen() {
+  const { control, handleSubmit } = useForm<LoginRequest>({
+    defaultValues: { phoneNumber: "", password: "" },
+  });
+
+  const login = useMutation({
+    mutationFn: api.auth.login,
+    onSuccess: () => router.replace("/main"),
+    onError: alertApiError,
+  });
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <KeyboardAvoidingView
@@ -16,25 +32,39 @@ export default function LoginScreen() {
       >
         <YStack flex={1} justify="space-between" p="$4">
           <YStack gap="$4">
-            <FormField error="휴대폰 번호가 올바르지 않습니다.">
-              <FormInput
-                placeholder="휴대폰 번호"
-                keyboardType="number-pad"
-                textContentType="telephoneNumber"
-                autoComplete="tel"
-                maxLength={11}
-              />
-            </FormField>
+            <ControlledInput
+              control={control}
+              name="phoneNumber"
+              rules={{
+                required: "휴대폰 번호를 입력해주시길 바랍니다.",
+                pattern: {
+                  value: PHONE_NUMBER_PATTERN,
+                  message: "휴대폰 번호가 올바르지 않습니다.",
+                },
+              }}
+              placeholder="휴대폰 번호"
+              keyboardType="number-pad"
+              textContentType="telephoneNumber"
+              autoComplete="tel"
+              maxLength={11}
+            />
 
-            <FormField error="비밀번호가 올바르지 않습니다.">
-              <FormInput
-                placeholder="비밀번호"
-                secureTextEntry
-                textContentType="password"
-                autoComplete="current-password"
-                autoCapitalize="none"
-              />
-            </FormField>
+            <ControlledInput
+              control={control}
+              name="password"
+              rules={{
+                required: "비밀번호를 입력해주시길 바랍니다.",
+                minLength: {
+                  value: PASSWORD_MIN_LENGTH,
+                  message: "비밀번호가 올바르지 않습니다.",
+                },
+              }}
+              placeholder="비밀번호"
+              secureTextEntry
+              textContentType="password"
+              autoComplete="current-password"
+              autoCapitalize="none"
+            />
 
             <Link href="/signup" asChild>
               <Text
@@ -48,7 +78,14 @@ export default function LoginScreen() {
             </Link>
           </YStack>
 
-          <Button size="$4" theme="blue" rounded="$7">
+          <Button
+            size="$4"
+            theme="blue"
+            rounded="$7"
+            disabled={login.isPending}
+            opacity={login.isPending ? 0.6 : 1}
+            onPress={handleSubmit((values) => login.mutate(values))}
+          >
             로그인
           </Button>
         </YStack>
