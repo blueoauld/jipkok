@@ -36,9 +36,15 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers(*DOCS_PATHS).permitAll()
                     .anyRequest().authenticated()
             }
             .exceptionHandling { it.authenticationEntryPoint(jwtAuthenticationEntryPoint) }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
+
+    companion object {
+
+        private val DOCS_PATHS = arrayOf("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
+    }
 }
