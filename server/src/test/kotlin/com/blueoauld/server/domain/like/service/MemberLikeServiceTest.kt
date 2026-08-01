@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -197,7 +198,7 @@ class MemberLikeServiceTest {
         memberLikeService.findLiked(LIKER_ID, null, 1000)
 
         // then
-        assertThat(limit.captured.max()).isEqualTo(MemberLikeService.MAX_PAGE_SIZE)
+        assertThat(limit.captured.max()).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
     }
 
     private fun memberLike(id: Long, likedMemberId: Long) = mockk<MemberLike>(relaxed = true) {

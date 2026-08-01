@@ -49,7 +49,7 @@ class MemberLikeService(
 
     @Transactional(readOnly = true)
     fun findLiked(likerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
-        val pageSize = pageSize(size)
+        val pageSize = CursorResponse.pageSize(size)
         val likes = memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
             likerId,
             cursor ?: Long.MAX_VALUE,
@@ -61,7 +61,7 @@ class MemberLikeService(
 
     @Transactional(readOnly = true)
     fun findReceived(likedMemberId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
-        val pageSize = pageSize(size)
+        val pageSize = CursorResponse.pageSize(size)
         val likes = memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
             likedMemberId,
             cursor ?: Long.MAX_VALUE,
@@ -76,11 +76,4 @@ class MemberLikeService(
             items = memberSummaryService.findSummaries(likes.map(toMemberId)),
             nextCursor = likes.lastOrNull()?.id.takeIf { likes.size == pageSize },
         )
-
-    private fun pageSize(size: Int) = size.coerceIn(1, MAX_PAGE_SIZE)
-
-    companion object {
-
-        const val MAX_PAGE_SIZE = 50
-    }
 }

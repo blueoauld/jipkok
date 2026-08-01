@@ -51,6 +51,8 @@ enum class ErrorCode(
 
     SELF_LIKE(HttpStatus.BAD_REQUEST, "LIKE_001", "자기 자신에게는 좋아요를 누를 수 없습니다."),
 
+    SELF_FAVORITE(HttpStatus.BAD_REQUEST, "FAVORITE_001", "자기 자신은 즐겨찾기할 수 없습니다."),
+
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }
