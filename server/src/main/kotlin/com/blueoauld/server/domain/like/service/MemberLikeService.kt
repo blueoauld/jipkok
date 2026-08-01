@@ -2,10 +2,14 @@ package com.blueoauld.server.domain.like.service
 
 import com.blueoauld.server.domain.like.entity.MemberLike
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
+import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,6 +18,7 @@ class MemberLikeService(
 
     private val memberLikeRepository: MemberLikeRepository,
     private val memberRepository: MemberRepository,
+    private val memberSummaryService: MemberSummaryService,
 ) {
 
     @Transactional
@@ -40,5 +45,42 @@ class MemberLikeService(
         if (memberLikeRepository.deleteByLikerIdAndLikedMemberId(likerId, likedMemberId) > 0) {
             memberRepository.decreaseReceivedLikeCount(likedMemberId)
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun findLiked(likerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
+        val pageSize = pageSize(size)
+        val likes = memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
+            likerId,
+            cursor ?: Long.MAX_VALUE,
+            Limit.of(pageSize),
+        )
+
+        return toResponse(likes, pageSize) { it.likedMemberId }
+    }
+
+    @Transactional(readOnly = true)
+    fun findReceived(likedMemberId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
+        val pageSize = pageSize(size)
+        val likes = memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
+            likedMemberId,
+            cursor ?: Long.MAX_VALUE,
+            Limit.of(pageSize),
+        )
+
+        return toResponse(likes, pageSize) { it.likerId }
+    }
+
+    private fun toResponse(likes: List<MemberLike>, pageSize: Int, toMemberId: (MemberLike) -> Long) =
+        CursorResponse(
+            items = memberSummaryService.findSummaries(likes.map(toMemberId)),
+            nextCursor = likes.lastOrNull()?.id.takeIf { likes.size == pageSize },
+        )
+
+    private fun pageSize(size: Int) = size.coerceIn(1, MAX_PAGE_SIZE)
+
+    companion object {
+
+        const val MAX_PAGE_SIZE = 50
     }
 }

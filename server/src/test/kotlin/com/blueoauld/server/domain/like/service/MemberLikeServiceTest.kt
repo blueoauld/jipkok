@@ -2,7 +2,10 @@ package com.blueoauld.server.domain.like.service
 
 import com.blueoauld.server.domain.like.entity.MemberLike
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
+import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -13,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Limit
 
 class MemberLikeServiceTest {
 
@@ -20,7 +24,13 @@ class MemberLikeServiceTest {
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 
-    private val memberLikeService = MemberLikeService(memberLikeRepository, memberRepository)
+    private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
+
+    private val memberLikeService = MemberLikeService(
+        memberLikeRepository,
+        memberRepository,
+        memberSummaryService,
+    )
 
     @BeforeEach
     fun setUp() {
@@ -110,6 +120,101 @@ class MemberLikeServiceTest {
         // then
         verify(exactly = 0) { memberRepository.decreaseReceivedLikeCount(any()) }
     }
+
+    @Test
+    fun `누른 좋아요 목록을 커서 순서대로 준다`() {
+        // given
+        val likes = listOf(memberLike(30L, LIKED_MEMBER_ID), memberLike(20L, 3L))
+        every {
+            memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
+                LIKER_ID,
+                Long.MAX_VALUE,
+                any()
+            )
+        } returns likes
+        every {
+            memberSummaryService.findSummaries(
+                listOf(
+                    LIKED_MEMBER_ID,
+                    3L
+                )
+            )
+        } returns listOf(summary(LIKED_MEMBER_ID), summary(3L))
+
+        // when
+        val response = memberLikeService.findLiked(LIKER_ID, null, 2)
+
+        // then
+        assertThat(response.items).extracting("memberId").containsExactly(LIKED_MEMBER_ID, 3L)
+        assertThat(response.nextCursor).isEqualTo(20L)
+    }
+
+    @Test
+    fun `마지막 쪽이면 다음 커서를 주지 않는다`() {
+        // given
+        every { memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(LIKER_ID, any(), any()) } returns
+                listOf(memberLike(30L, LIKED_MEMBER_ID))
+
+        // when
+        val response = memberLikeService.findLiked(LIKER_ID, null, 2)
+
+        // then
+        assertThat(response.nextCursor).isNull()
+    }
+
+    @Test
+    fun `받은 좋아요 목록은 누른 사람을 준다`() {
+        // given
+        every {
+            memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
+                LIKED_MEMBER_ID,
+                40L,
+                any()
+            )
+        } returns
+                listOf(memberLike(30L, LIKED_MEMBER_ID))
+
+        // when
+        memberLikeService.findReceived(LIKED_MEMBER_ID, 40L, 20)
+
+        // then
+        verify { memberSummaryService.findSummaries(listOf(LIKER_ID)) }
+    }
+
+    @Test
+    fun `요청한 크기가 상한을 넘으면 상한으로 자른다`() {
+        // given
+        val limit = slot<Limit>()
+        every {
+            memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
+                LIKER_ID,
+                any(),
+                capture(limit)
+            )
+        } returns emptyList()
+
+        // when
+        memberLikeService.findLiked(LIKER_ID, null, 1000)
+
+        // then
+        assertThat(limit.captured.max()).isEqualTo(MemberLikeService.MAX_PAGE_SIZE)
+    }
+
+    private fun memberLike(id: Long, likedMemberId: Long) = mockk<MemberLike>(relaxed = true) {
+        every { this@mockk.id } returns id
+        every { likerId } returns LIKER_ID
+        every { this@mockk.likedMemberId } returns likedMemberId
+    }
+
+    private fun summary(memberId: Long) = MemberSummaryResponse(
+        memberId = memberId,
+        nickname = "닉네임",
+        gender = Gender.MALE,
+        age = 28,
+        receivedLikeCount = 0,
+        comment = null,
+        profileImageUrl = null,
+    )
 
     companion object {
 
