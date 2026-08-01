@@ -544,6 +544,8 @@ export interface components {
     };
     CreatePhotoUploadUrlRequest: {
       contentType: string;
+      /** @enum {string} */
+      visibility: "PUBLIC" | "SECRET";
     };
     PhotoUploadUrlResponse: {
       uploadUrl: string;

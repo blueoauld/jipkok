@@ -116,7 +116,7 @@ class MemberService(
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
         validateBirthYear(request.birthYear)
-        validatePhotoKeys(memberId, request.publicPhotoKeys + request.secretPhotoKeys)
+        validatePhotoKeys(memberId, request)
 
         member.nickname = nickname
         member.birthYear = request.birthYear
@@ -141,7 +141,8 @@ class MemberService(
     }
 
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse {
-        val issued = photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
+        val prefix = photoKeyPrefix(memberId, request.visibility)
+        val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
 
         return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
     }
@@ -184,10 +185,21 @@ class MemberService(
         }
     }
 
-    private fun validatePhotoKeys(memberId: Long, objectKeys: List<String>) {
-        val prefix = photoKeyPrefix(memberId)
+    private fun validatePhotoKeys(memberId: Long, request: EditProfileRequest) {
+        val objectKeys = request.publicPhotoKeys + request.secretPhotoKeys
 
-        if (objectKeys.size != objectKeys.toSet().size || objectKeys.any { !it.startsWith(prefix) }) {
+        if (objectKeys.size != objectKeys.toSet().size) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        }
+
+        validatePhotoKeyPrefix(memberId, request.publicPhotoKeys, PhotoVisibility.PUBLIC)
+        validatePhotoKeyPrefix(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET)
+    }
+
+    private fun validatePhotoKeyPrefix(memberId: Long, objectKeys: List<String>, visibility: PhotoVisibility) {
+        val prefix = photoKeyPrefix(memberId, visibility)
+
+        if (objectKeys.any { !it.startsWith(prefix) }) {
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
     }
@@ -203,7 +215,8 @@ class MemberService(
         .sortedBy { it.displayOrder }
         .map { ProfilePhotoResponse(it.objectKey, toUrl(it.objectKey)) }
 
-    private fun photoKeyPrefix(memberId: Long) = "$PHOTO_KEY_ROOT/$memberId/"
+    private fun photoKeyPrefix(memberId: Long, visibility: PhotoVisibility) =
+        "$PHOTO_KEY_ROOT/$memberId/${visibility.name.lowercase()}/"
 
     private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
 

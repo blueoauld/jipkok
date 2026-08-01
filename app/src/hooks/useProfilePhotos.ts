@@ -2,10 +2,13 @@ import { useCallback, useState } from "react";
 
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { alertApiError } from "@/lib/alert";
-import type { ProfilePhoto } from "@/lib/api";
+import type { PhotoVisibility, ProfilePhoto } from "@/lib/api";
 import { uploadPhoto } from "@/lib/photo";
 
-export function useProfilePhotos(initial: ProfilePhoto[]) {
+export function useProfilePhotos(
+  initial: ProfilePhoto[],
+  visibility: PhotoVisibility,
+) {
   const [photos, setPhotos] = useState(initial);
   const [uploading, setUploading] = useState(false);
 
@@ -19,14 +22,16 @@ export function useProfilePhotos(initial: ProfilePhoto[]) {
     setUploading(true);
 
     try {
-      const uploaded = await Promise.all(assets.map(uploadPhoto));
+      const uploaded = await Promise.all(
+        assets.map((asset) => uploadPhoto(asset, visibility)),
+      );
       setPhotos((current) => [...current, ...uploaded].slice(0, MAX_PHOTOS));
     } catch (error) {
       alertApiError(error);
     } finally {
       setUploading(false);
     }
-  }, [photos.length]);
+  }, [photos.length, visibility]);
 
   const remove = useCallback((index: number) => {
     setPhotos((current) => current.filter((_, i) => i !== index));

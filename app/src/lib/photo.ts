@@ -2,7 +2,12 @@ import { File } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import type { ImagePickerAsset } from "expo-image-picker";
 
-import { api, ApiError, type ProfilePhoto } from "@/lib/api";
+import {
+  api,
+  ApiError,
+  type PhotoVisibility,
+  type ProfilePhoto,
+} from "@/lib/api";
 
 const CONTENT_TYPE = "image/jpeg";
 
@@ -35,10 +40,13 @@ async function toJpeg(asset: ImagePickerAsset) {
 
 export async function uploadPhoto(
   asset: ImagePickerAsset,
+  visibility: PhotoVisibility,
 ): Promise<ProfilePhoto> {
   const uri = await toJpeg(asset);
-  const { uploadUrl, objectKey } =
-    await api.members.createPhotoUploadUrl(CONTENT_TYPE);
+  const { uploadUrl, objectKey } = await api.members.createPhotoUploadUrl({
+    contentType: CONTENT_TYPE,
+    visibility,
+  });
 
   const result = await new File(uri).upload(uploadUrl, {
     httpMethod: "PUT",

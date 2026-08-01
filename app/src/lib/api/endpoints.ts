@@ -1,6 +1,7 @@
 import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
+  CreatePhotoUploadUrlRequest,
   CreateReportRequest,
   EditProfileRequest,
   HeartbeatRequest,
@@ -80,10 +81,10 @@ export const members = {
   heartbeat: (body: HeartbeatRequest) =>
     request<void>("/api/members/me/heartbeat", { method: "POST", body }),
 
-  createPhotoUploadUrl: (contentType: string) =>
+  createPhotoUploadUrl: (body: CreatePhotoUploadUrlRequest) =>
     request<PhotoUploadUrlResponse>("/api/members/me/photos/upload-url", {
       method: "POST",
-      body: { contentType },
+      body,
     }),
 };
 

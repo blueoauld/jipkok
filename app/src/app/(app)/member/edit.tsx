@@ -42,8 +42,8 @@ function Centered({ children }: { children: ReactNode }) {
 function EditForm({ profile }: { profile: MyProfileResponse }) {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const publicPhotos = useProfilePhotos(profile.publicPhotos);
-  const secretPhotos = useProfilePhotos(profile.secretPhotos);
+  const publicPhotos = useProfilePhotos(profile.publicPhotos, "PUBLIC");
+  const secretPhotos = useProfilePhotos(profile.secretPhotos, "SECRET");
 
   const nicknameRef = useRef(profile.nickname);
   const birthYearRef = useRef(String(profile.birthYear));

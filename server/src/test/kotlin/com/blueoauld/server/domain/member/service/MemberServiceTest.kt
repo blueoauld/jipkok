@@ -359,7 +359,7 @@ class MemberServiceTest {
         member.bio = "자기소개"
         stubMember(member)
         every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, photoKey("s")),
+            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, photoKey("s", PhotoVisibility.SECRET)),
             MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 1, photoKey("b")),
             MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
         )
@@ -375,7 +375,10 @@ class MemberServiceTest {
             ProfilePhotoResponse(photoKey("b"), "https://cdn.test/${photoKey("b")}"),
         )
         assertThat(response.secretPhotos).containsExactly(
-            ProfilePhotoResponse(photoKey("s"), "https://signed.test/${photoKey("s")}"),
+            ProfilePhotoResponse(
+                photoKey("s", PhotoVisibility.SECRET),
+                "https://signed.test/${photoKey("s", PhotoVisibility.SECRET)}",
+            ),
         )
         assertThat(response.nickname).isEqualTo(member.nickname)
         assertThat(response.comment).isEqualTo("코멘트")
@@ -425,7 +428,7 @@ class MemberServiceTest {
                 nickname = NICKNAME,
                 birthYear = 1998,
                 publicPhotoKeys = listOf(photoKey("a"), photoKey("b")),
-                secretPhotoKeys = listOf(photoKey("c")),
+                secretPhotoKeys = listOf(photoKey("c", PhotoVisibility.SECRET)),
             ),
         )
 
@@ -436,7 +439,7 @@ class MemberServiceTest {
             .containsExactly(
                 tuple(PhotoVisibility.PUBLIC, 0, photoKey("a")),
                 tuple(PhotoVisibility.PUBLIC, 1, photoKey("b")),
-                tuple(PhotoVisibility.SECRET, 0, photoKey("c")),
+                tuple(PhotoVisibility.SECRET, 0, photoKey("c", PhotoVisibility.SECRET)),
             )
     }
 
@@ -466,7 +469,7 @@ class MemberServiceTest {
         val exception = assertThrows(BusinessException::class.java) {
             memberService.editProfile(
                 MEMBER_ID,
-                EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf("members/999/other.jpg")),
+                EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf("members/999/public/other.jpg")),
             )
         }
 
@@ -476,7 +479,7 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `같은 사진 키를 공개와 비밀에 함께 보내면 편집에 실패한다`() {
+    fun `같은 사진 키를 두 번 보내면 편집에 실패한다`() {
         // given
         val member = member()
         stubMember(member)
@@ -488,8 +491,7 @@ class MemberServiceTest {
                 EditProfileRequest(
                     nickname = NICKNAME,
                     birthYear = 1998,
-                    publicPhotoKeys = listOf(photoKey("a")),
-                    secretPhotoKeys = listOf(photoKey("a")),
+                    publicPhotoKeys = listOf(photoKey("a"), photoKey("a")),
                 ),
             )
         }
@@ -500,18 +502,44 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `업로드 URL은 회원 폴더 아래로 발급한다`() {
+    fun `비밀 사진 키를 공개 사진으로 보내면 편집에 실패한다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.editProfile(
+                MEMBER_ID,
+                EditProfileRequest(
+                    nickname = NICKNAME,
+                    birthYear = 1998,
+                    publicPhotoKeys = listOf(photoKey("a", PhotoVisibility.SECRET)),
+                ),
+            )
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
+    }
+
+    @Test
+    fun `업로드 URL은 공개 여부에 따라 다른 폴더로 발급한다`() {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                IssuedPhotoUpload("https://upload.test/key", "members/$MEMBER_ID/key.jpg")
+                IssuedPhotoUpload("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
 
         // when
-        val response = memberService.createPhotoUploadUrl(MEMBER_ID, CreatePhotoUploadUrlRequest("image/jpeg"))
+        val response = memberService.createPhotoUploadUrl(
+            MEMBER_ID,
+            CreatePhotoUploadUrlRequest("image/jpeg", PhotoVisibility.SECRET),
+        )
 
         // then
-        assertThat(prefix.captured).isEqualTo("members/$MEMBER_ID/")
-        assertThat(response.objectKey).isEqualTo("members/$MEMBER_ID/key.jpg")
+        assertThat(prefix.captured).isEqualTo("members/$MEMBER_ID/secret/")
+        assertThat(response.objectKey).isEqualTo("members/$MEMBER_ID/secret/key.jpg")
     }
 
     @Test
@@ -701,7 +729,8 @@ class MemberServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
     }
 
-    private fun photoKey(name: String) = "members/$MEMBER_ID/$name.jpg"
+    private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
+        "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
 
     private fun member() = Member(
         phoneNumber = PHONE_NUMBER,

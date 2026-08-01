@@ -1671,8 +1671,11 @@
       },
       "CreatePhotoUploadUrlRequest": {
         "type": "object",
-        "properties": { "contentType": { "type": "string" } },
-        "required": ["contentType"]
+        "properties": {
+          "contentType": { "type": "string" },
+          "visibility": { "type": "string", "enum": ["PUBLIC", "SECRET"] }
+        },
+        "required": ["contentType", "visibility"]
       },
       "PhotoUploadUrlResponse": {
         "type": "object",
