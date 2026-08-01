@@ -73,23 +73,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/points/rewards/ad": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** 광고 보상 받기 */
-    post: operations["earnAdReward"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/points/rewards/access": {
     parameters: {
       query?: never;
@@ -485,6 +468,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/ads/rewards/callback": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 광고 보상 콜백 */
+    get: operations["reward"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -869,53 +869,6 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["ReportPhotoUploadUrlResponse"];
-        };
-      };
-      /** @description 요청이 올바르지 않다 */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 인증이 필요하다 */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 서버에 문제가 발생했다 */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
-  earnAdReward: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "*/*": components["schemas"]["PointRewardResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */
@@ -2232,6 +2185,56 @@ export interface operations {
         content: {
           "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
         };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  reward: {
+    parameters: {
+      query: {
+        user_id: number;
+        transaction_id: string;
+        key_id: string;
+        signature: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description 요청이 올바르지 않다 */
       400: {

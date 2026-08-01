@@ -1,5 +1,6 @@
 package com.blueoauld.server.global.config
 
+import com.blueoauld.server.global.properties.AdMobProperties
 import com.blueoauld.server.global.properties.JwtProperties
 import com.blueoauld.server.global.properties.R2Properties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
@@ -16,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties::class, R2Properties::class)
+@EnableConfigurationProperties(JwtProperties::class, R2Properties::class, AdMobProperties::class)
 class SecurityConfig(
 
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
@@ -36,6 +37,7 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, AD_REWARD_CALLBACK_PATH).permitAll()
                     .requestMatchers(*DOCS_PATHS).permitAll()
                     .anyRequest().authenticated()
             }
@@ -44,6 +46,8 @@ class SecurityConfig(
             .build()
 
     companion object {
+
+        private const val AD_REWARD_CALLBACK_PATH = "/api/ads/rewards/callback"
 
         private val DOCS_PATHS = arrayOf("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
     }

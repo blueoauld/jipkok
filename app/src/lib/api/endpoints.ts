@@ -154,9 +154,6 @@ export const points = {
     request<PointRewardResponse>("/api/points/rewards/access", {
       method: "POST",
     }),
-
-  earnAdReward: () =>
-    request<PointRewardResponse>("/api/points/rewards/ad", { method: "POST" }),
 };
 
 export const attendances = {
