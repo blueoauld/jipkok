@@ -17,6 +17,7 @@ import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { isApiError, type Gender, type MemberSort } from "@/lib/api";
+import { useMemberFilterStore } from "@/lib/filter/store";
 import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
@@ -26,10 +27,19 @@ const GENDERS = ["전체", "남자", "여자"] as const;
 type GenderLabel = (typeof GENDERS)[number];
 
 const SORTS: Record<Filter, MemberSort> = { 최근: "RECENT", 거리: "DISTANCE" };
-const GENDER_VALUES: Record<GenderLabel, Gender | undefined> = {
-  전체: undefined,
+const SORT_LABELS: Record<MemberSort, Filter> = {
+  RECENT: "최근",
+  DISTANCE: "거리",
+};
+
+const GENDER_VALUES: Record<GenderLabel, Gender | null> = {
+  전체: null,
   남자: "MALE",
   여자: "FEMALE",
+};
+const GENDER_LABELS: Record<string, GenderLabel> = {
+  MALE: "남자",
+  FEMALE: "여자",
 };
 
 const COMMENT_MAX_LENGTH = 100;
@@ -41,8 +51,6 @@ const MEMBERS_KEY = ["members"];
 
 export default function MainScreen() {
   const space = getTokens().space;
-  const [filter, setFilter] = useState<Filter>("최근");
-  const [genderLabel, setGenderLabel] = useState<GenderLabel>("전체");
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [comment, setComment] = useState("");
@@ -50,20 +58,24 @@ export default function MainScreen() {
 
   const queryClient = useQueryClient();
   const location = useLocationUpdate();
-  const feed = useMemberFeed(SORTS[filter], GENDER_VALUES[genderLabel]);
+  const sort = useMemberFilterStore((state) => state.sort);
+  const gender = useMemberFilterStore((state) => state.gender);
+  const setSort = useMemberFilterStore((state) => state.setSort);
+  const setGender = useMemberFilterStore((state) => state.setGender);
+  const feed = useMemberFeed(sort, gender);
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     feed;
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
   const changeFilter = useCallback(
     async (next: Filter) => {
-      setFilter(next);
+      setSort(SORTS[next]);
 
       if (next === "거리" && (await location.update())) {
         queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
       }
     },
-    [location, queryClient],
+    [location, queryClient, setSort],
   );
 
   const refresh = useCallback(async () => {
@@ -105,7 +117,7 @@ export default function MainScreen() {
       <YStack px="$4" pt="$4" pb="$2">
         <SegmentedControl
           values={FILTERS}
-          value={filter}
+          value={SORT_LABELS[sort]}
           onChange={changeFilter}
         />
       </YStack>
@@ -184,8 +196,8 @@ export default function MainScreen() {
         onOpenChange={setGenderOpen}
         items={GENDERS.map((label) => ({
           label,
-          selected: label === genderLabel,
-          onPress: () => setGenderLabel(label),
+          selected: label === (GENDER_LABELS[gender ?? ""] ?? "전체"),
+          onPress: () => setGender(GENDER_VALUES[label]),
         }))}
       />
     </YStack>

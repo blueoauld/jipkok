@@ -13,8 +13,8 @@ export type MyProfileResponse = Schemas["MyProfileResponse"];
 export type MemberSummaryResponse = Schemas["MemberSummaryResponse"];
 export type MemberListItemResponse = Schemas["MemberListItemResponse"];
 export type MemberSort = NonNullable<
-  Paths["/api/members"]["get"]["parameters"]["query"]
->["sort"];
+  NonNullable<Paths["/api/members"]["get"]["parameters"]["query"]>["sort"]
+>;
 export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
