@@ -16,6 +16,10 @@ class LocalPhotoStorage : PhotoStorage {
         return "$BASE_URL/$objectKey"
     }
 
+    override fun toPublicUrl(objectKey: String) = "$BASE_URL/$objectKey"
+
+    override fun createSignedViewUrl(objectKey: String) = "$BASE_URL/$objectKey?signed=true"
+
     override fun delete(objectKeys: List<String>) {
         log.info { "사진을 삭제한다. objectKeys=$objectKeys" }
     }

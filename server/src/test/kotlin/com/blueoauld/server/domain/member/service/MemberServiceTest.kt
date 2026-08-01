@@ -347,6 +347,64 @@ class MemberServiceTest {
     }
 
     @Test
+    fun `내 프로필은 공개 사진을 고정 URL로, 비밀 사진을 서명 URL로 준다`() {
+        // given
+        val member = member()
+        member.comment = "코멘트"
+        member.bio = "자기소개"
+        stubMember(member)
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
+            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, photoKey("s")),
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 1, photoKey("b")),
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
+        )
+        every { photoStorage.toPublicUrl(any()) } answers { "https://cdn.test/${firstArg<String>()}" }
+        every { photoStorage.createSignedViewUrl(any()) } answers { "https://signed.test/${firstArg<String>()}" }
+
+        // when
+        val response = memberService.getMyProfile(MEMBER_ID)
+
+        // then
+        assertThat(response.publicPhotoUrls).containsExactly(
+            "https://cdn.test/${photoKey("a")}",
+            "https://cdn.test/${photoKey("b")}",
+        )
+        assertThat(response.secretPhotoUrls).containsExactly("https://signed.test/${photoKey("s")}")
+        assertThat(response.nickname).isEqualTo(member.nickname)
+        assertThat(response.comment).isEqualTo("코멘트")
+        assertThat(response.bio).isEqualTo("자기소개")
+    }
+
+    @Test
+    fun `내 프로필의 나이는 출생연도로 계산한다`() {
+        // given
+        val member = member()
+        member.birthYear = 2000
+        stubMember(member)
+
+        // when
+        val response = memberService.getMyProfile(MEMBER_ID)
+
+        // then
+        assertThat(response.birthYear).isEqualTo(2000)
+        assertThat(response.age).isEqualTo(26)
+    }
+
+    @Test
+    fun `없는 회원이면 프로필 조회에 실패한다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.getMyProfile(MEMBER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
     fun `프로필을 편집하면 공개 사진과 비밀 사진을 보낸 순서대로 저장한다`() {
         // given
         val member = member()

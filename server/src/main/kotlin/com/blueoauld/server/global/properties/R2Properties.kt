@@ -10,5 +10,7 @@ data class R2Properties(
     val accessKeyId: String,
     val secretAccessKey: String,
     val bucket: String,
+    val publicBaseUrl: String,
     val uploadUrlValidity: Duration,
+    val viewUrlValidity: Duration,
 )

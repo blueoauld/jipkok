@@ -9,9 +9,11 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.Delete
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.net.URI
 
@@ -51,6 +53,22 @@ class R2PhotoStorage(
             .build()
 
         return presigner.presignPutObject(presignRequest).url().toString()
+    }
+
+    override fun toPublicUrl(objectKey: String) = "${r2Properties.publicBaseUrl}/$objectKey"
+
+    override fun createSignedViewUrl(objectKey: String): String {
+        val getObject = GetObjectRequest.builder()
+            .bucket(r2Properties.bucket)
+            .key(objectKey)
+            .build()
+
+        val presignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(r2Properties.viewUrlValidity)
+            .getObjectRequest(getObject)
+            .build()
+
+        return presigner.presignGetObject(presignRequest).url().toString()
     }
 
     override fun delete(objectKeys: List<String>) {

@@ -44,7 +44,9 @@ r2:
   access-key-id: ${R2_ACCESS_KEY_ID:}
   secret-access-key: ${R2_SECRET_ACCESS_KEY:}
   bucket: ${R2_BUCKET:}
+  public-base-url: ${R2_PUBLIC_BASE_URL:}
   upload-url-validity: 10m
+  view-url-validity: 10m
 
 jwt:
   secret: ${JWT_SECRET:local-development-only-secret-key-please-change-me}

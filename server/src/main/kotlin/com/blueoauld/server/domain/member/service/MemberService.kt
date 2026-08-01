@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
@@ -81,6 +82,26 @@ class MemberService(
         member.nickname = nickname
         member.birthYear = request.birthYear
         member.bio = request.bio
+    }
+
+    @Transactional(readOnly = true)
+    fun getMyProfile(memberId: Long): MyProfileResponse {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+        val photos = memberPhotoRepository.findAllByMemberId(memberId)
+
+        return MyProfileResponse(
+            memberId = member.id,
+            nickname = member.nickname,
+            gender = member.gender,
+            birthYear = member.birthYear,
+            age = currentYear() - member.birthYear,
+            comment = member.comment,
+            bio = member.bio,
+            publicPhotoUrls = photoUrls(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
+            secretPhotoUrls = photoUrls(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
+        )
     }
 
     @Transactional
@@ -175,6 +196,14 @@ class MemberService(
 
     private fun toPhotos(memberId: Long, objectKeys: List<String>, visibility: PhotoVisibility) =
         objectKeys.mapIndexed { index, objectKey -> MemberPhoto(memberId, visibility, index, objectKey) }
+
+    private fun photoUrls(
+        photos: List<MemberPhoto>,
+        visibility: PhotoVisibility,
+        toUrl: (String) -> String,
+    ) = photos.filter { it.visibility == visibility }
+        .sortedBy { it.displayOrder }
+        .map { toUrl(it.objectKey) }
 
     private fun photoKeyPrefix(memberId: Long) = "$PHOTO_KEY_ROOT/$memberId/"
 
