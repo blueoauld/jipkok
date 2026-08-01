@@ -21,14 +21,14 @@ type Cell =
   | { kind: "add" }
   | null;
 
-function toRows(photos: string[]): Cell[][] {
+function toRows(photos: string[], addable: boolean): Cell[][] {
   const cells: Cell[] = photos.map((uri, index) => ({
     kind: "photo",
     uri,
     index,
   }));
 
-  if (photos.length < MAX_PHOTOS) {
+  if (addable && photos.length < MAX_PHOTOS) {
     cells.push({ kind: "add" });
   }
 
@@ -81,7 +81,7 @@ export function PhotoGrid({
 
   return (
     <YStack gap="$2">
-      {toRows(photos).map((row, rowIndex) => (
+      {toRows(photos, Boolean(onAdd)).map((row, rowIndex) => (
         <XStack key={rowIndex} gap="$2">
           {row.map((cell, columnIndex) => {
             if (!cell) {
@@ -138,32 +138,34 @@ export function PhotoGrid({
                   </XStack>
                 )}
 
-                <OverlayButton
-                  t="$2"
-                  r="$2"
-                  bg="$red10"
-                  onPress={() => onRemove?.(cell.index)}
-                >
-                  <XIcon size={14} weight="bold" color="white" />
-                </OverlayButton>
+                {onRemove && (
+                  <OverlayButton
+                    t="$2"
+                    r="$2"
+                    bg="$red10"
+                    onPress={() => onRemove(cell.index)}
+                  >
+                    <XIcon size={14} weight="bold" color="white" />
+                  </OverlayButton>
+                )}
 
-                {cell.index > 0 && (
+                {onMove && cell.index > 0 && (
                   <OverlayButton
                     b="$2"
                     l="$2"
                     bg={OVERLAY_BUTTON_BG}
-                    onPress={() => onMove?.(cell.index, cell.index - 1)}
+                    onPress={() => onMove(cell.index, cell.index - 1)}
                   >
                     <CaretLeftIcon size={14} weight="bold" color="white" />
                   </OverlayButton>
                 )}
 
-                {cell.index < photos.length - 1 && (
+                {onMove && cell.index < photos.length - 1 && (
                   <OverlayButton
                     b="$2"
                     r="$2"
                     bg={OVERLAY_BUTTON_BG}
-                    onPress={() => onMove?.(cell.index, cell.index + 1)}
+                    onPress={() => onMove(cell.index, cell.index + 1)}
                   >
                     <CaretRightIcon size={14} weight="bold" color="white" />
                   </OverlayButton>

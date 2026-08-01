@@ -10,6 +10,7 @@ export type ReissueRequest = Schemas["ReissueRequest"];
 
 export type MyProfileResponse = Schemas["MyProfileResponse"];
 export type MemberSummaryResponse = Schemas["MemberSummaryResponse"];
+export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
 export type UpdateCommentRequest = Schemas["UpdateCommentRequest"];
