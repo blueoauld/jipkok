@@ -5,6 +5,7 @@ import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, useTheme } from "tamagui";
 
+import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { QueryProvider } from "@/lib/query";
 import { tamaguiConfig } from "@/tamagui.config";
 
@@ -17,12 +18,19 @@ export default function RootLayout() {
         <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
           <NavigationTheme scheme={scheme}>
             <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+            <SessionGuard />
             <Stack screenOptions={{ headerShown: false }} />
           </NavigationTheme>
         </TamaguiProvider>
       </KeyboardProvider>
     </QueryProvider>
   );
+}
+
+function SessionGuard() {
+  useSessionGuard();
+
+  return null;
 }
 
 function NavigationTheme({

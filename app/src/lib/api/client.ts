@@ -87,6 +87,8 @@ async function runReissue() {
   const refreshToken = await getRefreshToken();
 
   if (!refreshToken) {
+    await clearTokens();
+
     return false;
   }
 
@@ -107,6 +109,10 @@ async function runReissue() {
   );
 
   return true;
+}
+
+export function restoreSession() {
+  return reissue();
 }
 
 export async function request<T>(
