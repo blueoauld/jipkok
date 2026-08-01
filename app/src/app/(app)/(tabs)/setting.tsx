@@ -26,6 +26,7 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { useAdReward } from "@/hooks/useAdReward";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
@@ -39,7 +40,7 @@ const WITHDRAW_DESCRIPTION =
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
-type SettingAction = "attendanceReward";
+type SettingAction = "attendanceReward" | "adReward";
 
 type SettingItem = {
   label: string;
@@ -80,7 +81,7 @@ const SECTIONS: SettingItem[][] = [
   [
     { label: "포인트 내역", icon: CoinsIcon, href: "/point/history" },
     { label: "출석 보상", icon: CalendarCheckIcon, action: "attendanceReward" },
-    { label: "광고 보상", icon: MonitorPlayIcon },
+    { label: "광고 보상", icon: MonitorPlayIcon, action: "adReward" },
   ],
   [
     { label: "문의하기", icon: HeadsetIcon },
@@ -134,6 +135,7 @@ export default function SettingScreen() {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const logout = useMutation({ mutationFn: api.auth.logout });
+  const adReward = useAdReward();
 
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
@@ -156,11 +158,16 @@ export default function SettingScreen() {
 
   const handleAction = useCallback(
     (action: SettingAction) => {
-      if (action === "attendanceReward" && !earnAttendanceReward.isPending) {
+      if (action === "adReward") {
+        adReward.watch();
+        return;
+      }
+
+      if (!earnAttendanceReward.isPending) {
         earnAttendanceReward.mutate();
       }
     },
-    [earnAttendanceReward],
+    [adReward, earnAttendanceReward],
   );
 
   const accountMenu: MenuSheetItem[] = [
