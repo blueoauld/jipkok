@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { Tabs, type Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
@@ -25,6 +26,7 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { api } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 22;
@@ -104,6 +106,8 @@ export default function SettingScreen() {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
+  const logout = useMutation({ mutationFn: api.auth.logout });
+
   const accountMenu: MenuSheetItem[] = [
     { label: "로그아웃", onPress: () => setLogoutOpen(true) },
     {
@@ -159,6 +163,7 @@ export default function SettingScreen() {
         title="로그아웃"
         description={LOGOUT_DESCRIPTION}
         confirmLabel="확인"
+        onConfirm={() => logout.mutate()}
       />
 
       <ConfirmDialog

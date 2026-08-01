@@ -41,12 +41,13 @@ export const auth = {
   logout: async () => {
     const refreshToken = await getRefreshToken();
 
+    // 서버 호출이 실패해도 기기에서는 로그아웃해야 하므로 오류를 삼킨다.
     if (refreshToken) {
       await request<void>("/api/auth/logout", {
         method: "POST",
         body: { refreshToken },
         auth: false,
-      });
+      }).catch(() => undefined);
     }
 
     await clearTokens();
