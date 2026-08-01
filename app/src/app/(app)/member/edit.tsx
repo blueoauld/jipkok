@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
+import { Modal } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -24,6 +25,8 @@ const BOTTOM_BAR_HEIGHT = 80;
 const NICKNAME_MAX_LENGTH = 10;
 const BIO_MAX_LENGTH = 1000;
 const BIRTH_YEAR_LENGTH = 4;
+
+const OVERLAY_OPACITY = 0.6;
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const INVALID_BIRTH_YEAR_MESSAGE = "출생연도가 올바르지 않습니다.";
@@ -63,8 +66,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     onError: alertApiError,
   });
 
-  const busy =
-    save.isPending || publicPhotos.uploading || secretPhotos.uploading;
+  const uploading = publicPhotos.uploading || secretPhotos.uploading;
+  const busy = save.isPending || uploading;
 
   const submit = () => {
     const birthYear = Number(birthYearRef.current);
@@ -174,6 +177,29 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </Button>
         </YStack>
       </KeyboardStickyView>
+
+      <Modal
+        transparent
+        statusBarTranslucent
+        navigationBarTranslucent
+        visible={uploading}
+        animationType="fade"
+        onRequestClose={() => {}}
+      >
+        <YStack flex={1} items="center" justify="center">
+          <YStack
+            position="absolute"
+            t={0}
+            l={0}
+            r={0}
+            b={0}
+            bg="$background"
+            opacity={OVERLAY_OPACITY}
+          />
+
+          <Spinner size="small" />
+        </YStack>
+      </Modal>
     </>
   );
 }
