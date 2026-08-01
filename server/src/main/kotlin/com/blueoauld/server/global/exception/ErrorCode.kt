@@ -53,6 +53,12 @@ enum class ErrorCode(
 
     SELF_FAVORITE(HttpStatus.BAD_REQUEST, "FAVORITE_001", "자기 자신은 즐겨찾기할 수 없습니다."),
 
+    SELF_SECRET_PHOTO_ACCESS(
+        HttpStatus.BAD_REQUEST,
+        "SECRET_PHOTO_001",
+        "자기 자신에게는 비밀 사진을 공개할 수 없습니다.",
+    ),
+
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }
