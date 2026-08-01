@@ -1,0 +1,1855 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "집콕 API",
+    "description": "## 오류 코드\n\n| 코드 | 상태 | 메시지 |\n| --- | --- | --- |\n| COMMON_001 | 400 | 요청이 올바르지 않습니다. |\n| COMMON_999 | 500 | 서버에 문제가 발생했습니다. |\n| AUTH_001 | 429 | 인증번호를 너무 자주 요청했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_002 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_003 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_004 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_005 | 400 | 인증번호가 만료되었습니다. 다시 요청해주시길 바랍니다. |\n| AUTH_006 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_007 | 429 | 인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 요청해주시길 바랍니다. |\n| AUTH_008 | 401 | 휴대폰 번호 또는 비밀번호가 올바르지 않습니다. |\n| AUTH_009 | 401 | 다시 로그인해주시길 바랍니다. |\n| AUTH_010 | 401 | 로그인이 필요합니다. |\n| MEMBER_001 | 409 | 이미 가입된 휴대폰 번호입니다. |\n| MEMBER_002 | 400 | 비밀번호가 일치하지 않습니다. |\n| MEMBER_003 | 404 | 회원을 찾을 수 없습니다. |\n| MEMBER_004 | 409 | 이미 사용 중인 닉네임입니다. |\n| MEMBER_005 | 400 | 만 19세 이상 90세 이하만 가입할 수 있습니다. |\n| MEMBER_006 | 400 | 위치 정보가 올바르지 않습니다. |\n| MEMBER_007 | 400 | 지원하지 않는 이미지 형식입니다. |\n| MEMBER_008 | 400 | 사진 정보가 올바르지 않습니다. |\n| LIKE_001 | 400 | 자기 자신에게는 좋아요를 누를 수 없습니다. |\n| FAVORITE_001 | 400 | 자기 자신은 즐겨찾기할 수 없습니다. |\n| SECRET_PHOTO_001 | 400 | 자기 자신에게는 비밀 사진을 공개할 수 없습니다. |\n| BLOCK_001 | 400 | 자기 자신은 차단할 수 없습니다. |\n| POINT_001 | 400 | 포인트가 부족합니다. |\n| REPORT_001 | 400 | 자기 자신은 신고할 수 없습니다. |\n| REPORT_002 | 409 | 이미 신고한 회원입니다. |",
+    "version": "v1"
+  },
+  "servers": [
+    { "url": "http://localhost", "description": "Generated server url" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/api/members/me/profile": {
+      "put": {
+        "tags": ["member-controller"],
+        "summary": "프로필 편집",
+        "operationId": "editProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EditProfileRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["member-controller"],
+        "summary": "프로필 설정",
+        "operationId": "setupProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SetupProfileRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/comment": {
+      "put": {
+        "tags": ["member-controller"],
+        "summary": "코멘트 저장",
+        "operationId": "updateComment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCommentRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports": {
+      "post": {
+        "tags": ["report-controller"],
+        "summary": "회원 신고",
+        "operationId": "report",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateReportRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/photos/upload-url": {
+      "post": {
+        "tags": ["report-controller"],
+        "summary": "사진 업로드 URL 발급",
+        "operationId": "createPhotoUploadUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportPhotoUploadUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportPhotoUploadUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/points/rewards/attendance": {
+      "post": {
+        "tags": ["point-controller"],
+        "summary": "출석 보상 받기",
+        "operationId": "earnAttendanceReward",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PointRewardResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/points/rewards/ad": {
+      "post": {
+        "tags": ["point-controller"],
+        "summary": "광고 보상 받기",
+        "operationId": "earnAdReward",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PointRewardResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/points/rewards/access": {
+      "post": {
+        "tags": ["point-controller"],
+        "summary": "접속 보상 받기",
+        "operationId": "earnAccessReward",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PointRewardResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members": {
+      "post": {
+        "tags": ["member-controller"],
+        "summary": "회원가입",
+        "operationId": "signup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignupRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/SignupResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/{memberId}/secret-photos": {
+      "post": {
+        "tags": ["secret-photo-access-controller"],
+        "summary": "비밀 사진 공개",
+        "operationId": "grant",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["secret-photo-access-controller"],
+        "summary": "비밀 사진 공개 해제",
+        "operationId": "revoke",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/{memberId}/likes": {
+      "post": {
+        "tags": ["member-like-controller"],
+        "summary": "좋아요",
+        "operationId": "like",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["member-like-controller"],
+        "summary": "좋아요 취소",
+        "operationId": "cancel",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/{memberId}/favorites": {
+      "post": {
+        "tags": ["member-favorite-controller"],
+        "summary": "즐겨찾기 추가",
+        "operationId": "add",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["member-favorite-controller"],
+        "summary": "즐겨찾기 해제",
+        "operationId": "remove",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/{memberId}/blocks": {
+      "post": {
+        "tags": ["member-block-controller"],
+        "summary": "차단",
+        "operationId": "block",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["member-block-controller"],
+        "summary": "차단 해제",
+        "operationId": "unblock",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/photos/upload-url": {
+      "post": {
+        "tags": ["member-controller"],
+        "summary": "사진 업로드 URL 발급",
+        "operationId": "createPhotoUploadUrl_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhotoUploadUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoUploadUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/heartbeat": {
+      "post": {
+        "tags": ["member-controller"],
+        "summary": "접속과 위치 갱신",
+        "operationId": "heartbeat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/HeartbeatRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verification-codes": {
+      "post": {
+        "tags": ["verification-code-controller"],
+        "summary": "인증번호 발송",
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendVerificationCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/token/reissue": {
+      "post": {
+        "tags": ["auth-controller"],
+        "summary": "토큰 재발급",
+        "operationId": "reissue",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReissueRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["auth-controller"],
+        "summary": "로그아웃",
+        "operationId": "logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReissueRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["auth-controller"],
+        "summary": "로그인",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/points/me": {
+      "get": {
+        "tags": ["point-controller"],
+        "summary": "포인트 잔액 조회",
+        "operationId": "findBalance",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "type": "integer", "format": "int32" } }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/points/me/histories": {
+      "get": {
+        "tags": ["point-controller"],
+        "summary": "포인트 내역 조회",
+        "operationId": "findHistories",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponsePointHistoryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me": {
+      "get": {
+        "tags": ["member-controller"],
+        "summary": "내 프로필 조회",
+        "operationId": "getMyProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/MyProfileResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/secret-photos/received": {
+      "get": {
+        "tags": ["secret-photo-access-controller"],
+        "summary": "나에게 공개된 목록",
+        "operationId": "findReceived",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/secret-photos/granted": {
+      "get": {
+        "tags": ["secret-photo-access-controller"],
+        "summary": "내가 공개한 목록",
+        "operationId": "findGranted",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/likes": {
+      "get": {
+        "tags": ["member-like-controller"],
+        "summary": "내가 누른 좋아요 목록",
+        "operationId": "findLiked",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/likes/received": {
+      "get": {
+        "tags": ["member-like-controller"],
+        "summary": "받은 좋아요 목록",
+        "operationId": "findReceived_1",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/favorites": {
+      "get": {
+        "tags": ["member-favorite-controller"],
+        "summary": "즐겨찾기 목록",
+        "operationId": "findFavorites",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/favorites/received": {
+      "get": {
+        "tags": ["member-favorite-controller"],
+        "summary": "받은 즐겨찾기 목록",
+        "operationId": "findReceived_2",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/me/blocks": {
+      "get": {
+        "tags": ["member-block-controller"],
+        "summary": "차단 목록",
+        "operationId": "findBlocked",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorResponseMemberSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EditProfileRequest": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 0,
+            "pattern": "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
+          },
+          "birthYear": { "type": "integer", "format": "int32" },
+          "bio": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "publicPhotoKeys": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 6,
+            "minItems": 0
+          },
+          "secretPhotoKeys": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 6,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "birthYear",
+          "nickname",
+          "publicPhotoKeys",
+          "secretPhotoKeys"
+        ]
+      },
+      "UpdateCommentRequest": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": ["string", "null"],
+            "maxLength": 100,
+            "minLength": 0
+          }
+        }
+      },
+      "CreateReportRequest": {
+        "type": "object",
+        "properties": {
+          "reportedMemberId": { "type": "integer", "format": "int64" },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "OBSCENITY",
+              "MINOR",
+              "MONEY_TRANSACTION",
+              "ABUSE",
+              "IMPERSONATION",
+              "ETC"
+            ]
+          },
+          "detail": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "photoKeys": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 6,
+            "minItems": 0
+          }
+        },
+        "required": ["photoKeys", "reason", "reportedMemberId"]
+      },
+      "CreateReportPhotoUploadUrlRequest": {
+        "type": "object",
+        "properties": { "contentType": { "type": "string" } },
+        "required": ["contentType"]
+      },
+      "ReportPhotoUploadUrlResponse": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": { "type": "string" },
+          "objectKey": { "type": "string" }
+        },
+        "required": ["objectKey", "uploadUrl"]
+      },
+      "PointRewardResponse": {
+        "type": "object",
+        "properties": {
+          "earned": { "type": "boolean" },
+          "amount": { "type": "integer", "format": "int32" },
+          "balance": { "type": "integer", "format": "int32" }
+        },
+        "required": ["amount", "balance", "earned"]
+      },
+      "SignupRequest": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": { "type": "string", "pattern": "^010\\d{8}$" },
+          "verificationCode": { "type": "string", "pattern": "^\\d{6}$" },
+          "password": { "type": "string", "maxLength": 30, "minLength": 8 },
+          "passwordConfirm": { "type": "string" },
+          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] }
+        },
+        "required": [
+          "gender",
+          "password",
+          "passwordConfirm",
+          "phoneNumber",
+          "verificationCode"
+        ]
+      },
+      "SignupResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64" },
+          "accessToken": { "type": "string" },
+          "refreshToken": { "type": "string" }
+        },
+        "required": ["accessToken", "memberId", "refreshToken"]
+      },
+      "CreatePhotoUploadUrlRequest": {
+        "type": "object",
+        "properties": { "contentType": { "type": "string" } },
+        "required": ["contentType"]
+      },
+      "PhotoUploadUrlResponse": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": { "type": "string" },
+          "objectKey": { "type": "string" }
+        },
+        "required": ["objectKey", "uploadUrl"]
+      },
+      "HeartbeatRequest": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": ["number", "null"],
+            "format": "double",
+            "maximum": 90.0,
+            "minimum": -90.0
+          },
+          "longitude": {
+            "type": ["number", "null"],
+            "format": "double",
+            "maximum": 180.0,
+            "minimum": -180.0
+          }
+        }
+      },
+      "SendVerificationCodeRequest": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": { "type": "string", "pattern": "^010\\d{8}$" }
+        },
+        "required": ["phoneNumber"]
+      },
+      "ReissueRequest": {
+        "type": "object",
+        "properties": { "refreshToken": { "type": "string" } },
+        "required": ["refreshToken"]
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string" },
+          "refreshToken": { "type": "string" }
+        },
+        "required": ["accessToken", "refreshToken"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["password", "phoneNumber"]
+      },
+      "SetupProfileRequest": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 0,
+            "pattern": "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
+          },
+          "birthYear": { "type": "integer", "format": "int32" },
+          "bio": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "minLength": 0
+          }
+        },
+        "required": ["birthYear", "nickname"]
+      },
+      "CursorResponsePointHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PointHistoryResponse" }
+          },
+          "nextCursor": { "type": ["integer", "null"], "format": "int64" }
+        },
+        "required": ["items"]
+      },
+      "PointHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "historyId": { "type": "integer", "format": "int64" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ACCESS_REWARD",
+              "ATTENDANCE_REWARD",
+              "AD_REWARD",
+              "NOTE_SEND"
+            ]
+          },
+          "amount": { "type": "integer", "format": "int32" },
+          "balanceAfter": { "type": "integer", "format": "int32" },
+          "recordedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": [
+          "amount",
+          "balanceAfter",
+          "historyId",
+          "recordedAt",
+          "type"
+        ]
+      },
+      "MyProfileResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64" },
+          "nickname": { "type": "string" },
+          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
+          "birthYear": { "type": "integer", "format": "int32" },
+          "age": { "type": "integer", "format": "int32" },
+          "receivedLikeCount": { "type": "integer", "format": "int32" },
+          "comment": { "type": ["string", "null"] },
+          "bio": { "type": ["string", "null"] },
+          "publicPhotoUrls": { "type": "array", "items": { "type": "string" } },
+          "secretPhotoUrls": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": [
+          "age",
+          "birthYear",
+          "gender",
+          "memberId",
+          "nickname",
+          "publicPhotoUrls",
+          "receivedLikeCount",
+          "secretPhotoUrls"
+        ]
+      },
+      "CursorResponseMemberSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MemberSummaryResponse" }
+          },
+          "nextCursor": { "type": ["integer", "null"], "format": "int64" }
+        },
+        "required": ["items"]
+      },
+      "MemberSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64" },
+          "nickname": { "type": "string" },
+          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
+          "age": { "type": "integer", "format": "int32" },
+          "receivedLikeCount": { "type": "integer", "format": "int32" },
+          "comment": { "type": ["string", "null"] },
+          "profileImageUrl": { "type": ["string", "null"] }
+        },
+        "required": [
+          "age",
+          "gender",
+          "memberId",
+          "nickname",
+          "receivedLikeCount"
+        ]
+      },
+      "ErrorResponse": {
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

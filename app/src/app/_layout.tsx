@@ -5,20 +5,23 @@ import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, useTheme } from "tamagui";
 
+import { QueryProvider } from "@/lib/query";
 import { tamaguiConfig } from "@/tamagui.config";
 
 export default function RootLayout() {
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
   return (
-    <KeyboardProvider>
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
-        <NavigationTheme scheme={scheme}>
-          <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-          <Stack screenOptions={{ headerShown: false }} />
-        </NavigationTheme>
-      </TamaguiProvider>
-    </KeyboardProvider>
+    <QueryProvider>
+      <KeyboardProvider>
+        <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
+          <NavigationTheme scheme={scheme}>
+            <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+            <Stack screenOptions={{ headerShown: false }} />
+          </NavigationTheme>
+        </TamaguiProvider>
+      </KeyboardProvider>
+    </QueryProvider>
   );
 }
 

@@ -41,6 +41,20 @@ class OpenApiConfig {
     }
 
     @Bean
+    fun requiredPropertyCustomizer() = OpenApiCustomizer { openApi ->
+        openApi.components?.schemas?.values?.forEach { schema ->
+            val required = schema.properties.orEmpty()
+                .filterValues { !it.isNullable() }
+                .keys
+                .toList()
+
+            if (required.isNotEmpty()) {
+                schema.required = required
+            }
+        }
+    }
+
+    @Bean
     fun errorResponseCustomizer() = OperationCustomizer { operation, _ ->
         ERROR_RESPONSES.forEach { (status, description) ->
             operation.responses.addApiResponse(
@@ -51,6 +65,8 @@ class OpenApiConfig {
 
         operation
     }
+
+    private fun Schema<*>.isNullable() = nullable == true || types?.contains("null") == true
 
     private fun errorContent() = Content().addMediaType(
         APPLICATION_JSON,
