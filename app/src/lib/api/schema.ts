@@ -97,7 +97,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** 회원 목록 조회 */
+    /**
+     * 회원 목록 조회
+     * @description 거리순은 내 위치가 없으면 최근순으로 준다.
+     */
     get: operations["findMembers"];
     put?: never;
     /** 회원가입 */
@@ -325,6 +328,23 @@ export interface paths {
     };
     /** 포인트 내역 조회 */
     get: operations["findHistories"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/members/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 닉네임 검색 */
+    get: operations["searchByNickname"];
     put?: never;
     post?: never;
     delete?: never;
@@ -623,6 +643,23 @@ export interface components {
       items: components["schemas"]["MemberListItemResponse"][];
       nextCursor?: string | null;
     };
+    MemberSummaryResponse: {
+      /** Format: int64 */
+      memberId: number;
+      nickname: string;
+      /** @enum {string} */
+      gender: "MALE" | "FEMALE";
+      /** Format: int32 */
+      age: number;
+      /** Format: int32 */
+      receivedLikeCount: number;
+      comment?: string | null;
+      profileImageUrl?: string | null;
+    };
+    ScrollResponseMemberSummaryResponse: {
+      items: components["schemas"]["MemberSummaryResponse"][];
+      nextCursor?: string | null;
+    };
     MyProfileResponse: {
       /** Format: int64 */
       memberId: number;
@@ -648,19 +685,6 @@ export interface components {
       items: components["schemas"]["MemberSummaryResponse"][];
       /** Format: int64 */
       nextCursor?: number | null;
-    };
-    MemberSummaryResponse: {
-      /** Format: int64 */
-      memberId: number;
-      nickname: string;
-      /** @enum {string} */
-      gender: "MALE" | "FEMALE";
-      /** Format: int32 */
-      age: number;
-      /** Format: int32 */
-      receivedLikeCount: number;
-      comment?: string | null;
-      profileImageUrl?: string | null;
     };
     ErrorResponse: {
       code: string;
@@ -1861,6 +1885,57 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["CursorResponsePointHistoryResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  searchByNickname: {
+    parameters: {
+      query: {
+        keyword: string;
+        cursor?: string;
+        size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */

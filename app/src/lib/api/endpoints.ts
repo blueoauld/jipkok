@@ -9,6 +9,7 @@ import type {
   HeartbeatRequest,
   LoginRequest,
   MemberListPage,
+  MemberSearchPage,
   MemberSort,
   MemberSummaryPage,
   MyProfileResponse,
@@ -23,6 +24,12 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type MemberSearchParams = {
+  keyword: string;
+  cursor?: string;
+  size?: number;
+};
 
 type MemberListParams = {
   sort?: MemberSort;
@@ -80,6 +87,9 @@ export const members = {
 
   list: (params: MemberListParams = {}) =>
     request<MemberListPage>("/api/members", { query: params }),
+
+  search: (params: MemberSearchParams) =>
+    request<MemberSearchPage>("/api/members/search", { query: params }),
 
   myProfile: () => request<MyProfileResponse>("/api/members/me"),
 
