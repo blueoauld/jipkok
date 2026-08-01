@@ -14,6 +14,7 @@ import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.service.MemberListService
+import com.blueoauld.server.domain.member.service.MemberRankingService
 import com.blueoauld.server.domain.member.service.MemberSearchService
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.global.response.ScrollResponse
@@ -38,6 +39,7 @@ class MemberController(
     private val memberService: MemberService,
     private val memberListService: MemberListService,
     private val memberSearchService: MemberSearchService,
+    private val memberRankingService: MemberRankingService,
 ) {
 
     @Operation(summary = "회원가입")
@@ -54,6 +56,15 @@ class MemberController(
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): ScrollResponse<MemberListItemResponse> = memberListService.findMembers(memberId, sort, gender, cursor, size)
+
+    @Operation(summary = "좋아요 랭킹")
+    @GetMapping("/ranking")
+    fun findRanking(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestParam(required = false) gender: Gender?,
+        @RequestParam(required = false) cursor: String?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): ScrollResponse<MemberSummaryResponse> = memberRankingService.findRanking(memberId, gender, cursor, size)
 
     @Operation(summary = "닉네임 검색")
     @GetMapping("/search")

@@ -73,6 +73,36 @@ interface MemberListRepository : JpaRepository<Member, Long> {
     @Query(
         value = """
         select m.id as memberId,
+               cast(m.received_like_count as double precision) as orderValue,
+               m.located_at as locatedAt,
+               cast(null as double precision) as distance
+        from member m
+        where $VISIBLE $GENDER
+          and (
+            cast(:cursorLikeCount as bigint) is null
+            or (m.received_like_count, $LOCATED_EPOCH, m.id) < (
+              cast(:cursorLikeCount as bigint),
+              cast(:cursorLocatedAt as bigint),
+              cast(:cursorId as bigint)
+            )
+          )
+        order by m.received_like_count desc, $LOCATED_EPOCH desc, m.id desc
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findByReceivedLikeCount(
+        @Param("memberId") memberId: Long,
+        @Param("gender") gender: String?,
+        @Param("cursorLikeCount") cursorLikeCount: Long?,
+        @Param("cursorLocatedAt") cursorLocatedAt: Long?,
+        @Param("cursorId") cursorId: Long?,
+        @Param("size") size: Int,
+    ): List<MemberListRow>
+
+    @Query(
+        value = """
+        select m.id as memberId,
                coalesce(extract(epoch from m.located_at), 0) as orderValue,
                m.located_at as locatedAt,
                cast(null as double precision) as distance
@@ -110,6 +140,10 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                 where (b.blocker_id = :memberId and b.blocked_member_id = m.id)
                    or (b.blocker_id = m.id and b.blocked_member_id = :memberId)
               )
+        """
+
+        private const val LOCATED_EPOCH = """
+            coalesce(cast(extract(epoch from m.located_at) as bigint), 0)
         """
 
         private const val GENDER = """

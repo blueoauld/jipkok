@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
+import java.util.Collections.reverseOrder
 
 @SpringBootTest
 @Transactional
@@ -38,11 +39,17 @@ class MemberListRepositoryTest {
         val now = Instant.now()
 
         meId = save(member("01099990000", Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
-        nearId = save(member("01099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))).id
+        nearId = save(
+            member("01099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))
+                .apply { receivedLikeCount = 3 },
+        ).id
         farId = save(member("01099990002", Gender.MALE, 37.9, 127.0, now.minusSeconds(120))).id
         hongId = save(
             member("01099990003", Gender.MALE, 37.5, 127.0, now.minusSeconds(180))
-                .apply { nickname = "HongGil" },
+                .apply {
+                    nickname = "HongGil"
+                    receivedLikeCount = 7
+                },
         ).id
     }
 
@@ -132,6 +139,82 @@ class MemberListRepositoryTest {
 
         // then
         assertThat(rows.map { it.getDistance() }).allMatch { it == null }
+    }
+
+    @Test
+    fun `랭킹은 받은 좋아요가 많은 회원부터 준다`() {
+        // given
+
+        // when
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).containsSubsequence(hongId, nearId)
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(meId)
+        assertThat(rows.map { it.getOrderValue() }).isSortedAccordingTo(reverseOrder())
+    }
+
+    @Test
+    fun `랭킹 커서를 주면 그 뒤부터 준다`() {
+        // given
+        val first = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, 1).first()
+
+        // when
+        val next = memberListRepository.findByReceivedLikeCount(
+            meId,
+            null,
+            first.getOrderValue().toLong(),
+            first.getLocatedAt()?.epochSecond ?: 0,
+            first.getMemberId(),
+            PAGE_SIZE,
+        )
+
+        // then
+        assertThat(next.map { it.getMemberId() }).doesNotContain(first.getMemberId())
+        assertThat(next.map { it.getOrderValue() }).allMatch { it <= first.getOrderValue() }
+    }
+
+    @Test
+    fun `좋아요가 같으면 접속이 늦은 회원부터 준다`() {
+        // given
+        val now = Instant.now()
+        val older = save(
+            member("01099990004", Gender.MALE, 37.5, 127.0, now.minusSeconds(600))
+                .apply { receivedLikeCount = 7 },
+        ).id
+        val newer = save(
+            member("01099990005", Gender.MALE, 37.5, 127.0, now)
+                .apply { receivedLikeCount = 7 },
+        ).id
+
+        // when
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).containsSubsequence(newer, older)
+    }
+
+    @Test
+    fun `랭킹에서도 차단한 회원은 빠진다`() {
+        // given
+        memberBlockRepository.saveAndFlush(MemberBlock(meId, hongId))
+
+        // when
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(hongId)
+    }
+
+    @Test
+    fun `랭킹은 좋아요가 없는 회원도 준다`() {
+        // given
+
+        // when
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).contains(farId)
     }
 
     @Test
