@@ -27,6 +27,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { useAdReward } from "@/hooks/useAdReward";
+import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
@@ -47,6 +48,7 @@ type SettingItem = {
   icon: Icon;
   href?: Href;
   action?: SettingAction;
+  gated?: boolean;
 };
 
 const SECTIONS: SettingItem[][] = [
@@ -66,16 +68,19 @@ const SECTIONS: SettingItem[][] = [
       label: "받은 좋아요 목록",
       icon: HandHeartIcon,
       href: "/activity/like-received",
+      gated: true,
     },
     {
       label: "받은 즐겨찾기 목록",
       icon: TrayArrowDownIcon,
       href: "/activity/favorite-received",
+      gated: true,
     },
     {
       label: "공개된 비밀 사진 목록",
       icon: EyeIcon,
       href: "/activity/secret-photo-opened",
+      gated: true,
     },
   ],
   [
@@ -94,20 +99,14 @@ const SECTIONS: SettingItem[][] = [
 function SettingRow({
   item,
   pending,
-  onAction,
+  onPress,
 }: {
   item: SettingItem;
   pending: boolean;
-  onAction: (action: SettingAction) => void;
+  onPress?: () => void;
 }) {
   const theme = useTheme();
-  const { label, icon: Icon, href, action } = item;
-
-  const press = href
-    ? () => pushOnce(href)
-    : action
-      ? () => onAction(action)
-      : undefined;
+  const { label, icon: Icon } = item;
 
   return (
     <XStack
@@ -116,7 +115,7 @@ function SettingRow({
       px="$4"
       py="$3"
       pressStyle={{ bg: "$gray5" }}
-      onPress={press}
+      onPress={onPress}
     >
       <Icon size={ICON_SIZE} color={theme.color10.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
@@ -136,6 +135,7 @@ export default function SettingScreen() {
 
   const logout = useMutation({ mutationFn: api.auth.logout });
   const adReward = useAdReward();
+  const gate = useInterstitialGate();
 
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
@@ -168,6 +168,27 @@ export default function SettingScreen() {
       }
     },
     [adReward, earnAttendanceReward],
+  );
+
+  const handlePress = useCallback(
+    (item: SettingItem) => {
+      if (item.action) {
+        handleAction(item.action);
+        return;
+      }
+
+      if (!item.href) {
+        return;
+      }
+
+      if (item.gated) {
+        gate.open(item.href);
+        return;
+      }
+
+      pushOnce(item.href);
+    },
+    [gate, handleAction],
   );
 
   const accountMenu: MenuSheetItem[] = [
@@ -209,7 +230,9 @@ export default function SettingScreen() {
                 key={item.label}
                 item={item}
                 pending={item.action === pendingAction}
-                onAction={handleAction}
+                onPress={
+                  item.href || item.action ? () => handlePress(item) : undefined
+                }
               />
             ))}
           </YStack>
