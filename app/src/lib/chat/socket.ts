@@ -26,6 +26,8 @@ export function createChatSocket({
 }) {
   const client = new Client({
     brokerURL: toSocketUrl(),
+    forceBinaryWSFrames: true,
+    appendMissingNULLonIncoming: true,
     reconnectDelay: RECONNECT_DELAY,
     heartbeatIncoming: HEARTBEAT_INTERVAL,
     heartbeatOutgoing: HEARTBEAT_INTERVAL,
@@ -38,6 +40,8 @@ export function createChatSocket({
       );
       onConnect();
     },
+    onStompError: (frame) =>
+      console.error(`[chat] ${frame.headers.message} ${frame.body}`),
   });
 
   return client;
