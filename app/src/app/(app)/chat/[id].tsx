@@ -1,5 +1,6 @@
 import "dayjs/locale/ko";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
@@ -26,12 +27,18 @@ import {
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { useChatMessages } from "@/hooks/useChatMessages";
-import { useChatRoom } from "@/hooks/useChatRoom";
+import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
+import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
+import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import type { ChatMessageResponse, ChatRoomResponse } from "@/lib/api";
+import { alertApiError } from "@/lib/alert";
+import {
+  api,
+  type ChatMessageResponse,
+  type ChatRoomResponse,
+} from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
 const MESSAGE_MAX_LENGTH = 1000;
@@ -65,6 +72,7 @@ export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
 
+  const queryClient = useQueryClient();
   const headerHeight = useHeaderHeight();
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
@@ -74,6 +82,17 @@ export default function ChatRoomScreen() {
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId);
   const feed = useChatMessages(roomId);
+  const leave = useMutation({
+    mutationFn: () => api.chats.leave(roomId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
+      queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      router.back();
+    },
+    onError: alertApiError,
+  });
+
   const { sendText, sendPhotos, uploading } = useSendMessage(
     roomId,
     profile?.memberId ?? 0,
@@ -198,7 +217,7 @@ export default function ChatRoomScreen() {
         title="채팅"
         description={LEAVE_DESCRIPTION}
         confirmLabel="나가기"
-        onConfirm={() => router.back()}
+        onConfirm={() => leave.mutate()}
       />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />

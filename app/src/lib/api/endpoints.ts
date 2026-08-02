@@ -259,6 +259,9 @@ export const chats = {
       query: params,
     }),
 
+  leave: (roomId: number) =>
+    request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
+
   send: (roomId: number, body: SendMessageRequest) =>
     request<ChatMessageResponse>(`/api/chats/${roomId}/messages`, {
       method: "POST",
