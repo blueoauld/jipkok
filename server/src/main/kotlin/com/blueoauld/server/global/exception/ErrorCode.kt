@@ -66,6 +66,7 @@ enum class ErrorCode(
     SECRET_PHOTO_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_001", "비밀 사진 이용이 정지되었습니다."),
     PROFILE_EDIT_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_002", "프로필 수정이 정지되었습니다."),
     SERVICE_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_003", "서비스 이용이 정지되었습니다."),
+    SUSPENSION_NOT_FOUND(HttpStatus.NOT_FOUND, "SUSPENSION_004", "정지를 찾을 수 없습니다."),
 
     SELF_BLOCK(HttpStatus.BAD_REQUEST, "BLOCK_001", "자기 자신은 차단할 수 없습니다."),
 

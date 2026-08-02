@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.suspension.service
 
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.repository.SuspendedMemberCache
@@ -23,9 +24,12 @@ class MemberSuspensionServiceTest {
 
     private val suspendedMemberCache = mockk<SuspendedMemberCache>(relaxed = true)
 
+    private val memberRepository = mockk<MemberRepository>(relaxed = true)
+
     private val memberSuspensionService = MemberSuspensionService(
         memberSuspensionRepository,
         suspendedMemberCache,
+        memberRepository,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 

@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.config
 
 import com.blueoauld.server.global.properties.AdMobProperties
+import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.properties.JwtProperties
 import com.blueoauld.server.global.properties.R2Properties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
@@ -17,7 +18,12 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties::class, R2Properties::class, AdMobProperties::class)
+@EnableConfigurationProperties(
+    JwtProperties::class,
+    R2Properties::class,
+    AdMobProperties::class,
+    DiscordProperties::class,
+)
 class SecurityConfig(
 
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,

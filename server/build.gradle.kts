@@ -26,6 +26,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("net.dv8tion:JDA:6.5.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     implementation(platform("software.amazon.awssdk:bom:2.35.10"))
     implementation("software.amazon.awssdk:s3")
