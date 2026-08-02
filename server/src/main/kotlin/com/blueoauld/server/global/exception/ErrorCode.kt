@@ -63,6 +63,10 @@ enum class ErrorCode(
 
     SECRET_PHOTO_FORBIDDEN(HttpStatus.FORBIDDEN, "SECRET_PHOTO_002", "비밀 사진을 볼 수 없습니다."),
 
+    SECRET_PHOTO_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_001", "비밀 사진 이용이 정지되었습니다."),
+    PROFILE_EDIT_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_002", "프로필 수정이 정지되었습니다."),
+    SERVICE_SUSPENDED(HttpStatus.FORBIDDEN, "SUSPENSION_003", "서비스 이용이 정지되었습니다."),
+
     SELF_BLOCK(HttpStatus.BAD_REQUEST, "BLOCK_001", "자기 자신은 차단할 수 없습니다."),
 
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "POINT_001", "포인트가 부족합니다."),

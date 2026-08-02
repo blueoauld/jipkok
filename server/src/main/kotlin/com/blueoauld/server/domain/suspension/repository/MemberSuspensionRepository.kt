@@ -1,0 +1,41 @@
+package com.blueoauld.server.domain.suspension.repository
+
+import com.blueoauld.server.domain.suspension.entity.MemberSuspension
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import java.time.Instant
+
+interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
+
+    @Query(
+        """
+        select s
+        from MemberSuspension s, Member m
+        where m.id = :memberId
+          and s.phoneNumber = m.phoneNumber
+          and s.releasedAt is null
+          and (s.expiresAt is null or s.expiresAt > :now)
+        order by s.type
+        """,
+    )
+    fun findActive(@Param("memberId") memberId: Long, @Param("now") now: Instant): List<MemberSuspension>
+
+    @Query(
+        """
+        select count(s) > 0
+        from MemberSuspension s, Member m
+        where m.id = :memberId
+          and s.phoneNumber = m.phoneNumber
+          and s.type = :type
+          and s.releasedAt is null
+          and (s.expiresAt is null or s.expiresAt > :now)
+        """,
+    )
+    fun existsActive(
+        @Param("memberId") memberId: Long,
+        @Param("type") type: SuspensionType,
+        @Param("now") now: Instant,
+    ): Boolean
+}
