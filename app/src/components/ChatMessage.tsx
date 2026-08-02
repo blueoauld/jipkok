@@ -6,6 +6,7 @@ import {
   type LeftRightStyle,
   type MessageProps,
 } from "react-native-gifted-chat";
+import { XStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 
@@ -34,17 +35,22 @@ export function ChatMessage(props: MessageProps<IMessage>) {
         right: { maxWidth: MAX_WIDTH, marginRight: SIDE_MARGIN },
       }}
       imageStyle={{ left: AVATAR_STYLE, right: AVATAR_STYLE }}
-      renderAvatar={({ currentMessage }) => (
-        <UserAvatar
-          id={String(currentMessage.user._id)}
-          url={
-            typeof currentMessage.user.avatar === "string"
-              ? currentMessage.user.avatar
-              : undefined
-          }
-          size={AVATAR_SIZE}
-          circular
-        />
+      renderAvatar={({ currentMessage, onPressAvatar }) => (
+        <XStack
+          pressStyle={{ opacity: 0.6 }}
+          onPress={() => onPressAvatar?.(currentMessage.user)}
+        >
+          <UserAvatar
+            id={String(currentMessage.user._id)}
+            url={
+              typeof currentMessage.user.avatar === "string"
+                ? currentMessage.user.avatar
+                : undefined
+            }
+            size={AVATAR_SIZE}
+            circular
+          />
+        </XStack>
       )}
     />
   );

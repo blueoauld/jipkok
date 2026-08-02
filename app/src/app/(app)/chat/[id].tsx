@@ -181,6 +181,14 @@ export default function ChatRoomScreen() {
 
   const menuItems: MenuSheetItem[] = [
     {
+      label: "프로필",
+      onPress: () => {
+        if (room) {
+          pushOnce(`/member/${room.memberId}`);
+        }
+      },
+    },
+    {
       label: "나가기",
       onPress: () => setLeaveOpen(true),
     },
