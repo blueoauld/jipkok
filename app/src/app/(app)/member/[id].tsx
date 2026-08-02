@@ -36,6 +36,13 @@ const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
 
+const LIKES_KEY = ["likes"];
+const FAVORITES_KEY = ["favorites"];
+const SECRET_PHOTOS_KEY = ["secretPhotos"];
+const BLOCKS_KEY = ["blocks"];
+
+type Relation = { listKey: string[]; call: () => Promise<void> };
+
 type ActionKey = "like" | "favorite" | "note" | "secretPhoto" | "block";
 
 type ActionColor = "red10" | "yellow10" | "blue10" | "green10";
@@ -106,7 +113,9 @@ export default function MemberProfileScreen() {
   const queryKey = memberDetailKey(memberId);
 
   const relate = useMutation({
-    mutationFn: (call: () => Promise<void>) => call(),
+    mutationFn: ({ call }: Relation) => call(),
+    onSuccess: (_data, { listKey }) =>
+      queryClient.invalidateQueries({ queryKey: listKey }),
     onError: (mutationError) => {
       queryClient.invalidateQueries({ queryKey });
       alertApiError(mutationError);
@@ -114,12 +123,16 @@ export default function MemberProfileScreen() {
   });
 
   const run = useCallback(
-    (changes: Partial<MemberDetailResponse>, call: () => Promise<void>) => {
+    (
+      changes: Partial<MemberDetailResponse>,
+      listKey: string[],
+      call: () => Promise<void>,
+    ) => {
       queryClient.setQueryData<MemberDetailResponse>(
         queryKey,
         (current) => current && { ...current, ...changes },
       );
-      relate.mutate(call);
+      relate.mutate({ listKey, call });
     },
     [queryClient, queryKey, relate],
   );
@@ -137,6 +150,7 @@ export default function MemberProfileScreen() {
             receivedLikeCount:
               member.receivedLikeCount + (member.likedByMe ? -1 : 1),
           },
+          LIKES_KEY,
           () =>
             member.likedByMe
               ? api.likes.remove(memberId)
@@ -146,7 +160,7 @@ export default function MemberProfileScreen() {
       }
 
       if (key === "favorite") {
-        run({ favoritedByMe: !member.favoritedByMe }, () =>
+        run({ favoritedByMe: !member.favoritedByMe }, FAVORITES_KEY, () =>
           member.favoritedByMe
             ? api.favorites.remove(memberId)
             : api.favorites.add(memberId),
@@ -161,7 +175,9 @@ export default function MemberProfileScreen() {
 
       if (key === "block") {
         if (member.blockedByMe) {
-          run({ blockedByMe: false }, () => api.blocks.remove(memberId));
+          run({ blockedByMe: false }, BLOCKS_KEY, () =>
+            api.blocks.remove(memberId),
+          );
         } else {
           setBlockOpen(true);
         }
@@ -193,10 +209,13 @@ export default function MemberProfileScreen() {
         : "비밀 사진 공개",
       onPress: () => {
         if (member) {
-          run({ secretPhotoGrantedByMe: !member.secretPhotoGrantedByMe }, () =>
-            member.secretPhotoGrantedByMe
-              ? api.secretPhotos.remove(memberId)
-              : api.secretPhotos.add(memberId),
+          run(
+            { secretPhotoGrantedByMe: !member.secretPhotoGrantedByMe },
+            SECRET_PHOTOS_KEY,
+            () =>
+              member.secretPhotoGrantedByMe
+                ? api.secretPhotos.remove(memberId)
+                : api.secretPhotos.add(memberId),
           );
         }
       },
@@ -313,7 +332,7 @@ export default function MemberProfileScreen() {
         confirmLabel="확인"
         destructive
         onConfirm={() =>
-          run({ blockedByMe: true }, () => api.blocks.add(memberId))
+          run({ blockedByMe: true }, BLOCKS_KEY, () => api.blocks.add(memberId))
         }
       />
 
