@@ -1,11 +1,15 @@
 package com.blueoauld.server.domain.chat.service
 
+import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,8 +17,27 @@ import org.springframework.transaction.annotation.Transactional
 class ChatRoomService(
 
     private val chatRoomRepository: ChatRoomRepository,
+    private val memberSummaryService: MemberSummaryService,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
+
+    @Transactional(readOnly = true)
+    fun findRooms(memberId: Long, unreadOnly: Boolean, cursor: Long?, size: Int): CursorResponse<ChatRoomResponse> {
+        val pageSize = CursorResponse.pageSize(size)
+        val rows = chatRoomRepository.findRooms(
+            memberId = memberId,
+            minUnreadCount = if (unreadOnly) 1 else 0,
+            cursor = cursor ?: Long.MAX_VALUE,
+            limit = Limit.of(pageSize),
+        )
+        val partners = memberSummaryService.findSummaries(rows.map { it.getPartnerId() })
+            .associateBy { it.memberId }
+
+        return CursorResponse(
+            items = rows.mapNotNull { row -> partners[row.getPartnerId()]?.let { ChatRoomResponse.of(row, it) } },
+            nextCursor = rows.lastOrNull()?.getLastMessageId().takeIf { rows.size == pageSize },
+        )
+    }
 
     @Transactional
     fun leave(memberId: Long, roomId: Long) {
