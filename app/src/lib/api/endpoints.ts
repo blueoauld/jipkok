@@ -259,6 +259,8 @@ export const chats = {
       query: params,
     }),
 
+  unreadCount: () => request<number>("/api/chats/unread-count"),
+
   markRead: (roomId: number, lastReadMessageId: number) =>
     request<void>(`/api/chats/${roomId}/read`, {
       method: "POST",

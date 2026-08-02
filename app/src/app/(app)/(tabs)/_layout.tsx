@@ -13,11 +13,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
 const ICON_TOP_OFFSET = 6;
 const TAB_BAR_HEIGHT = ICON_SIZE + 10 + 15 + ICON_TOP_OFFSET;
+
+const MAX_BADGE_COUNT = 300;
+const BADGE_FONT_SIZE = 11;
 
 type Tab = {
   name: string;
@@ -49,6 +53,7 @@ const TABS: Tab[] = [
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const unreadCount = useChatUnreadCount();
 
   return (
     <Tabs
@@ -75,6 +80,17 @@ export default function TabsLayout() {
             title,
             headerLeft,
             headerRight,
+            tabBarBadge:
+              name === "chat" && unreadCount > 0
+                ? unreadCount > MAX_BADGE_COUNT
+                  ? `${MAX_BADGE_COUNT}+`
+                  : unreadCount
+                : undefined,
+            tabBarBadgeStyle: {
+              backgroundColor: theme.red10.val,
+              color: "white",
+              fontSize: BADGE_FONT_SIZE,
+            },
             tabBarIcon: ({ color, focused }) => (
               <Icon
                 color={color as string}
