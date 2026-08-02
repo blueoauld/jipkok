@@ -28,6 +28,7 @@ export type PhotoVisibility = CreatePhotoUploadUrlRequest["visibility"];
 export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 
 export type CreateReportRequest = Schemas["CreateReportRequest"];
+export type ReportReason = CreateReportRequest["reason"];
 
 export type FeedPostResponse = Schemas["FeedPostResponse"];
 export type CreateFeedPostRequest = Schemas["CreateFeedPostRequest"];

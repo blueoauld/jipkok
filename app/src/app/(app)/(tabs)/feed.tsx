@@ -48,8 +48,8 @@ import {
   type Gender,
 } from "@/lib/api";
 import { formatDateLabel, formatSlotTime } from "@/lib/date";
-import { uploadFeedPhoto } from "@/lib/feedPhoto";
 import { useFeedFilterStore } from "@/lib/filter/store";
+import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 import type { ImagePickerAsset } from "expo-image-picker";
 

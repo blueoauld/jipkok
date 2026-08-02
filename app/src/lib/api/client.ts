@@ -134,9 +134,7 @@ export async function request<T>(
     throw await toApiError(response);
   }
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
+  const body = await response.text();
 
-  return (await response.json()) as T;
+  return (body ? JSON.parse(body) : undefined) as T;
 }

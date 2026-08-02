@@ -1,4 +1,5 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native";
 import { useState } from "react";
 import {
@@ -13,20 +14,27 @@ import { Button, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { PhotoGrid } from "@/components/PhotoGrid";
-import { usePhotos } from "@/hooks/usePhotos";
+import { useMemberDetail } from "@/hooks/useMemberDetail";
+import { useUploadPhotos } from "@/hooks/useUploadPhotos";
+import { alertApiError, alertInfo } from "@/lib/alert";
+import { api, type ReportReason } from "@/lib/api";
+import { uploadReportPhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const DETAIL_MAX_LENGTH = 1000;
 
-const REASONS = [
-  "음란물",
-  "미성년자",
-  "금전거래",
-  "욕설 및 협박",
-  "사칭 및 도용",
-  "기타",
+const REASONS: { label: string; value: ReportReason }[] = [
+  { label: "음란물", value: "OBSCENITY" },
+  { label: "미성년자", value: "MINOR" },
+  { label: "금전거래", value: "MONEY_TRANSACTION" },
+  { label: "욕설 및 협박", value: "ABUSE" },
+  { label: "사칭 및 도용", value: "IMPERSONATION" },
+  { label: "기타", value: "ETC" },
 ];
+
+const REPORTED_MESSAGE = "신고를 접수했습니다.";
 
 function ReasonRow({
   label,
@@ -61,14 +69,36 @@ function ReasonRow({
 
 export default function ReportScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const memberId = Number(id);
   const insets = useSafeAreaInsets();
-  const [reason, setReason] = useState<string | null>(null);
+  const [reason, setReason] = useState<ReportReason | null>(null);
   const [detail, setDetail] = useState("");
-  const photos = usePhotos();
+  const photos = useUploadPhotos(uploadReportPhoto);
+
+  const { data: member } = useMemberDetail(memberId);
+
+  const report = useMutation({
+    mutationFn: (value: ReportReason) =>
+      api.reports.create({
+        reportedMemberId: memberId,
+        reason: value,
+        detail: detail || null,
+        photoKeys: photos.objectKeys,
+      }),
+    onSuccess: () => {
+      router.back();
+      alertInfo(REPORTED_MESSAGE);
+    },
+    onError: alertApiError,
+  });
+
+  const busy = report.isPending || photos.uploading;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "신고하기 (홍길동)" }} />
+      <Stack.Screen
+        options={{ title: member ? `신고 (${member.nickname})` : "신고" }}
+      />
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
@@ -82,7 +112,7 @@ export default function ReportScreen() {
               증거 사진
             </Text>
             <PhotoGrid
-              photos={photos.photos}
+              photos={photos.urls}
               onAdd={photos.add}
               onRemove={photos.remove}
               onMove={photos.move}
@@ -90,12 +120,12 @@ export default function ReportScreen() {
           </YStack>
 
           <YStack bg="$gray4" rounded="$7" overflow="hidden">
-            {REASONS.map((label) => (
+            {REASONS.map(({ label, value }) => (
               <ReasonRow
-                key={label}
+                key={value}
                 label={label}
-                selected={label === reason}
-                onPress={() => setReason(label)}
+                selected={value === reason}
+                onPress={() => setReason(value)}
               />
             ))}
           </YStack>
@@ -122,11 +152,20 @@ export default function ReportScreen() {
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button size="$4" theme="red" rounded="$7" disabled={!reason}>
+          <Button
+            size="$4"
+            theme="red"
+            rounded="$7"
+            disabled={!reason || busy}
+            opacity={!reason || busy ? 0.6 : 1}
+            onPress={() => reason && report.mutate(reason)}
+          >
             신고하기
           </Button>
         </YStack>
       </KeyboardStickyView>
+
+      <LoadingOverlay visible={photos.uploading} />
     </SafeAreaView>
   );
 }

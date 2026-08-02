@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack } from "expo-router";
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
-import { Modal } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -15,18 +15,23 @@ import { Button, Spinner, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
-import { useProfilePhotos } from "@/hooks/useProfilePhotos";
+import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { alertApiError, alertMessage } from "@/lib/alert";
 import { api, type MyProfileResponse } from "@/lib/api";
+import { uploadProfilePhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const NICKNAME_MAX_LENGTH = 10;
 const BIO_MAX_LENGTH = 1000;
 const BIRTH_YEAR_LENGTH = 4;
 
-const OVERLAY_OPACITY = 0.6;
+const uploadPublicPhoto = (asset: ImagePickerAsset) =>
+  uploadProfilePhoto(asset, "PUBLIC");
+const uploadSecretPhoto = (asset: ImagePickerAsset) =>
+  uploadProfilePhoto(asset, "SECRET");
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const INVALID_BIRTH_YEAR_MESSAGE = "출생연도가 올바르지 않습니다.";
@@ -42,8 +47,8 @@ function Centered({ children }: { children: ReactNode }) {
 function EditForm({ profile }: { profile: MyProfileResponse }) {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const publicPhotos = useProfilePhotos(profile.publicPhotos, "PUBLIC");
-  const secretPhotos = useProfilePhotos(profile.secretPhotos, "SECRET");
+  const publicPhotos = useUploadPhotos(uploadPublicPhoto, profile.publicPhotos);
+  const secretPhotos = useUploadPhotos(uploadSecretPhoto, profile.secretPhotos);
 
   const nicknameRef = useRef(profile.nickname);
   const birthYearRef = useRef(String(profile.birthYear));
@@ -178,28 +183,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         </YStack>
       </KeyboardStickyView>
 
-      <Modal
-        transparent
-        statusBarTranslucent
-        navigationBarTranslucent
-        visible={uploading}
-        animationType="fade"
-        onRequestClose={() => {}}
-      >
-        <YStack flex={1} items="center" justify="center">
-          <YStack
-            position="absolute"
-            t={0}
-            l={0}
-            r={0}
-            b={0}
-            bg="$background"
-            opacity={OVERLAY_OPACITY}
-          />
-
-          <Spinner size="small" />
-        </YStack>
-      </Modal>
+      <LoadingOverlay visible={uploading} />
     </>
   );
 }
