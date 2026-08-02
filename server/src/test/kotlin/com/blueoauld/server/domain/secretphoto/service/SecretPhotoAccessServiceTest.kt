@@ -10,6 +10,8 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.secretphoto.entity.SecretPhotoAccess
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
@@ -36,6 +38,8 @@ class SecretPhotoAccessServiceTest {
 
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
+    private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
+
     private val secretPhotoAccessService = SecretPhotoAccessService(
         secretPhotoAccessRepository,
         memberRepository,
@@ -43,6 +47,7 @@ class SecretPhotoAccessServiceTest {
         memberPhotoRepository,
         memberBlockRepository,
         photoStorage,
+        memberSuspensionService,
     )
 
     @BeforeEach
@@ -62,6 +67,24 @@ class SecretPhotoAccessServiceTest {
 
         // then
         assertThat(urls).containsExactly("signed:a.jpg", "signed:b.jpg")
+    }
+
+    @Test
+    fun `비밀 사진 정지 중이면 볼 수 없다`() {
+        // given
+        allowView()
+        every {
+            memberSuspensionService.check(VIEWER_ID, SuspensionType.SECRET_PHOTO)
+        } throws BusinessException(ErrorCode.SECRET_PHOTO_SUSPENDED)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_SUSPENDED)
+        verify(exactly = 0) { photoStorage.createSignedViewUrl(any()) }
     }
 
     @Test

@@ -8,6 +8,8 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.secretphoto.entity.SecretPhotoAccess
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
@@ -26,6 +28,7 @@ class SecretPhotoAccessService(
     private val memberPhotoRepository: MemberPhotoRepository,
     private val memberBlockRepository: MemberBlockRepository,
     private val photoStorage: PhotoStorage,
+    private val memberSuspensionService: MemberSuspensionService,
 ) {
 
     @Transactional
@@ -51,6 +54,8 @@ class SecretPhotoAccessService(
         if (viewerId == ownerId) {
             throw BusinessException(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
         }
+
+        memberSuspensionService.check(viewerId, SuspensionType.SECRET_PHOTO)
 
         if (!secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId) ||
             isBlocked(viewerId, ownerId)
