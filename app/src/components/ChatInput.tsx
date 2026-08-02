@@ -9,7 +9,7 @@ import {
   type InputToolbarProps,
   type SendProps,
 } from "react-native-gifted-chat";
-import { useTheme, XStack, YStack } from "tamagui";
+import { Spinner, useTheme, XStack, YStack } from "tamagui";
 
 const PILL_PADDING = 6;
 const BUTTON_SIZE = 36;
@@ -45,7 +45,10 @@ export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
   );
 }
 
-export function ChatActions({ onPressActionButton }: ActionsProps) {
+export function ChatActions({
+  onPressActionButton,
+  uploading,
+}: ActionsProps & { uploading?: boolean }) {
   const theme = useTheme();
 
   return (
@@ -56,14 +59,18 @@ export function ChatActions({ onPressActionButton }: ActionsProps) {
       bg="$gray2"
       items="center"
       justify="center"
-      pressStyle={{ opacity: 0.6 }}
-      onPress={onPressActionButton}
+      pressStyle={uploading ? undefined : { opacity: 0.6 }}
+      onPress={uploading ? undefined : onPressActionButton}
     >
-      <PlusIcon
-        size={ACTION_ICON_SIZE}
-        weight="bold"
-        color={theme.color10.val}
-      />
+      {uploading ? (
+        <Spinner size="small" />
+      ) : (
+        <PlusIcon
+          size={ACTION_ICON_SIZE}
+          weight="bold"
+          color={theme.color10.val}
+        />
+      )}
     </XStack>
   );
 }

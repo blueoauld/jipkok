@@ -3,6 +3,7 @@ import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
   ChatMessagePage,
+  ChatMessageResponse,
   ChatRoomPage,
   ChatRoomResponse,
   CreateFeedPostRequest,
@@ -23,6 +24,7 @@ import type {
   PhotoUploadUrlResponse,
   PointHistoryPage,
   PointRewardResponse,
+  SendMessageRequest,
   SendNoteResponse,
   SetupProfileRequest,
   SignupRequest,
@@ -255,6 +257,18 @@ export const chats = {
   messages: (roomId: number, params: CursorParams = {}) =>
     request<ChatMessagePage>(`/api/chats/${roomId}/messages`, {
       query: params,
+    }),
+
+  send: (roomId: number, body: SendMessageRequest) =>
+    request<ChatMessageResponse>(`/api/chats/${roomId}/messages`, {
+      method: "POST",
+      body,
+    }),
+
+  createPhotoUploadUrl: (contentType: string) =>
+    request<PhotoUploadUrlResponse>("/api/chats/photos/upload-url", {
+      method: "POST",
+      body: { contentType },
     }),
 
   search: (params: ChatRoomSearchParams) =>

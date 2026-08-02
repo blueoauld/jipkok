@@ -30,6 +30,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import type { ChatMessageResponse, ChatRoomResponse } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
@@ -73,6 +74,7 @@ export default function ChatRoomScreen() {
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId);
   const feed = useChatMessages(roomId);
+  const { sendText, sendPhotos, uploading } = useSendMessage(roomId);
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
   const giftedMessages = useMemo(
@@ -80,9 +82,24 @@ export default function ChatRoomScreen() {
     [messages, room],
   );
 
+  const handleSend = useCallback(
+    (sent: IMessage[]) => {
+      const text = sent[0]?.text.trim();
+
+      if (text) {
+        sendText(text);
+      }
+    },
+    [sendText],
+  );
+
   const handlePickPhotos = useCallback(async () => {
-    await pickPhotos(MAX_PHOTOS);
-  }, []);
+    const assets = await pickPhotos(MAX_PHOTOS);
+
+    if (assets.length > 0) {
+      sendPhotos(assets);
+    }
+  }, [sendPhotos]);
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
 
@@ -123,7 +140,7 @@ export default function ChatRoomScreen() {
       {room && profile ? (
         <GiftedChat
           messages={giftedMessages}
-          onSend={() => {}}
+          onSend={handleSend}
           user={{ _id: profile.memberId }}
           locale="ko"
           colorScheme={scheme}
@@ -154,7 +171,9 @@ export default function ChatRoomScreen() {
           renderInputToolbar={(props) => <ChatInputToolbar {...props} />}
           renderComposer={(props) => <ChatComposer {...props} />}
           renderSend={(props) => <ChatSend {...props} />}
-          renderActions={(props) => <ChatActions {...props} />}
+          renderActions={(props) => (
+            <ChatActions {...props} uploading={uploading} />
+          )}
           onPressActionButton={handlePickPhotos}
           onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
         />
