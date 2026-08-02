@@ -30,5 +30,14 @@ class FeedPostReportService(
         }
 
         feedPostReportRepository.saveAndFlush(FeedPostReport(reporterId, postId))
+
+        if (feedPostReportRepository.countByPostId(postId) >= AUTO_DELETE_REPORT_COUNT) {
+            feedPostRepository.delete(post)
+        }
+    }
+
+    companion object {
+
+        const val AUTO_DELETE_REPORT_COUNT = 5
     }
 }

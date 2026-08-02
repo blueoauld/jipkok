@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface FeedPostReportRepository : JpaRepository<FeedPostReport, Long> {
 
     fun existsByReporterIdAndPostId(reporterId: Long, postId: Long): Boolean
+
+    fun countByPostId(postId: Long): Long
 }

@@ -30,6 +30,7 @@ class FeedPostReportServiceTest {
         every { feedPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
         every { feedPostReportRepository.existsByReporterIdAndPostId(any(), any()) } returns false
         every { feedPostReportRepository.saveAndFlush(any()) } answers { firstArg() }
+        every { feedPostReportRepository.countByPostId(POST_ID) } returns 1
     }
 
     @Test
@@ -44,6 +45,34 @@ class FeedPostReportServiceTest {
         verify { feedPostReportRepository.saveAndFlush(capture(saved)) }
         assertThat(saved.captured.reporterId).isEqualTo(REPORTER_ID)
         assertThat(saved.captured.postId).isEqualTo(POST_ID)
+    }
+
+    @Test
+    fun `신고가 쌓이면 게시물이 지워진다`() {
+        // given
+        every {
+            feedPostReportRepository.countByPostId(POST_ID)
+        } returns FeedPostReportService.AUTO_DELETE_REPORT_COUNT.toLong()
+
+        // when
+        feedPostReportService.report(REPORTER_ID, POST_ID)
+
+        // then
+        verify { feedPostRepository.delete(any()) }
+    }
+
+    @Test
+    fun `신고가 기준에 못 미치면 게시물이 남는다`() {
+        // given
+        every {
+            feedPostReportRepository.countByPostId(POST_ID)
+        } returns FeedPostReportService.AUTO_DELETE_REPORT_COUNT - 1L
+
+        // when
+        feedPostReportService.report(REPORTER_ID, POST_ID)
+
+        // then
+        verify(exactly = 0) { feedPostRepository.delete(any()) }
     }
 
     @Test
