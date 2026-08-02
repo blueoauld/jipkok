@@ -11,6 +11,9 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     fun findByLowMemberIdAndHighMemberId(lowMemberId: Long, highMemberId: Long): ChatRoom?
 
+    fun findByMembers(memberId: Long, partnerId: Long): ChatRoom? =
+        findByLowMemberIdAndHighMemberId(minOf(memberId, partnerId), maxOf(memberId, partnerId))
+
     @Query(value = "select id from chat_room where deleted_at < :threshold", nativeQuery = true)
     fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
 

@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.block.service
 
 import com.blueoauld.server.domain.block.entity.MemberBlock
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.chat.service.ChatRoomService
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -25,10 +26,13 @@ class MemberBlockServiceTest {
 
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
+    private val chatRoomService = mockk<ChatRoomService>(relaxed = true)
+
     private val memberBlockService = MemberBlockService(
         memberBlockRepository,
         memberRepository,
         memberSummaryService,
+        chatRoomService,
     )
 
     @BeforeEach
@@ -36,6 +40,29 @@ class MemberBlockServiceTest {
         every { memberRepository.existsById(BLOCKED_MEMBER_ID) } returns true
         every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
         every { memberBlockRepository.saveAndFlush(any()) } answers { firstArg() }
+    }
+
+    @Test
+    fun `차단하면 상대와의 대화방을 지운다`() {
+        // when
+        memberBlockService.block(BLOCKER_ID, BLOCKED_MEMBER_ID)
+
+        // then
+        verify { chatRoomService.deleteBetween(BLOCKER_ID, BLOCKED_MEMBER_ID) }
+    }
+
+    @Test
+    fun `이미 차단한 상대면 대화방을 건드리지 않는다`() {
+        // given
+        every {
+            memberBlockRepository.existsByBlockerIdAndBlockedMemberId(BLOCKER_ID, BLOCKED_MEMBER_ID)
+        } returns true
+
+        // when
+        memberBlockService.block(BLOCKER_ID, BLOCKED_MEMBER_ID)
+
+        // then
+        verify(exactly = 0) { chatRoomService.deleteBetween(any(), any()) }
     }
 
     @Test

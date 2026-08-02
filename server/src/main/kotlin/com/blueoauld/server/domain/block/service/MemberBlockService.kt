@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.block.service
 
 import com.blueoauld.server.domain.block.entity.MemberBlock
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.chat.service.ChatRoomService
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
@@ -19,6 +20,7 @@ class MemberBlockService(
     private val memberBlockRepository: MemberBlockRepository,
     private val memberRepository: MemberRepository,
     private val memberSummaryService: MemberSummaryService,
+    private val chatRoomService: ChatRoomService,
 ) {
 
     @Transactional
@@ -36,6 +38,7 @@ class MemberBlockService(
         }
 
         runCatching { memberBlockRepository.saveAndFlush(MemberBlock(blockerId, blockedMemberId)) }
+            .onSuccess { chatRoomService.deleteBetween(blockerId, blockedMemberId) }
             .onFailure { if (it !is DataIntegrityViolationException) throw it }
     }
 

@@ -57,7 +57,7 @@ class ChatNoteServiceTest {
     fun setUp() {
         every { memberRepository.findById(RECEIVER_ID) } returns Optional.of(member())
         every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
-        every { chatRoomRepository.findByLowMemberIdAndHighMemberId(any(), any()) } returns null
+        every { chatRoomRepository.findByMembers(any(), any()) } returns null
         every { chatRoomRepository.save(any()) } answers { firstArg() }
         every { chatMessageRepository.save(any()) } answers { firstArg() }
     }
@@ -121,9 +121,7 @@ class ChatNoteServiceTest {
     @Test
     fun `방이 이미 있으면 포인트를 차감하지 않는다`() {
         // given
-        every {
-            chatRoomRepository.findByLowMemberIdAndHighMemberId(SENDER_ID, RECEIVER_ID)
-        } returns ChatRoom.of(SENDER_ID, RECEIVER_ID)
+        every { chatRoomRepository.findByMembers(SENDER_ID, RECEIVER_ID) } returns ChatRoom.of(SENDER_ID, RECEIVER_ID)
 
         // when
         chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
@@ -189,9 +187,7 @@ class ChatNoteServiceTest {
     fun `쪽지 수신을 꺼도 이미 열린 방에는 보낼 수 있다`() {
         // given
         every { memberRepository.findById(RECEIVER_ID) } returns Optional.of(member(noteReceiveEnabled = false))
-        every {
-            chatRoomRepository.findByLowMemberIdAndHighMemberId(SENDER_ID, RECEIVER_ID)
-        } returns ChatRoom.of(SENDER_ID, RECEIVER_ID)
+        every { chatRoomRepository.findByMembers(SENDER_ID, RECEIVER_ID) } returns ChatRoom.of(SENDER_ID, RECEIVER_ID)
 
         // when
         chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)

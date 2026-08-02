@@ -54,7 +54,35 @@ class ChatRoomServiceTest {
         verify { eventPublisher.publishEvent(capture(events)) }
         val deleted = events.filterIsInstance<ChatRoomDeletedEvent>().single()
         assertThat(deleted.receiverId).isEqualTo(PARTNER_ID)
-        assertThat(deleted.roomId).isEqualTo(ROOM_ID)
+        assertThat(deleted.roomId).isEqualTo(room.id)
+    }
+
+    @Test
+    fun `상대와의 방을 지우면 상대에게 알린다`() {
+        // given
+        every { chatRoomRepository.findByMembers(ME_ID, PARTNER_ID) } returns room
+        val events = mutableListOf<Any>()
+
+        // when
+        chatRoomService.deleteBetween(ME_ID, PARTNER_ID)
+
+        // then
+        verify { chatRoomRepository.delete(room) }
+        verify { eventPublisher.publishEvent(capture(events)) }
+        assertThat(events.filterIsInstance<ChatRoomDeletedEvent>().single().receiverId).isEqualTo(PARTNER_ID)
+    }
+
+    @Test
+    fun `상대와의 방이 없으면 아무것도 하지 않는다`() {
+        // given
+        every { chatRoomRepository.findByMembers(ME_ID, PARTNER_ID) } returns null
+
+        // when
+        chatRoomService.deleteBetween(ME_ID, PARTNER_ID)
+
+        // then
+        verify(exactly = 0) { chatRoomRepository.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
     @Test

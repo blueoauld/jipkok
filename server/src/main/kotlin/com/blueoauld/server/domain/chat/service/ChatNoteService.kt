@@ -47,7 +47,7 @@ class ChatNoteService(
             throw BusinessException(ErrorCode.NOTE_BLOCKED)
         }
 
-        val room = findRoom(senderId, receiverId) ?: openRoom(senderId, receiverId, receiver)
+        val room = chatRoomRepository.findByMembers(senderId, receiverId) ?: openRoom(senderId, receiverId, receiver)
         val message = chatMessageRepository.save(
             ChatMessage(
                 roomId = room.id,
@@ -63,11 +63,6 @@ class ChatNoteService(
 
         return SendNoteResponse(room.id)
     }
-
-    private fun findRoom(senderId: Long, receiverId: Long) = chatRoomRepository.findByLowMemberIdAndHighMemberId(
-        minOf(senderId, receiverId),
-        maxOf(senderId, receiverId),
-    )
 
     private fun openRoom(senderId: Long, receiverId: Long, receiver: Member): ChatRoom {
         if (!receiver.noteReceiveEnabled) {
