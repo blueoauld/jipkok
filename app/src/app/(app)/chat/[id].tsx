@@ -206,7 +206,7 @@ export default function ChatRoomScreen() {
       destructive: true,
       onPress: () => {
         if (room) {
-          pushOnce(`/report/${room.memberId}`);
+          pushOnce(`/report/${room.memberId}?roomId=${roomId}`);
         }
       },
     },

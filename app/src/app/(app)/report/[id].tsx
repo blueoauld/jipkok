@@ -68,7 +68,10 @@ function ReasonRow({
 }
 
 export default function ReportScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, roomId } = useLocalSearchParams<{
+    id: string;
+    roomId?: string;
+  }>();
   const memberId = Number(id);
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -76,11 +79,13 @@ export default function ReportScreen() {
   const photos = useUploadPhotos(uploadReportPhoto);
 
   const { data: member } = useMemberDetail(memberId);
+  const title = roomId ? "채팅 신고" : "신고";
 
   const report = useMutation({
     mutationFn: (value: ReportReason) =>
       api.reports.create({
         reportedMemberId: memberId,
+        roomId: roomId ? Number(roomId) : null,
         reason: value,
         detail: detail || null,
         photoKeys: photos.objectKeys,
@@ -97,7 +102,7 @@ export default function ReportScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen
-        options={{ title: member ? `신고 (${member.nickname})` : "신고" }}
+        options={{ title: member ? `${title} (${member.nickname})` : title }}
       />
 
       <KeyboardAwareScrollView
@@ -165,7 +170,7 @@ export default function ReportScreen() {
         </YStack>
       </KeyboardStickyView>
 
-      <LoadingOverlay visible={photos.uploading} />
+      <LoadingOverlay visible={busy} />
     </SafeAreaView>
   );
 }

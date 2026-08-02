@@ -544,6 +544,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/members/{memberId}/secret-photos/urls": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 비밀 사진 조회
+     * @description 공개받았고 서로 차단이 없을 때만 준다.
+     */
+    get: operations["findPhotoUrls"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/members/search": {
     parameters: {
       query?: never;
@@ -830,6 +850,8 @@ export interface components {
     CreateReportRequest: {
       /** Format: int64 */
       reportedMemberId: number;
+      /** Format: int64 */
+      roomId?: number | null;
       /** @enum {string} */
       reason:
         | "OBSCENITY"
@@ -3012,6 +3034,55 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["MemberDetailResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  findPhotoUrls: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        memberId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": string[];
         };
       };
       /** @description 요청이 올바르지 않다 */
