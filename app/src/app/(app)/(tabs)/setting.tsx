@@ -28,10 +28,12 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
+import { openSupportMail } from "@/lib/support";
 
 const ICON_SIZE = 22;
 
@@ -39,9 +41,11 @@ const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 
 const WITHDRAW_DESCRIPTION =
   "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.";
 
+const MAIL_FAILED_MESSAGE = "메일 앱을 열지 못했습니다.";
+
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
-type SettingAction = "attendanceReward" | "adReward";
+type SettingAction = "attendanceReward" | "adReward" | "contact" | "suggest";
 
 type SettingItem = {
   label: string;
@@ -89,8 +93,8 @@ const SECTIONS: SettingItem[][] = [
     { label: "광고 보상", icon: MonitorPlayIcon, action: "adReward" },
   ],
   [
-    { label: "문의하기", icon: HeadsetIcon },
-    { label: "건의하기", icon: LightbulbIcon },
+    { label: "문의하기", icon: HeadsetIcon, action: "contact" },
+    { label: "건의하기", icon: LightbulbIcon, action: "suggest" },
     { label: "서비스 이용약관", icon: FileTextIcon },
     { label: "개인정보 처리방침", icon: ShieldCheckIcon },
   ],
@@ -133,6 +137,7 @@ export default function SettingScreen() {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
+  const { data: profile } = useMyProfile();
   const logout = useMutation({ mutationFn: api.auth.logout });
   const adReward = useAdReward();
   const gate = useInterstitialGate();
@@ -158,6 +163,14 @@ export default function SettingScreen() {
 
   const handleAction = useCallback(
     (action: SettingAction) => {
+      if (action === "contact" || action === "suggest") {
+        openSupportMail(
+          action === "contact" ? "문의하기" : "건의하기",
+          profile?.memberId,
+        ).catch(() => alertMessage(MAIL_FAILED_MESSAGE));
+        return;
+      }
+
       if (action === "adReward") {
         adReward.watch();
         return;
@@ -167,7 +180,7 @@ export default function SettingScreen() {
         earnAttendanceReward.mutate();
       }
     },
-    [adReward, earnAttendanceReward],
+    [adReward, earnAttendanceReward, profile?.memberId],
   );
 
   const handlePress = useCallback(
