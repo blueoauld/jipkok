@@ -16,6 +16,7 @@ import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.entity.type.ReportType
+import com.blueoauld.server.domain.report.event.ReportCreatedEvent
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
@@ -24,6 +25,7 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,6 +46,7 @@ class ReportService(
     private val photoUploadService: PhotoUploadService,
     private val photoStorage: PhotoStorage,
     private val objectMapper: ObjectMapper,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     @Transactional
@@ -88,6 +91,17 @@ class ReportService(
             messages = room?.let { copyMessages(report.id, it.id) } ?: emptyList(),
         )
         reportSnapshotRepository.save(ReportSnapshot(report.id, objectMapper.writeValueAsString(snapshot)))
+
+        eventPublisher.publishEvent(
+            ReportCreatedEvent(
+                reportId = report.id,
+                type = report.type,
+                reason = report.reason,
+                detail = report.detail,
+                evidencePhotoCount = request.photoKeys.size,
+                snapshot = snapshot,
+            ),
+        )
     }
 
     fun createPhotoUploadUrl(

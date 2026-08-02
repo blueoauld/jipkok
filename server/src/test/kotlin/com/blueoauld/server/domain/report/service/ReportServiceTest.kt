@@ -35,6 +35,7 @@ import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import tools.jackson.databind.json.JsonMapper
 import java.util.*
 
@@ -58,6 +59,8 @@ class ReportServiceTest {
 
     private val chatMessageRepository = mockk<ChatMessageRepository>(relaxed = true)
 
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
     private val reportService = ReportService(
         reportRepository,
         reportPhotoRepository,
@@ -69,6 +72,7 @@ class ReportServiceTest {
         photoUploadService,
         photoStorage,
         JsonMapper.builder().build(),
+        eventPublisher,
     )
 
     @BeforeEach
