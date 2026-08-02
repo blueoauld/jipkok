@@ -33,6 +33,10 @@ const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 
 const NOTE_MAX_LENGTH = 100;
 
+const BADGE_SIZE = 18;
+const BADGE_FONT_SIZE = 11;
+const BADGE_OPACITY = 0.8;
+
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
@@ -55,6 +59,27 @@ const ACTIONS: { key: ActionKey; icon: Icon; color: ActionColor }[] = [
   { key: "secretPhoto", icon: ImageIcon, color: "green10" },
   { key: "block", icon: ProhibitIcon, color: "red10" },
 ];
+
+function CountBadge({ count }: { count: number }) {
+  return (
+    <XStack
+      position="absolute"
+      t={-BADGE_SIZE / 4}
+      r={-BADGE_SIZE / 4}
+      width={BADGE_SIZE}
+      height={BADGE_SIZE}
+      rounded={9999}
+      bg={count > 0 ? "$red10" : "$gray10"}
+      opacity={BADGE_OPACITY}
+      items="center"
+      justify="center"
+    >
+      <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
+        {count}
+      </Text>
+    </XStack>
+  );
+}
 
 function ActionBar({
   member,
@@ -98,11 +123,17 @@ function ActionBar({
           pressStyle={disabled[key] ? undefined : { opacity: 0.6 }}
           onPress={disabled[key] ? undefined : () => onPress(key)}
         >
-          <Icon
-            size={ACTION_ICON_SIZE}
-            weight={filled[key] && key !== "block" ? "fill" : "regular"}
-            color={filled[key] ? theme[color].val : theme.color10.val}
-          />
+          <YStack>
+            <Icon
+              size={ACTION_ICON_SIZE}
+              weight={filled[key] && key !== "block" ? "fill" : "regular"}
+              color={filled[key] ? theme[color].val : theme.color10.val}
+            />
+
+            {key === "secretPhoto" && (
+              <CountBadge count={member.secretPhotoCount} />
+            )}
+          </YStack>
         </XStack>
       ))}
     </XStack>
