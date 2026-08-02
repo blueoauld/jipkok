@@ -100,10 +100,12 @@ const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니�
 
 function FeedCard({
   post,
+  mine,
   onReport,
   onToggleLike,
 }: {
   post: FeedPostResponse;
+  mine: boolean;
   onReport: () => void;
   onToggleLike: () => void;
 }) {
@@ -150,7 +152,9 @@ function FeedCard({
         items="center"
         gap="$2"
         pressStyle={{ opacity: 0.6 }}
-        onPress={() => pushOnce(`/member/${post.memberId}`)}
+        onPress={() =>
+          pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
+        }
       >
         <UserAvatar
           id={String(post.memberId)}
@@ -395,6 +399,7 @@ function FeedNotificationButton() {
 export default function FeedScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
+  const { data: profile } = useMyProfile();
   const [reportId, setReportId] = useState<number | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [date, setDate] = useState(() => new Date());
@@ -515,6 +520,7 @@ export default function FeedScreen() {
           renderItem={({ item }) => (
             <FeedCard
               post={item}
+              mine={item.memberId === profile?.memberId}
               onReport={() => setReportId(item.postId)}
               onToggleLike={() => toggleLike.mutate(item)}
             />
