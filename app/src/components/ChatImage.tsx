@@ -24,7 +24,7 @@ import Animated, {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import Zoom from "react-native-zoom-reanimated";
-import { XStack, YStack } from "tamagui";
+import { Spinner, XStack, YStack } from "tamagui";
 
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
@@ -32,7 +32,16 @@ const CLOSE_ICON_SIZE = 24;
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
 
+const TRANSITION = 150;
+
+const UPLOADING_OPACITY = 0.6;
+
 type Size = { width: number; height: number };
+
+// 서명 URL은 요청마다 쿼리가 바뀌므로 오브젝트 경로만 캐시 키로 쓴다.
+function toCacheKey(uri: string) {
+  return uri.split("?")[0];
+}
 
 function fitInside(source: Size | undefined, screen: Size): Size {
   if (!source) {
@@ -48,7 +57,15 @@ function fitInside(source: Size | undefined, screen: Size): Size {
     : { width, height };
 }
 
-export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
+export function ChatImage({
+  uri,
+  style,
+  uploading,
+}: {
+  uri: string;
+  style: ImageStyle;
+  uploading?: boolean;
+}) {
   const screen = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<Size>();
@@ -115,8 +132,35 @@ export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
 
   return (
     <>
-      <XStack pressStyle={{ opacity: 0.8 }} onPress={openViewer}>
-        <Image source={uri} style={style} contentFit="cover" transition={150} />
+      <XStack
+        pressStyle={uploading ? undefined : { opacity: 0.8 }}
+        onPress={uploading ? undefined : openViewer}
+      >
+        <Image
+          source={{ uri, cacheKey: toCacheKey(uri) }}
+          style={style}
+          contentFit="cover"
+          transition={TRANSITION}
+        />
+
+        {uploading && (
+          <YStack
+            position="absolute"
+            t={0}
+            r={0}
+            b={0}
+            l={0}
+            rounded={
+              typeof style.borderRadius === "number" ? style.borderRadius : 0
+            }
+            bg="black"
+            opacity={UPLOADING_OPACITY}
+            items="center"
+            justify="center"
+          >
+            <Spinner size="small" color="white" />
+          </YStack>
+        )}
       </XStack>
 
       <Modal
@@ -152,7 +196,7 @@ export function ChatImage({ uri, style }: { uri: string; style: ImageStyle }) {
                 <Animated.View style={[styles.content, contentStyle]}>
                   <Zoom>
                     <Image
-                      source={uri}
+                      source={{ uri, cacheKey: toCacheKey(uri) }}
                       style={imageSize}
                       contentFit="contain"
                       onLoad={({ source }) =>

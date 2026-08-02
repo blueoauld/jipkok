@@ -36,8 +36,6 @@ import { pushOnce } from "@/lib/router";
 
 const MESSAGE_MAX_LENGTH = 1000;
 
-const LOAD_EARLIER_LABEL = "이전 메시지 보기";
-
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
@@ -58,6 +56,8 @@ function toGiftedMessage(
           }
         : { _id: message.senderId },
     image: message.imageUrl ?? undefined,
+    // 자리표시자는 음수 id를 쓴다.
+    pending: message.messageId < 0,
   };
 }
 
@@ -155,8 +155,14 @@ export default function ChatRoomScreen() {
             isLoading: isFetchingNextPage,
             isInfiniteScrollEnabled: true,
             onPress: fetchNextPage,
-            label: LOAD_EARLIER_LABEL,
           }}
+          renderLoadEarlier={({ isLoading }) =>
+            isLoading ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
+          }
           scrollToBottomStyle={CHAT_SCROLL_TO_BOTTOM_STYLE}
           scrollToBottomContentStyle={CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE}
           scrollToBottomComponent={() => <ChatScrollToBottom />}

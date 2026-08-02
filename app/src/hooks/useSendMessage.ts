@@ -89,11 +89,10 @@ export function useSendMessage(roomId: number, senderId: number) {
     }) => {
       for (const [index, asset] of assets.entries()) {
         const objectKey = await uploadChatPhoto(asset);
+        const sent = await api.chats.send(roomId, { type: "PHOTO", objectKey });
 
-        replace(
-          temps[index].messageId,
-          await api.chats.send(roomId, { type: "PHOTO", objectKey }),
-        );
+        // 서명 URL로 바꾸면 이미 그려둔 사진이 다시 받아지며 깜빡이므로 로컬 경로를 유지한다.
+        replace(temps[index].messageId, { ...sent, imageUrl: asset.uri });
       }
     },
     onMutate: ({ temps }) => prepend([...temps].reverse()),

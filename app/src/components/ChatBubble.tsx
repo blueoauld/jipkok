@@ -62,7 +62,11 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
       }}
       renderMessageImage={({ currentMessage: message }) =>
         message.image ? (
-          <ChatImage uri={message.image} style={IMAGE_STYLE} />
+          <ChatImage
+            uri={message.image}
+            style={IMAGE_STYLE}
+            uploading={message.pending}
+          />
         ) : null
       }
       textStyle={{
