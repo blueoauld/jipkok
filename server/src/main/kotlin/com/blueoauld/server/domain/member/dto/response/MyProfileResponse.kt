@@ -15,4 +15,5 @@ data class MyProfileResponse(
     val publicPhotos: List<ProfilePhotoResponse>,
     val secretPhotos: List<ProfilePhotoResponse>,
     val noteReceiveEnabled: Boolean,
+    val feedNotificationEnabled: Boolean,
 )

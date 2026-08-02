@@ -1,9 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
-  BellIcon,
-  BellSlashIcon,
   ChatCircleIcon,
   FireIcon,
   GearIcon,
@@ -14,10 +11,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
+import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
-import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
@@ -59,23 +56,14 @@ const NOTE_RECEIVE_ON_MESSAGE = "이제 새로운 쪽지를 받을 수 있습니
 const NOTE_RECEIVE_OFF_MESSAGE = "이제 새로운 쪽지를 받지 않습니다.";
 
 function NoteReceiveButton() {
-  const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
-  const enabled = profile?.noteReceiveEnabled ?? true;
-
-  const toggle = useMutation({
-    mutationFn: () => api.members.updateNoteReceive(!enabled),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      alertInfo(enabled ? NOTE_RECEIVE_OFF_MESSAGE : NOTE_RECEIVE_ON_MESSAGE);
-    },
-    onError: alertApiError,
-  });
 
   return (
-    <HeaderIconButton
-      icon={enabled ? BellIcon : BellSlashIcon}
-      onPress={toggle.isPending ? undefined : () => toggle.mutate()}
+    <BellToggleButton
+      enabled={profile?.noteReceiveEnabled ?? true}
+      update={api.members.updateNoteReceive}
+      onMessage={NOTE_RECEIVE_ON_MESSAGE}
+      offMessage={NOTE_RECEIVE_OFF_MESSAGE}
     />
   );
 }

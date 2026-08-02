@@ -42,6 +42,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/members/me/feed-notification": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** 피드 알림 설정 */
+    put: operations["updateFeedNotification"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/members/me/comment": {
     parameters: {
       query?: never;
@@ -804,6 +821,9 @@ export interface components {
     UpdateNoteReceiveRequest: {
       enabled: boolean;
     };
+    UpdateFeedNotificationRequest: {
+      enabled: boolean;
+    };
     UpdateCommentRequest: {
       comment?: string | null;
     };
@@ -1039,6 +1059,7 @@ export interface components {
       publicPhotos: components["schemas"]["ProfilePhotoResponse"][];
       secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
       noteReceiveEnabled: boolean;
+      feedNotificationEnabled: boolean;
     };
     ProfilePhotoResponse: {
       objectKey: string;
@@ -1213,6 +1234,55 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateNoteReceiveRequest"];
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  updateFeedNotification: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateFeedNotificationRequest"];
       };
     };
     responses: {

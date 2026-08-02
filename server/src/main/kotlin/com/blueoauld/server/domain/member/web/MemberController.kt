@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateFeedNotificationRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
 import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
@@ -126,6 +127,16 @@ class MemberController(
         @RequestBody request: UpdateNoteReceiveRequest,
     ) {
         memberService.updateNoteReceive(memberId, request)
+    }
+
+    @Operation(summary = "피드 알림 설정")
+    @PutMapping("/me/feed-notification")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateFeedNotification(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestBody request: UpdateFeedNotificationRequest,
+    ) {
+        memberService.updateFeedNotification(memberId, request)
     }
 
     @Operation(summary = "코멘트 저장")

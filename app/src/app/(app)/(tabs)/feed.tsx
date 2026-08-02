@@ -9,7 +9,6 @@ import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
-  BellIcon,
   CameraIcon,
   HeartIcon,
   ImagesIcon,
@@ -31,6 +30,7 @@ import {
   YStack,
 } from "tamagui";
 
+import { BellToggleButton } from "@/components/BellToggleButton";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
@@ -38,6 +38,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import {
@@ -93,6 +94,9 @@ const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
 const REPORTED_MESSAGE = "신고를 접수했습니다.";
+
+const FEED_NOTIFICATION_ON_MESSAGE = "이제 피드 알림을 받을 수 있습니다.";
+const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니다.";
 
 function FeedCard({
   post,
@@ -375,6 +379,19 @@ function ComposeDialog({
   );
 }
 
+function FeedNotificationButton() {
+  const { data: profile } = useMyProfile();
+
+  return (
+    <BellToggleButton
+      enabled={profile?.feedNotificationEnabled ?? true}
+      update={api.members.updateFeedNotification}
+      onMessage={FEED_NOTIFICATION_ON_MESSAGE}
+      offMessage={FEED_NOTIFICATION_OFF_MESSAGE}
+    />
+  );
+}
+
 export default function FeedScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
@@ -471,7 +488,7 @@ export default function FeedScreen() {
 
   const screenOptions = useMemo(
     () => ({
-      headerLeft: () => <HeaderIconButton icon={BellIcon} />,
+      headerLeft: () => <FeedNotificationButton />,
       headerRight: () => (
         <HeaderIconButton icon={NotePencilIcon} onPress={openCompose} />
       ),

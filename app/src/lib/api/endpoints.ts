@@ -146,6 +146,12 @@ export const members = {
       body: { enabled },
     }),
 
+  updateFeedNotification: (enabled: boolean) =>
+    request<void>("/api/members/me/feed-notification", {
+      method: "PUT",
+      body: { enabled },
+    }),
+
   updateComment: (body: UpdateCommentRequest) =>
     request<void>("/api/members/me/comment", { method: "PUT", body }),
 
