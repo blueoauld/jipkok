@@ -41,3 +41,4 @@ out/
 
 ### Local ###
 application-local.yaml
+application-prod.yaml
