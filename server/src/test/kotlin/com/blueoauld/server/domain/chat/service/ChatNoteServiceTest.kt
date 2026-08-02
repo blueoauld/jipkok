@@ -5,8 +5,6 @@ import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
-import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
-import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
@@ -24,7 +22,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.context.ApplicationEventPublisher
 import java.util.*
 
 class ChatNoteServiceTest {
@@ -33,7 +30,7 @@ class ChatNoteServiceTest {
 
     private val chatRoomMemberRepository = mockk<ChatRoomMemberRepository>(relaxed = true)
 
-    private val chatMessageRepository = mockk<ChatMessageRepository>(relaxed = true)
+    private val chatMessageService = mockk<ChatMessageService>(relaxed = true)
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 
@@ -41,16 +38,13 @@ class ChatNoteServiceTest {
 
     private val pointService = mockk<PointService>(relaxed = true)
 
-    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
-
     private val chatNoteService = ChatNoteService(
         chatRoomRepository,
         chatRoomMemberRepository,
-        chatMessageRepository,
+        chatMessageService,
         memberRepository,
         memberBlockRepository,
         pointService,
-        eventPublisher,
     )
 
     @BeforeEach
@@ -59,7 +53,6 @@ class ChatNoteServiceTest {
         every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
         every { chatRoomRepository.findByMembers(any(), any()) } returns null
         every { chatRoomRepository.save(any()) } answers { firstArg() }
-        every { chatMessageRepository.save(any()) } answers { firstArg() }
     }
 
     @Test
@@ -73,7 +66,7 @@ class ChatNoteServiceTest {
 
         // then
         verify { chatRoomRepository.save(capture(room)) }
-        verify { chatMessageRepository.save(capture(message)) }
+        verify { chatMessageService.append(any(), SENDER_ID, capture(message)) }
         assertThat(room.captured.lowMemberId).isEqualTo(SENDER_ID)
         assertThat(room.captured.highMemberId).isEqualTo(RECEIVER_ID)
         assertThat(message.captured.senderId).isEqualTo(SENDER_ID)
@@ -129,31 +122,7 @@ class ChatNoteServiceTest {
         // then
         verify(exactly = 0) { pointService.spend(any(), any()) }
         verify(exactly = 0) { chatRoomRepository.save(any()) }
-        verify { chatMessageRepository.save(any()) }
-    }
-
-    @Test
-    fun `쪽지를 보내면 상대의 안읽음 수가 올라간다`() {
-        // when
-        chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
-
-        // then
-        verify { chatRoomMemberRepository.increaseUnreadCount(any(), RECEIVER_ID) }
-    }
-
-    @Test
-    fun `쪽지를 보내면 상대에게 전달할 이벤트가 발행된다`() {
-        // given
-        val event = slot<ChatMessageSentEvent>()
-
-        // when
-        chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
-
-        // then
-        verify { eventPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.receiverId).isEqualTo(RECEIVER_ID)
-        assertThat(event.captured.message.senderId).isEqualTo(SENDER_ID)
-        assertThat(event.captured.message.content).isEqualTo(CONTENT)
+        verify { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test
@@ -165,7 +134,7 @@ class ChatNoteServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.SELF_NOTE)
-        verify(exactly = 0) { chatMessageRepository.save(any()) }
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test
@@ -193,7 +162,7 @@ class ChatNoteServiceTest {
         chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
 
         // then
-        verify { chatMessageRepository.save(any()) }
+        verify { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test
@@ -208,7 +177,7 @@ class ChatNoteServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.NOTE_BLOCKED)
-        verify(exactly = 0) { chatMessageRepository.save(any()) }
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test
@@ -223,7 +192,7 @@ class ChatNoteServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.NOTE_BLOCKED)
-        verify(exactly = 0) { chatMessageRepository.save(any()) }
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test
