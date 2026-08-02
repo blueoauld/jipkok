@@ -20,6 +20,7 @@ import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
@@ -172,6 +173,7 @@ export default function MemberProfileScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       alertInfo(NOTE_SENT_MESSAGE);
     },
     onError: alertApiError,
