@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.suspension.service
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
+import com.blueoauld.server.domain.suspension.repository.SuspendedMemberCache
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.stereotype.Service
@@ -13,6 +14,7 @@ import java.time.Clock
 class MemberSuspensionService(
 
     private val memberSuspensionRepository: MemberSuspensionRepository,
+    private val suspendedMemberCache: SuspendedMemberCache,
     private val clock: Clock,
 ) {
 
@@ -22,9 +24,16 @@ class MemberSuspensionService(
 
     @Transactional(readOnly = true)
     fun check(memberId: Long, type: SuspensionType) {
-        if (memberSuspensionRepository.existsActive(memberId, type, clock.instant())) {
+        if (isSuspended(memberId, type)) {
             throw BusinessException(errorCodeOf(type))
         }
+    }
+
+    private fun isSuspended(memberId: Long, type: SuspensionType): Boolean {
+        suspendedMemberCache.find(memberId, type)?.let { return it }
+
+        return memberSuspensionRepository.existsActive(memberId, type, clock.instant())
+            .also { suspendedMemberCache.save(memberId, type, it) }
     }
 
     private fun errorCodeOf(type: SuspensionType) = when (type) {

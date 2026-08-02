@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.suspension.service
 
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
+import com.blueoauld.server.domain.suspension.repository.SuspendedMemberCache
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -20,14 +21,18 @@ class MemberSuspensionServiceTest {
 
     private val memberSuspensionRepository = mockk<MemberSuspensionRepository>(relaxed = true)
 
+    private val suspendedMemberCache = mockk<SuspendedMemberCache>(relaxed = true)
+
     private val memberSuspensionService = MemberSuspensionService(
         memberSuspensionRepository,
+        suspendedMemberCache,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
     fun setUp() {
         every { memberSuspensionRepository.existsActive(any(), any(), any()) } returns false
+        every { suspendedMemberCache.find(any(), any()) } returns null
     }
 
     @Test
@@ -64,6 +69,42 @@ class MemberSuspensionServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.SERVICE_SUSPENDED)
+    }
+
+    @Test
+    fun `조회한 결과는 캐시에 담는다`() {
+        // when
+        memberSuspensionService.check(MEMBER_ID, SuspensionType.SECRET_PHOTO)
+
+        // then
+        verify { suspendedMemberCache.save(MEMBER_ID, SuspensionType.SECRET_PHOTO, false) }
+    }
+
+    @Test
+    fun `캐시에 있으면 조회하지 않는다`() {
+        // given
+        every { suspendedMemberCache.find(MEMBER_ID, SuspensionType.SECRET_PHOTO) } returns false
+
+        // when
+        memberSuspensionService.check(MEMBER_ID, SuspensionType.SECRET_PHOTO)
+
+        // then
+        verify(exactly = 0) { memberSuspensionRepository.existsActive(any(), any(), any()) }
+    }
+
+    @Test
+    fun `캐시가 정지라고 하면 조회 없이 막는다`() {
+        // given
+        every { suspendedMemberCache.find(MEMBER_ID, SuspensionType.SERVICE) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberSuspensionService.check(MEMBER_ID, SuspensionType.SERVICE)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SERVICE_SUSPENDED)
+        verify(exactly = 0) { memberSuspensionRepository.existsActive(any(), any(), any()) }
     }
 
     @Test
