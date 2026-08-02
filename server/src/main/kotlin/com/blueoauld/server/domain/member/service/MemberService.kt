@@ -19,6 +19,8 @@ import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
@@ -43,6 +45,7 @@ class MemberService(
     private val authService: AuthService,
     private val passwordEncoder: PasswordEncoder,
     private val photoStorage: PhotoStorage,
+    private val memberSuspensionService: MemberSuspensionService,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
@@ -113,6 +116,8 @@ class MemberService(
 
     @Transactional
     fun editProfile(memberId: Long, request: EditProfileRequest) {
+        memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
+
         val member = memberRepository.findById(memberId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
@@ -145,6 +150,8 @@ class MemberService(
     }
 
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse {
+        memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
+
         val prefix = photoKeyPrefix(memberId, request.visibility)
         val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
 
@@ -171,6 +178,8 @@ class MemberService(
 
     @Transactional
     fun updateComment(memberId: Long, request: UpdateCommentRequest) {
+        memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
+
         val member = memberRepository.findById(memberId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }

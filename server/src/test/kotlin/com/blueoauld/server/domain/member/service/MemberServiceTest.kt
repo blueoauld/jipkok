@@ -16,6 +16,8 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
@@ -56,6 +58,8 @@ class MemberServiceTest {
 
     private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
+    private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
+
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
@@ -64,6 +68,7 @@ class MemberServiceTest {
         authService,
         passwordEncoder,
         photoStorage,
+        memberSuspensionService,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -412,6 +417,23 @@ class MemberServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
+    fun `프로필 수정 정지 중이면 편집할 수 없다`() {
+        // given
+        every {
+            memberSuspensionService.check(MEMBER_ID, SuspensionType.PROFILE_EDIT)
+        } throws BusinessException(ErrorCode.PROFILE_EDIT_SUSPENDED)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.editProfile(MEMBER_ID, EditProfileRequest(NICKNAME, 1998))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.PROFILE_EDIT_SUSPENDED)
+        verify(exactly = 0) { memberPhotoRepository.deleteAllByMemberId(any()) }
     }
 
     @Test
