@@ -9,4 +9,5 @@ data class DiscordProperties(
     val guildId: String,
     val roleId: String,
     val suspensionChannelId: String,
+    val resetChannelId: String,
 )

@@ -14,6 +14,7 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -417,6 +418,51 @@ class MemberServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
+    fun `코멘트를 초기화하면 비운다`() {
+        // given
+        val member = member()
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+
+        // when
+        memberService.resetProfile(MEMBER_ID, ProfileTarget.COMMENT)
+
+        // then
+        assertThat(member.comment).isNull()
+    }
+
+    @Test
+    fun `닉네임을 초기화하면 새 닉네임을 준다`() {
+        // given
+        val member = member()
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+
+        // when
+        val nickname = memberService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME)
+
+        // then
+        assertThat(nickname).isEqualTo(member.nickname).isNotEqualTo(NICKNAME)
+    }
+
+    @Test
+    fun `공개 사진을 초기화하면 사진과 파일을 지운다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, "public.jpg"),
+            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, "secret.jpg"),
+        )
+        val event = slot<PhotosDeletedEvent>()
+
+        // when
+        memberService.resetProfile(MEMBER_ID, ProfileTarget.PUBLIC_PHOTO)
+
+        // then
+        verify { memberPhotoRepository.deleteAll(any<List<MemberPhoto>>()) }
+        verify { eventPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.objectKeys).containsExactly("public.jpg")
     }
 
     @Test

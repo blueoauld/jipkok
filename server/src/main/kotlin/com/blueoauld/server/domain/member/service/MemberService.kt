@@ -17,6 +17,7 @@ import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
@@ -158,6 +159,34 @@ class MemberService(
         val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
 
         return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
+    }
+
+    @Transactional
+    fun resetProfile(memberId: Long, target: ProfileTarget): String {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        when (target) {
+            ProfileTarget.NICKNAME -> member.nickname = generateNickname()
+            ProfileTarget.COMMENT -> member.comment = null
+            ProfileTarget.BIO -> member.bio = null
+            ProfileTarget.PUBLIC_PHOTO -> deletePhotos(memberId, PhotoVisibility.PUBLIC)
+            ProfileTarget.SECRET_PHOTO -> deletePhotos(memberId, PhotoVisibility.SECRET)
+        }
+
+        return member.nickname
+    }
+
+    private fun deletePhotos(memberId: Long, visibility: PhotoVisibility) {
+        val photos = memberPhotoRepository.findAllByMemberId(memberId).filter { it.visibility == visibility }
+
+        if (photos.isEmpty()) {
+            return
+        }
+
+        memberPhotoRepository.deleteAll(photos)
+        eventPublisher.publishEvent(PhotosDeletedEvent(photos.map { it.objectKey }))
     }
 
     @Transactional

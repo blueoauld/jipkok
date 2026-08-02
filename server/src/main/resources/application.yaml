@@ -67,3 +67,4 @@ discord:
   guild-id: ${DISCORD_GUILD_ID:}
   role-id: ${DISCORD_ROLE_ID:}
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
+  reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}

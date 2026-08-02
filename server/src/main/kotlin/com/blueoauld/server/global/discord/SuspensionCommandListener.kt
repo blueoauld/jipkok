@@ -1,5 +1,7 @@
 package com.blueoauld.server.global.discord
 
+import com.blueoauld.server.domain.member.entity.type.ProfileTarget
+import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -25,6 +27,7 @@ private val log = KotlinLogging.logger {}
 class SuspensionCommandListener(
 
     private val memberSuspensionService: MemberSuspensionService,
+    private val memberService: MemberService,
     private val discordProperties: DiscordProperties,
 ) : ListenerAdapter() {
 
@@ -46,16 +49,32 @@ class SuspensionCommandListener(
     }
 
     private fun record(event: SlashCommandInteractionEvent, suspension: SuspensionDetail) {
-        event.jda.getTextChannelById(discordProperties.suspensionChannelId)
-            ?.sendMessage("${describe(suspension)} ${event.user.asMention}")
+        send(event, discordProperties.suspensionChannelId, "${describe(suspension)} ${event.user.asMention}")
+    }
+
+    private fun send(event: SlashCommandInteractionEvent, channelId: String, message: String) {
+        event.jda.getTextChannelById(channelId)
+            ?.sendMessage(message)
             ?.queue()
-            ?: log.error { "정지 채널을 찾지 못했다. channelId=${discordProperties.suspensionChannelId}" }
+            ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
     }
 
     private fun handle(event: SlashCommandInteractionEvent) = when (event.name) {
         SUSPEND -> suspend(event)
         RELEASE -> release(event)
+        RESET -> reset(event)
         else -> history(event)
+    }
+
+    private fun reset(event: SlashCommandInteractionEvent): String {
+        val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
+        val target = ProfileTarget.valueOf(event.getOption(TARGET_OPTION)!!.asString)
+        val nickname = memberService.resetProfile(memberId, target)
+        val message = "$nickname(`#$memberId`) / ${target.label} 초기화"
+
+        send(event, discordProperties.resetChannelId, "$message ${event.user.asMention}")
+
+        return message
     }
 
     private fun suspend(event: SlashCommandInteractionEvent): String {
@@ -131,9 +150,11 @@ class SuspensionCommandListener(
         const val SUSPEND = "정지"
         const val RELEASE = "정지해제"
         const val HISTORY = "정지조회"
+        const val RESET = "초기화"
 
         private const val MEMBER_ID_OPTION = "회원id"
         private const val TYPE_OPTION = "유형"
+        private const val TARGET_OPTION = "항목"
         private const val REASON_OPTION = "사유"
         private const val DAYS_OPTION = "기간"
         private const val DETAIL_OPTION = "상세"
@@ -141,7 +162,7 @@ class SuspensionCommandListener(
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
 
-        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY)
+        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET)
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -161,6 +182,9 @@ class SuspensionCommandListener(
                 .addOptions(typeOption()),
             Commands.slash(HISTORY, "회원의 정지 이력을 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true),
+            Commands.slash(RESET, "회원의 프로필을 초기화한다.")
+                .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)
+                .addOptions(targetOption()),
         )
 
         private fun typeOption() =
@@ -171,6 +195,16 @@ class SuspensionCommandListener(
                 true,
             ).apply {
                 SuspensionType.entries.forEach { addChoice(it.label, it.name) }
+            }
+
+        private fun targetOption() =
+            OptionData(
+                OptionType.STRING,
+                TARGET_OPTION,
+                "초기화할 항목",
+                true,
+            ).apply {
+                ProfileTarget.entries.forEach { addChoice(it.label, it.name) }
             }
 
         private fun reasonOption() =
