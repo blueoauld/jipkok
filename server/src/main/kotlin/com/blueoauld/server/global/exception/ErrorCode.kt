@@ -61,6 +61,8 @@ enum class ErrorCode(
         "자기 자신에게는 비밀 사진을 공개할 수 없습니다.",
     ),
 
+    SECRET_PHOTO_FORBIDDEN(HttpStatus.FORBIDDEN, "SECRET_PHOTO_002", "비밀 사진을 볼 수 없습니다."),
+
     SELF_BLOCK(HttpStatus.BAD_REQUEST, "BLOCK_001", "자기 자신은 차단할 수 없습니다."),
 
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "POINT_001", "포인트가 부족합니다."),

@@ -29,6 +29,13 @@ class SecretPhotoAccessController(
         secretPhotoAccessService.grant(ownerId, memberId)
     }
 
+    @Operation(summary = "비밀 사진 조회", description = "공개받았고 서로 차단이 없을 때만 준다.")
+    @GetMapping("/{memberId}/secret-photos/urls")
+    fun findPhotoUrls(
+        @AuthenticationPrincipal viewerId: Long,
+        @PathVariable memberId: Long,
+    ): List<String> = secretPhotoAccessService.findPhotoUrls(viewerId, memberId)
+
     @Operation(summary = "비밀 사진 공개 해제")
     @DeleteMapping("/{memberId}/secret-photos")
     @ResponseStatus(HttpStatus.NO_CONTENT)

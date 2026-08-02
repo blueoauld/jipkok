@@ -1,13 +1,18 @@
 package com.blueoauld.server.domain.secretphoto.service
 
+import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.secretphoto.entity.SecretPhotoAccess
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -25,10 +30,19 @@ class SecretPhotoAccessServiceTest {
 
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
+    private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
+
+    private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
+
+    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+
     private val secretPhotoAccessService = SecretPhotoAccessService(
         secretPhotoAccessRepository,
         memberRepository,
         memberSummaryService,
+        memberPhotoRepository,
+        memberBlockRepository,
+        photoStorage,
     )
 
     @BeforeEach
@@ -36,6 +50,74 @@ class SecretPhotoAccessServiceTest {
         every { memberRepository.existsById(VIEWER_ID) } returns true
         every { secretPhotoAccessRepository.existsByOwnerIdAndViewerId(any(), any()) } returns false
         every { secretPhotoAccessRepository.saveAndFlush(any()) } answers { firstArg() }
+    }
+
+    @Test
+    fun `공개받았으면 비밀 사진을 순서대로 준다`() {
+        // given
+        allowView()
+
+        // when
+        val urls = secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+
+        // then
+        assertThat(urls).containsExactly("signed:a.jpg", "signed:b.jpg")
+    }
+
+    @Test
+    fun `공개받지 않았으면 볼 수 없다`() {
+        // given
+        allowView()
+        every { secretPhotoAccessRepository.existsByOwnerIdAndViewerId(OWNER_ID, VIEWER_ID) } returns false
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_FORBIDDEN)
+    }
+
+    @Test
+    fun `내가 차단했으면 공개받았어도 볼 수 없다`() {
+        // given
+        allowView()
+        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(VIEWER_ID, OWNER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_FORBIDDEN)
+    }
+
+    @Test
+    fun `상대가 나를 차단했으면 공개받았어도 볼 수 없다`() {
+        // given
+        allowView()
+        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(OWNER_ID, VIEWER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_FORBIDDEN)
+    }
+
+    @Test
+    fun `자기 자신의 비밀 사진은 이 API로 볼 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, VIEWER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
     }
 
     @Test
@@ -151,6 +233,17 @@ class SecretPhotoAccessServiceTest {
         comment = null,
         profileImageUrl = null,
     )
+
+    private fun allowView() {
+        every { secretPhotoAccessRepository.existsByOwnerIdAndViewerId(OWNER_ID, VIEWER_ID) } returns true
+        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
+        every { memberPhotoRepository.findAllByMemberId(OWNER_ID) } returns listOf(
+            MemberPhoto(OWNER_ID, PhotoVisibility.SECRET, 2, "b.jpg"),
+            MemberPhoto(OWNER_ID, PhotoVisibility.PUBLIC, 1, "public.jpg"),
+            MemberPhoto(OWNER_ID, PhotoVisibility.SECRET, 1, "a.jpg"),
+        )
+        every { photoStorage.createSignedViewUrl(any()) } answers { "signed:${firstArg<String>()}" }
+    }
 
     companion object {
 

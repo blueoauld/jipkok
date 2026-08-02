@@ -1,6 +1,9 @@
 package com.blueoauld.server.domain.secretphoto.service
 
+import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.secretphoto.entity.SecretPhotoAccess
@@ -8,6 +11,7 @@ import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepos
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
@@ -19,6 +23,9 @@ class SecretPhotoAccessService(
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val memberRepository: MemberRepository,
     private val memberSummaryService: MemberSummaryService,
+    private val memberPhotoRepository: MemberPhotoRepository,
+    private val memberBlockRepository: MemberBlockRepository,
+    private val photoStorage: PhotoStorage,
 ) {
 
     @Transactional
@@ -38,6 +45,28 @@ class SecretPhotoAccessService(
         runCatching { secretPhotoAccessRepository.saveAndFlush(SecretPhotoAccess(ownerId, viewerId)) }
             .onFailure { if (it !is DataIntegrityViolationException) throw it }
     }
+
+    @Transactional(readOnly = true)
+    fun findPhotoUrls(viewerId: Long, ownerId: Long): List<String> {
+        if (viewerId == ownerId) {
+            throw BusinessException(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
+        }
+
+        if (!secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId) ||
+            isBlocked(viewerId, ownerId)
+        ) {
+            throw BusinessException(ErrorCode.SECRET_PHOTO_FORBIDDEN)
+        }
+
+        return memberPhotoRepository.findAllByMemberId(ownerId)
+            .filter { it.visibility == PhotoVisibility.SECRET }
+            .sortedBy { it.displayOrder }
+            .map { photoStorage.createSignedViewUrl(it.objectKey) }
+    }
+
+    private fun isBlocked(viewerId: Long, ownerId: Long) =
+        memberBlockRepository.existsByBlockerIdAndBlockedMemberId(viewerId, ownerId) ||
+                memberBlockRepository.existsByBlockerIdAndBlockedMemberId(ownerId, viewerId)
 
     @Transactional
     fun revoke(ownerId: Long, viewerId: Long) {
