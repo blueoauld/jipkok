@@ -24,6 +24,7 @@ import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { alertApiError } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
+import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
@@ -50,14 +51,12 @@ type Relation = { listKey: string[]; call: () => Promise<void> };
 
 type ActionKey = "like" | "favorite" | "note" | "secretPhoto" | "block";
 
-type ActionColor = "red10" | "yellow10" | "blue10" | "green10";
-
-const ACTIONS: { key: ActionKey; icon: Icon; color: ActionColor }[] = [
-  { key: "like", icon: HeartIcon, color: "red10" },
-  { key: "favorite", icon: StarIcon, color: "yellow10" },
-  { key: "note", icon: ChatCircleIcon, color: "blue10" },
-  { key: "secretPhoto", icon: ImageIcon, color: "green10" },
-  { key: "block", icon: ProhibitIcon, color: "red10" },
+const ACTIONS: { key: ActionKey; icon: Icon }[] = [
+  { key: "like", icon: HeartIcon },
+  { key: "favorite", icon: StarIcon },
+  { key: "note", icon: ChatCircleIcon },
+  { key: "secretPhoto", icon: ImageIcon },
+  { key: "block", icon: ProhibitIcon },
 ];
 
 function CountBadge({ count }: { count: number }) {
@@ -98,6 +97,14 @@ function ActionBar({
     block: member.blockedByMe,
   };
 
+  const colors: Record<ActionKey, string> = {
+    like: theme.red10.val,
+    favorite: FAVORITE_COLOR,
+    note: theme.blue10.val,
+    secretPhoto: theme.green10.val,
+    block: theme.red10.val,
+  };
+
   const disabled: Record<ActionKey, boolean> = {
     like: false,
     favorite: false,
@@ -113,7 +120,7 @@ function ActionBar({
       borderTopWidth={StyleSheet.hairlineWidth}
       borderColor="$borderColor"
     >
-      {ACTIONS.map(({ key, icon: Icon, color }) => (
+      {ACTIONS.map(({ key, icon: Icon }) => (
         <XStack
           key={key}
           flex={1}
@@ -127,7 +134,7 @@ function ActionBar({
             <Icon
               size={ACTION_ICON_SIZE}
               weight={filled[key] && key !== "block" ? "fill" : "regular"}
-              color={filled[key] ? theme[color].val : theme.color10.val}
+              color={filled[key] ? colors[key] : theme.color10.val}
             />
 
             {key === "secretPhoto" && (

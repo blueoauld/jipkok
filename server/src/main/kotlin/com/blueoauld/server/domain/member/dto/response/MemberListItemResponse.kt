@@ -14,11 +14,17 @@ data class MemberListItemResponse(
     val profileImageUrl: String?,
     val locatedAt: Instant?,
     val distance: Double?,
+    val favoritedByMe: Boolean,
 ) {
 
     companion object {
 
-        fun of(summary: MemberSummaryResponse, locatedAt: Instant?, distance: Double?) = MemberListItemResponse(
+        fun of(
+            summary: MemberSummaryResponse,
+            locatedAt: Instant?,
+            distance: Double?,
+            favoritedByMe: Boolean,
+        ) = MemberListItemResponse(
             memberId = summary.memberId,
             nickname = summary.nickname,
             gender = summary.gender,
@@ -28,6 +34,7 @@ data class MemberListItemResponse(
             profileImageUrl = summary.profileImageUrl,
             locatedAt = locatedAt,
             distance = distance,
+            favoritedByMe = favoritedByMe,
         )
     }
 }

@@ -1,15 +1,20 @@
+import { StarIcon } from "phosphor-react-native";
 import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import { useNow } from "@/hooks/useNow";
-import type { MemberListItemResponse } from "@/lib/api";
+import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
+import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
 const EMPTY_COMMENT = "-";
+const FAVORITE_ICON_SIZE = 14;
 
-export function UserRow({ member }: { member: MemberListItemResponse }) {
+type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
+
+export function UserRow({ member }: { member: RowMember }) {
   const now = useNow();
   const {
     memberId,
@@ -21,6 +26,7 @@ export function UserRow({ member }: { member: MemberListItemResponse }) {
     profileImageUrl,
     locatedAt,
     distance,
+    favoritedByMe,
   } = member;
 
   return (
@@ -34,9 +40,19 @@ export function UserRow({ member }: { member: MemberListItemResponse }) {
 
       <YStack flex={1} gap="$1">
         <XStack items="center" justify="space-between" gap="$2">
-          <Text flex={1} numberOfLines={1} fontSize="$4" fontWeight="600">
-            {nickname}
-          </Text>
+          <XStack flex={1} items="center" gap="$1.5">
+            <Text shrink={1} numberOfLines={1} fontSize="$4" fontWeight="600">
+              {nickname}
+            </Text>
+
+            {favoritedByMe && (
+              <StarIcon
+                size={FAVORITE_ICON_SIZE}
+                weight="fill"
+                color={FAVORITE_COLOR}
+              />
+            )}
+          </XStack>
 
           {locatedAt && (
             <Text shrink={0} theme="gray" color="$color10" fontSize="$2">

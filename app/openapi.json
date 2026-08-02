@@ -6,9 +6,16 @@
     "version": "v1"
   },
   "servers": [
-    { "url": "http://localhost:8080", "description": "Generated server url" }
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
   ],
-  "security": [{ "bearerAuth": [] }],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "paths": {
     "/api/members/me/profile": {
       "put": {
@@ -18,18 +25,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/EditProfileRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/EditProfileRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -37,7 +50,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -45,7 +60,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -58,18 +75,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/SetupProfileRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/SetupProfileRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -77,7 +100,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -85,7 +110,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -100,18 +127,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/UpdateCommentRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -119,7 +152,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -127,7 +162,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -142,18 +179,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateReportRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "201": { "description": "Created" },
+          "201": {
+            "description": "Created"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -161,7 +204,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -169,7 +214,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -206,7 +253,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -214,7 +263,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -222,7 +273,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -239,7 +292,9 @@
             "description": "OK",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/PointRewardResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PointRewardResponse"
+                }
               }
             }
           },
@@ -247,7 +302,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -255,7 +312,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -263,7 +322,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -291,19 +352,28 @@
             "name": "gender",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["MALE", "FEMALE"] }
+            "schema": {
+              "type": "string",
+              "enum": ["MALE", "FEMALE"]
+            }
           },
           {
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -321,7 +391,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -329,7 +401,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -337,7 +411,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -350,7 +426,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/SignupRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
             }
           },
           "required": true
@@ -360,7 +438,9 @@
             "description": "Created",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/SignupResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SignupResponse"
+                }
               }
             }
           },
@@ -368,7 +448,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -376,7 +458,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -384,7 +468,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -401,16 +487,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -418,7 +511,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -426,7 +521,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -441,16 +538,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -458,7 +562,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -466,7 +572,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -483,16 +591,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -500,7 +615,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -508,7 +625,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -523,16 +642,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -540,7 +666,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -548,7 +676,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -565,16 +695,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -582,7 +719,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -590,7 +729,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -605,16 +746,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -622,7 +770,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -630,7 +780,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -647,16 +799,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -664,7 +823,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -672,7 +833,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -687,16 +850,23 @@
             "name": "memberId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -704,7 +874,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -712,7 +884,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -749,7 +923,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -757,7 +933,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -765,7 +943,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -780,18 +960,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/HeartbeatRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/HeartbeatRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -799,7 +985,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -807,7 +995,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -825,25 +1015,38 @@
             "name": "gender",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["MALE", "FEMALE"] }
+            "schema": {
+              "type": "string",
+              "enum": ["MALE", "FEMALE"]
+            }
           },
           {
             "name": "date",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "format": "date" }
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
           },
           {
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -861,7 +1064,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -869,7 +1074,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -877,7 +1084,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -891,18 +1100,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateFeedPostRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeedPostRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -910,7 +1125,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -918,7 +1135,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -935,16 +1154,23 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -952,7 +1178,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -960,7 +1188,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -977,16 +1207,23 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -994,7 +1231,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1002,7 +1241,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1017,16 +1258,23 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1034,7 +1282,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1042,7 +1292,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1079,7 +1331,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1087,7 +1341,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1095,7 +1351,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1118,12 +1376,16 @@
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1131,7 +1393,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1139,7 +1403,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1154,7 +1420,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ReissueRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ReissueRequest"
+              }
             }
           },
           "required": true
@@ -1164,7 +1432,9 @@
             "description": "OK",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
               }
             }
           },
@@ -1172,7 +1442,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1180,7 +1452,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1188,7 +1462,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1203,18 +1479,24 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ReissueRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ReissueRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1222,7 +1504,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1230,7 +1514,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1245,7 +1531,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
             }
           },
           "required": true
@@ -1255,7 +1543,9 @@
             "description": "OK",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
               }
             }
           },
@@ -1263,7 +1553,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1271,7 +1563,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1279,7 +1573,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1296,7 +1592,9 @@
             "description": "OK",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/AttendanceResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceResponse"
+                }
               }
             }
           },
@@ -1304,7 +1602,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1312,7 +1612,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1320,7 +1622,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1336,14 +1640,21 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": { "schema": { "type": "integer", "format": "int32" } }
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
             }
           },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1351,7 +1662,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1359,7 +1672,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1376,13 +1691,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1400,7 +1722,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1408,7 +1732,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1416,7 +1742,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1433,7 +1761,10 @@
             "name": "targetId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -1451,7 +1782,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1459,7 +1792,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1467,7 +1802,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1484,19 +1821,27 @@
             "name": "keyword",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1514,7 +1859,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1522,7 +1869,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1530,7 +1879,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1547,19 +1898,28 @@
             "name": "gender",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["MALE", "FEMALE"] }
+            "schema": {
+              "type": "string",
+              "enum": ["MALE", "FEMALE"]
+            }
           },
           {
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1577,7 +1937,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1585,7 +1947,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1593,7 +1957,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1610,7 +1976,9 @@
             "description": "OK",
             "content": {
               "*/*": {
-                "schema": { "$ref": "#/components/schemas/MyProfileResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/MyProfileResponse"
+                }
               }
             }
           },
@@ -1618,7 +1986,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1626,7 +1996,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1634,7 +2006,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1651,13 +2025,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1675,7 +2056,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1683,7 +2066,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1691,7 +2076,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1708,13 +2095,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1732,7 +2126,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1740,7 +2136,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1748,7 +2146,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1765,13 +2165,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1789,7 +2196,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1797,7 +2206,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1805,7 +2216,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1822,13 +2235,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1846,7 +2266,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1854,7 +2276,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1862,7 +2286,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1879,13 +2305,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1903,7 +2336,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1911,7 +2346,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1919,7 +2356,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1936,13 +2375,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -1960,7 +2406,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1968,7 +2416,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -1976,7 +2426,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1993,13 +2445,20 @@
             "name": "cursor",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "format": "int32", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -2017,7 +2476,9 @@
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -2025,7 +2486,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -2033,7 +2496,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -2050,34 +2515,47 @@
             "name": "user_id",
             "in": "query",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "transaction_id",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "key_id",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "signature",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "description": "요청이 올바르지 않다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -2085,7 +2563,9 @@
             "description": "인증이 필요하다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -2093,7 +2573,9 @@
             "description": "서버에 문제가 발생했다",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -2112,7 +2594,10 @@
             "minLength": 0,
             "pattern": "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
           },
-          "birthYear": { "type": "integer", "format": "int32" },
+          "birthYear": {
+            "type": "integer",
+            "format": "int32"
+          },
           "bio": {
             "type": ["string", "null"],
             "maxLength": 1000,
@@ -2120,13 +2605,17 @@
           },
           "publicPhotoKeys": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "maxItems": 6,
             "minItems": 0
           },
           "secretPhotoKeys": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "maxItems": 6,
             "minItems": 0
           }
@@ -2151,7 +2640,10 @@
       "CreateReportRequest": {
         "type": "object",
         "properties": {
-          "reportedMemberId": { "type": "integer", "format": "int64" },
+          "reportedMemberId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "reason": {
             "type": "string",
             "enum": [
@@ -2170,7 +2662,9 @@
           },
           "photoKeys": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "maxItems": 6,
             "minItems": 0
           }
@@ -2179,34 +2673,65 @@
       },
       "CreateReportPhotoUploadUrlRequest": {
         "type": "object",
-        "properties": { "contentType": { "type": "string" } },
+        "properties": {
+          "contentType": {
+            "type": "string"
+          }
+        },
         "required": ["contentType"]
       },
       "ReportPhotoUploadUrlResponse": {
         "type": "object",
         "properties": {
-          "uploadUrl": { "type": "string" },
-          "objectKey": { "type": "string" }
+          "uploadUrl": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          }
         },
         "required": ["objectKey", "uploadUrl"]
       },
       "PointRewardResponse": {
         "type": "object",
         "properties": {
-          "earned": { "type": "boolean" },
-          "amount": { "type": "integer", "format": "int32" },
-          "balance": { "type": "integer", "format": "int32" }
+          "earned": {
+            "type": "boolean"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balance": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
         "required": ["amount", "balance", "earned"]
       },
       "SignupRequest": {
         "type": "object",
         "properties": {
-          "phoneNumber": { "type": "string", "pattern": "^010\\d{8}$" },
-          "verificationCode": { "type": "string", "pattern": "^\\d{6}$" },
-          "password": { "type": "string", "maxLength": 30, "minLength": 8 },
-          "passwordConfirm": { "type": "string" },
-          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] }
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^010\\d{8}$"
+          },
+          "verificationCode": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 8
+          },
+          "passwordConfirm": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["MALE", "FEMALE"]
+          }
         },
         "required": [
           "gender",
@@ -2219,25 +2744,41 @@
       "SignupResponse": {
         "type": "object",
         "properties": {
-          "memberId": { "type": "integer", "format": "int64" },
-          "accessToken": { "type": "string" },
-          "refreshToken": { "type": "string" }
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
         },
         "required": ["accessToken", "memberId", "refreshToken"]
       },
       "CreatePhotoUploadUrlRequest": {
         "type": "object",
         "properties": {
-          "contentType": { "type": "string" },
-          "visibility": { "type": "string", "enum": ["PUBLIC", "SECRET"] }
+          "contentType": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": ["PUBLIC", "SECRET"]
+          }
         },
         "required": ["contentType", "visibility"]
       },
       "PhotoUploadUrlResponse": {
         "type": "object",
         "properties": {
-          "uploadUrl": { "type": "string" },
-          "objectKey": { "type": "string" }
+          "uploadUrl": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          }
         },
         "required": ["objectKey", "uploadUrl"]
       },
@@ -2261,7 +2802,10 @@
       "CreateFeedPostRequest": {
         "type": "object",
         "properties": {
-          "objectKey": { "type": "string", "minLength": 1 },
+          "objectKey": {
+            "type": "string",
+            "minLength": 1
+          },
           "caption": {
             "type": ["string", "null"],
             "maxLength": 30,
@@ -2272,51 +2816,82 @@
       },
       "CreateFeedPhotoUploadUrlRequest": {
         "type": "object",
-        "properties": { "contentType": { "type": "string" } },
+        "properties": {
+          "contentType": {
+            "type": "string"
+          }
+        },
         "required": ["contentType"]
       },
       "FeedPhotoUploadUrlResponse": {
         "type": "object",
         "properties": {
-          "uploadUrl": { "type": "string" },
-          "objectKey": { "type": "string" }
+          "uploadUrl": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          }
         },
         "required": ["objectKey", "uploadUrl"]
       },
       "SendVerificationCodeRequest": {
         "type": "object",
         "properties": {
-          "phoneNumber": { "type": "string", "pattern": "^010\\d{8}$" }
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^010\\d{8}$"
+          }
         },
         "required": ["phoneNumber"]
       },
       "ReissueRequest": {
         "type": "object",
-        "properties": { "refreshToken": { "type": "string" } },
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
         "required": ["refreshToken"]
       },
       "TokenResponse": {
         "type": "object",
         "properties": {
-          "accessToken": { "type": "string" },
-          "refreshToken": { "type": "string" }
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
         },
         "required": ["accessToken", "refreshToken"]
       },
       "LoginRequest": {
         "type": "object",
         "properties": {
-          "phoneNumber": { "type": "string" },
-          "password": { "type": "string" }
+          "phoneNumber": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
         },
         "required": ["password", "phoneNumber"]
       },
       "AttendanceResponse": {
         "type": "object",
         "properties": {
-          "earned": { "type": "boolean" },
-          "amount": { "type": "integer", "format": "int32" },
-          "balance": { "type": "integer", "format": "int32" }
+          "earned": {
+            "type": "boolean"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balance": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
         "required": ["amount", "balance", "earned"]
       },
@@ -2329,7 +2904,10 @@
             "minLength": 0,
             "pattern": "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
           },
-          "birthYear": { "type": "integer", "format": "int32" },
+          "birthYear": {
+            "type": "integer",
+            "format": "int32"
+          },
           "bio": {
             "type": ["string", "null"],
             "maxLength": 1000,
@@ -2343,16 +2921,24 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PointHistoryResponse" }
+            "items": {
+              "$ref": "#/components/schemas/PointHistoryResponse"
+            }
           },
-          "nextCursor": { "type": ["integer", "null"], "format": "int64" }
+          "nextCursor": {
+            "type": ["integer", "null"],
+            "format": "int64"
+          }
         },
         "required": ["items"]
       },
       "PointHistoryResponse": {
         "type": "object",
         "properties": {
-          "historyId": { "type": "integer", "format": "int64" },
+          "historyId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -2362,9 +2948,18 @@
               "NOTE_SEND"
             ]
           },
-          "amount": { "type": "integer", "format": "int32" },
-          "balanceAfter": { "type": "integer", "format": "int32" },
-          "recordedAt": { "type": "string", "format": "date-time" }
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balanceAfter": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "required": [
           "amount",
@@ -2377,22 +2972,50 @@
       "MemberListItemResponse": {
         "type": "object",
         "properties": {
-          "memberId": { "type": "integer", "format": "int64" },
-          "nickname": { "type": "string" },
-          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-          "age": { "type": "integer", "format": "int32" },
-          "receivedLikeCount": { "type": "integer", "format": "int32" },
-          "comment": { "type": ["string", "null"] },
-          "profileImageUrl": { "type": ["string", "null"] },
-          "locatedAt": { "type": ["string", "null"], "format": "date-time" },
-          "distance": { "type": ["number", "null"], "format": "double" }
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["MALE", "FEMALE"]
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "receivedLikeCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": ["string", "null"]
+          },
+          "profileImageUrl": {
+            "type": ["string", "null"]
+          },
+          "locatedAt": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "distance": {
+            "type": ["number", "null"],
+            "format": "double"
+          },
+          "favoritedByMe": {
+            "type": "boolean"
+          }
         },
         "required": [
           "age",
           "gender",
           "memberId",
           "nickname",
-          "receivedLikeCount"
+          "receivedLikeCount",
+          "favoritedByMe"
         ]
       },
       "ScrollResponseMemberListItemResponse": {
@@ -2400,32 +3023,80 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/MemberListItemResponse" }
+            "items": {
+              "$ref": "#/components/schemas/MemberListItemResponse"
+            }
           },
-          "nextCursor": { "type": ["string", "null"] }
+          "nextCursor": {
+            "type": ["string", "null"]
+          }
         },
         "required": ["items"]
       },
       "MemberDetailResponse": {
         "type": "object",
         "properties": {
-          "memberId": { "type": "integer", "format": "int64" },
-          "publicPhotoUrls": { "type": "array", "items": { "type": "string" } },
-          "secretPhotoCount": { "type": "integer", "format": "int32" },
-          "nickname": { "type": "string" },
-          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-          "age": { "type": "integer", "format": "int32" },
-          "receivedLikeCount": { "type": "integer", "format": "int32" },
-          "locatedAt": { "type": ["string", "null"], "format": "date-time" },
-          "distance": { "type": ["number", "null"], "format": "double" },
-          "comment": { "type": ["string", "null"] },
-          "bio": { "type": ["string", "null"] },
-          "likedByMe": { "type": "boolean" },
-          "favoritedByMe": { "type": "boolean" },
-          "secretPhotoGrantedToMe": { "type": "boolean" },
-          "secretPhotoGrantedByMe": { "type": "boolean" },
-          "blockedByMe": { "type": "boolean" },
-          "noteReceiveEnabled": { "type": "boolean" }
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "publicPhotoUrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "secretPhotoCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["MALE", "FEMALE"]
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "receivedLikeCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "locatedAt": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "distance": {
+            "type": ["number", "null"],
+            "format": "double"
+          },
+          "comment": {
+            "type": ["string", "null"]
+          },
+          "bio": {
+            "type": ["string", "null"]
+          },
+          "likedByMe": {
+            "type": "boolean"
+          },
+          "favoritedByMe": {
+            "type": "boolean"
+          },
+          "secretPhotoGrantedToMe": {
+            "type": "boolean"
+          },
+          "secretPhotoGrantedByMe": {
+            "type": "boolean"
+          },
+          "blockedByMe": {
+            "type": "boolean"
+          },
+          "noteReceiveEnabled": {
+            "type": "boolean"
+          }
         },
         "required": [
           "age",
@@ -2446,13 +3117,31 @@
       "MemberSummaryResponse": {
         "type": "object",
         "properties": {
-          "memberId": { "type": "integer", "format": "int64" },
-          "nickname": { "type": "string" },
-          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-          "age": { "type": "integer", "format": "int32" },
-          "receivedLikeCount": { "type": "integer", "format": "int32" },
-          "comment": { "type": ["string", "null"] },
-          "profileImageUrl": { "type": ["string", "null"] }
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["MALE", "FEMALE"]
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "receivedLikeCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": ["string", "null"]
+          },
+          "profileImageUrl": {
+            "type": ["string", "null"]
+          }
         },
         "required": [
           "age",
@@ -2467,30 +3156,59 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/MemberSummaryResponse" }
+            "items": {
+              "$ref": "#/components/schemas/MemberSummaryResponse"
+            }
           },
-          "nextCursor": { "type": ["string", "null"] }
+          "nextCursor": {
+            "type": ["string", "null"]
+          }
         },
         "required": ["items"]
       },
       "MyProfileResponse": {
         "type": "object",
         "properties": {
-          "memberId": { "type": "integer", "format": "int64" },
-          "nickname": { "type": "string" },
-          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-          "birthYear": { "type": "integer", "format": "int32" },
-          "age": { "type": "integer", "format": "int32" },
-          "receivedLikeCount": { "type": "integer", "format": "int32" },
-          "comment": { "type": ["string", "null"] },
-          "bio": { "type": ["string", "null"] },
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["MALE", "FEMALE"]
+          },
+          "birthYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "receivedLikeCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": ["string", "null"]
+          },
+          "bio": {
+            "type": ["string", "null"]
+          },
           "publicPhotos": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ProfilePhotoResponse" }
+            "items": {
+              "$ref": "#/components/schemas/ProfilePhotoResponse"
+            }
           },
           "secretPhotos": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ProfilePhotoResponse" }
+            "items": {
+              "$ref": "#/components/schemas/ProfilePhotoResponse"
+            }
           }
         },
         "required": [
@@ -2507,8 +3225,12 @@
       "ProfilePhotoResponse": {
         "type": "object",
         "properties": {
-          "objectKey": { "type": "string" },
-          "url": { "type": "string" }
+          "objectKey": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
         },
         "required": ["objectKey", "url"]
       },
@@ -2517,9 +3239,14 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/MemberSummaryResponse" }
+            "items": {
+              "$ref": "#/components/schemas/MemberSummaryResponse"
+            }
           },
-          "nextCursor": { "type": ["integer", "null"], "format": "int64" }
+          "nextCursor": {
+            "type": ["integer", "null"],
+            "format": "int64"
+          }
         },
         "required": ["items"]
       },
@@ -2528,23 +3255,47 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/FeedPostResponse" }
+            "items": {
+              "$ref": "#/components/schemas/FeedPostResponse"
+            }
           },
-          "nextCursor": { "type": ["integer", "null"], "format": "int64" }
+          "nextCursor": {
+            "type": ["integer", "null"],
+            "format": "int64"
+          }
         },
         "required": ["items"]
       },
       "FeedPostResponse": {
         "type": "object",
         "properties": {
-          "postId": { "type": "integer", "format": "int64" },
-          "imageUrl": { "type": "string" },
-          "slotAt": { "type": "string", "format": "date-time" },
-          "caption": { "type": ["string", "null"] },
-          "likedByMe": { "type": "boolean" },
-          "memberId": { "type": "integer", "format": "int64" },
-          "nickname": { "type": "string" },
-          "profileImageUrl": { "type": ["string", "null"] }
+          "postId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "slotAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "caption": {
+            "type": ["string", "null"]
+          },
+          "likedByMe": {
+            "type": "boolean"
+          },
+          "memberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "profileImageUrl": {
+            "type": ["string", "null"]
+          }
         },
         "required": [
           "imageUrl",
@@ -2557,8 +3308,12 @@
       },
       "ErrorResponse": {
         "properties": {
-          "code": { "type": "string" },
-          "message": { "type": "string" }
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
         },
         "required": ["code", "message"]
       }

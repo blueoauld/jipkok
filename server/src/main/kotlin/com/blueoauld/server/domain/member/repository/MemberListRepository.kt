@@ -13,7 +13,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         select m.id as memberId,
                extract(epoch from m.located_at) as orderValue,
                m.located_at as locatedAt,
-               $DISTANCE as distance
+               $DISTANCE as distance,
+               $FAVORITED as favoritedByMe
         from member m
         where $VISIBLE $GENDER
           and m.located_at is not null
@@ -45,7 +46,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         select m.id as memberId,
                $DISTANCE as orderValue,
                m.located_at as locatedAt,
-               $DISTANCE as distance
+               $DISTANCE as distance,
+               $FAVORITED as favoritedByMe
         from member m
         where $VISIBLE $GENDER
           and m.latitude is not null
@@ -75,7 +77,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         select m.id as memberId,
                cast(m.received_like_count as double precision) as orderValue,
                m.located_at as locatedAt,
-               cast(null as double precision) as distance
+               cast(null as double precision) as distance,
+               $FAVORITED as favoritedByMe
         from member m
         where $VISIBLE $GENDER
           and (
@@ -105,7 +108,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         select m.id as memberId,
                coalesce(extract(epoch from m.located_at), 0) as orderValue,
                m.located_at as locatedAt,
-               cast(null as double precision) as distance
+               cast(null as double precision) as distance,
+               $FAVORITED as favoritedByMe
         from member m
         where $VISIBLE
           and lower(m.nickname) like lower(:keyword) || '%' escape '\'
@@ -140,6 +144,13 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                 where (b.blocker_id = :memberId and b.blocked_member_id = m.id)
                    or (b.blocker_id = m.id and b.blocked_member_id = :memberId)
               )
+        """
+
+        private const val FAVORITED = """
+            exists (
+              select 1 from member_favorite f
+              where f.member_id = :memberId and f.favorite_member_id = m.id
+            )
         """
 
         private const val LOCATED_EPOCH = """

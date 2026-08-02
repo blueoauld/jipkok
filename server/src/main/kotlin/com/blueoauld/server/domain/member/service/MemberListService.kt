@@ -80,7 +80,12 @@ class MemberListService(
 
         return rows.mapNotNull { row ->
             summaries[row.getMemberId()]?.let {
-                MemberListItemResponse.of(it, row.getLocatedAt(), row.getDistance())
+                MemberListItemResponse.of(
+                    it,
+                    row.getLocatedAt(),
+                    row.getDistance(),
+                    row.getFavoritedByMe(),
+                )
             }
         }
     }

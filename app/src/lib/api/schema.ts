@@ -759,6 +759,7 @@ export interface components {
       locatedAt?: string | null;
       /** Format: double */
       distance?: number | null;
+      favoritedByMe: boolean;
     };
     ScrollResponseMemberListItemResponse: {
       items: components["schemas"]["MemberListItemResponse"][];

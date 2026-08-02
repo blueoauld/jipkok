@@ -11,4 +11,6 @@ interface MemberListRow {
     fun getLocatedAt(): Instant?
 
     fun getDistance(): Double?
+
+    fun getFavoritedByMe(): Boolean
 }
