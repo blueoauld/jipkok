@@ -15,20 +15,28 @@ private val log = KotlinLogging.logger {}
 class DiscordBot(
 
     private val discordProperties: DiscordProperties,
-    suspensionCommandListener: SuspensionCommandListener,
+    adminCommandListener: AdminCommandListener,
 ) {
 
     private val jda: JDA = JDABuilder.createLight(discordProperties.token)
-        .addEventListeners(suspensionCommandListener)
+        .addEventListeners(adminCommandListener)
         .build()
 
     init {
         jda.awaitReady()
         jda.getGuildById(discordProperties.guildId)
             ?.updateCommands()
-            ?.addCommands(SuspensionCommandListener.commands())
+            ?.addCommands(AdminCommandListener.commands())
             ?.queue()
             ?: log.error { "디스코드 길드를 찾지 못했다. guildId=${discordProperties.guildId}" }
+    }
+
+    fun send(channelId: String, message: String) {
+        jda.getTextChannelById(channelId)
+            ?.sendMessage(message)
+            ?.setSuppressEmbeds(true)
+            ?.queue()
+            ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
     }
 
     @PreDestroy

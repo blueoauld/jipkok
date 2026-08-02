@@ -1,10 +1,12 @@
 package com.blueoauld.server.domain.feed.service
 
 import com.blueoauld.server.domain.feed.entity.FeedPostReport
+import com.blueoauld.server.domain.feed.event.FeedPostAutoDeletedEvent
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,6 +15,7 @@ class FeedPostReportService(
 
     private val feedPostReportRepository: FeedPostReportRepository,
     private val feedPostRepository: FeedPostRepository,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     @Transactional
@@ -31,8 +34,20 @@ class FeedPostReportService(
 
         feedPostReportRepository.saveAndFlush(FeedPostReport(reporterId, postId))
 
-        if (feedPostReportRepository.countByPostId(postId) >= AUTO_DELETE_REPORT_COUNT) {
+        val reportCount = feedPostReportRepository.countByPostId(postId)
+
+        if (reportCount >= AUTO_DELETE_REPORT_COUNT) {
             feedPostRepository.delete(post)
+            eventPublisher.publishEvent(
+                FeedPostAutoDeletedEvent(
+                    postId = post.id,
+                    memberId = post.memberId,
+                    objectKey = post.objectKey,
+                    caption = post.caption,
+                    slotAt = post.slotAt,
+                    reportCount = reportCount,
+                ),
+            )
         }
     }
 

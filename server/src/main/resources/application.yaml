@@ -68,3 +68,4 @@ discord:
   role-id: ${DISCORD_ROLE_ID:}
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
   reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
+  report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}

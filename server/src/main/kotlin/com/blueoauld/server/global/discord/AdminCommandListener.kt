@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 private val log = KotlinLogging.logger {}
 
 @Component
-class SuspensionCommandListener(
+class AdminCommandListener(
 
     private val memberSuspensionService: MemberSuspensionService,
     private val memberService: MemberService,

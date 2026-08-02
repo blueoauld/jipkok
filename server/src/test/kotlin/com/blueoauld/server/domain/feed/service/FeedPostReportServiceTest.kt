@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.feed.service
 
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.FeedPostReport
+import com.blueoauld.server.domain.feed.event.FeedPostAutoDeletedEvent
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -14,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Instant
 import java.util.*
 
@@ -23,7 +25,13 @@ class FeedPostReportServiceTest {
 
     private val feedPostRepository = mockk<FeedPostRepository>(relaxed = true)
 
-    private val feedPostReportService = FeedPostReportService(feedPostReportRepository, feedPostRepository)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
+    private val feedPostReportService = FeedPostReportService(
+        feedPostReportRepository,
+        feedPostRepository,
+        eventPublisher,
+    )
 
     @BeforeEach
     fun setUp() {
@@ -59,6 +67,23 @@ class FeedPostReportServiceTest {
 
         // then
         verify { feedPostRepository.delete(any()) }
+    }
+
+    @Test
+    fun `자동 삭제하면 알릴 이벤트를 발행한다`() {
+        // given
+        every {
+            feedPostReportRepository.countByPostId(POST_ID)
+        } returns FeedPostReportService.AUTO_DELETE_REPORT_COUNT.toLong()
+        val event = slot<FeedPostAutoDeletedEvent>()
+
+        // when
+        feedPostReportService.report(REPORTER_ID, POST_ID)
+
+        // then
+        verify { eventPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.memberId).isEqualTo(AUTHOR_ID)
+        assertThat(event.captured.reportCount).isEqualTo(FeedPostReportService.AUTO_DELETE_REPORT_COUNT.toLong())
     }
 
     @Test
