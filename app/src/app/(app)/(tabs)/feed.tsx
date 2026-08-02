@@ -1,3 +1,9 @@
+import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
 import { Tabs } from "expo-router";
@@ -18,6 +24,7 @@ import {
   Button,
   Dialog,
   getTokens,
+  Spinner,
   Text,
   useTheme,
   XStack,
@@ -30,8 +37,20 @@ import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
+import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
+import { alertApiError, alertInfo } from "@/lib/alert";
+import {
+  api,
+  isApiError,
+  type FeedPostPage,
+  type FeedPostResponse,
+  type Gender,
+} from "@/lib/api";
+import { formatDateLabel, formatSlotTime } from "@/lib/date";
+import { uploadFeedPhoto } from "@/lib/feedPhoto";
 import { pushOnce } from "@/lib/router";
+import type { ImagePickerAsset } from "expo-image-picker";
 
 const CARD_RATIO = 2;
 
@@ -51,32 +70,31 @@ const BOTTOM_GRADIENT: ViewStyle = {
 
 const CAPTION_MAX_LENGTH = 30;
 
+const FEEDS_KEY = ["feeds"];
+
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
 
-type Post = {
-  id: string;
-  authorId: string;
-  nickname: string;
-  time: string;
-  caption?: string;
-  photo: string;
+const GENDER_VALUES: Record<Filter, Gender | null> = {
+  전체: null,
+  남자: "MALE",
+  여자: "FEMALE",
 };
 
-const POSTS: Post[] = [
-  { id: "0", time: "15:00" },
-  { id: "1", time: "14:00", caption: "미팅" },
-  { id: "2", time: "13:00", caption: "회의에서 얻은 커피" },
-  { id: "3", time: "12:00", caption: "인생 한방 노리기" },
-  { id: "4", time: "11:00", caption: "인터뷰하러 강남" },
-].map((post) => ({
-  ...post,
-  authorId: post.id,
-  nickname: `닉네임 ${post.id}`,
-  photo: `https://picsum.photos/seed/feed-${post.id}/1000/400`,
-}));
+const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
+const EMPTY_MESSAGE = "피드가 없습니다.";
+const POSTED_MESSAGE = "피드를 올렸습니다.";
+const REPORTED_MESSAGE = "신고를 접수했습니다.";
 
-function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
+function FeedCard({
+  post,
+  onReport,
+  onToggleLike,
+}: {
+  post: FeedPostResponse;
+  onReport: () => void;
+  onToggleLike: () => void;
+}) {
   return (
     <YStack
       width="100%"
@@ -86,8 +104,8 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
       bg="$gray4"
     >
       <Image
-        source={post.photo}
-        recyclingKey={post.id}
+        source={post.imageUrl}
+        recyclingKey={String(post.postId)}
         contentFit="cover"
         transition={PHOTO_TRANSITION}
         style={{ flex: 1 }}
@@ -120,9 +138,14 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
         items="center"
         gap="$2"
         pressStyle={{ opacity: 0.6 }}
-        onPress={() => pushOnce(`/member/${post.authorId}`)}
+        onPress={() => pushOnce(`/member/${post.memberId}`)}
       >
-        <UserAvatar id={post.authorId} size={AVATAR_SIZE} circular />
+        <UserAvatar
+          id={String(post.memberId)}
+          url={post.profileImageUrl}
+          size={AVATAR_SIZE}
+          circular
+        />
 
         <Text
           numberOfLines={1}
@@ -152,13 +175,18 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
         r="$2"
         p="$2"
         pressStyle={{ opacity: 0.6 }}
+        onPress={onToggleLike}
       >
-        <HeartIcon size={28} weight="bold" color="white" />
+        <HeartIcon
+          size={28}
+          weight={post.likedByMe ? "fill" : "bold"}
+          color="white"
+        />
       </XStack>
 
       <YStack fullscreen items="center" justify="center" px="$4">
         <Text color="white" fontSize="$9" fontWeight="800">
-          {post.time}
+          {formatSlotTime(post.slotAt)}
         </Text>
 
         {post.caption && (
@@ -171,7 +199,7 @@ function FeedCard({ post, onReport }: { post: Post; onReport: () => void }) {
   );
 }
 
-function TodayButton() {
+function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   const theme = useTheme();
   const hasGlass = isLiquidGlassAvailable();
 
@@ -184,8 +212,8 @@ function TodayButton() {
         backgroundColor: hasGlass ? undefined : theme.gray4.val,
       }}
     >
-      <XStack px="$4" py="$2" pressStyle={{ opacity: 0.7 }}>
-        <Text fontSize="$4">오늘</Text>
+      <XStack px="$4" py="$2" pressStyle={{ opacity: 0.7 }} onPress={onPress}>
+        <Text fontSize="$4">{formatDateLabel(date)}</Text>
       </XStack>
     </GlassView>
   );
@@ -217,15 +245,17 @@ function PickerTile({
 }
 
 function ComposeForm({
+  pending,
   onSubmit,
 }: {
-  onSubmit: (photo: string, caption: string) => void;
+  pending: boolean;
+  onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
-  const [photo, setPhoto] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<ImagePickerAsset | null>(null);
   const captionRef = useRef("");
   const [length, setLength] = useState(0);
 
-  const choose = async (pick: () => Promise<string | null>) => {
+  const choose = async (pick: () => Promise<ImagePickerAsset | null>) => {
     const picked = await pick();
 
     if (picked) {
@@ -239,7 +269,7 @@ function ComposeForm({
 
       {photo ? (
         <YStack aspectRatio={CARD_RATIO} rounded="$7" overflow="hidden">
-          <Image source={photo} contentFit="cover" style={{ flex: 1 }} />
+          <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
 
           <XStack
             position="absolute"
@@ -298,7 +328,8 @@ function ComposeForm({
           size="$4"
           theme="blue"
           rounded="$7"
-          disabled={!photo}
+          disabled={!photo || pending}
+          opacity={!photo || pending ? 0.6 : 1}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
           작성
@@ -310,10 +341,14 @@ function ComposeForm({
 
 function ComposeDialog({
   open,
+  pending,
   onOpenChange,
+  onSubmit,
 }: {
   open: boolean;
+  pending: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
@@ -323,7 +358,8 @@ function ComposeDialog({
         <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-120}>
           <ComposeForm
             key={String(open)}
-            onSubmit={() => onOpenChange(false)}
+            pending={pending}
+            onSubmit={onSubmit}
           />
         </Dialog.Content>
       </Dialog.Portal>
@@ -333,10 +369,86 @@ function ComposeDialog({
 
 export default function FeedScreen() {
   const space = getTokens().space;
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("전체");
-  const [reportId, setReportId] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<number | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
+  const [date, setDate] = useState(() => new Date());
+  const [pickerOpen, setPickerOpen] = useState(false);
   const openCompose = useCallback(() => setComposeOpen(true), []);
+
+  const gender = GENDER_VALUES[filter];
+  const feed = useFeedPosts(date, gender);
+  const { posts, error, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
+
+  const queryKey = feedPostsKey(date, gender);
+  const invalidate = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: FEEDS_KEY }),
+    [queryClient],
+  );
+
+  const toggleLike = useMutation({
+    mutationFn: (post: FeedPostResponse) =>
+      post.likedByMe
+        ? api.feeds.cancelLike(post.postId)
+        : api.feeds.like(post.postId),
+    onMutate: async (post) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous =
+        queryClient.getQueryData<InfiniteData<FeedPostPage>>(queryKey);
+
+      queryClient.setQueryData<InfiniteData<FeedPostPage>>(
+        queryKey,
+        (current) =>
+          current && {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.postId === post.postId
+                  ? { ...item, likedByMe: !item.likedByMe }
+                  : item,
+              ),
+            })),
+          },
+      );
+
+      return { previous };
+    },
+    onError: (mutationError, _post, context) => {
+      queryClient.setQueryData(queryKey, context?.previous);
+      alertApiError(mutationError);
+    },
+  });
+
+  const report = useMutation({
+    mutationFn: api.feeds.report,
+    onSuccess: async () => {
+      await invalidate();
+      alertInfo(REPORTED_MESSAGE);
+    },
+    onError: alertApiError,
+  });
+
+  const compose = useMutation({
+    mutationFn: async ({
+      photo,
+      caption,
+    }: {
+      photo: ImagePickerAsset;
+      caption: string;
+    }) => {
+      const objectKey = await uploadFeedPhoto(photo);
+
+      await api.feeds.create({ objectKey, caption: caption || null });
+    },
+    onSuccess: async () => {
+      setComposeOpen(false);
+      await invalidate();
+      alertInfo(POSTED_MESSAGE);
+    },
+    onError: alertApiError,
+  });
 
   const screenOptions = useMemo(
     () => ({
@@ -360,26 +472,92 @@ export default function FeedScreen() {
         />
       </YStack>
 
-      <FlatList
-        data={POSTS}
-        keyExtractor={(post) => post.id}
-        renderItem={({ item }) => (
-          <FeedCard post={item} onReport={() => setReportId(item.id)} />
-        )}
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{
-          paddingTop: space.$3.val,
-          paddingBottom: space.$4.val,
-          paddingHorizontal: space.$4.val,
-          gap: space.$4.val,
-        }}
-      />
+      {posts ? (
+        <FlatList
+          data={posts}
+          keyExtractor={(post) => String(post.postId)}
+          renderItem={({ item }) => (
+            <FeedCard
+              post={item}
+              onReport={() => setReportId(item.postId)}
+              onToggleLike={() => toggleLike.mutate(item)}
+            />
+          )}
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={{
+            paddingTop: space.$3.val,
+            paddingBottom: space.$4.val,
+            paddingHorizontal: space.$4.val,
+            gap: space.$4.val,
+          }}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
+          }
+          ListEmptyComponent={
+            <YStack items="center" py="$8">
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {EMPTY_MESSAGE}
+              </Text>
+            </YStack>
+          }
+        />
+      ) : (
+        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
+          {error ? (
+            <>
+              <Text color="$gray10" fontSize="$4" text="center">
+                {isApiError(error) ? error.message : ERROR_MESSAGE}
+              </Text>
+
+              <Button
+                size="$3"
+                theme="blue"
+                rounded="$7"
+                onPress={() => feed.refetch()}
+              >
+                다시 시도
+              </Button>
+            </>
+          ) : (
+            <Spinner size="small" />
+          )}
+        </YStack>
+      )}
 
       <XStack position="absolute" b="$4" l={0} r={0} justify="center">
-        <TodayButton />
+        <DateButton date={date} onPress={() => setPickerOpen(true)} />
       </XStack>
 
-      <ComposeDialog open={composeOpen} onOpenChange={setComposeOpen} />
+      {pickerOpen && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="inline"
+          maximumDate={new Date()}
+          onValueChange={(_event, selected) => {
+            setPickerOpen(false);
+            setDate(selected);
+          }}
+          onDismiss={() => setPickerOpen(false)}
+        />
+      )}
+
+      <ComposeDialog
+        open={composeOpen}
+        pending={compose.isPending}
+        onOpenChange={setComposeOpen}
+        onSubmit={(photo, caption) => compose.mutate({ photo, caption })}
+      />
 
       <ConfirmDialog
         open={reportId !== null}
@@ -392,6 +570,7 @@ export default function FeedScreen() {
         description="신고한 피드는 검토 후 조치됩니다."
         confirmLabel="신고"
         destructive
+        onConfirm={() => reportId !== null && report.mutate(reportId)}
       />
     </YStack>
   );

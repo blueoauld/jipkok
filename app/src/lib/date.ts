@@ -30,3 +30,25 @@ export function formatRelativeTime(isoString: string) {
 
   return `${Math.floor(elapsed / DAY)}일 전`;
 }
+
+export function toDateParam(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function isSameDay(left: Date, right: Date) {
+  return toDateParam(left) === toDateParam(right);
+}
+
+export function formatDateLabel(date: Date) {
+  if (isSameDay(date, new Date())) {
+    return "오늘";
+  }
+
+  return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+export function formatSlotTime(isoString: string) {
+  const date = new Date(isoString);
+
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}

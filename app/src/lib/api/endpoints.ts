@@ -2,9 +2,12 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
+  CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
   EditProfileRequest,
+  FeedPhotoUploadUrlResponse,
+  FeedPostPage,
   Gender,
   HeartbeatRequest,
   LoginRequest,
@@ -24,6 +27,13 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type FeedListParams = {
+  gender?: Gender;
+  date?: string;
+  cursor?: number;
+  size?: number;
+};
 
 type MemberRankingParams = {
   gender?: Gender;
@@ -191,6 +201,29 @@ export const points = {
 export const attendances = {
   checkIn: () =>
     request<AttendanceResponse>("/api/attendances", { method: "POST" }),
+};
+
+export const feeds = {
+  list: (params: FeedListParams = {}) =>
+    request<FeedPostPage>("/api/feeds", { query: params }),
+
+  create: (body: CreateFeedPostRequest) =>
+    request<void>("/api/feeds", { method: "POST", body }),
+
+  like: (postId: number) =>
+    request<void>(`/api/feeds/${postId}/likes`, { method: "POST" }),
+
+  cancelLike: (postId: number) =>
+    request<void>(`/api/feeds/${postId}/likes`, { method: "DELETE" }),
+
+  report: (postId: number) =>
+    request<void>(`/api/feeds/${postId}/reports`, { method: "POST" }),
+
+  createPhotoUploadUrl: (contentType: string) =>
+    request<FeedPhotoUploadUrlResponse>("/api/feeds/photos/upload-url", {
+      method: "POST",
+      body: { contentType },
+    }),
 };
 
 export const reports = {

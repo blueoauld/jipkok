@@ -35,7 +35,7 @@ export async function pickSinglePhoto() {
     quality: 0.8,
   });
 
-  return result.canceled ? null : result.assets[0].uri;
+  return result.canceled ? null : result.assets[0];
 }
 
 export async function takePhoto() {
@@ -51,7 +51,7 @@ export async function takePhoto() {
     quality: 0.8,
   });
 
-  return result.canceled ? null : result.assets[0].uri;
+  return result.canceled ? null : result.assets[0];
 }
 
 export function usePhotos() {
