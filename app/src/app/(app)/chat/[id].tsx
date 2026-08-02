@@ -74,7 +74,10 @@ export default function ChatRoomScreen() {
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId);
   const feed = useChatMessages(roomId);
-  const { sendText, sendPhotos, uploading } = useSendMessage(roomId);
+  const { sendText, sendPhotos, uploading } = useSendMessage(
+    roomId,
+    profile?.memberId ?? 0,
+  );
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
   const giftedMessages = useMemo(
