@@ -1,9 +1,14 @@
 package com.blueoauld.server.global.discord
 
+import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.MemberView
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
+import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
+import com.blueoauld.server.domain.report.dto.response.ReportDetail
+import com.blueoauld.server.domain.report.service.ReportService
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -18,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+import net.dv8tion.jda.api.utils.FileUpload
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.ZoneId
@@ -30,6 +36,7 @@ class AdminCommandListener(
 
     private val memberSuspensionService: MemberSuspensionService,
     private val memberService: MemberService,
+    private val reportService: ReportService,
     private val discordProperties: DiscordProperties,
 ) : ListenerAdapter() {
 
@@ -66,7 +73,68 @@ class AdminCommandListener(
         RELEASE -> release(event)
         RESET -> reset(event)
         MEMBER -> member(event)
+        REPORT -> report(event)
         else -> history(event)
+    }
+
+    private fun report(event: SlashCommandInteractionEvent): String {
+        val report = reportService.findDetail(event.getOption(REPORT_ID_OPTION)!!.asLong)
+        val snapshot = report.snapshot
+
+        attach(event, "report-${report.reportId}.txt", toText(report))
+
+        return buildString {
+            appendLine(
+                "`#${report.reportId}` ${report.type.label} / ${report.reason.label}" +
+                        " / ${format(report.reportedAt)}"
+            )
+            appendLine(
+                "${snapshot.reporter.nickname}(`#${snapshot.reporter.memberId}`)" +
+                        " → ${snapshot.reported.nickname}(`#${snapshot.reported.memberId}`)",
+            )
+            append("대화 ${snapshot.messages.size}건 / 증거 사진 ${report.evidencePhotoUrls.size}장")
+        }
+    }
+
+    private fun toText(report: ReportDetail) = buildString {
+        val snapshot = report.snapshot
+
+        appendLine("신고 #${report.reportId} ${report.type.label} / ${report.reason.label}")
+        appendLine("접수 ${format(report.reportedAt)}")
+        appendLine("신고자 ${snapshot.reporter.nickname}(#${snapshot.reporter.memberId})")
+        appendLine("피신고자 ${snapshot.reported.nickname}(#${snapshot.reported.memberId})")
+        appendLine("휴대폰 ${snapshot.reported.phoneNumber}")
+        appendLine("코멘트 ${snapshot.reported.comment ?: "없음"}")
+        appendLine("자기소개 ${snapshot.reported.bio ?: "없음"}")
+        appendLine("상세 ${report.detail ?: "없음"}")
+
+        appendLine()
+        appendLine("[증거 사진 ${report.evidencePhotoUrls.size}장]")
+        report.evidencePhotoUrls.forEachIndexed { index, url -> appendLine("${index + 1}. $url") }
+
+        appendLine()
+        appendLine("[신고 시점 프로필 사진 ${report.profilePhotoUrls.size}장]")
+        report.profilePhotoUrls.forEachIndexed { index, url -> appendLine("${index + 1}. $url") }
+
+        appendLine()
+        appendLine("[대화 ${snapshot.messages.size}건]")
+        snapshot.messages.forEach {
+            appendLine("${format(it.createdAt)} ${nicknameOf(snapshot, it)}: ${contentOf(it)}")
+        }
+    }
+
+    private fun nicknameOf(snapshot: ReportSnapshotContent, message: ChatMessageSnapshot) =
+        if (message.senderId == snapshot.reporter.memberId) {
+            snapshot.reporter.nickname
+        } else {
+            snapshot.reported.nickname
+        }
+
+    private fun contentOf(message: ChatMessageSnapshot) =
+        if (message.type == ChatMessageType.PHOTO) message.photoKey ?: "사진" else message.content ?: ""
+
+    private fun attach(event: SlashCommandInteractionEvent, name: String, text: String) {
+        event.hook.sendFiles(FileUpload.fromData(text.toByteArray(), name)).queue()
     }
 
     private fun member(event: SlashCommandInteractionEvent): String {
@@ -209,8 +277,10 @@ class AdminCommandListener(
         const val HISTORY = "정지조회"
         const val RESET = "초기화"
         const val MEMBER = "회원조회"
+        const val REPORT = "신고조회"
 
         private const val MEMBER_ID_OPTION = "회원id"
+        private const val REPORT_ID_OPTION = "신고id"
         private const val TYPE_OPTION = "유형"
         private const val TARGET_OPTION = "항목"
         private const val REASON_OPTION = "사유"
@@ -222,7 +292,7 @@ class AdminCommandListener(
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
 
-        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET, MEMBER)
+        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET, MEMBER, REPORT)
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -242,6 +312,8 @@ class AdminCommandListener(
                 .addOptions(typeOption()),
             Commands.slash(HISTORY, "회원의 정지 이력을 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true),
+            Commands.slash(REPORT, "신고 내용을 본다.")
+                .addOption(OptionType.INTEGER, REPORT_ID_OPTION, "신고 ID", true),
             Commands.slash(MEMBER, "회원 정보를 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)
                 .addOptions(viewOption()),

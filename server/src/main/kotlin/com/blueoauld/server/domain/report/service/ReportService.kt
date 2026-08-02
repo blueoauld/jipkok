@@ -11,6 +11,7 @@ import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
 import com.blueoauld.server.domain.report.dto.ReporterSnapshot
 import com.blueoauld.server.domain.report.dto.request.CreateReportPhotoUploadUrlRequest
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
+import com.blueoauld.server.domain.report.dto.response.ReportDetail
 import com.blueoauld.server.domain.report.dto.response.ReportPhotoUploadUrlResponse
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
@@ -101,6 +102,28 @@ class ReportService(
                 evidencePhotoCount = request.photoKeys.size,
                 snapshot = snapshot,
             ),
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun findDetail(reportId: Long): ReportDetail {
+        val report = reportRepository.findById(reportId).orElseThrow {
+            BusinessException(ErrorCode.REPORT_NOT_FOUND)
+        }
+        val snapshot = reportSnapshotRepository.findByReportId(reportId)
+            ?: throw BusinessException(ErrorCode.REPORT_NOT_FOUND)
+        val content = objectMapper.readValue(snapshot.content, ReportSnapshotContent::class.java)
+
+        return ReportDetail(
+            reportId = report.id,
+            type = report.type,
+            reason = report.reason,
+            detail = report.detail,
+            reportedAt = report.createdAt,
+            snapshot = content,
+            evidencePhotoUrls = reportPhotoRepository.findByReportIdOrderByDisplayOrder(reportId)
+                .map { photoStorage.createSignedViewUrl(it.objectKey) },
+            profilePhotoUrls = content.reported.photoKeys.map(photoStorage::createSignedViewUrl),
         )
     }
 
