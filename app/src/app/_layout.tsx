@@ -1,12 +1,13 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, useTheme } from "tamagui";
 
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
+import { initializeAds } from "@/lib/ads";
 import { QueryProvider } from "@/lib/query";
 import { tamaguiConfig } from "@/tamagui.config";
 
@@ -21,6 +22,7 @@ export default function RootLayout() {
             <StatusBar style={scheme === "dark" ? "light" : "dark"} />
             <SessionGuard />
             <ChatSocket />
+            <Ads />
             <Stack screenOptions={{ headerShown: false }} />
           </NavigationTheme>
         </TamaguiProvider>
@@ -37,6 +39,14 @@ function SessionGuard() {
 
 function ChatSocket() {
   useChatSocket();
+
+  return null;
+}
+
+function Ads() {
+  useEffect(() => {
+    initializeAds();
+  }, []);
 
   return null;
 }

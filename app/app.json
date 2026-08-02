@@ -56,7 +56,13 @@
           "locationWhenInUsePermission": "가까운 회원을 거리순으로 보기 위해 위치 접근 권한이 필요합니다."
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "관심사에 맞는 광고를 보여주기 위해 활동 추적 권한이 필요합니다."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
