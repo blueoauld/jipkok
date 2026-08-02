@@ -200,6 +200,9 @@ export const favorites = {
 };
 
 export const secretPhotos = {
+  urls: (memberId: number) =>
+    request<string[]>(`/api/members/${memberId}/secret-photos/urls`),
+
   ...relation("secret-photos"),
 
   granted: (params: CursorParams = {}) =>

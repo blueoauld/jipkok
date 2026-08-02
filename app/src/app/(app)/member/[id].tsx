@@ -18,12 +18,14 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/PhotoPager";
+import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
@@ -36,6 +38,10 @@ const ACTION_ICON_SIZE = 30;
 const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 
 const NOTE_MAX_LENGTH = 100;
+
+const SECRET_PHOTO_NOT_GRANTED_MESSAGE =
+  "상대가 비밀 사진을 공개하지 않았습니다.";
+const SECRET_PHOTO_EMPTY_MESSAGE = "공개된 비밀 사진이 없습니다.";
 
 const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
@@ -160,12 +166,14 @@ export default function MemberProfileScreen() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
+  const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
 
   const noteContent = useNoteStore((state) => state.content);
   const setNoteContent = useNoteStore((state) => state.setContent);
 
   const { data: member, error, refetch } = useMemberDetail(memberId);
+  const loadSecretPhotos = useSecretPhotos(memberId);
   const queryKey = memberDetailKey(memberId);
 
   const sendNote = useMutation({
@@ -235,6 +243,19 @@ export default function MemberProfileScreen() {
         return;
       }
 
+      if (key === "secretPhoto") {
+        if (!member.secretPhotoGrantedToMe) {
+          alertInfo(SECRET_PHOTO_NOT_GRANTED_MESSAGE);
+        } else if (member.secretPhotoCount === 0) {
+          alertInfo(SECRET_PHOTO_EMPTY_MESSAGE);
+        } else if (!loadSecretPhotos.isPending) {
+          loadSecretPhotos.mutate(undefined, {
+            onSuccess: () => setSecretPhotoOpen(true),
+          });
+        }
+        return;
+      }
+
       if (key === "note") {
         setNoteOpen(true);
         return;
@@ -250,7 +271,7 @@ export default function MemberProfileScreen() {
         }
       }
     },
-    [member, memberId, run],
+    [loadSecretPhotos, member, memberId, run],
   );
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
@@ -415,6 +436,13 @@ export default function MemberProfileScreen() {
           setNoteContent(content);
           sendNote.mutate(content);
         }}
+      />
+
+      <PhotoViewer
+        photos={loadSecretPhotos.data ?? []}
+        initialIndex={0}
+        open={secretPhotoOpen}
+        onClose={() => setSecretPhotoOpen(false)}
       />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
