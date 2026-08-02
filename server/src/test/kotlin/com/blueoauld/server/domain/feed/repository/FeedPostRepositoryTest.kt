@@ -148,7 +148,7 @@ class FeedPostRepositoryTest {
 
     private fun slot(hour: Int) = startOfDay().plusSeconds(hour * 3600L)
 
-    private fun startOfDay() = LocalDate.of(2026, 8, 2).atStartOfDay(KOREA).toInstant()
+    private fun startOfDay() = LocalDate.of(2020, 1, 1).atStartOfDay(KOREA).toInstant()
 
     private fun member(phoneNumber: String, gender: Gender) = Member(
         phoneNumber = phoneNumber,

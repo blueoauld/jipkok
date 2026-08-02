@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
@@ -13,6 +14,7 @@ import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
+import com.blueoauld.server.domain.member.service.MemberDetailService
 import com.blueoauld.server.domain.member.service.MemberListService
 import com.blueoauld.server.domain.member.service.MemberRankingService
 import com.blueoauld.server.domain.member.service.MemberSearchService
@@ -24,6 +26,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -40,6 +43,7 @@ class MemberController(
     private val memberListService: MemberListService,
     private val memberSearchService: MemberSearchService,
     private val memberRankingService: MemberRankingService,
+    private val memberDetailService: MemberDetailService,
 ) {
 
     @Operation(summary = "회원가입")
@@ -74,6 +78,13 @@ class MemberController(
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): ScrollResponse<MemberSummaryResponse> = memberSearchService.searchByNickname(memberId, keyword, cursor, size)
+
+    @Operation(summary = "회원 조회")
+    @GetMapping("/{targetId}")
+    fun findDetail(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable targetId: Long,
+    ): MemberDetailResponse = memberDetailService.findDetail(memberId, targetId)
 
     @Operation(summary = "프로필 설정")
     @PatchMapping("/me/profile")

@@ -60,6 +60,12 @@ class Member(
 
     @Column(name = "point_balance", nullable = false)
     var pointBalance: Int = 0,
+
+    @Column(name = "note_receive_enabled", nullable = false)
+    var noteReceiveEnabled: Boolean = true,
+
+    @Column(name = "feed_notification_enabled", nullable = false)
+    var feedNotificationEnabled: Boolean = true,
 ) : BaseEntity() {
 
     @Id
