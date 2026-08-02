@@ -21,6 +21,7 @@ import { PhotoPager } from "@/components/PhotoPager";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
+import { useNow } from "@/hooks/useNow";
 import { alertApiError } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/date";
@@ -111,6 +112,7 @@ function ActionBar({
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
+  const now = useNow();
   const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -263,7 +265,7 @@ export default function MemberProfileScreen() {
                       color="$color10"
                       fontSize="$2"
                     >
-                      {formatRelativeTime(member.locatedAt)}
+                      {formatRelativeTime(member.locatedAt, now)}
                     </Text>
                   )}
                 </XStack>

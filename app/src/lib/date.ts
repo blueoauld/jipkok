@@ -13,8 +13,8 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-export function formatRelativeTime(isoString: string) {
-  const elapsed = Date.now() - new Date(isoString).getTime();
+export function formatRelativeTime(isoString: string, now = Date.now()) {
+  const elapsed = now - new Date(isoString).getTime();
 
   if (elapsed < MINUTE) {
     return "방금 전";
