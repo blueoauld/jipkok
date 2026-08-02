@@ -48,7 +48,7 @@ import {
   type FeedPostResponse,
   type Gender,
 } from "@/lib/api";
-import { formatDateLabel, formatSlotTime } from "@/lib/date";
+import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import { useFeedFilterStore } from "@/lib/filter/store";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
@@ -402,13 +402,16 @@ export default function FeedScreen() {
   const { data: profile } = useMyProfile();
   const [reportId, setReportId] = useState<number | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
-  const [date, setDate] = useState(() => new Date());
+
   const [pickerOpen, setPickerOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const openCompose = useCallback(() => setComposeOpen(true), []);
 
   const gender = useFeedFilterStore((state) => state.gender);
   const setGender = useFeedFilterStore((state) => state.setGender);
+  const storedDate = useFeedFilterStore((state) => state.date);
+  const setDate = useFeedFilterStore((state) => state.setDate);
+  const date = useMemo(() => fromDateParam(storedDate), [storedDate]);
   const feed = useFeedPosts(date, gender);
   const { posts, error, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 

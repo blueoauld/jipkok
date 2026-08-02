@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import type { Gender, MemberSort } from "@/lib/api";
+import { toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 
 const MEMBER_STORAGE_KEY = "jipkok.memberFilter";
@@ -32,19 +33,23 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 
 type FeedFilterState = {
   gender: Gender | null;
+  date: string;
   setGender: (gender: Gender | null) => void;
+  setDate: (date: Date) => void;
 };
 
 export const useFeedFilterStore = create<FeedFilterState>()(
   persist(
     (set) => ({
       gender: null,
+      date: toDateParam(new Date()),
       setGender: (gender) => set({ gender }),
+      setDate: (date) => set({ date: toDateParam(date) }),
     }),
     {
       name: FEED_STORAGE_KEY,
       storage,
-      partialize: (state) => ({ gender: state.gender }),
+      partialize: (state) => ({ gender: state.gender, date: state.date }),
     },
   ),
 );

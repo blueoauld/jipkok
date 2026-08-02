@@ -35,6 +35,12 @@ export function toDateParam(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+export function fromDateParam(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+}
+
 export function isSameDay(left: Date, right: Date) {
   return toDateParam(left) === toDateParam(right);
 }
