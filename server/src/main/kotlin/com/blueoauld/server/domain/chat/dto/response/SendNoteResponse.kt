@@ -1,0 +1,6 @@
+package com.blueoauld.server.domain.chat.dto.response
+
+data class SendNoteResponse(
+
+    val roomId: Long,
+)
