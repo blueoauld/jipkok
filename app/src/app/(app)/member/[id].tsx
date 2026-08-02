@@ -131,10 +131,16 @@ export default function MemberProfileScreen() {
       }
 
       if (key === "like") {
-        run({ likedByMe: !member.likedByMe }, () =>
-          member.likedByMe
-            ? api.likes.remove(memberId)
-            : api.likes.add(memberId),
+        run(
+          {
+            likedByMe: !member.likedByMe,
+            receivedLikeCount:
+              member.receivedLikeCount + (member.likedByMe ? -1 : 1),
+          },
+          () =>
+            member.likedByMe
+              ? api.likes.remove(memberId)
+              : api.likes.add(memberId),
         );
         return;
       }
