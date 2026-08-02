@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
 import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
@@ -116,6 +117,16 @@ class MemberController(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
     ): PhotoUploadUrlResponse = memberService.createPhotoUploadUrl(memberId, request)
+
+    @Operation(summary = "쪽지 수신 설정", description = "끄면 새 쪽지로 방이 열리지 않는다.")
+    @PutMapping("/me/note-receive")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateNoteReceive(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestBody request: UpdateNoteReceiveRequest,
+    ) {
+        memberService.updateNoteReceive(memberId, request)
+    }
 
     @Operation(summary = "코멘트 저장")
     @PutMapping("/me/comment")

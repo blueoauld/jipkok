@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
@@ -104,6 +105,7 @@ class MemberService(
             bio = member.bio,
             publicPhotos = profilePhotos(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
             secretPhotos = profilePhotos(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
+            noteReceiveEnabled = member.noteReceiveEnabled,
         )
     }
 
@@ -145,6 +147,15 @@ class MemberService(
         val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
 
         return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
+    }
+
+    @Transactional
+    fun updateNoteReceive(memberId: Long, request: UpdateNoteReceiveRequest) {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
+        member.noteReceiveEnabled = request.enabled
     }
 
     @Transactional
