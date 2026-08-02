@@ -19,6 +19,7 @@ import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
@@ -111,6 +112,7 @@ class MemberService(
             secretPhotos = profilePhotos(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
             noteReceiveEnabled = member.noteReceiveEnabled,
             feedNotificationEnabled = member.feedNotificationEnabled,
+            suspensions = memberSuspensionService.findActive(memberId).map(SuspensionResponse::from),
         )
     }
 
