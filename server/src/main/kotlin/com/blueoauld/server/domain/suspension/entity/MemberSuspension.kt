@@ -29,6 +29,9 @@ class MemberSuspension(
     @Column(name = "member_id", nullable = false, updatable = false)
     val memberId: Long,
 
+    @Column(name = "nickname", nullable = false, updatable = false, length = Member.NICKNAME_MAX_LENGTH)
+    val nickname: String,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, updatable = false)
     val type: SuspensionType,
@@ -64,6 +67,7 @@ class MemberSuspension(
         fun screenCapture(member: Member, now: Instant) = MemberSuspension(
             phoneNumber = member.phoneNumber,
             memberId = member.id,
+            nickname = member.nickname,
             type = SuspensionType.SECRET_PHOTO,
             reason = SuspensionReason.SCREEN_CAPTURE,
             startedAt = now,

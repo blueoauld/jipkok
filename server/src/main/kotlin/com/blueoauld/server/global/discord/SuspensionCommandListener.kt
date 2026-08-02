@@ -1,6 +1,6 @@
 package com.blueoauld.server.global.discord
 
-import com.blueoauld.server.domain.suspension.entity.MemberSuspension
+import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -44,7 +44,7 @@ class SuspensionCommandListener(
             .onFailure { event.hook.sendMessage(toMessage(it)).queue() }
     }
 
-    private fun record(event: SlashCommandInteractionEvent, suspension: MemberSuspension) {
+    private fun record(event: SlashCommandInteractionEvent, suspension: SuspensionDetail) {
         event.jda.getTextChannelById(discordProperties.suspensionChannelId)
             ?.sendMessage("${describe(suspension)} ${event.user.asMention}")
             ?.queue()
@@ -74,7 +74,10 @@ class SuspensionCommandListener(
     }
 
     private fun release(event: SlashCommandInteractionEvent): String {
-        val suspension = memberSuspensionService.release(event.getOption(SUSPENSION_ID_OPTION)!!.asLong)
+        val suspension = memberSuspensionService.release(
+            memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong,
+            type = SuspensionType.valueOf(event.getOption(TYPE_OPTION)!!.asString),
+        )
 
         record(event, suspension)
 
@@ -91,8 +94,11 @@ class SuspensionCommandListener(
         return suspensions.joinToString("\n", prefix = "정지 이력 ${suspensions.size}건\n") { describe(it) }
     }
 
-    private fun describe(suspension: MemberSuspension) = buildString {
-        append("`#${suspension.id}` ${suspension.type.label} / ${suspension.reason.label}")
+    private fun describe(suspension: SuspensionDetail) = buildString {
+        val nickname = if (suspension.withdrawn) "~~${suspension.nickname}~~" else suspension.nickname
+
+        append("`#${suspension.id}` $nickname(`#${suspension.memberId}`)")
+        append(" / ${suspension.type.label} / ${suspension.reason.label}")
         append(" / ${format(suspension.startedAt)} ~ ${suspension.expiresAt?.let(::format) ?: "영구"}")
         suspension.releasedAt?.let { append(" / ${format(it)} 해제") }
         suspension.detail?.let { append(" / $it") }
@@ -110,7 +116,6 @@ class SuspensionCommandListener(
         const val HISTORY = "정지조회"
 
         private const val MEMBER_ID_OPTION = "회원id"
-        private const val SUSPENSION_ID_OPTION = "정지id"
         private const val TYPE_OPTION = "유형"
         private const val REASON_OPTION = "사유"
         private const val DAYS_OPTION = "기간"
@@ -135,7 +140,8 @@ class SuspensionCommandListener(
                 .addOption(OptionType.INTEGER, DAYS_OPTION, "정지 일수, 0이면 영구", true)
                 .addOption(OptionType.STRING, DETAIL_OPTION, "상세 사유"),
             Commands.slash(RELEASE, "정지를 해제한다.")
-                .addOption(OptionType.INTEGER, SUSPENSION_ID_OPTION, "정지 ID", true),
+                .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)
+                .addOptions(typeOption()),
             Commands.slash(HISTORY, "회원의 정지 이력을 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true),
         )

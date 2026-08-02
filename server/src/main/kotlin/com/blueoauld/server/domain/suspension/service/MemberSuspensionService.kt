@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.suspension.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -29,16 +30,15 @@ class MemberSuspensionService(
         reason: SuspensionReason,
         days: Long?,
         detail: String?,
-    ): MemberSuspension {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+    ): SuspensionDetail {
+        val member = findMember(memberId)
         val now = clock.instant()
 
         return memberSuspensionRepository.save(
             MemberSuspension(
                 phoneNumber = member.phoneNumber,
                 memberId = member.id,
+                nickname = member.nickname,
                 type = type,
                 reason = reason,
                 startedAt = now,
@@ -46,18 +46,20 @@ class MemberSuspensionService(
                 detail = detail,
             ),
         ).also { evict(it) }
+            .let { SuspensionDetail.of(it, withdrawn = false) }
     }
 
     @Transactional
-    fun release(suspensionId: Long): MemberSuspension {
-        val suspension = memberSuspensionRepository.findById(suspensionId).orElseThrow {
-            BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
-        }
+    fun release(memberId: Long, type: SuspensionType): SuspensionDetail {
+        val member = findMember(memberId)
+        val suspension = memberSuspensionRepository.findActive(memberId, clock.instant())
+            .firstOrNull { it.type == type }
+            ?: throw BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
 
         suspension.releasedAt = clock.instant()
         evict(suspension)
 
-        return suspension
+        return SuspensionDetail.of(suspension, withdrawn = suspension.memberId != member.id)
     }
 
     @Transactional(readOnly = true)
@@ -65,12 +67,17 @@ class MemberSuspensionService(
         memberSuspensionRepository.findActive(memberId, clock.instant())
 
     @Transactional(readOnly = true)
-    fun findHistory(memberId: Long): List<MemberSuspension> {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+    fun findHistory(memberId: Long): List<SuspensionDetail> {
+        val member = findMember(memberId)
 
-        return memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(member.phoneNumber)
+        val suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(member.phoneNumber)
+        val aliveIds = memberRepository.findAllById(suspensions.map { it.memberId }).map { it.id }.toSet()
+
+        return suspensions.map { SuspensionDetail.of(it, withdrawn = it.memberId !in aliveIds) }
+    }
+
+    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
+        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
     private fun evict(suspension: MemberSuspension) {
