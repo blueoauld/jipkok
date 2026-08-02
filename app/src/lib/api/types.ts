@@ -31,6 +31,7 @@ export type ChatRoomResponse = Schemas["ChatRoomResponse"];
 export type ChatMessageResponse = Schemas["ChatMessageResponse"];
 export type ChatMessagePage = Schemas["CursorResponseChatMessageResponse"];
 export type SendMessageRequest = Schemas["SendMessageRequest"];
+export type MarkReadRequest = Schemas["MarkReadRequest"];
 export type ChatRoomPage = Schemas["CursorResponseChatRoomResponse"];
 export type SendNoteRequest = Schemas["SendNoteRequest"];
 export type SendNoteResponse = Schemas["SendNoteResponse"];

@@ -259,6 +259,12 @@ export const chats = {
       query: params,
     }),
 
+  markRead: (roomId: number, lastReadMessageId: number) =>
+    request<void>(`/api/chats/${roomId}/read`, {
+      method: "POST",
+      body: { lastReadMessageId },
+    }),
+
   leave: (roomId: number) =>
     request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
 

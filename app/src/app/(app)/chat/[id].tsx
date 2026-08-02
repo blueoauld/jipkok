@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";
 import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -82,6 +82,15 @@ export default function ChatRoomScreen() {
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId);
   const feed = useChatMessages(roomId);
+  const markRead = useMutation({
+    mutationFn: (lastReadMessageId: number) =>
+      api.chats.markRead(roomId, lastReadMessageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+    },
+  });
+
   const leave = useMutation({
     mutationFn: () => api.chats.leave(roomId),
     onSuccess: () => {
@@ -98,6 +107,17 @@ export default function ChatRoomScreen() {
     profile?.memberId ?? 0,
   );
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
+
+  // 자리표시자는 음수 id라 서버에 보낼 수 없다.
+  const newestMessageId = messages?.[0]?.messageId ?? 0;
+  const unreadCount = room?.unreadCount ?? 0;
+  const markReadMutate = markRead.mutate;
+
+  useEffect(() => {
+    if (unreadCount > 0 && newestMessageId > 0) {
+      markReadMutate(newestMessageId);
+    }
+  }, [markReadMutate, newestMessageId, unreadCount]);
 
   const giftedMessages = useMemo(
     () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),
