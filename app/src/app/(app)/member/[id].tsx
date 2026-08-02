@@ -22,17 +22,21 @@ import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
-import { alertApiError } from "@/lib/alert";
+import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
 import { formatDistance, genderLabel } from "@/lib/member";
+import { useNoteStore } from "@/lib/note/store";
 import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
 const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 
 const NOTE_MAX_LENGTH = 100;
+
+const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
@@ -157,8 +161,21 @@ export default function MemberProfileScreen() {
   const [noteOpen, setNoteOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
 
+  const noteContent = useNoteStore((state) => state.content);
+  const setNoteContent = useNoteStore((state) => state.setContent);
+
   const { data: member, error, refetch } = useMemberDetail(memberId);
   const queryKey = memberDetailKey(memberId);
+
+  const sendNote = useMutation({
+    mutationFn: (content: string) => api.chats.sendNote(memberId, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
+      queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+      alertInfo(NOTE_SENT_MESSAGE);
+    },
+    onError: alertApiError,
+  });
 
   const relate = useMutation({
     mutationFn: ({ call }: Relation) => call(),
@@ -390,8 +407,12 @@ export default function MemberProfileScreen() {
         title="쪽지"
         placeholder="내용 입력"
         maxLength={NOTE_MAX_LENGTH}
+        defaultValue={noteContent}
         submitLabel="전송"
-        onSubmit={() => {}}
+        onSubmit={(content) => {
+          setNoteContent(content);
+          sendNote.mutate(content);
+        }}
       />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />

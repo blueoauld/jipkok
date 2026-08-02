@@ -20,6 +20,7 @@ import type {
   PhotoUploadUrlResponse,
   PointHistoryPage,
   PointRewardResponse,
+  SendNoteResponse,
   SetupProfileRequest,
   SignupRequest,
   SignupResponse,
@@ -227,6 +228,14 @@ export const feeds = {
     request<FeedPhotoUploadUrlResponse>("/api/feeds/photos/upload-url", {
       method: "POST",
       body: { contentType },
+    }),
+};
+
+export const chats = {
+  sendNote: (memberId: number, content: string) =>
+    request<SendNoteResponse>(`/api/members/${memberId}/notes`, {
+      method: "POST",
+      body: { content },
     }),
 };
 

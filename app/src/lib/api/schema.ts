@@ -129,6 +129,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/members/{memberId}/notes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 쪽지 전송
+     * @description 채팅방이 없으면 새로 만들고 포인트를 차감한다.
+     */
+    post: operations["send"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/members/{memberId}/likes": {
     parameters: {
       query?: never;
@@ -293,6 +313,64 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chats/{roomId}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** 읽음 처리 */
+    post: operations["markRead"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chats/{roomId}/messages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 메시지 목록 조회
+     * @description 최근 메시지부터 준다.
+     */
+    get: operations["findMessages"];
+    put?: never;
+    /**
+     * 메시지 전송
+     * @description 사진은 한 장에 메시지 하나다.
+     */
+    post: operations["send_1"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chats/photos/upload-url": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** 채팅 사진 업로드 URL 발급 */
+    post: operations["createPhotoUploadUrl_3"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/auth/verification-codes": {
     parameters: {
       query?: never;
@@ -303,7 +381,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** 인증번호 발송 */
-    post: operations["send"];
+    post: operations["send_2"];
     delete?: never;
     options?: never;
     head?: never;
@@ -599,6 +677,43 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 채팅방 목록 조회 */
+    get: operations["findRooms"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chats/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 채팅방 검색
+     * @description 상대 닉네임으로 찾는다.
+     */
+    get: operations["searchRooms"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/ads/rewards/callback": {
     parameters: {
       query?: never;
@@ -611,6 +726,26 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chats/{roomId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * 채팅방 나가기
+     * @description 방과 대화 내역이 양쪽 모두에서 사라진다.
+     */
+    delete: operations["leave"];
     options?: never;
     head?: never;
     patch?: never;
@@ -673,6 +808,13 @@ export interface components {
       accessToken: string;
       refreshToken: string;
     };
+    SendNoteRequest: {
+      content: string;
+    };
+    SendNoteResponse: {
+      /** Format: int64 */
+      roomId: number;
+    };
     CreatePhotoUploadUrlRequest: {
       contentType: string;
       /** @enum {string} */
@@ -696,6 +838,37 @@ export interface components {
       contentType: string;
     };
     FeedPhotoUploadUrlResponse: {
+      uploadUrl: string;
+      objectKey: string;
+    };
+    MarkReadRequest: {
+      /** Format: int64 */
+      lastReadMessageId: number;
+    };
+    SendMessageRequest: {
+      /** @enum {string} */
+      type: "TEXT" | "PHOTO";
+      content?: string | null;
+      objectKey?: string | null;
+    };
+    ChatMessageResponse: {
+      /** Format: int64 */
+      messageId: number;
+      /** Format: int64 */
+      roomId: number;
+      /** Format: int64 */
+      senderId: number;
+      /** @enum {string} */
+      type: "TEXT" | "PHOTO";
+      content?: string | null;
+      imageUrl?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+    };
+    CreateChatPhotoUploadUrlRequest: {
+      contentType: string;
+    };
+    ChatPhotoUploadUrlResponse: {
       uploadUrl: string;
       objectKey: string;
     };
@@ -851,6 +1024,31 @@ export interface components {
       memberId: number;
       nickname: string;
       profileImageUrl?: string | null;
+    };
+    ChatRoomResponse: {
+      /** Format: int64 */
+      roomId: number;
+      /** Format: int64 */
+      memberId: number;
+      nickname: string;
+      profileImageUrl?: string | null;
+      /** @enum {string} */
+      lastMessageType: "TEXT" | "PHOTO";
+      lastMessageContent?: string | null;
+      /** Format: date-time */
+      lastMessageAt: string;
+      /** Format: int32 */
+      unreadCount: number;
+    };
+    CursorResponseChatRoomResponse: {
+      items: components["schemas"]["ChatRoomResponse"][];
+      /** Format: int64 */
+      nextCursor?: number | null;
+    };
+    CursorResponseChatMessageResponse: {
+      items: components["schemas"]["ChatMessageResponse"][];
+      /** Format: int64 */
+      nextCursor?: number | null;
     };
     ErrorResponse: {
       code: string;
@@ -1326,6 +1524,59 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  send: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        memberId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SendNoteRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["SendNoteResponse"];
+        };
       };
       /** @description 요청이 올바르지 않다 */
       400: {
@@ -2031,7 +2282,214 @@ export interface operations {
       };
     };
   };
-  send: {
+  markRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roomId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MarkReadRequest"];
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  findMessages: {
+    parameters: {
+      query?: {
+        cursor?: number;
+        size?: number;
+      };
+      header?: never;
+      path: {
+        roomId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["CursorResponseChatMessageResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  send_1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roomId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SendMessageRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ChatMessageResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  createPhotoUploadUrl_3: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateChatPhotoUploadUrlRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["ChatPhotoUploadUrlResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  send_2: {
     parameters: {
       query?: never;
       header?: never;
@@ -2923,6 +3381,108 @@ export interface operations {
       };
     };
   };
+  findRooms: {
+    parameters: {
+      query?: {
+        unreadOnly?: boolean;
+        cursor?: number;
+        size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["CursorResponseChatRoomResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  searchRooms: {
+    parameters: {
+      query: {
+        keyword: string;
+        cursor?: number;
+        size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["CursorResponseChatRoomResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   reward: {
     parameters: {
       query: {
@@ -2933,6 +3493,53 @@ export interface operations {
       };
       header?: never;
       path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  leave: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roomId: number;
+      };
       cookie?: never;
     };
     requestBody?: never;

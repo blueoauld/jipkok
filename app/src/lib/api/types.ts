@@ -27,6 +27,9 @@ export type CreatePhotoUploadUrlRequest =
 export type PhotoVisibility = CreatePhotoUploadUrlRequest["visibility"];
 export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 
+export type SendNoteRequest = Schemas["SendNoteRequest"];
+export type SendNoteResponse = Schemas["SendNoteResponse"];
+
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type ReportReason = CreateReportRequest["reason"];
 
