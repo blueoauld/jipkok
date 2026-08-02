@@ -140,6 +140,12 @@ export const members = {
   editProfile: (body: EditProfileRequest) =>
     request<void>("/api/members/me/profile", { method: "PUT", body }),
 
+  updateNoteReceive: (enabled: boolean) =>
+    request<void>("/api/members/me/note-receive", {
+      method: "PUT",
+      body: { enabled },
+    }),
+
   updateComment: (body: UpdateCommentRequest) =>
     request<void>("/api/members/me/comment", { method: "PUT", body }),
 

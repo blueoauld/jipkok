@@ -20,6 +20,7 @@ export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
 export type UpdateCommentRequest = Schemas["UpdateCommentRequest"];
+export type UpdateNoteReceiveRequest = Schemas["UpdateNoteReceiveRequest"];
 export type HeartbeatRequest = Schemas["HeartbeatRequest"];
 export type PhotoUploadUrlResponse = Schemas["PhotoUploadUrlResponse"];
 export type CreatePhotoUploadUrlRequest =
