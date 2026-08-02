@@ -39,15 +39,13 @@ const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 
 const NOTE_MAX_LENGTH = 100;
 
-const SECRET_PHOTO_NOT_GRANTED_MESSAGE =
-  "상대가 비밀 사진을 공개하지 않았습니다.";
 const SECRET_PHOTO_EMPTY_MESSAGE = "공개된 비밀 사진이 없습니다.";
 
 const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
-const BADGE_OPACITY = 0.8;
+const BADGE_OPACITY = 0.9;
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
@@ -244,13 +242,12 @@ export default function MemberProfileScreen() {
       }
 
       if (key === "secretPhoto") {
-        if (!member.secretPhotoGrantedToMe) {
-          alertInfo(SECRET_PHOTO_NOT_GRANTED_MESSAGE);
-        } else if (member.secretPhotoCount === 0) {
-          alertInfo(SECRET_PHOTO_EMPTY_MESSAGE);
-        } else if (!loadSecretPhotos.isPending) {
+        if (!loadSecretPhotos.isPending) {
           loadSecretPhotos.mutate(undefined, {
-            onSuccess: () => setSecretPhotoOpen(true),
+            onSuccess: (photos) =>
+              photos.length === 0
+                ? alertInfo(SECRET_PHOTO_EMPTY_MESSAGE)
+                : setSecretPhotoOpen(true),
           });
         }
         return;
