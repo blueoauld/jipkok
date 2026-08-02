@@ -19,6 +19,29 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
     fun increaseUnreadCount(@Param("roomId") roomId: Long, @Param("memberId") memberId: Long)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        update ChatRoomMember m
+        set m.lastReadMessageId = :lastReadMessageId,
+            m.unreadCount = (
+              select cast(count(msg.id) as Integer)
+              from ChatMessage msg
+              where msg.roomId = :roomId
+                and msg.id > :lastReadMessageId
+                and msg.senderId <> :memberId
+            )
+        where m.roomId = :roomId
+          and m.memberId = :memberId
+          and m.lastReadMessageId < :lastReadMessageId
+        """,
+    )
+    fun markRead(
+        @Param("roomId") roomId: Long,
+        @Param("memberId") memberId: Long,
+        @Param("lastReadMessageId") lastReadMessageId: Long,
+    )
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from ChatRoomMember m where m.roomId in :roomIds")
     fun deleteByRoomIdIn(@Param("roomIds") roomIds: List<Long>)
 }

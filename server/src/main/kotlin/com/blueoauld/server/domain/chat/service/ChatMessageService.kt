@@ -13,9 +13,11 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,13 +32,36 @@ class ChatMessageService(
     private val eventPublisher: ApplicationEventPublisher,
 ) {
 
-    @Transactional
-    fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse {
-        val room = chatRoomRepository.findById(roomId)
-            .filter { it.contains(memberId) }
-            .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
+    @Transactional(readOnly = true)
+    fun findMessages(
+        memberId: Long,
+        roomId: Long,
+        cursor: Long?,
+        size: Int,
+    ): CursorResponse<ChatMessageResponse> {
+        findRoom(memberId, roomId)
 
-        return append(room, memberId, toMessage(memberId, roomId, request))
+        val pageSize = CursorResponse.pageSize(size)
+        val messages = chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(
+            roomId,
+            cursor ?: Long.MAX_VALUE,
+            Limit.of(pageSize),
+        )
+
+        return CursorResponse(
+            items = messages.map { ChatMessageResponse.of(it, it.objectKey?.let(photoStorage::createSignedViewUrl)) },
+            nextCursor = messages.lastOrNull()?.id.takeIf { messages.size == pageSize },
+        )
+    }
+
+    @Transactional
+    fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse =
+        append(findRoom(memberId, roomId), memberId, toMessage(memberId, roomId, request))
+
+    @Transactional
+    fun markRead(memberId: Long, roomId: Long, lastReadMessageId: Long) {
+        findRoom(memberId, roomId)
+        chatRoomMemberRepository.markRead(roomId, memberId, lastReadMessageId)
     }
 
     @Transactional
@@ -60,6 +85,10 @@ class ChatMessageService(
 
         return ChatPhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
     }
+
+    private fun findRoom(memberId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
+        .filter { it.contains(memberId) }
+        .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
 
     private fun toMessage(memberId: Long, roomId: Long, request: SendMessageRequest) = when (request.type) {
         ChatMessageType.TEXT -> ChatMessage(

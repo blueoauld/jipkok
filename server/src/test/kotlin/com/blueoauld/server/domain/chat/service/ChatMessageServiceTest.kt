@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
+import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Limit
 import java.util.*
 
 class ChatMessageServiceTest {
@@ -134,6 +136,70 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `메시지 목록은 최근 메시지부터 준다`() {
+        // given
+        every {
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns listOf(message(ChatMessageType.TEXT, content = "안녕하세요."))
+
+        // when
+        val response = chatMessageService.findMessages(ME_ID, ROOM_ID, cursor = null, size = 30)
+
+        // then
+        verify {
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, Limit.of(30))
+        }
+        assertThat(response.items.single().content).isEqualTo("안녕하세요.")
+        assertThat(response.nextCursor).isNull()
+    }
+
+    @Test
+    fun `목록의 사진도 서명된 URL을 준다`() {
+        // given
+        every {
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns listOf(message(ChatMessageType.PHOTO, objectKey = OBJECT_KEY))
+
+        // when
+        val response = chatMessageService.findMessages(ME_ID, ROOM_ID, cursor = null, size = 30)
+
+        // then
+        assertThat(response.items.single().imageUrl).isEqualTo(SIGNED_URL)
+    }
+
+    @Test
+    fun `참여자가 아니면 목록을 볼 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.findMessages(STRANGER_ID, ROOM_ID, cursor = null, size = 30)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    @Test
+    fun `읽음 처리하면 안읽음 수가 다시 계산된다`() {
+        // when
+        chatMessageService.markRead(ME_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
+
+        // then
+        verify { chatRoomMemberRepository.markRead(ROOM_ID, ME_ID, LAST_READ_MESSAGE_ID) }
+    }
+
+    @Test
+    fun `참여자가 아니면 읽음 처리할 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.markRead(STRANGER_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        verify(exactly = 0) { chatRoomMemberRepository.markRead(any(), any(), any()) }
+    }
+
+    @Test
     fun `참여자가 아니면 보낼 수 없다`() {
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -158,6 +224,14 @@ class ChatMessageServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
     }
 
+    private fun message(type: ChatMessageType, content: String? = null, objectKey: String? = null) = ChatMessage(
+        roomId = ROOM_ID,
+        senderId = ME_ID,
+        type = type,
+        content = content,
+        objectKey = objectKey,
+    )
+
     private fun text(content: String) = SendMessageRequest(type = ChatMessageType.TEXT, content = content)
 
     private fun photo(objectKey: String?) = SendMessageRequest(type = ChatMessageType.PHOTO, objectKey = objectKey)
@@ -168,6 +242,7 @@ class ChatMessageServiceTest {
         private const val ME_ID = 1L
         private const val PARTNER_ID = 2L
         private const val STRANGER_ID = 3L
+        private const val LAST_READ_MESSAGE_ID = 99L
 
         private const val OBJECT_KEY = "chats/$ME_ID/a.jpg"
         private const val SIGNED_URL = "https://r2.example.com/chats/1/a.jpg?signature=x"
