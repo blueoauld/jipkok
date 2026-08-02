@@ -11,6 +11,7 @@ export type ReissueRequest = Schemas["ReissueRequest"];
 
 export type MyProfileResponse = Schemas["MyProfileResponse"];
 export type MemberSummaryResponse = Schemas["MemberSummaryResponse"];
+export type MemberDetailResponse = Schemas["MemberDetailResponse"];
 export type MemberListItemResponse = Schemas["MemberListItemResponse"];
 export type MemberSort = NonNullable<
   NonNullable<Paths["/api/members"]["get"]["parameters"]["query"]>["sort"]

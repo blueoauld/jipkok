@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "집콕 API",
-    "description": "## 오류 코드\n\n| 코드 | 상태 | 메시지 |\n| --- | --- | --- |\n| COMMON_001 | 400 | 요청이 올바르지 않습니다. |\n| COMMON_002 | 409 | 요청이 중복되었습니다. |\n| COMMON_999 | 500 | 서버에 문제가 발생했습니다. |\n| AUTH_001 | 429 | 인증번호를 너무 자주 요청했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_002 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_003 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_004 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_005 | 400 | 인증번호가 만료되었습니다. 다시 요청해주시길 바랍니다. |\n| AUTH_006 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_007 | 429 | 인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 요청해주시길 바랍니다. |\n| AUTH_008 | 401 | 휴대폰 번호 또는 비밀번호가 올바르지 않습니다. |\n| AUTH_009 | 401 | 다시 로그인해주시길 바랍니다. |\n| AUTH_010 | 401 | 로그인이 필요합니다. |\n| MEMBER_001 | 409 | 이미 가입된 휴대폰 번호입니다. |\n| MEMBER_002 | 400 | 비밀번호가 일치하지 않습니다. |\n| MEMBER_003 | 404 | 회원을 찾을 수 없습니다. |\n| MEMBER_004 | 409 | 이미 사용 중인 닉네임입니다. |\n| MEMBER_005 | 400 | 만 19세 이상 90세 이하만 가입할 수 있습니다. |\n| MEMBER_006 | 400 | 위치 정보가 올바르지 않습니다. |\n| MEMBER_007 | 400 | 지원하지 않는 이미지 형식입니다. |\n| MEMBER_008 | 400 | 사진 정보가 올바르지 않습니다. |\n| LIKE_001 | 400 | 자기 자신에게는 좋아요를 누를 수 없습니다. |\n| FAVORITE_001 | 400 | 자기 자신은 즐겨찾기할 수 없습니다. |\n| SECRET_PHOTO_001 | 400 | 자기 자신에게는 비밀 사진을 공개할 수 없습니다. |\n| BLOCK_001 | 400 | 자기 자신은 차단할 수 없습니다. |\n| POINT_001 | 400 | 포인트가 부족합니다. |\n| AD_001 | 401 | 광고 보상 서명이 올바르지 않습니다. |\n| FEED_001 | 409 | 이번 시간에는 이미 올렸습니다. |\n| FEED_002 | 404 | 게시물을 찾을 수 없습니다. |\n| FEED_003 | 409 | 이미 신고한 게시물입니다. |\n| REPORT_001 | 400 | 자기 자신은 신고할 수 없습니다. |\n| REPORT_002 | 409 | 이미 신고한 회원입니다. |",
+    "description": "## 오류 코드\n\n| 코드 | 상태 | 메시지 |\n| --- | --- | --- |\n| COMMON_001 | 400 | 요청이 올바르지 않습니다. |\n| COMMON_002 | 409 | 요청이 중복되었습니다. |\n| COMMON_999 | 500 | 서버에 문제가 발생했습니다. |\n| AUTH_001 | 429 | 인증번호를 너무 자주 요청했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_002 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_003 | 429 | 인증번호 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다. |\n| AUTH_004 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_005 | 400 | 인증번호가 만료되었습니다. 다시 요청해주시길 바랍니다. |\n| AUTH_006 | 400 | 인증번호가 올바르지 않습니다. |\n| AUTH_007 | 429 | 인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 요청해주시길 바랍니다. |\n| AUTH_008 | 401 | 휴대폰 번호 또는 비밀번호가 올바르지 않습니다. |\n| AUTH_009 | 401 | 다시 로그인해주시길 바랍니다. |\n| AUTH_010 | 401 | 로그인이 필요합니다. |\n| MEMBER_001 | 409 | 이미 가입된 휴대폰 번호입니다. |\n| MEMBER_002 | 400 | 비밀번호가 일치하지 않습니다. |\n| MEMBER_003 | 404 | 회원을 찾을 수 없습니다. |\n| MEMBER_004 | 409 | 이미 사용 중인 닉네임입니다. |\n| MEMBER_005 | 400 | 만 19세 이상 90세 이하만 가입할 수 있습니다. |\n| MEMBER_006 | 400 | 위치 정보가 올바르지 않습니다. |\n| MEMBER_007 | 400 | 지원하지 않는 이미지 형식입니다. |\n| MEMBER_008 | 400 | 사진 정보가 올바르지 않습니다. |\n| MEMBER_009 | 400 | 자기 자신은 조회할 수 없습니다. |\n| LIKE_001 | 400 | 자기 자신에게는 좋아요를 누를 수 없습니다. |\n| FAVORITE_001 | 400 | 자기 자신은 즐겨찾기할 수 없습니다. |\n| SECRET_PHOTO_001 | 400 | 자기 자신에게는 비밀 사진을 공개할 수 없습니다. |\n| BLOCK_001 | 400 | 자기 자신은 차단할 수 없습니다. |\n| POINT_001 | 400 | 포인트가 부족합니다. |\n| AD_001 | 401 | 광고 보상 서명이 올바르지 않습니다. |\n| FEED_001 | 409 | 이번 시간에는 이미 올렸습니다. |\n| FEED_002 | 404 | 게시물을 찾을 수 없습니다. |\n| FEED_003 | 409 | 이미 신고한 게시물입니다. |\n| REPORT_001 | 400 | 자기 자신은 신고할 수 없습니다. |\n| REPORT_002 | 409 | 이미 신고한 회원입니다. |",
     "version": "v1"
   },
   "servers": [
@@ -1423,6 +1423,57 @@
         }
       }
     },
+    "/api/members/{targetId}": {
+      "get": {
+        "tags": ["member-controller"],
+        "summary": "회원 조회",
+        "operationId": "findDetail",
+        "parameters": [
+          {
+            "name": "targetId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "요청이 올바르지 않다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "인증이 필요하다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "서버에 문제가 발생했다",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/members/search": {
       "get": {
         "tags": ["member-controller"],
@@ -2354,6 +2405,43 @@
           "nextCursor": { "type": ["string", "null"] }
         },
         "required": ["items"]
+      },
+      "MemberDetailResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64" },
+          "publicPhotoUrls": { "type": "array", "items": { "type": "string" } },
+          "secretPhotoCount": { "type": "integer", "format": "int32" },
+          "nickname": { "type": "string" },
+          "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
+          "age": { "type": "integer", "format": "int32" },
+          "receivedLikeCount": { "type": "integer", "format": "int32" },
+          "locatedAt": { "type": ["string", "null"], "format": "date-time" },
+          "distance": { "type": ["number", "null"], "format": "double" },
+          "comment": { "type": ["string", "null"] },
+          "bio": { "type": ["string", "null"] },
+          "likedByMe": { "type": "boolean" },
+          "favoritedByMe": { "type": "boolean" },
+          "secretPhotoGrantedToMe": { "type": "boolean" },
+          "secretPhotoGrantedByMe": { "type": "boolean" },
+          "blockedByMe": { "type": "boolean" },
+          "noteReceiveEnabled": { "type": "boolean" }
+        },
+        "required": [
+          "age",
+          "blockedByMe",
+          "favoritedByMe",
+          "gender",
+          "likedByMe",
+          "memberId",
+          "nickname",
+          "noteReceiveEnabled",
+          "publicPhotoUrls",
+          "receivedLikeCount",
+          "secretPhotoCount",
+          "secretPhotoGrantedByMe",
+          "secretPhotoGrantedToMe"
+        ]
       },
       "MemberSummaryResponse": {
         "type": "object",

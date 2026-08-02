@@ -11,6 +11,7 @@ import type {
   Gender,
   HeartbeatRequest,
   LoginRequest,
+  MemberDetailResponse,
   MemberListPage,
   MemberSearchPage,
   MemberSort,
@@ -109,6 +110,9 @@ export const members = {
 
   search: (params: MemberSearchParams) =>
     request<MemberSearchPage>("/api/members/search", { query: params }),
+
+  detail: (memberId: number) =>
+    request<MemberDetailResponse>(`/api/members/${memberId}`),
 
   myProfile: () => request<MyProfileResponse>("/api/members/me"),
 

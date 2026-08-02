@@ -412,6 +412,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/members/{targetId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** 회원 조회 */
+    get: operations["findDetail"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/members/search": {
     parameters: {
       query?: never;
@@ -746,6 +763,32 @@ export interface components {
     ScrollResponseMemberListItemResponse: {
       items: components["schemas"]["MemberListItemResponse"][];
       nextCursor?: string | null;
+    };
+    MemberDetailResponse: {
+      /** Format: int64 */
+      memberId: number;
+      publicPhotoUrls: string[];
+      /** Format: int32 */
+      secretPhotoCount: number;
+      nickname: string;
+      /** @enum {string} */
+      gender: "MALE" | "FEMALE";
+      /** Format: int32 */
+      age: number;
+      /** Format: int32 */
+      receivedLikeCount: number;
+      /** Format: date-time */
+      locatedAt?: string | null;
+      /** Format: double */
+      distance?: number | null;
+      comment?: string | null;
+      bio?: string | null;
+      likedByMe: boolean;
+      favoritedByMe: boolean;
+      secretPhotoGrantedToMe: boolean;
+      secretPhotoGrantedByMe: boolean;
+      blockedByMe: boolean;
+      noteReceiveEnabled: boolean;
     };
     MemberSummaryResponse: {
       /** Format: int64 */
@@ -2300,6 +2343,55 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["CursorResponsePointHistoryResponse"];
+        };
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  findDetail: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        targetId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["MemberDetailResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */
