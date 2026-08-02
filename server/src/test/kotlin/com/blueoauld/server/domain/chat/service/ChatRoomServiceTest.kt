@@ -125,6 +125,42 @@ class ChatRoomServiceTest {
     }
 
     @Test
+    fun `닉네임 일부만 넣어도 방을 찾는다`() {
+        // given
+        every { chatRoomRepository.searchRooms(any(), any(), any(), any()) } returns listOf(row())
+        every { memberSummaryService.findSummaries(any()) } returns listOf(summary())
+
+        // when
+        val response = chatRoomService.searchRooms(ME_ID, "대", cursor = null, size = 20)
+
+        // then
+        verify { chatRoomRepository.searchRooms(ME_ID, "%대%", Long.MAX_VALUE, Limit.of(20)) }
+        assertThat(response.items.single().nickname).isEqualTo("상대")
+    }
+
+    @Test
+    fun `와일드카드를 그대로 보내면 이스케이프된다`() {
+        // given
+        every { chatRoomRepository.searchRooms(any(), any(), any(), any()) } returns emptyList()
+
+        // when
+        chatRoomService.searchRooms(ME_ID, "100%_", cursor = null, size = 20)
+
+        // then
+        verify { chatRoomRepository.searchRooms(ME_ID, """%100\%\_%""", Long.MAX_VALUE, Limit.of(20)) }
+    }
+
+    @Test
+    fun `검색어가 비어 있으면 조회하지 않는다`() {
+        // when
+        val response = chatRoomService.searchRooms(ME_ID, "   ", cursor = null, size = 20)
+
+        // then
+        assertThat(response.items).isEmpty()
+        verify(exactly = 0) { chatRoomRepository.searchRooms(any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `나가면 방이 소프트 딜리트된다`() {
         // when
         chatRoomService.leave(ME_ID, ROOM_ID)

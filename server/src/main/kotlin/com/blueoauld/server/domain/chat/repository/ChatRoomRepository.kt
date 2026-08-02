@@ -41,6 +41,32 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
         limit: Limit,
     ): List<ChatRoomRow>
 
+    @Query(
+        """
+        select r.id as roomId,
+               p.id as partnerId,
+               crm.unreadCount as unreadCount,
+               r.lastMessageId as lastMessageId,
+               m.type as lastMessageType,
+               m.content as lastMessageContent,
+               m.createdAt as lastMessageAt
+        from ChatRoomMember crm, ChatRoom r, ChatMessage m, Member p
+        where crm.memberId = :memberId
+          and r.id = crm.roomId
+          and m.id = r.lastMessageId
+          and p.id = (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end)
+          and lower(p.nickname) like lower(:keyword) escape '\'
+          and r.lastMessageId < :cursor
+        order by r.lastMessageId desc
+        """,
+    )
+    fun searchRooms(
+        @Param("memberId") memberId: Long,
+        @Param("keyword") keyword: String,
+        @Param("cursor") cursor: Long,
+        limit: Limit,
+    ): List<ChatRoomRow>
+
     @Query(value = "select id from chat_room where deleted_at < :threshold", nativeQuery = true)
     fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
 

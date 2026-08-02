@@ -30,6 +30,15 @@ class ChatRoomController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<ChatRoomResponse> = chatRoomService.findRooms(memberId, unreadOnly, cursor, size)
 
+    @Operation(summary = "채팅방 검색", description = "상대 닉네임으로 찾는다.")
+    @GetMapping("/search")
+    fun searchRooms(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestParam keyword: String,
+        @RequestParam(required = false) cursor: Long?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): CursorResponse<ChatRoomResponse> = chatRoomService.searchRooms(memberId, keyword, cursor, size)
+
     @Operation(summary = "채팅방 나가기", description = "방과 대화 내역이 양쪽 모두에서 사라진다.")
     @DeleteMapping("/{roomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
