@@ -17,4 +17,8 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
         """,
     )
     fun increaseUnreadCount(@Param("roomId") roomId: Long, @Param("memberId") memberId: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from ChatRoomMember m where m.roomId in :roomIds")
+    fun deleteByRoomIdIn(@Param("roomIds") roomIds: List<Long>)
 }

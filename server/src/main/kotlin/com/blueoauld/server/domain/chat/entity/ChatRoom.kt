@@ -7,18 +7,12 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
+import org.hibernate.annotations.SoftDelete
+import org.hibernate.annotations.SoftDeleteType
 
+@SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity
-@Table(
-    name = "chat_room",
-    uniqueConstraints = [
-        UniqueConstraint(
-            name = "uk_chat_room_low_member_id_high_member_id",
-            columnNames = ["low_member_id", "high_member_id"],
-        ),
-    ],
-)
+@Table(name = "chat_room")
 class ChatRoom(
 
     @Column(name = "low_member_id", nullable = false, updatable = false)

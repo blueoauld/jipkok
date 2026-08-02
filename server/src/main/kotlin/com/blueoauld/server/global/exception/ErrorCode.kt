@@ -74,6 +74,7 @@ enum class ErrorCode(
     SELF_NOTE(HttpStatus.BAD_REQUEST, "CHAT_001", "자기 자신에게는 쪽지를 보낼 수 없습니다."),
     NOTE_RECEIVE_DISABLED(HttpStatus.BAD_REQUEST, "CHAT_002", "상대가 쪽지를 받지 않습니다."),
     NOTE_BLOCKED(HttpStatus.BAD_REQUEST, "CHAT_003", "쪽지를 보낼 수 없습니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_004", "채팅방을 찾을 수 없습니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
