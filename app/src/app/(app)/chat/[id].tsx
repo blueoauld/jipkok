@@ -1,10 +1,10 @@
 import "dayjs/locale/ko";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useColorScheme } from "react-native";
 import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -76,6 +76,7 @@ export default function ChatRoomScreen() {
   const roomId = Number(id);
 
   const queryClient = useQueryClient();
+  const isFocused = useIsFocused();
   const headerHeight = useHeaderHeight();
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
@@ -83,9 +84,11 @@ export default function ChatRoomScreen() {
   const [leaveOpen, setLeaveOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
-  const { data: room, error: roomError } = useChatRoom(roomId);
   const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
   const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
+  const partnerLeft = deletedRoomId === roomId;
+
+  const { data: room, error: roomError } = useChatRoom(roomId, !partnerLeft);
   const feed = useChatMessages(roomId);
   const markRead = useMutation({
     mutationFn: (lastReadMessageId: number) =>
@@ -113,20 +116,26 @@ export default function ChatRoomScreen() {
   );
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
-  useEffect(() => {
-    if (roomError) {
-      alertApiError(roomError);
-      router.back();
-    }
-  }, [roomError]);
+  // 조건이 여러 번 바뀌어도 알림과 뒤로가기는 한 번만 일어나야 한다.
+  // 프로필처럼 위에 떠 있는 화면이 대신 닫히지 않도록 돌아올 때까지 미룬다.
+  const leftRef = useRef(false);
 
   useEffect(() => {
-    if (deletedRoomId === roomId) {
+    if (leftRef.current || !isFocused || (!partnerLeft && !roomError)) {
+      return;
+    }
+
+    leftRef.current = true;
+
+    if (partnerLeft) {
       clearDeletedRoom();
       alertInfo(PARTNER_LEFT_MESSAGE);
-      router.back();
+    } else {
+      alertApiError(roomError);
     }
-  }, [clearDeletedRoom, deletedRoomId, roomId]);
+
+    router.back();
+  }, [clearDeletedRoom, isFocused, partnerLeft, roomError]);
 
   // 자리표시자는 음수 id라 서버에 보낼 수 없다.
   const newestMessageId = messages?.[0]?.messageId ?? 0;
