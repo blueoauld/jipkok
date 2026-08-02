@@ -18,7 +18,10 @@ import {
   XIcon,
 } from "phosphor-react-native";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, type ViewStyle } from "react-native";
+import {
+  FlatList,
+  type ViewStyle
+} from "react-native";
 
 import {
   Button,
@@ -71,6 +74,9 @@ const BOTTOM_GRADIENT: ViewStyle = {
 const CAPTION_MAX_LENGTH = 30;
 
 const FEEDS_KEY = ["feeds"];
+
+const PICKER_LOCALE = "ko-KR";
+const OVERLAY_OPACITY = 0.8;
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -539,17 +545,37 @@ export default function FeedScreen() {
       </XStack>
 
       {pickerOpen && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="inline"
-          maximumDate={new Date()}
-          onValueChange={(_event, selected) => {
-            setPickerOpen(false);
-            setDate(selected);
-          }}
-          onDismiss={() => setPickerOpen(false)}
-        />
+        <>
+          <YStack
+            fullscreen
+            bg="$background"
+            opacity={OVERLAY_OPACITY}
+            onPress={() => setPickerOpen(false)}
+          />
+
+          <YStack
+            position="absolute"
+            b={0}
+            l={0}
+            r={0}
+            items="center"
+            pt="$2"
+            pb="$4"
+            bg="$background"
+          >
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="inline"
+              locale={PICKER_LOCALE}
+              maximumDate={new Date()}
+              onValueChange={(_event, selected) => {
+                setPickerOpen(false);
+                setDate(selected);
+              }}
+            />
+          </YStack>
+        </>
       )}
 
       <ComposeDialog
