@@ -1,11 +1,13 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.SendNoteResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
+import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -15,6 +17,7 @@ import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,6 +30,7 @@ class ChatNoteService(
     private val memberRepository: MemberRepository,
     private val memberBlockRepository: MemberBlockRepository,
     private val pointService: PointService,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     @Transactional
@@ -55,6 +59,7 @@ class ChatNoteService(
 
         room.lastMessageId = message.id
         chatRoomMemberRepository.increaseUnreadCount(room.id, receiverId)
+        eventPublisher.publishEvent(ChatMessageSentEvent(receiverId, ChatMessageResponse.of(message, null)))
 
         return SendNoteResponse(room.id)
     }

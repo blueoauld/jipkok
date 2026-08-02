@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
+import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -23,6 +24,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.util.*
 
 class ChatNoteServiceTest {
@@ -39,6 +41,8 @@ class ChatNoteServiceTest {
 
     private val pointService = mockk<PointService>(relaxed = true)
 
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
     private val chatNoteService = ChatNoteService(
         chatRoomRepository,
         chatRoomMemberRepository,
@@ -46,6 +50,7 @@ class ChatNoteServiceTest {
         memberRepository,
         memberBlockRepository,
         pointService,
+        eventPublisher,
     )
 
     @BeforeEach
@@ -136,6 +141,21 @@ class ChatNoteServiceTest {
 
         // then
         verify { chatRoomMemberRepository.increaseUnreadCount(any(), RECEIVER_ID) }
+    }
+
+    @Test
+    fun `쪽지를 보내면 상대에게 전달할 이벤트가 발행된다`() {
+        // given
+        val event = slot<ChatMessageSentEvent>()
+
+        // when
+        chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
+
+        // then
+        verify { eventPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.receiverId).isEqualTo(RECEIVER_ID)
+        assertThat(event.captured.message.senderId).isEqualTo(SENDER_ID)
+        assertThat(event.captured.message.content).isEqualTo(CONTENT)
     }
 
     @Test

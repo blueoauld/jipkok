@@ -38,6 +38,7 @@ class SecurityConfig(
                 it.requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, AD_REWARD_CALLBACK_PATH).permitAll()
+                    .requestMatchers(WEB_SOCKET_PATH).permitAll()
                     .requestMatchers(*DOCS_PATHS).permitAll()
                     .anyRequest().authenticated()
             }
@@ -48,6 +49,7 @@ class SecurityConfig(
     companion object {
 
         private const val AD_REWARD_CALLBACK_PATH = "/api/ads/rewards/callback"
+        private const val WEB_SOCKET_PATH = "/ws/**"
 
         private val DOCS_PATHS = arrayOf("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
     }
