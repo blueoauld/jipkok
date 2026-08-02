@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
+import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
@@ -18,9 +19,13 @@ import org.springframework.transaction.annotation.Transactional
 class ChatRoomService(
 
     private val chatRoomRepository: ChatRoomRepository,
+    private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val memberSummaryService: MemberSummaryService,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
+
+    @Transactional(readOnly = true)
+    fun findUnreadCount(memberId: Long) = chatRoomMemberRepository.sumUnreadCount(memberId)
 
     @Transactional(readOnly = true)
     fun findRoom(memberId: Long, roomId: Long): ChatRoomResponse {

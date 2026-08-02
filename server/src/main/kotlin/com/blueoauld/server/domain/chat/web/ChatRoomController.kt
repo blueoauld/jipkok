@@ -30,6 +30,10 @@ class ChatRoomController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<ChatRoomResponse> = chatRoomService.findRooms(memberId, unreadOnly, cursor, size)
 
+    @Operation(summary = "안읽은 메시지 수")
+    @GetMapping("/unread-count")
+    fun findUnreadCount(@AuthenticationPrincipal memberId: Long): Long = chatRoomService.findUnreadCount(memberId)
+
     @Operation(summary = "채팅방 검색", description = "상대 닉네임으로 찾는다.")
     @GetMapping("/search")
     fun searchRooms(

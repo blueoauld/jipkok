@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
+import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -26,6 +27,8 @@ class ChatRoomServiceTest {
 
     private val chatRoomRepository = mockk<ChatRoomRepository>(relaxed = true)
 
+    private val chatRoomMemberRepository = mockk<ChatRoomMemberRepository>(relaxed = true)
+
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
     private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
@@ -34,6 +37,7 @@ class ChatRoomServiceTest {
 
     private val chatRoomService = ChatRoomService(
         chatRoomRepository,
+        chatRoomMemberRepository,
         memberSummaryService,
         eventPublisher,
     )
@@ -41,6 +45,18 @@ class ChatRoomServiceTest {
     @BeforeEach
     fun setUp() {
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+    }
+
+    @Test
+    fun `안읽은 메시지 수를 모두 더해 준다`() {
+        // given
+        every { chatRoomMemberRepository.sumUnreadCount(ME_ID) } returns 7
+
+        // when
+        val count = chatRoomService.findUnreadCount(ME_ID)
+
+        // then
+        assertThat(count).isEqualTo(7)
     }
 
     @Test

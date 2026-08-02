@@ -18,6 +18,17 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
     )
     fun increaseUnreadCount(@Param("roomId") roomId: Long, @Param("memberId") memberId: Long)
 
+    @Query(
+        """
+        select coalesce(sum(crm.unreadCount), 0)
+        from ChatRoomMember crm, ChatRoom r, Member p
+        where crm.memberId = :memberId
+          and r.id = crm.roomId
+          and p.id = (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end)
+        """,
+    )
+    fun sumUnreadCount(@Param("memberId") memberId: Long): Long
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """
