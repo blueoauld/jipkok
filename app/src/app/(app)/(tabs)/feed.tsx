@@ -76,7 +76,7 @@ const CAPTION_MAX_LENGTH = 30;
 const FEEDS_KEY = ["feeds"];
 
 const PICKER_LOCALE = "ko-KR";
-const OVERLAY_OPACITY = 0.8;
+const OVERLAY_OPACITY = 0.6;
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
