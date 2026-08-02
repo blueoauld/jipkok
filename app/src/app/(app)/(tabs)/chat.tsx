@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, YStack } from "tamagui";
+import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
-import { Chat, ChatRow } from "@/components/ChatRow";
+import { ChatRow } from "@/components/ChatRow";
 import { SegmentedControl } from "@/components/SegmentedControl";
+import { useChatRooms } from "@/hooks/useChatRooms";
+import { isApiError } from "@/lib/api";
 
 const FILTERS = ["전체", "안읽음"] as const;
 type Filter = (typeof FILTERS)[number];
 
-const USERS: Chat[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-  unreadCount: index * 2,
-}));
+const ERROR_MESSAGE = "채팅을 불러오지 못했습니다.";
+const EMPTY_MESSAGE = "채팅이 없습니다.";
 
 export default function ChatScreen() {
   const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("전체");
+
+  const query = useChatRooms(filter === "안읽음");
+  const { rooms, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    query;
 
   return (
     <YStack flex={1}>
@@ -28,18 +31,61 @@ export default function ChatScreen() {
         />
       </YStack>
 
-      <FlatList
-        data={USERS}
-        keyExtractor={(user) => user.id}
-        renderItem={({ item }) => <ChatRow chat={item} />}
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{
-          paddingTop: space.$3.val,
-          paddingBottom: space.$4.val,
-          paddingHorizontal: space.$4.val,
-          gap: space.$4.val,
-        }}
-      />
+      {rooms ? (
+        <FlatList
+          data={rooms}
+          keyExtractor={(room) => String(room.roomId)}
+          renderItem={({ item }) => <ChatRow room={item} />}
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={{
+            paddingTop: space.$3.val,
+            paddingBottom: space.$4.val,
+            paddingHorizontal: space.$4.val,
+            gap: space.$4.val,
+          }}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
+          }
+          ListEmptyComponent={
+            <YStack items="center" py="$8">
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {EMPTY_MESSAGE}
+              </Text>
+            </YStack>
+          }
+        />
+      ) : (
+        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
+          {error ? (
+            <>
+              <Text color="$gray10" fontSize="$4" text="center">
+                {isApiError(error) ? error.message : ERROR_MESSAGE}
+              </Text>
+
+              <Button
+                size="$3"
+                theme="blue"
+                rounded="$7"
+                onPress={() => query.refetch()}
+              >
+                다시 시도
+              </Button>
+            </>
+          ) : (
+            <Spinner size="small" />
+          )}
+        </YStack>
+      )}
     </YStack>
   );
 }

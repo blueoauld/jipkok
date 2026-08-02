@@ -2,25 +2,36 @@ import { Stack } from "expo-router";
 import { useState } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Text, YStack } from "tamagui";
+import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
-import { ChatRow, type Chat } from "@/components/ChatRow";
+import { ChatRow } from "@/components/ChatRow";
 import { FormInput } from "@/components/FormInput";
+import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
+import { isApiError } from "@/lib/api";
 
-const CHATS: Chat[] = Array.from({ length: 100 }, (_, index) => ({
-  id: String(index),
-  nickname: `닉네임 ${index}`,
-  unreadCount: index % 4,
-}));
+const NICKNAME_MAX_LENGTH = 10;
+
+const HINT_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
+const EMPTY_MESSAGE = "검색 결과가 없습니다.";
+const ERROR_MESSAGE = "검색하지 못했습니다.";
 
 export default function ChatSearchScreen() {
   const space = getTokens().space;
-  const [query, setQuery] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [submitted, setSubmitted] = useState("");
 
-  const keyword = query.trim();
-  const results = keyword
-    ? CHATS.filter((chat) => chat.nickname.includes(keyword))
-    : [];
+  const search = useChatRoomSearch(submitted);
+  const {
+    rooms,
+    enabled,
+    error,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = search;
+
+  const submit = () => setSubmitted(keyword.trim());
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -28,21 +39,22 @@ export default function ChatSearchScreen() {
 
       <YStack px="$4" pt="$4" pb="$2">
         <FormInput
-          value={query}
-          onChangeText={setQuery}
+          value={keyword}
+          onChangeText={setKeyword}
+          onSubmitEditing={submit}
           placeholder="닉네임"
           autoFocusNative
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
-          maxLength={10}
+          maxLength={NICKNAME_MAX_LENGTH}
         />
       </YStack>
 
       <FlatList
-        data={results}
-        keyExtractor={(chat) => chat.id}
-        renderItem={({ item }) => <ChatRow chat={item} />}
+        data={rooms}
+        keyExtractor={(room) => String(room.roomId)}
+        renderItem={({ item }) => <ChatRow room={item} />}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{
@@ -51,13 +63,47 @@ export default function ChatSearchScreen() {
           paddingHorizontal: space.$4.val,
           gap: space.$4.val,
         }}
+        onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <YStack items="center" py="$4">
+              <Spinner size="small" />
+            </YStack>
+          ) : null
+        }
         ListEmptyComponent={
-          <YStack items="center" py="$8">
-            <Text theme="gray" color="$color10">
-              {keyword
-                ? "검색 결과가 없습니다."
-                : "닉네임을 입력해주시길 바랍니다."}
-            </Text>
+          <YStack items="center" gap="$4" py="$8">
+            {!enabled ? (
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {HINT_MESSAGE}
+              </Text>
+            ) : error ? (
+              <>
+                <Text color="$gray10" fontSize="$4" text="center">
+                  {isApiError(error) ? error.message : ERROR_MESSAGE}
+                </Text>
+
+                <Button
+                  size="$3"
+                  theme="blue"
+                  rounded="$7"
+                  onPress={() => search.refetch()}
+                >
+                  다시 시도
+                </Button>
+              </>
+            ) : isFetching ? (
+              <Spinner size="small" />
+            ) : (
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {EMPTY_MESSAGE}
+              </Text>
+            )}
           </YStack>
         }
       />

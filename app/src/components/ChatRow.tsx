@@ -1,13 +1,12 @@
 import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
+import type { ChatRoomResponse } from "@/lib/api";
+import { formatChatTime } from "@/lib/date";
 import { pushOnce } from "@/lib/router";
 
-export type Chat = {
-  id: string;
-  nickname: string;
-  unreadCount: number;
-};
+const PHOTO_MESSAGE = "사진";
+const MAX_UNREAD_COUNT = 99;
 
 function UnreadBadge({ count }: { count: number }) {
   if (count <= 0) {
@@ -26,29 +25,30 @@ function UnreadBadge({ count }: { count: number }) {
       justify="center"
     >
       <Text color="white" fontSize="$1" fontWeight="600">
-        {count > 99 ? "99+" : count}
+        {count > MAX_UNREAD_COUNT ? `${MAX_UNREAD_COUNT}+` : count}
       </Text>
     </XStack>
   );
 }
 
-export function ChatRow({ chat }: { chat: Chat }) {
+export function ChatRow({ room }: { room: ChatRoomResponse }) {
   return (
     <XStack
       gap="$3"
       items="center"
       pressStyle={{ opacity: 0.6 }}
-      onPress={() => pushOnce(`/chat/${chat.id}`)}
+      onPress={() => pushOnce(`/chat/${room.roomId}`)}
     >
-      <UserAvatar id={chat.id} />
+      <UserAvatar id={String(room.memberId)} url={room.profileImageUrl} />
 
       <YStack flex={1} gap="$2">
         <XStack items="center" justify="space-between" gap="$2">
           <Text flex={1} numberOfLines={1} fontSize="$4" fontWeight="600">
-            {chat.nickname}
+            {room.nickname}
           </Text>
+
           <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
-            오후 1:03
+            {formatChatTime(room.lastMessageAt)}
           </Text>
         </XStack>
 
@@ -60,9 +60,12 @@ export function ChatRow({ chat }: { chat: Chat }) {
             color="$color10"
             fontSize="$3"
           >
-            코멘트
+            {room.lastMessageType === "PHOTO"
+              ? PHOTO_MESSAGE
+              : room.lastMessageContent}
           </Text>
-          <UnreadBadge count={chat.unreadCount} />
+
+          <UnreadBadge count={room.unreadCount} />
         </XStack>
       </YStack>
     </XStack>

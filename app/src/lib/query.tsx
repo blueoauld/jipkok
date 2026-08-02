@@ -1,9 +1,11 @@
 import {
+  focusManager,
   QueryClient,
   QueryClientProvider,
   type QueryClientConfig,
 } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AppState } from "react-native";
 
 import { isApiError } from "@/lib/api";
 
@@ -27,8 +29,20 @@ const config: QueryClientConfig = {
   },
 };
 
+function useAppStateFocus() {
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) =>
+      focusManager.setFocused(state === "active"),
+    );
+
+    return () => subscription.remove();
+  }, []);
+}
+
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [client] = useState(() => new QueryClient(config));
+
+  useAppStateFocus();
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

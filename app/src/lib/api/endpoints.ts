@@ -2,6 +2,7 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
+  ChatRoomPage,
   CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -46,6 +47,18 @@ type MemberRankingParams = {
 type MemberSearchParams = {
   keyword: string;
   cursor?: string;
+  size?: number;
+};
+
+type ChatRoomListParams = {
+  unreadOnly?: boolean;
+  cursor?: number;
+  size?: number;
+};
+
+type ChatRoomSearchParams = {
+  keyword: string;
+  cursor?: number;
   size?: number;
 };
 
@@ -232,6 +245,12 @@ export const feeds = {
 };
 
 export const chats = {
+  list: (params: ChatRoomListParams = {}) =>
+    request<ChatRoomPage>("/api/chats", { query: params }),
+
+  search: (params: ChatRoomSearchParams) =>
+    request<ChatRoomPage>("/api/chats/search", { query: params }),
+
   sendNote: (memberId: number, content: string) =>
     request<SendNoteResponse>(`/api/members/${memberId}/notes`, {
       method: "POST",

@@ -14,7 +14,7 @@ const REISSUE_PATH = "/api/auth/token/reissue";
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
-  query?: Record<string, string | number | undefined>;
+  query?: Record<string, string | number | boolean | undefined>;
   auth?: boolean;
 };
 
