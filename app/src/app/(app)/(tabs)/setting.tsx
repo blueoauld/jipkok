@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs, type Href } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import type { Icon } from "phosphor-react-native";
 import {
   CalendarCheckIcon,
@@ -41,7 +42,11 @@ const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 
 const WITHDRAW_DESCRIPTION =
   "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.";
 
+const TERMS_URL = "https://jipkok.app/terms";
+const PRIVACY_URL = "https://jipkok.app/privacy";
+
 const MAIL_FAILED_MESSAGE = "메일 앱을 열지 못했습니다.";
+const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
@@ -51,6 +56,7 @@ type SettingItem = {
   label: string;
   icon: Icon;
   href?: Href;
+  url?: string;
   action?: SettingAction;
   gated?: boolean;
 };
@@ -95,8 +101,8 @@ const SECTIONS: SettingItem[][] = [
   [
     { label: "문의하기", icon: HeadsetIcon, action: "contact" },
     { label: "건의하기", icon: LightbulbIcon, action: "suggest" },
-    { label: "서비스 이용약관", icon: FileTextIcon },
-    { label: "개인정보 처리방침", icon: ShieldCheckIcon },
+    { label: "서비스 이용약관", icon: FileTextIcon, url: TERMS_URL },
+    { label: "개인정보 처리방침", icon: ShieldCheckIcon, url: PRIVACY_URL },
   ],
 ];
 
@@ -190,6 +196,13 @@ export default function SettingScreen() {
         return;
       }
 
+      if (item.url) {
+        WebBrowser.openBrowserAsync(item.url).catch(() =>
+          alertMessage(BROWSER_FAILED_MESSAGE),
+        );
+        return;
+      }
+
       if (!item.href) {
         return;
       }
@@ -244,7 +257,9 @@ export default function SettingScreen() {
                 item={item}
                 pending={item.action === pendingAction}
                 onPress={
-                  item.href || item.action ? () => handlePress(item) : undefined
+                  item.href || item.url || item.action
+                    ? () => handlePress(item)
+                    : undefined
                 }
               />
             ))}
