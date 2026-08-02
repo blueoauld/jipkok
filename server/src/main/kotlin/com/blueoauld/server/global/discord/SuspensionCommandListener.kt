@@ -1,5 +1,7 @@
 package com.blueoauld.server.global.discord
 
+import com.blueoauld.server.domain.member.entity.type.MemberView
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
@@ -44,8 +46,8 @@ class SuspensionCommandListener(
         event.deferReply(true).queue()
 
         runCatching { handle(event) }
-            .onSuccess { event.hook.sendMessage(it).queue() }
-            .onFailure { event.hook.sendMessage(toMessage(it)).queue() }
+            .onSuccess { reply(event, it) }
+            .onFailure { reply(event, toMessage(it)) }
     }
 
     private fun record(event: SlashCommandInteractionEvent, suspension: SuspensionDetail) {
@@ -63,8 +65,47 @@ class SuspensionCommandListener(
         SUSPEND -> suspend(event)
         RELEASE -> release(event)
         RESET -> reset(event)
+        MEMBER -> member(event)
         else -> history(event)
     }
+
+    private fun member(event: SlashCommandInteractionEvent): String {
+        val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
+
+        return when (MemberView.valueOf(event.getOption(TARGET_OPTION)!!.asString)) {
+            MemberView.PROFILE -> profile(memberId)
+            MemberView.PUBLIC_PHOTO -> photos(memberId, PhotoVisibility.PUBLIC)
+            MemberView.SECRET_PHOTO -> photos(memberId, PhotoVisibility.SECRET)
+        }
+    }
+
+    private fun photos(memberId: Long, visibility: PhotoVisibility): String {
+        val urls = memberService.findPhotoUrls(memberId, visibility)
+
+        return if (urls.isEmpty()) {
+            "사진이 없습니다."
+        } else {
+            urls.mapIndexed { index, url -> "${index + 1}. $url" }.joinToString("\n")
+        }
+    }
+
+    private fun profile(memberId: Long): String {
+        val member = memberService.findForAdmin(memberId)
+
+        return buildString {
+            appendLine("${member.nickname}(`#${member.memberId}`) / ${member.gender.label} / ${member.age}살")
+            appendLine("${member.phoneNumber} / 가입 ${format(member.joinedAt)}")
+            appendLine("접속 ${member.locatedAt?.let(::format) ?: "없음"} / 쪽지 수신 ${mark(member.noteReceiveEnabled)}")
+            appendLine(
+                "공개 사진 ${member.publicPhotoCount}장 / 비밀 사진 ${member.secretPhotoCount}장" +
+                        " / 좋아요 ${member.receivedLikeCount} / 포인트 ${member.pointBalance}",
+            )
+            appendLine("코멘트: ${member.comment ?: "없음"}")
+            append("자기소개: ${member.bio ?: "없음"}")
+        }
+    }
+
+    private fun mark(enabled: Boolean) = if (enabled) "O" else "X"
 
     private fun reset(event: SlashCommandInteractionEvent): String {
         val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
@@ -95,6 +136,22 @@ class SuspensionCommandListener(
         record(event, suspension)
 
         return "정지했습니다.\n${describe(suspension)}"
+    }
+
+    private fun reply(event: SlashCommandInteractionEvent, message: String) {
+        chunk(message).forEach { event.hook.sendMessage(it).setSuppressEmbeds(true).queue() }
+    }
+
+    private fun chunk(message: String) = message.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
+        val last = chunks.lastOrNull()
+
+        if (last == null || last.length + line.length + 1 > MESSAGE_MAX_LENGTH) {
+            chunks.add(line)
+        } else {
+            chunks[chunks.lastIndex] = "$last\n$line"
+        }
+
+        chunks
     }
 
     private fun isDuplicate(throwable: Throwable) =
@@ -151,6 +208,7 @@ class SuspensionCommandListener(
         const val RELEASE = "정지해제"
         const val HISTORY = "정지조회"
         const val RESET = "초기화"
+        const val MEMBER = "회원조회"
 
         private const val MEMBER_ID_OPTION = "회원id"
         private const val TYPE_OPTION = "유형"
@@ -159,10 +217,12 @@ class SuspensionCommandListener(
         private const val DAYS_OPTION = "기간"
         private const val DETAIL_OPTION = "상세"
 
+        private const val MESSAGE_MAX_LENGTH = 1900
+
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
 
-        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET)
+        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET, MEMBER)
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -182,6 +242,9 @@ class SuspensionCommandListener(
                 .addOptions(typeOption()),
             Commands.slash(HISTORY, "회원의 정지 이력을 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true),
+            Commands.slash(MEMBER, "회원 정보를 본다.")
+                .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)
+                .addOptions(viewOption()),
             Commands.slash(RESET, "회원의 프로필을 초기화한다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)
                 .addOptions(targetOption()),
@@ -195,6 +258,16 @@ class SuspensionCommandListener(
                 true,
             ).apply {
                 SuspensionType.entries.forEach { addChoice(it.label, it.name) }
+            }
+
+        private fun viewOption() =
+            OptionData(
+                OptionType.STRING,
+                TARGET_OPTION,
+                "볼 항목",
+                true,
+            ).apply {
+                MemberView.entries.forEach { addChoice(it.label, it.name) }
             }
 
         private fun targetOption() =

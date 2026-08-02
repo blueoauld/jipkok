@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateFeedNotificationRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
+import com.blueoauld.server.domain.member.dto.response.AdminMemberDetail
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
@@ -159,6 +160,46 @@ class MemberService(
         val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
 
         return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
+    }
+
+    @Transactional(readOnly = true)
+    fun findForAdmin(memberId: Long): AdminMemberDetail {
+        val member = memberRepository.findById(memberId).orElseThrow {
+            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+        val photos = memberPhotoRepository.findAllByMemberId(memberId)
+
+        return AdminMemberDetail(
+            memberId = member.id,
+            nickname = member.nickname,
+            phoneNumber = member.phoneNumber,
+            gender = member.gender,
+            birthYear = member.birthYear,
+            age = currentYear() - member.birthYear,
+            comment = member.comment,
+            bio = member.bio,
+            publicPhotoCount = photos.count { it.visibility == PhotoVisibility.PUBLIC },
+            secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
+            receivedLikeCount = member.receivedLikeCount,
+            pointBalance = member.pointBalance,
+            noteReceiveEnabled = member.noteReceiveEnabled,
+            locatedAt = member.locatedAt,
+            joinedAt = member.createdAt,
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun findPhotoUrls(memberId: Long, visibility: PhotoVisibility): List<String> {
+        val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
+            photoStorage::toPublicUrl
+        } else {
+            photoStorage::createSignedViewUrl
+        }
+
+        return memberPhotoRepository.findAllByMemberId(memberId)
+            .filter { it.visibility == visibility }
+            .sortedBy { it.displayOrder }
+            .map { toUrl(it.objectKey) }
     }
 
     @Transactional

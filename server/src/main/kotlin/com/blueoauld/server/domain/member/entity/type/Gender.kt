@@ -1,7 +1,10 @@
 package com.blueoauld.server.domain.member.entity.type
 
-enum class Gender {
+enum class Gender(
 
-    MALE,
-    FEMALE,
+    val label: String,
+) {
+
+    MALE("남자"),
+    FEMALE("여자"),
 }
