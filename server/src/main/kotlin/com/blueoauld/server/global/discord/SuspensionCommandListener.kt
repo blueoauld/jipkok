@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
+import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -58,30 +59,43 @@ class SuspensionCommandListener(
     }
 
     private fun suspend(event: SlashCommandInteractionEvent): String {
+        val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
+        val type = SuspensionType.valueOf(event.getOption(TYPE_OPTION)!!.asString)
         val days = event.getOption(DAYS_OPTION)!!.asLong
 
-        val suspension = memberSuspensionService.suspend(
-            memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong,
-            type = SuspensionType.valueOf(event.getOption(TYPE_OPTION)!!.asString),
-            reason = SuspensionReason.valueOf(event.getOption(REASON_OPTION)!!.asString),
-            days = days.takeIf { it > 0 },
-            detail = event.getOption(DETAIL_OPTION)?.asString,
-        )
+        val suspension = runCatching {
+            memberSuspensionService.suspend(
+                memberId = memberId,
+                type = type,
+                reason = SuspensionReason.valueOf(event.getOption(REASON_OPTION)!!.asString),
+                days = days.takeIf { it > 0 },
+                detail = event.getOption(DETAIL_OPTION)?.asString,
+            )
+        }.getOrElse { throw if (isDuplicate(it)) DuplicateSuspension(memberId, type) else it }
 
         record(event, suspension)
 
         return "정지했습니다.\n${describe(suspension)}"
     }
 
+    private fun isDuplicate(throwable: Throwable) =
+        throwable is BusinessException && throwable.errorCode == ErrorCode.DUPLICATE_SUSPENSION
+
+    private fun describeDuplicate(memberId: Long, type: SuspensionType) =
+        memberSuspensionService.findActiveDetails(memberId, type)
+            .joinToString("\n", prefix = "${ErrorCode.DUPLICATE_SUSPENSION.message}\n", transform = ::describe)
+
+    private class DuplicateSuspension(val memberId: Long, val type: SuspensionType) : RuntimeException()
+
     private fun release(event: SlashCommandInteractionEvent): String {
-        val suspension = memberSuspensionService.release(
+        val suspensions = memberSuspensionService.release(
             memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong,
             type = SuspensionType.valueOf(event.getOption(TYPE_OPTION)!!.asString),
         )
 
-        record(event, suspension)
+        suspensions.forEach { record(event, it) }
 
-        return "정지를 해제했습니다.\n${describe(suspension)}"
+        return suspensions.joinToString("\n", prefix = "정지를 해제했습니다.\n") { describe(it) }
     }
 
     private fun history(event: SlashCommandInteractionEvent): String {
@@ -106,8 +120,11 @@ class SuspensionCommandListener(
 
     private fun format(instant: Instant) = FORMATTER.format(instant.atZone(KOREA))
 
-    private fun toMessage(throwable: Throwable) =
-        if (throwable is BusinessException) throwable.errorCode.message else FAILED_MESSAGE
+    private fun toMessage(throwable: Throwable) = when (throwable) {
+        is DuplicateSuspension -> describeDuplicate(throwable.memberId, throwable.type)
+        is BusinessException -> throwable.errorCode.message
+        else -> FAILED_MESSAGE
+    }
 
     companion object {
 

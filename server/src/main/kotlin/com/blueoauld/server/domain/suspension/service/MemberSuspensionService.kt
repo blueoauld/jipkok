@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 
 @Service
 class MemberSuspensionService(
@@ -34,6 +35,11 @@ class MemberSuspensionService(
         val member = findMember(memberId)
         val now = clock.instant()
 
+        if (findActiveOf(memberId, type, now).isNotEmpty()) {
+            throw BusinessException(ErrorCode.DUPLICATE_SUSPENSION)
+        }
+
+
         return memberSuspensionRepository.save(
             MemberSuspension(
                 phoneNumber = member.phoneNumber,
@@ -50,17 +56,33 @@ class MemberSuspensionService(
     }
 
     @Transactional
-    fun release(memberId: Long, type: SuspensionType): SuspensionDetail {
+    fun release(memberId: Long, type: SuspensionType): List<SuspensionDetail> {
         val member = findMember(memberId)
-        val suspension = memberSuspensionRepository.findActive(memberId, clock.instant())
-            .firstOrNull { it.type == type }
-            ?: throw BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
+        val now = clock.instant()
+        val suspensions = findActiveOf(memberId, type, now)
 
-        suspension.releasedAt = clock.instant()
-        evict(suspension)
+        if (suspensions.isEmpty()) {
+            throw BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
+        }
 
-        return SuspensionDetail.of(suspension, withdrawn = suspension.memberId != member.id)
+        suspensions.forEach {
+            it.releasedAt = now
+            evict(it)
+        }
+
+        return suspensions.map { SuspensionDetail.of(it, withdrawn = it.memberId != member.id) }
     }
+
+    @Transactional(readOnly = true)
+    fun findActiveDetails(memberId: Long, type: SuspensionType): List<SuspensionDetail> {
+        val member = findMember(memberId)
+
+        return findActiveOf(memberId, type, clock.instant())
+            .map { SuspensionDetail.of(it, withdrawn = it.memberId != member.id) }
+    }
+
+    private fun findActiveOf(memberId: Long, type: SuspensionType, now: Instant) =
+        memberSuspensionRepository.findActive(memberId, now).filter { it.type == type }
 
     @Transactional(readOnly = true)
     fun findActive(memberId: Long): List<MemberSuspension> =
