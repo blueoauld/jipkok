@@ -18,10 +18,7 @@ import {
   XIcon,
 } from "phosphor-react-native";
 import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  FlatList,
-  type ViewStyle
-} from "react-native";
+import { FlatList, RefreshControl, type ViewStyle } from "react-native";
 
 import {
   Button,
@@ -52,6 +49,7 @@ import {
 } from "@/lib/api";
 import { formatDateLabel, formatSlotTime } from "@/lib/date";
 import { uploadFeedPhoto } from "@/lib/feedPhoto";
+import { useFeedFilterStore } from "@/lib/filter/store";
 import { pushOnce } from "@/lib/router";
 import type { ImagePickerAsset } from "expo-image-picker";
 
@@ -85,6 +83,10 @@ const GENDER_VALUES: Record<Filter, Gender | null> = {
   전체: null,
   남자: "MALE",
   여자: "FEMALE",
+};
+const GENDER_LABELS: Record<string, Filter> = {
+  MALE: "남자",
+  FEMALE: "여자",
 };
 
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
@@ -376,14 +378,15 @@ function ComposeDialog({
 export default function FeedScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
-  const [filter, setFilter] = useState<Filter>("전체");
   const [reportId, setReportId] = useState<number | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [date, setDate] = useState(() => new Date());
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const openCompose = useCallback(() => setComposeOpen(true), []);
 
-  const gender = GENDER_VALUES[filter];
+  const gender = useFeedFilterStore((state) => state.gender);
+  const setGender = useFeedFilterStore((state) => state.setGender);
   const feed = useFeedPosts(date, gender);
   const { posts, error, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
@@ -392,6 +395,16 @@ export default function FeedScreen() {
     () => queryClient.invalidateQueries({ queryKey: FEEDS_KEY }),
     [queryClient],
   );
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await feed.refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [feed]);
 
   const toggleLike = useMutation({
     mutationFn: (post: FeedPostResponse) =>
@@ -473,8 +486,8 @@ export default function FeedScreen() {
       <YStack px="$4" pt="$4" pb="$2">
         <SegmentedControl
           values={FILTERS}
-          value={filter}
-          onChange={setFilter}
+          value={GENDER_LABELS[gender ?? ""] ?? "전체"}
+          onChange={(label) => setGender(GENDER_VALUES[label])}
         />
       </YStack>
 
@@ -496,6 +509,9 @@ export default function FeedScreen() {
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }
           onEndReachedThreshold={0.5}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
