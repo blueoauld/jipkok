@@ -33,15 +33,18 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { alertApiError } from "@/lib/alert";
+import { alertApiError, alertInfo } from "@/lib/alert";
 import {
   api,
   type ChatMessageResponse,
   type ChatRoomResponse,
 } from "@/lib/api";
+import { useDeletedRoomStore } from "@/lib/chat/store";
 import { pushOnce } from "@/lib/router";
 
 const MESSAGE_MAX_LENGTH = 1000;
+
+const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -81,6 +84,8 @@ export default function ChatRoomScreen() {
 
   const { data: profile } = useMyProfile();
   const { data: room, error: roomError } = useChatRoom(roomId);
+  const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
+  const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
   const feed = useChatMessages(roomId);
   const markRead = useMutation({
     mutationFn: (lastReadMessageId: number) =>
@@ -108,13 +113,20 @@ export default function ChatRoomScreen() {
   );
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
-  // 상대가 나가면 방이 사라지므로 열려 있던 화면을 닫는다.
   useEffect(() => {
     if (roomError) {
       alertApiError(roomError);
       router.back();
     }
   }, [roomError]);
+
+  useEffect(() => {
+    if (deletedRoomId === roomId) {
+      clearDeletedRoom();
+      alertInfo(PARTNER_LEFT_MESSAGE);
+      router.back();
+    }
+  }, [clearDeletedRoom, deletedRoomId, roomId]);
 
   // 자리표시자는 음수 id라 서버에 보낼 수 없다.
   const newestMessageId = messages?.[0]?.messageId ?? 0;

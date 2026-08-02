@@ -7,6 +7,7 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { createChatSocket } from "@/lib/chat/socket";
+import { useDeletedRoomStore } from "@/lib/chat/store";
 
 type ChatEvent = {
   type: "MESSAGE" | "ROOM_DELETED";
@@ -31,10 +32,10 @@ export function useChatSocket() {
         const event = received as ChatEvent;
 
         if (event.type === "ROOM_DELETED") {
-          queryClient.removeQueries({ queryKey: chatRoomKey(event.roomId) });
           queryClient.removeQueries({
             queryKey: chatMessagesKey(event.roomId),
           });
+          useDeletedRoomStore.getState().markDeleted(event.roomId);
         } else if (event.message) {
           appendMessage(queryClient, event.roomId, event.message);
           queryClient.invalidateQueries({
