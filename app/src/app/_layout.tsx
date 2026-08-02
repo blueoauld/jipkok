@@ -5,6 +5,7 @@ import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, useTheme } from "tamagui";
 
+import { useChatSocket } from "@/hooks/useChatSocket";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { QueryProvider } from "@/lib/query";
 import { tamaguiConfig } from "@/tamagui.config";
@@ -19,6 +20,7 @@ export default function RootLayout() {
           <NavigationTheme scheme={scheme}>
             <StatusBar style={scheme === "dark" ? "light" : "dark"} />
             <SessionGuard />
+            <ChatSocket />
             <Stack screenOptions={{ headerShown: false }} />
           </NavigationTheme>
         </TamaguiProvider>
@@ -29,6 +31,12 @@ export default function RootLayout() {
 
 function SessionGuard() {
   useSessionGuard();
+
+  return null;
+}
+
+function ChatSocket() {
+  useChatSocket();
 
   return null;
 }
