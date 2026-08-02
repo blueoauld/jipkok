@@ -80,7 +80,7 @@ export default function ChatRoomScreen() {
   const [leaveOpen, setLeaveOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
-  const { data: room } = useChatRoom(roomId);
+  const { data: room, error: roomError } = useChatRoom(roomId);
   const feed = useChatMessages(roomId);
   const markRead = useMutation({
     mutationFn: (lastReadMessageId: number) =>
@@ -107,6 +107,14 @@ export default function ChatRoomScreen() {
     profile?.memberId ?? 0,
   );
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
+
+  // 상대가 나가면 방이 사라지므로 열려 있던 화면을 닫는다.
+  useEffect(() => {
+    if (roomError) {
+      alertApiError(roomError);
+      router.back();
+    }
+  }, [roomError]);
 
   // 자리표시자는 음수 id라 서버에 보낼 수 없다.
   const newestMessageId = messages?.[0]?.messageId ?? 0;
