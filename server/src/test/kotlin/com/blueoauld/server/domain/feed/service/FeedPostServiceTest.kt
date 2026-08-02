@@ -4,9 +4,11 @@ import com.blueoauld.server.domain.feed.dto.request.CreateFeedPhotoUploadUrlRequ
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
+import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
 import io.mockk.mockk
@@ -26,9 +28,15 @@ class FeedPostServiceTest {
 
     private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
 
+    private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
+
+    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+
     private val feedPostService = FeedPostService(
         feedPostRepository,
         photoUploadService,
+        memberSummaryService,
+        photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 

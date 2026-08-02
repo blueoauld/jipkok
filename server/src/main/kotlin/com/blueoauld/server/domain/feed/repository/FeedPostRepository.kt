@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.feed.repository
 
+import com.blueoauld.server.domain.feed.dto.projection.FeedPostRow
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -10,6 +11,46 @@ import java.time.Instant
 interface FeedPostRepository : JpaRepository<FeedPost, Long> {
 
     fun existsByMemberIdAndSlotAt(memberId: Long, slotAt: Instant): Boolean
+
+    @Query(
+        value = """
+        select p.id as postId,
+               p.member_id as memberId,
+               p.slot_at as slotAt,
+               p.caption as caption,
+               p.object_key as objectKey,
+               exists (
+                 select 1 from feed_post_like l
+                 where l.post_id = p.id and l.member_id = :memberId
+               ) as likedByMe
+        from feed_post p
+        join member m on m.id = p.member_id and m.deleted_at is null
+        where p.deleted_at is null
+          and p.slot_at >= :from and p.slot_at < :to
+          and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
+          and not exists (
+            select 1 from member_block b
+            where (b.blocker_id = :memberId and b.blocked_member_id = p.member_id)
+               or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
+          )
+          and not exists (
+            select 1 from feed_post_report r
+            where r.reporter_id = :memberId and r.post_id = p.id
+          )
+          and (cast(:cursor as bigint) is null or p.id > cast(:cursor as bigint))
+        order by p.id
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findByDate(
+        @Param("memberId") memberId: Long,
+        @Param("gender") gender: String?,
+        @Param("from") from: Instant,
+        @Param("to") to: Instant,
+        @Param("cursor") cursor: Long?,
+        @Param("size") size: Int,
+    ): List<FeedPostRow>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
