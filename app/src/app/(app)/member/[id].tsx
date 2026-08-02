@@ -67,9 +67,17 @@ function ActionBar({
   const filled: Record<ActionKey, boolean> = {
     like: member.likedByMe,
     favorite: member.favoritedByMe,
-    note: false,
+    note: member.noteReceiveEnabled,
     secretPhoto: member.secretPhotoGrantedToMe,
     block: member.blockedByMe,
+  };
+
+  const disabled: Record<ActionKey, boolean> = {
+    like: false,
+    favorite: false,
+    note: !member.noteReceiveEnabled,
+    secretPhoto: false,
+    block: false,
   };
 
   return (
@@ -86,8 +94,8 @@ function ActionBar({
           height="100%"
           items="center"
           justify="center"
-          pressStyle={{ opacity: 0.6 }}
-          onPress={() => onPress(key)}
+          pressStyle={disabled[key] ? undefined : { opacity: 0.6 }}
+          onPress={disabled[key] ? undefined : () => onPress(key)}
         >
           <Icon
             size={ACTION_ICON_SIZE}
@@ -205,7 +213,7 @@ export default function MemberProfileScreen() {
   const menuItems: MenuSheetItem[] = [
     {
       label: member?.secretPhotoGrantedByMe
-        ? "비밀 사진 공개 해제"
+        ? "비밀 사진 닫기"
         : "비밀 사진 공개",
       onPress: () => {
         if (member) {
