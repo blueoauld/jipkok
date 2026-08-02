@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.report.entity
 
 import com.blueoauld.server.domain.report.entity.type.ReportReason
+import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -11,17 +12,10 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
 
 @Entity
 @Table(
     name = "report",
-    uniqueConstraints = [
-        UniqueConstraint(
-            name = "uk_report_reporter_id_reported_member_id",
-            columnNames = ["reporter_id", "reported_member_id"]
-        ),
-    ],
     indexes = [Index(name = "idx_report_reported_member_id", columnList = "reported_member_id")],
 )
 class Report(
@@ -31,6 +25,13 @@ class Report(
 
     @Column(name = "reported_member_id", nullable = false, updatable = false)
     val reportedMemberId: Long,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, updatable = false)
+    val type: ReportType,
+
+    @Column(name = "room_id", updatable = false)
+    val roomId: Long? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reason", nullable = false)

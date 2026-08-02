@@ -1,5 +1,10 @@
 package com.blueoauld.server.domain.report.service
 
+import com.blueoauld.server.domain.chat.entity.ChatMessage
+import com.blueoauld.server.domain.chat.entity.ChatRoom
+import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
+import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
+import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -12,6 +17,7 @@ import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.entity.type.ReportReason
+import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
@@ -48,12 +54,18 @@ class ReportServiceTest {
 
     private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
 
+    private val chatRoomRepository = mockk<ChatRoomRepository>(relaxed = true)
+
+    private val chatMessageRepository = mockk<ChatMessageRepository>(relaxed = true)
+
     private val reportService = ReportService(
         reportRepository,
         reportPhotoRepository,
         reportSnapshotRepository,
         memberRepository,
         memberPhotoRepository,
+        chatRoomRepository,
+        chatMessageRepository,
         photoUploadService,
         photoStorage,
         JsonMapper.builder().build(),
@@ -64,7 +76,6 @@ class ReportServiceTest {
         every { memberRepository.findById(REPORTER_ID) } returns Optional.of(member(REPORTER_ID, "신고자"))
         every { memberRepository.findById(REPORTED_MEMBER_ID) } returns Optional.of(member(REPORTED_MEMBER_ID, "피신고자"))
         every { memberPhotoRepository.findAllByMemberId(REPORTED_MEMBER_ID) } returns emptyList()
-        every { reportRepository.existsByReporterIdAndReportedMemberId(any(), any()) } returns false
         every { reportRepository.save(any()) } answers { firstArg() }
         every { reportSnapshotRepository.save(any()) } answers { firstArg() }
     }
@@ -193,20 +204,68 @@ class ReportServiceTest {
     }
 
     @Test
-    fun `이미 신고한 회원은 다시 신고할 수 없다`() {
+    fun `채팅 신고면 대화 내용을 남긴다`() {
         // given
+        val room = ChatRoom.of(REPORTER_ID, REPORTED_MEMBER_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
         every {
-            reportRepository.existsByReporterIdAndReportedMemberId(REPORTER_ID, REPORTED_MEMBER_ID)
-        } returns true
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns listOf(
+            ChatMessage(ROOM_ID, REPORTED_MEMBER_ID, ChatMessageType.TEXT, content = "두 번째"),
+            ChatMessage(ROOM_ID, REPORTER_ID, ChatMessageType.TEXT, content = "첫 번째"),
+        )
+        val saved = slot<Report>()
+        val snapshot = slot<ReportSnapshot>()
+
+        // when
+        reportService.report(REPORTER_ID, createReportRequest(roomId = ROOM_ID))
+
+        // then
+        verify { reportRepository.save(capture(saved)) }
+        verify { reportSnapshotRepository.save(capture(snapshot)) }
+        assertThat(saved.captured.type).isEqualTo(ReportType.CHAT)
+        assertThat(saved.captured.roomId).isEqualTo(room.id)
+        assertThat(snapshot.captured.content).contains("첫 번째", "두 번째")
+    }
+
+    @Test
+    fun `참여자가 아닌 방은 신고할 수 없다`() {
+        // given
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(ChatRoom.of(REPORTED_MEMBER_ID, 999L))
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            reportService.report(REPORTER_ID, createReportRequest())
+            reportService.report(REPORTER_ID, createReportRequest(roomId = ROOM_ID))
         }
 
         // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.DUPLICATE_REPORT)
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
         verify(exactly = 0) { reportRepository.save(any()) }
+    }
+
+    @Test
+    fun `프로필 신고면 대화 내용이 없다`() {
+        // given
+        val saved = slot<Report>()
+
+        // when
+        reportService.report(REPORTER_ID, createReportRequest())
+
+        // then
+        verify { reportRepository.save(capture(saved)) }
+        assertThat(saved.captured.type).isEqualTo(ReportType.PROFILE)
+        assertThat(saved.captured.roomId).isNull()
+        verify(exactly = 0) { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any()) }
+    }
+
+    @Test
+    fun `같은 회원을 여러 번 신고할 수 있다`() {
+        // when
+        reportService.report(REPORTER_ID, createReportRequest())
+        reportService.report(REPORTER_ID, createReportRequest())
+
+        // then
+        verify(exactly = 2) { reportRepository.save(any()) }
     }
 
     @Test
@@ -244,7 +303,13 @@ class ReportServiceTest {
     private fun createReportRequest(
         reportedMemberId: Long = REPORTED_MEMBER_ID,
         photoKeys: List<String> = emptyList(),
-    ) = CreateReportRequest(reportedMemberId, ReportReason.ABUSE, photoKeys = photoKeys)
+        roomId: Long? = null,
+    ) = CreateReportRequest(
+        reportedMemberId = reportedMemberId,
+        roomId = roomId,
+        reason = ReportReason.ABUSE,
+        photoKeys = photoKeys,
+    )
 
     private fun photoKey(name: String) = "reports/evidence/$REPORTER_ID/$name.jpg"
 
@@ -258,6 +323,7 @@ class ReportServiceTest {
 
     companion object {
 
+        private const val ROOM_ID = 10L
         private const val REPORTER_ID = 1L
         private const val REPORTED_MEMBER_ID = 2L
     }

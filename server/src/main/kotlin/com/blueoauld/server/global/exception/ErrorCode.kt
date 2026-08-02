@@ -79,5 +79,4 @@ enum class ErrorCode(
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_004", "채팅방을 찾을 수 없습니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
-    DUPLICATE_REPORT(HttpStatus.CONFLICT, "REPORT_002", "이미 신고한 회원입니다."),
 }

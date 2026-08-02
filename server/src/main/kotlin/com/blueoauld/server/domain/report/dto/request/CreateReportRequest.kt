@@ -8,6 +8,8 @@ data class CreateReportRequest(
 
     val reportedMemberId: Long,
 
+    val roomId: Long? = null,
+
     val reason: ReportReason,
 
     @field:Size(max = Report.DETAIL_MAX_LENGTH, message = "상세 내용이 너무 깁니다.")

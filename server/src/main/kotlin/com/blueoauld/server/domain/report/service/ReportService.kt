@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.report.service
 
+import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
+import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
 import com.blueoauld.server.domain.report.dto.ReporterSnapshot
@@ -12,6 +15,7 @@ import com.blueoauld.server.domain.report.dto.response.ReportPhotoUploadUrlRespo
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
+import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
@@ -20,6 +24,7 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tools.jackson.databind.ObjectMapper
@@ -34,6 +39,8 @@ class ReportService(
     private val reportSnapshotRepository: ReportSnapshotRepository,
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val chatRoomRepository: ChatRoomRepository,
+    private val chatMessageRepository: ChatMessageRepository,
     private val photoUploadService: PhotoUploadService,
     private val photoStorage: PhotoStorage,
     private val objectMapper: ObjectMapper,
@@ -48,16 +55,15 @@ class ReportService(
         val reporter = findMember(reporterId)
         val reported = findMember(request.reportedMemberId)
 
-        if (reportRepository.existsByReporterIdAndReportedMemberId(reporterId, request.reportedMemberId)) {
-            throw BusinessException(ErrorCode.DUPLICATE_REPORT)
-        }
-
         validatePhotoKeys(reporterId, request.photoKeys)
 
+        val room = request.roomId?.let { findRoom(reporterId, it) }
         val report = reportRepository.save(
             Report(
                 reporterId = reporterId,
                 reportedMemberId = request.reportedMemberId,
+                type = if (room == null) ReportType.PROFILE else ReportType.CHAT,
+                roomId = room?.id,
                 reason = request.reason,
                 detail = request.detail,
             ),
@@ -79,6 +85,7 @@ class ReportService(
                 bio = reported.bio,
                 photoKeys = copyReportedPhotos(report.id, reported.id),
             ),
+            messages = room?.let { copyMessages(report.id, it.id) } ?: emptyList(),
         )
         reportSnapshotRepository.save(ReportSnapshot(report.id, objectMapper.writeValueAsString(snapshot)))
     }
@@ -92,18 +99,38 @@ class ReportService(
         return ReportPhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
     }
 
+    private fun findRoom(reporterId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
+        .filter { it.contains(reporterId) }
+        .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
+
+    private fun copyMessages(reportId: Long, roomId: Long) =
+        chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(roomId, Long.MAX_VALUE, Limit.of(MESSAGE_COUNT))
+            .asReversed()
+            .map { message ->
+                ChatMessageSnapshot(
+                    messageId = message.id,
+                    senderId = message.senderId,
+                    type = message.type,
+                    content = message.content,
+                    photoKey = message.objectKey?.let { copyPhoto(reportId, it) },
+                    createdAt = message.createdAt,
+                )
+            }
+
+    private fun copyPhoto(reportId: Long, objectKey: String): String? {
+        val targetKey = "${snapshotKeyPrefix(reportId)}${objectKey.substringAfterLast('/')}"
+
+        return runCatching { photoStorage.copy(objectKey, targetKey) }
+            .map { targetKey }
+            .onFailure { log.error(it) { "신고 시점 사진을 복사하지 못했다. objectKey=$objectKey" } }
+            .getOrNull()
+    }
+
     private fun copyReportedPhotos(reportId: Long, reportedMemberId: Long) =
         memberPhotoRepository.findAllByMemberId(reportedMemberId)
             .filter { it.visibility == PhotoVisibility.PUBLIC }
             .sortedBy { it.displayOrder }
-            .mapNotNull { photo ->
-                val targetKey = "${snapshotKeyPrefix(reportId)}${photo.objectKey.substringAfterLast('/')}"
-
-                runCatching { photoStorage.copy(photo.objectKey, targetKey) }
-                    .map { targetKey }
-                    .onFailure { log.error(it) { "신고 시점 사진을 복사하지 못했다. objectKey=${photo.objectKey}" } }
-                    .getOrNull()
-            }
+            .mapNotNull { copyPhoto(reportId, it.objectKey) }
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)
@@ -122,6 +149,8 @@ class ReportService(
     private fun snapshotKeyPrefix(reportId: Long) = "$SNAPSHOT_KEY_ROOT/$reportId/"
 
     companion object {
+
+        private const val MESSAGE_COUNT = 50
 
         private const val EVIDENCE_KEY_ROOT = "reports/evidence"
         private const val SNAPSHOT_KEY_ROOT = "reports/snapshot"
