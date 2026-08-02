@@ -44,6 +44,35 @@ class ChatRoomServiceTest {
     }
 
     @Test
+    fun `방을 조회하면 상대 정보를 함께 준다`() {
+        // given
+        every { chatRoomRepository.findRoom(ME_ID, ROOM_ID) } returns row()
+        every { memberSummaryService.findSummaries(listOf(PARTNER_ID)) } returns listOf(summary())
+
+        // when
+        val response = chatRoomService.findRoom(ME_ID, ROOM_ID)
+
+        // then
+        assertThat(response.roomId).isEqualTo(ROOM_ID)
+        assertThat(response.memberId).isEqualTo(PARTNER_ID)
+        assertThat(response.nickname).isEqualTo("상대")
+    }
+
+    @Test
+    fun `참여자가 아니면 방을 조회할 수 없다`() {
+        // given
+        every { chatRoomRepository.findRoom(STRANGER_ID, ROOM_ID) } returns null
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.findRoom(STRANGER_ID, ROOM_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    @Test
     fun `목록은 상대 정보와 마지막 메시지를 함께 준다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())

@@ -27,6 +27,24 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                m.createdAt as lastMessageAt
         from ChatRoomMember crm, ChatRoom r, ChatMessage m
         where crm.memberId = :memberId
+          and r.id = :roomId
+          and r.id = crm.roomId
+          and m.id = r.lastMessageId
+        """,
+    )
+    fun findRoom(@Param("memberId") memberId: Long, @Param("roomId") roomId: Long): ChatRoomRow?
+
+    @Query(
+        """
+        select r.id as roomId,
+               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
+               crm.unreadCount as unreadCount,
+               r.lastMessageId as lastMessageId,
+               m.type as lastMessageType,
+               m.content as lastMessageContent,
+               m.createdAt as lastMessageAt
+        from ChatRoomMember crm, ChatRoom r, ChatMessage m
+        where crm.memberId = :memberId
           and r.id = crm.roomId
           and m.id = r.lastMessageId
           and crm.unreadCount >= :minUnreadCount

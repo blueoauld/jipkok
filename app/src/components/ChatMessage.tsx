@@ -37,6 +37,11 @@ export function ChatMessage(props: MessageProps<IMessage>) {
       renderAvatar={({ currentMessage }) => (
         <UserAvatar
           id={String(currentMessage.user._id)}
+          url={
+            typeof currentMessage.user.avatar === "string"
+              ? currentMessage.user.avatar
+              : undefined
+          }
           size={AVATAR_SIZE}
           circular
         />

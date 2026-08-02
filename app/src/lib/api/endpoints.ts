@@ -2,7 +2,9 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
+  ChatMessagePage,
   ChatRoomPage,
+  ChatRoomResponse,
   CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -247,6 +249,13 @@ export const feeds = {
 export const chats = {
   list: (params: ChatRoomListParams = {}) =>
     request<ChatRoomPage>("/api/chats", { query: params }),
+
+  get: (roomId: number) => request<ChatRoomResponse>(`/api/chats/${roomId}`),
+
+  messages: (roomId: number, params: CursorParams = {}) =>
+    request<ChatMessagePage>(`/api/chats/${roomId}/messages`, {
+      query: params,
+    }),
 
   search: (params: ChatRoomSearchParams) =>
     request<ChatRoomPage>("/api/chats/search", { query: params }),

@@ -39,6 +39,13 @@ class ChatRoomController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<ChatRoomResponse> = chatRoomService.searchRooms(memberId, keyword, cursor, size)
 
+    @Operation(summary = "채팅방 조회")
+    @GetMapping("/{roomId}")
+    fun findRoom(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable roomId: Long,
+    ): ChatRoomResponse = chatRoomService.findRoom(memberId, roomId)
+
     @Operation(summary = "채팅방 나가기", description = "방과 대화 내역이 양쪽 모두에서 사라진다.")
     @DeleteMapping("/{roomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

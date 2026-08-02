@@ -23,6 +23,16 @@ class ChatRoomService(
 ) {
 
     @Transactional(readOnly = true)
+    fun findRoom(memberId: Long, roomId: Long): ChatRoomResponse {
+        val row = chatRoomRepository.findRoom(memberId, roomId)
+            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        val partner = memberSummaryService.findSummaries(listOf(row.getPartnerId())).firstOrNull()
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+
+        return ChatRoomResponse.of(row, partner)
+    }
+
+    @Transactional(readOnly = true)
     fun findRooms(memberId: Long, unreadOnly: Boolean, cursor: Long?, size: Int): CursorResponse<ChatRoomResponse> {
         val pageSize = CursorResponse.pageSize(size)
         val rows = chatRoomRepository.findRooms(
