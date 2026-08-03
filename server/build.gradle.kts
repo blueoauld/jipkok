@@ -37,6 +37,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-gson:0.13.0")
+    implementation("org.springframework.boot:spring-boot-flyway")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")

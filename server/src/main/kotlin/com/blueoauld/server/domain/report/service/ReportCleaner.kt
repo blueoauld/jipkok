@@ -6,11 +6,11 @@ import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.ObjectMapper
 import java.time.Clock
 import java.time.Duration
 

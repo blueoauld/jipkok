@@ -39,7 +39,6 @@ class MemberWithdrawService(
 
         leaveRooms(memberId)
         feedPostRepository.deleteAllByMemberId(memberId)
-
         feedPostLikeRepository.deleteAllByMemberId(memberId)
         memberBlockRepository.deleteAllByMember(memberId)
         memberFavoriteRepository.deleteAllByMember(memberId)
