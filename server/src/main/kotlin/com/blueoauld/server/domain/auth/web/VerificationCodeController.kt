@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.auth.web
 
 import com.blueoauld.server.domain.auth.dto.request.SendVerificationCodeRequest
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.global.web.clientIp
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -23,6 +24,6 @@ class VerificationCodeController(
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun send(@Valid @RequestBody request: SendVerificationCodeRequest, servletRequest: HttpServletRequest) {
-        verificationCodeService.send(request.phoneNumber, servletRequest.remoteAddr)
+        verificationCodeService.send(request.phoneNumber, servletRequest.clientIp())
     }
 }

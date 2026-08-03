@@ -24,6 +24,7 @@ import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.response.ScrollResponse
+import com.blueoauld.server.global.web.clientIp
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -167,7 +168,7 @@ class MemberController(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: HeartbeatRequest,
         servletRequest: HttpServletRequest,
-    ): PointRewardResponse = memberService.heartbeat(memberId, request, servletRequest.remoteAddr)
+    ): PointRewardResponse = memberService.heartbeat(memberId, request, servletRequest.clientIp())
 
     companion object {
 
