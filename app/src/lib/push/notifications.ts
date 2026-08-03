@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 import { api } from "@/lib/api";
+import { DEVICE_PLATFORM } from "@/lib/device";
 
 const ANDROID_CHANNEL_ID = "default";
 const ANDROID_CHANNEL_NAME = "알림";
@@ -53,7 +54,7 @@ export async function registerPushToken() {
     projectId,
   });
 
-  await api.push.register(token, Platform.OS === "ios" ? "IOS" : "ANDROID");
+  await api.push.register(token, DEVICE_PLATFORM);
   registeredToken = token;
 }
 

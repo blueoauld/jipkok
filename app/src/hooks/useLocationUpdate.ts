@@ -1,16 +1,26 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 
+import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api } from "@/lib/api";
 
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
 
 export function useLocationUpdate() {
+  const queryClient = useQueryClient();
   const [updating, setUpdating] = useState(false);
   const { mutateAsync: heartbeat } = useMutation({
     mutationFn: api.members.heartbeat,
+    onSuccess: async (reward) => {
+      if (!reward.earned) {
+        return;
+      }
+
+      queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
+      await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+    },
   });
 
   const send = useCallback(async () => {

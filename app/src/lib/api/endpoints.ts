@@ -1,3 +1,5 @@
+import { DEVICE_NAME, DEVICE_PLATFORM } from "@/lib/device";
+
 import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
@@ -35,6 +37,8 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type HeartbeatLocation = Omit<HeartbeatRequest, "platform" | "deviceName">;
 
 type FeedListParams = {
   gender?: Gender;
@@ -156,8 +160,15 @@ export const members = {
   updateComment: (body: UpdateCommentRequest) =>
     request<void>("/api/members/me/comment", { method: "PUT", body }),
 
-  heartbeat: (body: HeartbeatRequest) =>
-    request<void>("/api/members/me/heartbeat", { method: "POST", body }),
+  heartbeat: (location: HeartbeatLocation = {}) =>
+    request<PointRewardResponse>("/api/members/me/heartbeat", {
+      method: "POST",
+      body: {
+        ...location,
+        platform: DEVICE_PLATFORM,
+        deviceName: DEVICE_NAME,
+      },
+    }),
 
   withdraw: async () => {
     await request<void>("/api/members/me", { method: "DELETE" });
@@ -234,11 +245,6 @@ export const points = {
 
   histories: (params: CursorParams = {}) =>
     request<PointHistoryPage>("/api/points/me/histories", { query: params }),
-
-  earnAccessReward: () =>
-    request<PointRewardResponse>("/api/points/rewards/access", {
-      method: "POST",
-    }),
 };
 
 export const attendances = {

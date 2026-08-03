@@ -110,23 +110,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/points/rewards/access": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** 접속 보상 받기 */
-    post: operations["earnAccessReward"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/members": {
     parameters: {
       query?: never;
@@ -266,7 +249,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** 접속과 위치 갱신 */
+    /**
+     * 접속과 위치 갱신
+     * @description 하루 한 번 접속 보상을 준다.
+     */
     post: operations["heartbeat"];
     delete?: never;
     options?: never;
@@ -911,13 +897,6 @@ export interface components {
       uploadUrl: string;
       objectKey: string;
     };
-    PointRewardResponse: {
-      earned: boolean;
-      /** Format: int32 */
-      amount: number;
-      /** Format: int32 */
-      balance: number;
-    };
     SignupRequest: {
       phoneNumber: string;
       verificationCode: string;
@@ -949,10 +928,20 @@ export interface components {
       objectKey: string;
     };
     HeartbeatRequest: {
+      /** @enum {string|null} */
+      platform: "IOS" | "ANDROID" | null;
+      deviceName?: string | null;
       /** Format: double */
       latitude?: number | null;
       /** Format: double */
       longitude?: number | null;
+    };
+    PointRewardResponse: {
+      earned: boolean;
+      /** Format: int32 */
+      amount: number;
+      /** Format: int32 */
+      balance: number;
     };
     RegisterDeviceTokenRequest: {
       token: string;
@@ -1526,53 +1515,6 @@ export interface operations {
         };
         content: {
           "*/*": components["schemas"]["ReportPhotoUploadUrlResponse"];
-        };
-      };
-      /** @description 요청이 올바르지 않다 */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 인증이 필요하다 */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description 서버에 문제가 발생했다 */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
-  earnAccessReward: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "*/*": components["schemas"]["PointRewardResponse"];
         };
       };
       /** @description 요청이 올바르지 않다 */
@@ -2200,12 +2142,14 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No Content */
-      204: {
+      /** @description OK */
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          "*/*": components["schemas"]["PointRewardResponse"];
+        };
       };
       /** @description 요청이 올바르지 않다 */
       400: {
