@@ -17,6 +17,7 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -58,8 +59,31 @@ class AdminCommandListener(
     }
 
     private fun record(event: SlashCommandInteractionEvent, suspension: SuspensionDetail) {
-        send(event, discordProperties.suspensionChannelId, "${describe(suspension)} ${event.user.asMention}")
+        val embed = EmbedBuilder()
+            .setTitle(if (suspension.releasedAt == null) SUSPEND else RELEASE)
+            .addField("ID", "`${suspension.id}`", false)
+            .addField("회원", "${nicknameOf(suspension)}(`${suspension.memberId}`)", false)
+            .addField("유형", suspension.type.label, false)
+            .addField("사유", suspension.reason.label, false)
+            .addField("기간", period(suspension), false)
+            .apply {
+                suspension.releasedAt?.let { addField("해제", format(it), false) }
+                suspension.detail?.let { addField("상세", it, false) }
+            }
+            .setFooter("@${event.user.effectiveName}", event.user.effectiveAvatarUrl)
+            .build()
+
+        event.jda.getTextChannelById(discordProperties.suspensionChannelId)
+            ?.sendMessageEmbeds(embed)
+            ?.queue()
+            ?: log.error { "채널을 찾지 못했다. channelId=${discordProperties.suspensionChannelId}" }
     }
+
+    private fun period(suspension: SuspensionDetail) =
+        "${format(suspension.startedAt)} ~ ${suspension.expiresAt?.let(::format) ?: "영구"}"
+
+    private fun nicknameOf(suspension: SuspensionDetail) =
+        if (suspension.withdrawn) "~~${suspension.nickname}~~" else suspension.nickname
 
     private fun send(event: SlashCommandInteractionEvent, channelId: String, message: String) {
         event.jda.getTextChannelById(channelId)
@@ -253,11 +277,9 @@ class AdminCommandListener(
     }
 
     private fun describe(suspension: SuspensionDetail) = buildString {
-        val nickname = if (suspension.withdrawn) "~~${suspension.nickname}~~" else suspension.nickname
-
-        append("`#${suspension.id}` $nickname(`#${suspension.memberId}`)")
+        append("`#${suspension.id}` ${nicknameOf(suspension)}(`#${suspension.memberId}`)")
         append(" / ${suspension.type.label} / ${suspension.reason.label}")
-        append(" / ${format(suspension.startedAt)} ~ ${suspension.expiresAt?.let(::format) ?: "영구"}")
+        append(" / ${period(suspension)}")
         suspension.releasedAt?.let { append(" / ${format(it)} 해제") }
         suspension.detail?.let { append(" / $it") }
     }
