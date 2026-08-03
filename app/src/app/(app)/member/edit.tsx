@@ -15,12 +15,12 @@ import { Button, Spinner, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { alertApiError, alertMessage } from "@/lib/alert";
 import { api, type MyProfileResponse } from "@/lib/api";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
@@ -72,6 +72,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   });
 
   const uploading = publicPhotos.uploading || secretPhotos.uploading;
+
+  useLoadingOverlay(uploading);
   const busy = save.isPending || uploading;
 
   const submit = () => {
@@ -182,8 +184,6 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </Button>
         </YStack>
       </KeyboardStickyView>
-
-      <LoadingOverlay visible={uploading} />
     </>
   );
 }

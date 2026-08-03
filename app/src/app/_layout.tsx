@@ -3,8 +3,9 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, type ReactNode } from "react";
 import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { TamaguiProvider, useTheme } from "tamagui";
+import { TamaguiProvider, useTheme, YStack } from "tamagui";
 
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { initializeAds } from "@/lib/ads";
@@ -23,7 +24,10 @@ export default function RootLayout() {
             <SessionGuard />
             <ChatSocket />
             <Ads />
-            <Stack screenOptions={{ headerShown: false }} />
+            <YStack flex={1}>
+              <Stack screenOptions={{ headerShown: false }} />
+              <LoadingOverlay />
+            </YStack>
           </NavigationTheme>
         </TamaguiProvider>
       </KeyboardProvider>

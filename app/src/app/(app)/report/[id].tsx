@@ -14,12 +14,12 @@ import { Button, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, type ReportReason } from "@/lib/api";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
@@ -99,6 +99,8 @@ export default function ReportScreen() {
 
   const busy = report.isPending || photos.uploading;
 
+  useLoadingOverlay(busy);
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen
@@ -169,8 +171,6 @@ export default function ReportScreen() {
           </Button>
         </YStack>
       </KeyboardStickyView>
-
-      <LoadingOverlay visible={busy} />
     </SafeAreaView>
   );
 }
