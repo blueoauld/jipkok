@@ -30,6 +30,8 @@ export type CreatePhotoUploadUrlRequest =
 export type PhotoVisibility = CreatePhotoUploadUrlRequest["visibility"];
 export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 export type SuspensionResponse = Schemas["SuspensionResponse"];
+export type RegisterDeviceTokenRequest = Schemas["RegisterDeviceTokenRequest"];
+export type DevicePlatform = RegisterDeviceTokenRequest["platform"];
 export type SuspensionType = SuspensionResponse["type"];
 export type SuspensionReason = SuspensionResponse["reason"];
 

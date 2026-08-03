@@ -9,6 +9,7 @@ import type {
   CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
+  DevicePlatform,
   EditProfileRequest,
   FeedPhotoUploadUrlResponse,
   FeedPostPage,
@@ -308,7 +309,7 @@ export const chats = {
 };
 
 export const push = {
-  register: (token: string, platform: "IOS" | "ANDROID") =>
+  register: (token: string, platform: DevicePlatform) =>
     request<void>("/api/members/me/device-tokens", {
       method: "POST",
       body: { token, platform },
