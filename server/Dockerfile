@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jdk AS build
+FROM eclipse-temurin:25-jdk-alpine AS build
 
 WORKDIR /build
 
@@ -10,15 +10,19 @@ COPY build.gradle.kts settings.gradle.kts ./
 RUN ./gradlew dependencies --no-daemon || true
 
 COPY src src
-RUN ./gradlew bootJar --no-daemon -x test
+RUN ./gradlew bootJar --no-daemon -x test \
+    && java -Djarmode=tools -jar build/libs/*.jar extract --layers --destination extracted
 
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:25-jre-alpine
 
-RUN groupadd --system jipkok && useradd --system --gid jipkok jipkok
+RUN addgroup --system jipkok && adduser --system --ingroup jipkok jipkok
 
 WORKDIR /app
 
-COPY --from=build /build/build/libs/*.jar app.jar
+COPY --from=build /build/extracted/dependencies/ ./
+COPY --from=build /build/extracted/spring-boot-loader/ ./
+COPY --from=build /build/extracted/snapshot-dependencies/ ./
+COPY --from=build /build/extracted/application/ ./
 
 USER jipkok
 
