@@ -74,10 +74,7 @@ class AdminCommandListener(
             .setFooter("@${event.user.effectiveName}", event.user.effectiveAvatarUrl)
             .build()
 
-        event.jda.getTextChannelById(discordProperties.suspensionChannelId)
-            ?.sendMessageEmbeds(embed)
-            ?.queue()
-            ?: log.error { "채널을 찾지 못했다. channelId=${discordProperties.suspensionChannelId}" }
+        send(event, discordProperties.suspensionChannelId, embed)
     }
 
     private fun period(suspension: SuspensionDetail) =
@@ -86,9 +83,9 @@ class AdminCommandListener(
     private fun nicknameOf(suspension: SuspensionDetail) =
         if (suspension.withdrawn) "~~${suspension.nickname}~~" else suspension.nickname
 
-    private fun send(event: SlashCommandInteractionEvent, channelId: String, message: String) {
+    private fun send(event: SlashCommandInteractionEvent, channelId: String, embed: MessageEmbed) {
         event.jda.getTextChannelById(channelId)
-            ?.sendMessage(message)
+            ?.sendMessageEmbeds(embed)
             ?.queue()
             ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
     }
@@ -204,11 +201,17 @@ class AdminCommandListener(
         val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
         val target = ProfileTarget.valueOf(event.getOption(TARGET_OPTION)!!.asString)
         val nickname = memberService.resetProfile(memberId, target)
-        val message = "$nickname(`#$memberId`) / ${target.label} 초기화"
 
-        send(event, discordProperties.resetChannelId, "$message ${event.user.asMention}")
+        val embed = EmbedBuilder()
+            .setTitle(RESET)
+            .addField("항목", target.label, false)
+            .addField("회원", "$nickname(`$memberId`)", false)
+            .setFooter("@${event.user.effectiveName}", event.user.effectiveAvatarUrl)
+            .build()
 
-        return message
+        send(event, discordProperties.resetChannelId, embed)
+
+        return "$nickname(`$memberId`) / ${target.label} 초기화"
     }
 
     private fun suspend(event: SlashCommandInteractionEvent): String {
