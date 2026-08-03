@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
     shouldShowBanner: true,
     shouldShowList: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -55,6 +55,10 @@ export async function registerPushToken() {
 
   await api.push.register(token, Platform.OS === "ios" ? "IOS" : "ANDROID");
   registeredToken = token;
+}
+
+export function setBadgeCount(count: number) {
+  Notifications.setBadgeCountAsync(count).catch(() => undefined);
 }
 
 export async function dismissRoomNotifications(roomId: number) {

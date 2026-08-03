@@ -17,6 +17,7 @@ data class ExpoPushMessage(
     val data: Map<String, String> = emptyMap(),
     val collapseId: String? = null,
     val tag: String? = null,
+    val badge: Int? = null,
     val sound: String = SOUND,
 ) {
 

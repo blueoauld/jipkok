@@ -49,6 +49,19 @@ class PushServiceTest {
     }
 
     @Test
+    fun `뱃지 수를 실어 보낸다`() {
+        // given
+        val messages = slot<List<ExpoPushMessage>>()
+
+        // when
+        pushService.send(MEMBER_ID, TITLE, BODY, badge = BADGE)
+
+        // then
+        verify { expoPushClient.send(capture(messages)) }
+        assertThat(messages.captured).allMatch { it.badge == BADGE }
+    }
+
+    @Test
     fun `만료된 토큰은 지운다`() {
         // given
         every { expoPushClient.send(any()) } returns listOf(TOKEN)
@@ -118,5 +131,7 @@ class PushServiceTest {
         private const val BODY = "안녕하세요."
 
         private const val COLLAPSE_KEY = "feed"
+
+        private const val BADGE = 3
     }
 }

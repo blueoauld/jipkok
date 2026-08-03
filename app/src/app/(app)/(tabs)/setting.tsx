@@ -33,7 +33,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
-import { unregisterPushToken } from "@/lib/push/notifications";
+import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 
@@ -147,6 +147,7 @@ export default function SettingScreen() {
   const logout = useMutation({
     mutationFn: async () => {
       await unregisterPushToken().catch(() => undefined);
+      setBadgeCount(0);
       await api.auth.logout();
     },
   });

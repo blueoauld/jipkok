@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "집콕",
+    "slug": "jipkok",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "app",
+    "scheme": "jipkok",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
@@ -76,9 +76,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "419eb93c-1c77-4129-a589-f388311165d8"
+        "projectId": "137fcaaf-79ed-43b4-aec3-1b2472f02adc"
       }
     },
-    "owner": "blueoauld"
+    "owner": "jipkok"
   }
 }

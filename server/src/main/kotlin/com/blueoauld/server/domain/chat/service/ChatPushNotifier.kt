@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
+import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,6 +17,7 @@ class ChatPushNotifier(
 
     private val pushService: PushService,
     private val memberRepository: MemberRepository,
+    private val chatRoomMemberRepository: ChatRoomMemberRepository,
 ) {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -36,6 +38,7 @@ class ChatPushNotifier(
             title = sender.nickname,
             body = toBody(event),
             data = mapOf(ROOM_ID_KEY to event.message.roomId.toString()),
+            badge = chatRoomMemberRepository.sumUnreadCount(event.receiverId).toInt(),
         )
     }
 

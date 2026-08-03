@@ -18,9 +18,15 @@ class PushService(
     fun isConnected(memberId: Long) = simpUserRegistry.getUser(memberId.toString()) != null
 
     @Transactional
-    fun send(memberId: Long, title: String, body: String, data: Map<String, String> = emptyMap()) {
+    fun send(
+        memberId: Long,
+        title: String,
+        body: String,
+        data: Map<String, String> = emptyMap(),
+        badge: Int? = null,
+    ) {
         val messages = deviceTokenRepository.findAllByMemberId(memberId)
-            .map { ExpoPushMessage(to = it.token, title = title, body = body, data = data) }
+            .map { ExpoPushMessage(to = it.token, title = title, body = body, data = data, badge = badge) }
 
         removeExpired(expoPushClient.send(messages))
     }
