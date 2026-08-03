@@ -29,6 +29,9 @@ export type CreatePhotoUploadUrlRequest =
   Schemas["CreatePhotoUploadUrlRequest"];
 export type PhotoVisibility = CreatePhotoUploadUrlRequest["visibility"];
 export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
+export type SuspensionResponse = Schemas["SuspensionResponse"];
+export type SuspensionType = SuspensionResponse["type"];
+export type SuspensionReason = SuspensionResponse["reason"];
 
 export type ChatRoomResponse = Schemas["ChatRoomResponse"];
 export type ChatMessageResponse = Schemas["ChatMessageResponse"];

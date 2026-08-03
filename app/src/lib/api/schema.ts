@@ -1082,10 +1082,28 @@ export interface components {
       secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
       noteReceiveEnabled: boolean;
       feedNotificationEnabled: boolean;
+      suspensions: components["schemas"]["SuspensionResponse"][];
     };
     ProfilePhotoResponse: {
       objectKey: string;
       url: string;
+    };
+    SuspensionResponse: {
+      /** @enum {string} */
+      type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
+      /** @enum {string} */
+      reason:
+        | "SCREEN_CAPTURE"
+        | "OBSCENITY"
+        | "MINOR"
+        | "MONEY_TRANSACTION"
+        | "ABUSE"
+        | "IMPERSONATION"
+        | "ETC";
+      /** Format: date-time */
+      startedAt: string;
+      /** Format: date-time */
+      expiresAt?: string | null;
     };
     CursorResponseMemberSummaryResponse: {
       items: components["schemas"]["MemberSummaryResponse"][];
