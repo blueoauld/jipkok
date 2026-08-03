@@ -27,6 +27,7 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -40,8 +41,6 @@ import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 const ICON_SIZE = 22;
 
 const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
-const WITHDRAW_DESCRIPTION =
-  "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.";
 
 const TERMS_URL = "https://jipkok.app/terms";
 const PRIVACY_URL = "https://jipkok.app/privacy";
@@ -144,6 +143,7 @@ export default function SettingScreen() {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
+
   const logout = useMutation({
     mutationFn: async () => {
       await unregisterPushToken().catch(() => undefined);
@@ -290,14 +290,7 @@ export default function SettingScreen() {
         onConfirm={() => logout.mutate()}
       />
 
-      <ConfirmDialog
-        open={withdrawOpen}
-        onOpenChange={setWithdrawOpen}
-        title="회원탈퇴"
-        description={WITHDRAW_DESCRIPTION}
-        confirmLabel="탈퇴"
-        destructive
-      />
+      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
     </ScrollView>
   );
 }

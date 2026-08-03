@@ -159,6 +159,11 @@ export const members = {
   heartbeat: (body: HeartbeatRequest) =>
     request<void>("/api/members/me/heartbeat", { method: "POST", body }),
 
+  withdraw: async () => {
+    await request<void>("/api/members/me", { method: "DELETE" });
+    await clearTokens();
+  },
+
   createPhotoUploadUrl: (body: CreatePhotoUploadUrlRequest) =>
     request<PhotoUploadUrlResponse>("/api/members/me/photos/upload-url", {
       method: "POST",
