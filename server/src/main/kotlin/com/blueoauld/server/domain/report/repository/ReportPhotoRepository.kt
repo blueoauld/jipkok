@@ -6,4 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ReportPhotoRepository : JpaRepository<ReportPhoto, Long> {
 
     fun findByReportIdOrderByDisplayOrder(reportId: Long): List<ReportPhoto>
+
+    fun findAllByReportIdIn(reportIds: List<Long>): List<ReportPhoto>
+
+    fun deleteAllByReportIdIn(reportIds: List<Long>)
 }

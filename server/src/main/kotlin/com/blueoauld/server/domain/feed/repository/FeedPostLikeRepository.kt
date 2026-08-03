@@ -8,4 +8,8 @@ interface FeedPostLikeRepository : JpaRepository<FeedPostLike, Long> {
     fun existsByPostIdAndMemberId(postId: Long, memberId: Long): Boolean
 
     fun deleteByPostIdAndMemberId(postId: Long, memberId: Long): Long
+
+    fun deleteAllByMemberId(memberId: Long)
+
+    fun deleteAllByPostIdIn(postIds: List<Long>)
 }

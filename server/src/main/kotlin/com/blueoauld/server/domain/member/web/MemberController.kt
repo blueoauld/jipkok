@@ -21,11 +21,13 @@ import com.blueoauld.server.domain.member.service.MemberListService
 import com.blueoauld.server.domain.member.service.MemberRankingService
 import com.blueoauld.server.domain.member.service.MemberSearchService
 import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.global.response.ScrollResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -46,6 +48,7 @@ class MemberController(
     private val memberSearchService: MemberSearchService,
     private val memberRankingService: MemberRankingService,
     private val memberDetailService: MemberDetailService,
+    private val memberWithdrawService: MemberWithdrawService,
 ) {
 
     @Operation(summary = "회원가입")
@@ -96,6 +99,13 @@ class MemberController(
         @Valid @RequestBody request: SetupProfileRequest,
     ) {
         memberService.setupProfile(memberId, request)
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "대화와 피드가 함께 사라지며 되돌릴 수 없다.")
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun withdraw(@AuthenticationPrincipal memberId: Long) {
+        memberWithdrawService.withdraw(memberId)
     }
 
     @Operation(summary = "내 프로필 조회")

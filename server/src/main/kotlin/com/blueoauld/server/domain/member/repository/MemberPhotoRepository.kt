@@ -10,4 +10,6 @@ interface MemberPhotoRepository : JpaRepository<MemberPhoto, Long> {
     fun findAllByMemberIdIn(memberIds: List<Long>): List<MemberPhoto>
 
     fun deleteAllByMemberId(memberId: Long)
+
+    fun deleteAllByMemberIdIn(memberIds: List<Long>)
 }

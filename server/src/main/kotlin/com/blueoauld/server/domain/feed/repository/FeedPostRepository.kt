@@ -12,6 +12,10 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
 
     fun existsByMemberIdAndSlotAt(memberId: Long, slotAt: Instant): Boolean
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from FeedPost p where p.memberId = :memberId")
+    fun deleteAllByMemberId(@Param("memberId") memberId: Long)
+
     @Query(
         value = """
         select p.id as postId,
@@ -71,4 +75,14 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
         """,
     )
     fun decreaseLikeCount(@Param("postId") postId: Long)
+
+    @Query(value = "select id from feed_post where deleted_at < :threshold", nativeQuery = true)
+    fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
+
+    @Query(value = "select object_key from feed_post where id in (:postIds)", nativeQuery = true)
+    fun findObjectKeysByIdIn(@Param("postIds") postIds: List<Long>): List<String>
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from feed_post where id in (:postIds)", nativeQuery = true)
+    fun deleteAllByIdIn(@Param("postIds") postIds: List<Long>)
 }

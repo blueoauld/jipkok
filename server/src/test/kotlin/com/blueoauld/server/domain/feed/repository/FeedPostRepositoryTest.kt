@@ -8,6 +8,8 @@ import com.blueoauld.server.domain.feed.entity.FeedPostReport
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +38,9 @@ class FeedPostRepositoryTest {
 
     @Autowired
     private lateinit var memberBlockRepository: MemberBlockRepository
+
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
 
     private var meId: Long = 0
 
@@ -130,6 +135,24 @@ class FeedPostRepositoryTest {
         // then
         assertThat(rows.map { it.getPostId() }).doesNotContain(morningPostId)
     }
+
+    @Test
+    fun `회원의 게시물을 한꺼번에 지우면 소프트 삭제된다`() {
+        // given
+        val post = savePost(meId, slot(1))
+
+        // when
+        feedPostRepository.deleteAllByMemberId(meId)
+
+        // then
+        assertThat(feedPostRepository.findById(post.id)).isEmpty()
+        assertThat(countRows(post.id)).isOne()
+    }
+
+    private fun countRows(postId: Long) = entityManager
+        .createNativeQuery("select count(*) from feed_post where id = :id and deleted_at is not null")
+        .setParameter("id", postId)
+        .singleResult as Long
 
     private fun findByDate(gender: String?, cursor: Long?) = feedPostRepository.findByDate(
         memberId = meId,

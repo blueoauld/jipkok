@@ -13,6 +13,10 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     fun findByLowMemberIdAndHighMemberId(lowMemberId: Long, highMemberId: Long): ChatRoom?
 
+    fun findAllByLowMemberIdOrHighMemberId(lowMemberId: Long, highMemberId: Long): List<ChatRoom>
+
+    fun findAllByMember(memberId: Long): List<ChatRoom> = findAllByLowMemberIdOrHighMemberId(memberId, memberId)
+
     fun findByMembers(memberId: Long, partnerId: Long): ChatRoom? =
         findByLowMemberIdAndHighMemberId(minOf(memberId, partnerId), maxOf(memberId, partnerId))
 

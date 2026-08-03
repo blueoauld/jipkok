@@ -98,7 +98,7 @@ class ChatRoomService(
         .replace("%", """\%""")
         .replace("_", """\_""")
 
-    private fun delete(room: ChatRoom, partnerId: Long) {
+    fun delete(room: ChatRoom, partnerId: Long) {
         chatRoomRepository.delete(room)
         eventPublisher.publishEvent(ChatRoomDeletedEvent(partnerId, room.id))
     }

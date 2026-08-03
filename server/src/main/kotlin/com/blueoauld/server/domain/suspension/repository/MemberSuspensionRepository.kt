@@ -56,4 +56,15 @@ interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
         @Param("type") type: SuspensionType,
         @Param("now") now: Instant,
     ): Boolean
+
+    @Query(
+        """
+        select s.id from MemberSuspension s
+        where (s.releasedAt is not null and s.releasedAt < :threshold)
+           or (s.releasedAt is null and s.expiresAt is not null and s.expiresAt < :threshold)
+        """,
+    )
+    fun findIdsExpiredBefore(@Param("threshold") threshold: Instant): List<Long>
+
+    fun deleteAllByIdIn(ids: List<Long>)
 }

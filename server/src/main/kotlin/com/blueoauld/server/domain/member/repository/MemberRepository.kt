@@ -64,4 +64,11 @@ interface MemberRepository : JpaRepository<Member, Long> {
         """,
     )
     fun addPointBalance(@Param("memberId") memberId: Long, @Param("amount") amount: Int): Int
+
+    @Query(value = "select id from member where deleted_at < :threshold", nativeQuery = true)
+    fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from member where id in (:memberIds)", nativeQuery = true)
+    fun deleteAllByIdIn(@Param("memberIds") memberIds: List<Long>)
 }

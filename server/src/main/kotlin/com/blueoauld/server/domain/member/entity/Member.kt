@@ -20,7 +20,7 @@ import java.time.Instant
 @Table(name = "member")
 class Member(
 
-    @Column(name = "phone_number", nullable = false, unique = true, length = PHONE_NUMBER_LENGTH)
+    @Column(name = "phone_number", nullable = false, length = PHONE_NUMBER_LENGTH)
     val phoneNumber: String,
 
     @Column(name = "password", nullable = false)
@@ -30,7 +30,7 @@ class Member(
     @Column(name = "gender", nullable = false, updatable = false)
     val gender: Gender,
 
-    @Column(name = "nickname", nullable = false, unique = true, length = NICKNAME_MAX_LENGTH)
+    @Column(name = "nickname", nullable = false, length = NICKNAME_MAX_LENGTH)
     var nickname: String,
 
     @Column(name = "birth_year", nullable = false)

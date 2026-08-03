@@ -6,4 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ReportSnapshotRepository : JpaRepository<ReportSnapshot, Long> {
 
     fun findByReportId(reportId: Long): ReportSnapshot?
+
+    fun findAllByReportIdIn(reportIds: List<Long>): List<ReportSnapshot>
+
+    fun deleteAllByReportIdIn(reportIds: List<Long>)
 }
