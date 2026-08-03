@@ -40,6 +40,7 @@ import {
   type ChatRoomResponse,
 } from "@/lib/api";
 import { useDeletedRoomStore } from "@/lib/chat/store";
+import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
 const MESSAGE_MAX_LENGTH = 1000;
@@ -147,6 +148,10 @@ export default function ChatRoomScreen() {
       markReadMutate(newestMessageId);
     }
   }, [markReadMutate, newestMessageId, unreadCount]);
+
+  useEffect(() => {
+    dismissRoomNotifications(roomId).catch(() => undefined);
+  }, [newestMessageId, roomId]);
 
   const giftedMessages = useMemo(
     () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),

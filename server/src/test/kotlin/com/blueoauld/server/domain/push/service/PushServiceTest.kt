@@ -73,6 +73,23 @@ class PushServiceTest {
     }
 
     @Test
+    fun `묶음 발송은 이전 알림을 대체하도록 키를 실어 보낸다`() {
+        // given
+        val messages = slot<List<ExpoPushMessage>>()
+        every { deviceTokenRepository.findAllByMemberIdIn(listOf(MEMBER_ID)) } returns listOf(
+            DeviceToken(MEMBER_ID, TOKEN, DevicePlatform.IOS),
+        )
+
+        // when
+        pushService.sendAll(listOf(MEMBER_ID), TITLE, BODY, COLLAPSE_KEY)
+
+        // then
+        verify { expoPushClient.send(capture(messages)) }
+        assertThat(messages.captured.first().collapseId).isEqualTo(COLLAPSE_KEY)
+        assertThat(messages.captured.first().tag).isEqualTo(COLLAPSE_KEY)
+    }
+
+    @Test
     fun `소켓에 붙어 있으면 접속 중으로 본다`() {
         // given
         every { simpUserRegistry.getUser(MEMBER_ID.toString()) } returns mockk()
@@ -99,5 +116,7 @@ class PushServiceTest {
 
         private const val TITLE = "홍길동"
         private const val BODY = "안녕하세요."
+
+        private const val COLLAPSE_KEY = "feed"
     }
 }

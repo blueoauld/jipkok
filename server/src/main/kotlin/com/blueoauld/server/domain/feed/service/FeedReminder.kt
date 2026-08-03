@@ -31,13 +31,15 @@ class FeedReminder(
             return
         }
 
-        pushService.sendAll(targets, TITLE, bodyOf(now))
+        pushService.sendAll(targets, TITLE, bodyOf(now), COLLAPSE_KEY)
         log.info { "피드 알림을 ${targets.size}명에게 보냈다." }
     }
 
     companion object {
 
         const val TITLE = "피드"
+
+        const val COLLAPSE_KEY = "feed"
 
         val BODIES = listOf(
             "지금 무엇을 하고 있는지 올려주세요.",

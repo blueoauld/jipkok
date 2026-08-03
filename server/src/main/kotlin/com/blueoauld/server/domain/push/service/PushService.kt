@@ -26,13 +26,21 @@ class PushService(
     }
 
     @Transactional
-    fun sendAll(memberIds: List<Long>, title: String, body: String) {
+    fun sendAll(memberIds: List<Long>, title: String, body: String, collapseKey: String? = null) {
         if (memberIds.isEmpty()) {
             return
         }
 
         deviceTokenRepository.findAllByMemberIdIn(memberIds)
-            .map { ExpoPushMessage(to = it.token, title = title, body = body) }
+            .map {
+                ExpoPushMessage(
+                    to = it.token,
+                    title = title,
+                    body = body,
+                    collapseId = collapseKey,
+                    tag = collapseKey,
+                )
+            }
             .chunked(BATCH_SIZE)
             .forEach { removeExpired(expoPushClient.send(it)) }
     }

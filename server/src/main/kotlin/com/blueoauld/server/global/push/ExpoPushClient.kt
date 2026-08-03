@@ -1,5 +1,6 @@
 package com.blueoauld.server.global.push
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -7,12 +8,15 @@ import org.springframework.web.client.body
 
 private val log = KotlinLogging.logger {}
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ExpoPushMessage(
 
     val to: String,
     val title: String,
     val body: String,
     val data: Map<String, String> = emptyMap(),
+    val collapseId: String? = null,
+    val tag: String? = null,
     val sound: String = SOUND,
 ) {
 

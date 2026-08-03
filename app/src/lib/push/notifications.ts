@@ -57,6 +57,21 @@ export async function registerPushToken() {
   registeredToken = token;
 }
 
+export async function dismissRoomNotifications(roomId: number) {
+  const presented = await Notifications.getPresentedNotificationsAsync();
+
+  await Promise.all(
+    presented
+      .filter(
+        (notification) =>
+          notification.request.content.data?.roomId === String(roomId),
+      )
+      .map((notification) =>
+        Notifications.dismissNotificationAsync(notification.request.identifier),
+      ),
+  );
+}
+
 export async function unregisterPushToken() {
   if (!registeredToken) {
     return;
