@@ -5,16 +5,26 @@ import {
 import { Platform } from "react-native";
 import mobileAds, { AdsConsent, TestIds } from "react-native-google-mobile-ads";
 
-const IOS_REWARDED_AD_UNIT_ID = "ca-app-pub-5005991782528987/1980106124";
-const IOS_INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-5005991782528987/5548384263";
+const REWARDED_AD_UNIT_IDS = {
+  ios: "ca-app-pub-5005991782528987/1980106124",
+  android: "ca-app-pub-5005991782528987/7822457728",
+};
 
-export const REWARDED_AD_UNIT_ID =
-  __DEV__ || Platform.OS !== "ios" ? TestIds.REWARDED : IOS_REWARDED_AD_UNIT_ID;
+const INTERSTITIAL_AD_UNIT_IDS = {
+  ios: "ca-app-pub-5005991782528987/5548384263",
+  android: "ca-app-pub-5005991782528987/4235280513",
+};
 
-export const INTERSTITIAL_AD_UNIT_ID =
-  __DEV__ || Platform.OS !== "ios"
-    ? TestIds.INTERSTITIAL
-    : IOS_INTERSTITIAL_AD_UNIT_ID;
+export const REWARDED_AD_UNIT_ID = __DEV__
+  ? TestIds.REWARDED
+  : Platform.select({ ...REWARDED_AD_UNIT_IDS, default: TestIds.REWARDED });
+
+export const INTERSTITIAL_AD_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : Platform.select({
+      ...INTERSTITIAL_AD_UNIT_IDS,
+      default: TestIds.INTERSTITIAL,
+    });
 
 async function requestTracking() {
   const { status } = await getTrackingPermissionsAsync();
