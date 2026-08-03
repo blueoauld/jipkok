@@ -8,7 +8,10 @@
     "scheme": "jipkok",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.blueoauld.jipkok"
+      "bundleIdentifier": "com.blueoauld.jipkok",
+      "infoPlist": {
+        "CFBundleDevelopmentRegion": "ko"
+      }
     },
     "android": {
       "adaptiveIcon": {

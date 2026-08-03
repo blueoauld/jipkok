@@ -1,5 +1,6 @@
 import { APP_VERSION, DEVICE_PLATFORM } from "@/lib/device";
 
+import { API_BASE_URL } from "./config";
 import { ApiError } from "./errors";
 import { rememberFailedRequestId } from "./request-id";
 import {
@@ -8,9 +9,6 @@ import {
   getRefreshToken,
   saveTokens,
 } from "./tokens";
-
-const BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://192.168.0.15:8080";
 
 const REISSUE_PATH = "/api/auth/token/reissue";
 
@@ -24,7 +22,7 @@ type RequestOptions = {
 let reissuing: Promise<boolean> | null = null;
 
 function buildUrl(path: string, query?: RequestOptions["query"]) {
-  const url = new URL(path, BASE_URL);
+  const url = new URL(path, API_BASE_URL);
 
   Object.entries(query ?? {}).forEach(([key, value]) => {
     if (value !== undefined) {

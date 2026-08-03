@@ -3,9 +3,7 @@ import "@bacons/text-decoder/install";
 import { Client } from "@stomp/stompjs";
 
 import { getAccessToken } from "@/lib/api";
-
-const BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://192.168.0.15:8080";
+import { API_BASE_URL } from "@/lib/api/config";
 
 const ENDPOINT = "/ws";
 const DESTINATION = "/user/queue/chat";
@@ -14,7 +12,7 @@ const RECONNECT_DELAY = 5_000;
 const HEARTBEAT_INTERVAL = 10_000;
 
 function toSocketUrl() {
-  return `${BASE_URL.replace(/^http/, "ws")}${ENDPOINT}`;
+  return `${API_BASE_URL.replace(/^http/, "ws")}${ENDPOINT}`;
 }
 
 export function createChatSocket({
