@@ -99,51 +99,59 @@ class AdminCommandListener(
         else -> history(event)
     }
 
-    private fun report(event: SlashCommandInteractionEvent): String {
+    private fun report(event: SlashCommandInteractionEvent): EmbedReply {
         val report = reportService.findDetail(event.getOption(REPORT_ID_OPTION)!!.asLong)
         val snapshot = report.snapshot
 
-        attach(event, "report-${report.reportId}.txt", toText(report))
+        val body = listOf(
+            "**ID**\n`${report.reportId}`",
+            "**유형**\n${report.type.label}",
+            "**사유**\n${report.reason.label}",
+            "**신고자**\n${snapshot.reporter.nickname}(`${snapshot.reporter.memberId}`)",
+            "**피신고자**\n${snapshot.reported.nickname}(`${snapshot.reported.memberId}`)",
+            "**상세**\n${report.detail ?: NONE}",
+            "**대화**\n${snapshot.messages.size}건",
+            "**증거 사진**\n${report.evidencePhotoUrls.size}장",
+            "**접수일**\n${format(report.reportedAt)}",
+        ).joinToString("\n\n")
 
-        return buildString {
-            appendLine(
-                "`#${report.reportId}` ${report.type.label} / ${report.reason.label}" +
-                        " / ${format(report.reportedAt)}"
-            )
-            appendLine(
-                "${snapshot.reporter.nickname}(`#${snapshot.reporter.memberId}`)" +
-                        " → ${snapshot.reported.nickname}(`#${snapshot.reported.memberId}`)",
-            )
-            append("대화 ${snapshot.messages.size}건 / 증거 사진 ${report.evidencePhotoUrls.size}장")
-        }
+        return toEmbeds(
+            REPORT,
+            body,
+            FileUpload.fromData(toText(report).toByteArray(), "report-${report.reportId}.txt"),
+        )
     }
 
-    private fun toText(report: ReportDetail) = buildString {
+    private fun toText(report: ReportDetail): String {
         val snapshot = report.snapshot
 
-        appendLine("신고 #${report.reportId} ${report.type.label} / ${report.reason.label}")
-        appendLine("접수 ${format(report.reportedAt)}")
-        appendLine("신고자 ${snapshot.reporter.nickname}(#${snapshot.reporter.memberId})")
-        appendLine("피신고자 ${snapshot.reported.nickname}(#${snapshot.reported.memberId})")
-        appendLine("휴대폰 ${snapshot.reported.phoneNumber}")
-        appendLine("코멘트 ${snapshot.reported.comment ?: "없음"}")
-        appendLine("자기소개 ${snapshot.reported.bio ?: "없음"}")
-        appendLine("상세 ${report.detail ?: "없음"}")
-
-        appendLine()
-        appendLine("[증거 사진 ${report.evidencePhotoUrls.size}장]")
-        report.evidencePhotoUrls.forEachIndexed { index, url -> appendLine("${index + 1}. $url") }
-
-        appendLine()
-        appendLine("[신고 시점 프로필 사진 ${report.profilePhotoUrls.size}장]")
-        report.profilePhotoUrls.forEachIndexed { index, url -> appendLine("${index + 1}. $url") }
-
-        appendLine()
-        appendLine("[대화 ${snapshot.messages.size}건]")
-        snapshot.messages.forEach {
-            appendLine("${format(it.createdAt)} ${nicknameOf(snapshot, it)}: ${contentOf(it)}")
-        }
+        return listOf(
+            REPORT_TEXT_TITLE,
+            "[ID]\n${report.reportId}",
+            "[유형]\n${report.type.label}",
+            "[사유]\n${report.reason.label}",
+            "[접수일]\n${format(report.reportedAt)}",
+            "[신고자]\n${snapshot.reporter.nickname}(#${snapshot.reporter.memberId})",
+            "[피신고자]\n${snapshot.reported.nickname}(#${snapshot.reported.memberId})",
+            "[휴대폰]\n${snapshot.reported.phoneNumber}",
+            "[코멘트]\n${snapshot.reported.comment ?: NONE}",
+            "[자기소개]\n${snapshot.reported.bio ?: NONE}",
+            "[상세]\n${report.detail ?: NONE}",
+            listBlock("증거 사진 ${report.evidencePhotoUrls.size}장", numbered(report.evidencePhotoUrls)),
+            listBlock("신고 시점 프로필 사진 ${report.profilePhotoUrls.size}장", numbered(report.profilePhotoUrls)),
+            listBlock(
+                "대화 ${snapshot.messages.size}건",
+                snapshot.messages.map {
+                    "${formatSecond(it.createdAt)} ${nicknameOf(snapshot, it)}: ${contentOf(it, report)}"
+                },
+            ),
+        ).joinToString("\n\n")
     }
+
+    private fun listBlock(title: String, lines: List<String>) =
+        lines.joinToString("\n", prefix = if (lines.isEmpty()) "[$title]" else "[$title]\n")
+
+    private fun numbered(values: List<String>) = values.mapIndexed { index, value -> "${index + 1}. $value" }
 
     private fun nicknameOf(snapshot: ReportSnapshotContent, message: ChatMessageSnapshot) =
         if (message.senderId == snapshot.reporter.memberId) {
@@ -152,12 +160,12 @@ class AdminCommandListener(
             snapshot.reported.nickname
         }
 
-    private fun contentOf(message: ChatMessageSnapshot) =
-        if (message.type == ChatMessageType.PHOTO) message.photoKey ?: "사진" else message.content ?: ""
-
-    private fun attach(event: SlashCommandInteractionEvent, name: String, text: String) {
-        event.hook.sendFiles(FileUpload.fromData(text.toByteArray(), name)).queue()
-    }
+    private fun contentOf(message: ChatMessageSnapshot, report: ReportDetail) =
+        if (message.type == ChatMessageType.PHOTO) {
+            report.messagePhotoUrls[message.messageId] ?: "사진"
+        } else {
+            message.content ?: ""
+        }
 
     private fun member(event: SlashCommandInteractionEvent): Any {
         val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
@@ -181,7 +189,7 @@ class AdminCommandListener(
         return toEmbeds(view.label, body)
     }
 
-    private fun profile(memberId: Long): List<MessageEmbed> {
+    private fun profile(memberId: Long): EmbedReply {
         val member = memberService.findForAdmin(memberId)
 
         val body = listOf(
@@ -204,13 +212,17 @@ class AdminCommandListener(
         return toEmbeds(MEMBER, body)
     }
 
-    private fun toEmbeds(title: String, body: String) =
+    private fun toEmbeds(title: String, body: String, file: FileUpload? = null) = EmbedReply(
         chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
             EmbedBuilder()
                 .apply { if (index == 0) setTitle(title) }
                 .setDescription(chunk)
                 .build()
-        }
+        },
+        file,
+    )
+
+    private class EmbedReply(val embeds: List<MessageEmbed>, val file: FileUpload?)
 
     private fun mark(enabled: Boolean) = if (enabled) "O" else "X"
 
@@ -252,8 +264,11 @@ class AdminCommandListener(
     }
 
     private fun reply(event: SlashCommandInteractionEvent, result: Any) {
-        if (result is List<*>) {
-            event.hook.sendMessageEmbeds(result.filterIsInstance<MessageEmbed>()).queue()
+        if (result is EmbedReply) {
+            val action = event.hook.sendMessageEmbeds(result.embeds)
+
+            result.file?.let { action.addFiles(it) }
+            action.queue()
             return
         }
 
@@ -317,6 +332,8 @@ class AdminCommandListener(
 
     private fun format(instant: Instant) = FORMATTER.format(instant.atZone(KOREA))
 
+    private fun formatSecond(instant: Instant) = SECOND_FORMATTER.format(instant.atZone(KOREA))
+
     private fun toMessage(throwable: Throwable) = when (throwable) {
         is DuplicateSuspension -> describeDuplicate(throwable.memberId, throwable.type)
         is BusinessException -> throwable.errorCode.message
@@ -346,6 +363,7 @@ class AdminCommandListener(
         private const val HISTORY_TITLE = "정지 이력 (최신순)"
 
         private const val NONE = "없음"
+        private const val REPORT_TEXT_TITLE = "신고"
 
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
@@ -355,6 +373,8 @@ class AdminCommandListener(
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
         private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+        private val SECOND_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
         fun commands(): List<SlashCommandData> = listOf(
             Commands.slash(SUSPEND, "회원을 정지한다.")

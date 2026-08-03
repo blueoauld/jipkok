@@ -121,6 +121,9 @@ class ReportService(
             detail = report.detail,
             reportedAt = report.createdAt,
             snapshot = content,
+            messagePhotoUrls = content.messages
+                .mapNotNull { message -> message.photoKey?.let { message.messageId to it } }
+                .associate { (messageId, key) -> messageId to photoStorage.createSignedViewUrl(key) },
             evidencePhotoUrls = reportPhotoRepository.findByReportIdOrderByDisplayOrder(reportId)
                 .map { photoStorage.createSignedViewUrl(it.objectKey) },
             profilePhotoUrls = content.reported.photoKeys.map(photoStorage::createSignedViewUrl),
