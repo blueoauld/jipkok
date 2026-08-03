@@ -61,6 +61,8 @@ jwt:
   refresh-token-validity: 14d
 
 logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
   level:
     com.blueoauld.server: debug
     org.hibernate.SQL: debug
@@ -73,3 +75,18 @@ discord:
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
   reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
   report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  structured:
+    format:
+      console: ecs
+  level:
+    com.blueoauld.server: info
+    org.hibernate.SQL: off
+    org.hibernate.orm.jdbc.bind: off

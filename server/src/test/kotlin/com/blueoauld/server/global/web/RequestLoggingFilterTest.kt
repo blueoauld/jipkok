@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -65,7 +66,7 @@ class RequestLoggingFilterTest {
     }
 
     @Test
-    fun `로그인한 회원이면 회원 id를 남긴다`() {
+    fun `로그인한 회원이면 진단 정보에 회원 id를 담는다`() {
         // given
         SecurityContextHolder.getContext().authentication =
             UsernamePasswordAuthenticationToken(MEMBER_ID, null, emptyList())
@@ -78,11 +79,11 @@ class RequestLoggingFilterTest {
         )
 
         // then
-        assertThat(message()).endsWith("memberId=$MEMBER_ID")
+        assertThat(diagnostics()[RequestLoggingFilter.MEMBER_ID_KEY]).isEqualTo(MEMBER_ID.toString())
     }
 
     @Test
-    fun `로그인하지 않았으면 회원 id를 남기지 않는다`() {
+    fun `로그인하지 않았으면 회원 id를 담지 않는다`() {
         // when
         filter.doFilter(
             MockHttpServletRequest("POST", "/api/auth/login"),
@@ -91,7 +92,34 @@ class RequestLoggingFilterTest {
         )
 
         // then
-        assertThat(message()).doesNotContain("memberId")
+        assertThat(diagnostics()).doesNotContainKey(RequestLoggingFilter.MEMBER_ID_KEY)
+    }
+
+    @Test
+    fun `요청 id를 진단 정보와 응답 헤더에 함께 담는다`() {
+        // given
+        val response = MockHttpServletResponse()
+
+        // when
+        filter.doFilter(MockHttpServletRequest("GET", "/api/members/me"), response, mockk<FilterChain>(relaxed = true))
+
+        // then
+        val requestId = diagnostics()[RequestLoggingFilter.REQUEST_ID_KEY]
+        assertThat(requestId).isNotBlank()
+        assertThat(response.getHeader(RequestLoggingFilter.REQUEST_ID_HEADER)).isEqualTo(requestId)
+    }
+
+    @Test
+    fun `요청이 끝나면 진단 정보를 비운다`() {
+        // when
+        filter.doFilter(
+            MockHttpServletRequest("GET", "/api/members/me"),
+            MockHttpServletResponse(),
+            mockk<FilterChain>(relaxed = true),
+        )
+
+        // then
+        assertThat(MDC.getCopyOfContextMap()).isNullOrEmpty()
     }
 
     @Test
@@ -108,6 +136,8 @@ class RequestLoggingFilterTest {
     }
 
     private fun message() = appender.list.single().formattedMessage
+
+    private fun diagnostics() = appender.list.single().mdcPropertyMap
 
     companion object {
 
