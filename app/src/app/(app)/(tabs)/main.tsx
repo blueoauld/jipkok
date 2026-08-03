@@ -5,7 +5,7 @@ import {
   MagnifyingGlassIcon,
   NotePencilIcon,
 } from "phosphor-react-native";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
@@ -89,6 +89,12 @@ export default function MainScreen() {
     },
     [location, queryClient, setSort],
   );
+
+  const refreshLocation = location.refresh;
+
+  useEffect(() => {
+    refreshLocation();
+  }, [refreshLocation]);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);

@@ -9,12 +9,14 @@ const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 �
 
 export function useLocationUpdate() {
   const [updating, setUpdating] = useState(false);
-  const heartbeat = useMutation({ mutationFn: api.members.heartbeat });
+  const { mutateAsync: heartbeat } = useMutation({
+    mutationFn: api.members.heartbeat,
+  });
 
   const send = useCallback(async () => {
     const { coords } = await Location.getCurrentPositionAsync({});
 
-    await heartbeat.mutateAsync({
+    await heartbeat({
       latitude: coords.latitude,
       longitude: coords.longitude,
     });
@@ -51,7 +53,7 @@ export function useLocationUpdate() {
       const permission = await Location.getForegroundPermissionsAsync();
 
       if (!permission.granted) {
-        await heartbeat.mutateAsync({});
+        await heartbeat({});
         return;
       }
 
