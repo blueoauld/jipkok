@@ -159,41 +159,58 @@ class AdminCommandListener(
         event.hook.sendFiles(FileUpload.fromData(text.toByteArray(), name)).queue()
     }
 
-    private fun member(event: SlashCommandInteractionEvent): String {
+    private fun member(event: SlashCommandInteractionEvent): Any {
         val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
 
         return when (MemberView.valueOf(event.getOption(TARGET_OPTION)!!.asString)) {
             MemberView.PROFILE -> profile(memberId)
-            MemberView.PUBLIC_PHOTO -> photos(memberId, PhotoVisibility.PUBLIC)
-            MemberView.SECRET_PHOTO -> photos(memberId, PhotoVisibility.SECRET)
+            MemberView.PUBLIC_PHOTO -> photos(memberId, MemberView.PUBLIC_PHOTO, PhotoVisibility.PUBLIC)
+            MemberView.SECRET_PHOTO -> photos(memberId, MemberView.SECRET_PHOTO, PhotoVisibility.SECRET)
         }
     }
 
-    private fun photos(memberId: Long, visibility: PhotoVisibility): String {
+    private fun photos(memberId: Long, view: MemberView, visibility: PhotoVisibility): Any {
         val urls = memberService.findPhotoUrls(memberId, visibility)
 
-        return if (urls.isEmpty()) {
-            "사진이 없습니다."
-        } else {
-            urls.mapIndexed { index, url -> "${index + 1}. $url" }.joinToString("\n")
+        if (urls.isEmpty()) {
+            return "사진이 없습니다."
         }
+
+        val body = urls.mapIndexed { index, url -> "${index + 1}. $url" }.joinToString("\n")
+
+        return toEmbeds(view.label, body)
     }
 
-    private fun profile(memberId: Long): String {
+    private fun profile(memberId: Long): List<MessageEmbed> {
         val member = memberService.findForAdmin(memberId)
 
-        return buildString {
-            appendLine("${member.nickname}(`#${member.memberId}`) / ${member.gender.label} / ${member.age}살")
-            appendLine("${member.phoneNumber} / 가입 ${format(member.joinedAt)}")
-            appendLine("접속 ${member.locatedAt?.let(::format) ?: "없음"} / 쪽지 수신 ${mark(member.noteReceiveEnabled)}")
-            appendLine(
-                "공개 사진 ${member.publicPhotoCount}장 / 비밀 사진 ${member.secretPhotoCount}장" +
-                        " / 좋아요 ${member.receivedLikeCount} / 포인트 ${member.pointBalance}",
-            )
-            appendLine("코멘트: ${member.comment ?: "없음"}")
-            append("자기소개: ${member.bio ?: "없음"}")
-        }
+        val body = listOf(
+            "**ID**\n`${member.memberId}`",
+            "**닉네임**\n${member.nickname}",
+            "**휴대폰**\n`${member.phoneNumber}`",
+            "**성별**\n${member.gender.label}",
+            "**나이**\n${member.age}살",
+            "**좋아요**\n${member.receivedLikeCount}",
+            "**공개 사진**\n${member.publicPhotoCount}장",
+            "**비밀 사진**\n${member.secretPhotoCount}장",
+            "**포인트**\n${member.pointBalance}",
+            "**쪽지 수신**\n${mark(member.noteReceiveEnabled)}",
+            "**코멘트**\n${member.comment ?: NONE}",
+            "**자기소개**\n${member.bio ?: NONE}",
+            "**가입일**\n${format(member.joinedAt)}",
+            "**갱신일**\n${member.locatedAt?.let(::format) ?: NONE}",
+        ).joinToString("\n\n")
+
+        return toEmbeds(MEMBER, body)
     }
+
+    private fun toEmbeds(title: String, body: String) =
+        chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
+            EmbedBuilder()
+                .apply { if (index == 0) setTitle(title) }
+                .setDescription(chunk)
+                .build()
+        }
 
     private fun mark(enabled: Boolean) = if (enabled) "O" else "X"
 
@@ -287,12 +304,7 @@ class AdminCommandListener(
         val lines = suspensions.mapIndexed { index, it -> "${index + 1}. ${describe(it)}" }.joinToString("\n")
         val body = "**횟수**\n${suspensions.size}\n\n**내역**\n$lines"
 
-        return chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
-            EmbedBuilder()
-                .apply { if (index == 0) setTitle(HISTORY_TITLE) }
-                .setDescription(chunk)
-                .build()
-        }
+        return toEmbeds(HISTORY_TITLE, body)
     }
 
     private fun describe(suspension: SuspensionDetail) = buildString {
@@ -332,6 +344,8 @@ class AdminCommandListener(
         private const val DESCRIPTION_MAX_LENGTH = 4096
 
         private const val HISTORY_TITLE = "정지 이력 (최신순)"
+
+        private const val NONE = "없음"
 
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
