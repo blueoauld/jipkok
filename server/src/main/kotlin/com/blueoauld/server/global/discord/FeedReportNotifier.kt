@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.entities.MessageEmbed
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
@@ -27,22 +28,31 @@ class FeedReportNotifier(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun notifyAutoDeleted(event: FeedPostAutoDeletedEvent) {
-        runCatching { discordBot.send(discordProperties.reportChannelId, toMessage(event)) }
+        runCatching { discordBot.send(discordProperties.reportChannelId, toEmbeds(event)) }
             .onFailure { log.error(it) { "피드 삭제를 알리지 못했다. postId=${event.postId}" } }
     }
 
-    private fun toMessage(event: FeedPostAutoDeletedEvent) = buildString {
+    private fun toEmbeds(event: FeedPostAutoDeletedEvent): List<MessageEmbed> {
         val nickname = memberService.findForAdmin(event.memberId).nickname
 
-        appendLine("신고 ${event.reportCount}회로 피드를 지웠습니다.")
-        appendLine("`#${event.postId}` $nickname(`#${event.memberId}`) / ${format(event.slotAt)}")
-        appendLine("문구: ${event.caption ?: "없음"}")
-        append(photoStorage.toPublicUrl(event.objectKey))
+        val body = listOf(
+            DiscordEmbeds.field("ID", "`${event.postId}`"),
+            DiscordEmbeds.field("회원", "$nickname(`${event.memberId}`)"),
+            DiscordEmbeds.field("신고", "${event.reportCount}회"),
+            DiscordEmbeds.field("시간", format(event.slotAt)),
+            DiscordEmbeds.field("문구", event.caption ?: NONE),
+            DiscordEmbeds.field("사진", photoStorage.toPublicUrl(event.objectKey)),
+        ).joinToString("\n\n")
+
+        return DiscordEmbeds.of(TITLE, body)
     }
 
     private fun format(instant: Instant) = FORMATTER.format(instant.atZone(KOREA))
 
     companion object {
+
+        private const val TITLE = "피드 삭제"
+        private const val NONE = "없음"
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 

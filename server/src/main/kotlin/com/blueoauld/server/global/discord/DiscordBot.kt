@@ -5,6 +5,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 
@@ -31,10 +32,9 @@ class DiscordBot(
             ?: log.error { "디스코드 길드를 찾지 못했다. guildId=${discordProperties.guildId}" }
     }
 
-    fun send(channelId: String, message: String) {
+    fun send(channelId: String, embeds: List<MessageEmbed>) {
         jda.getTextChannelById(channelId)
-            ?.sendMessage(message)
-            ?.setSuppressEmbeds(true)
+            ?.sendMessageEmbeds(embeds)
             ?.queue()
             ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
     }

@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.event.ReportCreatedEvent
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.entities.MessageEmbed
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
@@ -24,41 +25,45 @@ class ReportNotifier(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun notifyCreated(event: ReportCreatedEvent) {
-        runCatching { discordBot.send(discordProperties.reportChannelId, toMessage(event)) }
+        runCatching { discordBot.send(discordProperties.reportChannelId, toEmbeds(event)) }
             .onFailure { log.error(it) { "신고를 알리지 못했다. reportId=${event.reportId}" } }
     }
 
-    private fun toMessage(event: ReportCreatedEvent) = buildString {
+    private fun toEmbeds(event: ReportCreatedEvent): List<MessageEmbed> {
         val snapshot = event.snapshot
 
-        appendLine("`#${event.reportId}` ${event.type.label} / ${event.reason.label}")
-        appendLine(
-            "${snapshot.reporter.nickname}(`#${snapshot.reporter.memberId}`)" +
-                    " → ${snapshot.reported.nickname}(`#${snapshot.reported.memberId}`)",
-        )
-        event.detail?.let { appendLine("상세: $it") }
+        val body = buildList {
+            add(DiscordEmbeds.field("ID", "`${event.reportId}`"))
+            add(DiscordEmbeds.field("유형", event.type.label))
+            add(DiscordEmbeds.field("사유", event.reason.label))
+            add(DiscordEmbeds.field("신고자", "${snapshot.reporter.nickname}(`${snapshot.reporter.memberId}`)"))
+            add(DiscordEmbeds.field("피신고자", "${snapshot.reported.nickname}(`${snapshot.reported.memberId}`)"))
+            add(DiscordEmbeds.field("상세", event.detail ?: NONE))
 
-        if (event.type == ReportType.CHAT) {
-            appendLine(describeMessages(snapshot))
-        } else {
-            appendLine("공개 사진 ${snapshot.reported.photoKeys.size}장")
-            appendLine("코멘트: ${snapshot.reported.comment ?: "없음"}")
-            appendLine("자기소개: ${snapshot.reported.bio ?: "없음"}")
-        }
+            if (event.type == ReportType.CHAT) {
+                add(DiscordEmbeds.field("대화", describeMessages(snapshot)))
+            } else {
+                add(DiscordEmbeds.field("공개 사진", "${snapshot.reported.photoKeys.size}장"))
+                add(DiscordEmbeds.field("코멘트", snapshot.reported.comment ?: NONE))
+                add(DiscordEmbeds.field("자기소개", snapshot.reported.bio ?: NONE))
+            }
 
-        append("증거 사진 ${event.evidencePhotoCount}장")
+            add(DiscordEmbeds.field("증거 사진", "${event.evidencePhotoCount}장"))
+        }.joinToString("\n\n")
+
+        return DiscordEmbeds.of(TITLE, body)
     }
 
     private fun describeMessages(snapshot: ReportSnapshotContent): String {
         if (snapshot.messages.isEmpty()) {
-            return "대화 없음"
+            return NONE
         }
 
         val recent = snapshot.messages.takeLast(RECENT_MESSAGE_COUNT)
 
         return recent.joinToString(
             "\n",
-            prefix = "대화 ${snapshot.messages.size}건 중 마지막 ${recent.size}건\n",
+            prefix = "${snapshot.messages.size}건 중 마지막 ${recent.size}건\n",
         ) { "${nicknameOf(snapshot, it)}: ${contentOf(it)}" }
     }
 
@@ -73,6 +78,9 @@ class ReportNotifier(
         if (message.type == ChatMessageType.PHOTO) "사진" else message.content ?: ""
 
     companion object {
+
+        private const val TITLE = "신고 접수"
+        private const val NONE = "없음"
 
         private const val RECENT_MESSAGE_COUNT = 3
     }

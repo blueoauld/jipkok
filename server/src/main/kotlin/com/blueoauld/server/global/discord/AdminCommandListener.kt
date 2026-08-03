@@ -212,15 +212,8 @@ class AdminCommandListener(
         return toEmbeds(MEMBER, body)
     }
 
-    private fun toEmbeds(title: String, body: String, file: FileUpload? = null) = EmbedReply(
-        chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
-            EmbedBuilder()
-                .apply { if (index == 0) setTitle(title) }
-                .setDescription(chunk)
-                .build()
-        },
-        file,
-    )
+    private fun toEmbeds(title: String, body: String, file: FileUpload? = null) =
+        EmbedReply(DiscordEmbeds.of(title, body), file)
 
     private class EmbedReply(val embeds: List<MessageEmbed>, val file: FileUpload?)
 
@@ -272,22 +265,10 @@ class AdminCommandListener(
             return
         }
 
-        chunk(result.toString(), MESSAGE_MAX_LENGTH)
+        DiscordEmbeds.chunk(result.toString(), MESSAGE_MAX_LENGTH)
             .forEach { event.hook.sendMessage(it).setSuppressEmbeds(true).queue() }
     }
 
-    private fun chunk(message: String, maxLength: Int) =
-        message.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
-            val last = chunks.lastOrNull()
-
-            if (last == null || last.length + line.length + 1 > maxLength) {
-                chunks.add(line)
-            } else {
-                chunks[chunks.lastIndex] = "$last\n$line"
-            }
-
-            chunks
-        }
 
     private fun isDuplicate(throwable: Throwable) =
         throwable is BusinessException && throwable.errorCode == ErrorCode.DUPLICATE_SUSPENSION
@@ -358,7 +339,6 @@ class AdminCommandListener(
         private const val DETAIL_OPTION = "상세"
 
         private const val MESSAGE_MAX_LENGTH = 1900
-        private const val DESCRIPTION_MAX_LENGTH = 4096
 
         private const val HISTORY_TITLE = "정지 이력 (최신순)"
 
