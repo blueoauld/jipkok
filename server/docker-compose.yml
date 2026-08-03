@@ -23,6 +23,7 @@ services:
   server:
     image: ${SERVER_IMAGE:-jipkok-server:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     env_file: .env
     expose:
       - "8080"
