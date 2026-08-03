@@ -2,10 +2,13 @@ spring:
   application:
     name: server
 
+  profiles:
+    default: local
+
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:jipkok}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:1234}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -26,7 +29,7 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       repositories:
         enabled: false
@@ -43,12 +46,12 @@ server:
   port: 8080
 
 r2:
-  enabled: ${R2_ENABLED:false}
-  endpoint: ${R2_ENDPOINT:}
-  access-key-id: ${R2_ACCESS_KEY_ID:}
-  secret-access-key: ${R2_SECRET_ACCESS_KEY:}
-  bucket: ${R2_BUCKET:}
-  public-base-url: ${R2_PUBLIC_BASE_URL:}
+  enabled: ${R2_ENABLED:true}
+  endpoint: ${R2_ENDPOINT}
+  access-key-id: ${R2_ACCESS_KEY_ID}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY}
+  bucket: ${R2_BUCKET}
+  public-base-url: ${R2_PUBLIC_BASE_URL}
   upload-url-validity: 10m
   view-url-validity: 10m
 
@@ -56,17 +59,9 @@ admob:
   verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
 
 jwt:
-  secret: ${JWT_SECRET:local-development-only-secret-key-please-change-me}
+  secret: ${JWT_SECRET}
   access-token-validity: 1h
   refresh-token-validity: 14d
-
-logging:
-  pattern:
-    correlation: "[%X{requestId:-}] "
-  level:
-    com.blueoauld.server: debug
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
 
 discord:
   token: ${DISCORD_TOKEN:}
@@ -75,6 +70,34 @@ discord:
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
   reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
   report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
+
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:jipkok}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+
+jwt:
+  secret: ${JWT_SECRET:local-development-only-secret-key-please-change-me}
+
+logging:
+  level:
+    com.blueoauld.server: debug
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
 
 ---
 spring:
