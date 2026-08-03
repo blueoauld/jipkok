@@ -26,6 +26,8 @@ import { scheduleOnRN } from "react-native-worklets";
 import Zoom from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
+import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
+
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
 
@@ -38,11 +40,13 @@ export function PhotoViewer({
   photos,
   initialIndex,
   open,
+  secret = false,
   onClose,
 }: {
   photos: string[];
   initialIndex: number;
   open: boolean;
+  secret?: boolean;
   onClose: () => void;
 }) {
   const screen = useWindowDimensions();
@@ -50,6 +54,8 @@ export function PhotoViewer({
   const [index, setIndex] = useState(initialIndex);
 
   const translateY = useSharedValue(0);
+
+  useSecretPhotoCapture(open && secret);
 
   useLayoutEffect(() => {
     if (open) {

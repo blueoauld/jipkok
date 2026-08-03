@@ -439,6 +439,7 @@ export default function MemberProfileScreen() {
         photos={loadSecretPhotos.data ?? []}
         initialIndex={0}
         open={secretPhotoOpen}
+        secret
         onClose={() => setSecretPhotoOpen(false)}
       />
 
