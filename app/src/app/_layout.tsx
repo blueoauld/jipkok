@@ -7,6 +7,7 @@ import { TamaguiProvider, useTheme, YStack } from "tamagui";
 
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useChatSocket } from "@/hooks/useChatSocket";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { initializeAds } from "@/lib/ads";
 import { QueryProvider } from "@/lib/query";
@@ -23,6 +24,7 @@ export default function RootLayout() {
             <StatusBar style={scheme === "dark" ? "light" : "dark"} />
             <SessionGuard />
             <ChatSocket />
+            <Push />
             <Ads />
             <YStack flex={1}>
               <Stack screenOptions={{ headerShown: false }} />
@@ -43,6 +45,12 @@ function SessionGuard() {
 
 function ChatSocket() {
   useChatSocket();
+
+  return null;
+}
+
+function Push() {
+  usePushNotifications();
 
   return null;
 }

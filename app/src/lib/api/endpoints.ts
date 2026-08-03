@@ -307,6 +307,22 @@ export const chats = {
     }),
 };
 
+export const push = {
+  register: (token: string, platform: "IOS" | "ANDROID") =>
+    request<void>("/api/members/me/device-tokens", {
+      method: "POST",
+      body: { token, platform },
+    }),
+
+  remove: (token: string) =>
+    request<void>(
+      `/api/members/me/device-tokens/${encodeURIComponent(token)}`,
+      {
+        method: "DELETE",
+      },
+    ),
+};
+
 export const reports = {
   create: (body: CreateReportRequest) =>
     request<void>("/api/reports", { method: "POST", body }),

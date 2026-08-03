@@ -33,6 +33,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
+import { unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 
@@ -143,7 +144,12 @@ export default function SettingScreen() {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
-  const logout = useMutation({ mutationFn: api.auth.logout });
+  const logout = useMutation({
+    mutationFn: async () => {
+      await unregisterPushToken().catch(() => undefined);
+      await api.auth.logout();
+    },
+  });
   const adReward = useAdReward();
   const gate = useInterstitialGate();
 
