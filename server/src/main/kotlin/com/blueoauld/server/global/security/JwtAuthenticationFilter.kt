@@ -1,8 +1,10 @@
 package com.blueoauld.server.global.security
 
+import com.blueoauld.server.global.web.RequestLoggingFilter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -23,7 +25,10 @@ class JwtAuthenticationFilter(
     ) {
         resolveToken(request)
             ?.let(jwtProvider::parseAccessToken)
-            ?.let { SecurityContextHolder.getContext().authentication = toAuthentication(it) }
+            ?.let {
+                SecurityContextHolder.getContext().authentication = toAuthentication(it)
+                MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, it.memberId.toString())
+            }
 
         filterChain.doFilter(request, response)
     }

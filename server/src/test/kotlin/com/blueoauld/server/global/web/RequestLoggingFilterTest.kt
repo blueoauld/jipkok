@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
 
 class RequestLoggingFilterTest {
 
@@ -35,7 +33,7 @@ class RequestLoggingFilterTest {
     @AfterEach
     fun tearDown() {
         logger.detachAppender(appender)
-        SecurityContextHolder.clearContext()
+        MDC.clear()
     }
 
     @Test
@@ -66,17 +64,12 @@ class RequestLoggingFilterTest {
     }
 
     @Test
-    fun `로그인한 회원이면 진단 정보에 회원 id를 담는다`() {
+    fun `뒤따르는 필터가 담은 회원 id를 함께 남긴다`() {
         // given
-        SecurityContextHolder.getContext().authentication =
-            UsernamePasswordAuthenticationToken(MEMBER_ID, null, emptyList())
+        val chain = FilterChain { _, _ -> MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, MEMBER_ID.toString()) }
 
         // when
-        filter.doFilter(
-            MockHttpServletRequest("GET", "/api/members/me"),
-            MockHttpServletResponse(),
-            mockk<FilterChain>(relaxed = true),
-        )
+        filter.doFilter(MockHttpServletRequest("GET", "/api/members/me"), MockHttpServletResponse(), chain)
 
         // then
         assertThat(diagnostics()[RequestLoggingFilter.MEMBER_ID_KEY]).isEqualTo(MEMBER_ID.toString())

@@ -1,4 +1,5 @@
 import { ApiError } from "./errors";
+import { rememberFailedRequestId } from "./request-id";
 import {
   clearTokens,
   getAccessToken,
@@ -52,6 +53,8 @@ async function send(path: string, options: RequestOptions) {
 }
 
 async function toApiError(response: Response) {
+  rememberFailedRequestId(response);
+
   const fallback = new ApiError(
     response.status,
     "UNKNOWN",

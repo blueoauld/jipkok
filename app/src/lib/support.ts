@@ -2,6 +2,8 @@ import Constants from "expo-constants";
 import * as Device from "expo-device";
 import { Linking } from "react-native";
 
+import { getLastFailedRequestId } from "@/lib/api/request-id";
+
 const EMAIL = "hello@jipkok.app";
 
 export const MAIL_FAILED_MESSAGE = `${EMAIL}으로 메일을 보내주시길 바랍니다.`;
@@ -18,6 +20,7 @@ function deviceInfo(memberId?: number) {
     `기기: ${Device.modelName ?? UNKNOWN}`,
     `OS: ${Device.osName ?? UNKNOWN} ${Device.osVersion ?? UNKNOWN}`,
     `회원 ID: ${memberId ?? UNKNOWN}`,
+    `요청 ID: ${getLastFailedRequestId() ?? UNKNOWN}`,
   ].join("\n");
 }
 
