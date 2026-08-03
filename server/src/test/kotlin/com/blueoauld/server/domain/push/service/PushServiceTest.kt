@@ -94,7 +94,7 @@ class PushServiceTest {
         )
 
         // when
-        pushService.sendAll(listOf(MEMBER_ID), TITLE, BODY, COLLAPSE_KEY)
+        pushService.sendAll(listOf(MEMBER_ID), TITLE, BODY, collapseKey = COLLAPSE_KEY)
 
         // then
         verify { expoPushClient.send(capture(messages)) }

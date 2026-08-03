@@ -1,20 +1,24 @@
 import * as Notifications from "expo-notifications";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { useAuthStore } from "@/lib/auth/store";
 import { registerPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
-function openRoom(response: Notifications.NotificationResponse) {
-  const roomId = response.notification.request.content.data?.roomId;
+function hrefOf(response: Notifications.NotificationResponse) {
+  const { roomId, screen } = response.notification.request.content.data ?? {};
 
   if (roomId) {
-    pushOnce(`/chat/${roomId}`);
+    return `/chat/${roomId}` as const;
   }
+
+  return screen === "feed" ? ("/feed" as const) : null;
 }
 
 export function usePushNotifications() {
   const status = useAuthStore((state) => state.status);
+  const response = Notifications.useLastNotificationResponse();
+  const handledId = useRef<string | null>(null);
 
   useEffect(() => {
     if (status !== "authenticated") {
@@ -25,9 +29,21 @@ export function usePushNotifications() {
   }, [status]);
 
   useEffect(() => {
-    const subscription =
-      Notifications.addNotificationResponseReceivedListener(openRoom);
+    if (status !== "authenticated" || !response) {
+      return;
+    }
 
-    return () => subscription.remove();
-  }, []);
+    const { identifier } = response.notification.request;
+
+    if (handledId.current === identifier) {
+      return;
+    }
+
+    const href = hrefOf(response);
+
+    if (href) {
+      handledId.current = identifier;
+      pushOnce(href);
+    }
+  }, [response, status]);
 }

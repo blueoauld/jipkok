@@ -34,7 +34,13 @@ class FeedReminderTest {
 
         // then
         verify {
-            pushService.sendAll(TARGETS, FeedReminder.TITLE, FeedReminder.bodyOf(NOW), FeedReminder.COLLAPSE_KEY)
+            pushService.sendAll(
+                TARGETS,
+                FeedReminder.TITLE,
+                FeedReminder.bodyOf(NOW),
+                FeedReminder.DATA,
+                FeedReminder.COLLAPSE_KEY,
+            )
         }
     }
 
@@ -57,7 +63,7 @@ class FeedReminderTest {
         feedReminder.remind()
 
         // then
-        verify(exactly = 0) { pushService.sendAll(any(), any(), any(), any()) }
+        verify(exactly = 0) { pushService.sendAll(any(), any(), any(), any(), any()) }
     }
 
     companion object {

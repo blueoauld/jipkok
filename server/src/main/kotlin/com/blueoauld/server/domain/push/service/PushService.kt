@@ -32,7 +32,13 @@ class PushService(
     }
 
     @Transactional
-    fun sendAll(memberIds: List<Long>, title: String, body: String, collapseKey: String? = null) {
+    fun sendAll(
+        memberIds: List<Long>,
+        title: String,
+        body: String,
+        data: Map<String, String> = emptyMap(),
+        collapseKey: String? = null,
+    ) {
         if (memberIds.isEmpty()) {
             return
         }
@@ -43,6 +49,7 @@ class PushService(
                     to = it.token,
                     title = title,
                     body = body,
+                    data = data,
                     collapseId = collapseKey,
                     tag = collapseKey,
                 )
