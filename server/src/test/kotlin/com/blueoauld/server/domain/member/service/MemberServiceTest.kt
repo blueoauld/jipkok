@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.access.service.AccessRewardService
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
@@ -17,6 +18,7 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
@@ -61,6 +63,8 @@ class MemberServiceTest {
 
     private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
 
+    private val accessRewardService = mockk<AccessRewardService>(relaxed = true)
+
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
@@ -70,6 +74,7 @@ class MemberServiceTest {
         passwordEncoder,
         photoStorage,
         memberSuspensionService,
+        accessRewardService,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -759,7 +764,7 @@ class MemberServiceTest {
         stubMember(member)
 
         // when
-        memberService.heartbeat(MEMBER_ID, HeartbeatRequest(37.5665, 126.9780))
+        memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
 
         // then
         assertThat(member.latitude).isEqualTo(37.5665)
@@ -776,7 +781,7 @@ class MemberServiceTest {
         stubMember(member)
 
         // when
-        memberService.heartbeat(MEMBER_ID, HeartbeatRequest())
+        memberService.heartbeat(MEMBER_ID, heartbeat(), IP_ADDRESS)
 
         // then
         assertThat(member.latitude).isNull()
@@ -792,7 +797,7 @@ class MemberServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberService.heartbeat(MEMBER_ID, HeartbeatRequest(latitude = 37.5665))
+            memberService.heartbeat(MEMBER_ID, heartbeat(latitude = 37.5665), IP_ADDRESS)
         }
 
         // then
@@ -807,12 +812,15 @@ class MemberServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberService.heartbeat(MEMBER_ID, HeartbeatRequest(37.5665, 126.9780))
+            memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
         }
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
     }
+
+    private fun heartbeat(latitude: Double? = null, longitude: Double? = null) =
+        HeartbeatRequest(DevicePlatform.IOS, "iPhone 15 Pro", latitude, longitude)
 
     private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
         "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
@@ -839,6 +847,8 @@ class MemberServiceTest {
     )
 
     companion object {
+
+        private const val IP_ADDRESS = "203.0.113.7"
 
         private const val PHONE_NUMBER = "01012345678"
         private const val VERIFICATION_CODE = "123456"

@@ -22,8 +22,10 @@ import com.blueoauld.server.domain.member.service.MemberRankingService
 import com.blueoauld.server.domain.member.service.MemberSearchService
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
+import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.response.ScrollResponse
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -159,15 +161,13 @@ class MemberController(
         memberService.updateComment(memberId, request)
     }
 
-    @Operation(summary = "접속과 위치 갱신")
+    @Operation(summary = "접속과 위치 갱신", description = "하루 한 번 접속 보상을 준다.")
     @PostMapping("/me/heartbeat")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun heartbeat(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: HeartbeatRequest,
-    ) {
-        memberService.heartbeat(memberId, request)
-    }
+        servletRequest: HttpServletRequest,
+    ): PointRewardResponse = memberService.heartbeat(memberId, request, servletRequest.remoteAddr)
 
     companion object {
 

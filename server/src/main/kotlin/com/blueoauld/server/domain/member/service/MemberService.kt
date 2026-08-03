@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.access.dto.AccessInfo
+import com.blueoauld.server.domain.access.service.AccessRewardService
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
@@ -21,6 +23,7 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -49,6 +52,7 @@ class MemberService(
     private val passwordEncoder: PasswordEncoder,
     private val photoStorage: PhotoStorage,
     private val memberSuspensionService: MemberSuspensionService,
+    private val accessRewardService: AccessRewardService,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
@@ -262,7 +266,7 @@ class MemberService(
     }
 
     @Transactional
-    fun heartbeat(memberId: Long, request: HeartbeatRequest) {
+    fun heartbeat(memberId: Long, request: HeartbeatRequest, ipAddress: String): PointRewardResponse {
         val member = memberRepository.findById(memberId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
@@ -274,6 +278,10 @@ class MemberService(
         member.latitude = request.latitude
         member.longitude = request.longitude
         member.locatedAt = clock.instant()
+
+        val platform = request.platform ?: throw BusinessException(ErrorCode.INVALID_REQUEST)
+
+        return accessRewardService.earn(member, AccessInfo(platform, request.deviceName, ipAddress))
     }
 
     private fun validateNickname(member: Member, nickname: String) {

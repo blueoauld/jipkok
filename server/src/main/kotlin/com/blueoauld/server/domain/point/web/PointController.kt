@@ -1,14 +1,11 @@
 package com.blueoauld.server.domain.point.web
 
 import com.blueoauld.server.domain.point.dto.response.PointHistoryResponse
-import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
-import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
 import com.blueoauld.server.global.response.CursorResponse
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -19,11 +16,6 @@ class PointController(
 
     private val pointService: PointService,
 ) {
-
-    @Operation(summary = "접속 보상 받기")
-    @PostMapping("/rewards/access")
-    fun earnAccessReward(@AuthenticationPrincipal memberId: Long): PointRewardResponse =
-        pointService.earn(memberId, PointType.ACCESS_REWARD)
 
     @Operation(summary = "포인트 잔액 조회")
     @GetMapping("/me")
