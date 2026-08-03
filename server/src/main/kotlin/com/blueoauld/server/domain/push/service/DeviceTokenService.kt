@@ -1,0 +1,32 @@
+package com.blueoauld.server.domain.push.service
+
+import com.blueoauld.server.domain.push.dto.request.RegisterDeviceTokenRequest
+import com.blueoauld.server.domain.push.entity.DeviceToken
+import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class DeviceTokenService(
+
+    private val deviceTokenRepository: DeviceTokenRepository,
+) {
+
+    @Transactional
+    fun register(memberId: Long, request: RegisterDeviceTokenRequest) {
+        val token = deviceTokenRepository.findByToken(request.token)
+
+        if (token == null) {
+            deviceTokenRepository.save(DeviceToken(memberId, request.token, request.platform))
+            return
+        }
+
+        token.memberId = memberId
+        token.platform = request.platform
+    }
+
+    @Transactional
+    fun remove(token: String) {
+        deviceTokenRepository.deleteByToken(token)
+    }
+}
