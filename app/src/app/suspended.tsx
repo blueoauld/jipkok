@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native";
 import { useEffect } from "react";
@@ -6,9 +6,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, useTheme, YStack } from "tamagui";
 
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { alertApiError } from "@/lib/alert";
+import { alertApiError, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
+import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
 
 const ICON_SIZE = 56;
@@ -16,11 +17,12 @@ const ICON_SIZE = 56;
 const TITLE = "서비스 이용이 정지되었습니다.";
 const FOREVER = "영구 정지";
 
+const MAIL_TITLE = "정지문의";
+
 export default function SuspendedScreen() {
-  const queryClient = useQueryClient();
   const theme = useTheme();
 
-  const { data: profile, isFetching, refetch } = useMyProfile();
+  const { data: profile } = useMyProfile();
   const suspension = findServiceSuspension(profile);
 
   const logout = useMutation({
@@ -64,11 +66,13 @@ export default function SuspendedScreen() {
             size="$4"
             theme="blue"
             rounded="$7"
-            disabled={isFetching}
-            opacity={isFetching ? 0.6 : 1}
-            onPress={() => refetch()}
+            onPress={() =>
+              openSupportMail(MAIL_TITLE, profile?.memberId).catch(() =>
+                alertMessage(MAIL_FAILED_MESSAGE),
+              )
+            }
           >
-            새로고침
+            문의하기
           </Button>
 
           <Button size="$4" rounded="$7" onPress={() => logout.mutate()}>

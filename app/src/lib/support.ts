@@ -4,6 +4,8 @@ import { Linking } from "react-native";
 
 const EMAIL = "hello@jipkok.app";
 
+export const MAIL_FAILED_MESSAGE = `${EMAIL}으로 메일을 보내주시길 바랍니다.`;
+
 const APP_NAME = "집콕";
 const PLACEHOLDER = "(여기에 내용을 적어주세요)";
 const DIVIDER = "────────────";

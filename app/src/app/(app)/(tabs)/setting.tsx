@@ -34,7 +34,7 @@ import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
-import { openSupportMail } from "@/lib/support";
+import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 
 const ICON_SIZE = 22;
 
@@ -45,7 +45,6 @@ const WITHDRAW_DESCRIPTION =
 const TERMS_URL = "https://jipkok.app/terms";
 const PRIVACY_URL = "https://jipkok.app/privacy";
 
-const MAIL_FAILED_MESSAGE = "메일 앱을 열지 못했습니다.";
 const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
