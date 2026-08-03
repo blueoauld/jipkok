@@ -18,6 +18,7 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -92,7 +93,7 @@ class AdminCommandListener(
             ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
     }
 
-    private fun handle(event: SlashCommandInteractionEvent) = when (event.name) {
+    private fun handle(event: SlashCommandInteractionEvent): Any = when (event.name) {
         SUSPEND -> suspend(event)
         RELEASE -> release(event)
         RESET -> reset(event)
@@ -230,21 +231,28 @@ class AdminCommandListener(
         return "정지했습니다.\n${describe(suspension)}"
     }
 
-    private fun reply(event: SlashCommandInteractionEvent, message: String) {
-        chunk(message).forEach { event.hook.sendMessage(it).setSuppressEmbeds(true).queue() }
-    }
-
-    private fun chunk(message: String) = message.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
-        val last = chunks.lastOrNull()
-
-        if (last == null || last.length + line.length + 1 > MESSAGE_MAX_LENGTH) {
-            chunks.add(line)
-        } else {
-            chunks[chunks.lastIndex] = "$last\n$line"
+    private fun reply(event: SlashCommandInteractionEvent, result: Any) {
+        if (result is List<*>) {
+            event.hook.sendMessageEmbeds(result.filterIsInstance<MessageEmbed>()).queue()
+            return
         }
 
-        chunks
+        chunk(result.toString(), MESSAGE_MAX_LENGTH)
+            .forEach { event.hook.sendMessage(it).setSuppressEmbeds(true).queue() }
     }
+
+    private fun chunk(message: String, maxLength: Int) =
+        message.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
+            val last = chunks.lastOrNull()
+
+            if (last == null || last.length + line.length + 1 > maxLength) {
+                chunks.add(line)
+            } else {
+                chunks[chunks.lastIndex] = "$last\n$line"
+            }
+
+            chunks
+        }
 
     private fun isDuplicate(throwable: Throwable) =
         throwable is BusinessException && throwable.errorCode == ErrorCode.DUPLICATE_SUSPENSION
@@ -266,18 +274,26 @@ class AdminCommandListener(
         return suspensions.joinToString("\n", prefix = "정지를 해제했습니다.\n") { describe(it) }
     }
 
-    private fun history(event: SlashCommandInteractionEvent): String {
+    private fun history(event: SlashCommandInteractionEvent): Any {
         val suspensions = memberSuspensionService.findHistory(event.getOption(MEMBER_ID_OPTION)!!.asLong)
 
         if (suspensions.isEmpty()) {
             return "정지 이력이 없습니다."
         }
 
-        return suspensions.joinToString("\n", prefix = "정지 이력 ${suspensions.size}건\n") { describe(it) }
+        val lines = suspensions.mapIndexed { index, it -> "${index + 1}. ${describe(it)}" }.joinToString("\n")
+        val body = "**횟수**\n${suspensions.size}\n\n**내역**\n$lines"
+
+        return chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
+            EmbedBuilder()
+                .apply { if (index == 0) setTitle(HISTORY_TITLE) }
+                .setDescription(chunk)
+                .build()
+        }
     }
 
     private fun describe(suspension: SuspensionDetail) = buildString {
-        append("`#${suspension.id}` ${nicknameOf(suspension)}(`#${suspension.memberId}`)")
+        append("`${suspension.id}` / ${nicknameOf(suspension)}(`${suspension.memberId}`)")
         append(" / ${suspension.type.label} / ${suspension.reason.label}")
         append(" / ${period(suspension)}")
         suspension.releasedAt?.let { append(" / ${format(it)} 해제") }
@@ -310,6 +326,9 @@ class AdminCommandListener(
         private const val DETAIL_OPTION = "상세"
 
         private const val MESSAGE_MAX_LENGTH = 1900
+        private const val DESCRIPTION_MAX_LENGTH = 4096
+
+        private const val HISTORY_TITLE = "정지 이력 (최신순)"
 
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
