@@ -1,2 +1,6 @@
 # macOS
 .DS_Store
+
+# 개인키
+*.pem
+*.key
