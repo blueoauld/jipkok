@@ -2,27 +2,23 @@ package com.blueoauld.server.global.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(BusinessException::class)
     fun handleBusiness(exception: BusinessException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(exception.errorCode.status).body(ErrorResponse.from(exception.errorCode))
-
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidation(exception: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        val errorCode = ErrorCode.INVALID_REQUEST
-        val message = exception.bindingResult.fieldErrors.firstOrNull()?.defaultMessage ?: errorCode.message
-
-        return ResponseEntity.status(errorCode.status).body(ErrorResponse.of(errorCode, message))
-    }
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolation(exception: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
@@ -38,5 +34,33 @@ class GlobalExceptionHandler {
         log.error(exception) { "처리하지 못한 예외가 발생했다." }
 
         return ResponseEntity.status(errorCode.status).body(ErrorResponse.from(errorCode))
+    }
+
+    override fun handleMethodArgumentNotValid(
+        exception: MethodArgumentNotValidException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any>? {
+        val errorCode = ErrorCode.INVALID_REQUEST
+        val message = exception.bindingResult.fieldErrors.firstOrNull()?.defaultMessage ?: errorCode.message
+
+        return ResponseEntity.status(status).body(ErrorResponse.of(errorCode, message))
+    }
+
+    override fun handleExceptionInternal(
+        exception: Exception,
+        body: Any?,
+        headers: HttpHeaders,
+        statusCode: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any>? {
+        val errorCode = if (statusCode.is4xxClientError) ErrorCode.INVALID_REQUEST else ErrorCode.INTERNAL_ERROR
+
+        if (!statusCode.is4xxClientError) {
+            log.error(exception) { "요청을 처리하지 못했다." }
+        }
+
+        return ResponseEntity.status(statusCode).body(ErrorResponse.from(errorCode))
     }
 }
