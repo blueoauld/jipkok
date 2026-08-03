@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.time.Instant
 
 interface MemberRepository : JpaRepository<Member, Long> {
 
@@ -13,6 +14,26 @@ interface MemberRepository : JpaRepository<Member, Long> {
     fun existsByNicknameIgnoreCase(nickname: String): Boolean
 
     fun findByPhoneNumber(phoneNumber: String): Member?
+
+    @Query(
+        """
+        select m.id
+        from Member m
+        where m.feedNotificationEnabled = true
+          and not exists (
+            select 1 from FeedPost p
+            where p.memberId = m.id and p.slotAt = :slotAt
+          )
+          and not exists (
+            select 1 from MemberSuspension s
+            where s.phoneNumber = m.phoneNumber
+              and s.type = com.blueoauld.server.domain.suspension.entity.type.SuspensionType.SERVICE
+              and s.releasedAt is null
+              and (s.expiresAt is null or s.expiresAt > :now)
+          )
+        """,
+    )
+    fun findFeedReminderTargets(@Param("slotAt") slotAt: Instant, @Param("now") now: Instant): List<Long>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(

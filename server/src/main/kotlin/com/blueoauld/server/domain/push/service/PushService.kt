@@ -25,9 +25,26 @@ class PushService(
         removeExpired(expoPushClient.send(messages))
     }
 
+    @Transactional
+    fun sendAll(memberIds: List<Long>, title: String, body: String) {
+        if (memberIds.isEmpty()) {
+            return
+        }
+
+        deviceTokenRepository.findAllByMemberIdIn(memberIds)
+            .map { ExpoPushMessage(to = it.token, title = title, body = body) }
+            .chunked(BATCH_SIZE)
+            .forEach { removeExpired(expoPushClient.send(it)) }
+    }
+
     private fun removeExpired(tokens: List<String>) {
         if (tokens.isNotEmpty()) {
             deviceTokenRepository.deleteAllByTokenIn(tokens)
         }
+    }
+
+    companion object {
+
+        private const val BATCH_SIZE = 100
     }
 }
