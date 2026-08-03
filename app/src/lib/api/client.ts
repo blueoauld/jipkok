@@ -1,3 +1,5 @@
+import { APP_VERSION, DEVICE_PLATFORM } from "@/lib/device";
+
 import { ApiError } from "./errors";
 import { rememberFailedRequestId } from "./request-id";
 import {
@@ -34,7 +36,10 @@ function buildUrl(path: string, query?: RequestOptions["query"]) {
 }
 
 async function send(path: string, options: RequestOptions) {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    "X-App-Version": APP_VERSION,
+    "X-Platform": DEVICE_PLATFORM,
+  };
   const token = getAccessToken();
 
   if (options.body !== undefined) {

@@ -116,6 +116,37 @@ class RequestLoggingFilterTest {
     }
 
     @Test
+    fun `클라이언트가 보낸 앱 버전과 플랫폼을 담는다`() {
+        // given
+        val request = MockHttpServletRequest("GET", "/api/members/me")
+        request.addHeader("X-App-Version", APP_VERSION)
+        request.addHeader("X-Platform", PLATFORM)
+
+        // when
+        filter.doFilter(request, MockHttpServletResponse(), mockk<FilterChain>(relaxed = true))
+
+        // then
+        assertThat(diagnostics()[RequestLoggingFilter.APP_VERSION_KEY]).isEqualTo(APP_VERSION)
+        assertThat(diagnostics()[RequestLoggingFilter.PLATFORM_KEY]).isEqualTo(PLATFORM)
+    }
+
+    @Test
+    fun `클라이언트 정보가 없으면 담지 않는다`() {
+        // when
+        filter.doFilter(
+            MockHttpServletRequest("GET", "/api/members/me"),
+            MockHttpServletResponse(),
+            mockk<FilterChain>(relaxed = true),
+        )
+
+        // then
+        assertThat(diagnostics()).doesNotContainKeys(
+            RequestLoggingFilter.APP_VERSION_KEY,
+            RequestLoggingFilter.PLATFORM_KEY,
+        )
+    }
+
+    @Test
     fun `api 경로가 아니면 남기지 않는다`() {
         // when
         filter.doFilter(
@@ -135,5 +166,8 @@ class RequestLoggingFilterTest {
     companion object {
 
         private const val MEMBER_ID = 42L
+
+        private const val APP_VERSION = "1.0.0"
+        private const val PLATFORM = "IOS"
     }
 }

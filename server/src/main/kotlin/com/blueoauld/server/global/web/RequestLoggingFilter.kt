@@ -27,6 +27,7 @@ class RequestLoggingFilter : OncePerRequestFilter() {
         val startedAt = System.nanoTime()
 
         MDC.put(REQUEST_ID_KEY, requestId)
+        putClientInfo(request)
         response.setHeader(REQUEST_ID_HEADER, requestId)
 
         try {
@@ -45,6 +46,11 @@ class RequestLoggingFilter : OncePerRequestFilter() {
         append(" $status ${elapsedMillis}ms")
     }
 
+    private fun putClientInfo(request: HttpServletRequest) {
+        request.getHeader(APP_VERSION_HEADER)?.let { MDC.put(APP_VERSION_KEY, it) }
+        request.getHeader(PLATFORM_HEADER)?.let { MDC.put(PLATFORM_KEY, it) }
+    }
+
     private fun newRequestId() = UUID.randomUUID().toString().take(REQUEST_ID_LENGTH)
 
     private fun elapsedMillis(startedAt: Long) = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt)
@@ -53,7 +59,13 @@ class RequestLoggingFilter : OncePerRequestFilter() {
 
         const val REQUEST_ID_KEY = "requestId"
         const val MEMBER_ID_KEY = "memberId"
+        const val APP_VERSION_KEY = "appVersion"
+        const val PLATFORM_KEY = "platform"
+
         const val REQUEST_ID_HEADER = "X-Request-Id"
+
+        private const val APP_VERSION_HEADER = "X-App-Version"
+        private const val PLATFORM_HEADER = "X-Platform"
 
         private const val API_PATH_PREFIX = "/api/"
         private const val REQUEST_ID_LENGTH = 8
