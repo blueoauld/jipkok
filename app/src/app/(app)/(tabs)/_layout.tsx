@@ -16,13 +16,13 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat/unread";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
 const ICON_TOP_OFFSET = 6;
 const TAB_BAR_HEIGHT = ICON_SIZE + 10 + 15 + ICON_TOP_OFFSET;
 
-const MAX_BADGE_COUNT = 300;
 const BADGE_FONT_SIZE = 11;
 
 type Tab = {
@@ -100,9 +100,7 @@ export default function TabsLayout() {
             headerRight,
             tabBarBadge:
               name === "chat" && unreadCount > 0
-                ? unreadCount > MAX_BADGE_COUNT
-                  ? `${MAX_BADGE_COUNT}+`
-                  : unreadCount
+                ? formatUnreadCount(unreadCount)
                 : undefined,
             tabBarBadgeStyle: {
               backgroundColor: theme.red10.val,

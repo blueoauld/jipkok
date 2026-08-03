@@ -2,11 +2,11 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat/unread";
 import { formatChatTime } from "@/lib/date";
 import { pushOnce } from "@/lib/router";
 
 const PHOTO_MESSAGE = "사진";
-const MAX_UNREAD_COUNT = 99;
 
 function UnreadBadge({ count }: { count: number }) {
   if (count <= 0) {
@@ -25,7 +25,7 @@ function UnreadBadge({ count }: { count: number }) {
       justify="center"
     >
       <Text color="white" fontSize="$1" fontWeight="600">
-        {count > MAX_UNREAD_COUNT ? `${MAX_UNREAD_COUNT}+` : count}
+        {formatUnreadCount(count)}
       </Text>
     </XStack>
   );
