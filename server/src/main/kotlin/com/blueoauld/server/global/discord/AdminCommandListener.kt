@@ -307,8 +307,9 @@ class AdminCommandListener(
         append("`${suspension.id}` / ${nicknameOf(suspension)}(`${suspension.memberId}`)")
         append(" / ${suspension.type.label} / ${suspension.reason.label}")
         append(" / ${period(suspension)}")
-        suspension.releasedAt?.let { append(" / ${format(it)} 해제") }
+        suspension.releasedAt?.let { append(" / ${format(it)}") }
         suspension.detail?.let { append(" / $it") }
+        suspension.releasedAt?.let { append(" **$RELEASED**") }
     }
 
     private fun format(instant: Instant) = FORMATTER.format(instant.atZone(KOREA))
@@ -344,6 +345,7 @@ class AdminCommandListener(
 
         private const val NONE = "없음"
         private const val REPORT_TEXT_TITLE = "신고"
+        private const val RELEASED = "해제"
 
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
