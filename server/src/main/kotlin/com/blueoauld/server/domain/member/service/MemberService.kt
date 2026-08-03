@@ -65,6 +65,8 @@ class MemberService(
             throw BusinessException(ErrorCode.DUPLICATE_PHONE_NUMBER)
         }
 
+        memberSuspensionService.checkPhoneNumber(request.phoneNumber, SuspensionType.SERVICE)
+
         val member = memberRepository.save(
             Member(
                 phoneNumber = request.phoneNumber,

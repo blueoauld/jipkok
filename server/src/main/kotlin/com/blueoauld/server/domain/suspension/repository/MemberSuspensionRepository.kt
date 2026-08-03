@@ -27,6 +27,22 @@ interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
     @Query(
         """
         select count(s) > 0
+        from MemberSuspension s
+        where s.phoneNumber = :phoneNumber
+          and s.type = :type
+          and s.releasedAt is null
+          and (s.expiresAt is null or s.expiresAt > :now)
+        """,
+    )
+    fun existsActiveByPhoneNumber(
+        @Param("phoneNumber") phoneNumber: String,
+        @Param("type") type: SuspensionType,
+        @Param("now") now: Instant,
+    ): Boolean
+
+    @Query(
+        """
+        select count(s) > 0
         from MemberSuspension s, Member m
         where m.id = :memberId
           and s.phoneNumber = m.phoneNumber

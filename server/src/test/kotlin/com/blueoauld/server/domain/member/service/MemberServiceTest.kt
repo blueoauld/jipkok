@@ -421,6 +421,23 @@ class MemberServiceTest {
     }
 
     @Test
+    fun `정지된 휴대폰 번호로는 가입할 수 없다`() {
+        // given
+        every {
+            memberSuspensionService.checkPhoneNumber(PHONE_NUMBER, SuspensionType.SERVICE)
+        } throws BusinessException(ErrorCode.SERVICE_SUSPENDED)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.signup(signupRequest())
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SERVICE_SUSPENDED)
+        verify(exactly = 0) { memberRepository.save(any()) }
+    }
+
+    @Test
     fun `코멘트를 초기화하면 비운다`() {
         // given
         val member = member()

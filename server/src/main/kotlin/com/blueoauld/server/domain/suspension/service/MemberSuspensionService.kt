@@ -110,6 +110,13 @@ class MemberSuspensionService(
     }
 
     @Transactional(readOnly = true)
+    fun checkPhoneNumber(phoneNumber: String, type: SuspensionType) {
+        if (memberSuspensionRepository.existsActiveByPhoneNumber(phoneNumber, type, clock.instant())) {
+            throw BusinessException(errorCodeOf(type))
+        }
+    }
+
+    @Transactional(readOnly = true)
     fun check(memberId: Long, type: SuspensionType) {
         if (isSuspended(memberId, type)) {
             throw BusinessException(errorCodeOf(type))
