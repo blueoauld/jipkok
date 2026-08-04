@@ -1,3 +1,7 @@
+server:
+  port: 8080
+  shutdown: graceful
+
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 20s
@@ -39,9 +43,24 @@ spring:
       include-message: always
       include-binding-errors: always
 
-server:
-  port: 8080
-  shutdown: graceful
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+  structured:
+    format:
+      console: ecs
+  level:
+    com.blueoauld.server: info
+    org.hibernate.SQL: off
+    org.hibernate.orm.jdbc.bind: off
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-validity: 1h
+  refresh-token-validity: 14d
+
+admob:
+  verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
 
 springdoc:
   api-docs:
@@ -59,14 +78,6 @@ r2:
   upload-url-validity: 10m
   view-url-validity: 10m
 
-admob:
-  verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
-
-jwt:
-  secret: ${JWT_SECRET}
-  access-token-validity: 1h
-  refresh-token-validity: 14d
-
 discord:
   token: ${DISCORD_TOKEN:}
   guild-id: ${DISCORD_GUILD_ID:}
@@ -74,14 +85,3 @@ discord:
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
   reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
   report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
-
-logging:
-  pattern:
-    correlation: "[%X{requestId:-}] "
-  structured:
-    format:
-      console: ecs
-  level:
-    com.blueoauld.server: info
-    org.hibernate.SQL: off
-    org.hibernate.orm.jdbc.bind: off
