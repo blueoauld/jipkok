@@ -354,7 +354,7 @@ export default function MemberProfileScreen() {
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <YStack>
               {photoGridOpen ? (
-                <YStack p="$2">
+                <YStack px="$4">
                   <PhotoGrid
                     photos={member.publicPhotoUrls}
                     showPlaceholders
@@ -367,8 +367,8 @@ export default function MemberProfileScreen() {
 
               <XStack
                 position="absolute"
-                t="$3"
-                r="$3"
+                t="$2"
+                r="$4"
                 width={GRID_BUTTON_SIZE}
                 height={GRID_BUTTON_SIZE}
                 rounded={9999}
