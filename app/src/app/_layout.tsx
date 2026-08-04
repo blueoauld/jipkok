@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, type ReactNode } from "react";
 import { useColorScheme } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, useTheme, YStack } from "tamagui";
 
@@ -19,24 +20,26 @@ export default function RootLayout() {
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
   return (
-    <QueryProvider>
-      <KeyboardProvider>
-        <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
-          <NavigationTheme scheme={scheme}>
-            <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-            <SessionGuard />
-            <ChatSocket />
-            <Push />
-            <Ads />
-            <Analytics />
-            <YStack flex={1}>
-              <Stack screenOptions={{ headerShown: false }} />
-              <LoadingOverlay />
-            </YStack>
-          </NavigationTheme>
-        </TamaguiProvider>
-      </KeyboardProvider>
-    </QueryProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <KeyboardProvider>
+          <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
+            <NavigationTheme scheme={scheme}>
+              <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+              <SessionGuard />
+              <ChatSocket />
+              <Push />
+              <Ads />
+              <Analytics />
+              <YStack flex={1}>
+                <Stack screenOptions={{ headerShown: false }} />
+                <LoadingOverlay />
+              </YStack>
+            </NavigationTheme>
+          </TamaguiProvider>
+        </KeyboardProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   );
 }
 
