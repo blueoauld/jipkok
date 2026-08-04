@@ -85,3 +85,4 @@ discord:
   reset-channel-id: ""
   report-channel-id: ""
   moderation-channel-id: ""
+  error-channel-id: ""
