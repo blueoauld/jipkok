@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert } from "react-native";
@@ -11,18 +12,22 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, XStack, YStack } from "tamagui";
+import { Button, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormButton } from "@/components/FormButton";
 import { FormField } from "@/components/FormField";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api, type SignupRequest } from "@/lib/api";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
 const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
+
+const TERMS_URL = "https://jipkok.app/terms";
+const PRIVACY_URL = "https://jipkok.app/privacy";
+const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 
 const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
@@ -48,6 +53,11 @@ export default function SignupScreen() {
   useEffect(() => {
     alertInfo(MINOR_NOTICE);
   }, []);
+
+  const openLegal = (url: string) =>
+    WebBrowser.openBrowserAsync(url).catch(() =>
+      alertMessage(BROWSER_FAILED_MESSAGE),
+    );
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
@@ -191,6 +201,28 @@ export default function SignupScreen() {
           >
             회원가입
           </Button>
+
+          <XStack justify="center" items="center" gap="$2" pt="$3">
+            <Text
+              theme="gray"
+              color="$color10"
+              fontSize="$2"
+              onPress={() => openLegal(PRIVACY_URL)}
+            >
+              개인정보 처리방침
+            </Text>
+            <Text theme="gray" color="$color8" fontSize="$2">
+              |
+            </Text>
+            <Text
+              theme="gray"
+              color="$color10"
+              fontSize="$2"
+              onPress={() => openLegal(TERMS_URL)}
+            >
+              서비스 이용약관
+            </Text>
+          </XStack>
         </YStack>
       </KeyboardStickyView>
     </SafeAreaView>
