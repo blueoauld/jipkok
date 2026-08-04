@@ -43,6 +43,12 @@ server:
   port: 8080
   shutdown: graceful
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 r2:
   enabled: ${R2_ENABLED:true}
   endpoint: ${R2_ENDPOINT}
