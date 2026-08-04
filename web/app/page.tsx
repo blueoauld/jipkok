@@ -51,11 +51,11 @@ export default function Home() {
           <span>© 2026 JIPKOK</span>
           <span>|</span>
           <Link href="/privacy" className="hover:underline">
-            개인정보처리방침
+            개인정보 처리방침
           </Link>
           <span>|</span>
           <Link href="/terms" className="hover:underline">
-            이용약관
+            서비스 이용약관
           </Link>
         </p>
       </footer>
