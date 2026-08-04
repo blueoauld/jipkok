@@ -22,7 +22,7 @@ class AdRewardController(
     @GetMapping("/rewards/callback")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun reward(
-        @RequestParam("user_id") userId: Long,
+        @RequestParam("user_id", required = false) userId: Long?,
         @RequestParam("transaction_id") transactionId: String,
         @RequestParam("key_id") keyId: String,
         @RequestParam("signature") signature: String,

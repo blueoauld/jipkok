@@ -28,11 +28,13 @@ class AdRewardService(
     fun reward(request: AdRewardCallbackRequest, queryString: String) {
         signatureVerifier.verify(queryString, request.keyId, request.signature)
 
+        val userId = request.userId ?: return
+
         if (adRewardRepository.existsByTransactionId(request.transactionId)) {
             return
         }
 
-        val member = memberRepository.findById(request.userId).orElseThrow {
+        val member = memberRepository.findById(userId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
         val today = today()
@@ -42,9 +44,9 @@ class AdRewardService(
         }
 
         adRewardRepository.saveAndFlush(
-            AdReward(request.transactionId, member.phoneNumber, request.userId, today),
+            AdReward(request.transactionId, member.phoneNumber, userId, today),
         )
-        pointService.earn(request.userId, PointType.AD_REWARD)
+        pointService.earn(userId, PointType.AD_REWARD)
     }
 
     private fun today() = LocalDate.now(clock.withZone(KOREA))

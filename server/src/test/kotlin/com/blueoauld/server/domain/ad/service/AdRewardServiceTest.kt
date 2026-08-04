@@ -144,6 +144,20 @@ class AdRewardServiceTest {
         verify(exactly = 0) { adRewardRepository.saveAndFlush(any()) }
     }
 
+    @Test
+    fun `회원이 없는 확인용 요청은 서명만 확인하고 넘어간다`() {
+        // given
+        val request = AdRewardCallbackRequest(null, TRANSACTION_ID, KEY_ID, SIGNATURE)
+
+        // when
+        adRewardService.reward(request, QUERY_STRING)
+
+        // then
+        verify(exactly = 1) { signatureVerifier.verify(QUERY_STRING, KEY_ID, SIGNATURE) }
+        verify(exactly = 0) { adRewardRepository.saveAndFlush(any()) }
+        verify(exactly = 0) { pointService.earn(any(), any()) }
+    }
+
     private fun request() = AdRewardCallbackRequest(MEMBER_ID, TRANSACTION_ID, KEY_ID, SIGNATURE)
 
     private fun member() = Member(
