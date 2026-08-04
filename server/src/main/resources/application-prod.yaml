@@ -97,3 +97,4 @@ discord:
   suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
   reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
   report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
+  moderation-channel-id: ${DISCORD_MODERATION_CHANNEL_ID:}

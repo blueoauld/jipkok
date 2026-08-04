@@ -2,46 +2,61 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.ModerationCategory
+import com.blueoauld.server.domain.member.event.MemberTextBlockedEvent
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.util.*
 
 class MemberTextModerationServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
     private val textModerator = mockk<TextModerator>()
 
-    private val service = MemberTextModerationService(memberRepository, textModerator)
+    private val service = MemberTextModerationService(memberRepository, eventPublisher, textModerator)
 
     @Test
-    fun `부적절한 글은 가려진다`() {
+    fun `부적절한 글은 가리고 분류와 함께 알린다`() {
         // given
         val member = member()
+        val blocked = slot<MemberTextBlockedEvent>()
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-        every { textModerator.isInappropriate(any()) } returns true
+        every { textModerator.moderate(COMMENT) } returns
+                ModerationResult(true, ModerationCategory.CONTACT)
+        every { textModerator.moderate(BIO) } returns ModerationResult.PASSED
+        every { eventPublisher.publishEvent(capture(blocked)) } returns Unit
 
         // when
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
 
         // then
         assertThat(member.commentBlocked).isTrue()
-        assertThat(member.bioBlocked).isTrue()
+        assertThat(member.bioBlocked).isFalse()
         assertThat(member.comment).isEqualTo(COMMENT)
         assertThat(member.visibleComment).isEqualTo(Member.BLOCKED_TEXT)
-        assertThat(member.visibleBio).isEqualTo(Member.BLOCKED_TEXT)
+        assertThat(member.visibleBio).isEqualTo(BIO)
+
+        assertThat(blocked.captured.field).isEqualTo("코멘트")
+        assertThat(blocked.captured.category).isEqualTo(ModerationCategory.CONTACT)
+        assertThat(blocked.captured.text).isEqualTo(COMMENT)
     }
 
     @Test
-    fun `문제 없는 글은 그대로 보인다`() {
+    fun `문제 없는 글은 그대로 보이고 알리지 않는다`() {
         // given
         val member = member()
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-        every { textModerator.isInappropriate(any()) } returns false
+        every { textModerator.moderate(any()) } returns ModerationResult.PASSED
 
         // when
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
@@ -49,7 +64,7 @@ class MemberTextModerationServiceTest {
         // then
         assertThat(member.commentBlocked).isFalse()
         assertThat(member.visibleComment).isEqualTo(COMMENT)
-        assertThat(member.visibleBio).isEqualTo(BIO)
+        verify(exactly = 0) { eventPublisher.publishEvent(ofType<MemberTextBlockedEvent>()) }
     }
 
     @Test
@@ -57,7 +72,7 @@ class MemberTextModerationServiceTest {
         // given
         val member = member()
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-        every { textModerator.isInappropriate(any()) } throws RuntimeException("호출 실패")
+        every { textModerator.moderate(any()) } throws RuntimeException("호출 실패")
 
         // when
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
@@ -75,11 +90,27 @@ class MemberTextModerationServiceTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
 
         // when
-        MemberTextModerationService(memberRepository, null).moderate(MemberTextChangedEvent(MEMBER_ID))
+        MemberTextModerationService(memberRepository, eventPublisher, null)
+            .moderate(MemberTextChangedEvent(MEMBER_ID))
 
         // then
         assertThat(member.commentBlocked).isFalse()
         assertThat(member.visibleComment).isEqualTo(COMMENT)
+    }
+
+    @Test
+    fun `비어 있는 글은 검수하지 않는다`() {
+        // given
+        val member = member().apply { comment = null }
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+        every { textModerator.moderate(BIO) } returns ModerationResult.PASSED
+
+        // when
+        service.moderate(MemberTextChangedEvent(MEMBER_ID))
+
+        // then
+        verify(exactly = 0) { textModerator.moderate(COMMENT) }
+        assertThat(member.commentBlocked).isFalse()
     }
 
     private fun member() = Member(

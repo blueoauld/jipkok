@@ -45,6 +45,7 @@ DISCORD_ROLE_ID=<역할 아이디>
 DISCORD_SUSPENSION_CHANNEL_ID=<채널 아이디>
 DISCORD_RESET_CHANNEL_ID=<채널 아이디>
 DISCORD_REPORT_CHANNEL_ID=<채널 아이디>
+DISCORD_MODERATION_CHANNEL_ID=<채널 아이디>
 ```
 
 ```bash
@@ -92,11 +93,9 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 ## CloudWatch 로그
 
-도커의 `awslogs` 드라이버가 EC2에 붙은 IAM 역할의 권한으로 로그를 보낸다. 액세스 키를
-서버에 두지 않아도 된다.
+도커의 `awslogs` 드라이버가 EC2에 붙은 IAM 역할의 권한으로 로그를 보낸다. 액세스 키를 서버에 두지 않아도 된다.
 
-IAM 콘솔에서 **역할 → 역할 만들기 → AWS 서비스 → EC2**로 역할을 만들고, 인라인 정책을
-넣는다.
+IAM 콘솔에서 **역할 → 역할 만들기 → AWS 서비스 → EC2**로 역할을 만들고, 인라인 정책을 넣는다.
 
 ```json
 {
@@ -115,8 +114,7 @@ IAM 콘솔에서 **역할 → 역할 만들기 → AWS 서비스 → EC2**로 �
 }
 ```
 
-만든 역할을 인스턴스에 붙인다. EC2 콘솔에서 **인스턴스 선택 → 작업 → 보안 → IAM 역할
-수정**으로 연결한다. 재부팅은 필요 없지만 이미 뜬 컨테이너는 다시 만들어야 한다.
+만든 역할을 인스턴스에 붙인다. EC2 콘솔에서 **인스턴스 선택 → 작업 → 보안 → IAM 역할 수정**으로 연결한다. 재부팅은 필요 없지만 이미 뜬 컨테이너는 다시 만들어야 한다.
 
 ```bash
 docker compose up -d --force-recreate

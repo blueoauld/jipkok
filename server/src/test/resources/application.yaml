@@ -79,6 +79,7 @@ discord:
   suspension-channel-id: ""
   reset-channel-id: ""
   report-channel-id: ""
+  moderation-channel-id: ""
 
 logging:
   pattern:

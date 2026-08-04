@@ -11,4 +11,5 @@ data class DiscordProperties(
     val suspensionChannelId: String,
     val resetChannelId: String,
     val reportChannelId: String,
+    val moderationChannelId: String,
 )
