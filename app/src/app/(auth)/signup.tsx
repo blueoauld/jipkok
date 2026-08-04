@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert } from "react-native";
 import {
@@ -15,10 +16,13 @@ import { Button, XStack, YStack } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormButton } from "@/components/FormButton";
 import { FormField } from "@/components/FormField";
-import { alertApiError } from "@/lib/alert";
+import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, type SignupRequest } from "@/lib/api";
 
 const BOTTOM_BAR_HEIGHT = 80;
+
+const MINOR_NOTICE =
+  "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
 
 const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
@@ -40,6 +44,10 @@ export default function SignupScreen() {
       passwordConfirm: "",
     },
   });
+
+  useEffect(() => {
+    alertInfo(MINOR_NOTICE);
+  }, []);
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
