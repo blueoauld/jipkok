@@ -20,13 +20,13 @@ interface MemberListRepository : JpaRepository<Member, Long> {
           and m.located_at is not null
           and (
             cast(:cursorValue as double precision) is null
-            or extract(epoch from m.located_at) < cast(:cursorValue as double precision)
+            or m.located_at < to_timestamp(cast(:cursorValue as double precision))
             or (
-              extract(epoch from m.located_at) = cast(:cursorValue as double precision)
+              m.located_at = to_timestamp(cast(:cursorValue as double precision))
               and m.id < cast(:cursorId as bigint)
             )
           )
-        order by orderValue desc, m.id desc
+        order by m.located_at desc, m.id desc
         limit :size
         """,
         nativeQuery = true,
@@ -57,7 +57,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
             or $DISTANCE > cast(:cursorValue as double precision)
             or ($DISTANCE = cast(:cursorValue as double precision) and m.id > cast(:cursorId as bigint))
           )
-        order by orderValue asc, m.id asc
+        order by $DISTANCE_ORDER asc, m.id asc
         limit :size
         """,
         nativeQuery = true,
@@ -166,6 +166,11 @@ interface MemberListRepository : JpaRepository<Member, Long> {
               st_makepoint(m.longitude, m.latitude),
               st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision))
             )
+        """
+
+        private const val DISTANCE_ORDER = """
+            geography(st_makepoint(m.longitude, m.latitude))
+              <-> geography(st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision)))
         """
     }
 }
