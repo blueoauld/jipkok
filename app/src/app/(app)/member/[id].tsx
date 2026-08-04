@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
@@ -217,6 +218,7 @@ export default function MemberProfileScreen() {
       }
 
       if (key === "like") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         run(
           {
             likedByMe: !member.likedByMe,
@@ -233,6 +235,7 @@ export default function MemberProfileScreen() {
       }
 
       if (key === "favorite") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         run({ favoritedByMe: !member.favoritedByMe }, FAVORITES_KEY, () =>
           member.favoritedByMe
             ? api.favorites.remove(memberId)
