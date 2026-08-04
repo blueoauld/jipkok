@@ -27,8 +27,8 @@ export default function Home() {
         <Image
           src="/mock.png"
           alt="집콕 앱 화면"
-          width={1530}
-          height={3036}
+          width={806}
+          height={1600}
           priority
           className="h-[46vh] min-h-64 w-auto"
         />
