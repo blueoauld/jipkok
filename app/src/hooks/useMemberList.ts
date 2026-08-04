@@ -5,6 +5,7 @@ import {
   type InfiniteData,
 } from "@tanstack/react-query";
 
+import { memberDetailKey } from "@/hooks/useMemberDetail";
 import { alertApiError } from "@/lib/alert";
 import type { MemberSummaryPage } from "@/lib/api";
 
@@ -52,6 +53,8 @@ export function useRemoveFromMemberList(
 
       return { previous };
     },
+    onSuccess: (_data, memberId) =>
+      queryClient.invalidateQueries({ queryKey: memberDetailKey(memberId) }),
     onError: (error, _memberId, context) => {
       queryClient.setQueryData(queryKey, context?.previous);
       alertApiError(error);
