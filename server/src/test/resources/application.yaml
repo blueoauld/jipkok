@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: server
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:jipkok}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        default_batch_fetch_size: 100
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      repositories:
+        enabled: false
+
+  jackson:
+    default-property-inclusion: non_null
+
+  web:
+    error:
+      include-message: always
+      include-binding-errors: always
+
+server:
+  port: 8080
+
+r2:
+  enabled: false
+  endpoint: ""
+  access-key-id: ""
+  secret-access-key: ""
+  bucket: ""
+  public-base-url: ""
+  upload-url-validity: 10m
+  view-url-validity: 10m
+
+admob:
+  verifier-keys-url: https://www.gstatic.com/admob/reward/verifier-keys.json
+
+jwt:
+  secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
+  access-token-validity: 1h
+  refresh-token-validity: 14d
+
+discord:
+  token: ""
+  guild-id: ""
+  role-id: ""
+  suspension-channel-id: ""
+  reset-channel-id: ""
+  report-channel-id: ""
+
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+  level:
+    com.blueoauld.server: info

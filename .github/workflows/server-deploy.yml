@@ -21,10 +21,10 @@ jobs:
 
     services:
       postgres:
-        image: kartoza/postgis:18-3.6
+        image: postgis/postgis:18-3.6
         env:
           POSTGRES_USER: root
-          POSTGRES_PASS: 1234
+          POSTGRES_PASSWORD: 1234
           POSTGRES_DB: jipkok
         ports:
           - 5432:5432
@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
       redis:
-        image: redis:8.4.0
+        image: redis:8.4.0-alpine
         ports:
           - 6379:6379
         options: >-
