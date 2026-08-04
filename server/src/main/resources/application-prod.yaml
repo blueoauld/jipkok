@@ -78,6 +78,11 @@ r2:
   upload-url-validity: 10m
   view-url-validity: 10m
 
+solapi:
+  api-key: ${SOLAPI_API_KEY:}
+  api-secret: ${SOLAPI_API_SECRET:}
+  sender-number: ${SOLAPI_SENDER_NUMBER:}
+
 discord:
   token: ${DISCORD_TOKEN:}
   guild-id: ${DISCORD_GUILD_ID:}

@@ -4,6 +4,7 @@ import com.blueoauld.server.global.properties.AdMobProperties
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.properties.JwtProperties
 import com.blueoauld.server.global.properties.R2Properties
+import com.blueoauld.server.global.properties.SolapiProperties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
 import com.blueoauld.server.global.security.JwtAuthenticationFilter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     R2Properties::class,
     AdMobProperties::class,
     DiscordProperties::class,
+    SolapiProperties::class,
 )
 class SecurityConfig(
 

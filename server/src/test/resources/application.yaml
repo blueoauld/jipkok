@@ -60,6 +60,11 @@ jwt:
   access-token-validity: 1h
   refresh-token-validity: 14d
 
+solapi:
+  api-key: ""
+  api-secret: ""
+  sender-number: ""
+
 discord:
   token: ""
   guild-id: ""
