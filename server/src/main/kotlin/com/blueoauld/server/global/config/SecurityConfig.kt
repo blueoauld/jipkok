@@ -46,7 +46,7 @@ class SecurityConfig(
                 it.requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, AD_REWARD_CALLBACK_PATH).permitAll()
-                    .requestMatchers(HttpMethod.GET, HEALTH_PATH).permitAll()
+                    .requestMatchers(HEALTH_PATH).permitAll()
                     .requestMatchers(WEB_SOCKET_PATH).permitAll()
                     .requestMatchers(*DOCS_PATHS).permitAll()
                     .anyRequest().authenticated()
