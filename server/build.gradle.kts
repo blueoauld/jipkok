@@ -6,6 +6,8 @@ plugins {
     kotlin("plugin.jpa") version "2.3.21"
 }
 
+val springAiVersion by extra("2.0.0")
+
 group = "com.blueoauld"
 version = "0.0.1-SNAPSHOT"
 description = "server"
@@ -36,6 +38,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-gson:0.13.0")
     implementation("org.springframework.boot:spring-boot-flyway")
@@ -50,6 +53,12 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:$springAiVersion")
     }
 }
 

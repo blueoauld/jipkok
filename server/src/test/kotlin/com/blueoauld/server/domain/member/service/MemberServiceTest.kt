@@ -670,7 +670,7 @@ class MemberServiceTest {
         )
 
         // then
-        verify(exactly = 0) { eventPublisher.publishEvent(any<PhotosDeletedEvent>()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(ofType<PhotosDeletedEvent>()) }
     }
 
     @Test

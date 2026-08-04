@@ -1,4 +1,11 @@
 spring:
+  ai:
+    openai:
+      api-key: ""
+      chat:
+        model: gpt-5-mini
+        temperature: 0.0
+
   application:
     name: server
 

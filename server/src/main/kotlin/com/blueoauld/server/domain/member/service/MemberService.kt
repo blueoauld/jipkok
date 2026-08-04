@@ -21,6 +21,7 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
+import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
@@ -98,6 +99,8 @@ class MemberService(
         member.nickname = nickname
         member.birthYear = request.birthYear
         member.bio = request.bio
+
+        eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
     }
 
     @Transactional(readOnly = true)
@@ -114,8 +117,8 @@ class MemberService(
             birthYear = member.birthYear,
             age = currentYear() - member.birthYear,
             receivedLikeCount = member.receivedLikeCount,
-            comment = member.comment,
-            bio = member.bio,
+            comment = member.visibleComment,
+            bio = member.visibleBio,
             publicPhotos = profilePhotos(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
             secretPhotos = profilePhotos(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
             noteReceiveEnabled = member.noteReceiveEnabled,
@@ -140,6 +143,8 @@ class MemberService(
         member.nickname = nickname
         member.birthYear = request.birthYear
         member.bio = request.bio
+
+        eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
 
         val keptKeys = request.publicPhotoKeys + request.secretPhotoKeys
         val removedKeys = memberPhotoRepository.findAllByMemberId(memberId)
@@ -182,8 +187,8 @@ class MemberService(
             gender = member.gender,
             birthYear = member.birthYear,
             age = currentYear() - member.birthYear,
-            comment = member.comment,
-            bio = member.bio,
+            comment = member.visibleComment,
+            bio = member.visibleBio,
             publicPhotoCount = photos.count { it.visibility == PhotoVisibility.PUBLIC },
             secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
             receivedLikeCount = member.receivedLikeCount,
@@ -263,6 +268,8 @@ class MemberService(
         }
 
         member.comment = request.comment?.ifEmpty { null }
+
+        eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
     }
 
     @Transactional

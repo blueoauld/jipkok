@@ -42,6 +42,12 @@ class Member(
     @Column(name = "bio", length = BIO_MAX_LENGTH)
     var bio: String? = null,
 
+    @Column(name = "comment_blocked", nullable = false)
+    var commentBlocked: Boolean = false,
+
+    @Column(name = "bio_blocked", nullable = false)
+    var bioBlocked: Boolean = false,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     val role: MemberRole = MemberRole.MEMBER,
@@ -73,8 +79,15 @@ class Member(
     @Column(name = "id")
     val id: Long = 0
 
+    val visibleComment: String?
+        get() = if (commentBlocked) BLOCKED_TEXT else comment
+
+    val visibleBio: String?
+        get() = if (bioBlocked) BLOCKED_TEXT else bio
+
     companion object {
 
+        const val BLOCKED_TEXT = "부적절한 내용입니다."
         const val PHONE_NUMBER_LENGTH = 11
         const val NICKNAME_MAX_LENGTH = 10
         const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
