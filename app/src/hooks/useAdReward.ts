@@ -10,7 +10,6 @@ import { alertInfo, alertMessage } from "@/lib/alert";
 const REWARD_DELAY = 2000;
 
 const REWARD_MESSAGE = "광고 보상이 적립되었습니다.";
-const LOAD_FAILED_MESSAGE = "광고를 불러오지 못했습니다.";
 const NOT_READY_MESSAGE =
   "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.";
 
@@ -19,10 +18,12 @@ export function useAdReward() {
   const { data } = useMyProfile();
   const memberId = data?.memberId;
 
-  const { isLoaded, isClosed, isEarnedReward, error, load, show } =
-    useRewardedAd(memberId === undefined ? null : REWARDED_AD_UNIT_ID, {
+  const { isLoaded, isClosed, isEarnedReward, load, show } = useRewardedAd(
+    memberId === undefined ? null : REWARDED_AD_UNIT_ID,
+    {
       serverSideVerificationOptions: { userId: String(memberId) },
-    });
+    },
+  );
 
   useEffect(() => {
     load();
@@ -47,12 +48,6 @@ export function useAdReward() {
 
     return () => clearTimeout(timer);
   }, [isEarnedReward, queryClient]);
-
-  useEffect(() => {
-    if (error) {
-      alertMessage(LOAD_FAILED_MESSAGE);
-    }
-  }, [error]);
 
   return {
     ready: isLoaded,
