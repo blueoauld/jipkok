@@ -2,6 +2,10 @@
   "expo": {
     "name": "집콕",
     "slug": "jipkok",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/137fcaaf-79ed-43b4-aec3-1b2472f02adc"
@@ -33,10 +37,6 @@
         "com.google.android.gms.permission.AD_ID"
       ],
       "package": "com.blueoauld.jipkok"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
