@@ -117,6 +117,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: 설정 파일 올리기
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "server/docker-compose.yml,server/Caddyfile"
+          target: "~/jipkok"
+          strip_components: 1
+
       - name: 배포
         uses: appleboy/ssh-action@v1
         with:
