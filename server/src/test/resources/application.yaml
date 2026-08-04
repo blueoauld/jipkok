@@ -3,8 +3,7 @@ spring:
     openai:
       api-key: ""
       chat:
-        model: gpt-5-mini
-        temperature: 0.0
+        model: gpt-5.6-luna
 
   application:
     name: server
@@ -46,6 +45,20 @@ spring:
       include-message: always
       include-binding-errors: always
 
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+  level:
+    com.blueoauld.server: info
+
+jwt:
+  secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
+  access-token-validity: 1h
+  refresh-token-validity: 14d
+
+admob:
+  verifier-keys-url: https://www.gstatic.com/admob/reward/verifier-keys.json
+
 server:
   port: 8080
 
@@ -58,14 +71,6 @@ r2:
   public-base-url: ""
   upload-url-validity: 10m
   view-url-validity: 10m
-
-admob:
-  verifier-keys-url: https://www.gstatic.com/admob/reward/verifier-keys.json
-
-jwt:
-  secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
-  access-token-validity: 1h
-  refresh-token-validity: 14d
 
 solapi:
   api-key: ""
@@ -80,9 +85,3 @@ discord:
   reset-channel-id: ""
   report-channel-id: ""
   moderation-channel-id: ""
-
-logging:
-  pattern:
-    correlation: "[%X{requestId:-}] "
-  level:
-    com.blueoauld.server: info
