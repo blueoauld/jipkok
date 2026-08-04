@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -41,6 +42,7 @@ const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
 const NOTE_MAX_LENGTH = 100;
 
 const SECRET_PHOTO_EMPTY_MESSAGE = "공개된 비밀 사진이 없습니다.";
+const ID_COPIED_MESSAGE = "회원 아이디를 복사했습니다.";
 
 const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
@@ -214,6 +216,12 @@ export default function MemberProfileScreen() {
     [queryClient, queryKey, relate],
   );
 
+  const copyMemberId = async (id: number) => {
+    await Clipboard.setStringAsync(String(id));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    alertInfo(ID_COPIED_MESSAGE);
+  };
+
   const handleAction = useCallback(
     (key: ActionKey) => {
       if (!member) {
@@ -335,6 +343,7 @@ export default function MemberProfileScreen() {
                     numberOfLines={1}
                     fontSize="$6"
                     fontWeight="700"
+                    onLongPress={() => copyMemberId(member.memberId)}
                   >
                     {member.nickname}
                   </Text>

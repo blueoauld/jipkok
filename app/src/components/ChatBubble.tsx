@@ -1,3 +1,6 @@
+import * as Clipboard from "expo-clipboard";
+import * as Haptics from "expo-haptics";
+
 import dayjs from "dayjs";
 import type { ImageStyle } from "react-native";
 import {
@@ -8,6 +11,7 @@ import {
 import { Text, useTheme, XStack } from "tamagui";
 
 import { ChatImage } from "@/components/ChatImage";
+import { alertInfo } from "@/lib/alert";
 
 const TIME_FORMAT = "A h:mm";
 
@@ -26,6 +30,8 @@ const IMAGE_STYLE: ImageStyle = {
 };
 
 const BOTTOM_STYLE = { paddingHorizontal: 0, paddingBottom: 0 };
+
+const COPIED_MESSAGE = "메시지를 복사했습니다.";
 
 export function ChatBubble(props: BubbleProps<IMessage>) {
   const { imageStyle: _avatarImageStyle, ...bubbleProps } =
@@ -46,9 +52,20 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
     </Text>
   );
 
+  const copyText = async () => {
+    if (!currentMessage.text) {
+      return;
+    }
+
+    await Clipboard.setStringAsync(currentMessage.text);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    alertInfo(COPIED_MESSAGE);
+  };
+
   const bubble = (
     <Bubble
       {...bubbleProps}
+      onLongPressMessage={copyText}
       renderTime={() => null}
       renderTicks={() => null}
       containerStyle={{ left: { flexShrink: 1 }, right: { flexShrink: 1 } }}
