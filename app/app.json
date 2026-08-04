@@ -2,10 +2,7 @@
   "expo": {
     "name": "집콕",
     "slug": "jipkok",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "version": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/137fcaaf-79ed-43b4-aec3-1b2472f02adc"
@@ -22,7 +19,8 @@
       "infoPlist": {
         "CFBundleDevelopmentRegion": "ko",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +34,8 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "com.google.android.gms.permission.AD_ID"
       ],
-      "package": "com.blueoauld.jipkok"
+      "package": "com.blueoauld.jipkok",
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
@@ -78,6 +77,16 @@
         "expo-tracking-transparency",
         {
           "userTrackingPermission": "관심사에 맞는 광고를 보여주기 위해 활동 추적 권한이 필요합니다."
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/analytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],

@@ -8,8 +8,10 @@ import { TamaguiProvider, useTheme, YStack } from "tamagui";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useScreenTracking } from "@/hooks/useScreenTracking";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { initializeAds } from "@/lib/ads";
+import { initializeAnalytics } from "@/lib/analytics";
 import { QueryProvider } from "@/lib/query";
 import { tamaguiConfig } from "@/tamagui.config";
 
@@ -26,6 +28,7 @@ export default function RootLayout() {
             <ChatSocket />
             <Push />
             <Ads />
+            <Analytics />
             <YStack flex={1}>
               <Stack screenOptions={{ headerShown: false }} />
               <LoadingOverlay />
@@ -59,6 +62,16 @@ function Ads() {
   useEffect(() => {
     initializeAds();
   }, []);
+
+  return null;
+}
+
+function Analytics() {
+  useEffect(() => {
+    initializeAnalytics();
+  }, []);
+
+  useScreenTracking();
 
   return null;
 }
