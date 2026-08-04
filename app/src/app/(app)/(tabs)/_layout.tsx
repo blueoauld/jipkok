@@ -61,6 +61,7 @@ function NoteReceiveButton() {
   return (
     <BellToggleButton
       enabled={profile?.noteReceiveEnabled ?? true}
+      field="noteReceiveEnabled"
       update={api.members.updateNoteReceive}
       onMessage={NOTE_RECEIVE_ON_MESSAGE}
       offMessage={NOTE_RECEIVE_OFF_MESSAGE}

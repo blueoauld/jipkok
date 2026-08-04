@@ -389,6 +389,7 @@ function FeedNotificationButton() {
   return (
     <BellToggleButton
       enabled={profile?.feedNotificationEnabled ?? true}
+      field="feedNotificationEnabled"
       update={api.members.updateFeedNotification}
       onMessage={FEED_NOTIFICATION_ON_MESSAGE}
       offMessage={FEED_NOTIFICATION_OFF_MESSAGE}
