@@ -42,12 +42,6 @@ class Member(
     @Column(name = "bio", length = BIO_MAX_LENGTH)
     var bio: String? = null,
 
-    @Column(name = "comment_blocked", nullable = false)
-    var commentBlocked: Boolean = false,
-
-    @Column(name = "bio_blocked", nullable = false)
-    var bioBlocked: Boolean = false,
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     val role: MemberRole = MemberRole.MEMBER,
@@ -78,12 +72,6 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0
-
-    val visibleComment: String?
-        get() = if (commentBlocked) BLOCKED_TEXT else comment
-
-    val visibleBio: String?
-        get() = if (bioBlocked) BLOCKED_TEXT else bio
 
     companion object {
 

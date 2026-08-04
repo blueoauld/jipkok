@@ -31,31 +31,38 @@ class MemberTextModerationService(
         val member = memberRepository.findById(event.memberId).orElse(null) ?: return
 
         runCatching {
-            member.commentBlocked = check(moderator, member, COMMENT, member.comment)
-            member.bioBlocked = check(moderator, member, BIO, member.bio)
+            member.comment = blockIfNeeded(moderator, member, COMMENT, member.comment)
+            member.bio = blockIfNeeded(moderator, member, BIO, member.bio)
         }.onFailure { log.error(it) { "글을 검수하지 못했다. memberId=${event.memberId}" } }
     }
 
-    private fun check(moderator: TextModerator, member: Member, field: String, text: String?): Boolean {
-        if (text.isNullOrBlank()) {
-            return false
+    private fun blockIfNeeded(
+        moderator: TextModerator,
+        member: Member,
+        field: String,
+        text: String?,
+    ): String? {
+        if (text.isNullOrBlank() || text == Member.BLOCKED_TEXT) {
+            return text
         }
 
         val result = moderator.moderate(text)
 
-        if (result.inappropriate) {
-            eventPublisher.publishEvent(
-                MemberTextBlockedEvent(
-                    memberId = member.id,
-                    nickname = member.nickname,
-                    field = field,
-                    text = text,
-                    category = result.category,
-                ),
-            )
+        if (!result.inappropriate) {
+            return text
         }
 
-        return result.inappropriate
+        eventPublisher.publishEvent(
+            MemberTextBlockedEvent(
+                memberId = member.id,
+                nickname = member.nickname,
+                field = field,
+                text = text,
+                category = result.category,
+            ),
+        )
+
+        return Member.BLOCKED_TEXT
     }
 
     companion object {

@@ -46,7 +46,7 @@ class MemberSummaryService(
         gender = member.gender,
         age = LocalDate.now(clock.withZone(KOREA)).year - member.birthYear,
         receivedLikeCount = member.receivedLikeCount,
-        comment = member.visibleComment,
+        comment = member.comment,
         profileImageUrl = profileImageUrl,
     )
 
