@@ -13,7 +13,9 @@ const TIME_FORMAT = "A h:mm";
 
 const RADIUS = 10;
 
-const TEXT_LINE_HEIGHT = 22;
+const TEXT_FONT_SIZE = 15;
+const TEXT_LINE_HEIGHT = 19;
+const TEXT_MARGIN = { marginVertical: 10, marginHorizontal: 12 };
 
 const IMAGE_SIZE = 200;
 
@@ -70,14 +72,19 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
         ) : null
       }
       textStyle={{
-        left: { color: theme.color.val, lineHeight: TEXT_LINE_HEIGHT },
-        right: { color: "white", lineHeight: TEXT_LINE_HEIGHT },
+        left: {
+          color: theme.color.val,
+          fontSize: TEXT_FONT_SIZE,
+          lineHeight: TEXT_LINE_HEIGHT,
+        },
+        right: {
+          color: "white",
+          fontSize: TEXT_FONT_SIZE,
+          lineHeight: TEXT_LINE_HEIGHT,
+        },
       }}
       messageTextProps={{
-        containerStyle: {
-          left: { marginVertical: 8, marginHorizontal: 12 },
-          right: { marginVertical: 8, marginHorizontal: 12 },
-        },
+        containerStyle: { left: TEXT_MARGIN, right: TEXT_MARGIN },
       }}
       bottomContainerStyle={{ left: BOTTOM_STYLE, right: BOTTOM_STYLE }}
       containerToNextStyle={{
