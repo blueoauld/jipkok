@@ -1,0 +1,373 @@
+{
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 서버"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "EC2 CPU",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/EC2",
+            "CPUUtilization",
+            "InstanceId",
+            "i-0c5778b433e645b16"
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "%",
+            "showUnits": false
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "높음",
+              "value": 80,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "메모리 사용률",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [
+          [
+            {
+              "expression": "SEARCH('Namespace=\"CWAgent\" MetricName=\"mem_used_percent\" InstanceId=\"i-0c5778b433e645b16\"', 'Average')",
+              "label": "메모리",
+              "id": "mem"
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "%",
+            "showUnits": false
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "높음",
+              "value": 85,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "디스크 사용률",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [
+          [
+            {
+              "expression": "SEARCH('Namespace=\"CWAgent\" MetricName=\"disk_used_percent\" InstanceId=\"i-0c5778b433e645b16\" path=\"/\"', 'Average')",
+              "label": "루트 디스크",
+              "id": "disk"
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "%",
+            "showUnits": false
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "높음",
+              "value": 80,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 7,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 데이터베이스"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 8,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "RDS CPU",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/RDS",
+            "CPUUtilization",
+            "DBInstanceIdentifier",
+            "jipkok-database"
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "%",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 8,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "커넥션 수",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Maximum",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/RDS",
+            "DatabaseConnections",
+            "DBInstanceIdentifier",
+            "jipkok-database"
+          ]
+        ],
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "커넥션 풀 상한",
+              "value": 10,
+              "color": "#ff7f0e"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 8,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "남은 저장 공간",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Minimum",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/RDS",
+            "FreeStorageSpace",
+            "DBInstanceIdentifier",
+            "jipkok-database"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 14,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 요청"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 15,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "분당 요청 수",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(status)\n| stats count() as requests by bin(1m)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 15,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "상태 코드 분포",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(status)\n| stats count() as cnt by status\n| sort cnt desc"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 21,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "느린 요청 (1초 이상)",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message, requestId, memberId\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms) and ms > 1000\n| sort ms desc\n| limit 50"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 21,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "느린 경로 평균",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms)\n| stats avg(ms) as avgMs, max(ms) as maxMs, count() as cnt by method, path\n| sort avgMs desc\n| limit 20"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 27,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 오류"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 28,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "분당 오류 수",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp\n| filter log.level = \"ERROR\"\n| stats count() as errors by bin(1m)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 28,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "오류 종류",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, error.type\n| filter log.level = \"ERROR\"\n| stats count() as cnt by error.type\n| sort cnt desc\n| limit 20"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 34,
+      "width": 24,
+      "height": 8,
+      "properties": {
+        "title": "최근 오류",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, log.logger as logger, message, requestId, memberId\n| filter log.level = \"ERROR\"\n| sort @timestamp desc\n| limit 50"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 42,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 프록시"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 43,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Caddy 상태 코드",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/caddy' | fields @timestamp, status\n| filter ispresent(status)\n| stats count() by status, bin(5m)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 43,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Caddy 오류 응답",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/caddy' | fields @timestamp, status, request.uri as uri, request.method as method\n| filter status >= 400\n| sort @timestamp desc\n| limit 50"
+      }
+    }
+  ]
+}
