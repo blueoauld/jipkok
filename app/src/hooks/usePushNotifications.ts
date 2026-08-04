@@ -1,4 +1,5 @@
 import * as Notifications from "expo-notifications";
+import { useSegments } from "expo-router";
 import { useEffect, useRef } from "react";
 
 import { useAuthStore } from "@/lib/auth/store";
@@ -19,6 +20,7 @@ export function usePushNotifications() {
   const status = useAuthStore((state) => state.status);
   const response = Notifications.useLastNotificationResponse();
   const handledId = useRef<string | null>(null);
+  const [group] = useSegments();
 
   useEffect(() => {
     if (status !== "authenticated") {
@@ -29,7 +31,7 @@ export function usePushNotifications() {
   }, [status]);
 
   useEffect(() => {
-    if (status !== "authenticated" || !response) {
+    if (group !== "(app)" || status !== "authenticated" || !response) {
       return;
     }
 
@@ -45,5 +47,5 @@ export function usePushNotifications() {
       handledId.current = identifier;
       pushOnce(href);
     }
-  }, [response, status]);
+  }, [group, response, status]);
 }
