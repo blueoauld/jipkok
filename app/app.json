@@ -3,6 +3,12 @@
     "name": "집콕",
     "slug": "jipkok",
     "version": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/137fcaaf-79ed-43b4-aec3-1b2472f02adc"
+    },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "jipkok",
@@ -10,7 +16,8 @@
     "ios": {
       "bundleIdentifier": "com.blueoauld.jipkok",
       "infoPlist": {
-        "CFBundleDevelopmentRegion": "ko"
+        "CFBundleDevelopmentRegion": "ko",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
