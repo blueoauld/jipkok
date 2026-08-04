@@ -49,7 +49,12 @@ export const useFeedFilterStore = create<FeedFilterState>()(
     {
       name: FEED_STORAGE_KEY,
       storage,
-      partialize: (state) => ({ gender: state.gender, date: state.date }),
+      version: 1,
+      migrate: (persisted) => ({
+        gender:
+          (persisted as { gender: Gender | null } | undefined)?.gender ?? null,
+      }),
+      partialize: (state) => ({ gender: state.gender }),
     },
   ),
 );
