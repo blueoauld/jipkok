@@ -20,7 +20,7 @@ class AdRewardController(
 
     @Operation(summary = "광고 보상 콜백")
     @GetMapping("/rewards/callback")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     fun reward(
         @RequestParam("user_id", required = false) userId: Long?,
         @RequestParam("transaction_id") transactionId: String,
