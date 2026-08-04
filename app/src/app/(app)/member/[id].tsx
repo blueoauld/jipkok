@@ -92,9 +92,11 @@ function CountBadge({ count }: { count: number }) {
 
 function ActionBar({
   member,
+  pending,
   onPress,
 }: {
   member: MemberDetailResponse;
+  pending: ActionKey | null;
   onPress: (key: ActionKey) => void;
 }) {
   const theme = useTheme();
@@ -137,6 +139,7 @@ function ActionBar({
           height="100%"
           items="center"
           justify="center"
+          opacity={pending === key ? 0.4 : 1}
           pressStyle={disabled[key] ? undefined : { opacity: 0.6 }}
           onPress={disabled[key] ? undefined : () => onPress(key)}
         >
@@ -387,7 +390,11 @@ export default function MemberProfileScreen() {
             </YStack>
           </ScrollView>
 
-          <ActionBar member={member} onPress={handleAction} />
+          <ActionBar
+            member={member}
+            pending={loadSecretPhotos.isPending ? "secretPhoto" : null}
+            onPress={handleAction}
+          />
         </>
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
