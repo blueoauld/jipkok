@@ -17,7 +17,6 @@ import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoGrid } from "@/components/PhotoGrid";
@@ -30,7 +29,7 @@ import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
@@ -56,6 +55,9 @@ const BADGE_OPACITY = 0.9;
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
+
+const BLOCK_DESCRIPTION =
+  "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다.";
 
 const GRID_BUTTON_SIZE = 32;
 const GRID_ICON_SIZE = 18;
@@ -179,7 +181,6 @@ export default function MemberProfileScreen() {
   const [gridPhotoIndex, setGridPhotoIndex] = useState<number | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
-  const [blockOpen, setBlockOpen] = useState(false);
 
   const photoGridOpen = usePhotoGridStore((state) => state.open);
   const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
@@ -288,7 +289,16 @@ export default function MemberProfileScreen() {
             api.blocks.remove(memberId),
           );
         } else {
-          setBlockOpen(true);
+          confirmAlert({
+            title: "차단",
+            message: BLOCK_DESCRIPTION,
+            confirmLabel: "확인",
+            destructive: true,
+            onConfirm: () =>
+              run({ blockedByMe: true }, BLOCKS_KEY, () =>
+                api.blocks.add(memberId),
+              ),
+          });
         }
       }
     },
@@ -468,18 +478,6 @@ export default function MemberProfileScreen() {
           )}
         </YStack>
       )}
-
-      <ConfirmDialog
-        open={blockOpen}
-        onOpenChange={setBlockOpen}
-        title="차단"
-        description="차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다."
-        confirmLabel="확인"
-        destructive
-        onConfirm={() =>
-          run({ blockedByMe: true }, BLOCKS_KEY, () => api.blocks.add(memberId))
-        }
-      />
 
       <TextInputDialog
         open={noteOpen}

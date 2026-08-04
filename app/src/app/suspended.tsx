@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, useTheme, YStack } from "tamagui";
 
-import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useWithdraw } from "@/hooks/useWithdraw";
 import { alertApiError, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
@@ -22,7 +22,7 @@ const MAIL_TITLE = "정지문의";
 
 export default function SuspendedScreen() {
   const theme = useTheme();
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const confirmWithdraw = useWithdraw();
 
   const { data: profile } = useMyProfile();
   const suspension = findServiceSuspension(profile);
@@ -81,17 +81,10 @@ export default function SuspendedScreen() {
             로그아웃
           </Button>
 
-          <Button
-            size="$4"
-            theme="red"
-            rounded="$7"
-            onPress={() => setWithdrawOpen(true)}
-          >
+          <Button size="$4" theme="red" rounded="$7" onPress={confirmWithdraw}>
             회원탈퇴
           </Button>
         </YStack>
-
-        <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
       </YStack>
     </SafeAreaView>
   );

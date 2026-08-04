@@ -24,7 +24,6 @@ import {
   CHAT_SCROLL_TO_BOTTOM_STYLE,
   ChatScrollToBottom,
 } from "@/components/ChatScrollToBottom";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
@@ -33,7 +32,7 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import {
   api,
   type ChatMessageResponse,
@@ -82,7 +81,6 @@ export default function ChatRoomScreen() {
   const scheme = useColorScheme() === "dark" ? "dark" : "light";
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [leaveOpen, setLeaveOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
   const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
@@ -204,7 +202,13 @@ export default function ChatRoomScreen() {
     },
     {
       label: "나가기",
-      onPress: () => setLeaveOpen(true),
+      onPress: () =>
+        confirmAlert({
+          title: "채팅",
+          message: LEAVE_DESCRIPTION,
+          confirmLabel: "나가기",
+          onConfirm: () => leave.mutate(),
+        }),
     },
     {
       label: "신고하기",
@@ -272,15 +276,6 @@ export default function ChatRoomScreen() {
           <Spinner size="small" />
         </YStack>
       )}
-
-      <ConfirmDialog
-        open={leaveOpen}
-        onOpenChange={setLeaveOpen}
-        title="채팅"
-        description={LEAVE_DESCRIPTION}
-        confirmLabel="나가기"
-        onConfirm={() => leave.mutate()}
-      />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
     </SafeAreaView>

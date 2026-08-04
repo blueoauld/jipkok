@@ -24,15 +24,19 @@ import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
+import { useWithdraw } from "@/hooks/useWithdraw";
+import {
+  alertApiError,
+  alertInfo,
+  alertMessage,
+  confirmAlert,
+} from "@/lib/alert";
 import { api } from "@/lib/api";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -139,8 +143,6 @@ export default function SettingScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [logoutOpen, setLogoutOpen] = useState(false);
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
 
@@ -223,12 +225,23 @@ export default function SettingScreen() {
     [gate, handleAction],
   );
 
+  const confirmWithdraw = useWithdraw();
+
   const accountMenu: MenuSheetItem[] = [
-    { label: "로그아웃", onPress: () => setLogoutOpen(true) },
+    {
+      label: "로그아웃",
+      onPress: () =>
+        confirmAlert({
+          title: "로그아웃",
+          message: LOGOUT_DESCRIPTION,
+          confirmLabel: "확인",
+          onConfirm: () => logout.mutate(),
+        }),
+    },
     {
       label: "회원탈퇴",
       destructive: true,
-      onPress: () => setWithdrawOpen(true),
+      onPress: confirmWithdraw,
     },
   ];
   const openMenu = useCallback(() => setMenuOpen(true), []);
@@ -280,17 +293,6 @@ export default function SettingScreen() {
         onOpenChange={setMenuOpen}
         items={accountMenu}
       />
-
-      <ConfirmDialog
-        open={logoutOpen}
-        onOpenChange={setLogoutOpen}
-        title="로그아웃"
-        description={LOGOUT_DESCRIPTION}
-        confirmLabel="확인"
-        onConfirm={() => logout.mutate()}
-      />
-
-      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
     </ScrollView>
   );
 }

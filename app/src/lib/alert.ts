@@ -17,3 +17,26 @@ export function alertMessage(message: string) {
 export function alertInfo(message: string) {
   Alert.alert(INFO_TITLE, message);
 }
+
+export function confirmAlert({
+  title,
+  message,
+  confirmLabel,
+  destructive,
+  onConfirm,
+}: {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  destructive?: boolean;
+  onConfirm: () => void;
+}) {
+  Alert.alert(title, message, [
+    { text: "닫기", style: "cancel" },
+    {
+      text: confirmLabel,
+      style: destructive ? "destructive" : "default",
+      onPress: onConfirm,
+    },
+  ]);
+}

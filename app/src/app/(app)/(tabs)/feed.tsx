@@ -31,7 +31,6 @@ import {
 } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -40,7 +39,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import {
   api,
   isApiError,
@@ -401,7 +400,6 @@ export default function FeedScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
-  const [reportId, setReportId] = useState<number | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
 
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -525,7 +523,15 @@ export default function FeedScreen() {
             <FeedCard
               post={item}
               mine={item.memberId === profile?.memberId}
-              onReport={() => setReportId(item.postId)}
+              onReport={() =>
+                confirmAlert({
+                  title: "피드",
+                  message: "신고한 피드는 검토 후 조치됩니다.",
+                  confirmLabel: "신고",
+                  destructive: true,
+                  onConfirm: () => report.mutate(item.postId),
+                })
+              }
               onToggleLike={() => toggleLike.mutate(item)}
             />
           )}
@@ -626,20 +632,6 @@ export default function FeedScreen() {
         pending={compose.isPending}
         onOpenChange={setComposeOpen}
         onSubmit={(photo, caption) => compose.mutate({ photo, caption })}
-      />
-
-      <ConfirmDialog
-        open={reportId !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setReportId(null);
-          }
-        }}
-        title="피드"
-        description="신고한 피드는 검토 후 조치됩니다."
-        confirmLabel="신고"
-        destructive
-        onConfirm={() => reportId !== null && report.mutate(reportId)}
       />
     </YStack>
   );
