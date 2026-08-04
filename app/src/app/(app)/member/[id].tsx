@@ -9,6 +9,7 @@ import {
   HeartIcon,
   ImageIcon,
   ProhibitIcon,
+  SquaresFourIcon,
   StarIcon,
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
@@ -19,6 +20,7 @@ import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { PhotoGrid } from "@/components/PhotoGrid";
 import { PhotoPager } from "@/components/PhotoPager";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
@@ -34,6 +36,7 @@ import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
+import { usePhotoGridStore } from "@/lib/photo-grid/store";
 import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
@@ -53,6 +56,10 @@ const BADGE_OPACITY = 0.9;
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
+
+const GRID_BUTTON_SIZE = 32;
+const GRID_ICON_SIZE = 18;
+const GRID_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 
 const LIKES_KEY = ["likes"];
 const FAVORITES_KEY = ["favorites"];
@@ -169,10 +176,13 @@ export default function MemberProfileScreen() {
   const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [gridPhotoIndex, setGridPhotoIndex] = useState<number | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
 
+  const photoGridOpen = usePhotoGridStore((state) => state.open);
+  const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
   const noteContent = useNoteStore((state) => state.content);
   const setNoteContent = useNoteStore((state) => state.setContent);
 
@@ -286,7 +296,6 @@ export default function MemberProfileScreen() {
   );
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
-
   const screenOptions = useMemo(
     () => ({
       title: "프로필",
@@ -333,7 +342,39 @@ export default function MemberProfileScreen() {
       {member ? (
         <>
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-            <PhotoPager photos={member.publicPhotoUrls} />
+            <YStack>
+              {photoGridOpen ? (
+                <YStack p="$2">
+                  <PhotoGrid
+                    photos={member.publicPhotoUrls}
+                    showPlaceholders
+                    onPressPhoto={setGridPhotoIndex}
+                  />
+                </YStack>
+              ) : (
+                <PhotoPager photos={member.publicPhotoUrls} />
+              )}
+
+              <XStack
+                position="absolute"
+                t="$3"
+                r="$3"
+                width={GRID_BUTTON_SIZE}
+                height={GRID_BUTTON_SIZE}
+                rounded={9999}
+                bg={GRID_BUTTON_BG}
+                items="center"
+                justify="center"
+                pressStyle={{ opacity: 0.6 }}
+                onPress={togglePhotoGrid}
+              >
+                <SquaresFourIcon
+                  size={GRID_ICON_SIZE}
+                  weight={photoGridOpen ? "fill" : "regular"}
+                  color="white"
+                />
+              </XStack>
+            </YStack>
 
             <YStack gap="$4" p="$4">
               <YStack gap="$1">
@@ -452,6 +493,13 @@ export default function MemberProfileScreen() {
           setNoteContent(content);
           sendNote.mutate(content);
         }}
+      />
+
+      <PhotoViewer
+        photos={member?.publicPhotoUrls ?? []}
+        initialIndex={gridPhotoIndex ?? 0}
+        open={gridPhotoIndex !== null}
+        onClose={() => setGridPhotoIndex(null)}
       />
 
       <PhotoViewer
