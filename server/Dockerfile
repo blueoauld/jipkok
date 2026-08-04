@@ -26,6 +26,8 @@ COPY --from=build /build/extracted/application/ ./
 
 USER jipkok
 
+ENV SPRING_PROFILES_ACTIVE=prod
+
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]

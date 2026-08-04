@@ -19,6 +19,34 @@ sudo usermod -aG docker $USER
 mkdir -p ~/jipkok/certs
 ```
 
+## 환경 변수
+
+`~/jipkok/.env`를 만든다. 프로파일은 이미지에 `prod`로 박혀 있어 적지 않아도 된다.
+
+```
+DB_HOST=<RDS 엔드포인트>
+DB_NAME=jipkok
+DB_USERNAME=<사용자>
+DB_PASSWORD=<비밀번호>
+REDIS_HOST=redis
+JWT_SECRET=<openssl rand -base64 64 로 만든 값>
+R2_ENDPOINT=<R2 엔드포인트>
+R2_ACCESS_KEY_ID=<키>
+R2_SECRET_ACCESS_KEY=<비밀 키>
+R2_BUCKET=<버킷>
+R2_PUBLIC_BASE_URL=<공개 주소>
+DISCORD_TOKEN=<봇 토큰>
+DISCORD_GUILD_ID=<서버 아이디>
+DISCORD_ROLE_ID=<역할 아이디>
+DISCORD_SUSPENSION_CHANNEL_ID=<채널 아이디>
+DISCORD_RESET_CHANNEL_ID=<채널 아이디>
+DISCORD_REPORT_CHANNEL_ID=<채널 아이디>
+```
+
+```bash
+chmod 600 ~/jipkok/.env
+```
+
 ## 인증서
 
 Cloudflare 프록시 뒤에서는 Let's Encrypt 자동 발급이 동작하지 않는다. Cloudflare가 TLS를 종료해서 챌린지가 오리진까지 오지 않고, 보안 그룹을 Cloudflare IP로 막으면 검증
