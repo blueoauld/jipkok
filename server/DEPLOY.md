@@ -88,15 +88,44 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 ## CloudWatch 로그
 
-EC2 인스턴스 역할에 아래 권한이 필요하다.
+도커의 `awslogs` 드라이버가 EC2에 붙은 IAM 역할의 권한으로 로그를 보낸다. 액세스 키를
+서버에 두지 않아도 된다.
+
+IAM 콘솔에서 **역할 → 역할 만들기 → AWS 서비스 → EC2**로 역할을 만들고, 인라인 정책을
+넣는다.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:ap-northeast-2:*:log-group:/jipkok/*"
+    }
+  ]
+}
+```
+
+만든 역할을 인스턴스에 붙인다. EC2 콘솔에서 **인스턴스 선택 → 작업 → 보안 → IAM 역할
+수정**으로 연결한다. 재부팅은 필요 없지만 이미 뜬 컨테이너는 다시 만들어야 한다.
+
+```bash
+docker compose up -d --force-recreate
+```
+
+로그 그룹은 `/jipkok/server`, `/jipkok/caddy`로 자동 생성된다. 자동 생성 때문에
+`logs:CreateLogGroup`이 필요하고, 그룹을 미리 만들어 둔다면 이 권한은 빼도 된다.
+
+권한이 없으면 컨테이너가 아예 뜨지 않는다. 아래처럼 나오면 역할을 확인한다.
 
 ```
-logs:CreateLogGroup
-logs:CreateLogStream
-logs:PutLogEvents
+failed to create task for container: failed to initialize logging driver
 ```
-
-로그 그룹은 `/jipkok/server`, `/jipkok/caddy`로 자동 생성된다.
 
 ## GitHub Actions 시크릿
 
