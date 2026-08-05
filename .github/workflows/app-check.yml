@@ -35,4 +35,4 @@ jobs:
 
       - name: 포맷 검사
         working-directory: app
-        run: npm run format:check
+        run: npx prettier --check .

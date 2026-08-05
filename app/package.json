@@ -72,9 +72,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "api:types": "npx --yes openapi-typescript@7 openapi.json -o src/lib/api/schema.ts",
-    "postinstall": "patch-package",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "postinstall": "patch-package"
   },
   "private": true
 }
