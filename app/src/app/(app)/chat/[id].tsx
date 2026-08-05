@@ -1,11 +1,19 @@
 import "dayjs/locale/ko";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type TextInput, useColorScheme } from "react-native";
+import {
+  type ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { type FlatList, type TextInput, useColorScheme } from "react-native";
 import {
   GiftedChat,
   type IMessage,
@@ -184,6 +192,25 @@ export default function ChatRoomScreen() {
   );
 
   const textInputRef = useRef<TextInput>(null!);
+  const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
+
+  const handlePressReply = useCallback(
+    (reply: ReplyMessage) => {
+      const index = giftedMessages.findIndex((it) => it._id === reply._id);
+
+      if (index < 0) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        return;
+      }
+
+      messagesContainerRef.current?.scrollToIndex({
+        index,
+        viewPosition: 0.5,
+        animated: true,
+      });
+    },
+    [giftedMessages],
+  );
 
   const handleSwipeReply = useCallback((message: IMessage) => {
     const messageId = Number(message._id);
@@ -278,9 +305,22 @@ export default function ChatRoomScreen() {
           messages={giftedMessages}
           onSend={handleSend}
           textInputRef={textInputRef}
+          messagesContainerRef={
+            messagesContainerRef as ComponentProps<
+              typeof GiftedChat<IMessage>
+            >["messagesContainerRef"]
+          }
+          listProps={{
+            onScrollToIndexFailed: (info) =>
+              messagesContainerRef.current?.scrollToOffset({
+                offset: info.averageItemLength * info.index,
+                animated: true,
+              }),
+          }}
           reply={{
             message: replyPreview,
             onClear: () => setReplyTarget(null),
+            onPress: handlePressReply,
             renderPreview: (previewProps) => (
               <ChatReplyPreview
                 {...previewProps}

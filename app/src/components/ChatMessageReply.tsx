@@ -9,6 +9,7 @@ export function ChatMessageReply({
   name,
   replyMessage,
   position,
+  onPress,
 }: MessageReplyProps & { name: string }) {
   const theme = useTheme();
   const isRight = position === "right";
@@ -18,7 +19,13 @@ export function ChatMessageReply({
   const dividerColor = isRight ? "rgba(255, 255, 255, 0.35)" : theme.color6.val;
 
   return (
-    <YStack self="stretch" px={12} pt={10} gap="$1">
+    <YStack
+      self="stretch"
+      px={12}
+      pt={10}
+      gap="$1"
+      onPress={() => onPress?.(replyMessage)}
+    >
       <Text
         fontSize="$3"
         fontWeight="500"
