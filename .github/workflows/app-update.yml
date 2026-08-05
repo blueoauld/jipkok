@@ -1,0 +1,38 @@
+name: 앱 OTA 발행
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "업데이트 메모"
+        required: true
+      branch:
+        description: "발행 채널"
+        type: choice
+        default: production
+        options:
+          - production
+          - preview
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: 의존성 설치
+        working-directory: app
+        run: npm ci
+
+      - name: OTA 발행
+        working-directory: app
+        run: npx eas-cli update --branch "${{ inputs.branch }}" --message "${{ inputs.message }}" --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
