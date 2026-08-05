@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-gifted-chat/lib/Message/index.js b/node_modules/react-native-gifted-chat/lib/Message/index.js
+index a239261..18a228a 100644
+--- a/node_modules/react-native-gifted-chat/lib/Message/index.js
++++ b/node_modules/react-native-gifted-chat/lib/Message/index.js
+@@ -127,7 +127,7 @@ export const Message = (props) => {
+         {messageContent}
+       </View>);
+     return (<View onLayout={onMessageLayout}>
+-      <ReanimatedSwipeable ref={swipeableRef} friction={2} overshootFriction={8} renderRightActions={swipeToReplyDirection === 'left' ? renderSwipeAction : undefined} renderLeftActions={swipeToReplyDirection === 'right' ? renderSwipeAction : undefined} onSwipeableOpen={handleSwipeableOpen} onSwipeableWillOpen={handleSwipeableWillOpen}>
++      <ReanimatedSwipeable ref={swipeableRef} friction={2} overshootFriction={8} dragOffsetFromLeftEdge={swipeToReplyDirection === 'right' ? 10 : Number.MAX_SAFE_INTEGER} dragOffsetFromRightEdge={swipeToReplyDirection === 'left' ? 10 : Number.MAX_SAFE_INTEGER} renderRightActions={swipeToReplyDirection === 'left' ? renderSwipeAction : undefined} renderLeftActions={swipeToReplyDirection === 'right' ? renderSwipeAction : undefined} onSwipeableOpen={handleSwipeableOpen} onSwipeableWillOpen={handleSwipeableWillOpen}>
+         {messageContent}
+       </ReanimatedSwipeable>
+     </View>);
