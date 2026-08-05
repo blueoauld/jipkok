@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,6 +18,7 @@ class MemberCleaner(
 
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
@@ -33,6 +35,7 @@ class MemberCleaner(
         val objectKeys = memberPhotoRepository.findAllByMemberIdIn(memberIds).map { it.objectKey }
 
         memberPhotoRepository.deleteAllByMemberIdIn(memberIds)
+        nicknameHistoryRepository.deleteAllByMemberIdIn(memberIds)
         memberRepository.deleteAllByIdIn(memberIds)
 
         if (objectKeys.isNotEmpty()) {

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.access.dto.AccessInfo
+import com.blueoauld.server.domain.access.service.AccessLogService
 import com.blueoauld.server.domain.access.service.AccessRewardService
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
@@ -19,11 +20,13 @@ import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
+import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -54,6 +57,8 @@ class MemberService(
     private val photoStorage: PhotoStorage,
     private val memberSuspensionService: MemberSuspensionService,
     private val accessRewardService: AccessRewardService,
+    private val accessLogService: AccessLogService,
+    private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
@@ -83,6 +88,8 @@ class MemberService(
         )
         val tokens = authService.issueTokens(member)
 
+        nicknameHistoryRepository.save(NicknameHistory(member.id, member.nickname))
+
         return SignupResponse(member.id, tokens.accessToken, tokens.refreshToken)
     }
 
@@ -96,7 +103,7 @@ class MemberService(
         validateNickname(member, nickname)
         validateBirthYear(request.birthYear)
 
-        member.nickname = nickname
+        changeNickname(member, nickname)
         member.birthYear = request.birthYear
         member.bio = request.bio
 
@@ -140,7 +147,7 @@ class MemberService(
         validateBirthYear(request.birthYear)
         validatePhotoKeys(memberId, request)
 
-        member.nickname = nickname
+        changeNickname(member, nickname)
         member.birthYear = request.birthYear
         member.bio = request.bio
 
@@ -220,7 +227,7 @@ class MemberService(
         }
 
         when (target) {
-            ProfileTarget.NICKNAME -> member.nickname = generateNickname()
+            ProfileTarget.NICKNAME -> changeNickname(member, generateNickname())
             ProfileTarget.COMMENT -> member.comment = null
             ProfileTarget.BIO -> member.bio = null
             ProfileTarget.PUBLIC_PHOTO -> deletePhotos(memberId, PhotoVisibility.PUBLIC)
@@ -288,7 +295,20 @@ class MemberService(
 
         val platform = request.platform ?: throw BusinessException(ErrorCode.INVALID_REQUEST)
 
-        return accessRewardService.earn(member, AccessInfo(platform, request.deviceName, ipAddress))
+        val access = AccessInfo(platform, request.deviceName, ipAddress)
+
+        accessLogService.record(member, access)
+
+        return accessRewardService.earn(member, access)
+    }
+
+    private fun changeNickname(member: Member, nickname: String) {
+        if (member.nickname == nickname) {
+            return
+        }
+
+        member.nickname = nickname
+        nicknameHistoryRepository.save(NicknameHistory(member.id, nickname))
     }
 
     private fun validateNickname(member: Member, nickname: String) {

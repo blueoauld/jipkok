@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.access.service.AccessLogService
 import com.blueoauld.server.domain.access.service.AccessRewardService
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
@@ -18,6 +19,7 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -65,6 +67,10 @@ class MemberServiceTest {
 
     private val accessRewardService = mockk<AccessRewardService>(relaxed = true)
 
+    private val accessLogService = mockk<AccessLogService>(relaxed = true)
+
+    private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
+
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
@@ -75,6 +81,8 @@ class MemberServiceTest {
         photoStorage,
         memberSuspensionService,
         accessRewardService,
+        accessLogService,
+        nicknameHistoryRepository,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -83,6 +91,7 @@ class MemberServiceTest {
     fun setUp() {
         every { memberRepository.existsByPhoneNumber(PHONE_NUMBER) } returns false
         every { memberRepository.save(any()) } answers { firstArg() }
+        every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
         every { passwordEncoder.encode(PASSWORD) } returns ENCODED_PASSWORD
         every { authService.issueTokens(any()) } returns TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN)
         every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
@@ -824,6 +833,49 @@ class MemberServiceTest {
 
     private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
         "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
+
+    @Test
+    fun `닉네임을 바꾸면 이력이 남는다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+
+        // then
+        verify {
+            nicknameHistoryRepository.save(
+                match { it.memberId == MEMBER_ID && it.nickname == NICKNAME },
+            )
+        }
+    }
+
+    @Test
+    fun `닉네임이 그대로면 이력을 남기지 않는다`() {
+        // given
+        val member = member().apply { nickname = NICKNAME }
+        stubMember(member)
+
+        // when
+        memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998))
+
+        // then
+        verify(exactly = 0) { nicknameHistoryRepository.save(any()) }
+    }
+
+    @Test
+    fun `하트비트마다 접속 기록을 남긴다`() {
+        // given
+        val member = member()
+        stubMember(member)
+
+        // when
+        memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
+
+        // then
+        verify { accessLogService.record(member, any()) }
+    }
 
     private fun member() = Member(
         phoneNumber = PHONE_NUMBER,
