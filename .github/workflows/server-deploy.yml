@@ -142,4 +142,4 @@ jobs:
             export SERVER_IMAGE="${{ needs.build.outputs.image }}"
             docker compose pull server
             docker compose up -d --remove-orphans
-            docker image prune -f
+            docker image prune -af
