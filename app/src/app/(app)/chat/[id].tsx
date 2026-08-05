@@ -5,7 +5,7 @@ import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useColorScheme } from "react-native";
+import { type TextInput, useColorScheme } from "react-native";
 import {
   GiftedChat,
   type IMessage,
@@ -183,6 +183,8 @@ export default function ChatRoomScreen() {
     [messages, room],
   );
 
+  const textInputRef = useRef<TextInput>(null!);
+
   const handleSwipeReply = useCallback((message: IMessage) => {
     const messageId = Number(message._id);
 
@@ -198,6 +200,7 @@ export default function ChatRoomScreen() {
       content: message.text || null,
       imageUrl: message.image ?? null,
     });
+    textInputRef.current?.focus();
   }, []);
 
   const handleSend = useCallback(
@@ -274,6 +277,7 @@ export default function ChatRoomScreen() {
         <GiftedChat
           messages={giftedMessages}
           onSend={handleSend}
+          textInputRef={textInputRef}
           reply={{
             message: replyPreview,
             onClear: () => setReplyTarget(null),
