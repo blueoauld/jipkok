@@ -1,7 +1,7 @@
 import {
+  type InfiniteData,
   useMutation,
   useQueryClient,
-  type InfiniteData,
 } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { BellIcon, BellSlashIcon, SignOutIcon } from "phosphor-react-native";
@@ -10,8 +10,8 @@ import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import Animated, {
-  useAnimatedStyle,
   type SharedValue,
+  useAnimatedStyle,
 } from "react-native-reanimated";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 

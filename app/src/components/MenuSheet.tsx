@@ -1,6 +1,7 @@
-import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 import { CheckIcon } from "phosphor-react-native";
 import { Sheet, Text, useTheme, XStack } from "tamagui";
+
+import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 
 export type MenuSheetItem = {
   label: string;

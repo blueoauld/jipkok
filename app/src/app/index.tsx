@@ -11,9 +11,13 @@ export default function IndexScreen() {
   const [failed, setFailed] = useState(false);
 
   const restore = useCallback(() => {
-    setFailed(false);
     restoreSession().catch(() => setFailed(true));
   }, []);
+
+  const retry = () => {
+    setFailed(false);
+    restore();
+  };
 
   useEffect(() => {
     restore();
@@ -34,7 +38,7 @@ export default function IndexScreen() {
               연결에 실패했습니다.
             </Text>
 
-            <Button size="$3" theme="blue" rounded="$7" onPress={restore}>
+            <Button size="$3" theme="blue" rounded="$7" onPress={retry}>
               다시 시도
             </Button>
           </>

@@ -1,0 +1,6 @@
+ios
+android
+.expo
+openapi.json
+src/lib/api/schema.ts
+patches

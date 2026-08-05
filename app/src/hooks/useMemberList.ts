@@ -1,8 +1,8 @@
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQueryClient,
-  type InfiniteData,
 } from "@tanstack/react-query";
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";

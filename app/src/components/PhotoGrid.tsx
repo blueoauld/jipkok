@@ -7,7 +7,7 @@ import {
   PlusIcon,
   XIcon,
 } from "phosphor-react-native";
-import { useTheme, XStack, YStack, type XStackProps } from "tamagui";
+import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";

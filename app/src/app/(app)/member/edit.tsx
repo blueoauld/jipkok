@@ -54,7 +54,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   const nicknameRef = useRef(profile.nickname);
   const birthYearRef = useRef(String(profile.birthYear));
   const bioRef = useRef(profile.bio ?? "");
-  const [bioLength, setBioLength] = useState(bioRef.current.length);
+  const [bioLength, setBioLength] = useState((profile.bio ?? "").length);
 
   const save = useMutation({
     mutationFn: (birthYear: number) =>

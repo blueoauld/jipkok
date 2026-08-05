@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import {
-  Controller,
   type Control,
+  Controller,
   type FieldPath,
   type FieldValues,
   type RegisterOptions,

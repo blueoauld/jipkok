@@ -1,4 +1,4 @@
-import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
+import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";

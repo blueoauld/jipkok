@@ -1,17 +1,12 @@
-import {
-  DISABLED_OPACITY,
-  PHOTO_PRESS_OPACITY,
-  PRESS_OPACITY,
-} from "@/lib/design";
 import { Image } from "expo-image";
 import { XIcon } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
 import {
+  type ImageStyle,
   Modal,
   StatusBar,
   StyleSheet,
   useWindowDimensions,
-  type ImageStyle,
 } from "react-native";
 import {
   Gesture,
@@ -30,6 +25,12 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import Zoom from "react-native-zoom-reanimated";
 import { Spinner, XStack, YStack } from "tamagui";
+
+import {
+  DISABLED_OPACITY,
+  PHOTO_PRESS_OPACITY,
+  PRESS_OPACITY,
+} from "@/lib/design";
 
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;

@@ -1,9 +1,9 @@
 import type { ComponentType } from "react";
 import type { ImageStyle } from "react-native";
 import {
-  Message,
   type IMessage,
   type LeftRightStyle,
+  Message,
   type MessageProps,
 } from "react-native-gifted-chat";
 import { XStack } from "tamagui";

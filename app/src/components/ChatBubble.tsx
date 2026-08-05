@@ -1,7 +1,6 @@
+import dayjs from "dayjs";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-
-import dayjs from "dayjs";
 import type { ImageStyle } from "react-native";
 import {
   Bubble,

@@ -1,6 +1,7 @@
-import { PRESS_OPACITY } from "@/lib/design";
 import type { Icon, IconWeight } from "phosphor-react-native";
 import { useTheme, XStack } from "tamagui";
+
+import { PRESS_OPACITY } from "@/lib/design";
 
 const ICON_SIZE = 28;
 const BUTTON_WIDTH = 36;

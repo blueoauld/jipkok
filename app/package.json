@@ -58,7 +58,11 @@
   "devDependencies": {
     "@tamagui/babel-plugin": "^2.6.0",
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.1",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
     "patch-package": "^8.0.1",
+    "prettier": "^3.9.6",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -68,7 +72,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "api:types": "npx --yes openapi-typescript@7 openapi.json -o src/lib/api/schema.ts",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "private": true
 }

@@ -1,0 +1,38 @@
+name: 앱 검사
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "app/**"
+      - ".github/workflows/app-check.yml"
+  workflow_dispatch:
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: 의존성 설치
+        working-directory: app
+        run: npm ci
+
+      - name: 타입 검사
+        working-directory: app
+        run: npx tsc --noEmit
+
+      - name: 린트
+        working-directory: app
+        run: npm run lint
+
+      - name: 포맷 검사
+        working-directory: app
+        run: npm run format:check

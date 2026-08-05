@@ -1,16 +1,17 @@
-import { PRESS_OPACITY } from "@/lib/design";
 import { PaperPlaneRightIcon, PlusIcon } from "phosphor-react-native";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import {
-  InputToolbar,
   type ActionsProps,
   type ComposerProps,
   type IMessage,
+  InputToolbar,
   type InputToolbarProps,
   type SendProps,
 } from "react-native-gifted-chat";
 import { Spinner, useTheme, XStack, YStack } from "tamagui";
+
+import { PRESS_OPACITY } from "@/lib/design";
 
 const PILL_PADDING = 6;
 const BUTTON_SIZE = 36;

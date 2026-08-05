@@ -18,7 +18,7 @@ import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { alertApiError, alertInfo } from "@/lib/alert";
-import { api, isApiError, type Gender, type MemberSort } from "@/lib/api";
+import { api, type Gender, isApiError, type MemberSort } from "@/lib/api";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import { pushOnce } from "@/lib/router";
 

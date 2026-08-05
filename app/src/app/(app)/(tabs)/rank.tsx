@@ -5,7 +5,7 @@ import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
-import { isApiError, type Gender } from "@/lib/api";
+import { type Gender, isApiError } from "@/lib/api";
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];

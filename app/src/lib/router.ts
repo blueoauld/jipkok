@@ -1,4 +1,4 @@
-import { router, type Href } from "expo-router";
+import { type Href, router } from "expo-router";
 
 const DUPLICATE_WINDOW = 700;
 

@@ -1,10 +1,10 @@
 import {
   focusManager,
   QueryClient,
-  QueryClientProvider,
   type QueryClientConfig,
+  QueryClientProvider,
 } from "@tanstack/react-query";
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { AppState } from "react-native";
 
 import { isApiError } from "@/lib/api";
