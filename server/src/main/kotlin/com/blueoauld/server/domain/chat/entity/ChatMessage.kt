@@ -35,6 +35,9 @@ class ChatMessage(
 
     @Column(name = "object_key", updatable = false, length = PhotoUpload.OBJECT_KEY_MAX_LENGTH)
     val objectKey: String? = null,
+
+    @Column(name = "reply_to_message_id", updatable = false)
+    val replyToMessageId: Long? = null,
 ) : BaseEntity() {
 
     @Id

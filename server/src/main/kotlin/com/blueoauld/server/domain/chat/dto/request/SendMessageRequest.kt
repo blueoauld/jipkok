@@ -12,4 +12,6 @@ data class SendMessageRequest(
     val content: String? = null,
 
     val objectKey: String? = null,
+
+    val replyToMessageId: Long? = null,
 )

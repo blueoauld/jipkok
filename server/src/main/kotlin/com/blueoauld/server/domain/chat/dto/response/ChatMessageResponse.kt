@@ -13,11 +13,37 @@ data class ChatMessageResponse(
     val content: String?,
     val imageUrl: String?,
     val createdAt: Instant,
+    val replyMessage: ReplyMessageResponse? = null,
 ) {
+
+    data class ReplyMessageResponse(
+
+        val messageId: Long,
+        val senderId: Long,
+        val type: ChatMessageType,
+        val content: String?,
+        val imageUrl: String?,
+    ) {
+
+        companion object {
+
+            fun of(message: ChatMessage, imageUrl: String?) = ReplyMessageResponse(
+                messageId = message.id,
+                senderId = message.senderId,
+                type = message.type,
+                content = message.content,
+                imageUrl = imageUrl,
+            )
+        }
+    }
 
     companion object {
 
-        fun of(message: ChatMessage, imageUrl: String?) = ChatMessageResponse(
+        fun of(
+            message: ChatMessage,
+            imageUrl: String?,
+            replyMessage: ReplyMessageResponse? = null,
+        ) = ChatMessageResponse(
             messageId = message.id,
             roomId = message.roomId,
             senderId = message.senderId,
@@ -25,6 +51,7 @@ data class ChatMessageResponse(
             content = message.content,
             imageUrl = imageUrl,
             createdAt = message.createdAt,
+            replyMessage = replyMessage,
         )
     }
 }

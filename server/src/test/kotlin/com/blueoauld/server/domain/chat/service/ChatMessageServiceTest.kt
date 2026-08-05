@@ -136,6 +136,75 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `답글로 보내면 원문이 함께 담긴다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original())
+
+        // when
+        val response = chatMessageService.send(ME_ID, ROOM_ID, reply("좋아요!", REPLY_ID))
+
+        // then
+        assertThat(response.content).isEqualTo("좋아요!")
+        assertThat(response.replyMessage?.messageId).isEqualTo(REPLY_ID)
+        assertThat(response.replyMessage?.content).isEqualTo("원문입니다.")
+        assertThat(response.replyMessage?.senderId).isEqualTo(PARTNER_ID)
+    }
+
+    @Test
+    fun `다른 방의 메시지에는 답글을 달 수 없다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns
+                Optional.of(original(roomId = ROOM_ID + 1))
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, reply("좋아요!", REPLY_ID))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.REPLY_TARGET_NOT_FOUND)
+    }
+
+    @Test
+    fun `없는 메시지에는 답글을 달 수 없다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, reply("좋아요!", REPLY_ID))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.REPLY_TARGET_NOT_FOUND)
+    }
+
+    @Test
+    fun `목록에서도 답글 원문을 함께 준다`() {
+        // given
+        val replyMessage = ChatMessage(
+            roomId = ROOM_ID,
+            senderId = ME_ID,
+            type = ChatMessageType.TEXT,
+            content = "좋아요!",
+            replyToMessageId = REPLY_ID,
+        )
+        every {
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns listOf(replyMessage)
+        every { chatMessageRepository.findAllById(listOf(REPLY_ID)) } returns listOf(original())
+
+        // when
+        val response = chatMessageService.findMessages(ME_ID, ROOM_ID, cursor = null, size = 30)
+
+        // then
+        val item = response.items.single()
+
+        assertThat(item.replyMessage?.messageId).isEqualTo(REPLY_ID)
+        assertThat(item.replyMessage?.content).isEqualTo("원문입니다.")
+    }
+
+    @Test
     fun `메시지 목록은 최근 메시지부터 준다`() {
         // given
         every {
@@ -234,6 +303,26 @@ class ChatMessageServiceTest {
 
     private fun text(content: String) = SendMessageRequest(type = ChatMessageType.TEXT, content = content)
 
+    private fun reply(content: String, replyToMessageId: Long) = SendMessageRequest(
+        type = ChatMessageType.TEXT,
+        content = content,
+        replyToMessageId = replyToMessageId,
+    )
+
+    private fun original(roomId: Long = ROOM_ID, id: Long = REPLY_ID): ChatMessage {
+        val message = ChatMessage(
+            roomId = roomId,
+            senderId = PARTNER_ID,
+            type = ChatMessageType.TEXT,
+            content = "원문입니다.",
+        )
+        ChatMessage::class.java.getDeclaredField("id").apply {
+            isAccessible = true
+            set(message, id)
+        }
+        return message
+    }
+
     private fun photo(objectKey: String?) = SendMessageRequest(type = ChatMessageType.PHOTO, objectKey = objectKey)
 
     companion object {
@@ -243,6 +332,7 @@ class ChatMessageServiceTest {
         private const val PARTNER_ID = 2L
         private const val STRANGER_ID = 3L
         private const val LAST_READ_MESSAGE_ID = 99L
+        private const val REPLY_ID = 7L
 
         private const val OBJECT_KEY = "chats/$ME_ID/a.jpg"
         private const val SIGNED_URL = "https://r2.example.com/chats/1/a.jpg?signature=x"

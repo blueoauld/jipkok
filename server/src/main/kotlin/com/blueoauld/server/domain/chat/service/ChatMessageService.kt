@@ -48,15 +48,31 @@ class ChatMessageService(
             Limit.of(pageSize),
         )
 
+        val originals = messages.mapNotNull { it.replyToMessageId }
+            .ifEmpty { null }
+            ?.let { chatMessageRepository.findAllById(it) }
+            ?.associateBy { it.id }
+            .orEmpty()
+
         return CursorResponse(
-            items = messages.map { ChatMessageResponse.of(it, it.objectKey?.let(photoStorage::createSignedViewUrl)) },
+            items = messages.map { message ->
+                ChatMessageResponse.of(
+                    message,
+                    message.objectKey?.let(photoStorage::createSignedViewUrl),
+                    message.replyToMessageId?.let(originals::get)?.let(::toReplyResponse),
+                )
+            },
             nextCursor = messages.lastOrNull()?.id.takeIf { messages.size == pageSize },
         )
     }
 
     @Transactional
-    fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse =
-        append(findRoom(memberId, roomId), memberId, toMessage(memberId, roomId, request))
+    fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse {
+        val room = findRoom(memberId, roomId)
+        val replyTarget = findReplyTarget(roomId, request.replyToMessageId)
+
+        return append(room, memberId, toMessage(memberId, roomId, request, replyTarget), replyTarget)
+    }
 
     @Transactional
     fun markRead(memberId: Long, roomId: Long, lastReadMessageId: Long) {
@@ -65,7 +81,12 @@ class ChatMessageService(
     }
 
     @Transactional
-    fun append(room: ChatRoom, senderId: Long, message: ChatMessage): ChatMessageResponse {
+    fun append(
+        room: ChatRoom,
+        senderId: Long,
+        message: ChatMessage,
+        replyTarget: ChatMessage? = null,
+    ): ChatMessageResponse {
         val saved = chatMessageRepository.save(message)
         val partnerId = room.partnerIdOf(senderId)
 
@@ -73,7 +94,11 @@ class ChatMessageService(
         chatRoomMemberRepository.increaseUnreadCount(room.id, partnerId)
         saved.objectKey?.let { photoUploadService.confirm(listOf(it)) }
 
-        val response = ChatMessageResponse.of(saved, saved.objectKey?.let(photoStorage::createSignedViewUrl))
+        val response = ChatMessageResponse.of(
+            saved,
+            saved.objectKey?.let(photoStorage::createSignedViewUrl),
+            replyTarget?.let(::toReplyResponse),
+        )
 
         eventPublisher.publishEvent(ChatMessageSentEvent(partnerId, response))
 
@@ -90,12 +115,33 @@ class ChatMessageService(
         .filter { it.contains(memberId) }
         .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
 
-    private fun toMessage(memberId: Long, roomId: Long, request: SendMessageRequest) = when (request.type) {
+    private fun findReplyTarget(roomId: Long, replyToMessageId: Long?): ChatMessage? {
+        if (replyToMessageId == null) {
+            return null
+        }
+
+        return chatMessageRepository.findById(replyToMessageId)
+            .filter { it.roomId == roomId }
+            .orElseThrow { BusinessException(ErrorCode.REPLY_TARGET_NOT_FOUND) }
+    }
+
+    private fun toReplyResponse(original: ChatMessage) = ChatMessageResponse.ReplyMessageResponse.of(
+        original,
+        original.objectKey?.let(photoStorage::createSignedViewUrl),
+    )
+
+    private fun toMessage(
+        memberId: Long,
+        roomId: Long,
+        request: SendMessageRequest,
+        replyTarget: ChatMessage?,
+    ) = when (request.type) {
         ChatMessageType.TEXT -> ChatMessage(
             roomId = roomId,
             senderId = memberId,
             type = ChatMessageType.TEXT,
             content = request.content?.trim()?.ifEmpty { null } ?: throw BusinessException(ErrorCode.INVALID_REQUEST),
+            replyToMessageId = replyTarget?.id,
         )
 
         ChatMessageType.PHOTO -> ChatMessage(
@@ -103,6 +149,7 @@ class ChatMessageService(
             senderId = memberId,
             type = ChatMessageType.PHOTO,
             objectKey = validatePhotoKey(memberId, request.objectKey),
+            replyToMessageId = replyTarget?.id,
         )
     }
 
