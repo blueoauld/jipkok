@@ -2,7 +2,7 @@ name: 서버 배포
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "server/**"
       - ".github/workflows/server-deploy.yml"
@@ -57,6 +57,34 @@ jobs:
       - name: 테스트
         working-directory: server
         run: ./gradlew test
+
+      - name: 테스트 결과 요약
+        if: always()
+        working-directory: server
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import glob
+          import xml.etree.ElementTree as ET
+
+          total = failures = errors = skipped = 0
+          failed = []
+
+          for path in glob.glob("build/test-results/test/*.xml"):
+              suite = ET.parse(path).getroot()
+              total += int(suite.get("tests", 0))
+              failures += int(suite.get("failures", 0))
+              errors += int(suite.get("errors", 0))
+              skipped += int(suite.get("skipped", 0))
+              for case in suite.iter("testcase"):
+                  if case.find("failure") is not None or case.find("error") is not None:
+                      failed.append(f"{case.get('classname')} > {case.get('name')}")
+
+          passed = total - failures - errors - skipped
+          print(f"### 테스트 {total}개, 성공 {passed}, 실패 {failures + errors}, 건너뜀 {skipped}")
+
+          for name in failed:
+              print(f"- ❌ `{name}`")
+          EOF
 
   build:
     needs: test
