@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Button, Dialog, Text, XStack } from "tamagui";
 
+import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 import { FormField } from "./FormField";
 import { FormInput } from "./FormInput";
 
@@ -98,7 +99,7 @@ export function TextInputDialog({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay opacity={0.6} />
+        <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
 
         <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-45}>
           <DialogForm

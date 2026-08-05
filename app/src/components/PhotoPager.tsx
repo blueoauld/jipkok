@@ -5,6 +5,7 @@ import { FlatList, useWindowDimensions } from "react-native";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { PhotoViewer } from "@/components/PhotoViewer";
+import { OVERLAY_BG, PHOTO_PRESS_OPACITY } from "@/lib/design";
 
 const PHOTO_RATIO = 0.8;
 
@@ -13,8 +14,6 @@ const PHOTO_TRANSITION = 200;
 const PLACEHOLDER_ICON_SIZE = 48;
 
 const BADGE_ICON_SIZE = 12;
-
-const BADGE_BG = "rgba(0, 0, 0, 0.5)";
 
 export function PhotoPager({
   photos,
@@ -59,7 +58,7 @@ export function PhotoPager({
         renderItem={({ item, index: photoIndex }) => (
           <XStack
             bg="$gray4"
-            pressStyle={{ opacity: 0.8 }}
+            pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
             onPress={openViewer}
           >
             <Image
@@ -79,7 +78,7 @@ export function PhotoPager({
                 px="$2"
                 py="$1.5"
                 rounded={9999}
-                bg={BADGE_BG}
+                bg={OVERLAY_BG}
               >
                 <LockSimpleIcon
                   size={BADGE_ICON_SIZE}

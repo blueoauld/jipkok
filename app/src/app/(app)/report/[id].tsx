@@ -19,6 +19,7 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, type ReportReason } from "@/lib/api";
+import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
@@ -164,7 +165,7 @@ export default function ReportScreen() {
             theme="red"
             rounded="$7"
             disabled={!reason || busy}
-            opacity={!reason || busy ? 0.6 : 1}
+            opacity={!reason || busy ? DISABLED_OPACITY : 1}
             onPress={() => reason && report.mutate(reason)}
           >
             신고하기

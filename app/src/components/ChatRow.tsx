@@ -23,6 +23,7 @@ import { alertApiError, confirmAlert } from "@/lib/alert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
 import { formatChatTime } from "@/lib/date";
+import { PRESS_OPACITY } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const PHOTO_MESSAGE = "사진";
@@ -56,7 +57,7 @@ function LeaveAction({
         rounded={9999}
         items="center"
         justify="center"
-        pressStyle={{ opacity: 0.8 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={onPress}
       >
         <SignOutIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
@@ -90,7 +91,7 @@ function NotificationAction({
         rounded={9999}
         items="center"
         justify="center"
-        pressStyle={{ opacity: 0.8 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={onPress}
       >
         {enabled ? (
@@ -211,7 +212,7 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
       <XStack
         gap="$3"
         items="center"
-        pressStyle={{ opacity: 0.6 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={() => pushOnce(`/chat/${room.roomId}`)}
       >
         <UserAvatar id={String(room.memberId)} url={room.profileImageUrl} />

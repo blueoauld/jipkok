@@ -27,6 +27,7 @@ import Zoom from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
+import { PRESS_OPACITY } from "@/lib/design";
 
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
@@ -133,7 +134,7 @@ export function PhotoViewer({
                   height={CLOSE_BUTTON_SIZE}
                   items="center"
                   justify="center"
-                  pressStyle={{ opacity: 0.6 }}
+                  pressStyle={{ opacity: PRESS_OPACITY }}
                   onPress={onClose}
                 >
                   <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />

@@ -1,3 +1,4 @@
+import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 import { CheckIcon } from "phosphor-react-native";
 import { Sheet, Text, useTheme, XStack } from "tamagui";
 
@@ -27,7 +28,7 @@ export function MenuSheet({
       snapPointsMode="fit"
       dismissOnSnapToBottom
     >
-      <Sheet.Overlay opacity={0.6} />
+      <Sheet.Overlay opacity={SHEET_OVERLAY_OPACITY} />
       <Sheet.Handle bg="$color3" />
 
       <Sheet.Frame bg="$color3" p="$4" pb="$6" gap="$2">

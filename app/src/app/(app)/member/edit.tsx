@@ -20,6 +20,7 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { alertApiError, alertMessage } from "@/lib/alert";
 import { api, type MyProfileResponse } from "@/lib/api";
+import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 
@@ -177,7 +178,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
             theme="blue"
             rounded="$7"
             disabled={busy}
-            opacity={busy ? 0.6 : 1}
+            opacity={busy ? DISABLED_OPACITY : 1}
             onPress={submit}
           >
             저장

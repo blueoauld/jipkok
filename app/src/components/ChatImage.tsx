@@ -1,3 +1,8 @@
+import {
+  DISABLED_OPACITY,
+  PHOTO_PRESS_OPACITY,
+  PRESS_OPACITY,
+} from "@/lib/design";
 import { Image } from "expo-image";
 import { XIcon } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
@@ -33,8 +38,6 @@ const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
 
 const TRANSITION = 150;
-
-const UPLOADING_OPACITY = 0.6;
 
 type Size = { width: number; height: number };
 
@@ -133,7 +136,7 @@ export function ChatImage({
   return (
     <>
       <XStack
-        pressStyle={uploading ? undefined : { opacity: 0.8 }}
+        pressStyle={uploading ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
         onPress={uploading ? undefined : openViewer}
       >
         <Image
@@ -154,7 +157,7 @@ export function ChatImage({
               typeof style.borderRadius === "number" ? style.borderRadius : 0
             }
             bg="black"
-            opacity={UPLOADING_OPACITY}
+            opacity={DISABLED_OPACITY}
             items="center"
             justify="center"
           >
@@ -184,7 +187,7 @@ export function ChatImage({
                     height={CLOSE_BUTTON_SIZE}
                     items="center"
                     justify="center"
-                    pressStyle={{ opacity: 0.6 }}
+                    pressStyle={{ opacity: PRESS_OPACITY }}
                     onPress={closeViewer}
                   >
                     <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />

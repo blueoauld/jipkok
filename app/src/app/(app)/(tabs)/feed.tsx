@@ -48,6 +48,11 @@ import {
   type Gender,
 } from "@/lib/api";
 import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
+import {
+  DISABLED_OPACITY,
+  PRESS_OPACITY,
+  SHEET_OVERLAY_OPACITY,
+} from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
@@ -74,7 +79,6 @@ const CAPTION_MAX_LENGTH = 30;
 const FEEDS_KEY = ["feeds"];
 
 const PICKER_LOCALE = "ko-KR";
-const OVERLAY_OPACITY = 0.6;
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -150,7 +154,7 @@ function FeedCard({
         l="$3"
         items="center"
         gap="$2"
-        pressStyle={{ opacity: 0.6 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={() =>
           pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
         }
@@ -178,7 +182,7 @@ function FeedCard({
         t="$2"
         r="$2"
         p="$2"
-        pressStyle={{ opacity: 0.6 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={onReport}
       >
         <SirenIcon size={28} weight="bold" color="white" />
@@ -189,7 +193,7 @@ function FeedCard({
         b="$2"
         r="$2"
         p="$2"
-        pressStyle={{ opacity: 0.6 }}
+        pressStyle={{ opacity: PRESS_OPACITY }}
         onPress={onToggleLike}
       >
         <HeartIcon
@@ -227,7 +231,12 @@ function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
         backgroundColor: hasGlass ? undefined : theme.gray4.val,
       }}
     >
-      <XStack px="$4" py="$2" pressStyle={{ opacity: 0.7 }} onPress={onPress}>
+      <XStack
+        px="$4"
+        py="$2"
+        pressStyle={{ opacity: PRESS_OPACITY }}
+        onPress={onPress}
+      >
         <Text fontSize="$4">{formatDateLabel(date)}</Text>
       </XStack>
     </GlassView>
@@ -251,7 +260,7 @@ function PickerTile({
       bg="$gray4"
       items="center"
       justify="center"
-      pressStyle={{ opacity: 0.6 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
       <Icon size={36} color={theme.gray9.val} />
@@ -296,7 +305,7 @@ function ComposeForm({
             bg="$red10"
             items="center"
             justify="center"
-            pressStyle={{ opacity: 0.6 }}
+            pressStyle={{ opacity: PRESS_OPACITY }}
             onPress={() => setPhoto(null)}
           >
             <XIcon size={14} weight="bold" color="white" />
@@ -344,7 +353,7 @@ function ComposeForm({
           theme="blue"
           rounded="$7"
           disabled={!photo || pending}
-          opacity={!photo || pending ? 0.6 : 1}
+          opacity={!photo || pending ? DISABLED_OPACITY : 1}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
           작성
@@ -368,7 +377,7 @@ function ComposeDialog({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay opacity={0.6} />
+        <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
 
         <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-120}>
           <ComposeForm
@@ -598,7 +607,7 @@ export default function FeedScreen() {
           <YStack
             fullscreen
             bg="$background"
-            opacity={OVERLAY_OPACITY}
+            opacity={SHEET_OVERLAY_OPACITY}
             onPress={() => setPickerOpen(false)}
           />
 

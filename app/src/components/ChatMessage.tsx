@@ -9,6 +9,7 @@ import {
 import { XStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
+import { PRESS_OPACITY } from "@/lib/design";
 
 const AVATAR_SIZE = 38;
 
@@ -37,7 +38,7 @@ export function ChatMessage(props: MessageProps<IMessage>) {
       imageStyle={{ left: AVATAR_STYLE, right: AVATAR_STYLE }}
       renderAvatar={({ currentMessage, onPressAvatar }) => (
         <XStack
-          pressStyle={{ opacity: 0.6 }}
+          pressStyle={{ opacity: PRESS_OPACITY }}
           onPress={() => onPressAvatar?.(currentMessage.user)}
         >
           <UserAvatar

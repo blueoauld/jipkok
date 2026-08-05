@@ -19,6 +19,7 @@ import { FormButton } from "@/components/FormButton";
 import { FormField } from "@/components/FormField";
 import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
 import { api, type SignupRequest } from "@/lib/api";
+import { DISABLED_OPACITY } from "@/lib/design";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
@@ -105,7 +106,7 @@ export default function SignupScreen() {
 
             <FormButton
               disabled={!canSendCode}
-              opacity={canSendCode ? 1 : 0.6}
+              opacity={canSendCode ? 1 : DISABLED_OPACITY}
               onPress={() => sendCode.mutate(getValues("phoneNumber"))}
             >
               전송
@@ -196,7 +197,7 @@ export default function SignupScreen() {
             theme="blue"
             rounded="$7"
             disabled={signup.isPending}
-            opacity={signup.isPending ? 0.6 : 1}
+            opacity={signup.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) => signup.mutate(values))}
           >
             회원가입

@@ -10,12 +10,11 @@ import {
 import { useTheme, XStack, YStack, type XStackProps } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
+import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
 
 const COLUMNS = 3;
 
 const PHOTO_TRANSITION = 200;
-
-const OVERLAY_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 
 type Cell =
   | { kind: "photo"; uri: string; index: number }
@@ -68,7 +67,7 @@ function OverlayButton({
       rounded={9999}
       items="center"
       justify="center"
-      pressStyle={{ opacity: 0.6 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       {...rest}
     >
       {children}
@@ -131,7 +130,7 @@ export function PhotoGrid({
                     bg="$gray4"
                     items="center"
                     justify="center"
-                    pressStyle={{ opacity: 0.6 }}
+                    pressStyle={{ opacity: PRESS_OPACITY }}
                     onPress={onAdd}
                   >
                     <PlusIcon size={24} weight="bold" color={theme.gray9.val} />
@@ -147,7 +146,9 @@ export function PhotoGrid({
                   rounded="$7"
                   overflow="hidden"
                   bg="$gray4"
-                  pressStyle={onPressPhoto ? { opacity: 0.8 } : undefined}
+                  pressStyle={
+                    onPressPhoto ? { opacity: PHOTO_PRESS_OPACITY } : undefined
+                  }
                   onPress={
                     onPressPhoto ? () => onPressPhoto(cell.index) : undefined
                   }
@@ -190,7 +191,7 @@ export function PhotoGrid({
                     <OverlayButton
                       b="$2"
                       l="$2"
-                      bg={OVERLAY_BUTTON_BG}
+                      bg={OVERLAY_BG}
                       onPress={() => onMove(cell.index, cell.index - 1)}
                     >
                       <CaretLeftIcon size={14} weight="bold" color="white" />
@@ -201,7 +202,7 @@ export function PhotoGrid({
                     <OverlayButton
                       b="$2"
                       r="$2"
-                      bg={OVERLAY_BUTTON_BG}
+                      bg={OVERLAY_BG}
                       onPress={() => onMove(cell.index, cell.index + 1)}
                     >
                       <CaretRightIcon size={14} weight="bold" color="white" />

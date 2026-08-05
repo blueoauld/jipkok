@@ -1,3 +1,4 @@
+import { PRESS_OPACITY } from "@/lib/design";
 import type { Icon, IconWeight } from "phosphor-react-native";
 import { useTheme, XStack } from "tamagui";
 
@@ -19,7 +20,7 @@ export function HeaderIconButton({
       items="center"
       justify="center"
       p="$3"
-      pressStyle={{ opacity: 0.5 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
       <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />

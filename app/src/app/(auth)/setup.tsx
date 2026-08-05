@@ -15,6 +15,7 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { alertApiError } from "@/lib/alert";
 import { api } from "@/lib/api";
+import { DISABLED_OPACITY } from "@/lib/design";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
@@ -126,7 +127,7 @@ export default function SetupScreen() {
             theme="blue"
             rounded="$7"
             disabled={setupProfile.isPending}
-            opacity={setupProfile.isPending ? 0.6 : 1}
+            opacity={setupProfile.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) =>
               setupProfile.mutate({
                 nickname: values.nickname,

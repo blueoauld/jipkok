@@ -1,3 +1,4 @@
+import { PRESS_OPACITY } from "@/lib/design";
 import { PaperPlaneRightIcon, PlusIcon } from "phosphor-react-native";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
@@ -59,7 +60,7 @@ export function ChatActions({
       bg="$gray2"
       items="center"
       justify="center"
-      pressStyle={uploading ? undefined : { opacity: 0.6 }}
+      pressStyle={uploading ? undefined : { opacity: PRESS_OPACITY }}
       onPress={uploading ? undefined : onPressActionButton}
     >
       {uploading ? (
@@ -103,7 +104,7 @@ export function ChatSend({ text, onSend }: SendProps<IMessage>) {
       bg={disabled ? "$gray7" : "$blue10"}
       items="center"
       justify="center"
-      pressStyle={{ opacity: 0.6 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={disabled ? undefined : () => onSend?.({ text: trimmed }, true)}
     >
       <PaperPlaneRightIcon size={SEND_ICON_SIZE} weight="fill" color="white" />

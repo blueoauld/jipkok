@@ -1,9 +1,8 @@
 import { StyleSheet } from "react-native";
 import { Spinner, YStack } from "tamagui";
 
+import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 import { useLoadingOverlayStore } from "@/lib/overlay/store";
-
-const OVERLAY_OPACITY = 0.6;
 
 export function LoadingOverlay() {
   const visible = useLoadingOverlayStore((state) => state.visible);
@@ -17,7 +16,7 @@ export function LoadingOverlay() {
       <YStack
         style={StyleSheet.absoluteFill}
         bg="$background"
-        opacity={OVERLAY_OPACITY}
+        opacity={SHEET_OVERLAY_OPACITY}
       />
 
       <Spinner size="small" />

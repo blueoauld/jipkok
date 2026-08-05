@@ -8,6 +8,7 @@ import { Button, Text, YStack } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { alertApiError } from "@/lib/alert";
 import { api, type LoginRequest } from "@/lib/api";
+import { DISABLED_OPACITY, PRESS_OPACITY } from "@/lib/design";
 
 const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 const PASSWORD_MIN_LENGTH = 8;
@@ -71,7 +72,7 @@ export default function LoginScreen() {
                 theme="blue"
                 color="$color10"
                 self="center"
-                pressStyle={{ opacity: 0.6 }}
+                pressStyle={{ opacity: PRESS_OPACITY }}
               >
                 회원가입
               </Text>
@@ -83,7 +84,7 @@ export default function LoginScreen() {
             theme="blue"
             rounded="$7"
             disabled={login.isPending}
-            opacity={login.isPending ? 0.6 : 1}
+            opacity={login.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) => login.mutate(values))}
           >
             로그인

@@ -33,6 +33,7 @@ import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
+import { OVERLAY_BG, PRESS_OPACITY } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { usePhotoGridStore } from "@/lib/photo-grid/store";
@@ -61,7 +62,6 @@ const BLOCK_DESCRIPTION =
 
 const GRID_BUTTON_SIZE = 32;
 const GRID_ICON_SIZE = 18;
-const GRID_BUTTON_BG = "rgba(0, 0, 0, 0.5)";
 
 const LIKES_KEY = ["likes"];
 const FAVORITES_KEY = ["favorites"];
@@ -151,7 +151,7 @@ function ActionBar({
           items="center"
           justify="center"
           opacity={pending === key ? 0.4 : 1}
-          pressStyle={disabled[key] ? undefined : { opacity: 0.6 }}
+          pressStyle={disabled[key] ? undefined : { opacity: PRESS_OPACITY }}
           onPress={disabled[key] ? undefined : () => onPress(key)}
         >
           <YStack>
@@ -372,10 +372,10 @@ export default function MemberProfileScreen() {
                 width={GRID_BUTTON_SIZE}
                 height={GRID_BUTTON_SIZE}
                 rounded={9999}
-                bg={GRID_BUTTON_BG}
+                bg={OVERLAY_BG}
                 items="center"
                 justify="center"
-                pressStyle={{ opacity: 0.6 }}
+                pressStyle={{ opacity: PRESS_OPACITY }}
                 onPress={togglePhotoGrid}
               >
                 <SquaresFourIcon

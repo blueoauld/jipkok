@@ -6,6 +6,7 @@ import { useNow } from "@/hooks/useNow";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
+import { PRESS_OPACITY } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -33,7 +34,7 @@ export function UserRow({ member }: { member: RowMember }) {
     <XStack
       gap="$3"
       items="center"
-      pressStyle={{ opacity: 0.6 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={() => pushOnce(`/member/${memberId}`)}
     >
       <UserAvatar id={String(memberId)} url={profileImageUrl} />

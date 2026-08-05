@@ -4,6 +4,7 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
+import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 
 const EMPTY_COMMENT = "-";
@@ -26,7 +27,7 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
       bg="$red10"
       items="center"
       justify="center"
-      pressStyle={{ opacity: 0.6 }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={press}
     >
       <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
@@ -52,7 +53,7 @@ export function ActivityRow({
         flex={1}
         gap="$3"
         items="center"
-        pressStyle={onPress && { opacity: 0.6 }}
+        pressStyle={onPress && { opacity: PRESS_OPACITY }}
         onPress={onPress}
       >
         <UserAvatar id={String(memberId)} url={member.profileImageUrl} />
