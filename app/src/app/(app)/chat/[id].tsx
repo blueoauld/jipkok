@@ -220,6 +220,7 @@ export default function ChatRoomScreen() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setReplyTarget({
       messageId,
       senderId: Number(message.user._id),
