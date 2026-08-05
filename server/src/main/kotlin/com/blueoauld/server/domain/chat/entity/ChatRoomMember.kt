@@ -34,6 +34,9 @@ class ChatRoomMember(
 
     @Column(name = "unread_count", nullable = false)
     var unreadCount: Int = 0,
+
+    @Column(name = "notification_enabled", nullable = false)
+    var notificationEnabled: Boolean = true,
 ) : BaseEntity() {
 
     @Id

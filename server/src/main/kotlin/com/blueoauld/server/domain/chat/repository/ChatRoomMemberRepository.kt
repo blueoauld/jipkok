@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param
 
 interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
 
+    fun findByRoomIdAndMemberId(roomId: Long, memberId: Long): ChatRoomMember?
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """

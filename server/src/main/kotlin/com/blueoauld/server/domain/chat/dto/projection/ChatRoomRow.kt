@@ -11,6 +11,8 @@ interface ChatRoomRow {
 
     fun getUnreadCount(): Int
 
+    fun getNotificationEnabled(): Boolean
+
     fun getLastMessageId(): Long
 
     fun getLastMessageType(): ChatMessageType

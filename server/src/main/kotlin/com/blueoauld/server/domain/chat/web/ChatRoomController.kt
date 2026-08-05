@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.chat.web
 
+import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.service.ChatRoomService
 import com.blueoauld.server.global.response.CursorResponse
@@ -9,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -49,6 +52,17 @@ class ChatRoomController(
         @AuthenticationPrincipal memberId: Long,
         @PathVariable roomId: Long,
     ): ChatRoomResponse = chatRoomService.findRoom(memberId, roomId)
+
+    @Operation(summary = "채팅방 알림 설정")
+    @PutMapping("/{roomId}/notification")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateNotification(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable roomId: Long,
+        @RequestBody request: UpdateChatNotificationRequest,
+    ) {
+        chatRoomService.updateNotification(memberId, roomId, request)
+    }
 
     @Operation(summary = "채팅방 나가기", description = "방과 대화 내역이 양쪽 모두에서 사라진다.")
     @DeleteMapping("/{roomId}")

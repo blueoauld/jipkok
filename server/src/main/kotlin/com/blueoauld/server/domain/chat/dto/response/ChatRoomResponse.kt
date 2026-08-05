@@ -15,6 +15,7 @@ data class ChatRoomResponse(
     val lastMessageContent: String?,
     val lastMessageAt: Instant,
     val unreadCount: Int,
+    val notificationEnabled: Boolean,
 ) {
 
     companion object {
@@ -28,6 +29,7 @@ data class ChatRoomResponse(
             lastMessageContent = row.getLastMessageContent(),
             lastMessageAt = row.getLastMessageAt(),
             unreadCount = row.getUnreadCount(),
+            notificationEnabled = row.getNotificationEnabled(),
         )
     }
 }

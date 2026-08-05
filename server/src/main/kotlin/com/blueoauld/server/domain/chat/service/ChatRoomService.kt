@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
+import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
@@ -67,6 +68,14 @@ class ChatRoomService(
         )
 
         return toResponse(rows, pageSize)
+    }
+
+    @Transactional
+    fun updateNotification(memberId: Long, roomId: Long, request: UpdateChatNotificationRequest) {
+        val roomMember = chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
+            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+
+        roomMember.notificationEnabled = request.enabled
     }
 
     @Transactional

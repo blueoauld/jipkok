@@ -31,6 +31,12 @@ class ChatPushNotifier(
     }
 
     private fun send(event: ChatMessageSentEvent) {
+        val receiver = chatRoomMemberRepository.findByRoomIdAndMemberId(event.message.roomId, event.receiverId)
+
+        if (receiver?.notificationEnabled != true) {
+            return
+        }
+
         val sender = memberRepository.findById(event.message.senderId).orElse(null) ?: return
 
         pushService.send(

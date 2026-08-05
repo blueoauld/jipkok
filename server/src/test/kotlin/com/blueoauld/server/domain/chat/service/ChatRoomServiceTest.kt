@@ -1,7 +1,9 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
+import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.entity.ChatRoom
+import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
@@ -287,6 +289,7 @@ class ChatRoomServiceTest {
         every { getRoomId() } returns ROOM_ID
         every { getPartnerId() } returns PARTNER_ID
         every { getUnreadCount() } returns 3
+        every { getNotificationEnabled() } returns true
         every { getLastMessageId() } returns LAST_MESSAGE_ID
         every { getLastMessageType() } returns ChatMessageType.TEXT
         every { getLastMessageContent() } returns "안녕하세요."
@@ -302,6 +305,33 @@ class ChatRoomServiceTest {
         comment = null,
         profileImageUrl = null,
     )
+
+    @Test
+    fun `채팅방 알림을 끈다`() {
+        // given
+        val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID)
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
+
+        // when
+        chatRoomService.updateNotification(ME_ID, ROOM_ID, UpdateChatNotificationRequest(false))
+
+        // then
+        assertThat(roomMember.notificationEnabled).isFalse()
+    }
+
+    @Test
+    fun `내가 속하지 않은 방의 알림은 바꿀 수 없다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, STRANGER_ID) } returns null
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.updateNotification(STRANGER_ID, ROOM_ID, UpdateChatNotificationRequest(false))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
 
     companion object {
 
