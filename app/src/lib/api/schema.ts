@@ -76,6 +76,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/chats/{roomId}/notification": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** 채팅방 알림 설정 */
+    put: operations["updateNotification"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/reports": {
     parameters: {
       query?: never;
@@ -499,6 +516,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["health"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/points/me": {
     parameters: {
       query?: never;
@@ -874,6 +907,9 @@ export interface components {
     UpdateCommentRequest: {
       comment?: string | null;
     };
+    UpdateChatNotificationRequest: {
+      enabled: boolean;
+    };
     CreateReportRequest: {
       /** Format: int64 */
       reportedMemberId: number;
@@ -1177,6 +1213,7 @@ export interface components {
       lastMessageAt: string;
       /** Format: int32 */
       unreadCount: number;
+      notificationEnabled: boolean;
     };
     CursorResponseChatRoomResponse: {
       items: components["schemas"]["ChatRoomResponse"][];
@@ -1407,6 +1444,57 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateCommentRequest"];
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  updateNotification: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roomId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateChatNotificationRequest"];
       };
     };
     responses: {
@@ -2976,6 +3064,51 @@ export interface operations {
       };
     };
   };
+  health: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 요청이 올바르지 않다 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 인증이 필요하다 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description 서버에 문제가 발생했다 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   findBalance: {
     parameters: {
       query?: never;
@@ -3963,7 +4096,7 @@ export interface operations {
   reward: {
     parameters: {
       query: {
-        user_id: number;
+        user_id?: number;
         transaction_id: string;
         key_id: string;
         signature: string;
@@ -3974,8 +4107,8 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description No Content */
-      204: {
+      /** @description OK */
+      200: {
         headers: {
           [name: string]: unknown;
         };

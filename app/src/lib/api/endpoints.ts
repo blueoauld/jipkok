@@ -294,6 +294,12 @@ export const chats = {
       body: { lastReadMessageId },
     }),
 
+  updateNotification: (roomId: number, enabled: boolean) =>
+    request<void>(`/api/chats/${roomId}/notification`, {
+      method: "PUT",
+      body: { enabled },
+    }),
+
   leave: (roomId: number) =>
     request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
 
