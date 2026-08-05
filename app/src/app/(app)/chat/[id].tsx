@@ -55,9 +55,12 @@ import {
 } from "@/lib/api";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
+import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 
 const MESSAGE_MAX_LENGTH = 1000;
+
+const REVIEW_SENT_THRESHOLD = 5;
 
 const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
@@ -192,6 +195,17 @@ export default function ChatRoomScreen() {
   );
 
   const textInputRef = useRef<TextInput>(null!);
+  const sentCountRef = useRef(0);
+
+  // 대화가 이어진 방에서 나올 때가 평점을 부탁하기 좋은 순간이다.
+  useEffect(
+    () => () => {
+      if (sentCountRef.current >= REVIEW_SENT_THRESHOLD) {
+        maybeRequestReview();
+      }
+    },
+    [],
+  );
   const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
 
   const handlePressReply = useCallback(
@@ -236,6 +250,7 @@ export default function ChatRoomScreen() {
       const text = sent[0]?.text.trim();
 
       if (text) {
+        sentCountRef.current += 1;
         sendText(text, replyTarget);
         setReplyTarget(null);
       }
