@@ -50,7 +50,10 @@ export async function maybeRequestReview() {
     return;
   }
 
-  if (lastRequestedAt !== null && now - lastRequestedAt < REQUEST_INTERVAL_MILLIS) {
+  if (
+    lastRequestedAt !== null &&
+    now - lastRequestedAt < REQUEST_INTERVAL_MILLIS
+  ) {
     return;
   }
 
