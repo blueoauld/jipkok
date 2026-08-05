@@ -6,7 +6,11 @@ import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useColorScheme } from "react-native";
-import { GiftedChat, type IMessage } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  type IMessage,
+  type ReplyMessage,
+} from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
@@ -19,6 +23,8 @@ import {
   ChatSend,
 } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
+import { ChatMessageReply } from "@/components/ChatMessageReply";
+import { ChatReplyPreview } from "@/components/ChatReplyPreview";
 import {
   CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE,
   CHAT_SCROLL_TO_BOTTOM_STYLE,
@@ -37,6 +43,7 @@ import {
   api,
   type ChatMessageResponse,
   type ChatRoomResponse,
+  type ReplyMessageResponse,
 } from "@/lib/api";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
@@ -66,8 +73,20 @@ function toGiftedMessage(
           }
         : { _id: message.senderId },
     image: message.imageUrl ?? undefined,
+    replyMessage: message.replyMessage
+      ? toGiftedReply(message.replyMessage)
+      : undefined,
     // 자리표시자는 음수 id를 쓴다.
     pending: message.messageId < 0,
+  };
+}
+
+function toGiftedReply(reply: ReplyMessageResponse): ReplyMessage {
+  return {
+    _id: reply.messageId,
+    text: reply.content ?? "",
+    user: { _id: reply.senderId },
+    image: reply.imageUrl ?? undefined,
   };
 }
 
@@ -151,20 +170,46 @@ export default function ChatRoomScreen() {
     dismissRoomNotifications(roomId).catch(() => undefined);
   }, [newestMessageId, roomId]);
 
+  const [replyTarget, setReplyTarget] = useState<ReplyMessageResponse | null>(
+    null,
+  );
+  const replyPreview = useMemo(
+    () => (replyTarget ? toGiftedReply(replyTarget) : null),
+    [replyTarget],
+  );
+
   const giftedMessages = useMemo(
     () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),
     [messages, room],
   );
+
+  const handleSwipeReply = useCallback((message: IMessage) => {
+    const messageId = Number(message._id);
+
+    // 전송 중인 자리표시자에는 답글을 달 수 없다.
+    if (messageId <= 0) {
+      return;
+    }
+
+    setReplyTarget({
+      messageId,
+      senderId: Number(message.user._id),
+      type: message.image ? "PHOTO" : "TEXT",
+      content: message.text || null,
+      imageUrl: message.image ?? null,
+    });
+  }, []);
 
   const handleSend = useCallback(
     (sent: IMessage[]) => {
       const text = sent[0]?.text.trim();
 
       if (text) {
-        sendText(text);
+        sendText(text, replyTarget);
+        setReplyTarget(null);
       }
     },
-    [sendText],
+    [replyTarget, sendText],
   );
 
   const handlePickPhotos = useCallback(async () => {
@@ -229,6 +274,32 @@ export default function ChatRoomScreen() {
         <GiftedChat
           messages={giftedMessages}
           onSend={handleSend}
+          reply={{
+            message: replyPreview,
+            onClear: () => setReplyTarget(null),
+            renderPreview: (previewProps) => (
+              <ChatReplyPreview
+                {...previewProps}
+                name={
+                  replyTarget?.senderId === room.memberId ? room.nickname : "나"
+                }
+              />
+            ),
+            renderMessageReply: (replyProps) => (
+              <ChatMessageReply
+                {...replyProps}
+                name={
+                  Number(replyProps.replyMessage.user._id) === room.memberId
+                    ? room.nickname
+                    : "나"
+                }
+              />
+            ),
+            swipe: {
+              isEnabled: true,
+              onSwipe: handleSwipeReply,
+            },
+          }}
           user={{ _id: profile.memberId }}
           locale="ko"
           colorScheme={scheme}

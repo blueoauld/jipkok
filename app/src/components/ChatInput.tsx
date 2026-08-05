@@ -22,6 +22,7 @@ const COMPOSER_MAX_HEIGHT = 120;
 
 const ACTION_ICON_SIZE = 20;
 const SEND_ICON_SIZE = 18;
+const REPLY_GAP = 8;
 
 export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
   const theme = useTheme();
@@ -40,7 +41,8 @@ export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
         borderRadius: PILL_HEIGHT / 2,
         gap: 4,
         marginHorizontal: 12,
-        marginVertical: 12,
+        marginTop: props.replyMessage ? REPLY_GAP : 12,
+        marginBottom: 12,
         padding: PILL_PADDING,
       }}
     />
