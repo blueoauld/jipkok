@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
+import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Tabs } from "expo-router";
@@ -556,7 +557,10 @@ export default function FeedScreen() {
                   onConfirm: () => report.mutate(item.postId),
                 })
               }
-              onToggleLike={() => toggleLike.mutate(item)}
+              onToggleLike={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                toggleLike.mutate(item);
+              }}
             />
           )}
           showsVerticalScrollIndicator={true}
