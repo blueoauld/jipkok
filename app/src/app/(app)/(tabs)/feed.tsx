@@ -341,7 +341,13 @@ function ComposeForm({
 
       <XStack gap="$2">
         <Dialog.Close asChild>
-          <Button flex={1} size="$4" rounded="$7">
+          <Button
+            flex={1}
+            size="$4"
+            rounded="$7"
+            disabled={pending}
+            opacity={pending ? DISABLED_OPACITY : 1}
+          >
             닫기
           </Button>
         </Dialog.Close>
@@ -352,10 +358,10 @@ function ComposeForm({
           theme="blue"
           rounded="$7"
           disabled={!photo || pending}
-          opacity={!photo || pending ? DISABLED_OPACITY : 1}
+          opacity={!photo ? DISABLED_OPACITY : 1}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
-          작성
+          {pending ? <Spinner size="small" color="$color" /> : "작성"}
         </Button>
       </XStack>
     </>
@@ -374,7 +380,11 @@ function ComposeDialog({
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
   return (
-    <Dialog modal open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      modal
+      open={open}
+      onOpenChange={(next) => !pending && onOpenChange(next)}
+    >
       <Dialog.Portal>
         <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
 
