@@ -8,6 +8,8 @@ import java.time.Instant
 
 interface ReportRepository : JpaRepository<Report, Long> {
 
+    fun findTop20ByHandledAtIsNullOrderByIdAsc(): List<Report>
+
     @Query("select r.id from Report r where r.createdAt < :threshold")
     fun findIdsCreatedBefore(@Param("threshold") threshold: Instant): List<Long>
 

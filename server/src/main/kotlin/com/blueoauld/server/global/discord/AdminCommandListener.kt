@@ -96,7 +96,32 @@ class AdminCommandListener(
         RESET -> reset(event)
         MEMBER -> member(event)
         REPORT -> report(event)
+        REPORTS -> reports()
+        HANDLE -> markHandled(event)
         else -> history(event)
+    }
+
+    private fun reports(): Any {
+        val pending = reportService.findPending()
+
+        if (pending.isEmpty()) {
+            return NO_PENDING_MESSAGE
+        }
+
+        val body = pending.joinToString("\n") {
+            "`${it.reportId}` ${format(it.reportedAt)} / ${it.type.label} / ${it.reason.label}" +
+                    " / 피신고자 `${it.reportedMemberId}`"
+        }
+
+        return toEmbeds(PENDING_TITLE, body)
+    }
+
+    private fun markHandled(event: SlashCommandInteractionEvent): String {
+        val reportId = event.getOption(REPORT_ID_OPTION)!!.asLong
+
+        reportService.handle(reportId)
+
+        return "신고 `$reportId` 처리 완료"
     }
 
     private fun report(event: SlashCommandInteractionEvent): EmbedReply {
@@ -330,6 +355,8 @@ class AdminCommandListener(
         const val RESET = "초기화"
         const val MEMBER = "회원조회"
         const val REPORT = "신고조회"
+        const val REPORTS = "신고목록"
+        const val HANDLE = "신고처리"
 
         private const val MEMBER_ID_OPTION = "회원id"
         private const val REPORT_ID_OPTION = "신고id"
@@ -342,6 +369,8 @@ class AdminCommandListener(
         private const val MESSAGE_MAX_LENGTH = 1900
 
         private const val HISTORY_TITLE = "정지 이력 (최신순)"
+        private const val PENDING_TITLE = "미처리 신고 (오래된 순)"
+        private const val NO_PENDING_MESSAGE = "미처리 신고가 없습니다."
 
         private const val NONE = "없음"
         private const val REPORT_TEXT_TITLE = "신고"
@@ -350,7 +379,7 @@ class AdminCommandListener(
         private const val FORBIDDEN_MESSAGE = "권한이 없습니다."
         private const val FAILED_MESSAGE = "처리하지 못했습니다."
 
-        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET, MEMBER, REPORT)
+        private val COMMAND_NAMES = setOf(SUSPEND, RELEASE, HISTORY, RESET, MEMBER, REPORT, REPORTS, HANDLE)
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -373,6 +402,9 @@ class AdminCommandListener(
             Commands.slash(HISTORY, "회원의 정지 이력을 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true),
             Commands.slash(REPORT, "신고 내용을 본다.")
+                .addOption(OptionType.INTEGER, REPORT_ID_OPTION, "신고 ID", true),
+            Commands.slash(REPORTS, "미처리 신고를 본다."),
+            Commands.slash(HANDLE, "신고를 처리 완료로 표시한다.")
                 .addOption(OptionType.INTEGER, REPORT_ID_OPTION, "신고 ID", true),
             Commands.slash(MEMBER, "회원 정보를 본다.")
                 .addOption(OptionType.INTEGER, MEMBER_ID_OPTION, "회원 ID", true)

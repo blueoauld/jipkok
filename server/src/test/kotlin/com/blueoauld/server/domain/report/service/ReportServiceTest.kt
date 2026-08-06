@@ -37,6 +37,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import tools.jackson.databind.json.JsonMapper
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 import java.util.*
 
 class ReportServiceTest {
@@ -73,6 +76,7 @@ class ReportServiceTest {
         photoStorage,
         JsonMapper.builder().build(),
         eventPublisher,
+        Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
@@ -325,8 +329,62 @@ class ReportServiceTest {
         every { birthYear } returns 1998
     }
 
+    @Test
+    fun `신고를 처리하면 처리 시각이 남는다`() {
+        // given
+        val report = Report(
+            reporterId = REPORTER_ID,
+            reportedMemberId = REPORTED_MEMBER_ID,
+            type = ReportType.PROFILE,
+            reason = ReportReason.ABUSE,
+        )
+        every { reportRepository.findById(REPORT_ID) } returns Optional.of(report)
+
+        // when
+        reportService.handle(REPORT_ID)
+
+        // then
+        assertThat(report.handledAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `없는 신고는 처리할 수 없다`() {
+        // given
+        every { reportRepository.findById(REPORT_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            reportService.handle(REPORT_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.REPORT_NOT_FOUND)
+    }
+
+    @Test
+    fun `미처리 신고만 목록에 담는다`() {
+        // given
+        every { reportRepository.findTop20ByHandledAtIsNullOrderByIdAsc() } returns listOf(
+            Report(
+                reporterId = REPORTER_ID,
+                reportedMemberId = REPORTED_MEMBER_ID,
+                type = ReportType.PROFILE,
+                reason = ReportReason.ABUSE,
+            ),
+        )
+
+        // when
+        val pending = reportService.findPending()
+
+        // then
+        assertThat(pending).singleElement()
+            .satisfies({ assertThat(it.reportedMemberId).isEqualTo(REPORTED_MEMBER_ID) })
+    }
+
     companion object {
 
+        private val NOW: Instant = Instant.parse("2026-08-06T12:00:00Z")
+        private const val REPORT_ID = 100L
         private const val ROOM_ID = 10L
         private const val REPORTER_ID = 1L
         private const val REPORTED_MEMBER_ID = 2L

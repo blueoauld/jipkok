@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import java.time.Instant
 
 @Entity
 @Table(
@@ -39,6 +40,9 @@ class Report(
 
     @Column(name = "detail", length = DETAIL_MAX_LENGTH)
     val detail: String? = null,
+
+    @Column(name = "handled_at")
+    var handledAt: Instant? = null,
 ) : BaseEntity() {
 
     @Id
