@@ -34,6 +34,7 @@ import { BellToggleButton } from "@/components/BellToggleButton";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { PhotoViewer } from "@/components/PhotoViewer";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
@@ -103,11 +104,13 @@ const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니�
 function FeedCard({
   post,
   mine,
+  onPress,
   onReport,
   onToggleLike,
 }: {
   post: FeedPostResponse;
   mine: boolean;
+  onPress: () => void;
   onReport: () => void;
   onToggleLike: () => void;
 }) {
@@ -118,6 +121,7 @@ function FeedCard({
       rounded="$7"
       overflow="hidden"
       bg="$gray4"
+      onPress={onPress}
     >
       <Image
         source={post.imageUrl}
@@ -422,6 +426,7 @@ export default function FeedScreen() {
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const openCompose = useCallback(() => setComposeOpen(true), []);
 
   const gender = useFeedFilterStore((state) => state.gender);
@@ -541,6 +546,7 @@ export default function FeedScreen() {
             <FeedCard
               post={item}
               mine={item.memberId === profile?.memberId}
+              onPress={() => setViewerUrl(item.imageUrl)}
               onReport={() =>
                 confirmAlert({
                   title: "피드",
@@ -650,6 +656,13 @@ export default function FeedScreen() {
         pending={compose.isPending}
         onOpenChange={setComposeOpen}
         onSubmit={(photo, caption) => compose.mutate({ photo, caption })}
+      />
+
+      <PhotoViewer
+        photos={viewerUrl ? [viewerUrl] : []}
+        initialIndex={0}
+        open={viewerUrl !== null}
+        onClose={() => setViewerUrl(null)}
       />
     </YStack>
   );
