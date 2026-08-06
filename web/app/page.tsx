@@ -18,9 +18,9 @@ export default function Home() {
           />
           <h1 className="text-3xl font-bold tracking-tight text-accent">집콕</h1>
           <p className="text-base leading-7 font-medium">
-            부담 없이 건네는 첫 쪽지
+            집에서 보내는 하루도
             <br />
-            가까운 사람들과 천천히
+            동네 친구와 함께
           </p>
         </div>
 
