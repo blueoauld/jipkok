@@ -17,7 +17,7 @@ export function ChatReplyPreview({
   const theme = useTheme();
 
   return (
-    <XStack mx="$3" mt="$3" rounded="$7" overflow="hidden" bg="$gray4">
+    <XStack mx="$3" mt="$3" mb="$2" rounded="$7" overflow="hidden" bg="$gray4">
       <XStack flex={1} items="center" px="$3" py="$2.5" gap="$2.5">
         {replyMessage.image && (
           <Image

@@ -1,3 +1,4 @@
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { PaperPlaneRightIcon, PlusIcon } from "phosphor-react-native";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
@@ -22,30 +23,37 @@ const COMPOSER_MAX_HEIGHT = 120;
 
 const ACTION_ICON_SIZE = 20;
 const SEND_ICON_SIZE = 18;
-const REPLY_GAP = 8;
+const TOOLBAR_MARGIN = 12;
 
 export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
   const theme = useTheme();
+  const hasGlass = isLiquidGlassAvailable();
 
   return (
-    <InputToolbar
-      {...props}
-      containerStyle={{
-        backgroundColor: theme.background.val,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: theme.borderColor.val,
-      }}
-      primaryStyle={{
-        alignItems: "flex-end",
-        backgroundColor: theme.gray4.val,
-        borderRadius: PILL_HEIGHT / 2,
-        gap: 4,
-        marginHorizontal: 12,
-        marginTop: props.replyMessage ? REPLY_GAP : 12,
-        marginBottom: 12,
-        padding: PILL_PADDING,
-      }}
-    />
+    <YStack px={TOOLBAR_MARGIN} pt={TOOLBAR_MARGIN} pb={TOOLBAR_MARGIN}>
+      <GlassView
+        glassEffectStyle="regular"
+        tintColor={theme.gray3.val}
+        style={{
+          borderRadius: PILL_HEIGHT / 2,
+          overflow: "hidden",
+          backgroundColor: hasGlass ? undefined : theme.gray4.val,
+        }}
+      >
+        <InputToolbar
+          {...props}
+          containerStyle={{
+            backgroundColor: "transparent",
+            borderTopWidth: 0,
+          }}
+          primaryStyle={{
+            alignItems: "flex-end",
+            gap: 4,
+            padding: PILL_PADDING,
+          }}
+        />
+      </GlassView>
+    </YStack>
   );
 }
 
