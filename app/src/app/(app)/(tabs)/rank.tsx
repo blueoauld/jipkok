@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { FlatList } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { type Gender, isApiError } from "@/lib/api";
+import { tabBarOverlayHeight } from "@/lib/design";
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -21,6 +23,7 @@ const EMPTY_MESSAGE = "회원이 없습니다.";
 
 export default function RankScreen() {
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<Filter>("전체");
 
   const ranking = useMemberRanking(GENDER_VALUES[filter]);
@@ -45,7 +48,7 @@ export default function RankScreen() {
           showsVerticalScrollIndicator={true}
           contentContainerStyle={{
             paddingTop: space.$3.val,
-            paddingBottom: space.$4.val,
+            paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

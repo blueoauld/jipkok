@@ -7,6 +7,7 @@ import {
 } from "phosphor-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -19,6 +20,7 @@ import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, type Gender, isApiError, type MemberSort } from "@/lib/api";
+import { tabBarOverlayHeight } from "@/lib/design";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import { pushOnce } from "@/lib/router";
 
@@ -54,6 +56,7 @@ const MEMBERS_KEY = ["members"];
 
 export default function MainScreen() {
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -148,7 +151,7 @@ export default function MainScreen() {
           showsVerticalScrollIndicator={true}
           contentContainerStyle={{
             paddingTop: space.$3.val,
-            paddingBottom: space.$4.val,
+            paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

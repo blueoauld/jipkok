@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { FlatList } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatRow } from "@/components/ChatRow";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
+import { tabBarOverlayHeight } from "@/lib/design";
 
 const FILTERS = ["전체", "안읽음"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -15,6 +17,7 @@ const EMPTY_MESSAGE = "채팅이 없습니다.";
 
 export default function ChatScreen() {
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<Filter>("전체");
 
   const query = useChatRooms(filter === "안읽음");
@@ -39,7 +42,7 @@ export default function ChatScreen() {
           showsVerticalScrollIndicator={true}
           contentContainerStyle={{
             paddingTop: space.$3.val,
-            paddingBottom: space.$4.val,
+            paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

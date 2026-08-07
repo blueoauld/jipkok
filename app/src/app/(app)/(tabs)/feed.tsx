@@ -21,6 +21,7 @@ import {
 } from "phosphor-react-native";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, type ViewStyle } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Button,
   Dialog,
@@ -57,6 +58,7 @@ import {
   DISABLED_OPACITY,
   PRESS_OPACITY,
   SHEET_OVERLAY_OPACITY,
+  tabBarOverlayHeight,
 } from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
 import { uploadFeedPhoto } from "@/lib/photo";
@@ -430,6 +432,8 @@ function FeedNotificationButton() {
 
 export default function FeedScreen() {
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
+  const tabBarOverlay = tabBarOverlayHeight(insets.bottom);
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
@@ -582,7 +586,7 @@ export default function FeedScreen() {
           showsVerticalScrollIndicator={true}
           contentContainerStyle={{
             paddingTop: space.$3.val,
-            paddingBottom: space.$4.val,
+            paddingBottom: space.$4.val + tabBarOverlay,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}
@@ -633,7 +637,13 @@ export default function FeedScreen() {
         </YStack>
       )}
 
-      <XStack position="absolute" b="$4" l={0} r={0} justify="center">
+      <XStack
+        position="absolute"
+        b={space.$4.val + tabBarOverlay}
+        l={0}
+        r={0}
+        justify="center"
+      >
         <DateButton date={date} onPress={() => setPickerOpen(true)} />
       </XStack>
 
@@ -653,7 +663,7 @@ export default function FeedScreen() {
             r={0}
             items="center"
             pt="$2"
-            pb="$4"
+            pb={space.$4.val + tabBarOverlay}
             bg="$background"
           >
             <DateTimePicker

@@ -1,3 +1,4 @@
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -9,6 +10,7 @@ import {
   MagnifyingGlassIcon,
   TrophyIcon,
 } from "phosphor-react-native";
+import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
@@ -18,13 +20,15 @@ import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
+import { TAB_BAR_BOTTOM_GAP, TAB_BAR_HEIGHT } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
-const ICON_TOP_OFFSET = 6;
-const TAB_BAR_HEIGHT = ICON_SIZE + 10 + 15 + ICON_TOP_OFFSET;
+const TAB_BAR_MARGIN = 16;
+const TAB_ITEM_PADDING = 5;
 
 const BADGE_FONT_SIZE = 11;
+const BADGE_TOP = (TAB_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
 type Tab = {
   name: string;
@@ -74,9 +78,11 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const unreadCount = useChatUnreadCount();
+  const hasGlass = isLiquidGlassAvailable();
 
   return (
     <Tabs
+      safeAreaInsets={{ bottom: 0 }}
       screenListeners={{
         tabPress: () => {
           Haptics.selectionAsync();
@@ -89,11 +95,29 @@ export default function TabsLayout() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: theme.color10.val,
         tabBarInactiveTintColor: theme.color10.val,
-        tabBarStyle: { height: TAB_BAR_HEIGHT + insets.bottom },
+        tabBarStyle: {
+          position: "absolute",
+          bottom: Math.max(insets.bottom, TAB_BAR_BOTTOM_GAP),
+          marginHorizontal: TAB_BAR_MARGIN,
+          height: TAB_BAR_HEIGHT,
+          borderRadius: TAB_BAR_HEIGHT / 2,
+          borderTopWidth: 0,
+          backgroundColor: "transparent",
+          overflow: "hidden",
+          elevation: 0,
+        },
+        tabBarBackground: () => (
+          <GlassView
+            glassEffectStyle="regular"
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: hasGlass ? undefined : theme.gray4.val },
+            ]}
+          />
+        ),
         tabBarIconStyle: {
           width: ICON_SIZE,
-          height: ICON_SIZE,
-          marginTop: ICON_TOP_OFFSET,
+          flex: 1,
         },
       }}
     >
@@ -110,6 +134,7 @@ export default function TabsLayout() {
                 ? formatUnreadCount(unreadCount)
                 : undefined,
             tabBarBadgeStyle: {
+              top: BADGE_TOP,
               backgroundColor: theme.red10.val,
               color: "white",
               fontSize: BADGE_FONT_SIZE,

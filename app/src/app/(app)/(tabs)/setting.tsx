@@ -22,6 +22,7 @@ import {
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -38,6 +39,7 @@ import {
   confirmAlert,
 } from "@/lib/alert";
 import { api } from "@/lib/api";
+import { tabBarOverlayHeight } from "@/lib/design";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
@@ -141,6 +143,7 @@ function SettingRow({
 
 export default function SettingScreen() {
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -259,7 +262,10 @@ export default function SettingScreen() {
     <ScrollView
       style={{ flex: 1 }}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingVertical: space.$4.val }}
+      contentContainerStyle={{
+        paddingTop: space.$4.val,
+        paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
+      }}
     >
       <YStack gap="$4">
         {SECTIONS.map((items) => (
