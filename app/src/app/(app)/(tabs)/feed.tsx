@@ -46,6 +46,7 @@ import {
 } from "@/components/ScrollToTopButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
+import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
@@ -395,6 +396,8 @@ function ComposeDialog({
   onOpenChange: (open: boolean) => void;
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
+  const keyboardOffset = useDialogKeyboardOffset();
+
   return (
     <Dialog
       modal
@@ -404,7 +407,13 @@ function ComposeDialog({
       <Dialog.Portal>
         <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
 
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-120}>
+        <Dialog.Content
+          width="85%"
+          maxW={400}
+          p="$4"
+          gap="$4"
+          y={keyboardOffset}
+        >
           <ComposeForm
             key={String(open)}
             pending={pending}

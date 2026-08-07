@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Button, Dialog, Text, XStack } from "tamagui";
 
+import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 
 import { FormField } from "./FormField";
@@ -97,12 +98,20 @@ export function TextInputDialog({
   rows?: number;
   onSubmit: (value: string) => void;
 }) {
+  const keyboardOffset = useDialogKeyboardOffset();
+
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
 
-        <Dialog.Content width="85%" maxW={400} p="$4" gap="$4" y={-45}>
+        <Dialog.Content
+          width="85%"
+          maxW={400}
+          p="$4"
+          gap="$4"
+          y={keyboardOffset}
+        >
           <DialogForm
             key={String(open)}
             title={title}
