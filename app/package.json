@@ -75,5 +75,9 @@
     "api:types": "npx --yes openapi-typescript@7 openapi.json -o src/lib/api/schema.ts",
     "postinstall": "patch-package"
   },
+  "overrides": {
+    "@emnapi/core": "1.10.0",
+    "@emnapi/runtime": "1.10.0"
+  },
   "private": true
 }

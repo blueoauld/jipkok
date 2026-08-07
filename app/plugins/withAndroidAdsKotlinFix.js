@@ -1,4 +1,7 @@
-const { withGradleProperties, withProjectBuildGradle } = require("expo/config-plugins");
+const {
+  withGradleProperties,
+  withProjectBuildGradle,
+} = require("expo/config-plugins");
 
 const ANCHOR = 'apply plugin: "expo-root-project"';
 
@@ -21,7 +24,9 @@ const JVM_ARGS_VALUE = "-Xmx4096m -XX:MaxMetaspaceSize=2048m";
 
 function withAdsKotlinMetadataFix(config) {
   return withProjectBuildGradle(config, (modConfig) => {
-    if (!modConfig.modResults.contents.includes("-Xskip-metadata-version-check")) {
+    if (
+      !modConfig.modResults.contents.includes("-Xskip-metadata-version-check")
+    ) {
       modConfig.modResults.contents = modConfig.modResults.contents.replace(
         ANCHOR,
         `${SKIP_METADATA_CHECK}\n${ANCHOR}`,
