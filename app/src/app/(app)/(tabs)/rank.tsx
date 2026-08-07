@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
+import {
+  SCROLL_EVENT_THROTTLE,
+  ScrollToTopButton,
+  useScrollToTopVisible,
+} from "@/components/ScrollToTopButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
@@ -25,6 +30,8 @@ export default function RankScreen() {
   const space = getTokens().space;
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<Filter>("전체");
+  const listRef = useRef<FlatList>(null);
+  const scrollTop = useScrollToTopVisible();
 
   const ranking = useMemberRanking(GENDER_VALUES[filter]);
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -42,10 +49,13 @@ export default function RankScreen() {
 
       {members ? (
         <FlatList
+          ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
           showsVerticalScrollIndicator={true}
+          onScroll={scrollTop.onScroll}
+          scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$3.val,
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
@@ -95,6 +105,11 @@ export default function RankScreen() {
           )}
         </YStack>
       )}
+
+      <ScrollToTopButton
+        visible={scrollTop.visible}
+        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+      />
     </YStack>
   );
 }

@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatRow } from "@/components/ChatRow";
+import {
+  SCROLL_EVENT_THROTTLE,
+  ScrollToTopButton,
+  useScrollToTopVisible,
+} from "@/components/ScrollToTopButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
@@ -19,6 +24,8 @@ export default function ChatScreen() {
   const space = getTokens().space;
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<Filter>("전체");
+  const listRef = useRef<FlatList>(null);
+  const scrollTop = useScrollToTopVisible();
 
   const query = useChatRooms(filter === "안읽음");
   const { rooms, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -36,10 +43,13 @@ export default function ChatScreen() {
 
       {rooms ? (
         <FlatList
+          ref={listRef}
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
           renderItem={({ item }) => <ChatRow room={item} />}
           showsVerticalScrollIndicator={true}
+          onScroll={scrollTop.onScroll}
+          scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$3.val,
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
@@ -89,6 +99,11 @@ export default function ChatScreen() {
           )}
         </YStack>
       )}
+
+      <ScrollToTopButton
+        visible={scrollTop.visible}
+        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+      />
     </YStack>
   );
 }

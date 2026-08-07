@@ -5,13 +5,18 @@ import {
   MagnifyingGlassIcon,
   NotePencilIcon,
 } from "phosphor-react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
+import {
+  SCROLL_EVENT_THROTTLE,
+  ScrollToTopButton,
+  useScrollToTopVisible,
+} from "@/components/ScrollToTopButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { UserRow } from "@/components/UserRow";
@@ -60,6 +65,8 @@ export default function MainScreen() {
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const listRef = useRef<FlatList>(null);
+  const scrollTop = useScrollToTopVisible();
 
   const queryClient = useQueryClient();
   const location = useLocationUpdate();
@@ -145,10 +152,13 @@ export default function MainScreen() {
 
       {members ? (
         <FlatList
+          ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
           showsVerticalScrollIndicator={true}
+          onScroll={scrollTop.onScroll}
+          scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$3.val,
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
@@ -201,6 +211,11 @@ export default function MainScreen() {
           )}
         </YStack>
       )}
+
+      <ScrollToTopButton
+        visible={scrollTop.visible}
+        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+      />
 
       <TextInputDialog
         open={commentOpen}

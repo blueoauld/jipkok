@@ -39,6 +39,11 @@ import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
+import {
+  SCROLL_EVENT_THROTTLE,
+  ScrollToTopButton,
+  useScrollToTopVisible,
+} from "@/components/ScrollToTopButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
@@ -442,6 +447,8 @@ export default function FeedScreen() {
   const [genderOpen, setGenderOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const listRef = useRef<FlatList<FeedPostResponse>>(null);
+  const scrollTop = useScrollToTopVisible();
   const openCompose = useCallback(() => setComposeOpen(true), []);
   const openGender = useCallback(() => setGenderOpen(true), []);
 
@@ -561,6 +568,7 @@ export default function FeedScreen() {
 
       {posts ? (
         <FlatList
+          ref={listRef}
           data={posts}
           keyExtractor={(post) => String(post.postId)}
           renderItem={({ item }) => (
@@ -584,6 +592,8 @@ export default function FeedScreen() {
             />
           )}
           showsVerticalScrollIndicator={true}
+          onScroll={scrollTop.onScroll}
+          scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$3.val,
             paddingBottom: space.$4.val + tabBarOverlay,
@@ -636,6 +646,11 @@ export default function FeedScreen() {
           )}
         </YStack>
       )}
+
+      <ScrollToTopButton
+        visible={scrollTop.visible}
+        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+      />
 
       <XStack
         position="absolute"
