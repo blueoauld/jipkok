@@ -48,6 +48,7 @@ import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
 const ACTION_BAR_MARGIN = 16;
+const LIKE_ICON_SIZE = 14;
 
 const NOTE_MAX_LENGTH = 100;
 
@@ -195,6 +196,7 @@ export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
   const now = useNow();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
@@ -439,15 +441,23 @@ export default function MemberProfileScreen() {
                 </XStack>
 
                 <XStack items="center" justify="space-between" gap="$2">
-                  <Text
-                    flex={1}
-                    numberOfLines={1}
-                    theme="gray"
-                    color="$color10"
-                    fontSize="$4"
-                  >
-                    {`${genderLabel(member.gender)} · ${member.age}살 · ♥ ${member.receivedLikeCount}`}
-                  </Text>
+                  <XStack flex={1} items="center">
+                    <Text theme="gray" color="$color10" fontSize="$4">
+                      {`${genderLabel(member.gender)} · ${member.age}살 · `}
+                    </Text>
+
+                    <XStack items="center" gap="$1">
+                      <HeartIcon
+                        size={LIKE_ICON_SIZE}
+                        weight="fill"
+                        color={theme.gray10.val}
+                      />
+
+                      <Text theme="gray" color="$color10" fontSize="$4">
+                        {member.receivedLikeCount}
+                      </Text>
+                    </XStack>
+                  </XStack>
 
                   {member.distance !== undefined &&
                     member.distance !== null && (

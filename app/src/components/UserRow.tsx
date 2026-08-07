@@ -1,5 +1,5 @@
-import { StarIcon } from "phosphor-react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { HeartIcon, StarIcon } from "phosphor-react-native";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import { useNow } from "@/hooks/useNow";
@@ -12,11 +12,13 @@ import { pushOnce } from "@/lib/router";
 
 const EMPTY_COMMENT = "-";
 const FAVORITE_ICON_SIZE = 14;
+const LIKE_ICON_SIZE = 13;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
 export function UserRow({ member }: { member: RowMember }) {
   const now = useNow();
+  const theme = useTheme();
   const {
     memberId,
     nickname,
@@ -62,9 +64,23 @@ export function UserRow({ member }: { member: RowMember }) {
           )}
         </XStack>
 
-        <Text theme="gray" color="$color10" fontSize="$3">
-          {`${genderLabel(gender)} · ${age}살 · ♥ ${receivedLikeCount}`}
-        </Text>
+        <XStack items="center">
+          <Text theme="gray" color="$color10" fontSize="$3">
+            {`${genderLabel(gender)} · ${age}살 · `}
+          </Text>
+
+          <XStack items="center" gap="$1">
+            <HeartIcon
+              size={LIKE_ICON_SIZE}
+              weight="fill"
+              color={theme.gray10.val}
+            />
+
+            <Text theme="gray" color="$color10" fontSize="$3">
+              {receivedLikeCount}
+            </Text>
+          </XStack>
+        </XStack>
 
         <XStack items="center" justify="space-between" gap="$2">
           <Text
