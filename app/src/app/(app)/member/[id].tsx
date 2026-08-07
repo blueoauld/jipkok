@@ -37,8 +37,8 @@ import { formatRelativeTime } from "@/lib/date";
 import {
   OVERLAY_BG,
   PRESS_OPACITY,
-  TAB_BAR_BOTTOM_GAP,
   TAB_BAR_HEIGHT,
+  tabBarBottom,
   tabBarOverlayHeight,
 } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
@@ -148,7 +148,7 @@ function ActionBar({
   return (
     <XStack
       position="absolute"
-      b={Math.max(insets.bottom, TAB_BAR_BOTTOM_GAP)}
+      b={tabBarBottom(insets.bottom)}
       l={ACTION_BAR_MARGIN}
       r={ACTION_BAR_MARGIN}
     >

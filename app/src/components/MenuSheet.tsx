@@ -1,5 +1,6 @@
 import { CheckIcon } from "phosphor-react-native";
-import { Sheet, Text, useTheme, XStack } from "tamagui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
 import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
 
@@ -20,6 +21,7 @@ export function MenuSheet({
   items: MenuSheetItem[];
 }) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Sheet
@@ -32,7 +34,12 @@ export function MenuSheet({
       <Sheet.Overlay opacity={SHEET_OVERLAY_OPACITY} />
       <Sheet.Handle bg="$color3" />
 
-      <Sheet.Frame bg="$color3" p="$4" pb="$6" gap="$2">
+      <Sheet.Frame
+        bg="$color3"
+        p="$4"
+        pb={getTokens().space.$6.val + insets.bottom}
+        gap="$2"
+      >
         {items.map(({ label, destructive, selected, onPress }) => (
           <XStack
             key={label}

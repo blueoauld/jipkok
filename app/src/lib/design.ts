@@ -12,6 +12,10 @@ export const TAB_BAR_HEIGHT = 64;
 
 export const TAB_BAR_BOTTOM_GAP = 12;
 
+export function tabBarBottom(bottomInset: number) {
+  return bottomInset + TAB_BAR_BOTTOM_GAP;
+}
+
 export function tabBarOverlayHeight(bottomInset: number) {
-  return TAB_BAR_HEIGHT + Math.max(bottomInset, TAB_BAR_BOTTOM_GAP);
+  return TAB_BAR_HEIGHT + tabBarBottom(bottomInset);
 }

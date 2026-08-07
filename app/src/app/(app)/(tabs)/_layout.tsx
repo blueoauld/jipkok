@@ -20,7 +20,7 @@ import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
-import { TAB_BAR_BOTTOM_GAP, TAB_BAR_HEIGHT } from "@/lib/design";
+import { TAB_BAR_HEIGHT, tabBarBottom } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
@@ -97,7 +97,7 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: theme.color10.val,
         tabBarStyle: {
           position: "absolute",
-          bottom: Math.max(insets.bottom, TAB_BAR_BOTTOM_GAP),
+          bottom: tabBarBottom(insets.bottom),
           marginHorizontal: TAB_BAR_MARGIN,
           height: TAB_BAR_HEIGHT,
           borderRadius: TAB_BAR_HEIGHT / 2,
