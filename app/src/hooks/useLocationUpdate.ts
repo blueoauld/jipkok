@@ -1,12 +1,41 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useCallback, useState } from "react";
+import { Platform } from "react-native";
 
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { alertApiError, alertInfo } from "@/lib/alert";
 import { api } from "@/lib/api";
 
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
+const SERVICES_OFF_MESSAGE =
+  "기기의 위치 기능을 켜야 거리순으로 볼 수 있습니다.";
+const FAILED_MESSAGE = "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.";
+
+const LOCATION_TIMEOUT = 10_000;
+
+async function resolveCoords() {
+  const current = await Promise.race([
+    Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+    new Promise<null>((resolve) => {
+      setTimeout(() => resolve(null), LOCATION_TIMEOUT);
+    }),
+  ]).catch(() => null);
+
+  if (current) {
+    return current.coords;
+  }
+
+  const last = await Location.getLastKnownPositionAsync();
+
+  return last?.coords ?? null;
+}
+
+async function resolveCachedCoords() {
+  const last = await Location.getLastKnownPositionAsync().catch(() => null);
+
+  return last?.coords ?? (await resolveCoords());
+}
 
 export function useLocationUpdate() {
   const queryClient = useQueryClient();
@@ -23,14 +52,20 @@ export function useLocationUpdate() {
     },
   });
 
-  const send = useCallback(async () => {
-    const { coords } = await Location.getCurrentPositionAsync({});
+  const enableServices = useCallback(async () => {
+    if (await Location.hasServicesEnabledAsync()) {
+      return true;
+    }
 
-    await heartbeat({
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    });
-  }, [heartbeat]);
+    if (Platform.OS !== "android") {
+      return false;
+    }
+
+    return Location.enableNetworkProviderAsync().then(
+      () => true,
+      () => false,
+    );
+  }, []);
 
   const update = useCallback(async () => {
     if (updating) {
@@ -47,7 +82,22 @@ export function useLocationUpdate() {
         return false;
       }
 
-      await send();
+      if (!(await enableServices())) {
+        alertInfo(SERVICES_OFF_MESSAGE);
+        return false;
+      }
+
+      const coords = await resolveCoords();
+
+      if (!coords) {
+        alertInfo(FAILED_MESSAGE);
+        return false;
+      }
+
+      await heartbeat({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
 
       return true;
     } catch (error) {
@@ -56,22 +106,28 @@ export function useLocationUpdate() {
     } finally {
       setUpdating(false);
     }
-  }, [send, updating]);
+  }, [enableServices, heartbeat, updating]);
 
   const refresh = useCallback(async () => {
     try {
       const permission = await Location.getForegroundPermissionsAsync();
 
-      if (!permission.granted) {
+      if (!permission.granted || !(await Location.hasServicesEnabledAsync())) {
         await heartbeat({});
         return;
       }
 
-      await send();
+      const coords = await resolveCachedCoords();
+
+      await heartbeat(
+        coords
+          ? { latitude: coords.latitude, longitude: coords.longitude }
+          : {},
+      );
     } catch (error) {
       alertApiError(error);
     }
-  }, [heartbeat, send]);
+  }, [heartbeat]);
 
   return { updating, update, refresh };
 }

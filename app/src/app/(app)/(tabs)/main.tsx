@@ -110,8 +110,7 @@ export default function MainScreen() {
     setRefreshing(true);
 
     try {
-      await location.refresh();
-      await feed.refetch();
+      await Promise.all([location.refresh(), feed.refetch()]);
     } finally {
       setRefreshing(false);
     }
