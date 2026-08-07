@@ -1,4 +1,3 @@
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { CaretUpIcon } from "phosphor-react-native";
 import { useCallback, useState } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
@@ -7,6 +6,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, XStack } from "tamagui";
 
 import { PRESS_OPACITY, tabBarOverlayHeight } from "@/lib/design";
+
+import { GlassSurface } from "./GlassSurface";
 
 const BUTTON_SIZE = 40;
 const ICON_SIZE = 20;
@@ -38,7 +39,6 @@ export function ScrollToTopButton({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const hasGlass = isLiquidGlassAvailable();
 
   if (!visible) {
     return null;
@@ -50,12 +50,10 @@ export function ScrollToTopButton({
       r={BUTTON_GAP}
       b={tabBarOverlayHeight(insets.bottom) + BUTTON_GAP}
     >
-      <GlassView
-        glassEffectStyle="regular"
+      <GlassSurface
         style={{
           borderRadius: 9999,
           overflow: "hidden",
-          backgroundColor: hasGlass ? undefined : theme.gray4.val,
         }}
       >
         <XStack
@@ -75,7 +73,7 @@ export function ScrollToTopButton({
             color={theme.color10.val}
           />
         </XStack>
-      </GlassView>
+      </GlassSurface>
     </XStack>
   );
 }

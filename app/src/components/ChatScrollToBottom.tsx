@@ -1,7 +1,8 @@
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { CaretDownIcon } from "phosphor-react-native";
 import { StyleSheet } from "react-native";
 import { useTheme, XStack } from "tamagui";
+
+import { GlassSurface } from "./GlassSurface";
 
 const BUTTON_SIZE = 40;
 const ICON_SIZE = 20;
@@ -16,15 +17,12 @@ export const CHAT_SCROLL_TO_BOTTOM_STYLE = { right: 12, bottom: 16 };
 
 export function ChatScrollToBottom() {
   const theme = useTheme();
-  const hasGlass = isLiquidGlassAvailable();
 
   return (
-    <GlassView
-      glassEffectStyle="regular"
+    <GlassSurface
       style={{
         borderRadius: 9999,
         overflow: "hidden",
-        backgroundColor: hasGlass ? undefined : theme.gray4.val,
       }}
     >
       <XStack
@@ -42,6 +40,6 @@ export function ChatScrollToBottom() {
           color={theme.color10.val}
         />
       </XStack>
-    </GlassView>
+    </GlassSurface>
   );
 }

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Clipboard from "expo-clipboard";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -18,6 +17,7 @@ import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoGrid } from "@/components/PhotoGrid";
@@ -119,7 +119,6 @@ function ActionBar({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const hasGlass = isLiquidGlassAvailable();
 
   const filled: Record<ActionKey, boolean> = {
     like: member.likedByMe,
@@ -152,13 +151,11 @@ function ActionBar({
       l={ACTION_BAR_MARGIN}
       r={ACTION_BAR_MARGIN}
     >
-      <GlassView
-        glassEffectStyle="regular"
+      <GlassSurface
         style={{
           flex: 1,
           borderRadius: TAB_BAR_HEIGHT / 2,
           overflow: "hidden",
-          backgroundColor: hasGlass ? undefined : theme.gray4.val,
         }}
       >
         <XStack height={TAB_BAR_HEIGHT} items="center">
@@ -189,7 +186,7 @@ function ActionBar({
             </XStack>
           ))}
         </XStack>
-      </GlassView>
+      </GlassSurface>
     </XStack>
   );
 }

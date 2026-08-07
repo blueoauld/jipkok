@@ -1,4 +1,3 @@
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { PaperPlaneRightIcon, PlusIcon } from "phosphor-react-native";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
@@ -14,6 +13,8 @@ import { Spinner, useTheme, XStack, YStack } from "tamagui";
 
 import { PRESS_OPACITY } from "@/lib/design";
 
+import { GlassSurface } from "./GlassSurface";
+
 const PILL_PADDING = 6;
 const BUTTON_SIZE = 36;
 const PILL_HEIGHT = BUTTON_SIZE + PILL_PADDING * 2;
@@ -27,17 +28,14 @@ const TOOLBAR_MARGIN = 12;
 
 export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
   const theme = useTheme();
-  const hasGlass = isLiquidGlassAvailable();
 
   return (
     <YStack px={TOOLBAR_MARGIN} pt={TOOLBAR_MARGIN} pb={TOOLBAR_MARGIN}>
-      <GlassView
-        glassEffectStyle="regular"
+      <GlassSurface
         tintColor={theme.gray3.val}
         style={{
           borderRadius: PILL_HEIGHT / 2,
           overflow: "hidden",
-          backgroundColor: hasGlass ? undefined : theme.gray4.val,
         }}
       >
         <InputToolbar
@@ -52,7 +50,7 @@ export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
             padding: PILL_PADDING,
           }}
         />
-      </GlassView>
+      </GlassSurface>
     </YStack>
   );
 }

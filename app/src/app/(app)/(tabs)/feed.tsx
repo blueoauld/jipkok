@@ -4,7 +4,6 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import type { ImagePickerAsset } from "expo-image-picker";
@@ -36,6 +35,7 @@ import {
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
+import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -239,16 +239,11 @@ function FeedCard({
 }
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
-  const theme = useTheme();
-  const hasGlass = isLiquidGlassAvailable();
-
   return (
-    <GlassView
-      glassEffectStyle="regular"
+    <GlassSurface
       style={{
         borderRadius: 9999,
         overflow: "hidden",
-        backgroundColor: hasGlass ? undefined : theme.gray4.val,
       }}
     >
       <XStack
@@ -259,7 +254,7 @@ function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
       >
         <Text fontSize="$4">{formatDateLabel(date)}</Text>
       </XStack>
-    </GlassView>
+    </GlassSurface>
   );
 }
 

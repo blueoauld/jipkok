@@ -1,4 +1,3 @@
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -15,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
+import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -78,7 +78,6 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const unreadCount = useChatUnreadCount();
-  const hasGlass = isLiquidGlassAvailable();
 
   return (
     <Tabs
@@ -107,13 +106,12 @@ export default function TabsLayout() {
           elevation: 0,
         },
         tabBarBackground: () => (
-          <GlassView
-            glassEffectStyle="regular"
+          <GlassSurface
             style={[
               StyleSheet.absoluteFill,
               {
                 borderRadius: TAB_BAR_HEIGHT / 2,
-                backgroundColor: hasGlass ? undefined : theme.gray4.val,
+                overflow: "hidden",
               },
             ]}
           />
