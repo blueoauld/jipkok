@@ -56,7 +56,7 @@ export default function MemberSearchScreen() {
         keyExtractor={(member) => String(member.memberId)}
         renderItem={({ item }) => <UserRow member={item} />}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: space.$3.val,
           paddingBottom: space.$4.val,

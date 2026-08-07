@@ -595,7 +595,7 @@ export default function FeedScreen() {
               }}
             />
           )}
-          showsVerticalScrollIndicator={true}
+          showsVerticalScrollIndicator={false}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{

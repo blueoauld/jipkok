@@ -56,7 +56,7 @@ export default function ChatSearchScreen() {
         keyExtractor={(room) => String(room.roomId)}
         renderItem={({ item }) => <ChatRow room={item} />}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: space.$3.val,
           paddingBottom: space.$4.val,

@@ -47,7 +47,7 @@ export default function ChatScreen() {
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
           renderItem={({ item }) => <ChatRow room={item} />}
-          showsVerticalScrollIndicator={true}
+          showsVerticalScrollIndicator={false}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{

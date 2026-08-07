@@ -155,7 +155,7 @@ export default function MainScreen() {
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
-          showsVerticalScrollIndicator={true}
+          showsVerticalScrollIndicator={false}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
