@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Gender, MemberSort } from "@/lib/api";
+import type { FeedSort, Gender, MemberSort } from "@/lib/api";
 import { toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 
@@ -32,8 +32,10 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 );
 
 type FeedFilterState = {
+  sort: FeedSort;
   gender: Gender | null;
   date: string;
+  setSort: (sort: FeedSort) => void;
   setGender: (gender: Gender | null) => void;
   setDate: (date: Date) => void;
 };
@@ -41,8 +43,10 @@ type FeedFilterState = {
 export const useFeedFilterStore = create<FeedFilterState>()(
   persist(
     (set) => ({
+      sort: "LATEST",
       gender: null,
       date: toDateParam(new Date()),
+      setSort: (sort) => set({ sort }),
       setGender: (gender) => set({ gender }),
       setDate: (date) => set({ date: toDateParam(date) }),
     }),
@@ -54,7 +58,7 @@ export const useFeedFilterStore = create<FeedFilterState>()(
         gender:
           (persisted as { gender: Gender | null } | undefined)?.gender ?? null,
       }),
-      partialize: (state) => ({ gender: state.gender }),
+      partialize: (state) => ({ sort: state.sort, gender: state.gender }),
     },
   ),
 );

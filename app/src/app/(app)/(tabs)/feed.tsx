@@ -12,6 +12,7 @@ import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
   CameraIcon,
+  FunnelSimpleIcon,
   HeartIcon,
   ImagesIcon,
   NotePencilIcon,
@@ -35,6 +36,7 @@ import { BellToggleButton } from "@/components/BellToggleButton";
 import { FormField } from "@/components/FormField";
 import { FormInput } from "@/components/FormInput";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -46,6 +48,7 @@ import {
   api,
   type FeedPostPage,
   type FeedPostResponse,
+  type FeedSort,
   type Gender,
   isApiError,
 } from "@/lib/api";
@@ -83,6 +86,12 @@ const PICKER_LOCALE = "ko-KR";
 
 const FILTERS = ["전체", "남자", "여자"] as const;
 type Filter = (typeof FILTERS)[number];
+
+const SORTS = ["최신", "과거"] as const;
+type Sort = (typeof SORTS)[number];
+
+const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
+const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
 const GENDER_VALUES: Record<Filter, Gender | null> = {
   전체: null,
@@ -426,19 +435,23 @@ export default function FeedScreen() {
   const [composeOpen, setComposeOpen] = useState(false);
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [genderOpen, setGenderOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const openCompose = useCallback(() => setComposeOpen(true), []);
+  const openGender = useCallback(() => setGenderOpen(true), []);
 
+  const sort = useFeedFilterStore((state) => state.sort);
+  const setSort = useFeedFilterStore((state) => state.setSort);
   const gender = useFeedFilterStore((state) => state.gender);
   const setGender = useFeedFilterStore((state) => state.setGender);
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
   const date = useMemo(() => fromDateParam(storedDate), [storedDate]);
-  const feed = useFeedPosts(date, gender);
+  const feed = useFeedPosts(date, gender, sort);
   const { posts, error, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
 
-  const queryKey = feedPostsKey(date, gender);
+  const queryKey = feedPostsKey(date, gender, sort);
   const invalidate = useCallback(
     () => queryClient.invalidateQueries({ queryKey: FEEDS_KEY }),
     [queryClient],
@@ -521,10 +534,13 @@ export default function FeedScreen() {
     () => ({
       headerLeft: () => <FeedNotificationButton />,
       headerRight: () => (
-        <HeaderIconButton icon={NotePencilIcon} onPress={openCompose} />
+        <XStack>
+          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openGender} />
+          <HeaderIconButton icon={NotePencilIcon} onPress={openCompose} />
+        </XStack>
       ),
     }),
-    [openCompose],
+    [openCompose, openGender],
   );
 
   return (
@@ -533,9 +549,9 @@ export default function FeedScreen() {
 
       <YStack px="$4" pt="$4" pb="$2">
         <SegmentedControl
-          values={FILTERS}
-          value={GENDER_LABELS[gender ?? ""] ?? "전체"}
-          onChange={(label) => setGender(GENDER_VALUES[label])}
+          values={SORTS}
+          value={SORT_LABELS[sort]}
+          onChange={(label) => setSort(SORT_VALUES[label])}
         />
       </YStack>
 
@@ -667,6 +683,16 @@ export default function FeedScreen() {
         initialIndex={0}
         open={viewerUrl !== null}
         onClose={() => setViewerUrl(null)}
+      />
+
+      <MenuSheet
+        open={genderOpen}
+        onOpenChange={setGenderOpen}
+        items={FILTERS.map((label) => ({
+          label,
+          selected: label === (GENDER_LABELS[gender ?? ""] ?? "전체"),
+          onPress: () => setGender(GENDER_VALUES[label]),
+        }))}
       />
     </YStack>
   );

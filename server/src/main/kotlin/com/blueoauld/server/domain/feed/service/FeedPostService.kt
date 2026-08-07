@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.dto.response.FeedPhotoUploadUrlResponse
 import com.blueoauld.server.domain.feed.dto.response.FeedPostResponse
 import com.blueoauld.server.domain.feed.entity.FeedPost
+import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.service.MemberSummaryService
@@ -35,20 +36,33 @@ class FeedPostService(
     fun findByDate(
         memberId: Long,
         gender: Gender?,
+        sort: FeedSort,
         date: LocalDate?,
         cursor: Long?,
         size: Int,
     ): CursorResponse<FeedPostResponse> {
         val pageSize = CursorResponse.pageSize(size)
         val from = (date ?: today()).atStartOfDay(KOREA).toInstant()
-        val rows = feedPostRepository.findByDate(
-            memberId = memberId,
-            gender = gender?.name,
-            from = from,
-            to = from.plus(1, ChronoUnit.DAYS),
-            cursor = cursor,
-            size = pageSize,
-        )
+        val to = from.plus(1, ChronoUnit.DAYS)
+        val rows = when (sort) {
+            FeedSort.LATEST -> feedPostRepository.findByDateLatestFirst(
+                memberId = memberId,
+                gender = gender?.name,
+                from = from,
+                to = to,
+                cursor = cursor,
+                size = pageSize,
+            )
+
+            FeedSort.OLDEST -> feedPostRepository.findByDateOldestFirst(
+                memberId = memberId,
+                gender = gender?.name,
+                from = from,
+                to = to,
+                cursor = cursor,
+                size = pageSize,
+            )
+        }
         val summaries = memberSummaryService.findSummaries(rows.map { it.getMemberId() }.distinct())
             .associateBy { it.memberId }
 

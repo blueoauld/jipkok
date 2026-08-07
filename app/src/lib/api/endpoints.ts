@@ -15,6 +15,7 @@ import type {
   EditProfileRequest,
   FeedPhotoUploadUrlResponse,
   FeedPostPage,
+  FeedSort,
   Gender,
   HeartbeatRequest,
   LoginRequest,
@@ -42,6 +43,7 @@ type HeartbeatLocation = Omit<HeartbeatRequest, "platform" | "deviceName">;
 
 type FeedListParams = {
   gender?: Gender;
+  sort?: FeedSort;
   date?: string;
   cursor?: number;
   size?: number;

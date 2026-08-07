@@ -48,6 +48,7 @@ export type SendNoteResponse = Schemas["SendNoteResponse"];
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type ReportReason = CreateReportRequest["reason"];
 
+export type FeedSort = "LATEST" | "OLDEST";
 export type FeedPostResponse = Schemas["FeedPostResponse"];
 export type CreateFeedPostRequest = Schemas["CreateFeedPostRequest"];
 export type FeedPhotoUploadUrlResponse = Schemas["FeedPhotoUploadUrlResponse"];

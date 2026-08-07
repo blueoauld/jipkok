@@ -67,7 +67,7 @@ class FeedPostRepositoryTest {
     }
 
     @Test
-    fun `그날 게시물만 이른 시간부터 준다`() {
+    fun `과거 정렬은 그날 게시물만 이른 시간부터 준다`() {
         // given
 
         // when
@@ -76,6 +76,18 @@ class FeedPostRepositoryTest {
         // then
         assertThat(rows.map { it.getPostId() })
             .containsExactly(morningPostId, femalePostId, eveningPostId)
+    }
+
+    @Test
+    fun `최신 정렬은 그날 게시물만 늦은 시간부터 준다`() {
+        // given
+
+        // when
+        val rows = findByDateLatest(gender = null, cursor = null)
+
+        // then
+        assertThat(rows.map { it.getPostId() })
+            .containsExactly(eveningPostId, femalePostId, morningPostId)
     }
 
     @Test
@@ -97,6 +109,17 @@ class FeedPostRepositoryTest {
 
         // then
         assertThat(rows.map { it.getPostId() }).containsExactly(femalePostId, eveningPostId)
+    }
+
+    @Test
+    fun `최신 정렬에서 커서를 주면 그보다 이른 게시물을 준다`() {
+        // given
+
+        // when
+        val rows = findByDateLatest(gender = null, cursor = eveningPostId)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(femalePostId, morningPostId)
     }
 
     @Test
@@ -154,7 +177,16 @@ class FeedPostRepositoryTest {
         .setParameter("id", postId)
         .singleResult as Long
 
-    private fun findByDate(gender: String?, cursor: Long?) = feedPostRepository.findByDate(
+    private fun findByDate(gender: String?, cursor: Long?) = feedPostRepository.findByDateOldestFirst(
+        memberId = meId,
+        gender = gender,
+        from = startOfDay(),
+        to = startOfDay().plusSeconds(DAY_SECONDS),
+        cursor = cursor,
+        size = PAGE_SIZE,
+    )
+
+    private fun findByDateLatest(gender: String?, cursor: Long?) = feedPostRepository.findByDateLatestFirst(
         memberId = meId,
         gender = gender,
         from = startOfDay(),
