@@ -81,7 +81,8 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/analytics",
-      "./plugins/withFirebaseDisableSPM"
+      "./plugins/withFirebaseDisableSPM",
+      "./plugins/withAndroidAdsKotlinFix"
     ],
     "experiments": {
       "typedRoutes": true,
