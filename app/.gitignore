@@ -18,6 +18,9 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# 파이어베이스 서비스 계정 키 (푸시 발송용 서버 자격증명)
+*-firebase-adminsdk-*.json
+
 # Metro
 .metro-health-check*
 
