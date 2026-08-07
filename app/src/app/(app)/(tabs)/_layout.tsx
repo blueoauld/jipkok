@@ -111,7 +111,10 @@ export default function TabsLayout() {
             glassEffectStyle="regular"
             style={[
               StyleSheet.absoluteFill,
-              { backgroundColor: hasGlass ? undefined : theme.gray4.val },
+              {
+                borderRadius: TAB_BAR_HEIGHT / 2,
+                backgroundColor: hasGlass ? undefined : theme.gray4.val,
+              },
             ]}
           />
         ),
