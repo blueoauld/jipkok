@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
-import { PencilSimpleIcon } from "phosphor-react-native";
+import { HeartIcon, PencilSimpleIcon } from "phosphor-react-native";
 import type { ReactNode } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Spinner, Text, YStack } from "tamagui";
+import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoPager } from "@/components/PhotoPager";
@@ -12,6 +12,8 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
+
+const LIKE_ICON_SIZE = 14;
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "아직 코멘트를 작성하지 않았습니다.";
@@ -26,6 +28,7 @@ function Centered({ children }: { children: ReactNode }) {
 }
 
 function Profile({ profile }: { profile: MyProfileResponse }) {
+  const theme = useTheme();
   const {
     nickname,
     gender,
@@ -49,9 +52,23 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
           <Text fontSize="$6" fontWeight="700">
             {nickname}
           </Text>
-          <Text theme="gray" color="$color10" fontSize="$4">
-            {`${genderLabel(gender)} · ${age}살 · ♥ ${receivedLikeCount}`}
-          </Text>
+          <XStack items="center">
+            <Text theme="gray" color="$color10" fontSize="$4">
+              {`${genderLabel(gender)} · ${age}살 · `}
+            </Text>
+
+            <XStack items="center" gap="$1">
+              <HeartIcon
+                size={LIKE_ICON_SIZE}
+                weight="fill"
+                color={theme.gray10.val}
+              />
+
+              <Text theme="gray" color="$color10" fontSize="$4">
+                {receivedLikeCount}
+              </Text>
+            </XStack>
+          </XStack>
         </YStack>
 
         <ProfileSection

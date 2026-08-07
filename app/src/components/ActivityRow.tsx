@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
-import { TrashIcon } from "phosphor-react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { HeartIcon, TrashIcon } from "phosphor-react-native";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
@@ -8,6 +8,7 @@ import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 
 const EMPTY_COMMENT = "-";
+const LIKE_ICON_SIZE = 13;
 
 const DELETE_BUTTON_SIZE = 48;
 const DELETE_ICON_SIZE = 24;
@@ -44,6 +45,7 @@ export function ActivityRow({
   onPress?: () => void;
   onDelete?: () => void;
 }) {
+  const theme = useTheme();
   const { memberId, nickname, gender, age, receivedLikeCount, comment } =
     member;
 
@@ -63,9 +65,23 @@ export function ActivityRow({
             {nickname}
           </Text>
 
-          <Text theme="gray" color="$color10" fontSize="$3">
-            {`${genderLabel(gender)} · ${age}살 · ♥ ${receivedLikeCount}`}
-          </Text>
+          <XStack items="center">
+            <Text theme="gray" color="$color10" fontSize="$3">
+              {`${genderLabel(gender)} · ${age}살 · `}
+            </Text>
+
+            <XStack items="center" gap="$1">
+              <HeartIcon
+                size={LIKE_ICON_SIZE}
+                weight="fill"
+                color={theme.gray10.val}
+              />
+
+              <Text theme="gray" color="$color10" fontSize="$3">
+                {receivedLikeCount}
+              </Text>
+            </XStack>
+          </XStack>
 
           <Text numberOfLines={1} theme="gray" color="$color10" fontSize="$3">
             {comment || EMPTY_COMMENT}
