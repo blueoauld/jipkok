@@ -91,6 +91,7 @@ export default function TabsLayout() {
         headerShown: true,
         headerShadowVisible: false,
         headerBackButtonDisplayMode: "minimal",
+        headerTitleAlign: "center",
         tabBarShowLabel: false,
         tabBarActiveTintColor: theme.color10.val,
         tabBarInactiveTintColor: theme.color10.val,

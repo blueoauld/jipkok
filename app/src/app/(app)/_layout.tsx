@@ -23,6 +23,7 @@ export default function AppLayout() {
       screenOptions={{
         headerShadowVisible: false,
         headerBackButtonDisplayMode: "minimal",
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
