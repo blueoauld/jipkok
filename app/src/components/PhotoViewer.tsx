@@ -189,25 +189,20 @@ export function PhotoViewer({
               </Animated.View>
             </GestureDetector>
 
-            <XStack
-              position="absolute"
-              b="$6"
-              l={0}
-              r={0}
-              justify="center"
-              gap="$2"
-            >
-              {photos.map((uri, photoIndex) => (
-                <YStack
-                  key={uri}
-                  width={6}
-                  height={6}
-                  rounded={9999}
-                  bg="white"
-                  opacity={photoIndex === index ? 1 : 0.4}
-                />
-              ))}
-            </XStack>
+            <SafeAreaView edges={["bottom"]} style={styles.dots}>
+              <XStack justify="center" gap="$2" pb="$6">
+                {photos.map((uri, photoIndex) => (
+                  <YStack
+                    key={uri}
+                    width={6}
+                    height={6}
+                    rounded={9999}
+                    bg="white"
+                    opacity={photoIndex === index ? 1 : 0.4}
+                  />
+                ))}
+              </XStack>
+            </SafeAreaView>
           </YStack>
         </GestureHandlerRootView>
       </SafeAreaProvider>
@@ -229,5 +224,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  dots: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
 });
