@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Clipboard from "expo-clipboard";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -13,8 +14,8 @@ import {
   StarIcon,
 } from "phosphor-react-native";
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
@@ -33,14 +34,20 @@ import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
-import { OVERLAY_BG, PRESS_OPACITY } from "@/lib/design";
+import {
+  OVERLAY_BG,
+  PRESS_OPACITY,
+  TAB_BAR_BOTTOM_GAP,
+  TAB_BAR_HEIGHT,
+  tabBarOverlayHeight,
+} from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { usePhotoGridStore } from "@/lib/photo-grid/store";
 import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
-const ACTION_BAR_HEIGHT = ACTION_ICON_SIZE + 10 + 15 + 6;
+const ACTION_BAR_MARGIN = 16;
 
 const NOTE_MAX_LENGTH = 100;
 
@@ -111,6 +118,8 @@ function ActionBar({
   onPress: (key: ActionKey) => void;
 }) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const hasGlass = isLiquidGlassAvailable();
 
   const filled: Record<ActionKey, boolean> = {
     like: member.likedByMe,
@@ -138,35 +147,49 @@ function ActionBar({
 
   return (
     <XStack
-      height={ACTION_BAR_HEIGHT}
-      items="center"
-      borderTopWidth={StyleSheet.hairlineWidth}
-      borderColor="$borderColor"
+      position="absolute"
+      b={Math.max(insets.bottom, TAB_BAR_BOTTOM_GAP)}
+      l={ACTION_BAR_MARGIN}
+      r={ACTION_BAR_MARGIN}
     >
-      {ACTIONS.map(({ key, icon: Icon }) => (
-        <XStack
-          key={key}
-          flex={1}
-          height="100%"
-          items="center"
-          justify="center"
-          opacity={pending === key ? 0.4 : 1}
-          pressStyle={disabled[key] ? undefined : { opacity: PRESS_OPACITY }}
-          onPress={disabled[key] ? undefined : () => onPress(key)}
-        >
-          <YStack>
-            <Icon
-              size={ACTION_ICON_SIZE}
-              weight={filled[key] && key !== "block" ? "fill" : "regular"}
-              color={filled[key] ? colors[key] : theme.color10.val}
-            />
+      <GlassView
+        glassEffectStyle="regular"
+        style={{
+          flex: 1,
+          borderRadius: TAB_BAR_HEIGHT / 2,
+          overflow: "hidden",
+          backgroundColor: hasGlass ? undefined : theme.gray4.val,
+        }}
+      >
+        <XStack height={TAB_BAR_HEIGHT} items="center">
+          {ACTIONS.map(({ key, icon: Icon }) => (
+            <XStack
+              key={key}
+              flex={1}
+              height="100%"
+              items="center"
+              justify="center"
+              opacity={pending === key ? 0.4 : 1}
+              pressStyle={
+                disabled[key] ? undefined : { opacity: PRESS_OPACITY }
+              }
+              onPress={disabled[key] ? undefined : () => onPress(key)}
+            >
+              <YStack>
+                <Icon
+                  size={ACTION_ICON_SIZE}
+                  weight={filled[key] && key !== "block" ? "fill" : "regular"}
+                  color={filled[key] ? colors[key] : theme.color10.val}
+                />
 
-            {key === "secretPhoto" && (
-              <CountBadge count={member.secretPhotoCount} />
-            )}
-          </YStack>
+                {key === "secretPhoto" && (
+                  <CountBadge count={member.secretPhotoCount} />
+                )}
+              </YStack>
+            </XStack>
+          ))}
         </XStack>
-      ))}
+      </GlassView>
     </XStack>
   );
 }
@@ -175,6 +198,7 @@ export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
   const now = useNow();
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -346,12 +370,18 @@ export default function MemberProfileScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+    <YStack flex={1}>
       <Stack.Screen options={screenOptions} />
 
       {member ? (
         <>
-          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingBottom: tabBarOverlayHeight(insets.bottom),
+            }}
+          >
             <YStack>
               {photoGridOpen ? (
                 <YStack px="$4">
@@ -509,6 +539,6 @@ export default function MemberProfileScreen() {
       />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
-    </SafeAreaView>
+    </YStack>
   );
 }
