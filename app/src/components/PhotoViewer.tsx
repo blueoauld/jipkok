@@ -116,7 +116,6 @@ export function PhotoViewer({
       visible={open}
       animationType="fade"
       transparent
-      statusBarTranslucent
       onRequestClose={onClose}
       onShow={() => setIndex(initialIndex)}
     >

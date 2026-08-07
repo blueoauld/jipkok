@@ -171,7 +171,6 @@ export function ChatImage({
         visible={open}
         animationType="fade"
         transparent
-        statusBarTranslucent
         onRequestClose={closeViewer}
       >
         <StatusBar barStyle="light-content" />
