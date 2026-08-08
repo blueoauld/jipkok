@@ -1,4 +1,4 @@
-import { CaretDownIcon } from "phosphor-react-native";
+import { CaretDownIcon } from "phosphor-react-native/src/icons/CaretDown";
 import { StyleSheet } from "react-native";
 import { useTheme, XStack } from "tamagui";
 

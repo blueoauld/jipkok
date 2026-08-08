@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { HeartIcon, PencilSimpleIcon } from "phosphor-react-native";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { PencilSimpleIcon } from "phosphor-react-native/src/icons/PencilSimple";
 import type { ReactNode } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -4,7 +4,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
-import { BellIcon, BellSlashIcon, SignOutIcon } from "phosphor-react-native";
+import { BellIcon } from "phosphor-react-native/src/icons/Bell";
+import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
+import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { useRef } from "react";
 import { StyleSheet } from "react-native";
 import { Pressable } from "react-native-gesture-handler";

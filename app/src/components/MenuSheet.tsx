@@ -1,4 +1,4 @@
-import { CheckIcon } from "phosphor-react-native";
+import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 

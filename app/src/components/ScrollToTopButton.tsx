@@ -1,4 +1,4 @@
-import { CaretUpIcon } from "phosphor-react-native";
+import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
 import { useCallback, useState } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { StyleSheet } from "react-native";

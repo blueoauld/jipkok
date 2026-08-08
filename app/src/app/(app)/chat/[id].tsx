@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
-import { DotsThreeIcon } from "phosphor-react-native";
+import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import {
   type ComponentProps,
   useCallback,

@@ -2,24 +2,22 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Href, Tabs } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import type { Icon } from "phosphor-react-native";
-import {
-  CalendarCheckIcon,
-  CoinsIcon,
-  EyeIcon,
-  FileTextIcon,
-  HandHeartIcon,
-  HeadsetIcon,
-  HeartIcon,
-  ImagesIcon,
-  LightbulbIcon,
-  MonitorPlayIcon,
-  ProhibitIcon,
-  ShieldCheckIcon,
-  SignOutIcon,
-  StarIcon,
-  TrayArrowDownIcon,
-  UserIcon,
-} from "phosphor-react-native";
+import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
+import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
+import { EyeIcon } from "phosphor-react-native/src/icons/Eye";
+import { FileTextIcon } from "phosphor-react-native/src/icons/FileText";
+import { HandHeartIcon } from "phosphor-react-native/src/icons/HandHeart";
+import { HeadsetIcon } from "phosphor-react-native/src/icons/Headset";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
+import { LightbulbIcon } from "phosphor-react-native/src/icons/Lightbulb";
+import { MonitorPlayIcon } from "phosphor-react-native/src/icons/MonitorPlay";
+import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
+import { ShieldCheckIcon } from "phosphor-react-native/src/icons/ShieldCheck";
+import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
+import { StarIcon } from "phosphor-react-native/src/icons/Star";
+import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
+import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

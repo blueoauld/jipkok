@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
-import { ImageIcon, LockSimpleIcon } from "phosphor-react-native";
+import { ImageIcon } from "phosphor-react-native/src/icons/Image";
+import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { useState } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
 import { Text, useTheme, XStack, YStack } from "tamagui";

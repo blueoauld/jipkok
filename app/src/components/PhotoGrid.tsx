@@ -1,12 +1,10 @@
 import { Image } from "expo-image";
-import {
-  CaretLeftIcon,
-  CaretRightIcon,
-  CrownSimpleIcon,
-  ImageIcon,
-  PlusIcon,
-  XIcon,
-} from "phosphor-react-native";
+import { CaretLeftIcon } from "phosphor-react-native/src/icons/CaretLeft";
+import { CaretRightIcon } from "phosphor-react-native/src/icons/CaretRight";
+import { CrownSimpleIcon } from "phosphor-react-native/src/icons/CrownSimple";
+import { ImageIcon } from "phosphor-react-native/src/icons/Image";
+import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
+import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";

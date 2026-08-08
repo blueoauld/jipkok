@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { XIcon } from "phosphor-react-native";
+import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
 import {
   type ImageStyle,

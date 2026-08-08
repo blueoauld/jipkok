@@ -1,4 +1,5 @@
-import { HeartIcon, StarIcon } from "phosphor-react-native";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";

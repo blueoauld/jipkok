@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { CheckIcon } from "phosphor-react-native";
+import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useState } from "react";
 import {
   KeyboardAwareScrollView,

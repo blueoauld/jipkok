@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "expo-router";
-import {
-  FunnelSimpleIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-} from "phosphor-react-native";
+import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
+import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
+import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

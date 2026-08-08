@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BellIcon, BellSlashIcon } from "phosphor-react-native";
+import { BellIcon } from "phosphor-react-native/src/icons/Bell";
+import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MY_PROFILE_KEY } from "@/hooks/useMyProfile";

@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { UserIcon } from "phosphor-react-native";
+import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useTheme, YStack } from "tamagui";
 
 const SIZE = 64;

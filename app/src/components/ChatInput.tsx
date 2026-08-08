@@ -1,4 +1,5 @@
-import { PaperPlaneRightIcon, PlusIcon } from "phosphor-react-native";
+import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
+import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import {

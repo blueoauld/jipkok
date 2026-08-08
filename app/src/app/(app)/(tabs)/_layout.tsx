@@ -1,13 +1,11 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
-import {
-  ChatCircleIcon,
-  FireIcon,
-  GearIcon,
-  HouseIcon,
-  MagnifyingGlassIcon,
-  TrophyIcon,
-} from "phosphor-react-native";
+import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
+import { FireIcon } from "phosphor-react-native/src/icons/Fire";
+import { GearIcon } from "phosphor-react-native/src/icons/Gear";
+import { HouseIcon } from "phosphor-react-native/src/icons/House";
+import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
+import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";

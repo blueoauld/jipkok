@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { ProhibitIcon } from "phosphor-react-native";
+import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, useTheme, YStack } from "tamagui";

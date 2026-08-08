@@ -1,5 +1,6 @@
 import * as Haptics from "expo-haptics";
-import { HeartIcon, TrashIcon } from "phosphor-react-native";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { UserAvatar } from "@/components/UserAvatar";

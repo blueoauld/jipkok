@@ -3,15 +3,13 @@ import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
-import {
-  ChatCircleIcon,
-  DotsThreeIcon,
-  HeartIcon,
-  ImageIcon,
-  ProhibitIcon,
-  SquaresFourIcon,
-  StarIcon,
-} from "phosphor-react-native";
+import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
+import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { ImageIcon } from "phosphor-react-native/src/icons/Image";
+import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
+import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
+import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

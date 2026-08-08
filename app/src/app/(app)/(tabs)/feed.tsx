@@ -9,15 +9,13 @@ import { Image } from "expo-image";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
-import {
-  CameraIcon,
-  FunnelSimpleIcon,
-  HeartIcon,
-  ImagesIcon,
-  NotePencilIcon,
-  SirenIcon,
-  XIcon,
-} from "phosphor-react-native";
+import { CameraIcon } from "phosphor-react-native/src/icons/Camera";
+import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
+import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
+import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
+import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
