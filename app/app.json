@@ -84,6 +84,14 @@
       "./plugins/withFirebaseDisableSPM",
       "./plugins/withAndroidAdsKotlinFix",
       [
+        "expo-media-library",
+        {
+          "photosPermission": "프로필과 피드에 사진을 올리고 대화에서 사진을 보내기 위해 사진 접근 권한이 필요합니다.",
+          "savePhotosPermission": "대화에서 받은 사진을 저장하기 위해 사진 접근 권한이 필요합니다.",
+          "granularPermissions": ["photo"]
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {

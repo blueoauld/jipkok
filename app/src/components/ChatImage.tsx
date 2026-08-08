@@ -1,4 +1,7 @@
+import { File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
+import { Asset, requestPermissionsAsync } from "expo-media-library";
+import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -26,14 +29,19 @@ import { scheduleOnRN } from "react-native-worklets";
 import Zoom from "react-native-zoom-reanimated";
 import { Spinner, XStack, YStack } from "tamagui";
 
+import { alertInfo, alertMessage } from "@/lib/alert";
 import {
   DISABLED_OPACITY,
   PHOTO_PRESS_OPACITY,
   PRESS_OPACITY,
 } from "@/lib/design";
 
-const CLOSE_BUTTON_SIZE = 40;
-const CLOSE_ICON_SIZE = 24;
+const ICON_BUTTON_SIZE = 40;
+const ICON_SIZE = 24;
+
+const SAVED_MESSAGE = "사진을 저장했습니다.";
+const SAVE_DENIED_MESSAGE = "사진을 저장하려면 사진 접근 권한이 필요합니다.";
+const SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
 
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
@@ -73,6 +81,7 @@ export function ChatImage({
   const screen = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<Size>();
+  const [saving, setSaving] = useState(false);
 
   const translateY = useSharedValue(0);
 
@@ -83,6 +92,33 @@ export function ChatImage({
   }, [translateY]);
 
   const closeViewer = useCallback(() => setOpen(false), []);
+
+  const saveImage = useCallback(async () => {
+    setSaving(true);
+
+    const file = new File(Paths.cache, `chat-${Date.now()}.jpg`);
+
+    try {
+      const { granted } = await requestPermissionsAsync(true, ["photo"]);
+
+      if (!granted) {
+        alertMessage(SAVE_DENIED_MESSAGE);
+        return;
+      }
+
+      await File.downloadFileAsync(uri, file);
+      await Asset.create(file.uri);
+      alertInfo(SAVED_MESSAGE);
+    } catch {
+      alertMessage(SAVE_FAILED_MESSAGE);
+    } finally {
+      if (file.exists) {
+        file.delete();
+      }
+
+      setSaving(false);
+    }
+  }, [uri]);
 
   const imageSize = useMemo(
     () => fitInside(size, { width: screen.width, height: screen.height }),
@@ -181,16 +217,36 @@ export function ChatImage({
 
             <YStack flex={1}>
               <SafeAreaView edges={["top"]}>
-                <XStack p="$2">
+                <XStack p="$2" justify="space-between">
                   <XStack
-                    width={CLOSE_BUTTON_SIZE}
-                    height={CLOSE_BUTTON_SIZE}
+                    width={ICON_BUTTON_SIZE}
+                    height={ICON_BUTTON_SIZE}
                     items="center"
                     justify="center"
                     pressStyle={{ opacity: PRESS_OPACITY }}
                     onPress={closeViewer}
                   >
-                    <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                    <XIcon size={ICON_SIZE} weight="bold" color="white" />
+                  </XStack>
+
+                  <XStack
+                    width={ICON_BUTTON_SIZE}
+                    height={ICON_BUTTON_SIZE}
+                    items="center"
+                    justify="center"
+                    opacity={saving ? DISABLED_OPACITY : 1}
+                    pressStyle={saving ? undefined : { opacity: PRESS_OPACITY }}
+                    onPress={saving ? undefined : saveImage}
+                  >
+                    {saving ? (
+                      <Spinner size="small" color="white" />
+                    ) : (
+                      <TrayArrowDownIcon
+                        size={ICON_SIZE}
+                        weight="bold"
+                        color="white"
+                      />
+                    )}
                   </XStack>
                 </XStack>
               </SafeAreaView>
