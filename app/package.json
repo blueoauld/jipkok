@@ -58,6 +58,8 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@emnapi/core": "1.10.0",
+    "@emnapi/runtime": "1.10.0",
     "@tamagui/babel-plugin": "^2.6.0",
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
@@ -75,10 +77,6 @@
     "lint": "expo lint",
     "api:types": "npx --yes openapi-typescript@7 openapi.json -o src/lib/api/schema.ts",
     "postinstall": "patch-package"
-  },
-  "overrides": {
-    "@emnapi/core": "1.10.0",
-    "@emnapi/runtime": "1.10.0"
   },
   "private": true
 }
