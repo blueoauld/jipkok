@@ -1,7 +1,7 @@
 import { File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { Asset, requestPermissionsAsync } from "expo-media-library";
-import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
+import { DownloadSimpleIcon } from "phosphor-react-native/src/icons/DownloadSimple";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -241,7 +241,7 @@ export function ChatImage({
                     {saving ? (
                       <Spinner size="small" color="white" />
                     ) : (
-                      <TrayArrowDownIcon
+                      <DownloadSimpleIcon
                         size={ICON_SIZE}
                         weight="bold"
                         color="white"
