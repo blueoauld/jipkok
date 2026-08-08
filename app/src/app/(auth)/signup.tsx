@@ -105,9 +105,12 @@ export default function SignupScreen() {
             </YStack>
 
             <FormButton
-              disabled={!canSendCode}
               opacity={canSendCode ? 1 : DISABLED_OPACITY}
-              onPress={() => sendCode.mutate(getValues("phoneNumber"))}
+              onPress={() => {
+                if (canSendCode) {
+                  sendCode.mutate(getValues("phoneNumber"));
+                }
+              }}
             >
               전송
             </FormButton>
@@ -196,9 +199,12 @@ export default function SignupScreen() {
             size="$4"
             theme="blue"
             rounded="$7"
-            disabled={signup.isPending}
             opacity={signup.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) => signup.mutate(values))}
+            onPress={handleSubmit((values) => {
+              if (!signup.isPending) {
+                signup.mutate(values);
+              }
+            })}
           >
             회원가입
           </Button>

@@ -164,9 +164,8 @@ export default function ReportScreen() {
             size="$4"
             theme="red"
             rounded="$7"
-            disabled={!reason || busy}
             opacity={!reason || busy ? DISABLED_OPACITY : 1}
-            onPress={() => reason && report.mutate(reason)}
+            onPress={() => reason && !busy && report.mutate(reason)}
           >
             신고하기
           </Button>

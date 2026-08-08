@@ -126,15 +126,18 @@ export default function SetupScreen() {
             size="$4"
             theme="blue"
             rounded="$7"
-            disabled={setupProfile.isPending}
             opacity={setupProfile.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) =>
+            onPress={handleSubmit((values) => {
+              if (setupProfile.isPending) {
+                return;
+              }
+
               setupProfile.mutate({
                 nickname: values.nickname,
                 birthYear: Number(values.birthYear),
                 bio: values.bio || undefined,
-              }),
-            )}
+              });
+            })}
           >
             들어가기
           </Button>

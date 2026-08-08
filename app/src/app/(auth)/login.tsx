@@ -83,9 +83,12 @@ export default function LoginScreen() {
             size="$4"
             theme="blue"
             rounded="$7"
-            disabled={login.isPending}
             opacity={login.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) => login.mutate(values))}
+            onPress={handleSubmit((values) => {
+              if (!login.isPending) {
+                login.mutate(values);
+              }
+            })}
           >
             로그인
           </Button>

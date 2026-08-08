@@ -177,9 +177,12 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
             size="$4"
             theme="blue"
             rounded="$7"
-            disabled={busy}
             opacity={busy ? DISABLED_OPACITY : 1}
-            onPress={submit}
+            onPress={() => {
+              if (!busy) {
+                submit();
+              }
+            }}
           >
             저장
           </Button>

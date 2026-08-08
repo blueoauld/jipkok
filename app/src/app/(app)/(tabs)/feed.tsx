@@ -362,7 +362,6 @@ function ComposeForm({
             flex={1}
             size="$4"
             rounded="$7"
-            disabled={pending}
             opacity={pending ? DISABLED_OPACITY : 1}
           >
             닫기
@@ -374,9 +373,10 @@ function ComposeForm({
           size="$4"
           theme="blue"
           rounded="$7"
-          disabled={!photo || pending}
           opacity={!photo ? DISABLED_OPACITY : 1}
-          onPress={() => photo && onSubmit(photo, captionRef.current)}
+          onPress={() =>
+            photo && !pending && onSubmit(photo, captionRef.current)
+          }
         >
           {pending ? <Spinner size="small" color="$color" /> : "작성"}
         </Button>
