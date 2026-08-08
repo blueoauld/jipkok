@@ -20,6 +20,13 @@ const TEXT_FONT_SIZE = 15;
 const TEXT_LINE_HEIGHT = 19;
 const TEXT_MARGIN = { marginVertical: 10, marginHorizontal: 12 };
 
+const EMOJI_FONT_SIZE = 40;
+const EMOJI_LINE_HEIGHT = 48;
+const EMOJI_MARGIN = { marginVertical: 2, marginHorizontal: 0 };
+
+const SINGLE_EMOJI_PATTERN =
+  /^(?:\p{Extended_Pictographic}\p{Emoji_Modifier}?\uFE0F?|\p{Regional_Indicator}{2}|[#*0-9]\uFE0F?\u20E3)(?:\u200D(?:\p{Extended_Pictographic}\p{Emoji_Modifier}?\uFE0F?|\p{Regional_Indicator}{2}))*$/u;
+
 const IMAGE_SIZE = 200;
 
 const IMAGE_STYLE: ImageStyle = {
@@ -43,7 +50,15 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
   const time = dayjs(currentMessage.createdAt).locale("ko").format(TIME_FORMAT);
 
   const isImageOnly = !!currentMessage.image && !currentMessage.text;
-  const wrapperColor = (color: string) => (isImageOnly ? "transparent" : color);
+  const isEmojiOnly =
+    !currentMessage.image &&
+    SINGLE_EMOJI_PATTERN.test(currentMessage.text?.trim() ?? "");
+  const wrapperColor = (color: string) =>
+    isImageOnly || isEmojiOnly ? "transparent" : color;
+
+  const fontSize = isEmojiOnly ? EMOJI_FONT_SIZE : TEXT_FONT_SIZE;
+  const lineHeight = isEmojiOnly ? EMOJI_LINE_HEIGHT : TEXT_LINE_HEIGHT;
+  const textMargin = isEmojiOnly ? EMOJI_MARGIN : TEXT_MARGIN;
 
   const meta = (
     <Text shrink={0} pb={2} theme="gray" color="$color10" fontSize={11}>
@@ -90,17 +105,17 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
       textStyle={{
         left: {
           color: theme.color.val,
-          fontSize: TEXT_FONT_SIZE,
-          lineHeight: TEXT_LINE_HEIGHT,
+          fontSize,
+          lineHeight,
         },
         right: {
-          color: "white",
-          fontSize: TEXT_FONT_SIZE,
-          lineHeight: TEXT_LINE_HEIGHT,
+          color: isEmojiOnly ? theme.color.val : "white",
+          fontSize,
+          lineHeight,
         },
       }}
       messageTextProps={{
-        containerStyle: { left: TEXT_MARGIN, right: TEXT_MARGIN },
+        containerStyle: { left: textMargin, right: textMargin },
       }}
       bottomContainerStyle={{ left: BOTTOM_STYLE, right: BOTTOM_STYLE }}
       containerToNextStyle={{
