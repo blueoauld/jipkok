@@ -31,7 +31,7 @@ class FeedReminder(
             return
         }
 
-        pushService.sendAll(targets, TITLE, bodyOf(now), DATA, COLLAPSE_KEY)
+        pushService.sendAll(targets, TITLE, bodyOf(now), DATA, COLLAPSE_KEY, CHANNEL_ID, HIGH_PRIORITY)
         log.info { "피드 알림을 ${targets.size}명에게 보냈다." }
     }
 
@@ -40,6 +40,10 @@ class FeedReminder(
         const val TITLE = "피드"
 
         const val COLLAPSE_KEY = "feed"
+
+        const val CHANNEL_ID = "feed"
+
+        const val HIGH_PRIORITY = "high"
 
         val DATA = mapOf("screen" to "feed")
 

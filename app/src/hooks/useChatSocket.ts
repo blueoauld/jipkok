@@ -1,5 +1,6 @@
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { AppState } from "react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
@@ -47,9 +48,20 @@ export function useChatSocket() {
       },
     });
 
-    client.activate();
+    if (AppState.currentState === "active") {
+      client.activate();
+    }
+
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        client.activate();
+      } else if (state === "background") {
+        client.deactivate();
+      }
+    });
 
     return () => {
+      subscription.remove();
       client.deactivate();
     };
   }, [queryClient, status]);

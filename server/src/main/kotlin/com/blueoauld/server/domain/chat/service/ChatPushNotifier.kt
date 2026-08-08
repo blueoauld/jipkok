@@ -45,6 +45,8 @@ class ChatPushNotifier(
             body = toBody(event),
             data = mapOf(ROOM_ID_KEY to event.message.roomId.toString()),
             badge = chatRoomMemberRepository.sumUnreadCount(event.receiverId).toInt(),
+            channelId = CHANNEL_ID,
+            priority = HIGH_PRIORITY,
         )
     }
 
@@ -55,5 +57,7 @@ class ChatPushNotifier(
 
         private const val ROOM_ID_KEY = "roomId"
         private const val PHOTO_BODY = "사진을 보냈습니다."
+        private const val CHANNEL_ID = "chat"
+        private const val HIGH_PRIORITY = "high"
     }
 }

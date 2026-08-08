@@ -5,8 +5,11 @@ import { Platform } from "react-native";
 import { api } from "@/lib/api";
 import { DEVICE_PLATFORM } from "@/lib/device";
 
-const ANDROID_CHANNEL_ID = "default";
-const ANDROID_CHANNEL_NAME = "알림";
+const ANDROID_CHANNELS = [
+  { id: "default", name: "알림", importance: "DEFAULT" },
+  { id: "chat", name: "채팅", importance: "HIGH" },
+  { id: "feed", name: "피드", importance: "HIGH" },
+] as const;
 
 let registeredToken: string | null = null;
 
@@ -19,15 +22,19 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function prepareAndroidChannel() {
+async function prepareAndroidChannels() {
   if (Platform.OS !== "android") {
     return;
   }
 
-  await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-    name: ANDROID_CHANNEL_NAME,
-    importance: Notifications.AndroidImportance.DEFAULT,
-  });
+  await Promise.all(
+    ANDROID_CHANNELS.map(({ id, name, importance }) =>
+      Notifications.setNotificationChannelAsync(id, {
+        name,
+        importance: Notifications.AndroidImportance[importance],
+      }),
+    ),
+  );
 }
 
 async function requestPermission() {
@@ -43,7 +50,7 @@ async function requestPermission() {
 }
 
 export async function registerPushToken() {
-  await prepareAndroidChannel();
+  await prepareAndroidChannels();
 
   if (!(await requestPermission())) {
     return;

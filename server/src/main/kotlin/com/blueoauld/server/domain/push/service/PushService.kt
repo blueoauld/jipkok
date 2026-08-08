@@ -24,9 +24,21 @@ class PushService(
         body: String,
         data: Map<String, String> = emptyMap(),
         badge: Int? = null,
+        channelId: String? = null,
+        priority: String? = null,
     ) {
         val messages = deviceTokenRepository.findAllByMemberId(memberId)
-            .map { ExpoPushMessage(to = it.token, title = title, body = body, data = data, badge = badge) }
+            .map {
+                ExpoPushMessage(
+                    to = it.token,
+                    title = title,
+                    body = body,
+                    data = data,
+                    badge = badge,
+                    channelId = channelId,
+                    priority = priority,
+                )
+            }
 
         removeExpired(expoPushClient.send(messages))
     }
@@ -38,6 +50,8 @@ class PushService(
         body: String,
         data: Map<String, String> = emptyMap(),
         collapseKey: String? = null,
+        channelId: String? = null,
+        priority: String? = null,
     ) {
         if (memberIds.isEmpty()) {
             return
@@ -52,6 +66,8 @@ class PushService(
                     data = data,
                     collapseId = collapseKey,
                     tag = collapseKey,
+                    channelId = channelId,
+                    priority = priority,
                 )
             }
             .chunked(BATCH_SIZE)

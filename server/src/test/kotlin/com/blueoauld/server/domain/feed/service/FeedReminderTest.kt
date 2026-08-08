@@ -40,6 +40,8 @@ class FeedReminderTest {
                 FeedReminder.bodyOf(NOW),
                 FeedReminder.DATA,
                 FeedReminder.COLLAPSE_KEY,
+                FeedReminder.CHANNEL_ID,
+                FeedReminder.HIGH_PRIORITY,
             )
         }
     }
@@ -63,7 +65,7 @@ class FeedReminderTest {
         feedReminder.remind()
 
         // then
-        verify(exactly = 0) { pushService.sendAll(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { pushService.sendAll(any(), any(), any(), any(), any(), any(), any()) }
     }
 
     companion object {

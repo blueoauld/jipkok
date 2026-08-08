@@ -43,7 +43,7 @@ class ChatPushNotifierTest {
         notifier.notifySent(event())
 
         // then
-        verify(exactly = 1) { pushService.send(RECEIVER_ID, any(), any(), any(), any()) }
+        verify(exactly = 1) { pushService.send(RECEIVER_ID, any(), any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -56,7 +56,7 @@ class ChatPushNotifierTest {
         notifier.notifySent(event())
 
         // then
-        verify(exactly = 0) { pushService.send(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { pushService.send(any(), any(), any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -68,7 +68,7 @@ class ChatPushNotifierTest {
         notifier.notifySent(event())
 
         // then
-        verify(exactly = 0) { pushService.send(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { pushService.send(any(), any(), any(), any(), any(), any(), any()) }
     }
 
     private fun roomMember(notificationEnabled: Boolean) = ChatRoomMember(
