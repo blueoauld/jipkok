@@ -6,6 +6,8 @@ import {
 import * as Haptics from "expo-haptics";
 import { BellIcon, BellSlashIcon, SignOutIcon } from "phosphor-react-native";
 import { useRef } from "react";
+import { StyleSheet } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -34,6 +36,9 @@ const LEAVE_ICON_SIZE = 24;
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
+// 스와이프 액션은 투명한 반대쪽 컨테이너에 덮여 있어, 일반 프레서블은
+// 안드로이드에서 탭을 받지 못한다. 제스처 시스템에 직접 등록되는
+// 제스처 핸들러의 Pressable을 쓴다.
 function LeaveAction({
   drag,
   onPress,
@@ -41,6 +46,8 @@ function LeaveAction({
   drag: SharedValue<number>;
   onPress: () => void;
 }) {
+  const theme = useTheme();
+
   const slideIn = useAnimatedStyle(() => ({
     transform: [
       { translateX: drag.value + LEAVE_ACTION_WIDTH + LEAVE_ACTION_GAP },
@@ -48,20 +55,20 @@ function LeaveAction({
   }));
 
   return (
-    <Animated.View style={[slideIn, { justifyContent: "center" }]}>
-      <XStack
-        ml={LEAVE_ACTION_GAP}
-        width={LEAVE_ACTION_WIDTH}
-        height={LEAVE_ACTION_WIDTH}
-        bg="$red10"
-        rounded={9999}
-        items="center"
-        justify="center"
-        pressStyle={{ opacity: PRESS_OPACITY }}
+    <Animated.View style={[slideIn, styles.action]}>
+      <Pressable
         onPress={onPress}
+        style={({ pressed }) => [
+          styles.actionButton,
+          {
+            marginLeft: LEAVE_ACTION_GAP,
+            backgroundColor: theme.red10.val,
+            opacity: pressed ? PRESS_OPACITY : 1,
+          },
+        ]}
       >
         <SignOutIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
-      </XStack>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -75,6 +82,8 @@ function NotificationAction({
   drag: SharedValue<number>;
   onPress: () => void;
 }) {
+  const theme = useTheme();
+
   const slideIn = useAnimatedStyle(() => ({
     transform: [
       { translateX: drag.value - LEAVE_ACTION_WIDTH - LEAVE_ACTION_GAP },
@@ -82,24 +91,24 @@ function NotificationAction({
   }));
 
   return (
-    <Animated.View style={[slideIn, { justifyContent: "center" }]}>
-      <XStack
-        mr={LEAVE_ACTION_GAP}
-        width={LEAVE_ACTION_WIDTH}
-        height={LEAVE_ACTION_WIDTH}
-        bg="$blue10"
-        rounded={9999}
-        items="center"
-        justify="center"
-        pressStyle={{ opacity: PRESS_OPACITY }}
+    <Animated.View style={[slideIn, styles.action]}>
+      <Pressable
         onPress={onPress}
+        style={({ pressed }) => [
+          styles.actionButton,
+          {
+            marginRight: LEAVE_ACTION_GAP,
+            backgroundColor: theme.blue10.val,
+            opacity: pressed ? PRESS_OPACITY : 1,
+          },
+        ]}
       >
         {enabled ? (
           <BellSlashIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
         ) : (
           <BellIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
         )}
-      </XStack>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -258,3 +267,16 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
     </ReanimatedSwipeable>
   );
 }
+
+const styles = StyleSheet.create({
+  action: {
+    justifyContent: "center",
+  },
+  actionButton: {
+    width: LEAVE_ACTION_WIDTH,
+    height: LEAVE_ACTION_WIDTH,
+    borderRadius: 9999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
