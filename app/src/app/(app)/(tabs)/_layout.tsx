@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import {
@@ -82,11 +81,6 @@ export default function TabsLayout() {
   return (
     <Tabs
       safeAreaInsets={{ bottom: 0 }}
-      screenListeners={{
-        tabPress: () => {
-          Haptics.selectionAsync();
-        },
-      }}
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
