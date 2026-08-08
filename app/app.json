@@ -82,7 +82,16 @@
       "@react-native-firebase/app",
       "@react-native-firebase/analytics",
       "./plugins/withFirebaseDisableSPM",
-      "./plugins/withAndroidAdsKotlinFix"
+      "./plugins/withAndroidAdsKotlinFix",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
