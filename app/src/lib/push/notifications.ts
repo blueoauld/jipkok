@@ -70,14 +70,21 @@ export function setBadgeCount(count: number) {
 }
 
 export async function dismissRoomNotifications(roomId: number) {
+  await dismissMatching((data) => data?.roomId === String(roomId));
+}
+
+export async function dismissChatNotifications() {
+  await dismissMatching((data) => data?.roomId !== undefined);
+}
+
+async function dismissMatching(
+  matches: (data: Record<string, unknown> | undefined) => boolean,
+) {
   const presented = await Notifications.getPresentedNotificationsAsync();
 
   await Promise.all(
     presented
-      .filter(
-        (notification) =>
-          notification.request.content.data?.roomId === String(roomId),
-      )
+      .filter((notification) => matches(notification.request.content.data))
       .map((notification) =>
         Notifications.dismissNotificationAsync(notification.request.identifier),
       ),

@@ -4,7 +4,10 @@ import { useEffect } from "react";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
-import { setBadgeCount } from "@/lib/push/notifications";
+import {
+  dismissChatNotifications,
+  setBadgeCount,
+} from "@/lib/push/notifications";
 
 export const CHAT_UNREAD_COUNT_KEY = [...CHAT_ROOMS_KEY, "unreadCount"];
 
@@ -18,8 +21,14 @@ export function useChatUnreadCount() {
   });
 
   useEffect(() => {
-    if (data !== undefined) {
-      setBadgeCount(data);
+    if (data === undefined) {
+      return;
+    }
+
+    setBadgeCount(data);
+
+    if (data === 0) {
+      dismissChatNotifications().catch(() => undefined);
     }
   }, [data]);
 
