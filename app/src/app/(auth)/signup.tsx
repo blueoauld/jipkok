@@ -79,6 +79,7 @@ export default function SignupScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
+        mode="layout"
         bottomOffset={BOTTOM_BAR_HEIGHT}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
