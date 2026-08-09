@@ -1,9 +1,5 @@
 import SwiftUI
 
-private let rowSpacing: CGFloat = 12
-private let listTopPadding: CGFloat = 8
-private let listBottomPadding: CGFloat = 16
-
 struct ChatView: View {
     
     private enum Filter: CaseIterable {
@@ -18,6 +14,7 @@ struct ChatView: View {
         }
     }
     
+    @State private var router = ChatRouter()
     @State private var filter: Filter = .all
     @State private var isNoteReceiveEnabled = true
     @State private var rooms = ChatRoom.samples
@@ -30,16 +27,23 @@ struct ChatView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             roomList
                 .safeAreaInset(edge: .top) {
                     filterPicker
+                }
+                .navigationDestination(for: ChatRoute.self) { route in
+                    switch route {
+                    case .search: ChatSearchView()
+                    }
                 }
                 .navigationTitle("채팅")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("채팅 검색", systemImage: "magnifyingglass") {}
+                        Button("채팅 검색", systemImage: "magnifyingglass") {
+                            router.push(.search)
+                        }
                     }
                     
                     ToolbarItem(placement: .topBarTrailing) {
@@ -47,6 +51,7 @@ struct ChatView: View {
                     }
                 }
         }
+        .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
     
     private var roomList: some View {
@@ -54,9 +59,9 @@ struct ChatView: View {
             ChatRow(room: room)
                 .listRowInsets(EdgeInsets(
                     top: rowSpacing / 2,
-                    leading: 16,
+                    leading: listHorizontalPadding,
                     bottom: rowSpacing / 2,
-                    trailing: 16
+                    trailing: listHorizontalPadding
                 ))
                 .listRowSeparator(.hidden)
                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
