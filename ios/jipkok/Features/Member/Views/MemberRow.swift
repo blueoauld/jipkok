@@ -1,0 +1,85 @@
+import SwiftUI
+
+private let emptyComment = "-"
+
+struct MemberRow: View {
+    
+    let member: Member
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            MemberAvatar(url: member.profileImageURL)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                nameLine
+                profileLine
+                commentLine
+            }
+        }
+    }
+    
+    private var nameLine: some View {
+        HStack(alignment: .center, spacing: 4) {
+            Text(member.nickname)
+                .font(.body.weight(.semibold))
+                .lineLimit(1)
+            
+            if member.isFavorited {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundStyle(.yellow)
+            }
+            
+            Spacer()
+            
+            Text(relativeTime(from: member.locatedAt))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .layoutPriority(1)
+        }
+    }
+    
+    private var profileLine: some View {
+        HStack {
+            Text("\(member.gender.label) · \(member.age)살 · ♥ \(member.receivedLikeCount.formatted())")
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+    }
+    
+    private var commentLine: some View {
+        HStack {
+            Text(member.comment ?? emptyComment)
+                .font(.footnote)
+                .lineLimit(1)
+            
+            Spacer()
+            
+            if let distance = member.distanceInMeters {
+                Text(formatDistance(distance))
+                    .font(.caption)
+                    .layoutPriority(1)
+            }
+        }
+        .foregroundStyle(.secondary)
+    }
+}
+
+private func relativeTime(from date: Date, now: Date = Date()) -> String {
+    now.timeIntervalSince(date) < 60
+    ? "방금 전"
+    : date.formatted(.relative(presentation: .numeric))
+}
+
+private func formatDistance(_ meters: Double) -> String {
+    (meters / 1_000).formatted(.number.precision(.fractionLength(1))) + "km"
+}
+
+#Preview {
+    VStack(spacing: 16) {
+        ForEach(Array(Member.samples.prefix(5))) { member in
+            MemberRow(member: member)
+        }
+    }
+    .padding()
+}
