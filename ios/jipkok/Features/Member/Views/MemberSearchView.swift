@@ -20,7 +20,7 @@ struct MemberSearchView: View {
             .searchable(
                 text: $keyword,
                 placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "닉네임"
+                prompt: "닉네임 입력"
             )
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
