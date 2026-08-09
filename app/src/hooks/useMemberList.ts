@@ -7,11 +7,20 @@ import {
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";
 import { alertApiError } from "@/lib/alert";
-import type { MemberSummaryPage } from "@/lib/api";
+import type { MemberSummaryPage, MemberSummaryResponse } from "@/lib/api";
 
 type Page = InfiniteData<MemberSummaryPage>;
 
 type Fetcher = (params: { cursor?: number }) => Promise<MemberSummaryPage>;
+
+export type MemberListQuery = {
+  members?: MemberSummaryResponse[];
+  isError: boolean;
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => unknown;
+  refetch: () => unknown;
+};
 
 export function useMemberList(queryKey: string[], fetcher: Fetcher) {
   const query = useInfiniteQuery({

@@ -3,7 +3,7 @@ import { FlatList } from "react-native";
 import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ActivityRow } from "@/components/ActivityRow";
-import type { useMemberList } from "@/hooks/useMemberList";
+import type { MemberListQuery } from "@/hooks/useMemberList";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
 
@@ -22,7 +22,7 @@ export function ActivityList({
   query,
   onDelete,
 }: {
-  query: ReturnType<typeof useMemberList>;
+  query: MemberListQuery;
   onDelete?: (member: MemberSummaryResponse) => void;
 }) {
   const space = getTokens().space;

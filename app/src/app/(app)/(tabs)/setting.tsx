@@ -6,6 +6,7 @@ import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
 import { EyeIcon } from "phosphor-react-native/src/icons/Eye";
 import { FileTextIcon } from "phosphor-react-native/src/icons/FileText";
+import { FootprintsIcon } from "phosphor-react-native/src/icons/Footprints";
 import { HandHeartIcon } from "phosphor-react-native/src/icons/HandHeart";
 import { HeadsetIcon } from "phosphor-react-native/src/icons/Headset";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
@@ -93,6 +94,12 @@ const SECTIONS: SettingItem[][] = [
       label: "공개된 비밀 사진 목록",
       icon: EyeIcon,
       href: "/activity/secret-photo-opened",
+      gated: true,
+    },
+    {
+      label: "내 프로필 조회 목록",
+      icon: FootprintsIcon,
+      href: "/activity/profile-view",
       gated: true,
     },
   ],

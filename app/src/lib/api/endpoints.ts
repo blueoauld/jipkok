@@ -28,6 +28,7 @@ import type {
   PhotoUploadUrlResponse,
   PointHistoryPage,
   PointRewardResponse,
+  ProfileViewPage,
   SendMessageRequest,
   SendNoteResponse,
   SetupProfileRequest,
@@ -38,6 +39,8 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type ScrollParams = { cursor?: string; size?: number };
 
 type HeartbeatLocation = Omit<HeartbeatRequest, "platform" | "deviceName">;
 
@@ -231,6 +234,13 @@ export const secretPhotos = {
 
   received: (params: CursorParams = {}) =>
     request<MemberSummaryPage>("/api/members/me/secret-photos/received", {
+      query: params,
+    }),
+};
+
+export const profileViews = {
+  received: (params: ScrollParams = {}) =>
+    request<ProfileViewPage>("/api/members/me/profile-views", {
       query: params,
     }),
 };
