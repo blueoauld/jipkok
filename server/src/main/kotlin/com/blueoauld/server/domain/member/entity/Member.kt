@@ -66,6 +66,9 @@ class Member(
 
     @Column(name = "feed_notification_enabled", nullable = false)
     var feedNotificationEnabled: Boolean = true,
+
+    @Column(name = "profile_views_seen_at")
+    var profileViewsSeenAt: Instant? = null,
 ) : BaseEntity() {
 
     @Id

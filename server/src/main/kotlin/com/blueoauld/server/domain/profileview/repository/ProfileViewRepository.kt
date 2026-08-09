@@ -18,6 +18,10 @@ interface ProfileViewRepository : JpaRepository<ProfileView, Long> {
 
     fun findByViewedMemberIdOrderByViewedAtDescIdDesc(viewedMemberId: Long, limit: Limit): List<ProfileView>
 
+    fun countByViewedMemberIdAndViewedAtAfter(viewedMemberId: Long, viewedAt: Instant): Int
+
+    fun countByViewedMemberId(viewedMemberId: Long): Int
+
     @Query(
         """
         select v from ProfileView v

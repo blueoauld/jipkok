@@ -1,7 +1,9 @@
 package com.blueoauld.server.domain.profileview.service
 
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.profileview.entity.ProfileView
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Limit
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import java.util.*
 
 class ProfileViewServiceTest {
 
@@ -26,8 +29,11 @@ class ProfileViewServiceTest {
 
     private val clock = Clock.fixed(NOW, ZoneId.of("Asia/Seoul"))
 
+    private val memberRepository = mockk<MemberRepository>(relaxed = true)
+
     private val profileViewService = ProfileViewService(
         profileViewRepository,
+        memberRepository,
         memberSummaryService,
         clock,
     )
@@ -93,7 +99,8 @@ class ProfileViewServiceTest {
         val response = profileViewService.findViewers(VIEWED_MEMBER_ID, null, 2)
 
         // then
-        assertThat(response.items).extracting("memberId").containsExactly(VIEWER_ID, 3L)
+        assertThat(response.items).extracting("member.memberId").containsExactly(VIEWER_ID, 3L)
+        assertThat(response.items).extracting("viewedAt").containsExactly(NOW, older)
         assertThat(response.nextCursor).isEqualTo("${older.toEpochMilli()}:20")
     }
 
@@ -155,6 +162,49 @@ class ProfileViewServiceTest {
 
         // then
         assertThat(limit.captured.max()).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
+    }
+
+    @Test
+    fun `확인한 시각 뒤에 쌓인 조회만 새 것으로 센다`() {
+        // given
+        val seenAt = NOW.minusSeconds(600)
+        every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
+                Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns seenAt })
+        every { profileViewRepository.countByViewedMemberIdAndViewedAtAfter(VIEWED_MEMBER_ID, seenAt) } returns 3
+
+        // when
+        val count = profileViewService.countNew(VIEWED_MEMBER_ID)
+
+        // then
+        assertThat(count).isEqualTo(3)
+        verify(exactly = 0) { profileViewRepository.countByViewedMemberId(any()) }
+    }
+
+    @Test
+    fun `한 번도 확인하지 않았으면 전부 새 것으로 센다`() {
+        // given
+        every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
+                Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns null })
+        every { profileViewRepository.countByViewedMemberId(VIEWED_MEMBER_ID) } returns 7
+
+        // when
+        val count = profileViewService.countNew(VIEWED_MEMBER_ID)
+
+        // then
+        assertThat(count).isEqualTo(7)
+    }
+
+    @Test
+    fun `확인 처리하면 확인 시각을 지금으로 남긴다`() {
+        // given
+        val member = mockk<Member>(relaxed = true)
+        every { memberRepository.findById(VIEWED_MEMBER_ID) } returns Optional.of(member)
+
+        // when
+        profileViewService.markSeen(VIEWED_MEMBER_ID)
+
+        // then
+        verify { member.profileViewsSeenAt = NOW }
     }
 
     private fun profileView(id: Long, viewerId: Long, viewedAt: Instant) = mockk<ProfileView>(relaxed = true) {

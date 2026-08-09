@@ -1,7 +1,8 @@
 package com.blueoauld.server.domain.profileview.service
 
-import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
+import com.blueoauld.server.domain.profileview.dto.response.ProfileViewResponse
 import com.blueoauld.server.domain.profileview.entity.ProfileView
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.global.response.CursorResponse
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit
 class ProfileViewService(
 
     private val profileViewRepository: ProfileViewRepository,
+    private val memberRepository: MemberRepository,
     private val memberSummaryService: MemberSummaryService,
     private val clock: Clock,
 ) {
@@ -41,7 +43,22 @@ class ProfileViewService(
     }
 
     @Transactional(readOnly = true)
-    fun findViewers(viewedMemberId: Long, cursor: String?, size: Int): ScrollResponse<MemberSummaryResponse> {
+    fun countNew(viewedMemberId: Long): Int {
+        val seenAt = memberRepository.findById(viewedMemberId).orElse(null)?.profileViewsSeenAt
+            ?: return profileViewRepository.countByViewedMemberId(viewedMemberId)
+
+        return profileViewRepository.countByViewedMemberIdAndViewedAtAfter(viewedMemberId, seenAt)
+    }
+
+    @Transactional
+    fun markSeen(viewedMemberId: Long) {
+        memberRepository.findById(viewedMemberId).ifPresent {
+            it.profileViewsSeenAt = clock.instant()
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun findViewers(viewedMemberId: Long, cursor: String?, size: Int): ScrollResponse<ProfileViewResponse> {
         val pageSize = CursorResponse.pageSize(size)
         val decoded = ScrollResponse.decodeProfileView(cursor)
 
@@ -51,10 +68,13 @@ class ProfileViewService(
             profileViewRepository.findNextPage(viewedMemberId, decoded.first, decoded.second, Limit.of(pageSize))
         }
 
+        val summaries = memberSummaryService.findSummaries(views.map { it.viewerId }).associateBy { it.memberId }
         val last = views.lastOrNull().takeIf { views.size == pageSize }
 
         return ScrollResponse(
-            items = memberSummaryService.findSummaries(views.map { it.viewerId }),
+            items = views.mapNotNull { view ->
+                summaries[view.viewerId]?.let { ProfileViewResponse(it, view.viewedAt) }
+            },
             nextCursor = last?.let { ScrollResponse.encodeProfileView(it.viewedAt, it.id) },
         )
     }
