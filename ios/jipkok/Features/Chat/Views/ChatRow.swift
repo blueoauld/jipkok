@@ -20,7 +20,7 @@ struct ChatRow: View {
     private var nameLine: some View {
         HStack(spacing: 4) {
             Text(room.nickname)
-                .font(.body.weight(.semibold))
+                .font(.subheadline.bold())
                 .lineLimit(1)
             
             if !room.isNotificationEnabled {

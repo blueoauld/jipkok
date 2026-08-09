@@ -53,7 +53,7 @@ struct FeedCard: View {
             MemberAvatar(url: post.profileImageURL, size: avatarSize, isCircular: true)
             
             Text(post.nickname)
-                .font(.subheadline.weight(.semibold))
+                .font(.subheadline.bold())
                 .foregroundStyle(.white)
                 .lineLimit(1)
         }
@@ -83,7 +83,7 @@ struct FeedCard: View {
     }
     
     private var slot: some View {
-        VStack(spacing: 4) {
+        VStack {
             Text(post.slotAt, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
                 .font(.largeTitle.weight(.heavy))
             

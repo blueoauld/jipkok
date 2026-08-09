@@ -68,7 +68,6 @@ struct FeedView: View {
             isPickingDate = true
         } label: {
             Text(dateLabel)
-                .font(.body)
                 .padding(.horizontal)
                 .padding(.vertical, 8)
         }

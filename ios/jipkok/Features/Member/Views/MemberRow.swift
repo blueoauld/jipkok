@@ -21,7 +21,7 @@ struct MemberRow: View {
     private var nameLine: some View {
         HStack(alignment: .center, spacing: 4) {
             Text(member.nickname)
-                .font(.body.weight(.semibold))
+                .font(.subheadline.bold())
                 .lineLimit(1)
             
             if member.isFavorited {
