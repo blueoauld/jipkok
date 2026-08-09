@@ -68,13 +68,13 @@ struct MainView: View {
     
     private var memberList: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: rowSpacing) {
                 ForEach(Member.samples) { member in
                     MemberRow(member: member)
                 }
             }
             .padding(.horizontal)
-            .padding(.top, 8)
+            .padding(.top, listTopPadding)
             .padding(.bottom)
         }
     }
