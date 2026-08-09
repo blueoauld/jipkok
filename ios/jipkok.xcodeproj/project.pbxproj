@@ -86,9 +86,10 @@
 				};
 			};
 			buildConfigurationList = 9DCBA99D3028B601000C9701 /* Build configuration list for PBXProject "jipkok" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				ko,
 				en,
 				Base,
 			);
