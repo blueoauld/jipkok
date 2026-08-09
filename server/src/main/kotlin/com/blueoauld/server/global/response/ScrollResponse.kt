@@ -1,5 +1,7 @@
 package com.blueoauld.server.global.response
 
+import java.time.Instant
+
 data class ScrollResponse<T>(
 
     val items: List<T>,
@@ -29,6 +31,14 @@ data class ScrollResponse<T>(
                 locatedAt.toLongOrNull() ?: return null,
                 memberId.toLongOrNull() ?: return null,
             )
+        }
+
+        fun encodeProfileView(viewedAt: Instant, id: Long) = "${viewedAt.toEpochMilli()}$SEPARATOR$id"
+
+        fun decodeProfileView(cursor: String?): Pair<Instant, Long>? {
+            val (viewedAt, id) = split(cursor, 2) ?: return null
+
+            return Instant.ofEpochMilli(viewedAt.toLongOrNull() ?: return null) to (id.toLongOrNull() ?: return null)
         }
 
         private fun split(cursor: String?, count: Int) = cursor?.split(SEPARATOR)?.takeIf { it.size == count }

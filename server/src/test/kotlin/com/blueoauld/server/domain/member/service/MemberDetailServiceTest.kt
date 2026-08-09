@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.profileview.service.ProfileViewService
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -39,6 +40,8 @@ class MemberDetailServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val profileViewService = mockk<ProfileViewService>(relaxed = true)
+
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
     private val memberDetailService = MemberDetailService(
@@ -48,6 +51,7 @@ class MemberDetailServiceTest {
         memberFavoriteRepository,
         secretPhotoAccessRepository,
         memberBlockRepository,
+        profileViewService,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )

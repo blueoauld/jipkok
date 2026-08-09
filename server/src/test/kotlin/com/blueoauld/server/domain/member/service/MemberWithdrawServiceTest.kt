@@ -12,6 +12,7 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
+import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -43,6 +44,8 @@ class MemberWithdrawServiceTest {
 
     private val secretPhotoAccessRepository = mockk<SecretPhotoAccessRepository>(relaxed = true)
 
+    private val profileViewRepository = mockk<ProfileViewRepository>(relaxed = true)
+
     private val pointHistoryRepository = mockk<PointHistoryRepository>(relaxed = true)
 
     private val deviceTokenRepository = mockk<DeviceTokenRepository>(relaxed = true)
@@ -57,6 +60,7 @@ class MemberWithdrawServiceTest {
         memberFavoriteRepository,
         memberLikeRepository,
         secretPhotoAccessRepository,
+        profileViewRepository,
         pointHistoryRepository,
         deviceTokenRepository,
     )

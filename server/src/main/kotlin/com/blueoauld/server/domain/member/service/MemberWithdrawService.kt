@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
+import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -28,6 +29,7 @@ class MemberWithdrawService(
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val memberLikeRepository: MemberLikeRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
+    private val profileViewRepository: ProfileViewRepository,
     private val pointHistoryRepository: PointHistoryRepository,
     private val deviceTokenRepository: DeviceTokenRepository,
 ) {
@@ -44,6 +46,7 @@ class MemberWithdrawService(
         memberFavoriteRepository.deleteAllByMember(memberId)
         memberLikeRepository.deleteAllByMember(memberId)
         secretPhotoAccessRepository.deleteAllByMember(memberId)
+        profileViewRepository.deleteAllByMember(memberId)
         pointHistoryRepository.deleteAllByMemberId(memberId)
         deviceTokenRepository.deleteAllByMemberId(memberId)
 

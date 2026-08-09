@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.profileview.service.ProfileViewService
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -31,6 +32,7 @@ class MemberDetailService(
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val profileViewService: ProfileViewService,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
@@ -44,7 +46,12 @@ class MemberDetailService(
         val me = findMember(memberId)
         val target = findMember(targetId)
         val blockedByThem = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(targetId, memberId)
+        val blockedByMe = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(memberId, targetId)
         val photos = memberPhotoRepository.findAllByMemberId(targetId)
+
+        if (!blockedByThem && !blockedByMe) {
+            profileViewService.record(memberId, targetId)
+        }
 
         return MemberDetailResponse(
             memberId = target.id,
@@ -62,7 +69,7 @@ class MemberDetailService(
             favoritedByMe = memberFavoriteRepository.existsByMemberIdAndFavoriteMemberId(memberId, targetId),
             secretPhotoGrantedToMe = secretPhotoAccessRepository.existsByOwnerIdAndViewerId(targetId, memberId),
             secretPhotoGrantedByMe = secretPhotoAccessRepository.existsByOwnerIdAndViewerId(memberId, targetId),
-            blockedByMe = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(memberId, targetId),
+            blockedByMe = blockedByMe,
             noteReceiveEnabled = target.noteReceiveEnabled,
         )
     }
