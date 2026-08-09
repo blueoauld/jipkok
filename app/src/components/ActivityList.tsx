@@ -20,9 +20,11 @@ function Centered({ children }: { children: ReactNode }) {
 
 export function ActivityList({
   query,
+  captionOf,
   onDelete,
 }: {
   query: MemberListQuery;
+  captionOf?: (member: MemberSummaryResponse) => string | undefined;
   onDelete?: (member: MemberSummaryResponse) => void;
 }) {
   const space = getTokens().space;
@@ -61,6 +63,7 @@ export function ActivityList({
       renderItem={({ item }) => (
         <ActivityRow
           member={item}
+          caption={captionOf?.(item)}
           onPress={() => pushOnce(`/member/${item.memberId}`)}
           onDelete={onDelete && (() => onDelete(item))}
         />

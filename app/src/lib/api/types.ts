@@ -61,7 +61,8 @@ export type PointType = PointHistoryResponse["type"];
 export type MemberSummaryPage = Schemas["CursorResponseMemberSummaryResponse"];
 export type MemberListPage = Schemas["ScrollResponseMemberListItemResponse"];
 export type MemberSearchPage = Schemas["ScrollResponseMemberSummaryResponse"];
-export type ProfileViewPage = Schemas["ScrollResponseMemberSummaryResponse"];
+export type ProfileViewResponse = Schemas["ProfileViewResponse"];
+export type ProfileViewPage = Schemas["ScrollResponseProfileViewResponse"];
 export type PointHistoryPage = Schemas["CursorResponsePointHistoryResponse"];
 
 export type CursorPage<T> = {

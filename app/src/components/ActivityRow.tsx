@@ -39,10 +39,12 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
 
 export function ActivityRow({
   member,
+  caption,
   onPress,
   onDelete,
 }: {
   member: MemberSummaryResponse;
+  caption?: string;
   onPress?: () => void;
   onDelete?: () => void;
 }) {
@@ -62,9 +64,17 @@ export function ActivityRow({
         <UserAvatar id={String(memberId)} url={member.profileImageUrl} />
 
         <YStack flex={1} gap="$1">
-          <Text numberOfLines={1} fontSize="$4" fontWeight="600">
-            {nickname}
-          </Text>
+          <XStack items="center" gap="$2">
+            <Text flex={1} numberOfLines={1} fontSize="$4" fontWeight="600">
+              {nickname}
+            </Text>
+
+            {caption && (
+              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+                {caption}
+              </Text>
+            )}
+          </XStack>
 
           <XStack items="center">
             <Text theme="gray" color="$color10" fontSize="$3">

@@ -243,6 +243,11 @@ export const profileViews = {
     request<ProfileViewPage>("/api/members/me/profile-views", {
       query: params,
     }),
+
+  newCount: () => request<number>("/api/members/me/profile-views/new-count"),
+
+  markSeen: () =>
+    request<void>("/api/members/me/profile-views/seen", { method: "POST" }),
 };
 
 export const blocks = {

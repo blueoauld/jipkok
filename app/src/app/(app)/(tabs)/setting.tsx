@@ -30,6 +30,7 @@ import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import {
   alertApiError,
@@ -38,6 +39,7 @@ import {
   confirmAlert,
 } from "@/lib/alert";
 import { api } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat/unread";
 import { tabBarOverlayHeight } from "@/lib/design";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -64,6 +66,11 @@ type SettingItem = {
   action?: SettingAction;
   gated?: boolean;
 };
+
+const PROFILE_VIEW_HREF = "/activity/profile-view";
+
+const BADGE_SIZE = 18;
+const BADGE_FONT_SIZE = 11;
 
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
@@ -99,7 +106,7 @@ const SECTIONS: SettingItem[][] = [
     {
       label: "내 프로필 조회 목록",
       icon: FootprintsIcon,
-      href: "/activity/profile-view",
+      href: PROFILE_VIEW_HREF,
       gated: true,
     },
   ],
@@ -119,10 +126,12 @@ const SECTIONS: SettingItem[][] = [
 function SettingRow({
   item,
   pending,
+  badge,
   onPress,
 }: {
   item: SettingItem;
   pending: boolean;
+  badge?: number;
   onPress?: () => void;
 }) {
   const theme = useTheme();
@@ -141,6 +150,21 @@ function SettingRow({
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
+      {!!badge && (
+        <XStack
+          minW={BADGE_SIZE}
+          height={BADGE_SIZE}
+          px="$1.5"
+          rounded={9999}
+          bg="$red10"
+          items="center"
+          justify="center"
+        >
+          <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
+            {formatUnreadCount(badge)}
+          </Text>
+        </XStack>
+      )}
       {pending && <Spinner size="small" />}
     </XStack>
   );
@@ -153,6 +177,7 @@ export default function SettingScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
+  const profileViewCount = useProfileViewNewCount();
 
   const logout = useMutation({
     mutationFn: async () => {
@@ -286,6 +311,9 @@ export default function SettingScreen() {
                 key={item.label}
                 item={item}
                 pending={item.action === pendingAction}
+                badge={
+                  item.href === PROFILE_VIEW_HREF ? profileViewCount : undefined
+                }
                 onPress={
                   item.href || item.url || item.action
                     ? () => handlePress(item)
