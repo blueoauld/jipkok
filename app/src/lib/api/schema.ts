@@ -692,6 +692,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/members/me/profile-views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내 프로필 조회 목록
+         * @description 같은 회원은 한 번만 담기고 최근 조회순으로 준다.
+         */
+        get: operations["findViewers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/members/me/likes": {
         parameters: {
             query?: never;
@@ -2321,6 +2341,7 @@ export interface operations {
         parameters: {
             query?: {
                 gender?: "MALE" | "FEMALE";
+                sort?: "LATEST" | "OLDEST";
                 date?: string;
                 cursor?: number;
                 size?: number;
@@ -3567,6 +3588,56 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findViewers: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
