@@ -3,11 +3,11 @@ import SwiftUI
 private let commentMaxLength = 100
 
 struct MainView: View {
-    
+
     private enum Sort: CaseIterable {
         case latest
         case distance
-        
+
         var label: String {
             switch self {
             case .latest: "최근"
@@ -15,26 +15,12 @@ struct MainView: View {
             }
         }
     }
-    
-    private enum GenderFilter: CaseIterable {
-        case all
-        case male
-        case female
-        
-        var label: String {
-            switch self {
-            case .all: "전체"
-            case .male: "남자"
-            case .female: "여자"
-            }
-        }
-    }
-    
+
     @State private var sort: Sort = .latest
     @State private var genderFilter: GenderFilter = .all
     @State private var isWritingComment = false
     @State private var comment = ""
-    
+
     var body: some View {
         NavigationStack {
             memberList
@@ -47,11 +33,11 @@ struct MainView: View {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("회원 검색", systemImage: "magnifyingglass") {}
                     }
-                    
+
                     ToolbarItem(placement: .topBarTrailing) {
                         genderMenu
                     }
-                    
+
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("코멘트 작성", systemImage: "square.and.pencil") {
                             isWritingComment = true
@@ -60,9 +46,9 @@ struct MainView: View {
                 }
                 .alert("코멘트", isPresented: $isWritingComment) {
                     TextField("내용 입력 (100자)", text: $comment)
-                    
+
                     Button("작성") {}
-                    
+
                     Button("닫기", role: .cancel) {}
                 }
                 .onChange(of: comment) { _, newValue in
@@ -70,7 +56,7 @@ struct MainView: View {
                 }
         }
     }
-    
+
     private var memberList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
@@ -83,7 +69,7 @@ struct MainView: View {
             .padding(.bottom)
         }
     }
-    
+
     private var genderMenu: some View {
         Menu("성별 선택", systemImage: "line.3.horizontal.decrease") {
             Picker("성별", selection: $genderFilter) {
@@ -94,7 +80,7 @@ struct MainView: View {
             }
         }
     }
-    
+
     private var sortPicker: some View {
         Picker("정렬", selection: $sort) {
             ForEach(Sort.allCases, id: \.self) { item in
