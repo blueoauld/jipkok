@@ -240,6 +240,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/members/me/profile-views/seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 프로필 조회 목록 확인 처리 */
+        post: operations["markSeen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/members/me/photos/upload-url": {
         parameters: {
             query?: never;
@@ -704,6 +721,23 @@ export interface paths {
          * @description 같은 회원은 한 번만 담기고 최근 조회순으로 준다.
          */
         get: operations["findViewers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/members/me/profile-views/new-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 확인하지 않은 프로필 조회 수 */
+        get: operations["countNew"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1200,6 +1234,15 @@ export interface components {
             items: components["schemas"]["MemberSummaryResponse"][];
             /** Format: int64 */
             nextCursor?: number | null;
+        };
+        ProfileViewResponse: {
+            member: components["schemas"]["MemberSummaryResponse"];
+            /** Format: date-time */
+            viewedAt: string;
+        };
+        ScrollResponseProfileViewResponse: {
+            items: components["schemas"]["ProfileViewResponse"][];
+            nextCursor?: string | null;
         };
         CursorResponseFeedPostResponse: {
             items: components["schemas"]["FeedPostResponse"][];
@@ -2146,6 +2189,51 @@ export interface operations {
             path: {
                 memberId: number;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    markSeen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3637,7 +3725,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
+                    "*/*": components["schemas"]["ScrollResponseProfileViewResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    countNew: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": number;
                 };
             };
             /** @description 요청이 올바르지 않다 */
