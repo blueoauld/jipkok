@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct MemberSearchView: View {
-    
+
     @State private var viewModel = MemberSearchViewModel()
-    
+
     var body: some View {
         content
             .navigationTitle("회원 검색")
@@ -17,7 +17,7 @@ struct MemberSearchView: View {
             .autocorrectionDisabled()
             .onChange(of: viewModel.keyword) { _, _ in
                 viewModel.sanitizeKeyword()
-                
+
                 Task { await viewModel.search() }
             }
             .alert("알림", isPresented: $viewModel.isShowingMessage) {
@@ -26,7 +26,7 @@ struct MemberSearchView: View {
                 Text(viewModel.message ?? "")
             }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         if !viewModel.isSearchable {
@@ -40,7 +40,7 @@ struct MemberSearchView: View {
             memberList
         }
     }
-    
+
     @ViewBuilder
     private var emptyResult: some View {
         if viewModel.isLoading {
@@ -50,15 +50,18 @@ struct MemberSearchView: View {
             ContentUnavailableView.search(text: viewModel.keyword)
         }
     }
-    
+
     private var memberList: some View {
         ScrollView {
             LazyVStack(spacing: rowSpacing) {
                 ForEach(viewModel.members) { member in
-                    MemberRow(member: member)
-                        .task { await loadMoreIfNeeded(for: member) }
+                    NavigationLink(value: MemberRoute.memberDetail(id: member.id)) {
+                        MemberRow(member: member)
+                    }
+                    .buttonStyle(.plain)
+                    .task { await loadMoreIfNeeded(for: member) }
                 }
-                
+
                 if viewModel.isLoading {
                     ProgressView()
                         .padding()
@@ -68,10 +71,10 @@ struct MemberSearchView: View {
         }
         .scrollDismissesKeyboard(.interactively)
     }
-    
+
     private func loadMoreIfNeeded(for member: Member) async {
         guard member.id == viewModel.members.last?.id else { return }
-        
+
         await viewModel.loadMore()
     }
 }
