@@ -1,4 +1,4 @@
-enum GenderFilter: CaseIterable {
+enum GenderFilter: String, CaseIterable {
 
     case all
     case male

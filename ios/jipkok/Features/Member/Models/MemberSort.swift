@@ -1,4 +1,4 @@
-enum MemberSort: CaseIterable {
+enum MemberSort: String, CaseIterable {
     
     case recent
     case distance

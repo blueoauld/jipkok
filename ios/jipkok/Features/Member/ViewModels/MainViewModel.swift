@@ -4,8 +4,8 @@ import Observation
 @MainActor
 final class MainViewModel {
     
-    var sort: MemberSort = .recent
-    var genderFilter: GenderFilter = .all
+    var sort: MemberSort
+    var genderFilter: GenderFilter
     var errorMessage: String?
     
     private(set) var members: [Member] = []
@@ -21,9 +21,16 @@ final class MainViewModel {
     }
     
     private let repository: MemberRepository
-    
-    init(repository: MemberRepository = MemberRepository()) {
+    private let filterStore: MemberFilterStore
+
+    init(
+        repository: MemberRepository = MemberRepository(),
+        filterStore: MemberFilterStore = MemberFilterStore()
+    ) {
         self.repository = repository
+        self.filterStore = filterStore
+        self.sort = filterStore.sort
+        self.genderFilter = filterStore.gender
     }
     
     func loadIfNeeded() async {
@@ -33,6 +40,9 @@ final class MainViewModel {
     }
     
     func reload() async {
+        filterStore.sort = sort
+        filterStore.gender = genderFilter
+
         loadTask?.cancel()
         members = []
         nextCursor = nil
