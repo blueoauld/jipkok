@@ -8,6 +8,7 @@ struct FeedView: View {
     @State private var viewModel = FeedViewModel()
     @State private var isPickingDate = false
     @State private var isComposing = false
+    @State private var viewingPost: FeedPost?
     
     init() {}
     
@@ -43,6 +44,9 @@ struct FeedView: View {
                     NavigationStack {
                         FeedComposeView { viewModel.date = Date() }
                     }
+                }
+                .fullScreenCover(item: $viewingPost) { post in
+                    PhotoViewer(urls: [post.imageURL], index: .constant(0))
                 }
                 .safeAreaInset(edge: .top) {
                     sortPicker
@@ -101,6 +105,7 @@ struct FeedView: View {
                     ForEach(viewModel.posts) { post in
                         FeedCard(
                             post: post,
+                            onPhotoTap: { viewingPost = post },
                             onAuthorTap: { openAuthor(post) },
                             onLike: { Task { await viewModel.toggleLike(post) } },
                             onReport: { viewModel.reportingPost = post }

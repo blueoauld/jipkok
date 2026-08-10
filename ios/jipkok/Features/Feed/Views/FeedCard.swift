@@ -9,6 +9,7 @@ private let scrimOpacity: CGFloat = 0.35
 struct FeedCard: View {
     
     let post: FeedPost
+    let onPhotoTap: () -> Void
     let onAuthorTap: () -> Void
     let onLike: () -> Void
     let onReport: () -> Void
@@ -23,6 +24,8 @@ struct FeedCard: View {
             .overlay(alignment: .bottomTrailing) { likeButton }
             .overlay { slot }
             .clipShape(.rect(cornerRadius: fieldCornerRadius))
+            .contentShape(.rect)
+            .onTapGesture(perform: onPhotoTap)
     }
     
     private var photo: some View {
@@ -111,7 +114,7 @@ struct FeedCard: View {
     ScrollView {
         LazyVStack(spacing: rowSpacing) {
             ForEach(FeedPost.previews) { post in
-                FeedCard(post: post, onAuthorTap: {}, onLike: {}, onReport: {})
+                FeedCard(post: post, onPhotoTap: {}, onAuthorTap: {}, onLike: {}, onReport: {})
             }
         }
         .padding()

@@ -99,7 +99,7 @@ struct ProfileEditView: View {
     }
     
     private var birthYearField: some View {
-        TextField("출생연도", text: $viewModel.birthYear)
+        TextField("출생연도 (YYYY)", text: $viewModel.birthYear)
             .keyboardType(.numberPad)
             .focused($focusedField, equals: .birthYear)
             .onChange(of: viewModel.birthYear) { _, _ in viewModel.sanitizeBirthYear() }
