@@ -18,7 +18,7 @@ struct RankView: View {
     private var memberList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(Member.samples) { member in
+                ForEach([Member]()) { member in
                     MemberRow(member: member)
                 }
             }

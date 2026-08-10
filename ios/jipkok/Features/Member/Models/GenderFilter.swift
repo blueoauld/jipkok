@@ -1,8 +1,9 @@
 enum GenderFilter: CaseIterable {
+
     case all
     case male
     case female
-    
+
     var label: String {
         switch self {
         case .all: "전체"

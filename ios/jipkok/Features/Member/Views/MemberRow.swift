@@ -32,10 +32,12 @@ struct MemberRow: View {
             
             Spacer()
             
-            Text(relativeTime(from: member.locatedAt))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .layoutPriority(1)
+            if let locatedAt = member.locatedAt {
+                Text(relativeTime(from: locatedAt))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .layoutPriority(1)
+            }
         }
     }
     
@@ -77,7 +79,7 @@ private func formatDistance(_ meters: Double) -> String {
 
 #Preview {
     VStack(spacing: 16) {
-        ForEach(Array(Member.samples.prefix(5))) { member in
+        ForEach(Member.previews) { member in
             MemberRow(member: member)
         }
     }

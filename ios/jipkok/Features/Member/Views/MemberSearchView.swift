@@ -10,7 +10,7 @@ struct MemberSearchView: View {
     private var results: [Member] {
         guard keyword.count >= minKeywordLength else { return [] }
         
-        return Member.samples.filter { $0.nickname.contains(keyword) }
+        return []
     }
     
     var body: some View {
