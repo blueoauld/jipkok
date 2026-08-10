@@ -1,6 +1,8 @@
 import SwiftUI
 
 private let actionBarHeight: CGFloat = 64
+private let dotSize: CGFloat = 7
+private let dotSpacing: CGFloat = 6
 private let actionIconSize: CGFloat = 26
 private let badgeSize: CGFloat = 18
 
@@ -44,7 +46,15 @@ struct MemberDetailView: View {
         }
     }
     
+    private struct ViewerStart: Identifiable {
+        let index: Int
+        
+        var id: Int { index }
+    }
+    
     @State private var viewModel: MemberDetailViewModel
+    @State private var photoIndex = 0
+    @State private var viewerStart: ViewerStart?
     
     init(id: Int) {
         _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
@@ -89,6 +99,9 @@ struct MemberDetailView: View {
             .fullScreenCover(isPresented: $viewModel.isViewingSecretPhotos) {
                 PhotoViewer(urls: viewModel.secretPhotoURLs)
             }
+            .fullScreenCover(item: $viewerStart) { start in
+                PhotoViewer(urls: viewModel.member?.publicPhotoURLs ?? [], startIndex: start.index)
+            }
             .loadingOverlay(viewModel.isProcessing)
             .task { await viewModel.loadIfNeeded() }
     }
@@ -105,7 +118,7 @@ struct MemberDetailView: View {
     
     private func profile(_ member: MemberDetail) -> some View {
         ScrollView {
-            photoArea
+            photoArea(member)
             
             VStack(alignment: .leading, spacing: 12) {
                 summary(member)
@@ -120,9 +133,36 @@ struct MemberDetailView: View {
         }
     }
     
-    private var photoArea: some View {
-        Color(.secondarySystemBackground)
+    @ViewBuilder
+    private func photoArea(_ member: MemberDetail) -> some View {
+        if member.publicPhotoURLs.isEmpty {
+            Color(.secondarySystemBackground)
+                .aspectRatio(1, contentMode: .fit)
+        } else {
+            PhotoCarousel(urls: member.publicPhotoURLs, currentIndex: $photoIndex) { index in
+                viewerStart = ViewerStart(index: index)
+            }
             .aspectRatio(1, contentMode: .fit)
+            .overlay(alignment: .bottom) {
+                pageIndicator(member)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func pageIndicator(_ member: MemberDetail) -> some View {
+        if member.publicPhotoURLs.count > 1 {
+            HStack(spacing: dotSpacing) {
+                ForEach(member.publicPhotoURLs.indices, id: \.self) { index in
+                    Circle()
+                        .fill(.white)
+                        .opacity(index == photoIndex ? 1 : 0.4)
+                        .frame(width: dotSize, height: dotSize)
+                }
+            }
+            .padding(12)
+            .animation(.easeOut(duration: 0.15), value: photoIndex)
+        }
     }
     
     private func summary(_ member: MemberDetail) -> some View {

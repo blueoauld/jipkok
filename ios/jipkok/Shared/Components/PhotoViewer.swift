@@ -78,7 +78,7 @@ private struct PhotoPager: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UICollectionView {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: PagingLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: PagingCollectionLayout())
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.contentInsetAdjustmentBehavior = .never
@@ -197,24 +197,6 @@ private struct PhotoPager: UIViewRepresentable {
     }
 }
 
-private final class PagingLayout: UICollectionViewFlowLayout {
-
-    override func prepare() {
-        super.prepare()
-
-        guard let collectionView else { return }
-
-        scrollDirection = .horizontal
-        minimumLineSpacing = 0
-        minimumInteritemSpacing = 0
-        sectionInset = .zero
-        itemSize = collectionView.bounds.size
-    }
-
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        collectionView?.bounds.size != newBounds.size
-    }
-}
 
 private final class ZoomablePhotoCell: UICollectionViewCell, UIScrollViewDelegate {
 
