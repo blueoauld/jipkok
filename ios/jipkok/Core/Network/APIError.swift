@@ -28,7 +28,11 @@ extension APIError {
             return from(clientError.underlyingError)
         }
 
+        #if DEBUG
+        return APIError(status: 0, code: unknownCode, message: String(describing: error))
+        #else
         return unknown
+        #endif
     }
 }
 

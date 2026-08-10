@@ -7,6 +7,7 @@ enum APIClient {
     static func make(middlewares: [any ClientMiddleware] = []) -> Client {
         Client(
             serverURL: APIConfiguration.baseURL,
+            configuration: Configuration(dateTranscoder: APIDateTranscoder()),
             transport: URLSessionTransport(),
             middlewares: [ErrorMappingMiddleware(), AppHeadersMiddleware()] + middlewares
         )
