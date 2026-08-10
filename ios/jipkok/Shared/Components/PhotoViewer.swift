@@ -20,6 +20,9 @@ struct PhotoViewer: View {
         LazyPager(data: urls, page: $index) { url in
             ViewerPhoto(url: url)
                 .captureProtected(isProtected)
+                .accessibilityElement(children: .ignore)
+                .accessibilityAddTraits(.isImage)
+                .accessibilityLabel(photoLabel(for: url))
         }
         .zoomable(min: 1, max: 3)
         .onDismiss(backgroundOpacity: $backgroundOpacity) {
@@ -45,6 +48,12 @@ struct PhotoViewer: View {
         .statusBarHidden()
         .onAppear { index = min(index, max(urls.count - 1, 0)) }
     }
+
+    private func photoLabel(for url: URL) -> String {
+        guard urls.count > 1, let position = urls.firstIndex(of: url) else { return "사진" }
+
+        return "사진 \(position + 1) / \(urls.count)"
+    }
     
     private var controls: some View {
         ZStack {
@@ -54,6 +63,7 @@ struct PhotoViewer: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .glassEffect(.regular, in: .capsule)
+                    .accessibilityHidden(true)
             }
             
             HStack {
