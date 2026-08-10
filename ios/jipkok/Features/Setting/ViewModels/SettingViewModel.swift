@@ -8,7 +8,6 @@ final class SettingViewModel {
     var isConfirmingSignout = false
     var message: String?
     
-    private(set) var isSigningOut = false
     private(set) var isProcessing = false
     
     var isShowingMessage: Bool {
@@ -63,21 +62,32 @@ final class SettingViewModel {
             ? "\(reward.amount.formatted()) 포인트를 받았습니다."
             : "오늘 출석 보상은 이미 받았습니다."
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
     
     func signout() async {
-        guard !isSigningOut else { return }
+        guard !isProcessing else { return }
         
-        isSigningOut = true
+        isProcessing = true
         
-        defer { isSigningOut = false }
+        defer { isProcessing = false }
         
         if let refreshToken = tokenStore.refreshToken {
             _ = try? await client.logout(.init(body: .json(.init(refreshToken: refreshToken))))
         }
         
         session.signout()
+    }
+}
+
+extension SettingViewModel {
+
+    static func preview(isProcessing: Bool = false) -> SettingViewModel {
+        let viewModel = SettingViewModel(session: AuthSession())
+        viewModel.isProcessing = isProcessing
+        return viewModel
     }
 }
