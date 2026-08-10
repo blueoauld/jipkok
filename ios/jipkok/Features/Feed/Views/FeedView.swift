@@ -2,12 +2,28 @@ import SwiftUI
 
 struct FeedView: View {
     
+    @State private var router = FeedRouter()
     @State private var viewModel = FeedViewModel()
     @State private var isPickingDate = false
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             postList
+                .navigationDestination(for: FeedRoute.self) { route in
+                    switch route {
+                    case .memberDetail(let id): MemberDetailView(id: id)
+                    case .myProfile: MyProfileView()
+                    }
+                }
+                .navigationDestination(for: SettingRoute.self) { route in
+                    switch route {
+                    case .activity(let kind): ActivityListView(kind: kind)
+                    case .memberDetail(let id): MemberDetailView(id: id)
+                    case .pointHistory: PointHistoryView()
+                    case .myProfile: MyProfileView()
+                    case .editProfile: ProfileEditView()
+                    }
+                }
                 .overlay(alignment: .bottom) {
                     dateButton
                 }
@@ -53,6 +69,7 @@ struct FeedView: View {
                 .onChange(of: viewModel.date) { _, _ in Task { await viewModel.reload() } }
                 .refreshable { await viewModel.reload() }
         }
+        .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
     
     @ViewBuilder
@@ -65,6 +82,7 @@ struct FeedView: View {
                     ForEach(viewModel.posts) { post in
                         FeedCard(
                             post: post,
+                            onAuthorTap: { openProfile(of: post) },
                             onLike: { Task { await viewModel.toggleLike(post) } },
                             onReport: { viewModel.reportingPost = post }
                         )
@@ -85,6 +103,14 @@ struct FeedView: View {
                     ProgressView()
                 }
             }
+        }
+    }
+    
+    private func openProfile(of post: FeedPost) {
+        if post.memberId == viewModel.myMemberId {
+            router.push(.myProfile)
+        } else {
+            router.push(.memberDetail(id: post.memberId))
         }
     }
     

@@ -9,6 +9,7 @@ private let scrimOpacity: CGFloat = 0.35
 struct FeedCard: View {
     
     let post: FeedPost
+    let onAuthorTap: () -> Void
     let onLike: () -> Void
     let onReport: () -> Void
     
@@ -49,15 +50,20 @@ struct FeedCard: View {
     }
     
     private var author: some View {
-        HStack {
-            MemberAvatar(url: post.profileImageURL, size: avatarSize, isCircular: true)
-            
-            Text(post.nickname)
-                .font(.subheadline.bold())
-                .foregroundStyle(.white)
-                .lineLimit(1)
+        Button(action: onAuthorTap) {
+            HStack {
+                MemberAvatar(url: post.profileImageURL, size: avatarSize, isCircular: true)
+                
+                Text(post.nickname)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+            }
+            .padding()
+            .contentShape(.rect)
         }
-        .padding()
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(post.nickname) 프로필")
     }
     
     private var reportButton: some View {
@@ -105,7 +111,7 @@ struct FeedCard: View {
     ScrollView {
         LazyVStack(spacing: rowSpacing) {
             ForEach(FeedPost.previews) { post in
-                FeedCard(post: post, onLike: {}, onReport: {})
+                FeedCard(post: post, onAuthorTap: {}, onLike: {}, onReport: {})
             }
         }
         .padding()
