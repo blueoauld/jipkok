@@ -45,6 +45,28 @@ struct MemberRepository {
         MyProfile(try await client.getMyProfile(.init()).ok.body.json)
     }
 
+    func editProfile(
+        nickname: String,
+        birthYear: Int,
+        bio: String?,
+        publicPhotoKeys: [String],
+        secretPhotoKeys: [String]
+    ) async throws {
+        _ = try await client.editProfile(
+            .init(
+                body: .json(
+                    .init(
+                        nickname: nickname,
+                        birthYear: Int32(birthYear),
+                        bio: bio,
+                        publicPhotoKeys: publicPhotoKeys,
+                        secretPhotoKeys: secretPhotoKeys
+                    )
+                )
+            )
+        )
+    }
+
     func findDetail(id: Int) async throws -> MemberDetail {
         let output = try await client.findDetail(.init(path: .init(targetId: Int64(id))))
         

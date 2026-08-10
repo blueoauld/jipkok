@@ -20,8 +20,8 @@ final class MyProfileViewModel {
         self.repository = repository
     }
 
-    func loadIfNeeded() async {
-        guard profile == nil, !isLoading else { return }
+    func load() async {
+        guard !isLoading else { return }
 
         isLoading = true
 

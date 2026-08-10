@@ -30,6 +30,7 @@ struct SettingView: View {
                 case .memberDetail(let id): MemberDetailView(id: id)
                 case .pointHistory: PointHistoryView()
                 case .myProfile: MyProfileView()
+                case .editProfile: ProfileEditView()
                 }
             }
             .navigationTitle("설정")

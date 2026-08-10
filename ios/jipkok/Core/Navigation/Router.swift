@@ -9,6 +9,12 @@ final class Router<Route: Hashable> {
         path.append(route)
     }
 
+    func pop() {
+        guard !path.isEmpty else { return }
+
+        path.removeLast()
+    }
+
     func popToRoot() {
         path.removeAll()
     }

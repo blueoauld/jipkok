@@ -4,6 +4,7 @@ enum SettingRoute: Hashable {
     case memberDetail(id: Int)
     case pointHistory
     case myProfile
+    case editProfile
 }
 
 typealias SettingRouter = Router<SettingRoute>

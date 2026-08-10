@@ -15,7 +15,7 @@ struct MyProfileView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("편집") {}
+                    NavigationLink("편집", value: SettingRoute.editProfile)
                         .disabled(viewModel.profile == nil)
                 }
             }
@@ -27,7 +27,7 @@ struct MyProfileView: View {
             .fullScreenCover(isPresented: $isViewingPhotos) {
                 PhotoViewer(urls: viewModel.profile?.allPhotoURLs ?? [], index: $photoIndex)
             }
-            .task { await viewModel.loadIfNeeded() }
+            .onAppear { Task { await viewModel.load() } }
     }
 
     @ViewBuilder
