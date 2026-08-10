@@ -7,6 +7,10 @@ struct ActivityListView: View {
     init(kind: ActivityKind) {
         _viewModel = State(wrappedValue: ActivityListViewModel(kind: kind))
     }
+
+    fileprivate init(viewModel: ActivityListViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
     
     var body: some View {
         content
@@ -21,42 +25,43 @@ struct ActivityListView: View {
             .task { await viewModel.loadIfNeeded() }
     }
     
-    @ViewBuilder
     private var content: some View {
-        if viewModel.isEmpty {
-            ContentUnavailableView("목록이 비어있습니다.", systemImage: "tray")
-        } else if viewModel.items.isEmpty {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            itemList
-        }
-    }
-    
-    private var itemList: some View {
         ScrollView {
-            LazyVStack(spacing: rowSpacing) {
-                ForEach(viewModel.items) { item in
-                    NavigationLink(value: SettingRoute.memberDetail(id: item.member.id)) {
-                        ActivityRow(
-                            member: item.member,
-                            caption: item.viewedAt.map { relativeTime(from: $0) },
-                            onDelete: deleteAction(for: item)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .task { await loadMoreIfNeeded(for: item) }
-                }
-                
-                if viewModel.isLoading {
-                    ProgressView()
-                        .padding()
-                }
+            switch viewModel.displayState {
+            case .loading:
+                ProgressView()
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .empty:
+                ContentUnavailableView("목록이 비어있습니다.", systemImage: "tray")
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .content:
+                itemList
             }
-            .padding()
         }
         .scrollIndicators(.hidden)
         .refreshable { await viewModel.reload() }
+    }
+    
+    private var itemList: some View {
+        LazyVStack(spacing: rowSpacing) {
+            ForEach(viewModel.items) { item in
+                NavigationLink(value: SettingRoute.memberDetail(id: item.member.id)) {
+                    ActivityRow(
+                        member: item.member,
+                        caption: item.viewedAt.map { relativeTime(from: $0) },
+                        onDelete: deleteAction(for: item)
+                    )
+                }
+                .buttonStyle(.plain)
+                .task { await loadMoreIfNeeded(for: item) }
+            }
+            
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding()
+            }
+        }
+        .padding()
     }
     
     private func deleteAction(for item: ActivityItem) -> (() -> Void)? {
@@ -72,8 +77,33 @@ struct ActivityListView: View {
     }
 }
 
-#Preview {
+#Preview("목록") {
     NavigationStack {
-        ActivityListView(kind: .like)
+        ActivityListView(
+            viewModel: .preview(items: Member.previews.map { ActivityItem(member: $0, viewedAt: nil) })
+        )
+    }
+}
+
+#Preview("삭제 처리 중") {
+    NavigationStack {
+        ActivityListView(
+            viewModel: .preview(
+                items: Member.previews.map { ActivityItem(member: $0, viewedAt: nil) },
+                isProcessing: true
+            )
+        )
+    }
+}
+
+#Preview("로딩 중") {
+    NavigationStack {
+        ActivityListView(viewModel: .preview(isLoading: true))
+    }
+}
+
+#Preview("빈 상태") {
+    NavigationStack {
+        ActivityListView(viewModel: .preview())
     }
 }

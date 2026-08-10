@@ -3,23 +3,23 @@ import SwiftUI
 private let deleteButtonSize: CGFloat = 44
 
 struct ActivityRow: View {
-
+    
     let member: Member
     var caption: String?
     var onDelete: (() -> Void)?
-
+    
     var body: some View {
         HStack(spacing: 12) {
             MemberAvatar(url: member.profileImageURL)
-
+            
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(member.nickname)
                         .font(.subheadline.bold())
                         .lineLimit(1)
-
+                    
                     Spacer()
-
+                    
                     if let caption {
                         Text(caption)
                             .font(.caption)
@@ -27,24 +27,24 @@ struct ActivityRow: View {
                             .layoutPriority(1)
                     }
                 }
-
+                
                 Text("\(member.gender.label) · \(member.age)살 · ♥ \(member.receivedLikeCount.formatted())")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-
+                
                 Text(member.comment ?? "-")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-
+            
             if let onDelete {
                 deleteButton(onDelete)
             }
         }
         .contentShape(.rect)
     }
-
+    
     private func deleteButton(_ action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: "trash.fill")
