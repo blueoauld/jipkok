@@ -1,8 +1,6 @@
 import SwiftUI
 
 private let actionBarHeight: CGFloat = 64
-private let dotSize: CGFloat = 7
-private let dotSpacing: CGFloat = 6
 private let actionIconSize: CGFloat = 26
 private let badgeSize: CGFloat = 18
 
@@ -54,6 +52,10 @@ struct MemberDetailView: View {
     
     init(id: Int) {
         _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
+    }
+    
+    fileprivate init(viewModel: MemberDetailViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -111,11 +113,16 @@ struct MemberDetailView: View {
     
     @ViewBuilder
     private var content: some View {
-        if let member = viewModel.member {
-            profile(member)
-        } else {
+        switch viewModel.displayState {
+        case .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .empty:
+            ContentUnavailableView("프로필을 불러오지 못했습니다.", systemImage: "person.slash")
+        case .content:
+            if let member = viewModel.member {
+                profile(member)
+            }
         }
     }
     
@@ -125,8 +132,8 @@ struct MemberDetailView: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 summary(member)
-                section("코멘트", body: member.comment, placeholder: "코멘트가 없습니다.")
-                section("자기소개", body: member.bio, placeholder: "자기소개가 없습니다.")
+                ProfileSection("코멘트", body: member.comment, placeholder: "코멘트가 없습니다.")
+                ProfileSection("자기소개", body: member.bio, placeholder: "자기소개가 없습니다.")
             }
             .padding()
         }
@@ -136,41 +143,10 @@ struct MemberDetailView: View {
         }
     }
     
-    @ViewBuilder
     private func photoArea(_ member: MemberDetail) -> some View {
-        if member.publicPhotoURLs.isEmpty {
-            Color(.secondarySystemBackground)
-                .aspectRatio(1, contentMode: .fit)
-                .overlay {
-                    Image(systemName: "photo")
-                        .font(.largeTitle)
-                        .foregroundStyle(.tertiary)
-                }
-        } else {
-            PhotoCarousel(urls: member.publicPhotoURLs, currentIndex: $photoIndex) { index in
-                photoIndex = index
-                isViewingPhotos = true
-            }
-            .aspectRatio(1, contentMode: .fit)
-            .overlay(alignment: .bottom) {
-                pageIndicator(member)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func pageIndicator(_ member: MemberDetail) -> some View {
-        if member.publicPhotoURLs.count > 1 {
-            HStack(spacing: dotSpacing) {
-                ForEach(member.publicPhotoURLs.indices, id: \.self) { index in
-                    Circle()
-                        .fill(.white)
-                        .opacity(index == photoIndex ? 1 : 0.4)
-                        .frame(width: dotSize, height: dotSize)
-                }
-            }
-            .padding(12)
-            .animation(.easeOut(duration: 0.15), value: photoIndex)
+        ProfilePhotoArea(urls: member.publicPhotoURLs, index: $photoIndex) { index in
+            photoIndex = index
+            isViewingPhotos = true
         }
     }
     
@@ -204,21 +180,6 @@ struct MemberDetailView: View {
                 }
             }
             .foregroundStyle(.secondary)
-        }
-    }
-    
-    private func section(_ title: String, body: String?, placeholder: String) -> some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
-            
-            Text(body ?? placeholder)
-                .font(.body)
-                .foregroundStyle(body == nil ? .secondary : .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: fieldCornerRadius))
         }
     }
     
@@ -321,12 +282,27 @@ struct MemberDetailView: View {
 }
 
 
-private func formatDistance(_ meters: Double) -> String {
-    (meters / 1_000).formatted(.number.precision(.fractionLength(1))) + "km"
+
+#Preview("프로필") {
+    NavigationStack {
+        MemberDetailView(viewModel: .preview(member: .preview))
+    }
 }
 
-#Preview {
+#Preview("처리 중") {
     NavigationStack {
-        MemberDetailView(id: 1)
+        MemberDetailView(viewModel: .preview(member: .preview, isProcessing: true))
+    }
+}
+
+#Preview("로딩 중") {
+    NavigationStack {
+        MemberDetailView(viewModel: .preview(isLoading: true))
+    }
+}
+
+#Preview("불러오기 실패") {
+    NavigationStack {
+        MemberDetailView(viewModel: .preview())
     }
 }

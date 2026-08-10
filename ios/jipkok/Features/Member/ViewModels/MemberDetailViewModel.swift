@@ -13,6 +13,14 @@ final class MemberDetailViewModel {
     private(set) var member: MemberDetail?
     private(set) var isLoading = false
     
+    var displayState: DisplayState {
+        if member == nil {
+            return isLoading ? .loading : .empty
+        }
+        
+        return .content
+    }
+    
     private var isTogglingLike = false
     private var isTogglingFavorite = false
     private(set) var isProcessing = false
@@ -41,6 +49,8 @@ final class MemberDetailViewModel {
         do {
             member = try await repository.findDetail(id: id)
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
@@ -61,6 +71,9 @@ final class MemberDetailViewModel {
         } catch {
             member?.isLiked = previous.isLiked
             member?.receivedLikeCount = previous.receivedLikeCount
+            
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
@@ -80,45 +93,49 @@ final class MemberDetailViewModel {
             member?.isSecretPhotoGrantedByMe = isGranted
             message = isGranted ? "비밀 사진을 공개하셨습니다." : "비밀 사진을 비공개하셨습니다."
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
     
     func openSecretPhotos() async {
         guard !isProcessing, let member else { return }
-
+        
         guard member.isSecretPhotoGrantedToMe else {
             message = "비밀 사진이 공개되지 않았습니다."
-
+            
             return
         }
-
+        
         guard member.secretPhotoCount > 0 else {
             message = "공개된 비밀 사진이 없습니다."
-
+            
             return
         }
-
+        
         isProcessing = true
-
+        
         defer { isProcessing = false }
-
+        
         do {
             let urls = try await repository.findSecretPhotoURLs(id: id)
-
+            
             guard !urls.isEmpty else {
                 message = "공개된 비밀 사진이 없습니다."
-
+                
                 return
             }
-
+            
             secretPhotoURLs = urls
             isViewingSecretPhotos = true
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
-
+    
     func toggleBlock() async {
         guard !isProcessing, let previous = member?.isBlocked else { return }
         
@@ -134,6 +151,8 @@ final class MemberDetailViewModel {
             member?.isBlocked = isBlocked
             message = isBlocked ? "차단하셨습니다." : "차단을 해제하셨습니다."
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
@@ -150,7 +169,25 @@ final class MemberDetailViewModel {
             try await repository.setFavorited(!previous, id: id)
         } catch {
             member?.isFavorited = previous
+            
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
+    }
+}
+
+extension MemberDetailViewModel {
+    
+    static func preview(
+        member: MemberDetail? = nil,
+        isLoading: Bool = false,
+        isProcessing: Bool = false
+    ) -> MemberDetailViewModel {
+        let viewModel = MemberDetailViewModel(id: member?.id ?? 0)
+        viewModel.member = member
+        viewModel.isLoading = isLoading
+        viewModel.isProcessing = isProcessing
+        return viewModel
     }
 }

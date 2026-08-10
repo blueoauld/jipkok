@@ -1,8 +1,5 @@
 import SwiftUI
 
-private let dotSize: CGFloat = 7
-private let dotSpacing: CGFloat = 6
-
 struct MyProfileView: View {
     
     @State private var viewModel = MyProfileViewModel()
@@ -60,38 +57,21 @@ struct MyProfileView: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 summary(profile)
-                section("코멘트", body: profile.comment, placeholder: "아직 코멘트를 작성하지 않았습니다.")
-                section("자기소개", body: profile.bio, placeholder: "아직 자기소개를 작성하지 않았습니다.")
+                ProfileSection("코멘트", body: profile.comment, placeholder: "아직 코멘트를 작성하지 않았습니다.")
+                ProfileSection("자기소개", body: profile.bio, placeholder: "아직 자기소개를 작성하지 않았습니다.")
             }
             .padding()
         }
     }
     
-    @ViewBuilder
     private func photoArea(_ profile: MyProfile) -> some View {
-        let urls = profile.allPhotoURLs
-        
-        if urls.isEmpty {
-            Color(.secondarySystemBackground)
-                .aspectRatio(1, contentMode: .fit)
-                .overlay {
-                    Image(systemName: "photo")
-                        .font(.largeTitle)
-                        .foregroundStyle(.tertiary)
-                }
-        } else {
-            PhotoCarousel(urls: urls, currentIndex: $photoIndex) { index in
-                photoIndex = index
-                isViewingPhotos = true
-            }
-            .aspectRatio(1, contentMode: .fit)
-            .overlay(alignment: .bottom) {
-                pageIndicator(count: urls.count)
-            }
-            .overlay(alignment: .topLeading) {
-                if profile.isSecretPhoto(at: photoIndex) {
-                    secretBadge
-                }
+        ProfilePhotoArea(urls: profile.allPhotoURLs, index: $photoIndex) { index in
+            photoIndex = index
+            isViewingPhotos = true
+        }
+        .overlay(alignment: .topLeading) {
+            if profile.isSecretPhoto(at: photoIndex) {
+                secretBadge
             }
         }
     }
@@ -106,22 +86,6 @@ struct MyProfileView: View {
             .padding(12)
     }
     
-    @ViewBuilder
-    private func pageIndicator(count: Int) -> some View {
-        if count > 1 {
-            HStack(spacing: dotSpacing) {
-                ForEach(0..<count, id: \.self) { index in
-                    Circle()
-                        .fill(.white)
-                        .opacity(index == photoIndex ? 1 : 0.4)
-                        .frame(width: dotSize, height: dotSize)
-                }
-            }
-            .padding(12)
-            .animation(.easeOut(duration: 0.15), value: photoIndex)
-        }
-    }
-    
     private func summary(_ profile: MyProfile) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(profile.nickname)
@@ -134,20 +98,6 @@ struct MyProfileView: View {
         }
     }
     
-    private func section(_ title: String, body: String?, placeholder: String) -> some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
-            
-            Text(body ?? placeholder)
-                .font(.body)
-                .foregroundStyle(body == nil ? .secondary : .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: fieldCornerRadius))
-        }
-    }
 }
 
 #Preview("프로필") {
