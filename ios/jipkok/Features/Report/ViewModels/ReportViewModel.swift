@@ -33,6 +33,10 @@ final class ReportViewModel {
         reason != nil && !isSubmitting
     }
 
+    var isDirty: Bool {
+        reason != nil || !detail.isEmpty || !photos.isEmpty
+    }
+
     var isShowingMessage: Bool {
         get { message != nil }
         set { if !newValue { message = nil } }
@@ -66,6 +70,8 @@ final class ReportViewModel {
                 let objectKey = try await repository.uploadPhoto(image)
                 photos.append(ReportPhoto(objectKey: objectKey, image: image))
             } catch {
+                guard !error.isCancellation else { break }
+
                 message = APIError.from(error).message
 
                 break
@@ -96,7 +102,34 @@ final class ReportViewModel {
             didSubmit = true
             message = "신고가 접수되었습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
+}
+
+extension ReportViewModel {
+
+    static func preview(
+        reason: ReportReason? = nil,
+        detail: String = "",
+        photoCount: Int = 0,
+        isSubmitting: Bool = false
+    ) -> ReportViewModel {
+        let viewModel = ReportViewModel(memberId: 1, roomId: nil)
+        viewModel.reason = reason
+        viewModel.detail = detail
+        viewModel.photos = (0..<photoCount).map {
+            ReportPhoto(objectKey: "preview-\($0)", image: previewImage)
+        }
+        viewModel.isSubmitting = isSubmitting
+        return viewModel
+    }
+
+    private static let previewImage = UIGraphicsImageRenderer(size: CGSize(width: 600, height: 600))
+        .image { context in
+            UIColor.systemGray3.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 600, height: 600))
+        }
 }

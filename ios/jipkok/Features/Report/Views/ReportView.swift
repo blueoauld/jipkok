@@ -10,6 +10,7 @@ struct ReportView: View {
     @State private var viewModel: ReportViewModel
     @State private var isPickerPresented = false
     @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var isConfirmingClose = false
 
     @FocusState private var isDetailFocused: Bool
 
@@ -23,6 +24,12 @@ struct ReportView: View {
         _viewModel = State(wrappedValue: ReportViewModel(memberId: memberId, roomId: roomId))
     }
 
+    fileprivate init(nickname: String, viewModel: ReportViewModel) {
+        self.nickname = nickname
+        self.isChatReport = false
+        _viewModel = State(wrappedValue: viewModel)
+    }
+
     private var title: String {
         (isChatReport ? "채팅 신고" : "신고") + " (\(nickname))"
     }
@@ -33,9 +40,23 @@ struct ReportView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("닫기") { dismiss() }
+                    Button("닫기", systemImage: "xmark") {
+                        if viewModel.isDirty {
+                            isConfirmingClose = true
+                        } else {
+                            dismiss()
+                        }
+                    }
                 }
             }
+            .alert("알림", isPresented: $isConfirmingClose) {
+                Button("닫기", role: .destructive) { dismiss() }
+
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("작성 중인 내용이 사라집니다.")
+            }
+            .interactiveDismissDisabled(viewModel.isDirty)
             .alert("알림", isPresented: $viewModel.isShowingMessage) {
                 Button("확인", role: .cancel) {
                     if viewModel.didSubmit { dismiss() }
@@ -187,7 +208,6 @@ struct ReportView: View {
         Button(action: submit) {
             if viewModel.isSubmitting {
                 ProgressView()
-                    .tint(.primary)
             } else {
                 Text("신고하기")
             }
@@ -219,8 +239,30 @@ struct ReportView: View {
     }
 }
 
-#Preview {
+#Preview("기본") {
     NavigationStack {
         ReportView(memberId: 1, nickname: "달리는고양이")
+    }
+}
+
+#Preview("작성 완료") {
+    NavigationStack {
+        ReportView(
+            nickname: "달리는고양이",
+            viewModel: .preview(
+                reason: .abuse,
+                detail: "채팅에서 욕설을 반복했습니다.",
+                photoCount: 2
+            )
+        )
+    }
+}
+
+#Preview("제출 중") {
+    NavigationStack {
+        ReportView(
+            nickname: "달리는고양이",
+            viewModel: .preview(reason: .abuse, isSubmitting: true)
+        )
     }
 }
