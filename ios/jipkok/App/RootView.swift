@@ -20,7 +20,7 @@ struct RootView: View {
             LoginView(session: session)
         case .needsSetup:
             NavigationStack {
-                SetupView()
+                SetupView(session: session)
             }
         }
     }

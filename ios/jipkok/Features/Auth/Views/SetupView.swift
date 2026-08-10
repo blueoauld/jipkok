@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let nicknameMaxLength = 10
-private let birthYearLength = 4
 private let bioMaxLength = 1000
 private let bioLineCount = 7
 
@@ -13,14 +11,12 @@ struct SetupView: View {
         case bio
     }
 
-    @State private var nickname = ""
-    @State private var birthYear = ""
-    @State private var bio = ""
+    @State private var viewModel: SetupViewModel
 
     @FocusState private var focusedField: Field?
 
-    private var canSubmit: Bool {
-        !nickname.isEmpty && birthYear.count == birthYearLength
+    init(session: AuthSession) {
+        _viewModel = State(wrappedValue: SetupViewModel(session: session))
     }
 
     var body: some View {
@@ -28,6 +24,11 @@ struct SetupView: View {
             .navigationTitle("프로필 설정")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
+            .alert("알림", isPresented: $viewModel.isShowingError) {
+                Button("확인", role: .cancel) {}
+            } message: {
+                Text(viewModel.errorMessage ?? "")
+            }
     }
 
     private var content: some View {
@@ -48,28 +49,24 @@ struct SetupView: View {
     }
 
     private var nicknameField: some View {
-        TextField("닉네임", text: $nickname)
+        TextField("닉네임 (2자 ~ 10자)", text: $viewModel.nickname)
             .textContentType(.nickname)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .submitLabel(.next)
             .focused($focusedField, equals: .nickname)
             .onSubmit { focusedField = .birthYear }
-            .onChange(of: nickname) { _, newValue in
-                nickname = String(newValue.prefix(nicknameMaxLength))
-            }
+            .onChange(of: viewModel.nickname) { _, _ in viewModel.sanitizeNickname() }
             .inputStyle(isFocused: focusedField == .nickname)
             .contentShape(.rect)
             .onTapGesture { focusedField = .nickname }
     }
 
     private var birthYearField: some View {
-        TextField("출생연도", text: $birthYear)
+        TextField("출생연도 (YYYY)", text: $viewModel.birthYear)
             .keyboardType(.numberPad)
             .focused($focusedField, equals: .birthYear)
-            .onChange(of: birthYear) { _, newValue in
-                birthYear = String(newValue.filter(\.isNumber).prefix(birthYearLength))
-            }
+            .onChange(of: viewModel.birthYear) { _, _ in viewModel.sanitizeBirthYear() }
             .inputStyle(isFocused: focusedField == .birthYear)
             .contentShape(.rect)
             .onTapGesture { focusedField = .birthYear }
@@ -77,43 +74,50 @@ struct SetupView: View {
 
     private var bioField: some View {
         VStack(alignment: .trailing, spacing: 8) {
-            TextField("자기소개", text: $bio, axis: .vertical)
+            TextField("자기소개", text: $viewModel.bio, axis: .vertical)
                 .lineLimit(bioLineCount, reservesSpace: true)
                 .focused($focusedField, equals: .bio)
-                .onChange(of: bio) { _, newValue in
-                    bio = String(newValue.prefix(bioMaxLength))
-                }
+                .onChange(of: viewModel.bio) { _, _ in viewModel.sanitizeBio() }
                 .inputStyle(isFocused: focusedField == .bio)
                 .contentShape(.rect)
                 .onTapGesture { focusedField = .bio }
 
-            Text("\(String(bio.count)) / \(String(bioMaxLength))")
+            Text("\(String(viewModel.bio.count)) / \(String(bioMaxLength))")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
     }
 
     private var submitButton: some View {
-        Button("들어가기", action: submit)
-            .buttonStyle(.submit)
-            .disabled(!canSubmit)
+        Button(action: submit) {
+            if viewModel.isSubmitting {
+                ProgressView()
+                    .tint(.primary)
+            } else {
+                Text("들어가기")
+            }
+        }
+        .buttonStyle(.submit)
+        .disabled(!viewModel.canSubmit)
     }
 
     private func submit() {
         focusedField = nil
+
+        Task { await viewModel.submit() }
     }
 }
 
 #Preview("라이트") {
     NavigationStack {
-        SetupView()
+        SetupView(session: AuthSession())
     }
     .preferredColorScheme(.light)
 }
 
 #Preview("다크") {
     NavigationStack {
-        SetupView()
+        SetupView(session: AuthSession())
     }
     .preferredColorScheme(.dark)
 }
