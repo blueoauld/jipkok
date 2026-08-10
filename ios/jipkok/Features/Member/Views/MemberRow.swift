@@ -67,11 +67,6 @@ struct MemberRow: View {
     }
 }
 
-private func relativeTime(from date: Date, now: Date = Date()) -> String {
-    now.timeIntervalSince(date) < 60
-    ? "방금 전"
-    : date.formatted(.relative(presentation: .numeric))
-}
 
 private func formatDistance(_ meters: Double) -> String {
     (meters / 1_000).formatted(.number.precision(.fractionLength(1))) + "km"

@@ -6,6 +6,7 @@ private let iconCornerRadius: CGFloat = 8
 
 struct SettingView: View {
 
+    @State private var router = SettingRouter()
     @State private var viewModel: SettingViewModel
 
     init(session: AuthSession) {
@@ -13,7 +14,7 @@ struct SettingView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             List {
                 ForEach(SettingMenu.sections) { section in
                     Section {
@@ -21,6 +22,11 @@ struct SettingView: View {
                             row(item)
                         }
                     }
+                }
+            }
+            .navigationDestination(for: SettingRoute.self) { route in
+                switch route {
+                case .activity(let kind): ActivityListView(kind: kind)
                 }
             }
             .navigationTitle("설정")
@@ -40,26 +46,38 @@ struct SettingView: View {
                 Text("로그아웃하면 다시 로그인해야 이용할 수 있습니다.")
             }
         }
+        .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
 
+    @ViewBuilder
     private func row(_ item: SettingMenuItem) -> some View {
-        Button {
-        } label: {
-            HStack {
-                Label {
-                    Text(item.label)
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                } icon: {
-                    icon(item)
-                }
-
-                Spacer()
-
-                accessory(for: item.kind)
+        if let destination = item.destination {
+            NavigationLink(value: destination) {
+                rowLabel(item)
             }
+        } else {
+            Button {
+            } label: {
+                HStack {
+                    rowLabel(item)
+
+                    Spacer()
+
+                    accessory(for: item.kind)
+                }
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
+    }
+
+    private func rowLabel(_ item: SettingMenuItem) -> some View {
+        Label {
+            Text(item.label)
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+        } icon: {
+            icon(item)
+        }
     }
 
     private func icon(_ item: SettingMenuItem) -> some View {

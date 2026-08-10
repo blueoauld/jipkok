@@ -278,7 +278,7 @@ struct MemberDetailView: View {
         case .favorite: Task { await viewModel.toggleFavorite() }
         case .secretPhoto:
             secretPhotoIndex = 0
-
+            
             Task { await viewModel.openSecretPhotos() }
         case .block: viewModel.isConfirmingBlock = true
         case .note: break
@@ -312,11 +312,6 @@ struct MemberDetailView: View {
     }
 }
 
-private func relativeTime(from date: Date, now: Date = Date()) -> String {
-    now.timeIntervalSince(date) < 60
-    ? "방금 전"
-    : date.formatted(.relative(presentation: .numeric))
-}
 
 private func formatDistance(_ meters: Double) -> String {
     (meters / 1_000).formatted(.number.precision(.fractionLength(1))) + "km"
