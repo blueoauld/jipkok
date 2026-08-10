@@ -8,6 +8,7 @@ struct PhotoViewer: View {
     
     let urls: [URL]
     @Binding var index: Int
+    var isProtected = false
     
     @Environment(\.dismiss) private var dismiss
     
@@ -18,14 +19,15 @@ struct PhotoViewer: View {
     var body: some View {
         LazyPager(data: urls, page: $index) { url in
             ViewerPhoto(url: url)
+                .captureProtected(isProtected)
         }
         .zoomable(min: 1, max: 3)
         .onDismiss(backgroundOpacity: $backgroundOpacity) {
             isDismissing = true
-
+            
             var transaction = Transaction()
             transaction.disablesAnimations = true
-
+            
             withTransaction(transaction) { dismiss() }
         }
         .onTap { withAnimation(.easeOut(duration: 0.15)) { isShowingControls.toggle() } }
@@ -51,7 +53,7 @@ struct PhotoViewer: View {
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .glassEffect(.clear, in: .capsule)
+                    .glassEffect(.regular, in: .capsule)
             }
             
             HStack {
@@ -70,7 +72,6 @@ struct PhotoViewer: View {
                 Spacer()
             }
         }
-        .foregroundStyle(.white)
         .padding()
     }
 }

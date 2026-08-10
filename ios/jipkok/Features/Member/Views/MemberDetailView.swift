@@ -93,7 +93,7 @@ struct MemberDetailView: View {
                 )
             }
             .fullScreenCover(isPresented: $viewModel.isViewingSecretPhotos) {
-                PhotoViewer(urls: viewModel.secretPhotoURLs, index: $secretPhotoIndex)
+                PhotoViewer(urls: viewModel.secretPhotoURLs, index: $secretPhotoIndex, isProtected: true)
             }
             .fullScreenCover(isPresented: $isViewingPhotos) {
                 PhotoViewer(urls: viewModel.member?.publicPhotoURLs ?? [], index: $photoIndex)
