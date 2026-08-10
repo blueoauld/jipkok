@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct SignupView: View {
-    
+
     private enum Field {
         case phoneNumber
         case verificationCode
         case password
         case passwordConfirm
     }
-    
+
     @State private var viewModel: SignupViewModel
 
     @State private var webPage: WebPage?
@@ -18,7 +18,11 @@ struct SignupView: View {
     init(session: AuthSession) {
         _viewModel = State(wrappedValue: SignupViewModel(session: session))
     }
-    
+
+    fileprivate init(viewModel: SignupViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+
     var body: some View {
         content
             .navigationTitle("회원가입")
@@ -33,7 +37,7 @@ struct SignupView: View {
                 Text(viewModel.message ?? "")
             }
     }
-    
+
     private var content: some View {
         ScrollView {
             VStack {
@@ -47,18 +51,18 @@ struct SignupView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollBounceBehavior(.basedOnSize)
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             bottomBar
         }
     }
-    
+
     private var phoneNumberRow: some View {
         HStack {
             phoneNumberField
             sendCodeButton
         }
     }
-    
+
     private var phoneNumberField: some View {
         TextField("휴대폰 번호", text: $viewModel.phoneNumber)
             .keyboardType(.numberPad)
@@ -69,7 +73,7 @@ struct SignupView: View {
             .contentShape(.rect)
             .onTapGesture { focusedField = .phoneNumber }
     }
-    
+
     private var sendCodeButton: some View {
         Button("전송") {
             focusedField = nil
@@ -79,7 +83,7 @@ struct SignupView: View {
         .buttonStyle(.action)
         .disabled(!viewModel.canSendCode)
     }
-    
+
     private var verificationCodeField: some View {
         TextField("인증번호", text: $viewModel.verificationCode)
             .keyboardType(.numberPad)
@@ -90,7 +94,7 @@ struct SignupView: View {
             .contentShape(.rect)
             .onTapGesture { focusedField = .verificationCode }
     }
-    
+
     private var passwordField: some View {
         SecureField("비밀번호 (8자 이상)", text: $viewModel.password)
             .textContentType(.newPassword)
@@ -102,7 +106,7 @@ struct SignupView: View {
             .contentShape(.rect)
             .onTapGesture { focusedField = .password }
     }
-    
+
     private var passwordConfirmField: some View {
         SecureField("비밀번호 확인", text: $viewModel.passwordConfirm)
             .textContentType(.newPassword)
@@ -114,7 +118,7 @@ struct SignupView: View {
             .contentShape(.rect)
             .onTapGesture { focusedField = .passwordConfirm }
     }
-    
+
     private var genderPicker: some View {
         HStack {
             ForEach(SignupViewModel.Gender.allCases, id: \.self) { item in
@@ -128,7 +132,7 @@ struct SignupView: View {
             }
         }
     }
-    
+
     private var bottomBar: some View {
         VStack(spacing: 12) {
             submitButton
@@ -136,12 +140,11 @@ struct SignupView: View {
         }
         .padding()
     }
-    
+
     private var submitButton: some View {
         Button(action: submit) {
             if viewModel.isSubmitting {
                 ProgressView()
-                    .tint(.primary)
             } else {
                 Text("회원가입")
             }
@@ -149,7 +152,7 @@ struct SignupView: View {
         .buttonStyle(.submit)
         .disabled(!viewModel.canSubmit)
     }
-    
+
     private var legalLinks: some View {
         HStack(alignment: .center) {
             Button("개인정보 처리방침") { webPage = LegalPage.privacy }
@@ -160,7 +163,7 @@ struct SignupView: View {
         .buttonStyle(.plain)
         .foregroundStyle(.secondary)
     }
-    
+
     private func submit() {
         focusedField = nil
 
@@ -168,8 +171,37 @@ struct SignupView: View {
     }
 }
 
-#Preview {
+#Preview("기본") {
     NavigationStack {
         SignupView(session: AuthSession())
+    }
+}
+
+#Preview("입력 완료") {
+    NavigationStack {
+        SignupView(
+            viewModel: .preview(
+                phoneNumber: "01012345678",
+                verificationCode: "123456",
+                password: "password123",
+                passwordConfirm: "password123",
+                gender: .male
+            )
+        )
+    }
+}
+
+#Preview("가입 중") {
+    NavigationStack {
+        SignupView(
+            viewModel: .preview(
+                phoneNumber: "01012345678",
+                verificationCode: "123456",
+                password: "password123",
+                passwordConfirm: "password123",
+                gender: .male,
+                isSubmitting: true
+            )
+        )
     }
 }

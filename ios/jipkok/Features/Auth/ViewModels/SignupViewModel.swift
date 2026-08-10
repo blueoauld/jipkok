@@ -45,7 +45,7 @@ final class SignupViewModel {
         phoneNumber.count == PhoneNumber.length
         && verificationCode.count == verificationCodeLength
         && (passwordMinLength...passwordMaxLength).contains(password.count)
-        && !passwordConfirm.isEmpty
+        && passwordConfirm == password
         && gender != nil
         && !isSubmitting
     }
@@ -57,7 +57,7 @@ final class SignupViewModel {
 
     private let session: AuthSession
     private let client: Client
-    
+
     init(session: AuthSession, client: Client = APIClient.make()) {
         self.session = session
         self.client = client
@@ -82,6 +82,8 @@ final class SignupViewModel {
             _ = try await client.sendVerificationCode(.init(body: .json(.init(phoneNumber: phoneNumber))))
             message = "인증번호를 보냈습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -111,7 +113,30 @@ final class SignupViewModel {
 
             try session.completeSignup(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken)
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
+    }
+}
+
+extension SignupViewModel {
+
+    static func preview(
+        phoneNumber: String = "",
+        verificationCode: String = "",
+        password: String = "",
+        passwordConfirm: String = "",
+        gender: Gender? = nil,
+        isSubmitting: Bool = false
+    ) -> SignupViewModel {
+        let viewModel = SignupViewModel(session: AuthSession())
+        viewModel.phoneNumber = phoneNumber
+        viewModel.verificationCode = verificationCode
+        viewModel.password = password
+        viewModel.passwordConfirm = passwordConfirm
+        viewModel.gender = gender
+        viewModel.isSubmitting = isSubmitting
+        return viewModel
     }
 }
