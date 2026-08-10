@@ -84,7 +84,7 @@ struct FeedCard: View {
     
     private var slot: some View {
         VStack {
-            Text(post.slotAt, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+            Text(post.slotAt, format: .dateTime.hour().minute())
                 .font(.largeTitle.weight(.heavy))
             
             if let caption = post.caption {
