@@ -125,7 +125,7 @@ class MemberController(
         memberService.editProfile(memberId, request)
     }
 
-    @Operation(summary = "사진 업로드 URL 발급")
+    @Operation(operationId = "createMemberPhotoUploadUrl", summary = "사진 업로드 URL 발급")
     @PostMapping("/me/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,

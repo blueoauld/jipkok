@@ -22,14 +22,14 @@ class MemberFavoriteController(
     private val memberFavoriteService: MemberFavoriteService,
 ) {
 
-    @Operation(summary = "즐겨찾기 추가")
+    @Operation(operationId = "addFavorite", summary = "즐겨찾기 추가")
     @PostMapping("/{memberId}/favorites")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun add(@AuthenticationPrincipal loginMemberId: Long, @PathVariable memberId: Long) {
         memberFavoriteService.add(loginMemberId, memberId)
     }
 
-    @Operation(summary = "즐겨찾기 해제")
+    @Operation(operationId = "removeFavorite", summary = "즐겨찾기 해제")
     @DeleteMapping("/{memberId}/favorites")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun remove(@AuthenticationPrincipal loginMemberId: Long, @PathVariable memberId: Long) {
@@ -44,7 +44,7 @@ class MemberFavoriteController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<MemberSummaryResponse> = memberFavoriteService.findFavorites(memberId, cursor, size)
 
-    @Operation(summary = "받은 즐겨찾기 목록")
+    @Operation(operationId = "findReceivedFavorites", summary = "받은 즐겨찾기 목록")
     @GetMapping("/me/favorites/received")
     fun findReceived(
         @AuthenticationPrincipal memberId: Long,

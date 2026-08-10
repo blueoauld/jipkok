@@ -22,14 +22,14 @@ class MemberLikeController(
     private val memberLikeService: MemberLikeService,
 ) {
 
-    @Operation(summary = "좋아요")
+    @Operation(operationId = "likeMember", summary = "좋아요")
     @PostMapping("/{memberId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun like(@AuthenticationPrincipal likerId: Long, @PathVariable memberId: Long) {
         memberLikeService.like(likerId, memberId)
     }
 
-    @Operation(summary = "좋아요 취소")
+    @Operation(operationId = "cancelMemberLike", summary = "좋아요 취소")
     @DeleteMapping("/{memberId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cancel(@AuthenticationPrincipal likerId: Long, @PathVariable memberId: Long) {
@@ -44,7 +44,7 @@ class MemberLikeController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<MemberSummaryResponse> = memberLikeService.findLiked(memberId, cursor, size)
 
-    @Operation(summary = "받은 좋아요 목록")
+    @Operation(operationId = "findReceivedLikes", summary = "받은 좋아요 목록")
     @GetMapping("/me/likes/received")
     fun findReceived(
         @AuthenticationPrincipal memberId: Long,

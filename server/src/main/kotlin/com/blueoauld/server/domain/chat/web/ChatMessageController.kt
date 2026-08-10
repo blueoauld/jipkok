@@ -56,7 +56,7 @@ class ChatMessageController(
         chatMessageService.markRead(memberId, roomId, request.lastReadMessageId)
     }
 
-    @Operation(summary = "채팅 사진 업로드 URL 발급")
+    @Operation(operationId = "createChatPhotoUploadUrl", summary = "채팅 사진 업로드 URL 발급")
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,

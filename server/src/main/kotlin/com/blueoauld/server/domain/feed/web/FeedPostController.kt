@@ -46,7 +46,7 @@ class FeedPostController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<FeedPostResponse> = feedPostService.findByDate(memberId, gender, sort, date, cursor, size)
 
-    @Operation(summary = "피드 작성", description = "한 시간대에 하나만 올릴 수 있다.")
+    @Operation(operationId = "createFeedPost", summary = "피드 작성", description = "한 시간대에 하나만 올릴 수 있다.")
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun create(
@@ -56,7 +56,7 @@ class FeedPostController(
         feedPostService.create(memberId, request)
     }
 
-    @Operation(summary = "피드 좋아요")
+    @Operation(operationId = "likeFeedPost", summary = "피드 좋아요")
     @PostMapping("/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun like(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {
@@ -70,14 +70,14 @@ class FeedPostController(
         feedPostLikeService.cancel(memberId, postId)
     }
 
-    @Operation(summary = "피드 신고")
+    @Operation(operationId = "reportFeedPost", summary = "피드 신고")
     @PostMapping("/{postId}/reports")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun report(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {
         feedPostReportService.report(memberId, postId)
     }
 
-    @Operation(summary = "피드 사진 업로드 URL 발급")
+    @Operation(operationId = "createFeedPhotoUploadUrl", summary = "피드 사진 업로드 URL 발급")
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,

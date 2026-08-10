@@ -31,7 +31,7 @@ class DeviceTokenController(
         deviceTokenService.register(memberId, request)
     }
 
-    @Operation(summary = "푸시 토큰 해제")
+    @Operation(operationId = "removeDeviceToken", summary = "푸시 토큰 해제")
     @DeleteMapping("/{token}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun remove(@PathVariable token: String) {
