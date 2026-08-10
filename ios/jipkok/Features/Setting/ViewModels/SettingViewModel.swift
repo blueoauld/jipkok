@@ -20,6 +20,7 @@ final class SettingViewModel {
     private let tokenStore: TokenStore
     private let client: Client
     private let pointRepository: PointRepository
+    private let adManager: RewardedAdManager
     
     init(
         session: AuthSession,
@@ -31,12 +32,21 @@ final class SettingViewModel {
         self.tokenStore = tokenStore
         self.client = client
         self.pointRepository = pointRepository
+        self.adManager = RewardedAdManager()
+        adManager.onMessage = { [weak self] message in
+            self?.message = message
+        }
+    }
+    
+    func prepareAds() async {
+        await adManager.prepare()
     }
     
     func perform(_ action: SettingMenuItem.Action) async {
         switch action {
         case .attendanceReward: await checkInAttendance()
-        case .adReward, .contact, .suggest: break
+        case .adReward: await adManager.watch()
+        case .contact, .suggest: break
         }
     }
     

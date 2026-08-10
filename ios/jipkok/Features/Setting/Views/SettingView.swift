@@ -55,6 +55,7 @@ struct SettingView: View {
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
         .loadingOverlay(viewModel.isProcessing)
+        .task { await viewModel.prepareAds() }
     }
 
     @ViewBuilder

@@ -51,7 +51,7 @@ enum SettingMenu {
         SettingMenuSection(id: "point", items: [
             SettingMenuItem(label: "포인트 내역", systemImage: "wonsign.circle.fill", color: .purple, kind: .link, destination: .pointHistory),
             SettingMenuItem(label: "출석 보상", systemImage: "calendar.circle.fill", color: .mint, kind: .action, action: .attendanceReward),
-            SettingMenuItem(label: "광고 보상", systemImage: "play.rectangle.fill", color: .indigo, kind: .action)
+            SettingMenuItem(label: "광고 보상", systemImage: "play.rectangle.fill", color: .indigo, kind: .action, action: .adReward)
         ]),
         SettingMenuSection(id: "support", items: [
             SettingMenuItem(label: "문의하기", systemImage: "questionmark.circle.fill", color: .blue, kind: .action),

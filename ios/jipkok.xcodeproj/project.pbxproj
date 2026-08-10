@@ -10,6 +10,7 @@
 		9DCBAAF930297D3F000C9701 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAAF830297D3F000C9701 /* OpenAPIRuntime */; };
 		9DCBAAFC30297D50000C9701 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAAFB30297D50000C9701 /* OpenAPIURLSession */; };
 		9DCBAB8F3029BCDD000C9701 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAB8E3029BCDD000C9701 /* Kingfisher */; };
+		9DCBABEE3029D6E1000C9701 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBABED3029D6E1000C9701 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DCBABEE3029D6E1000C9701 /* GoogleMobileAds in Frameworks */,
 				9DCBAB8F3029BCDD000C9701 /* Kingfisher in Frameworks */,
 				9DCBAAF930297D3F000C9701 /* OpenAPIRuntime in Frameworks */,
 				9DCBAAFC30297D50000C9701 /* OpenAPIURLSession in Frameworks */,
@@ -78,6 +80,7 @@
 				9DCBAAF830297D3F000C9701 /* OpenAPIRuntime */,
 				9DCBAAFB30297D50000C9701 /* OpenAPIURLSession */,
 				9DCBAB8E3029BCDD000C9701 /* Kingfisher */,
+				9DCBABED3029D6E1000C9701 /* GoogleMobileAds */,
 			);
 			productName = jipkok;
 			productReference = 9DCBA9A23028B602000C9701 /* jipkok.app */;
@@ -113,6 +116,7 @@
 				9DCBAAF730297D3F000C9701 /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
 				9DCBAAFA30297D50000C9701 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
 				9DCBAB8D3029BCDD000C9701 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				9DCBABEC3029D6E1000C9701 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9DCBA9A33028B602000C9701 /* Products */;
@@ -281,6 +285,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Support/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -326,6 +331,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Support/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -414,6 +420,14 @@
 				minimumVersion = 8.11.0;
 			};
 		};
+		9DCBABEC3029D6E1000C9701 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.7.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -436,6 +450,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9DCBAB8D3029BCDD000C9701 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		9DCBABED3029D6E1000C9701 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DCBABEC3029D6E1000C9701 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
