@@ -5,13 +5,13 @@ struct MemberDetail: Identifiable, Hashable {
     let nickname: String
     let gender: Member.Gender
     let age: Int
-    let receivedLikeCount: Int
+    var receivedLikeCount: Int
     let comment: String?
     let bio: String?
     let locatedAt: Date?
     let distanceInMeters: Double?
-    let isLiked: Bool
-    let isFavorited: Bool
+    var isLiked: Bool
+    var isFavorited: Bool
     let isNoteReceiveEnabled: Bool
     let isSecretPhotoGrantedToMe: Bool
     let isSecretPhotoGrantedByMe: Bool
