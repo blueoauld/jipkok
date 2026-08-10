@@ -64,6 +64,8 @@ final class MainViewModel {
             _ = try await repository.updateComment(comment.isEmpty ? nil : comment)
             message = "코멘트를 작성하셨습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -109,6 +111,8 @@ final class MainViewModel {
                 members += page.members
                 nextCursor = page.nextCursor
             } catch {
+                guard !error.isCancellation else { return }
+
                 guard generation == self.generation else { return }
                 
                 message = APIError.from(error).message

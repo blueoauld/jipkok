@@ -50,6 +50,8 @@ final class PointHistoryViewModel {
             nextCursor = try await page.nextCursor
             hasLoaded = true
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -66,6 +68,8 @@ final class PointHistoryViewModel {
             items += page.items
             nextCursor = page.nextCursor
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }

@@ -79,9 +79,9 @@ final class MemberSearchViewModel {
 
                 members += page.members
                 nextCursor = page.nextCursor
-            } catch is CancellationError {
-                return
             } catch {
+                guard !error.isCancellation else { return }
+
                 guard generation == self.generation else { return }
 
                 message = APIError.from(error).message

@@ -19,9 +19,9 @@ final class ActivityListViewModel {
         get { message != nil }
         set { if !newValue { message = nil } }
     }
-
+    
     var isEmpty: Bool {
-        hasLoaded && items.isEmpty
+        hasLoaded && items.isEmpty && !isLoading
     }
 
     private let repository: ActivityRepository
@@ -52,6 +52,8 @@ final class ActivityListViewModel {
 
             await markSeenIfNeeded()
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -68,6 +70,8 @@ final class ActivityListViewModel {
             items += page.items
             nextCursor = page.nextCursor
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -84,6 +88,8 @@ final class ActivityListViewModel {
 
             items.removeAll { $0.id == item.id }
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }

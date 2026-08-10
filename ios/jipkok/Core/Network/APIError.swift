@@ -36,6 +36,25 @@ extension APIError {
     }
 }
 
+extension Error {
+
+    var isCancellation: Bool {
+        if self is CancellationError {
+            return true
+        }
+
+        if let urlError = self as? URLError, urlError.code == .cancelled {
+            return true
+        }
+
+        if let clientError = self as? ClientError {
+            return clientError.underlyingError.isCancellation
+        }
+
+        return false
+    }
+}
+
 extension APIError {
 
     private struct Payload: Decodable {

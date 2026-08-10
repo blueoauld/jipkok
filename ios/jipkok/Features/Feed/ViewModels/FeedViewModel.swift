@@ -33,7 +33,7 @@ final class FeedViewModel {
     }
     
     var isEmpty: Bool {
-        hasLoaded && posts.isEmpty
+        hasLoaded && posts.isEmpty && !isLoading
     }
     
     private let repository: FeedRepository
@@ -57,6 +57,7 @@ final class FeedViewModel {
     
     func reload() async {
         generation += 1
+        isLoading = true
         posts = []
         nextCursor = nil
         
@@ -97,6 +98,8 @@ final class FeedViewModel {
             try await repository.report(postId: post.id)
             message = "신고가 접수되었습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -116,6 +119,8 @@ final class FeedViewModel {
             isNotificationEnabled = enabled
             message = enabled ? "이제 피드 알림을 받을 수 있습니다." : "이제 피드 알림을 받지 않습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
     }
@@ -137,13 +142,13 @@ final class FeedViewModel {
             nextCursor = page.nextCursor
             hasLoaded = true
         } catch {
-            guard generation == self.generation else { return }
-            
-            message = APIError.from(error).message
+            if !error.isCancellation, generation == self.generation {
+                message = APIError.from(error).message
+            }
         }
-        
+
         guard generation == self.generation else { return }
-        
+
         isLoading = false
     }
 }

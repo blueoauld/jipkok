@@ -70,6 +70,8 @@ final class RankViewModel {
                 members += page.members
                 nextCursor = page.nextCursor
             } catch {
+                guard !error.isCancellation else { return }
+
                 guard generation == self.generation else { return }
 
                 message = APIError.from(error).message
