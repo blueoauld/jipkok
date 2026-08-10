@@ -22,6 +22,10 @@ struct MyProfile {
     var allPhotoURLs: [URL] {
         (publicPhotos + secretPhotos).map(\.url)
     }
+    
+    func isSecretPhoto(at index: Int) -> Bool {
+        (publicPhotos.count..<publicPhotos.count + secretPhotos.count).contains(index)
+    }
 }
 
 extension MyProfile {

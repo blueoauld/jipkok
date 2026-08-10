@@ -4,17 +4,17 @@ private let dotSize: CGFloat = 7
 private let dotSpacing: CGFloat = 6
 
 struct MyProfileView: View {
-
+    
     @State private var viewModel = MyProfileViewModel()
     @State private var photoIndex = 0
     @State private var isViewingPhotos = false
-
+    
     init() {}
-
+    
     fileprivate init(viewModel: MyProfileViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         content
             .navigationTitle("내 프로필")
@@ -35,7 +35,7 @@ struct MyProfileView: View {
             }
             .task { await viewModel.load() }
     }
-
+    
     private var content: some View {
         ScrollView {
             switch viewModel.displayState {
@@ -53,11 +53,11 @@ struct MyProfileView: View {
         }
         .scrollIndicators(.hidden)
     }
-
+    
     private func profileContent(_ profile: MyProfile) -> some View {
         VStack {
             photoArea(profile)
-
+            
             VStack(alignment: .leading, spacing: 12) {
                 summary(profile)
                 section("코멘트", body: profile.comment, placeholder: "아직 코멘트를 작성하지 않았습니다.")
@@ -66,11 +66,11 @@ struct MyProfileView: View {
             .padding()
         }
     }
-
+    
     @ViewBuilder
     private func photoArea(_ profile: MyProfile) -> some View {
         let urls = profile.allPhotoURLs
-
+        
         if urls.isEmpty {
             Color(.secondarySystemBackground)
                 .aspectRatio(1, contentMode: .fit)
@@ -88,9 +88,24 @@ struct MyProfileView: View {
             .overlay(alignment: .bottom) {
                 pageIndicator(count: urls.count)
             }
+            .overlay(alignment: .topLeading) {
+                if profile.isSecretPhoto(at: photoIndex) {
+                    secretBadge
+                }
+            }
         }
     }
-
+    
+    private var secretBadge: some View {
+        Text("비밀")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.black.opacity(0.5), in: .capsule)
+            .padding(12)
+    }
+    
     @ViewBuilder
     private func pageIndicator(count: Int) -> some View {
         if count > 1 {
@@ -106,25 +121,25 @@ struct MyProfileView: View {
             .animation(.easeOut(duration: 0.15), value: photoIndex)
         }
     }
-
+    
     private func summary(_ profile: MyProfile) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(profile.nickname)
                 .font(.title3.bold())
                 .lineLimit(1)
-
+            
             Text("\(profile.gender.label) · \(profile.age)살 · ♥ \(profile.receivedLikeCount.formatted())")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
     }
-
+    
     private func section(_ title: String, body: String?, placeholder: String) -> some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
-
+            
             Text(body ?? placeholder)
                 .font(.body)
                 .foregroundStyle(body == nil ? .secondary : .primary)
