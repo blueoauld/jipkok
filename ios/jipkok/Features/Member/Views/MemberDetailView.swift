@@ -50,6 +50,7 @@ struct MemberDetailView: View {
     @State private var photoIndex = 0
     @State private var isViewingPhotos = false
     @State private var secretPhotoIndex = 0
+    @State private var isReporting = false
     
     init(id: Int) {
         _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
@@ -96,6 +97,13 @@ struct MemberDetailView: View {
             }
             .fullScreenCover(isPresented: $isViewingPhotos) {
                 PhotoViewer(urls: viewModel.member?.publicPhotoURLs ?? [], index: $photoIndex)
+            }
+            .sheet(isPresented: $isReporting) {
+                if let member = viewModel.member {
+                    NavigationStack {
+                        ReportView(memberId: member.id, nickname: member.nickname)
+                    }
+                }
             }
             .loadingOverlay(viewModel.isProcessing)
             .task { await viewModel.loadIfNeeded() }
@@ -257,7 +265,7 @@ struct MemberDetailView: View {
         Menu {
             Button(secretPhotoLabel) { viewModel.isConfirmingSecretPhoto = true }
             
-            Button("신고", role: .destructive) {}
+            Button("신고", role: .destructive) { isReporting = true }
         } label: {
             Image(systemName: "ellipsis")
         }

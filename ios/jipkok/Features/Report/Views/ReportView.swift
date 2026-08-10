@@ -1,26 +1,65 @@
+import PhotosUI
 import SwiftUI
 
-private let detailMaxLength = 1000
 private let detailLineCount = 7
-private let photoColumnCount = 3
 
 struct ReportView: View {
 
     let nickname: String
-    var isChatReport = false
 
-    @State private var reason: ReportReason?
-    @State private var detail = ""
+    @State private var viewModel: ReportViewModel
+    @State private var isPickerPresented = false
+    @State private var pickerItems: [PhotosPickerItem] = []
 
     @FocusState private var isDetailFocused: Bool
+
+    @Environment(\.dismiss) private var dismiss
+
+    private let isChatReport: Bool
+
+    init(memberId: Int, nickname: String, roomId: Int? = nil) {
+        self.nickname = nickname
+        self.isChatReport = roomId != nil
+        _viewModel = State(wrappedValue: ReportViewModel(memberId: memberId, roomId: roomId))
+    }
 
     private var title: String {
         (isChatReport ? "채팅 신고" : "신고") + " (\(nickname))"
     }
 
     var body: some View {
+        content
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+            .alert("알림", isPresented: $viewModel.isShowingMessage) {
+                Button("확인", role: .cancel) {
+                    if viewModel.didSubmit { dismiss() }
+                }
+            } message: {
+                Text(viewModel.message ?? "")
+            }
+            .photosPicker(
+                isPresented: $isPickerPresented,
+                selection: $pickerItems,
+                maxSelectionCount: reportPhotoMaxCount - viewModel.photos.count,
+                matching: .images
+            )
+            .onChange(of: pickerItems) { _, items in
+                guard !items.isEmpty else { return }
+
+                Task { await addPickedPhotos(items) }
+            }
+            .loadingOverlay(viewModel.isProcessing)
+    }
+
+    private var content: some View {
         ScrollView {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 16) {
                 photoSection
                 reasonList
                 detailSection
@@ -31,23 +70,53 @@ struct ReportView: View {
         .scrollIndicators(.hidden)
         .safeAreaBar(edge: .bottom) {
             submitButton
+                .padding()
         }
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var photoSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 8) {
             sectionTitle("증거 사진")
 
-            LazyVGrid(columns: Array(repeating: GridItem(spacing: 8), count: photoColumnCount), spacing: 8) {
-                addPhotoButton
+            LazyVGrid(columns: Array(repeating: GridItem(spacing: 8), count: 3), spacing: 8) {
+                ForEach(viewModel.photos) { photo in
+                    photoTile(photo)
+                }
+
+                if viewModel.canAddPhoto {
+                    addPhotoButton
+                }
             }
         }
     }
 
+    private func photoTile(_ photo: ReportPhoto) -> some View {
+        RoundedRectangle(cornerRadius: fieldCornerRadius)
+            .fill(Color(.secondarySystemBackground))
+            .aspectRatio(1, contentMode: .fit)
+            .overlay {
+                Image(uiImage: photo.image)
+                    .resizable()
+                    .scaledToFill()
+            }
+            .clipShape(.rect(cornerRadius: fieldCornerRadius))
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    viewModel.removePhoto(photo)
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white, .red)
+                        .padding(6)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("사진 삭제")
+            }
+    }
+
     private var addPhotoButton: some View {
         Button {
+            isPickerPresented = true
         } label: {
             RoundedRectangle(cornerRadius: fieldCornerRadius)
                 .fill(Color(.secondarySystemBackground))
@@ -63,7 +132,7 @@ struct ReportView: View {
     }
 
     private var reasonList: some View {
-        VStack {
+        VStack(spacing: 0) {
             ForEach(ReportReason.allCases, id: \.self) { item in
                 reasonRow(item)
             }
@@ -73,7 +142,7 @@ struct ReportView: View {
 
     private func reasonRow(_ item: ReportReason) -> some View {
         Button {
-            reason = item
+            viewModel.reason = item
         } label: {
             HStack {
                 Text(item.label)
@@ -83,9 +152,9 @@ struct ReportView: View {
 
                 Image(systemName: "checkmark")
                     .font(.subheadline.weight(.bold))
-                    .opacity(reason == item ? 1 : 0)
+                    .opacity(viewModel.reason == item ? 1 : 0)
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .contentShape(.rect)
         }
@@ -94,17 +163,15 @@ struct ReportView: View {
 
     private var detailSection: some View {
         VStack(alignment: .trailing, spacing: 8) {
-            TextField("상세 내용", text: $detail, axis: .vertical)
+            TextField("상세 내용", text: $viewModel.detail, axis: .vertical)
                 .lineLimit(detailLineCount, reservesSpace: true)
                 .focused($isDetailFocused)
-                .onChange(of: detail) { _, newValue in
-                    detail = String(newValue.prefix(detailMaxLength))
-                }
+                .onChange(of: viewModel.detail) { _, _ in viewModel.sanitizeDetail() }
                 .inputStyle(isFocused: isDetailFocused)
                 .contentShape(.rect)
                 .onTapGesture { isDetailFocused = true }
 
-            Text("\(String(detail.count)) / \(String(detailMaxLength))")
+            Text("\(String(viewModel.detail.count)) / \(String(reportDetailMaxLength))")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -117,25 +184,43 @@ struct ReportView: View {
     }
 
     private var submitButton: some View {
-        Button("신고하기", action: submit)
-            .buttonStyle(.submit(color: .red))
-            .disabled(reason == nil)
-            .padding()
+        Button(action: submit) {
+            if viewModel.isSubmitting {
+                ProgressView()
+                    .tint(.primary)
+            } else {
+                Text("신고하기")
+            }
+        }
+        .buttonStyle(.submit(color: .red))
+        .disabled(!viewModel.canSubmit)
     }
 
     private func submit() {
         isDetailFocused = false
+
+        Task { await viewModel.submit() }
+    }
+
+    private func addPickedPhotos(_ items: [PhotosPickerItem]) async {
+        defer { pickerItems = [] }
+
+        var images: [UIImage] = []
+
+        for item in items {
+            guard let data = try? await item.loadTransferable(type: Data.self),
+                  let image = UIImage(data: data)
+            else { continue }
+
+            images.append(image)
+        }
+
+        await viewModel.addPhotos(images)
     }
 }
 
-#Preview("회원 신고") {
+#Preview {
     NavigationStack {
-        ReportView(nickname: "달리는고양이")
-    }
-}
-
-#Preview("채팅 신고") {
-    NavigationStack {
-        ReportView(nickname: "졸린너구리", isChatReport: true)
+        ReportView(memberId: 1, nickname: "달리는고양이")
     }
 }
