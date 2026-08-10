@@ -59,9 +59,21 @@ final class MainViewModel {
         await reload()
     }
 
-    func refresh() async {
+    func genderChanged() async {
         await locationUpdater.refresh()
         await reload()
+    }
+
+    func refresh() async {
+        await locationUpdater.refresh()
+
+        filterStore.sort = sort
+        filterStore.gender = genderFilter
+
+        loadTask?.cancel()
+        nextCursor = nil
+
+        await load(cursor: nil)
     }
 
     func sanitizeComment() {
@@ -123,7 +135,7 @@ final class MainViewModel {
 
                 guard generation == self.generation else { return }
 
-                members += page.members
+                members = cursor == nil ? page.members : members + page.members
                 nextCursor = page.nextCursor
             } catch {
                 guard !error.isCancellation else { return }

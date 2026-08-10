@@ -31,7 +31,7 @@ struct RankView: View {
                 }
                 .task { await viewModel.loadIfNeeded() }
                 .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.reload() } }
-                .refreshable { await viewModel.reload() }
+                .refreshable { await viewModel.refresh() }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }

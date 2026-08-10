@@ -59,7 +59,7 @@ struct MainView: View {
                 }
                 .task { await viewModel.loadIfNeeded() }
                 .onChange(of: viewModel.sort) { _, _ in Task { await viewModel.sortChanged() } }
-                .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.refresh() } }
+                .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.genderChanged() } }
                 .refreshable { await viewModel.refresh() }
                 .loadingOverlay(viewModel.isProcessing)
         }

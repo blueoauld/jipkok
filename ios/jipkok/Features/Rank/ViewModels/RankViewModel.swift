@@ -45,13 +45,22 @@ final class RankViewModel {
         await reload()
     }
     
+    func refresh() async {
+        filterStore.rankingGender = genderFilter
+
+        loadTask?.cancel()
+        nextCursor = nil
+
+        await load(cursor: nil)
+    }
+
     func reload() async {
         filterStore.rankingGender = genderFilter
-        
+
         loadTask?.cancel()
         members = []
         nextCursor = nil
-        
+
         await load(cursor: nil)
     }
     
@@ -75,7 +84,7 @@ final class RankViewModel {
                 
                 guard generation == self.generation else { return }
                 
-                members += page.members
+                members = cursor == nil ? page.members : members + page.members
                 nextCursor = page.nextCursor
             } catch {
                 guard !error.isCancellation else { return }
