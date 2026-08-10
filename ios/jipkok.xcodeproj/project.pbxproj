@@ -11,6 +11,7 @@
 		9DCBAAFC30297D50000C9701 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAAFB30297D50000C9701 /* OpenAPIURLSession */; };
 		9DCBAB8F3029BCDD000C9701 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAB8E3029BCDD000C9701 /* Kingfisher */; };
 		9DCBABEE3029D6E1000C9701 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBABED3029D6E1000C9701 /* GoogleMobileAds */; };
+		9DCBAC033029F001000C9701 /* LazyPager in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCBAC023029F001000C9701 /* LazyPager */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 			files = (
 				9DCBABEE3029D6E1000C9701 /* GoogleMobileAds in Frameworks */,
 				9DCBAB8F3029BCDD000C9701 /* Kingfisher in Frameworks */,
+				9DCBAC033029F001000C9701 /* LazyPager in Frameworks */,
 				9DCBAAF930297D3F000C9701 /* OpenAPIRuntime in Frameworks */,
 				9DCBAAFC30297D50000C9701 /* OpenAPIURLSession in Frameworks */,
 			);
@@ -81,6 +83,7 @@
 				9DCBAAFB30297D50000C9701 /* OpenAPIURLSession */,
 				9DCBAB8E3029BCDD000C9701 /* Kingfisher */,
 				9DCBABED3029D6E1000C9701 /* GoogleMobileAds */,
+				9DCBAC023029F001000C9701 /* LazyPager */,
 			);
 			productName = jipkok;
 			productReference = 9DCBA9A23028B602000C9701 /* jipkok.app */;
@@ -117,6 +120,7 @@
 				9DCBAAFA30297D50000C9701 /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
 				9DCBAB8D3029BCDD000C9701 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9DCBABEC3029D6E1000C9701 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				9DCBAC013029F001000C9701 /* XCRemoteSwiftPackageReference "SwiftUI-LazyPager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9DCBA9A33028B602000C9701 /* Products */;
@@ -428,6 +432,14 @@
 				minimumVersion = 13.7.0;
 			};
 		};
+		9DCBAC013029F001000C9701 /* XCRemoteSwiftPackageReference "SwiftUI-LazyPager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gh123man/SwiftUI-LazyPager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -455,6 +467,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9DCBABEC3029D6E1000C9701 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		9DCBAC023029F001000C9701 /* LazyPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DCBAC013029F001000C9701 /* XCRemoteSwiftPackageReference "SwiftUI-LazyPager" */;
+			productName = LazyPager;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
