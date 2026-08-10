@@ -27,6 +27,13 @@ struct MemberRepository {
         return MemberPage(members: page.items.map(Member.init), nextCursor: page.nextCursor)
     }
     
+    func searchMembers(keyword: String, cursor: String?) async throws -> MemberPage {
+        let output = try await client.searchByNickname(.init(query: .init(keyword: keyword, cursor: cursor)))
+        let page = try output.ok.body.json
+        
+        return MemberPage(members: page.items.map(Member.init), nextCursor: page.nextCursor)
+    }
+    
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
@@ -46,6 +53,24 @@ private extension Member {
             locatedAt: response.locatedAt,
             distanceInMeters: response.distance,
             isFavorited: response.favoritedByMe
+        )
+    }
+}
+
+private extension Member {
+    
+    init(_ response: Components.Schemas.MemberSummaryResponse) {
+        self.init(
+            id: Int(response.memberId),
+            nickname: response.nickname,
+            gender: response.gender == .male ? .male : .female,
+            age: Int(response.age),
+            receivedLikeCount: Int(response.receivedLikeCount),
+            comment: response.comment,
+            profileImageURL: response.profileImageUrl.flatMap(URL.init(string:)),
+            locatedAt: nil,
+            distanceInMeters: nil,
+            isFavorited: false
         )
     }
 }
