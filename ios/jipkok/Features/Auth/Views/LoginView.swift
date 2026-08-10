@@ -51,7 +51,7 @@ struct LoginView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollBounceBehavior(.basedOnSize)
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             loginButton
                 .padding()
         }
@@ -92,7 +92,6 @@ struct LoginView: View {
         Button(action: submit) {
             if viewModel.isSubmitting {
                 ProgressView()
-                    .tint(.primary)
             } else {
                 Text("로그인")
             }
