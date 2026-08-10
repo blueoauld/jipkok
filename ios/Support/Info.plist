@@ -4,5 +4,7 @@
 <dict>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-5005991782528987~9659285597</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>내 위치를 기준으로 거리순 정렬과 거리 표시에 사용합니다.</string>
 </dict>
 </plist>

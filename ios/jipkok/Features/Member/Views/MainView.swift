@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct MainView: View {
-
+    
     @State private var router = MemberRouter()
     @State private var viewModel = MainViewModel()
-
+    
     var body: some View {
         NavigationStack(path: $router.path) {
             memberList
@@ -25,11 +25,11 @@ struct MainView: View {
                             router.push(.search)
                         }
                     }
-
+                    
                     ToolbarItem(placement: .topBarTrailing) {
                         genderMenu
                     }
-
+                    
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("코멘트 작성", systemImage: "square.and.pencil") {
                             viewModel.isWritingComment = true
@@ -38,11 +38,11 @@ struct MainView: View {
                 }
                 .alert("코멘트", isPresented: $viewModel.isWritingComment) {
                     TextField("내용 입력 (100자)", text: $viewModel.comment)
-
+                    
                     Button("작성") {
                         Task { await viewModel.updateComment() }
                     }
-
+                    
                     Button("닫기", role: .cancel) {}
                 }
                 .onChange(of: viewModel.comment) { _, _ in viewModel.sanitizeComment() }
@@ -52,19 +52,19 @@ struct MainView: View {
                     Text(viewModel.message ?? "")
                 }
                 .task { await viewModel.loadIfNeeded() }
-                .onChange(of: viewModel.sort) { _, _ in Task { await viewModel.reload() } }
-                .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.reload() } }
-                .refreshable { await viewModel.reload() }
+                .onChange(of: viewModel.sort) { _, _ in Task { await viewModel.sortChanged() } }
+                .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.refresh() } }
+                .refreshable { await viewModel.refresh() }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
-
+    
     private func loadMoreIfNeeded(for member: Member) async {
         guard member.id == viewModel.members.last?.id else { return }
-
+        
         await viewModel.loadMore()
     }
-
+    
     private var memberList: some View {
         ScrollView {
             LazyVStack(spacing: rowSpacing) {
@@ -77,7 +77,7 @@ struct MainView: View {
                     .buttonStyle(.plain)
                     .task { await loadMoreIfNeeded(for: member) }
                 }
-
+                
                 if viewModel.isLoading, !viewModel.members.isEmpty {
                     ProgressView()
                         .padding()
@@ -93,7 +93,7 @@ struct MainView: View {
             }
         }
     }
-
+    
     private var genderMenu: some View {
         Menu("성별 선택", systemImage: "line.3.horizontal.decrease") {
             Picker("성별", selection: $viewModel.genderFilter) {
@@ -104,7 +104,7 @@ struct MainView: View {
             }
         }
     }
-
+    
     private var sortPicker: some View {
         Picker("정렬", selection: $viewModel.sort) {
             ForEach(MemberSort.allCases, id: \.self) { item in

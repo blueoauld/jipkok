@@ -44,7 +44,7 @@ struct MemberRepository {
     func findMyProfile() async throws -> MyProfile {
         MyProfile(try await client.getMyProfile(.init()).ok.body.json)
     }
-
+    
     func editProfile(
         nickname: String,
         birthYear: Int,
@@ -66,7 +66,7 @@ struct MemberRepository {
             )
         )
     }
-
+    
     func findDetail(id: Int) async throws -> MemberDetail {
         let output = try await client.findDetail(.init(path: .init(targetId: Int64(id))))
         
@@ -111,6 +111,21 @@ struct MemberRepository {
         return try output.ok.body.json.compactMap(URL.init(string:))
     }
     
+    func heartbeat(latitude: Double?, longitude: Double?, deviceName: String?) async throws {
+        _ = try await client.heartbeat(
+            .init(
+                body: .json(
+                    .init(
+                        platform: .ios,
+                        deviceName: deviceName,
+                        latitude: latitude,
+                        longitude: longitude
+                    )
+                )
+            )
+        )
+    }
+    
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
@@ -153,7 +168,7 @@ extension Member {
 }
 
 private extension MyProfile {
-
+    
     init(_ response: Components.Schemas.MyProfileResponse) {
         self.init(
             id: Int(response.memberId),
@@ -171,10 +186,10 @@ private extension MyProfile {
 }
 
 private extension ProfilePhoto {
-
+    
     init?(_ response: Components.Schemas.ProfilePhotoResponse) {
         guard let url = URL(string: response.url) else { return nil }
-
+        
         self.init(objectKey: response.objectKey, url: url)
     }
 }
