@@ -7,4 +7,4 @@ enum SettingRoute: Hashable {
     case editProfile
 }
 
-typealias SettingRouter = Router<SettingRoute>
+typealias SettingRouter = Router

@@ -4,4 +4,4 @@ enum MemberRoute: Hashable {
     case memberDetail(id: Int)
 }
 
-typealias MemberRouter = Router<MemberRoute>
+typealias MemberRouter = Router

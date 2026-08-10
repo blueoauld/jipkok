@@ -1,11 +1,11 @@
-import Observation
+import SwiftUI
 
 @Observable
-final class Router<Route: Hashable> {
+final class Router {
 
-    var path: [Route] = []
+    var path = NavigationPath()
 
-    func push(_ route: Route) {
+    func push(_ route: some Hashable) {
         path.append(route)
     }
 
@@ -16,6 +16,6 @@ final class Router<Route: Hashable> {
     }
 
     func popToRoot() {
-        path.removeAll()
+        path = NavigationPath()
     }
 }

@@ -22,7 +22,7 @@ struct MainView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("회원 검색", systemImage: "magnifyingglass") {
-                            router.push(.search)
+                            router.push(MemberRoute.search)
                         }
                     }
                     
@@ -70,7 +70,7 @@ struct MainView: View {
             LazyVStack(spacing: rowSpacing) {
                 ForEach(viewModel.members) { member in
                     Button {
-                        router.push(.memberDetail(id: member.id))
+                        router.push(MemberRoute.memberDetail(id: member.id))
                     } label: {
                         MemberRow(member: member)
                     }

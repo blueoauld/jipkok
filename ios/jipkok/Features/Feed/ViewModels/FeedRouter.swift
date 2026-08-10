@@ -4,4 +4,4 @@ enum FeedRoute: Hashable {
     case myProfile
 }
 
-typealias FeedRouter = Router<FeedRoute>
+typealias FeedRouter = Router

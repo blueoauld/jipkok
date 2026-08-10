@@ -3,4 +3,4 @@ enum ChatRoute: Hashable {
     case search
 }
 
-typealias ChatRouter = Router<ChatRoute>
+typealias ChatRouter = Router

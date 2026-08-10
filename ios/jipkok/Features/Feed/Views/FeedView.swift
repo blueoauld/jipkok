@@ -108,9 +108,9 @@ struct FeedView: View {
     
     private func openProfile(of post: FeedPost) {
         if post.memberId == viewModel.myMemberId {
-            router.push(.myProfile)
+            router.push(FeedRoute.myProfile)
         } else {
-            router.push(.memberDetail(id: post.memberId))
+            router.push(FeedRoute.memberDetail(id: post.memberId))
         }
     }
     

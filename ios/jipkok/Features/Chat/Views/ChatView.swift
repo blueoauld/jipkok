@@ -42,7 +42,7 @@ struct ChatView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("채팅 검색", systemImage: "magnifyingglass") {
-                            router.push(.search)
+                            router.push(ChatRoute.search)
                         }
                     }
                     

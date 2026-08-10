@@ -35,7 +35,7 @@ struct RankView: View {
             LazyVStack(spacing: rowSpacing) {
                 ForEach(viewModel.members) { member in
                     Button {
-                        router.push(.memberDetail(id: member.id))
+                        router.push(RankRoute.memberDetail(id: member.id))
                     } label: {
                         MemberRow(member: member)
                     }
