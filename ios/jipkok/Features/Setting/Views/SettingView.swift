@@ -29,6 +29,7 @@ struct SettingView: View {
                 case .activity(let kind): ActivityListView(kind: kind)
                 case .memberDetail(let id): MemberDetailView(id: id)
                 case .pointHistory: PointHistoryView()
+                case .myProfile: MyProfileView()
                 }
             }
             .navigationTitle("설정")

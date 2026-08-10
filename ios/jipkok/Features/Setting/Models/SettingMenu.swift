@@ -34,7 +34,7 @@ enum SettingMenu {
     
     static let sections: [SettingMenuSection] = [
         SettingMenuSection(id: "profile", items: [
-            SettingMenuItem(label: "내 프로필", systemImage: "person.fill", color: .blue, kind: .link)
+            SettingMenuItem(label: "내 프로필", systemImage: "person.fill", color: .blue, kind: .link, destination: .myProfile)
         ]),
         SettingMenuSection(id: "activity", items: [
             SettingMenuItem(label: "좋아요 목록", systemImage: "heart.fill", color: .pink, kind: .link, destination: .activity(.like)),

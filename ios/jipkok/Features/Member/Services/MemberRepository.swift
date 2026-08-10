@@ -41,6 +41,10 @@ struct MemberRepository {
         return MemberPage(members: page.items.map(Member.init), nextCursor: page.nextCursor)
     }
     
+    func findMyProfile() async throws -> MyProfile {
+        MyProfile(try await client.getMyProfile(.init()).ok.body.json)
+    }
+
     func findDetail(id: Int) async throws -> MemberDetail {
         let output = try await client.findDetail(.init(path: .init(targetId: Int64(id))))
         
@@ -123,6 +127,33 @@ extension Member {
             distanceInMeters: nil,
             isFavorited: false
         )
+    }
+}
+
+private extension MyProfile {
+
+    init(_ response: Components.Schemas.MyProfileResponse) {
+        self.init(
+            id: Int(response.memberId),
+            nickname: response.nickname,
+            gender: response.gender == .male ? .male : .female,
+            birthYear: Int(response.birthYear),
+            age: Int(response.age),
+            receivedLikeCount: Int(response.receivedLikeCount),
+            comment: response.comment,
+            bio: response.bio,
+            publicPhotos: response.publicPhotos.compactMap(ProfilePhoto.init),
+            secretPhotos: response.secretPhotos.compactMap(ProfilePhoto.init)
+        )
+    }
+}
+
+private extension ProfilePhoto {
+
+    init?(_ response: Components.Schemas.ProfilePhotoResponse) {
+        guard let url = URL(string: response.url) else { return nil }
+
+        self.init(objectKey: response.objectKey, url: url)
     }
 }
 
