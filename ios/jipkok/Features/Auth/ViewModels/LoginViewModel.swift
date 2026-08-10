@@ -13,7 +13,7 @@ final class LoginViewModel {
     private(set) var isSubmitting = false
 
     var canSubmit: Bool {
-        !phoneNumber.isEmpty && !password.isEmpty && !isSubmitting
+        phoneNumber.count == phoneNumberLength && !password.isEmpty && !isSubmitting
     }
 
     var isShowingError: Bool {
