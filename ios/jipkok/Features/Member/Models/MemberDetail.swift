@@ -1,7 +1,7 @@
 import Foundation
 
 struct MemberDetail: Identifiable, Hashable {
-
+    
     let id: Int
     let nickname: String
     let gender: Member.Gender
@@ -16,13 +16,13 @@ struct MemberDetail: Identifiable, Hashable {
     let isNoteReceiveEnabled: Bool
     let isSecretPhotoGrantedToMe: Bool
     var isSecretPhotoGrantedByMe: Bool
-    let isBlocked: Bool
+    var isBlocked: Bool
     let secretPhotoCount: Int
     let publicPhotoURLs: [URL]
 }
 
 extension MemberDetail {
-
+    
     static let preview = MemberDetail(
         id: 1,
         nickname: "달리는고양이",

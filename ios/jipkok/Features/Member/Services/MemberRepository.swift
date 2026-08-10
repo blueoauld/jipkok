@@ -71,6 +71,14 @@ struct MemberRepository {
         }
     }
     
+    func setBlocked(_ isBlocked: Bool, id: Int) async throws {
+        if isBlocked {
+            _ = try await client.block(.init(path: .init(memberId: Int64(id))))
+        } else {
+            _ = try await client.unblock(.init(path: .init(memberId: Int64(id))))
+        }
+    }
+    
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
