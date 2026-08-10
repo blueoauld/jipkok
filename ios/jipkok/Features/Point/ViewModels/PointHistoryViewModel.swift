@@ -18,8 +18,12 @@ final class PointHistoryViewModel {
         set { if !newValue { message = nil } }
     }
 
-    var isEmpty: Bool {
-        hasLoaded && items.isEmpty
+    var displayState: DisplayState {
+        if items.isEmpty {
+            return isLoading ? .loading : .empty
+        }
+
+        return .content
     }
 
     private let repository: PointRepository
@@ -72,5 +76,21 @@ final class PointHistoryViewModel {
 
             message = APIError.from(error).message
         }
+    }
+}
+
+extension PointHistoryViewModel {
+
+    static func preview(
+        balance: Int? = nil,
+        items: [PointHistory] = [],
+        isLoading: Bool = false
+    ) -> PointHistoryViewModel {
+        let viewModel = PointHistoryViewModel()
+        viewModel.balance = balance
+        viewModel.items = items
+        viewModel.isLoading = isLoading
+        viewModel.hasLoaded = true
+        return viewModel
     }
 }
