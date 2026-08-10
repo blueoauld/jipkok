@@ -67,59 +67,14 @@ struct FeedView: View {
                 .onChange(of: viewModel.sort) { _, _ in Task { await viewModel.reload() } }
                 .onChange(of: viewModel.genderFilter) { _, _ in Task { await viewModel.reload() } }
                 .onChange(of: viewModel.date) { _, _ in Task { await viewModel.reload() } }
-                .refreshable { await viewModel.reload() }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
     
-    @ViewBuilder
     private var postList: some View {
-        if viewModel.isEmpty {
-            ContentUnavailableView("피드가 없습니다.", systemImage: "flame")
-        } else {
-            ScrollView {
-                LazyVStack(spacing: rowSpacing) {
-                    ForEach(viewModel.posts) { post in
-                        FeedCard(
-                            post: post,
-                            onAuthorTap: { openProfile(of: post) },
-                            onLike: { Task { await viewModel.toggleLike(post) } },
-                            onReport: { viewModel.reportingPost = post }
-                        )
-                        .task { await loadMoreIfNeeded(for: post) }
-                    }
-                    
-                    if viewModel.isLoading, !viewModel.posts.isEmpty {
-                        ProgressView()
-                            .padding()
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, listTopPadding)
-                .padding(.bottom)
-            }
-            .overlay {
-                if viewModel.isLoading, viewModel.posts.isEmpty {
-                    ProgressView()
-                }
-            }
-        }
+        Color.clear
     }
-    
-    private func openProfile(of post: FeedPost) {
-        if post.memberId == viewModel.myMemberId {
-            router.push(FeedRoute.myProfile)
-        } else {
-            router.push(FeedRoute.memberDetail(id: post.memberId))
-        }
-    }
-    
-    private func loadMoreIfNeeded(for post: FeedPost) async {
-        guard post.id == viewModel.posts.last?.id else { return }
-        
-        await viewModel.loadMore()
-    }
-    
+
     private var dateButton: some View {
         Button {
             isPickingDate = true
