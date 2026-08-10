@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct MemberSearchView: View {
-
+    
     @State private var viewModel = MemberSearchViewModel()
-
+    
+    init() {}
+    
+    fileprivate init(viewModel: MemberSearchViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         content
             .navigationTitle("회원 검색")
@@ -17,7 +23,7 @@ struct MemberSearchView: View {
             .autocorrectionDisabled()
             .onChange(of: viewModel.keyword) { _, _ in
                 viewModel.sanitizeKeyword()
-
+                
                 Task { await viewModel.search() }
             }
             .alert("알림", isPresented: $viewModel.isShowingMessage) {
@@ -26,7 +32,7 @@ struct MemberSearchView: View {
                 Text(viewModel.message ?? "")
             }
     }
-
+    
     @ViewBuilder
     private var content: some View {
         if !viewModel.isSearchable {
@@ -34,23 +40,19 @@ struct MemberSearchView: View {
                 "닉네임을 \(minKeywordLength)자 이상 입력해 주세요.",
                 systemImage: "magnifyingglass"
             )
-        } else if viewModel.members.isEmpty {
-            emptyResult
         } else {
-            memberList
+            switch viewModel.displayState {
+            case .loading:
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            case .empty:
+                ContentUnavailableView.search(text: viewModel.keyword)
+            case .content:
+                memberList
+            }
         }
     }
-
-    @ViewBuilder
-    private var emptyResult: some View {
-        if viewModel.isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            ContentUnavailableView.search(text: viewModel.keyword)
-        }
-    }
-
+    
     private var memberList: some View {
         ScrollView {
             LazyVStack(spacing: rowSpacing) {
@@ -61,7 +63,7 @@ struct MemberSearchView: View {
                     .buttonStyle(.plain)
                     .task { await loadMoreIfNeeded(for: member) }
                 }
-
+                
                 if viewModel.isLoading {
                     ProgressView()
                         .padding()
@@ -71,16 +73,40 @@ struct MemberSearchView: View {
         }
         .scrollDismissesKeyboard(.interactively)
     }
-
+    
     private func loadMoreIfNeeded(for member: Member) async {
         guard member.id == viewModel.members.last?.id else { return }
-
+        
         await viewModel.loadMore()
     }
 }
 
-#Preview {
+#Preview("기본") {
     NavigationStack {
         MemberSearchView()
+    }
+}
+
+#Preview("결과 목록") {
+    NavigationStack {
+        MemberSearchView(viewModel: .preview(keyword: "철수", members: Member.previews))
+    }
+}
+
+#Preview("추가 로딩") {
+    NavigationStack {
+        MemberSearchView(viewModel: .preview(keyword: "철수", members: Member.previews, isLoading: true))
+    }
+}
+
+#Preview("로딩 중") {
+    NavigationStack {
+        MemberSearchView(viewModel: .preview(keyword: "철수", isLoading: true))
+    }
+}
+
+#Preview("결과 없음") {
+    NavigationStack {
+        MemberSearchView(viewModel: .preview(keyword: "철수"))
     }
 }

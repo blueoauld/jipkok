@@ -2,8 +2,6 @@ import Observation
 
 let minKeywordLength = 2
 
-private let keywordMaxLength = 10
-
 private let debounce = Duration.milliseconds(300)
 
 @Observable
@@ -21,7 +19,15 @@ final class MemberSearchViewModel {
     private var generation = 0
 
     var isSearchable: Bool {
-        keyword.count >= minKeywordLength
+        Nickname.trimmed(keyword).count >= minKeywordLength
+    }
+
+    var displayState: DisplayState {
+        if members.isEmpty {
+            return isLoading ? .loading : .empty
+        }
+
+        return .content
     }
 
     var isShowingMessage: Bool {
@@ -36,15 +42,15 @@ final class MemberSearchViewModel {
     }
 
     func sanitizeKeyword() {
-        keyword = String(keyword.prefix(keywordMaxLength))
+        keyword = Nickname.sanitized(keyword)
     }
 
     func search() async {
         loadTask?.cancel()
-        members = []
         nextCursor = nil
 
         guard isSearchable else {
+            members = []
             isLoading = false
 
             return
@@ -63,7 +69,7 @@ final class MemberSearchViewModel {
         generation += 1
 
         let generation = generation
-        let keyword = keyword
+        let keyword = Nickname.trimmed(keyword)
 
         isLoading = true
 
@@ -77,7 +83,7 @@ final class MemberSearchViewModel {
 
                 guard generation == self.generation else { return }
 
-                members += page.members
+                members = cursor == nil ? page.members : members + page.members
                 nextCursor = page.nextCursor
             } catch {
                 guard !error.isCancellation else { return }
@@ -96,5 +102,21 @@ final class MemberSearchViewModel {
 
         loadTask = nil
         isLoading = false
+    }
+}
+
+extension MemberSearchViewModel {
+
+    static func preview(
+        keyword: String = "",
+        members: [Member] = [],
+        isLoading: Bool = false
+    ) -> MemberSearchViewModel {
+        let viewModel = MemberSearchViewModel()
+        viewModel.keyword = keyword
+        viewModel.members = members
+        viewModel.isLoading = isLoading
+        viewModel.loadTask = Task {}
+        return viewModel
     }
 }
