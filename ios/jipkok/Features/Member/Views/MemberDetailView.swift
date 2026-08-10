@@ -86,6 +86,9 @@ struct MemberDetailView: View {
                     : "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다."
                 )
             }
+            .fullScreenCover(isPresented: $viewModel.isViewingSecretPhotos) {
+                PhotoViewer(urls: viewModel.secretPhotoURLs)
+            }
             .loadingOverlay(viewModel.isProcessing)
             .task { await viewModel.loadIfNeeded() }
     }
@@ -232,8 +235,9 @@ struct MemberDetailView: View {
         switch action {
         case .like: Task { await viewModel.toggleLike() }
         case .favorite: Task { await viewModel.toggleFavorite() }
+        case .secretPhoto: Task { await viewModel.openSecretPhotos() }
         case .block: viewModel.isConfirmingBlock = true
-        case .note, .secretPhoto: break
+        case .note: break
         }
     }
     

@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 
 @Observable
@@ -7,6 +8,7 @@ final class MemberDetailViewModel {
     var message: String?
     var isConfirmingSecretPhoto = false
     var isConfirmingBlock = false
+    var isViewingSecretPhotos = false
     
     private(set) var member: MemberDetail?
     private(set) var isLoading = false
@@ -14,6 +16,7 @@ final class MemberDetailViewModel {
     private var isTogglingLike = false
     private var isTogglingFavorite = false
     private(set) var isProcessing = false
+    private(set) var secretPhotoURLs: [URL] = []
     
     var isShowingMessage: Bool {
         get { message != nil }
@@ -81,6 +84,41 @@ final class MemberDetailViewModel {
         }
     }
     
+    func openSecretPhotos() async {
+        guard !isProcessing, let member else { return }
+
+        guard member.isSecretPhotoGrantedToMe else {
+            message = "비밀 사진이 공개되지 않았습니다."
+
+            return
+        }
+
+        guard member.secretPhotoCount > 0 else {
+            message = "공개된 비밀 사진이 없습니다."
+
+            return
+        }
+
+        isProcessing = true
+
+        defer { isProcessing = false }
+
+        do {
+            let urls = try await repository.findSecretPhotoURLs(id: id)
+
+            guard !urls.isEmpty else {
+                message = "공개된 비밀 사진이 없습니다."
+
+                return
+            }
+
+            secretPhotoURLs = urls
+            isViewingSecretPhotos = true
+        } catch {
+            message = APIError.from(error).message
+        }
+    }
+
     func toggleBlock() async {
         guard !isProcessing, let previous = member?.isBlocked else { return }
         
