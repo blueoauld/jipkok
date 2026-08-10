@@ -5,6 +5,12 @@ struct RankView: View {
     @State private var router = RankRouter()
     @State private var viewModel = RankViewModel()
     
+    init() {}
+    
+    fileprivate init(viewModel: RankViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         NavigationStack(path: $router.path) {
             memberList
@@ -32,29 +38,33 @@ struct RankView: View {
     
     private var memberList: some View {
         ScrollView {
-            LazyVStack(spacing: rowSpacing) {
-                ForEach(viewModel.members) { member in
-                    Button {
-                        router.push(RankRoute.memberDetail(id: member.id))
-                    } label: {
-                        MemberRow(member: member)
-                    }
-                    .buttonStyle(.plain)
-                    .task { await loadMoreIfNeeded(for: member) }
-                }
-                
-                if viewModel.isLoading, !viewModel.members.isEmpty {
-                    ProgressView()
-                        .padding()
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, listTopPadding)
-            .padding(.bottom)
-        }
-        .overlay {
-            if viewModel.isLoading, viewModel.members.isEmpty {
+            switch viewModel.displayState {
+            case .loading:
                 ProgressView()
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .empty:
+                ContentUnavailableView("회원이 없습니다.", systemImage: "person.2.slash")
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .content:
+                LazyVStack(spacing: rowSpacing) {
+                    ForEach(viewModel.members) { member in
+                        Button {
+                            router.push(RankRoute.memberDetail(id: member.id))
+                        } label: {
+                            MemberRow(member: member)
+                        }
+                        .buttonStyle(.plain)
+                        .task { await loadMoreIfNeeded(for: member) }
+                    }
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .padding()
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, listTopPadding)
+                .padding(.bottom)
             }
         }
     }
@@ -79,6 +89,18 @@ struct RankView: View {
     }
 }
 
-#Preview {
-    RankView()
+#Preview("목록") {
+    RankView(viewModel: .preview(members: Member.previews))
+}
+
+#Preview("추가 로딩") {
+    RankView(viewModel: .preview(members: Member.previews, isLoading: true))
+}
+
+#Preview("로딩 중") {
+    RankView(viewModel: .preview(isLoading: true))
+}
+
+#Preview("빈 상태") {
+    RankView(viewModel: .preview())
 }
