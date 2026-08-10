@@ -7,7 +7,7 @@ final class LoginViewModel {
     var phoneNumber = ""
     var password = ""
     var errorMessage: String?
-
+    
     private(set) var isSubmitting = false
 
     var canSubmit: Bool {
@@ -50,5 +50,20 @@ final class LoginViewModel {
 
             errorMessage = APIError.from(error).message
         }
+    }
+}
+
+extension LoginViewModel {
+
+    static func preview(
+        phoneNumber: String = "",
+        password: String = "",
+        isSubmitting: Bool = false
+    ) -> LoginViewModel {
+        let viewModel = LoginViewModel(session: AuthSession())
+        viewModel.phoneNumber = phoneNumber
+        viewModel.password = password
+        viewModel.isSubmitting = isSubmitting
+        return viewModel
     }
 }

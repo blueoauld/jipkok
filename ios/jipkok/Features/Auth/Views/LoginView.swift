@@ -18,6 +18,11 @@ struct LoginView: View {
         _viewModel = State(wrappedValue: LoginViewModel(session: session))
     }
 
+    fileprivate init(viewModel: LoginViewModel) {
+        self.session = AuthSession()
+        _viewModel = State(wrappedValue: viewModel)
+    }
+
     var body: some View {
         NavigationStack {
             content
@@ -107,6 +112,14 @@ struct LoginView: View {
     }
 }
 
-#Preview {
+#Preview("기본") {
     LoginView(session: AuthSession())
+}
+
+#Preview("입력 완료") {
+    LoginView(viewModel: .preview(phoneNumber: "01012345678", password: "password123"))
+}
+
+#Preview("로그인 중") {
+    LoginView(viewModel: .preview(phoneNumber: "01012345678", password: "password123", isSubmitting: true))
 }
