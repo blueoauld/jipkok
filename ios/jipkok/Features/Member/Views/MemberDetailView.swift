@@ -133,6 +133,11 @@ struct MemberDetailView: View {
         if member.publicPhotoURLs.isEmpty {
             Color(.secondarySystemBackground)
                 .aspectRatio(1, contentMode: .fit)
+                .overlay {
+                    Image(systemName: "photo")
+                        .font(.largeTitle)
+                        .foregroundStyle(.tertiary)
+                }
         } else {
             PhotoCarousel(urls: member.publicPhotoURLs, currentIndex: $photoIndex) { index in
                 photoIndex = index

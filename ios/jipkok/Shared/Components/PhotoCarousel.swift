@@ -145,12 +145,30 @@ private final class CarouselPhotoCell: UICollectionViewCell {
     )?.withTintColor(.gray, renderingMode: .alwaysOriginal)
 }
 
-#Preview {
+#Preview("사진") {
     PhotoCarousel(
         urls: [
             URL(string: "https://picsum.photos/id/237/1200/1200")!,
             URL(string: "https://picsum.photos/id/1015/1200/1200")!,
         ],
+        currentIndex: .constant(0),
+        onTap: { _ in }
+    )
+    .aspectRatio(1, contentMode: .fit)
+}
+
+#Preview("로딩 중") {
+    PhotoCarousel(
+        urls: [URL(string: "https://10.255.255.1/carousel-loading.jpg")!],
+        currentIndex: .constant(0),
+        onTap: { _ in }
+    )
+    .aspectRatio(1, contentMode: .fit)
+}
+
+#Preview("실패") {
+    PhotoCarousel(
+        urls: [URL(string: "https://jipkok.invalid/carousel-failure.jpg")!],
         currentIndex: .constant(0),
         onTap: { _ in }
     )
