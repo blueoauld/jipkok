@@ -1,19 +1,19 @@
 import Foundation
 
 struct MemberPage {
-
+    
     let members: [Member]
     let nextCursor: String?
 }
 
 struct MemberRepository {
-
+    
     private let client: Client
-
+    
     init(client: Client = APIClient.authenticated()) {
         self.client = client
     }
-
+    
     func findMembers(
         sort: MemberSort,
         gender: GenderFilter,
@@ -23,8 +23,12 @@ struct MemberRepository {
             .init(query: .init(sort: sort.payload, gender: gender.payload, cursor: cursor))
         )
         let page = try output.ok.body.json
-
+        
         return MemberPage(members: page.items.map(Member.init), nextCursor: page.nextCursor)
+    }
+    
+    func updateComment(_ comment: String?) async throws {
+        _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
 }
 
@@ -47,7 +51,7 @@ private extension Member {
 }
 
 private extension MemberSort {
-
+    
     var payload: Operations.FindMembers.Input.Query.SortPayload {
         switch self {
         case .recent: .recent
@@ -57,7 +61,7 @@ private extension MemberSort {
 }
 
 private extension GenderFilter {
-
+    
     var payload: Operations.FindMembers.Input.Query.GenderPayload? {
         switch self {
         case .all: nil

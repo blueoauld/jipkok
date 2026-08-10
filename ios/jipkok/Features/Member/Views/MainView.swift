@@ -1,13 +1,9 @@
 import SwiftUI
 
-private let commentMaxLength = 100
-
 struct MainView: View {
 
     @State private var router = MemberRouter()
     @State private var viewModel = MainViewModel()
-    @State private var isWritingComment = false
-    @State private var comment = ""
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -36,24 +32,24 @@ struct MainView: View {
 
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("코멘트 작성", systemImage: "square.and.pencil") {
-                            isWritingComment = true
+                            viewModel.isWritingComment = true
                         }
                     }
                 }
-                .alert("코멘트", isPresented: $isWritingComment) {
-                    TextField("내용 입력 (100자)", text: $comment)
+                .alert("코멘트", isPresented: $viewModel.isWritingComment) {
+                    TextField("내용 입력 (100자)", text: $viewModel.comment)
 
-                    Button("작성") {}
+                    Button("작성") {
+                        Task { await viewModel.updateComment() }
+                    }
 
                     Button("닫기", role: .cancel) {}
                 }
-                .onChange(of: comment) { _, newValue in
-                    comment = String(newValue.prefix(commentMaxLength))
-                }
-                .alert("알림", isPresented: $viewModel.isShowingError) {
+                .onChange(of: viewModel.comment) { _, _ in viewModel.sanitizeComment() }
+                .alert("알림", isPresented: $viewModel.isShowingMessage) {
                     Button("확인", role: .cancel) {}
                 } message: {
-                    Text(viewModel.errorMessage ?? "")
+                    Text(viewModel.message ?? "")
                 }
                 .task { await viewModel.loadIfNeeded() }
                 .onChange(of: viewModel.sort) { _, _ in Task { await viewModel.reload() } }
