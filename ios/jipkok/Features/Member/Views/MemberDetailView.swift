@@ -117,7 +117,7 @@ struct MemberDetailView: View {
                 .foregroundStyle(body == nil ? .secondary : .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: fieldCornerRadius))
         }
     }
 
