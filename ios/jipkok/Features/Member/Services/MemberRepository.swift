@@ -81,10 +81,10 @@ struct MemberRepository {
     
     func findSecretPhotoURLs(id: Int) async throws -> [URL] {
         let output = try await client.findPhotoUrls(.init(path: .init(memberId: Int64(id))))
-
+        
         return try output.ok.body.json.compactMap(URL.init(string:))
     }
-
+    
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
@@ -108,7 +108,7 @@ private extension Member {
     }
 }
 
-private extension Member {
+extension Member {
     
     init(_ response: Components.Schemas.MemberSummaryResponse) {
         self.init(

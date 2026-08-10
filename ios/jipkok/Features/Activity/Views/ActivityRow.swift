@@ -13,21 +13,30 @@ struct ActivityRow: View {
             MemberAvatar(url: member.profileImageURL)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(member.nickname)
-                    .font(.subheadline.bold())
-                    .lineLimit(1)
+                HStack {
+                    Text(member.nickname)
+                        .font(.subheadline.bold())
+                        .lineLimit(1)
+
+                    Spacer()
+
+                    if let caption {
+                        Text(caption)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .layoutPriority(1)
+                    }
+                }
 
                 Text("\(member.gender.label) · \(member.age)살 · ♥ \(member.receivedLikeCount.formatted())")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                Text(caption ?? member.comment ?? "-")
+                Text(member.comment ?? "-")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-
-            Spacer()
 
             if let onDelete {
                 deleteButton(onDelete)
