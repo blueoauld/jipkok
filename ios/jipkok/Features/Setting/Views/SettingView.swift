@@ -5,7 +5,13 @@ private let iconGlyphSize: CGFloat = 12
 private let iconCornerRadius: CGFloat = 8
 
 struct SettingView: View {
-    
+
+    @State private var viewModel: SettingViewModel
+
+    init(session: AuthSession) {
+        _viewModel = State(wrappedValue: SettingViewModel(session: session))
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -24,9 +30,18 @@ struct SettingView: View {
                     accountMenu
                 }
             }
+            .alert("알림", isPresented: $viewModel.isConfirmingSignout) {
+                Button("로그아웃", role: .destructive) {
+                    Task { await viewModel.signout() }
+                }
+
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("로그아웃하면 다시 로그인해야 이용할 수 있습니다.")
+            }
         }
     }
-    
+
     private func row(_ item: SettingMenuItem) -> some View {
         Button {
         } label: {
@@ -38,15 +53,15 @@ struct SettingView: View {
                 } icon: {
                     icon(item)
                 }
-                
+
                 Spacer()
-                
+
                 accessory(for: item.kind)
             }
         }
         .buttonStyle(.plain)
     }
-    
+
     private func icon(_ item: SettingMenuItem) -> some View {
         Image(systemName: item.systemImage)
             .font(.system(size: iconGlyphSize, weight: .semibold))
@@ -70,11 +85,11 @@ struct SettingView: View {
             EmptyView()
         }
     }
-    
+
     private var accountMenu: some View {
         Menu {
-            Button("로그아웃") {}
-            
+            Button("로그아웃") { viewModel.isConfirmingSignout = true }
+
             Button("회원탈퇴", role: .destructive) {}
         } label: {
             Image(systemName: "ellipsis")
@@ -84,5 +99,5 @@ struct SettingView: View {
 }
 
 #Preview {
-    SettingView()
+    SettingView(session: AuthSession())
 }
