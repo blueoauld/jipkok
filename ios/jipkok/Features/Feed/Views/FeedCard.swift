@@ -1,3 +1,4 @@
+import Kingfisher
 import SwiftUI
 
 private let cardRatio: CGFloat = 2
@@ -8,6 +9,8 @@ private let scrimOpacity: CGFloat = 0.35
 struct FeedCard: View {
     
     let post: FeedPost
+    let onLike: () -> Void
+    let onReport: () -> Void
     
     var body: some View {
         photo
@@ -24,13 +27,10 @@ struct FeedCard: View {
     private var photo: some View {
         Color(.secondarySystemBackground)
             .overlay {
-                AsyncImage(url: post.imageURL) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Color.clear
-                }
+                KFImage(source: .network(KF.ImageResource(downloadURL: post.imageURL, cacheKey: post.imageURL.path)))
+                    .resizable()
+                    .scaledToFill()
+                    .allowsHitTesting(false)
             }
             .clipped()
     }
@@ -61,24 +61,26 @@ struct FeedCard: View {
     }
     
     private var reportButton: some View {
-        Button {
-        } label: {
+        Button(action: onReport) {
             Image(systemName: "light.beacon.max.fill")
                 .font(.title3)
                 .foregroundStyle(.white)
                 .padding()
+                .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("신고")
     }
     
     private var likeButton: some View {
-        Button {
-        } label: {
+        Button(action: onLike) {
             Image(systemName: post.isLiked ? "heart.fill" : "heart")
                 .font(.title3)
                 .foregroundStyle(.white)
                 .padding()
+                .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel(post.isLiked ? "좋아요 취소" : "좋아요")
     }
     
@@ -102,8 +104,8 @@ struct FeedCard: View {
 #Preview {
     ScrollView {
         LazyVStack(spacing: rowSpacing) {
-            ForEach(FeedPost.samples.prefix(3)) { post in
-                FeedCard(post: post)
+            ForEach(FeedPost.previews) { post in
+                FeedCard(post: post, onLike: {}, onReport: {})
             }
         }
         .padding()
