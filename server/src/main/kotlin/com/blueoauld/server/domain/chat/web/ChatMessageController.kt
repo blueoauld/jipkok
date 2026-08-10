@@ -36,7 +36,7 @@ class ChatMessageController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<ChatMessageResponse> = chatMessageService.findMessages(memberId, roomId, cursor, size)
 
-    @Operation(summary = "메시지 전송", description = "사진은 한 장에 메시지 하나다.")
+    @Operation(operationId = "sendChatMessage", summary = "메시지 전송", description = "사진은 한 장에 메시지 하나다.")
     @PostMapping("/{roomId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
     fun send(

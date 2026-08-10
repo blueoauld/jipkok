@@ -21,7 +21,7 @@ class ChatNoteController(
     private val chatNoteService: ChatNoteService,
 ) {
 
-    @Operation(summary = "쪽지 전송", description = "채팅방이 없으면 새로 만들고 포인트를 차감한다.")
+    @Operation(operationId = "sendNote", summary = "쪽지 전송", description = "채팅방이 없으면 새로 만들고 포인트를 차감한다.")
     @PostMapping("/{memberId}/notes")
     @ResponseStatus(HttpStatus.CREATED)
     fun send(

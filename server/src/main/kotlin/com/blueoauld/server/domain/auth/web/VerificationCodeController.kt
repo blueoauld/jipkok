@@ -20,7 +20,7 @@ class VerificationCodeController(
     private val verificationCodeService: VerificationCodeService,
 ) {
 
-    @Operation(summary = "인증번호 발송")
+    @Operation(operationId = "sendVerificationCode", summary = "인증번호 발송")
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun send(@Valid @RequestBody request: SendVerificationCodeRequest, servletRequest: HttpServletRequest) {
