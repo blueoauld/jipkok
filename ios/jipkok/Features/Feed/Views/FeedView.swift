@@ -1,10 +1,18 @@
 import SwiftUI
 
+private let postListBottomPadding: CGFloat = 72
+
 struct FeedView: View {
     
     @State private var router = FeedRouter()
     @State private var viewModel = FeedViewModel()
     @State private var isPickingDate = false
+    
+    init() {}
+    
+    fileprivate init(viewModel: FeedViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
     
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -72,9 +80,53 @@ struct FeedView: View {
     }
     
     private var postList: some View {
-        Color.clear
+        ScrollView {
+            switch viewModel.displayState {
+            case .loading:
+                ProgressView()
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .empty:
+                ContentUnavailableView("피드가 없습니다.", systemImage: "photo.on.rectangle.angled")
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .content:
+                LazyVStack(spacing: rowSpacing) {
+                    ForEach(viewModel.posts) { post in
+                        FeedCard(
+                            post: post,
+                            onAuthorTap: { openAuthor(post) },
+                            onLike: { Task { await viewModel.toggleLike(post) } },
+                            onReport: { viewModel.reportingPost = post }
+                        )
+                        .task { await loadMoreIfNeeded(for: post) }
+                    }
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .padding()
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, listTopPadding)
+                .padding(.bottom)
+            }
+        }
+        .refreshable { await viewModel.refresh() }
     }
-
+    
+    private func openAuthor(_ post: FeedPost) {
+        if post.memberId == viewModel.myMemberId {
+            router.push(FeedRoute.myProfile)
+        } else {
+            router.push(FeedRoute.memberDetail(id: post.memberId))
+        }
+    }
+    
+    private func loadMoreIfNeeded(for post: FeedPost) async {
+        guard post.id == viewModel.posts.last?.id else { return }
+        
+        await viewModel.loadMore()
+    }
+    
     private var dateButton: some View {
         Button {
             isPickingDate = true
@@ -137,6 +189,22 @@ struct FeedView: View {
     }
 }
 
-#Preview {
+#Preview("기본") {
     FeedView()
+}
+
+#Preview("목록") {
+    FeedView(viewModel: .preview(posts: FeedPost.previews))
+}
+
+#Preview("추가 로딩") {
+    FeedView(viewModel: .preview(posts: FeedPost.previews, isLoading: true))
+}
+
+#Preview("로딩 중") {
+    FeedView(viewModel: .preview(isLoading: true))
+}
+
+#Preview("빈 상태") {
+    FeedView(viewModel: .preview())
 }

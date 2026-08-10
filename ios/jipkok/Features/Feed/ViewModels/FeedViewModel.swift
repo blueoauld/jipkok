@@ -32,8 +32,12 @@ final class FeedViewModel {
         set { if !newValue { reportingPost = nil } }
     }
     
-    var isEmpty: Bool {
-        hasLoaded && posts.isEmpty && !isLoading
+    var displayState: DisplayState {
+        if posts.isEmpty {
+            return isLoading ? .loading : .empty
+        }
+        
+        return .content
     }
     
     private let repository: FeedRepository
@@ -55,9 +59,15 @@ final class FeedViewModel {
         }
     }
     
+    func refresh() async {
+        generation += 1
+        nextCursor = nil
+        
+        await load(cursor: nil)
+    }
+    
     func reload() async {
         generation += 1
-        isLoading = true
         posts = []
         nextCursor = nil
         
@@ -96,10 +106,12 @@ final class FeedViewModel {
     func report(_ post: FeedPost) async {
         do {
             try await repository.report(postId: post.id)
+            
+            posts.removeAll { $0.id == post.id }
             message = "신고가 접수되었습니다."
         } catch {
             guard !error.isCancellation else { return }
-
+            
             message = APIError.from(error).message
         }
     }
@@ -120,7 +132,7 @@ final class FeedViewModel {
             message = enabled ? "이제 피드 알림을 받을 수 있습니다." : "이제 피드 알림을 받지 않습니다."
         } catch {
             guard !error.isCancellation else { return }
-
+            
             message = APIError.from(error).message
         }
     }
@@ -138,7 +150,7 @@ final class FeedViewModel {
             
             guard generation == self.generation else { return }
             
-            posts += page.posts
+            posts = cursor == nil ? page.posts : posts + page.posts
             nextCursor = page.nextCursor
             hasLoaded = true
         } catch {
@@ -146,9 +158,23 @@ final class FeedViewModel {
                 message = APIError.from(error).message
             }
         }
-
+        
         guard generation == self.generation else { return }
-
+        
         isLoading = false
+    }
+}
+
+extension FeedViewModel {
+    
+    static func preview(
+        posts: [FeedPost] = [],
+        isLoading: Bool = false
+    ) -> FeedViewModel {
+        let viewModel = FeedViewModel()
+        viewModel.posts = posts
+        viewModel.isLoading = isLoading
+        viewModel.hasLoaded = true
+        return viewModel
     }
 }
