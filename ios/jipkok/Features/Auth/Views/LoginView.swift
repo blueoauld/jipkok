@@ -7,13 +7,12 @@ struct LoginView: View {
         case password
     }
 
-    @State private var phoneNumber = ""
-    @State private var password = ""
+    @State private var viewModel: LoginViewModel
 
     @FocusState private var focusedField: Field?
 
-    private var canSubmit: Bool {
-        !phoneNumber.isEmpty && !password.isEmpty
+    init(session: AuthSession) {
+        _viewModel = State(wrappedValue: LoginViewModel(session: session))
     }
 
     var body: some View {
@@ -21,6 +20,11 @@ struct LoginView: View {
             content
                 .navigationTitle("로그인")
                 .navigationBarTitleDisplayMode(.inline)
+                .alert("에러", isPresented: $viewModel.isShowingError) {
+                    Button("확인", role: .cancel) {}
+                } message: {
+                    Text(viewModel.errorMessage ?? "")
+                }
         }
     }
 
@@ -46,20 +50,18 @@ struct LoginView: View {
     }
 
     private var phoneNumberField: some View {
-        TextField("휴대폰 번호", text: $phoneNumber)
+        TextField("휴대폰 번호", text: $viewModel.phoneNumber)
             .keyboardType(.numberPad)
             .textContentType(.telephoneNumber)
             .focused($focusedField, equals: .phoneNumber)
-            .onChange(of: phoneNumber) { _, newValue in
-                phoneNumber = String(newValue.filter(\.isNumber).prefix(11))
-            }
+            .onChange(of: viewModel.phoneNumber) { _, _ in viewModel.sanitizePhoneNumber() }
             .inputStyle(isFocused: focusedField == .phoneNumber)
             .contentShape(.rect)
             .onTapGesture { focusedField = .phoneNumber }
     }
 
     private var passwordField: some View {
-        SecureField("비밀번호", text: $password)
+        SecureField("비밀번호", text: $viewModel.password)
             .textContentType(.password)
             .textInputAutocapitalization(.never)
             .submitLabel(.go)
@@ -77,24 +79,27 @@ struct LoginView: View {
             .foregroundStyle(Color.accentColor)
             .contentShape(.rect)
     }
-    
+
     private var loginButton: some View {
-        Button("로그인", action: submit)
-            .buttonStyle(.submit)
-            .disabled(!canSubmit)
+        Button(action: submit) {
+            if viewModel.isSubmitting {
+                ProgressView()
+                    .tint(.primary)
+            } else {
+                Text("로그인")
+            }
+        }
+        .buttonStyle(.submit)
+        .disabled(!viewModel.canSubmit)
     }
 
     private func submit() {
         focusedField = nil
+
+        Task { await viewModel.submit() }
     }
 }
 
-#Preview("라이트") {
-    LoginView()
-        .preferredColorScheme(.light)
-}
-
-#Preview("다크") {
-    LoginView()
-        .preferredColorScheme(.dark)
+#Preview {
+    LoginView(session: AuthSession())
 }

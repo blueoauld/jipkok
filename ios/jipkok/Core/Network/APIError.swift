@@ -17,6 +17,23 @@ struct APIError: Error, Equatable {
 
 extension APIError {
 
+    static let unknown = APIError(status: 0, code: unknownCode, message: fallbackMessage)
+
+    static func from(_ error: any Error) -> APIError {
+        if let apiError = error as? APIError {
+            return apiError
+        }
+
+        if let clientError = error as? ClientError {
+            return from(clientError.underlyingError)
+        }
+
+        return unknown
+    }
+}
+
+extension APIError {
+
     private struct Payload: Decodable {
         let code: String
         let message: String

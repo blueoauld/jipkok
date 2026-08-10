@@ -4,7 +4,7 @@ import SwiftUI
 struct jipkokApp: App {
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            RootView()
         }
     }
 }
