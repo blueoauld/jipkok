@@ -22,7 +22,7 @@ class SecretPhotoAccessController(
     private val secretPhotoAccessService: SecretPhotoAccessService,
 ) {
 
-    @Operation(summary = "비밀 사진 공개")
+    @Operation(operationId = "grantSecretPhoto", summary = "비밀 사진 공개")
     @PostMapping("/{memberId}/secret-photos")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun grant(@AuthenticationPrincipal ownerId: Long, @PathVariable memberId: Long) {
@@ -36,14 +36,14 @@ class SecretPhotoAccessController(
         @PathVariable memberId: Long,
     ): List<String> = secretPhotoAccessService.findPhotoUrls(viewerId, memberId)
 
-    @Operation(summary = "비밀 사진 공개 해제")
+    @Operation(operationId = "revokeSecretPhoto", summary = "비밀 사진 공개 해제")
     @DeleteMapping("/{memberId}/secret-photos")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun revoke(@AuthenticationPrincipal ownerId: Long, @PathVariable memberId: Long) {
         secretPhotoAccessService.revoke(ownerId, memberId)
     }
 
-    @Operation(summary = "내가 공개한 목록")
+    @Operation(operationId = "findGrantedSecretPhotos", summary = "내가 공개한 목록")
     @GetMapping("/me/secret-photos/granted")
     fun findGranted(
         @AuthenticationPrincipal memberId: Long,
@@ -51,7 +51,7 @@ class SecretPhotoAccessController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<MemberSummaryResponse> = secretPhotoAccessService.findGranted(memberId, cursor, size)
 
-    @Operation(summary = "나에게 공개된 목록")
+    @Operation(operationId = "findReceivedSecretPhotos", summary = "나에게 공개된 목록")
     @GetMapping("/me/secret-photos/received")
     fun findReceived(
         @AuthenticationPrincipal memberId: Long,
