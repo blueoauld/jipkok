@@ -33,6 +33,11 @@ class OpenApiCheckTest {
             jsonPath("$.paths['/api/auth/login'].post.responses['401'].content['application/json'].schema.\$ref")
                 .value("#/components/schemas/ErrorResponse"),
         )
+        result.andExpect(
+            jsonPath("$.paths['/api/auth/login'].post.responses['200'].content['application/json'].schema.\$ref")
+                .value("#/components/schemas/TokenResponse"),
+        )
+        result.andExpect(jsonPath("$.paths['/api/auth/login'].post.responses['200'].content['*/*']").doesNotExist())
         result.andExpect(jsonPath("$.components.schemas.ErrorResponse").exists())
         result.andExpect(jsonPath("$.info.description").value(org.hamcrest.Matchers.containsString("COMMON_001")))
     }

@@ -55,6 +55,19 @@ class OpenApiConfig {
     }
 
     @Bean
+    fun jsonContentCustomizer() = OpenApiCustomizer { openApi ->
+        openApi.paths?.values
+            ?.flatMap { it.readOperations() }
+            ?.mapNotNull { it.responses }
+            ?.flatMap { it.values }
+            ?.forEach { response ->
+                response.content?.remove(ANY_MEDIA_TYPE)?.let { mediaType ->
+                    response.content.addMediaType(APPLICATION_JSON, mediaType)
+                }
+            }
+    }
+
+    @Bean
     fun errorResponseCustomizer() = OperationCustomizer { operation, _ ->
         ERROR_RESPONSES.forEach { (status, description) ->
             operation.responses.addApiResponse(
@@ -82,6 +95,7 @@ class OpenApiConfig {
 
         private const val BEARER_SCHEME = "bearerAuth"
         private const val APPLICATION_JSON = "application/json"
+        private const val ANY_MEDIA_TYPE = "*/*"
 
         private val ERROR_RESPONSES = listOf(
             "400" to "요청이 올바르지 않다",
