@@ -42,6 +42,7 @@ struct ActivityRow: View {
                 deleteButton(onDelete)
             }
         }
+        .contentShape(.rect)
     }
 
     private func deleteButton(_ action: @escaping () -> Void) -> some View {

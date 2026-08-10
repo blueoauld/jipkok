@@ -16,6 +16,7 @@ struct MemberRow: View {
                 commentLine
             }
         }
+        .contentShape(.rect)
     }
     
     private var nameLine: some View {
