@@ -11,6 +11,8 @@ struct SignupView: View {
     
     @State private var viewModel: SignupViewModel
 
+    @State private var webPage: WebPage?
+
     @FocusState private var focusedField: Field?
 
     init(session: AuthSession) {
@@ -21,6 +23,10 @@ struct SignupView: View {
         content
             .navigationTitle("회원가입")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $webPage) { page in
+                SafariView(url: page.url)
+                    .ignoresSafeArea()
+            }
             .alert("알림", isPresented: $viewModel.isShowingMessage) {
                 Button("확인", role: .cancel) {}
             } message: {
@@ -146,9 +152,9 @@ struct SignupView: View {
     
     private var legalLinks: some View {
         HStack(alignment: .center) {
-            Button("개인정보 처리방침") {}
+            Button("개인정보 처리방침") { webPage = LegalPage.privacy }
             Text("|")
-            Button("서비스 이용약관") {}
+            Button("서비스 이용약관") { webPage = LegalPage.terms }
         }
         .font(.footnote)
         .buttonStyle(.plain)

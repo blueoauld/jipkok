@@ -21,6 +21,7 @@ struct SettingMenuItem: Identifiable {
     let kind: Kind
     var destination: SettingRoute?
     var action: Action?
+    var webPage: WebPage?
     
     var id: String { label }
 }
@@ -56,8 +57,8 @@ enum SettingMenu {
         SettingMenuSection(id: "support", items: [
             SettingMenuItem(label: "문의하기", systemImage: "questionmark.circle.fill", color: .blue, kind: .action),
             SettingMenuItem(label: "건의하기", systemImage: "lightbulb.fill", color: .orange, kind: .action),
-            SettingMenuItem(label: "서비스 이용약관", systemImage: "doc.text.fill", color: .gray, kind: .external),
-            SettingMenuItem(label: "개인정보 처리방침", systemImage: "checkmark.shield.fill", color: .green, kind: .external)
+            SettingMenuItem(label: "서비스 이용약관", systemImage: "doc.text.fill", color: .gray, kind: .external, webPage: LegalPage.terms),
+            SettingMenuItem(label: "개인정보 처리방침", systemImage: "checkmark.shield.fill", color: .green, kind: .external, webPage: LegalPage.privacy)
         ])
     ]
 }

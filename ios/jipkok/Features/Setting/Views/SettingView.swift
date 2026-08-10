@@ -7,6 +7,7 @@ private let iconCornerRadius: CGFloat = 8
 struct SettingView: View {
 
     @State private var router = SettingRouter()
+    @State private var webPage: WebPage?
     @State private var viewModel: SettingViewModel
 
     init(session: AuthSession) {
@@ -56,6 +57,10 @@ struct SettingView: View {
             }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
+        .sheet(item: $webPage) { page in
+            SafariView(url: page.url)
+                .ignoresSafeArea()
+        }
         .loadingOverlay(viewModel.isProcessing)
         .task { await viewModel.prepareAds() }
     }
@@ -84,6 +89,12 @@ struct SettingView: View {
     }
 
     private func perform(_ item: SettingMenuItem) {
+        if let webPage = item.webPage {
+            self.webPage = webPage
+
+            return
+        }
+
         guard let action = item.action else { return }
 
         Task { await viewModel.perform(action) }
