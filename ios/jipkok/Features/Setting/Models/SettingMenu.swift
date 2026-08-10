@@ -1,19 +1,27 @@
 import SwiftUI
 
 struct SettingMenuItem: Identifiable {
-
+    
     enum Kind {
         case link
         case external
         case action
     }
-
+    
+    enum Action {
+        case attendanceReward
+        case adReward
+        case contact
+        case suggest
+    }
+    
     let label: String
     let systemImage: String
     let color: Color
     let kind: Kind
     var destination: SettingRoute?
-
+    var action: Action?
+    
     var id: String { label }
 }
 
@@ -23,7 +31,7 @@ struct SettingMenuSection: Identifiable {
 }
 
 enum SettingMenu {
-
+    
     static let sections: [SettingMenuSection] = [
         SettingMenuSection(id: "profile", items: [
             SettingMenuItem(label: "내 프로필", systemImage: "person.fill", color: .blue, kind: .link)
@@ -42,7 +50,7 @@ enum SettingMenu {
         ]),
         SettingMenuSection(id: "point", items: [
             SettingMenuItem(label: "포인트 내역", systemImage: "wonsign.circle.fill", color: .purple, kind: .link, destination: .pointHistory),
-            SettingMenuItem(label: "출석 보상", systemImage: "calendar.circle.fill", color: .mint, kind: .action),
+            SettingMenuItem(label: "출석 보상", systemImage: "calendar.circle.fill", color: .mint, kind: .action, action: .attendanceReward),
             SettingMenuItem(label: "광고 보상", systemImage: "play.rectangle.fill", color: .indigo, kind: .action)
         ]),
         SettingMenuSection(id: "support", items: [
