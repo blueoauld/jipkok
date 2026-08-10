@@ -2,7 +2,6 @@ import Kingfisher
 import PhotosUI
 import SwiftUI
 
-private let bioMaxLength = 1000
 private let bioLineCount = 7
 
 struct ProfileEditView: View {
@@ -104,7 +103,7 @@ struct ProfileEditView: View {
                 .contentShape(.rect)
                 .onTapGesture { focusedField = .bio }
             
-            Text("\(String(viewModel.bio.count)) / \(String(bioMaxLength))")
+            Text("\(String(viewModel.bio.count)) / \(String(Bio.maxLength))")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

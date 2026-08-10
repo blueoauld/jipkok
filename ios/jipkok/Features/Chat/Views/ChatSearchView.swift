@@ -1,17 +1,15 @@
 import SwiftUI
 
-private let nicknameMaxLength = 10
-
 struct ChatSearchView: View {
-
+    
     @State private var keyword = ""
-
+    
     private var results: [ChatRoom] {
         guard !keyword.isEmpty else { return [] }
-
+        
         return ChatRoom.samples.filter { $0.nickname.contains(keyword) }
     }
-
+    
     var body: some View {
         content
             .navigationTitle("채팅 검색")
@@ -24,10 +22,10 @@ struct ChatSearchView: View {
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .onChange(of: keyword) { _, newValue in
-                keyword = String(newValue.prefix(nicknameMaxLength))
+                keyword = String(newValue.prefix(Nickname.maxLength))
             }
     }
-
+    
     @ViewBuilder
     private var content: some View {
         if keyword.isEmpty {
@@ -38,7 +36,7 @@ struct ChatSearchView: View {
             roomList
         }
     }
-
+    
     private var roomList: some View {
         List(results) { room in
             ChatRow(room: room)

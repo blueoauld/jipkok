@@ -1,8 +1,6 @@
 import Observation
 
-private let nicknameMaxLength = 10
 private let birthYearLength = 4
-private let bioMaxLength = 1000
 
 @Observable
 @MainActor
@@ -16,7 +14,13 @@ final class SetupViewModel {
     private(set) var isSubmitting = false
 
     var canSubmit: Bool {
-        !nickname.isEmpty && birthYear.count == birthYearLength && !isSubmitting
+        (Nickname.minLength...Nickname.maxLength).contains(trimmedNickname.count)
+        && birthYear.count == birthYearLength
+        && !isSubmitting
+    }
+
+    private var trimmedNickname: String {
+        Nickname.trimmed(nickname)
     }
 
     var isShowingError: Bool {
@@ -33,7 +37,7 @@ final class SetupViewModel {
     }
 
     func sanitizeNickname() {
-        nickname = String(nickname.prefix(nicknameMaxLength))
+        nickname = Nickname.sanitized(nickname)
     }
 
     func sanitizeBirthYear() {
@@ -41,7 +45,7 @@ final class SetupViewModel {
     }
 
     func sanitizeBio() {
-        bio = String(bio.prefix(bioMaxLength))
+        bio = Bio.sanitized(bio)
     }
 
     func submit() async {
@@ -56,7 +60,7 @@ final class SetupViewModel {
                 .init(
                     body: .json(
                         .init(
-                            nickname: nickname,
+                            nickname: trimmedNickname,
                             birthYear: year,
                             bio: bio.isEmpty ? nil : bio
                         )
@@ -66,7 +70,26 @@ final class SetupViewModel {
 
             session.completeSetup()
         } catch {
+            guard !error.isCancellation else { return }
+
             errorMessage = APIError.from(error).message
         }
+    }
+}
+
+extension SetupViewModel {
+
+    static func preview(
+        nickname: String = "",
+        birthYear: String = "",
+        bio: String = "",
+        isSubmitting: Bool = false
+    ) -> SetupViewModel {
+        let viewModel = SetupViewModel(session: AuthSession())
+        viewModel.nickname = nickname
+        viewModel.birthYear = birthYear
+        viewModel.bio = bio
+        viewModel.isSubmitting = isSubmitting
+        return viewModel
     }
 }

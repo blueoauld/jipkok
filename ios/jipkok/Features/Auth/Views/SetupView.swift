@@ -1,6 +1,5 @@
 import SwiftUI
 
-private let bioMaxLength = 1000
 private let bioLineCount = 7
 
 struct SetupView: View {
@@ -17,6 +16,10 @@ struct SetupView: View {
 
     init(session: AuthSession) {
         _viewModel = State(wrappedValue: SetupViewModel(session: session))
+    }
+
+    fileprivate init(viewModel: SetupViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
     }
 
     var body: some View {
@@ -42,7 +45,7 @@ struct SetupView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollBounceBehavior(.basedOnSize)
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             submitButton
                 .padding()
         }
@@ -82,7 +85,7 @@ struct SetupView: View {
                 .contentShape(.rect)
                 .onTapGesture { focusedField = .bio }
 
-            Text("\(String(viewModel.bio.count)) / \(String(bioMaxLength))")
+            Text("\(String(viewModel.bio.count)) / \(String(Bio.maxLength))")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -92,7 +95,6 @@ struct SetupView: View {
         Button(action: submit) {
             if viewModel.isSubmitting {
                 ProgressView()
-                    .tint(.primary)
             } else {
                 Text("들어가기")
             }
@@ -108,16 +110,33 @@ struct SetupView: View {
     }
 }
 
-#Preview("라이트") {
+#Preview("기본") {
     NavigationStack {
         SetupView(session: AuthSession())
     }
-    .preferredColorScheme(.light)
 }
 
-#Preview("다크") {
+#Preview("입력 완료") {
     NavigationStack {
-        SetupView(session: AuthSession())
+        SetupView(
+            viewModel: .preview(
+                nickname: "철수",
+                birthYear: "1998",
+                bio: "안녕하세요."
+            )
+        )
     }
-    .preferredColorScheme(.dark)
+}
+
+#Preview("제출 중") {
+    NavigationStack {
+        SetupView(
+            viewModel: .preview(
+                nickname: "철수",
+                birthYear: "1998",
+                bio: "안녕하세요.",
+                isSubmitting: true
+            )
+        )
+    }
 }

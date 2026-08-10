@@ -1,9 +1,7 @@
 import Observation
 import UIKit
 
-private let nicknameMaxLength = 10
 private let birthYearLength = 4
-private let bioMaxLength = 1000
 
 let profilePhotoMaxCount = 6
 
@@ -124,7 +122,7 @@ final class ProfileEditViewModel {
     }
     
     func sanitizeNickname() {
-        nickname = String(nickname.prefix(nicknameMaxLength))
+        nickname = Nickname.sanitized(nickname)
     }
     
     func sanitizeBirthYear() {
@@ -132,7 +130,7 @@ final class ProfileEditViewModel {
     }
     
     func sanitizeBio() {
-        bio = String(bio.prefix(bioMaxLength))
+        bio = Bio.sanitized(bio)
     }
     
     func loadIfNeeded() async {
