@@ -5,12 +5,14 @@ import Observation
 final class MemberDetailViewModel {
 
     var message: String?
+    var isConfirmingSecretPhoto = false
 
     private(set) var member: MemberDetail?
     private(set) var isLoading = false
 
     private var isTogglingLike = false
     private var isTogglingFavorite = false
+    private(set) var isProcessing = false
 
     var isShowingMessage: Bool {
         get { message != nil }
@@ -55,6 +57,25 @@ final class MemberDetailViewModel {
         } catch {
             member?.isLiked = previous.isLiked
             member?.receivedLikeCount = previous.receivedLikeCount
+            message = APIError.from(error).message
+        }
+    }
+
+    func toggleSecretPhoto() async {
+        guard !isProcessing, let previous = member?.isSecretPhotoGrantedByMe else { return }
+
+        let isGranted = !previous
+
+        isProcessing = true
+
+        defer { isProcessing = false }
+
+        do {
+            try await repository.setSecretPhotoGranted(isGranted, id: id)
+
+            member?.isSecretPhotoGrantedByMe = isGranted
+            message = isGranted ? "비밀 사진을 공개하셨습니다." : "비밀 사진을 비공개하셨습니다."
+        } catch {
             message = APIError.from(error).message
         }
     }

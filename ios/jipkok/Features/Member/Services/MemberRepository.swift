@@ -63,6 +63,14 @@ struct MemberRepository {
         }
     }
     
+    func setSecretPhotoGranted(_ isGranted: Bool, id: Int) async throws {
+        if isGranted {
+            _ = try await client.grantSecretPhoto(.init(path: .init(memberId: Int64(id))))
+        } else {
+            _ = try await client.revokeSecretPhoto(.init(path: .init(memberId: Int64(id))))
+        }
+    }
+    
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }

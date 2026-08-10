@@ -1,6 +1,7 @@
 import Foundation
 
 struct MemberDetail: Identifiable, Hashable {
+
     let id: Int
     let nickname: String
     let gender: Member.Gender
@@ -14,7 +15,7 @@ struct MemberDetail: Identifiable, Hashable {
     var isFavorited: Bool
     let isNoteReceiveEnabled: Bool
     let isSecretPhotoGrantedToMe: Bool
-    let isSecretPhotoGrantedByMe: Bool
+    var isSecretPhotoGrantedByMe: Bool
     let isBlocked: Bool
     let secretPhotoCount: Int
     let publicPhotoURLs: [URL]

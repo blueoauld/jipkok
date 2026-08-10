@@ -5,14 +5,14 @@ private let actionIconSize: CGFloat = 26
 private let badgeSize: CGFloat = 18
 
 struct MemberDetailView: View {
-    
+
     private enum Action: CaseIterable {
         case like
         case favorite
         case note
         case secretPhoto
         case block
-        
+
         var systemImage: String {
             switch self {
             case .like: "heart.fill"
@@ -22,7 +22,7 @@ struct MemberDetailView: View {
             case .block: "nosign"
             }
         }
-        
+
         var label: String {
             switch self {
             case .like: "좋아요"
@@ -32,7 +32,7 @@ struct MemberDetailView: View {
             case .block: "차단"
             }
         }
-        
+
         var filledColor: Color {
             switch self {
             case .like: .red
@@ -43,13 +43,13 @@ struct MemberDetailView: View {
             }
         }
     }
-    
+
     @State private var viewModel: MemberDetailViewModel
-    
+
     init(id: Int) {
         _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
     }
-    
+
     var body: some View {
         content
             .navigationTitle("프로필")
@@ -64,9 +64,19 @@ struct MemberDetailView: View {
             } message: {
                 Text(viewModel.message ?? "")
             }
+            .alert("알림", isPresented: $viewModel.isConfirmingSecretPhoto) {
+                Button(isSecretPhotoGranted ? "비공개" : "공개") {
+                    Task { await viewModel.toggleSecretPhoto() }
+                }
+
+                Button("닫기", role: .cancel) {}
+            } message: {
+                Text(isSecretPhotoGranted ? "비밀 사진을 비공개하시겠습니까?" : "비밀 사진을 공개하시겠습니까?")
+            }
+            .loadingOverlay(viewModel.isProcessing)
             .task { await viewModel.loadIfNeeded() }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         if let member = viewModel.member {
@@ -76,11 +86,11 @@ struct MemberDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-    
+
     private func profile(_ member: MemberDetail) -> some View {
         ScrollView {
             photoArea
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 summary(member)
                 section("코멘트", body: member.comment, placeholder: "코멘트가 없습니다.")
@@ -93,21 +103,21 @@ struct MemberDetailView: View {
             actionBar(member)
         }
     }
-    
+
     private var photoArea: some View {
         Color(.secondarySystemBackground)
             .aspectRatio(1, contentMode: .fit)
     }
-    
+
     private func summary(_ member: MemberDetail) -> some View {
         VStack {
             HStack {
                 Text(member.nickname)
                     .font(.title3.bold())
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 if let locatedAt = member.locatedAt {
                     Text(relativeTime(from: locatedAt))
                         .font(.caption)
@@ -115,13 +125,13 @@ struct MemberDetailView: View {
                         .layoutPriority(1)
                 }
             }
-            
+
             HStack {
                 Text("\(member.gender.label) · \(member.age)살 · ♥ \(member.receivedLikeCount.formatted())")
                     .font(.subheadline)
-                
+
                 Spacer()
-                
+
                 if let distance = member.distanceInMeters {
                     Text(formatDistance(distance))
                         .font(.caption)
@@ -131,13 +141,13 @@ struct MemberDetailView: View {
             .foregroundStyle(.secondary)
         }
     }
-    
+
     private func section(_ title: String, body: String?, placeholder: String) -> some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
-            
+
             Text(body ?? placeholder)
                 .font(.body)
                 .foregroundStyle(body == nil ? .secondary : .primary)
@@ -146,7 +156,7 @@ struct MemberDetailView: View {
                 .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: fieldCornerRadius))
         }
     }
-    
+
     private func actionBar(_ member: MemberDetail) -> some View {
         HStack {
             ForEach(Action.allCases, id: \.self) { action in
@@ -157,7 +167,7 @@ struct MemberDetailView: View {
         .glassEffect(.clear, in: .capsule)
         .padding()
     }
-    
+
     private func actionButton(_ action: Action, member: MemberDetail) -> some View {
         Button {
             perform(action)
@@ -176,7 +186,7 @@ struct MemberDetailView: View {
         .disabled(isDisabled(action, member: member))
         .accessibilityLabel(action.label)
     }
-    
+
     private func countBadge(_ member: MemberDetail) -> some View {
         Text(member.secretPhotoCount.formatted())
             .font(.caption2.weight(.bold))
@@ -185,18 +195,26 @@ struct MemberDetailView: View {
             .background(member.secretPhotoCount > 0 ? .red : .gray, in: .circle)
             .offset(x: badgeSize / 4, y: -badgeSize / 3)
     }
-    
+
     private var moreMenu: some View {
         Menu {
-            Button("비밀 사진 공개") {}
-            
+            Button(secretPhotoLabel) { viewModel.isConfirmingSecretPhoto = true }
+
             Button("신고", role: .destructive) {}
         } label: {
             Image(systemName: "ellipsis")
         }
         .accessibilityLabel("더 보기")
     }
-    
+
+    private var isSecretPhotoGranted: Bool {
+        viewModel.member?.isSecretPhotoGrantedByMe ?? false
+    }
+
+    private var secretPhotoLabel: String {
+        isSecretPhotoGranted ? "비밀 사진 비공개" : "비밀 사진 공개"
+    }
+
     private func perform(_ action: Action) {
         switch action {
         case .like: Task { await viewModel.toggleLike() }
@@ -204,7 +222,7 @@ struct MemberDetailView: View {
         case .note, .secretPhoto, .block: break
         }
     }
-    
+
     private func isFilled(_ action: Action, member: MemberDetail) -> Bool {
         switch action {
         case .like: member.isLiked
@@ -214,7 +232,7 @@ struct MemberDetailView: View {
         case .block: member.isBlocked
         }
     }
-    
+
     private func isDisabled(_ action: Action, member: MemberDetail) -> Bool {
         action == .note && !member.isNoteReceiveEnabled
     }
@@ -223,7 +241,7 @@ struct MemberDetailView: View {
         if isDisabled(action, member: member) {
             return Color(.tertiaryLabel)
         }
-        
+
         return isFilled(action, member: member) ? action.filledColor : Color(.secondaryLabel)
     }
 }
