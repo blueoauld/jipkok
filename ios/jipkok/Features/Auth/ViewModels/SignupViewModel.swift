@@ -1,6 +1,5 @@
 import Observation
 
-private let phoneNumberLength = 11
 private let verificationCodeLength = 6
 private let passwordMinLength = 8
 private let passwordMaxLength = 30
@@ -39,11 +38,11 @@ final class SignupViewModel {
     private(set) var isSubmitting = false
 
     var canSendCode: Bool {
-        phoneNumber.count == phoneNumberLength && !isSendingCode
+        phoneNumber.count == PhoneNumber.length && !isSendingCode
     }
 
     var canSubmit: Bool {
-        phoneNumber.count == phoneNumberLength
+        phoneNumber.count == PhoneNumber.length
         && verificationCode.count == verificationCodeLength
         && (passwordMinLength...passwordMaxLength).contains(password.count)
         && !passwordConfirm.isEmpty
@@ -65,7 +64,7 @@ final class SignupViewModel {
     }
 
     func sanitizePhoneNumber() {
-        phoneNumber = String(phoneNumber.filter(\.isNumber).prefix(phoneNumberLength))
+        phoneNumber = PhoneNumber.sanitized(phoneNumber)
     }
 
     func sanitizeVerificationCode() {

@@ -1,7 +1,5 @@
 import Observation
 
-private let phoneNumberLength = 11
-
 @Observable
 @MainActor
 final class LoginViewModel {
@@ -13,7 +11,7 @@ final class LoginViewModel {
     private(set) var isSubmitting = false
 
     var canSubmit: Bool {
-        phoneNumber.count == phoneNumberLength && !password.isEmpty && !isSubmitting
+        phoneNumber.count == PhoneNumber.length && !password.isEmpty && !isSubmitting
     }
 
     var isShowingError: Bool {
@@ -30,7 +28,7 @@ final class LoginViewModel {
     }
 
     func sanitizePhoneNumber() {
-        phoneNumber = String(phoneNumber.filter(\.isNumber).prefix(phoneNumberLength))
+        phoneNumber = PhoneNumber.sanitized(phoneNumber)
     }
 
     func submit() async {
