@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct FeedPage {
     
@@ -20,7 +21,9 @@ struct FeedRepository {
                 query: .init(
                     gender: gender.feedPayload,
                     sort: sort.payload,
-                    date: date.formatted(.iso8601.year().month().day().dateSeparator(.dash)),
+                    date: date.formatted(
+                        Date.ISO8601FormatStyle(timeZone: .current).year().month().day().dateSeparator(.dash)
+                    ),
                     cursor: cursor
                 )
             )
@@ -44,6 +47,26 @@ struct FeedRepository {
     
     func updateNotification(enabled: Bool) async throws {
         _ = try await client.updateFeedNotification(.init(body: .json(.init(enabled: enabled))))
+    }
+    
+    func uploadPhoto(_ image: UIImage) async throws -> String {
+        guard let data = PhotoUpload.jpegData(from: image) else {
+            throw PhotoUpload.failed
+        }
+        
+        let issued = try await client.createFeedPhotoUploadUrl(
+            .init(body: .json(.init(contentType: PhotoUpload.contentType)))
+        ).ok.body.json
+        
+        try await PhotoUpload.put(data, to: issued.uploadUrl)
+        
+        return issued.objectKey
+    }
+    
+    func createPost(objectKey: String, caption: String?) async throws {
+        _ = try await client.createFeedPost(
+            .init(body: .json(.init(objectKey: objectKey, caption: caption)))
+        )
     }
     
     func findMyInfo() async throws -> (memberId: Int, notificationEnabled: Bool) {

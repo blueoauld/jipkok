@@ -7,6 +7,7 @@ struct FeedView: View {
     @State private var router = FeedRouter()
     @State private var viewModel = FeedViewModel()
     @State private var isPickingDate = false
+    @State private var isComposing = false
     
     init() {}
     
@@ -38,6 +39,11 @@ struct FeedView: View {
                 .sheet(isPresented: $isPickingDate) {
                     datePicker
                 }
+                .sheet(isPresented: $isComposing) {
+                    NavigationStack {
+                        FeedComposeView { viewModel.date = Date() }
+                    }
+                }
                 .safeAreaInset(edge: .top) {
                     sortPicker
                 }
@@ -53,7 +59,9 @@ struct FeedView: View {
                     }
                     
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("피드 작성", systemImage: "square.and.pencil") {}
+                        Button("피드 작성", systemImage: "square.and.pencil") {
+                            isComposing = true
+                        }
                     }
                 }
                 .alert("알림", isPresented: $viewModel.isConfirmingReport, presenting: viewModel.reportingPost) { post in
