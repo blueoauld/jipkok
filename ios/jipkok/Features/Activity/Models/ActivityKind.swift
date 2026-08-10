@@ -1,5 +1,5 @@
 enum ActivityKind: Hashable {
-
+    
     case like
     case favorite
     case secretPhoto
@@ -8,7 +8,7 @@ enum ActivityKind: Hashable {
     case receivedFavorite
     case openedSecretPhoto
     case profileView
-
+    
     var title: String {
         switch self {
         case .like: "좋아요 목록"
@@ -21,11 +21,18 @@ enum ActivityKind: Hashable {
         case .profileView: "내 프로필 조회 목록"
         }
     }
-
+    
     var isDeletable: Bool {
         switch self {
         case .like, .favorite, .secretPhoto, .block: true
         case .receivedLike, .receivedFavorite, .openedSecretPhoto, .profileView: false
+        }
+    }
+    
+    var requiresAd: Bool {
+        switch self {
+        case .like, .favorite, .secretPhoto, .block: false
+        case .receivedLike, .receivedFavorite, .openedSecretPhoto, .profileView: true
         }
     }
 }

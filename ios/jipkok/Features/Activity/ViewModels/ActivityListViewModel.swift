@@ -14,6 +14,7 @@ final class ActivityListViewModel {
     
     private var nextCursor: String?
     private var hasLoaded = false
+    private var hasShownAd = false
     
     var isShowingMessage: Bool {
         get { message != nil }
@@ -29,16 +30,35 @@ final class ActivityListViewModel {
     }
     
     private let repository: ActivityRepository
+    private let adManager: InterstitialAdManager
     
-    init(kind: ActivityKind, repository: ActivityRepository = ActivityRepository()) {
+    init(
+        kind: ActivityKind,
+        repository: ActivityRepository = ActivityRepository(),
+        adManager: InterstitialAdManager? = nil
+    ) {
         self.kind = kind
         self.repository = repository
+        self.adManager = adManager ?? InterstitialAdManager()
     }
     
     func loadIfNeeded() async {
         guard !hasLoaded, !isLoading else { return }
         
+        await showAdIfNeeded()
         await reload()
+    }
+    
+    private func showAdIfNeeded() async {
+        guard kind.requiresAd, !hasShownAd else { return }
+        
+        isLoading = true
+        
+        defer { isLoading = false }
+        
+        await adManager.show()
+        
+        hasShownAd = true
     }
     
     func reload() async {
