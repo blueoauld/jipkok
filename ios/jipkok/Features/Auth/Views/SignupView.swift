@@ -9,42 +9,23 @@ struct SignupView: View {
         case passwordConfirm
     }
     
-    private enum Gender: CaseIterable {
-        case male
-        case female
-        
-        var label: String {
-            switch self {
-            case .male: "남자"
-            case .female: "여자"
-            }
-        }
-    }
-    
-    @State private var phoneNumber = ""
-    @State private var verificationCode = ""
-    @State private var password = ""
-    @State private var passwordConfirm = ""
-    @State private var gender: Gender?
-    
+    @State private var viewModel: SignupViewModel
+
     @FocusState private var focusedField: Field?
-    
-    private var canSendCode: Bool {
-        phoneNumber.count == 11
-    }
-    
-    private var canSubmit: Bool {
-        !phoneNumber.isEmpty
-        && !verificationCode.isEmpty
-        && !password.isEmpty
-        && !passwordConfirm.isEmpty
-        && gender != nil
+
+    init(session: AuthSession) {
+        _viewModel = State(wrappedValue: SignupViewModel(session: session))
     }
     
     var body: some View {
         content
             .navigationTitle("회원가입")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("알림", isPresented: $viewModel.isShowingMessage) {
+                Button("확인", role: .cancel) {}
+            } message: {
+                Text(viewModel.message ?? "")
+            }
     }
     
     private var content: some View {
@@ -73,39 +54,39 @@ struct SignupView: View {
     }
     
     private var phoneNumberField: some View {
-        TextField("휴대폰 번호", text: $phoneNumber)
+        TextField("휴대폰 번호", text: $viewModel.phoneNumber)
             .keyboardType(.numberPad)
             .textContentType(.telephoneNumber)
             .focused($focusedField, equals: .phoneNumber)
-            .onChange(of: phoneNumber) { _, newValue in
-                phoneNumber = String(newValue.filter(\.isNumber).prefix(11))
-            }
+            .onChange(of: viewModel.phoneNumber) { _, _ in viewModel.sanitizePhoneNumber() }
             .inputStyle(isFocused: focusedField == .phoneNumber)
             .contentShape(.rect)
             .onTapGesture { focusedField = .phoneNumber }
     }
     
     private var sendCodeButton: some View {
-        Button("전송", action: sendCode)
-            .buttonStyle(.action)
-            .disabled(!canSendCode)
+        Button("전송") {
+            focusedField = nil
+
+            Task { await viewModel.sendCode() }
+        }
+        .buttonStyle(.action)
+        .disabled(!viewModel.canSendCode)
     }
     
     private var verificationCodeField: some View {
-        TextField("인증번호", text: $verificationCode)
+        TextField("인증번호", text: $viewModel.verificationCode)
             .keyboardType(.numberPad)
             .textContentType(.oneTimeCode)
             .focused($focusedField, equals: .verificationCode)
-            .onChange(of: verificationCode) { _, newValue in
-                verificationCode = String(newValue.filter(\.isNumber).prefix(6))
-            }
+            .onChange(of: viewModel.verificationCode) { _, _ in viewModel.sanitizeVerificationCode() }
             .inputStyle(isFocused: focusedField == .verificationCode)
             .contentShape(.rect)
             .onTapGesture { focusedField = .verificationCode }
     }
     
     private var passwordField: some View {
-        SecureField("비밀번호", text: $password)
+        SecureField("비밀번호 (8자 이상)", text: $viewModel.password)
             .textContentType(.newPassword)
             .textInputAutocapitalization(.never)
             .submitLabel(.next)
@@ -117,7 +98,7 @@ struct SignupView: View {
     }
     
     private var passwordConfirmField: some View {
-        SecureField("비밀번호 확인", text: $passwordConfirm)
+        SecureField("비밀번호 확인", text: $viewModel.passwordConfirm)
             .textContentType(.newPassword)
             .textInputAutocapitalization(.never)
             .submitLabel(.done)
@@ -130,14 +111,14 @@ struct SignupView: View {
     
     private var genderPicker: some View {
         HStack {
-            ForEach(Gender.allCases, id: \.self) { item in
+            ForEach(SignupViewModel.Gender.allCases, id: \.self) { item in
                 Button {
-                    gender = item
+                    viewModel.gender = item
                 } label: {
                     Text(item.label)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.action(isSelected: gender == item))
+                .buttonStyle(.action(isSelected: viewModel.gender == item))
             }
         }
     }
@@ -151,9 +132,16 @@ struct SignupView: View {
     }
     
     private var submitButton: some View {
-        Button("회원가입", action: submit)
-            .buttonStyle(.submit)
-            .disabled(!canSubmit)
+        Button(action: submit) {
+            if viewModel.isSubmitting {
+                ProgressView()
+                    .tint(.primary)
+            } else {
+                Text("회원가입")
+            }
+        }
+        .buttonStyle(.submit)
+        .disabled(!viewModel.canSubmit)
     }
     
     private var legalLinks: some View {
@@ -167,25 +155,15 @@ struct SignupView: View {
         .foregroundStyle(.secondary)
     }
     
-    private func sendCode() {
-        focusedField = nil
-    }
-    
     private func submit() {
         focusedField = nil
+
+        Task { await viewModel.submit() }
     }
 }
 
-#Preview("라이트") {
+#Preview {
     NavigationStack {
-        SignupView()
+        SignupView(session: AuthSession())
     }
-    .preferredColorScheme(.light)
-}
-
-#Preview("다크") {
-    NavigationStack {
-        SignupView()
-    }
-    .preferredColorScheme(.dark)
 }

@@ -11,16 +11,24 @@ struct LoginView: View {
 
     @FocusState private var focusedField: Field?
 
+    private let session: AuthSession
+
     init(session: AuthSession) {
+        self.session = session
         _viewModel = State(wrappedValue: LoginViewModel(session: session))
     }
 
     var body: some View {
         NavigationStack {
             content
+                .navigationDestination(for: AuthRoute.self) { route in
+                    switch route {
+                    case .signup: SignupView(session: session)
+                    }
+                }
                 .navigationTitle("로그인")
                 .navigationBarTitleDisplayMode(.inline)
-                .alert("에러", isPresented: $viewModel.isShowingError) {
+                .alert("알림", isPresented: $viewModel.isShowingError) {
                     Button("확인", role: .cancel) {}
                 } message: {
                     Text(viewModel.errorMessage ?? "")
@@ -73,7 +81,7 @@ struct LoginView: View {
     }
 
     private var signupLink: some View {
-        Button("회원가입") {}
+        NavigationLink("회원가입", value: AuthRoute.signup)
             .font(.subheadline)
             .buttonStyle(.plain)
             .foregroundStyle(Color.accentColor)

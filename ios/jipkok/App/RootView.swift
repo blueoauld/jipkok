@@ -18,6 +18,10 @@ struct RootView: View {
             RootTabView(session: session)
         case .unauthenticated:
             LoginView(session: session)
+        case .needsSetup:
+            NavigationStack {
+                SetupView()
+            }
         }
     }
 }
