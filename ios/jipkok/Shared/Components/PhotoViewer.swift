@@ -4,18 +4,11 @@ import SwiftUI
 struct PhotoViewer: View {
 
     let urls: [URL]
-    var startIndex = 0
+    @Binding var index: Int
 
     @Environment(\.dismiss) private var dismiss
 
-    @State private var index: Int
     @State private var isShowingControls = true
-
-    init(urls: [URL], startIndex: Int = 0) {
-        self.urls = urls
-        self.startIndex = startIndex
-        _index = State(wrappedValue: startIndex)
-    }
 
     var body: some View {
         ZStack {
@@ -24,7 +17,7 @@ struct PhotoViewer: View {
 
             PhotoPager(
                 urls: urls,
-                startIndex: startIndex,
+                startIndex: index,
                 currentIndex: $index,
                 onTap: { withAnimation(.easeOut(duration: 0.15)) { isShowingControls.toggle() } },
                 onDismiss: { dismiss() }
@@ -78,7 +71,7 @@ private struct PhotoPager: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UICollectionView {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: PagingCollectionLayout())
+        let collectionView = PagerCollectionView(frame: .zero, collectionViewLayout: PagingCollectionLayout())
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.contentInsetAdjustmentBehavior = .never
@@ -92,26 +85,14 @@ private struct PhotoPager: UIViewRepresentable {
         collectionView.addGestureRecognizer(pan)
 
         if startIndex > 0 {
-            context.coordinator.pendingStartIndex = startIndex
+            collectionView.pendingStartIndex = startIndex
+            context.coordinator.reportedIndex = startIndex
         }
 
         return collectionView
     }
 
-    func updateUIView(_ collectionView: UICollectionView, context: Context) {
-        let coordinator = context.coordinator
-
-        guard let startIndex = coordinator.pendingStartIndex, collectionView.bounds.width > 0 else { return }
-
-        coordinator.pendingStartIndex = nil
-        coordinator.reportedIndex = startIndex
-        collectionView.layoutIfNeeded()
-        collectionView.scrollToItem(
-            at: IndexPath(item: startIndex, section: 0),
-            at: .centeredHorizontally,
-            animated: false
-        )
-    }
+    func updateUIView(_ collectionView: UICollectionView, context: Context) {}
 
     final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate {
 
@@ -123,7 +104,6 @@ private struct PhotoPager: UIViewRepresentable {
         let onDismiss: () -> Void
 
         var reportedIndex = 0
-        var pendingStartIndex: Int?
 
         init(urls: [URL], currentIndex: Binding<Int>, onTap: @escaping () -> Void, onDismiss: @escaping () -> Void) {
             self.urls = urls
@@ -197,6 +177,20 @@ private struct PhotoPager: UIViewRepresentable {
     }
 }
 
+
+private final class PagerCollectionView: UICollectionView {
+
+    var pendingStartIndex: Int?
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard let index = pendingStartIndex, bounds.width > 0 else { return }
+
+        pendingStartIndex = nil
+        setContentOffset(CGPoint(x: CGFloat(index) * bounds.width, y: 0), animated: false)
+    }
+}
 
 private final class ZoomablePhotoCell: UICollectionViewCell, UIScrollViewDelegate {
 
@@ -304,21 +298,28 @@ private final class ZoomablePhotoCell: UICollectionViewCell, UIScrollViewDelegat
 }
 
 #Preview("사진") {
-    PhotoViewer(urls: [
-        URL(string: "https://picsum.photos/id/237/1200/1600")!,
-        URL(string: "https://picsum.photos/id/1015/1600/1200")!,
-        URL(string: "https://picsum.photos/id/1025/1200/1200")!,
-    ])
+    @Previewable @State var index = 0
+
+    PhotoViewer(
+        urls: [
+            URL(string: "https://picsum.photos/id/237/1200/1600")!,
+            URL(string: "https://picsum.photos/id/1015/1600/1200")!,
+            URL(string: "https://picsum.photos/id/1025/1200/1200")!,
+        ],
+        index: $index
+    )
 }
 
 #Preview("로딩 중") {
-    PhotoViewer(urls: [
-        URL(string: "https://10.255.255.1/loading.jpg")!,
-    ])
+    PhotoViewer(
+        urls: [URL(string: "https://10.255.255.1/loading.jpg")!],
+        index: .constant(0)
+    )
 }
 
 #Preview("실패") {
-    PhotoViewer(urls: [
-        URL(string: "https://jipkok.invalid/failure.jpg")!,
-    ])
+    PhotoViewer(
+        urls: [URL(string: "https://jipkok.invalid/failure.jpg")!],
+        index: .constant(0)
+    )
 }

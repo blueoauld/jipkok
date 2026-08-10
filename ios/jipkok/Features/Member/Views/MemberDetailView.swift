@@ -46,15 +46,10 @@ struct MemberDetailView: View {
         }
     }
     
-    private struct ViewerStart: Identifiable {
-        let index: Int
-        
-        var id: Int { index }
-    }
-    
     @State private var viewModel: MemberDetailViewModel
     @State private var photoIndex = 0
-    @State private var viewerStart: ViewerStart?
+    @State private var isViewingPhotos = false
+    @State private var secretPhotoIndex = 0
     
     init(id: Int) {
         _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
@@ -97,10 +92,10 @@ struct MemberDetailView: View {
                 )
             }
             .fullScreenCover(isPresented: $viewModel.isViewingSecretPhotos) {
-                PhotoViewer(urls: viewModel.secretPhotoURLs)
+                PhotoViewer(urls: viewModel.secretPhotoURLs, index: $secretPhotoIndex)
             }
-            .fullScreenCover(item: $viewerStart) { start in
-                PhotoViewer(urls: viewModel.member?.publicPhotoURLs ?? [], startIndex: start.index)
+            .fullScreenCover(isPresented: $isViewingPhotos) {
+                PhotoViewer(urls: viewModel.member?.publicPhotoURLs ?? [], index: $photoIndex)
             }
             .loadingOverlay(viewModel.isProcessing)
             .task { await viewModel.loadIfNeeded() }
@@ -140,7 +135,8 @@ struct MemberDetailView: View {
                 .aspectRatio(1, contentMode: .fit)
         } else {
             PhotoCarousel(urls: member.publicPhotoURLs, currentIndex: $photoIndex) { index in
-                viewerStart = ViewerStart(index: index)
+                photoIndex = index
+                isViewingPhotos = true
             }
             .aspectRatio(1, contentMode: .fit)
             .overlay(alignment: .bottom) {
@@ -275,7 +271,10 @@ struct MemberDetailView: View {
         switch action {
         case .like: Task { await viewModel.toggleLike() }
         case .favorite: Task { await viewModel.toggleFavorite() }
-        case .secretPhoto: Task { await viewModel.openSecretPhotos() }
+        case .secretPhoto:
+            secretPhotoIndex = 0
+
+            Task { await viewModel.openSecretPhotos() }
         case .block: viewModel.isConfirmingBlock = true
         case .note: break
         }

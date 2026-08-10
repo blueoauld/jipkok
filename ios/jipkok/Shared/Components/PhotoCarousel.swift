@@ -27,10 +27,22 @@ struct PhotoCarousel: UIViewRepresentable {
     func updateUIView(_ collectionView: UICollectionView, context: Context) {
         let coordinator = context.coordinator
 
-        guard coordinator.urls != urls else { return }
+        if coordinator.urls != urls {
+            coordinator.urls = urls
+            collectionView.reloadData()
+        }
 
-        coordinator.urls = urls
-        collectionView.reloadData()
+        guard coordinator.reportedIndex != currentIndex,
+              (0..<urls.count).contains(currentIndex),
+              collectionView.bounds.width > 0
+        else { return }
+
+        coordinator.reportedIndex = currentIndex
+        collectionView.scrollToItem(
+            at: IndexPath(item: currentIndex, section: 0),
+            at: .centeredHorizontally,
+            animated: false
+        )
     }
 
     final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -39,7 +51,7 @@ struct PhotoCarousel: UIViewRepresentable {
         var currentIndex: Binding<Int>
         let onTap: (Int) -> Void
 
-        private var reportedIndex = 0
+        var reportedIndex = 0
 
         init(urls: [URL], currentIndex: Binding<Int>, onTap: @escaping (Int) -> Void) {
             self.urls = urls
