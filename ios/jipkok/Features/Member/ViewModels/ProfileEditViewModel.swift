@@ -1,8 +1,6 @@
 import Observation
 import UIKit
 
-private let birthYearLength = 4
-
 let profilePhotoMaxCount = 6
 
 struct EditablePhoto: Identifiable {
@@ -39,9 +37,21 @@ final class ProfileEditViewModel {
     
     var canSubmit: Bool {
         profile != nil
-        && !nickname.isEmpty
-        && birthYear.count == birthYearLength
+        && (Nickname.minLength...Nickname.maxLength).contains(trimmedNickname.count)
+        && birthYear.count == BirthYear.length
         && !isSubmitting
+    }
+    
+    private var trimmedNickname: String {
+        Nickname.trimmed(nickname)
+    }
+    
+    var displayState: DisplayState {
+        if profile == nil {
+            return isLoading ? .loading : .empty
+        }
+        
+        return .content
     }
     
     var isShowingMessage: Bool {
@@ -90,6 +100,8 @@ final class ProfileEditViewModel {
                 case .secret: secretPhotos.append(photo)
                 }
             } catch {
+                guard !error.isCancellation else { break }
+                
                 message = APIError.from(error).message
                 
                 break
@@ -126,7 +138,7 @@ final class ProfileEditViewModel {
     }
     
     func sanitizeBirthYear() {
-        birthYear = String(birthYear.filter(\.isNumber).prefix(birthYearLength))
+        birthYear = BirthYear.sanitized(birthYear)
     }
     
     func sanitizeBio() {
@@ -149,6 +161,8 @@ final class ProfileEditViewModel {
             publicPhotos = profile.publicPhotos.map { EditablePhoto(objectKey: $0.objectKey, source: .remote($0.url)) }
             secretPhotos = profile.secretPhotos.map { EditablePhoto(objectKey: $0.objectKey, source: .remote($0.url)) }
         } catch {
+            guard !error.isCancellation else { return }
+            
             message = APIError.from(error).message
         }
     }
@@ -162,7 +176,7 @@ final class ProfileEditViewModel {
         
         do {
             try await repository.editProfile(
-                nickname: nickname,
+                nickname: trimmedNickname,
                 birthYear: year,
                 bio: bio.isEmpty ? nil : bio,
                 publicPhotoKeys: publicPhotos.map(\.objectKey),
@@ -172,7 +186,32 @@ final class ProfileEditViewModel {
             didSave = true
             message = "프로필을 수정하셨습니다."
         } catch {
+            guard !error.isCancellation else { return }
+
             message = APIError.from(error).message
         }
+    }
+}
+
+extension ProfileEditViewModel {
+
+    static func preview(
+        profile: MyProfile? = nil,
+        isLoading: Bool = false,
+        isProcessing: Bool = false
+    ) -> ProfileEditViewModel {
+        let viewModel = ProfileEditViewModel()
+        viewModel.isLoading = isLoading
+        viewModel.isProcessing = isProcessing
+
+        guard let profile else { return viewModel }
+
+        viewModel.profile = profile
+        viewModel.nickname = profile.nickname
+        viewModel.birthYear = String(profile.birthYear)
+        viewModel.bio = profile.bio ?? ""
+        viewModel.publicPhotos = profile.publicPhotos.map { EditablePhoto(objectKey: $0.objectKey, source: .remote($0.url)) }
+        viewModel.secretPhotos = profile.secretPhotos.map { EditablePhoto(objectKey: $0.objectKey, source: .remote($0.url)) }
+        return viewModel
     }
 }

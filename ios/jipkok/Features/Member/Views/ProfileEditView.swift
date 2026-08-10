@@ -21,6 +21,12 @@ struct ProfileEditView: View {
     
     @Environment(\.dismiss) private var dismiss
     
+    init() {}
+    
+    fileprivate init(viewModel: ProfileEditViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         content
             .navigationTitle("프로필 편집")
@@ -49,17 +55,26 @@ struct ProfileEditView: View {
     
     private var content: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                photoSection("공개 사진", visibility: .public)
-                photoSection("비밀 사진", visibility: .secret)
-                
-                VStack {
-                    nicknameField
-                    birthYearField
-                    bioField
+            switch viewModel.displayState {
+            case .loading:
+                ProgressView()
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .empty:
+                ContentUnavailableView("프로필을 불러오지 못했습니다.", systemImage: "person.slash")
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .content:
+                VStack(spacing: 16) {
+                    photoSection("공개 사진", visibility: .public)
+                    photoSection("비밀 사진", visibility: .secret)
+                    
+                    VStack {
+                        nicknameField
+                        birthYearField
+                        bioField
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
         .scrollDismissesKeyboard(.interactively)
         .scrollBounceBehavior(.basedOnSize)
@@ -70,7 +85,7 @@ struct ProfileEditView: View {
     }
     
     private var nicknameField: some View {
-        TextField("닉네임", text: $viewModel.nickname)
+        TextField("닉네임 (2자 ~ 10자)", text: $viewModel.nickname)
             .textContentType(.nickname)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -113,7 +128,6 @@ struct ProfileEditView: View {
         Button(action: submit) {
             if viewModel.isSubmitting {
                 ProgressView()
-                    .tint(.primary)
             } else {
                 Text("저장")
             }
@@ -255,8 +269,26 @@ private struct MoveButton: View {
     }
 }
 
-#Preview {
+#Preview("편집") {
     NavigationStack {
-        ProfileEditView()
+        ProfileEditView(viewModel: .preview(profile: .preview))
+    }
+}
+
+#Preview("업로드 중") {
+    NavigationStack {
+        ProfileEditView(viewModel: .preview(profile: .preview, isProcessing: true))
+    }
+}
+
+#Preview("로딩 중") {
+    NavigationStack {
+        ProfileEditView(viewModel: .preview(isLoading: true))
+    }
+}
+
+#Preview("불러오기 실패") {
+    NavigationStack {
+        ProfileEditView(viewModel: .preview())
     }
 }

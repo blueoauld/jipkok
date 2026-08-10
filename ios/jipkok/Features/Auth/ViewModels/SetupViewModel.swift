@@ -1,7 +1,5 @@
 import Observation
 
-private let birthYearLength = 4
-
 @Observable
 @MainActor
 final class SetupViewModel {
@@ -15,7 +13,7 @@ final class SetupViewModel {
 
     var canSubmit: Bool {
         (Nickname.minLength...Nickname.maxLength).contains(trimmedNickname.count)
-        && birthYear.count == birthYearLength
+        && birthYear.count == BirthYear.length
         && !isSubmitting
     }
 
@@ -41,7 +39,7 @@ final class SetupViewModel {
     }
 
     func sanitizeBirthYear() {
-        birthYear = String(birthYear.filter(\.isNumber).prefix(birthYearLength))
+        birthYear = BirthYear.sanitized(birthYear)
     }
 
     func sanitizeBio() {
