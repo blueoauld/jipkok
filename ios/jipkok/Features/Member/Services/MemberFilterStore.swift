@@ -5,6 +5,7 @@ struct MemberFilterStore {
     private enum Key {
         static let sort = "member.sort"
         static let gender = "member.gender"
+        static let rankingGender = "ranking.gender"
     }
 
     private let defaults: UserDefaults
@@ -21,5 +22,10 @@ struct MemberFilterStore {
     var gender: GenderFilter {
         get { defaults.string(forKey: Key.gender).flatMap(GenderFilter.init(rawValue:)) ?? .all }
         nonmutating set { defaults.set(newValue.rawValue, forKey: Key.gender) }
+    }
+
+    var rankingGender: GenderFilter {
+        get { defaults.string(forKey: Key.rankingGender).flatMap(GenderFilter.init(rawValue:)) ?? .all }
+        nonmutating set { defaults.set(newValue.rawValue, forKey: Key.rankingGender) }
     }
 }
