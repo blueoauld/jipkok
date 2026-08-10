@@ -48,6 +48,8 @@ final class LoginViewModel {
 
             try session.signin(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken)
         } catch {
+            guard !error.isCancellation else { return }
+
             errorMessage = APIError.from(error).message
         }
     }
