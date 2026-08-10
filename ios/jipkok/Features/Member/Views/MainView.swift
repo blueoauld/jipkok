@@ -14,7 +14,7 @@ struct MainView: View {
                 .navigationDestination(for: MemberRoute.self) { route in
                     switch route {
                     case .search: MemberSearchView()
-                    case .memberDetail: MemberDetailView(member: .sample)
+                    case .memberDetail(let id): MemberDetailView(id: id)
                     }
                 }
                 .navigationTitle("메인")

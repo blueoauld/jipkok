@@ -41,6 +41,12 @@ struct MemberRepository {
         return MemberPage(members: page.items.map(Member.init), nextCursor: page.nextCursor)
     }
 
+    func findDetail(id: Int) async throws -> MemberDetail {
+        let output = try await client.findDetail(.init(path: .init(targetId: Int64(id))))
+
+        return MemberDetail(try output.ok.body.json)
+    }
+
     func updateComment(_ comment: String?) async throws {
         _ = try await client.updateComment(.init(body: .json(.init(comment: comment))))
     }
@@ -78,6 +84,31 @@ private extension Member {
             locatedAt: nil,
             distanceInMeters: nil,
             isFavorited: false
+        )
+    }
+}
+
+private extension MemberDetail {
+
+    init(_ response: Components.Schemas.MemberDetailResponse) {
+        self.init(
+            id: Int(response.memberId),
+            nickname: response.nickname,
+            gender: response.gender == .male ? .male : .female,
+            age: Int(response.age),
+            receivedLikeCount: Int(response.receivedLikeCount),
+            comment: response.comment,
+            bio: response.bio,
+            locatedAt: response.locatedAt,
+            distanceInMeters: response.distance,
+            isLiked: response.likedByMe,
+            isFavorited: response.favoritedByMe,
+            isNoteReceiveEnabled: response.noteReceiveEnabled,
+            isSecretPhotoGrantedToMe: response.secretPhotoGrantedToMe,
+            isSecretPhotoGrantedByMe: response.secretPhotoGrantedByMe,
+            isBlocked: response.blockedByMe,
+            secretPhotoCount: Int(response.secretPhotoCount),
+            publicPhotoURLs: response.publicPhotoUrls.compactMap(URL.init(string:))
         )
     }
 }

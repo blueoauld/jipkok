@@ -6,8 +6,6 @@ private let badgeSize: CGFloat = 18
 
 struct MemberDetailView: View {
 
-    let member: MemberDetail
-
     private enum Action: CaseIterable {
         case like
         case favorite
@@ -46,12 +44,45 @@ struct MemberDetailView: View {
         }
     }
 
+    @State private var viewModel: MemberDetailViewModel
+
+    init(id: Int) {
+        _viewModel = State(wrappedValue: MemberDetailViewModel(id: id))
+    }
+
     var body: some View {
+        content
+            .navigationTitle("프로필")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    moreMenu
+                }
+            }
+            .alert("알림", isPresented: $viewModel.isShowingMessage) {
+                Button("확인", role: .cancel) {}
+            } message: {
+                Text(viewModel.message ?? "")
+            }
+            .task { await viewModel.loadIfNeeded() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let member = viewModel.member {
+            profile(member)
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private func profile(_ member: MemberDetail) -> some View {
         ScrollView {
             photoArea
 
             VStack(alignment: .leading, spacing: 12) {
-                summary
+                summary(member)
                 section("코멘트", body: member.comment, placeholder: "코멘트가 없습니다.")
                 section("자기소개", body: member.bio, placeholder: "자기소개가 없습니다.")
             }
@@ -59,14 +90,7 @@ struct MemberDetailView: View {
         }
         .scrollIndicators(.hidden)
         .safeAreaBar(edge: .bottom) {
-            actionBar
-        }
-        .navigationTitle("프로필")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                moreMenu
-            }
+            actionBar(member)
         }
     }
 
@@ -75,7 +99,7 @@ struct MemberDetailView: View {
             .aspectRatio(1, contentMode: .fit)
     }
 
-    private var summary: some View {
+    private func summary(_ member: MemberDetail) -> some View {
         VStack {
             HStack {
                 Text(member.nickname)
@@ -84,10 +108,12 @@ struct MemberDetailView: View {
 
                 Spacer()
 
-                Text(relativeTime(from: member.locatedAt))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .layoutPriority(1)
+                if let locatedAt = member.locatedAt {
+                    Text(relativeTime(from: locatedAt))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .layoutPriority(1)
+                }
             }
 
             HStack {
@@ -121,36 +147,36 @@ struct MemberDetailView: View {
         }
     }
 
-    private var actionBar: some View {
+    private func actionBar(_ member: MemberDetail) -> some View {
         HStack {
             ForEach(Action.allCases, id: \.self) { action in
-                actionButton(action)
+                actionButton(action, member: member)
             }
         }
         .frame(height: actionBarHeight)
-        .glassEffect(.regular, in: .capsule)
+        .glassEffect(.clear, in: .capsule)
         .padding()
     }
 
-    private func actionButton(_ action: Action) -> some View {
+    private func actionButton(_ action: Action, member: MemberDetail) -> some View {
         Button {
         } label: {
             Image(systemName: action.systemImage)
                 .font(.system(size: actionIconSize))
-                .foregroundStyle(foreground(action))
+                .foregroundStyle(foreground(action, member: member))
                 .overlay(alignment: .topTrailing) {
                     if action == .secretPhoto {
-                        countBadge
+                        countBadge(member)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .buttonStyle(.plain)
-        .disabled(isDisabled(action))
+        .disabled(isDisabled(action, member: member))
         .accessibilityLabel(action.label)
     }
 
-    private var countBadge: some View {
+    private func countBadge(_ member: MemberDetail) -> some View {
         Text(member.secretPhotoCount.formatted())
             .font(.caption2.weight(.bold))
             .foregroundStyle(.white)
@@ -162,6 +188,7 @@ struct MemberDetailView: View {
     private var moreMenu: some View {
         Menu {
             Button("비밀 사진 공개") {}
+
             Button("신고", role: .destructive) {}
         } label: {
             Image(systemName: "ellipsis")
@@ -169,26 +196,26 @@ struct MemberDetailView: View {
         .accessibilityLabel("더 보기")
     }
 
-    private func isFilled(_ action: Action) -> Bool {
+    private func isFilled(_ action: Action, member: MemberDetail) -> Bool {
         switch action {
         case .like: member.isLiked
         case .favorite: member.isFavorited
         case .note: member.isNoteReceiveEnabled
-        case .secretPhoto: member.isSecretPhotoGranted
+        case .secretPhoto: member.isSecretPhotoGrantedToMe
         case .block: member.isBlocked
         }
     }
 
-    private func isDisabled(_ action: Action) -> Bool {
+    private func isDisabled(_ action: Action, member: MemberDetail) -> Bool {
         action == .note && !member.isNoteReceiveEnabled
     }
-
-    private func foreground(_ action: Action) -> Color {
-        if isDisabled(action) {
+    
+    private func foreground(_ action: Action, member: MemberDetail) -> Color {
+        if isDisabled(action, member: member) {
             return Color(.tertiaryLabel)
         }
 
-        return isFilled(action) ? action.filledColor : Color(.secondaryLabel)
+        return isFilled(action, member: member) ? action.filledColor : Color(.secondaryLabel)
     }
 }
 
@@ -202,14 +229,8 @@ private func formatDistance(_ meters: Double) -> String {
     (meters / 1_000).formatted(.number.precision(.fractionLength(1))) + "km"
 }
 
-#Preview("내용 있음") {
+#Preview {
     NavigationStack {
-        MemberDetailView(member: .sample)
-    }
-}
-
-#Preview("내용 없음") {
-    NavigationStack {
-        MemberDetailView(member: .empty)
+        MemberDetailView(id: 1)
     }
 }
