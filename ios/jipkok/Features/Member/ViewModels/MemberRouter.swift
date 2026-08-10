@@ -2,6 +2,7 @@ import Observation
 
 enum MemberRoute: Hashable {
     case search
+    case memberDetail(id: Int)
 }
 
 @Observable

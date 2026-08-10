@@ -31,6 +31,7 @@ struct MainView: View {
                 .navigationDestination(for: MemberRoute.self) { route in
                     switch route {
                     case .search: MemberSearchView()
+                    case .memberDetail: MemberDetailView(member: .sample)
                     }
                 }
                 .navigationTitle("메인")
@@ -70,7 +71,12 @@ struct MainView: View {
         ScrollView {
             LazyVStack(spacing: rowSpacing) {
                 ForEach(Member.samples) { member in
-                    MemberRow(member: member)
+                    Button {
+                        router.push(.memberDetail(id: member.id))
+                    } label: {
+                        MemberRow(member: member)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal)
