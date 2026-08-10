@@ -9,6 +9,12 @@ struct MyProfileView: View {
     @State private var photoIndex = 0
     @State private var isViewingPhotos = false
 
+    init() {}
+
+    fileprivate init(viewModel: MyProfileViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+
     var body: some View {
         content
             .navigationTitle("내 프로필")
@@ -27,21 +33,29 @@ struct MyProfileView: View {
             .fullScreenCover(isPresented: $isViewingPhotos) {
                 PhotoViewer(urls: viewModel.profile?.allPhotoURLs ?? [], index: $photoIndex)
             }
-            .onAppear { Task { await viewModel.load() } }
+            .task { await viewModel.load() }
     }
 
-    @ViewBuilder
     private var content: some View {
-        if let profile = viewModel.profile {
-            profileContent(profile)
-        } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ScrollView {
+            switch viewModel.displayState {
+            case .loading:
+                ProgressView()
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .empty:
+                ContentUnavailableView("프로필을 불러오지 못했습니다.", systemImage: "person.slash")
+                    .containerRelativeFrame([.horizontal, .vertical])
+            case .content:
+                if let profile = viewModel.profile {
+                    profileContent(profile)
+                }
+            }
         }
+        .scrollIndicators(.hidden)
     }
 
     private func profileContent(_ profile: MyProfile) -> some View {
-        ScrollView {
+        VStack {
             photoArea(profile)
 
             VStack(alignment: .leading, spacing: 12) {
@@ -51,7 +65,6 @@ struct MyProfileView: View {
             }
             .padding()
         }
-        .scrollIndicators(.hidden)
     }
 
     @ViewBuilder
@@ -122,8 +135,26 @@ struct MyProfileView: View {
     }
 }
 
-#Preview {
+#Preview("프로필") {
     NavigationStack {
-        MyProfileView()
+        MyProfileView(viewModel: .preview(profile: .preview))
+    }
+}
+
+#Preview("작성 전") {
+    NavigationStack {
+        MyProfileView(viewModel: .preview(profile: .previewEmpty))
+    }
+}
+
+#Preview("로딩 중") {
+    NavigationStack {
+        MyProfileView(viewModel: .preview(isLoading: true))
+    }
+}
+
+#Preview("불러오기 실패") {
+    NavigationStack {
+        MyProfileView(viewModel: .preview())
     }
 }
