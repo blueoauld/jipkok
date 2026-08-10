@@ -8,7 +8,16 @@ enum APIClient {
         Client(
             serverURL: APIConfiguration.baseURL,
             transport: URLSessionTransport(),
-            middlewares: [AppHeadersMiddleware()] + middlewares + [ErrorMappingMiddleware()]
+            middlewares: [ErrorMappingMiddleware(), AppHeadersMiddleware()] + middlewares
         )
+    }
+    
+    static func authenticated(tokenStore: TokenStore = TokenStore()) -> Client {
+        make(middlewares: [
+            AuthenticationMiddleware(
+                tokenStore: tokenStore,
+                refresher: TokenRefresher(tokenStore: tokenStore)
+            )
+        ])
     }
 }
