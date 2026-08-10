@@ -190,7 +190,7 @@ struct MemberDetailView: View {
             }
         }
         .frame(height: actionBarHeight)
-        .glassEffect(.clear, in: .capsule)
+        .glassEffect(.regular, in: .capsule)
         .padding()
     }
     
