@@ -43,6 +43,7 @@ import {
 } from "@/components/ScrollToTopButton";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { RetroDialogContent } from "@/components/ui/RetroDialogContent";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
@@ -90,7 +91,6 @@ type Sort = (typeof SORTS)[number];
 const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
-const SHADOW_OFFSET = 4;
 const SMALL_SHADOW_OFFSET = 2;
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = 40;
@@ -390,45 +390,9 @@ function ComposeDialog({
       open={open}
       onOpenChange={(next) => !pending && onOpenChange(next)}
     >
-      <Dialog.Portal>
-        <Dialog.Overlay bg="black" opacity={SHEET_OVERLAY_OPACITY} />
-
-        <Dialog.Content
-          width="85%"
-          maxW={400}
-          p={0}
-          bg="transparent"
-          rounded={0}
-          borderWidth={0}
-          elevation={0}
-          shadowOpacity={0}
-          y={keyboardOffset}
-        >
-          <YStack>
-            <YStack
-              position="absolute"
-              t={SHADOW_OFFSET}
-              b={-SHADOW_OFFSET}
-              l={SHADOW_OFFSET}
-              r={-SHADOW_OFFSET}
-              bg="$gray12"
-            />
-            <YStack
-              borderWidth={2}
-              borderColor="$color12"
-              bg="$color1"
-              p="$4"
-              gap="$4"
-            >
-              <ComposeForm
-                key={String(open)}
-                pending={pending}
-                onSubmit={onSubmit}
-              />
-            </YStack>
-          </YStack>
-        </Dialog.Content>
-      </Dialog.Portal>
+      <RetroDialogContent y={keyboardOffset}>
+        <ComposeForm key={String(open)} pending={pending} onSubmit={onSubmit} />
+      </RetroDialogContent>
     </Dialog>
   );
 }
