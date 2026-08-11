@@ -9,6 +9,7 @@ type AlertState = {
   confirmLabel?: string;
   destructive?: boolean;
   onConfirm?: () => void;
+  onDismiss?: () => void;
 };
 
 const TITLES: Record<RetroAlertVariant, string> = {
@@ -21,8 +22,8 @@ export function useRetroAlert(initial?: AlertState) {
   const [alert, setAlert] = useState<AlertState | null>(initial ?? null);
 
   const show = useCallback(
-    (variant: RetroAlertVariant, message: string) =>
-      setAlert({ variant, message }),
+    (variant: RetroAlertVariant, message: string, onDismiss?: () => void) =>
+      setAlert({ variant, message, onDismiss }),
     [],
   );
 
@@ -51,7 +52,10 @@ export function useRetroAlert(initial?: AlertState) {
       confirmLabel={alert.confirmLabel}
       destructive={alert.destructive}
       onConfirm={alert.onConfirm}
-      onClose={() => setAlert(null)}
+      onClose={() => {
+        setAlert(null);
+        alert.onDismiss?.();
+      }}
     />
   );
 

@@ -8,7 +8,7 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
-import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
+import { PHOTO_PRESS_OPACITY } from "@/lib/design";
 
 const COLUMNS = 3;
 
@@ -69,21 +69,39 @@ function CellShadow() {
 
 function OverlayButton({
   children,
-  ...rest
-}: { children: React.ReactNode } & XStackProps) {
+  bg,
+  onPress,
+  ...position
+}: {
+  children: React.ReactNode;
+  bg: XStackProps["bg"];
+  onPress: () => void;
+} & XStackProps) {
   return (
-    <XStack
-      position="absolute"
-      width={24}
-      height={24}
-      rounded={0}
-      items="center"
-      justify="center"
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      {...rest}
-    >
-      {children}
-    </XStack>
+    <YStack position="absolute" {...position}>
+      <YStack
+        position="absolute"
+        t={CELL_SHADOW_OFFSET}
+        b={-CELL_SHADOW_OFFSET}
+        l={CELL_SHADOW_OFFSET}
+        r={-CELL_SHADOW_OFFSET}
+        bg="$gray12"
+      />
+      <XStack
+        width={24}
+        height={24}
+        rounded={0}
+        borderWidth={2}
+        borderColor="$gray12"
+        bg={bg}
+        items="center"
+        justify="center"
+        pressStyle={{ x: CELL_SHADOW_OFFSET, y: CELL_SHADOW_OFFSET }}
+        onPress={onPress}
+      >
+        {children}
+      </XStack>
+    </YStack>
   );
 }
 
@@ -229,10 +247,14 @@ export function PhotoGrid({
                       <OverlayButton
                         b="$2"
                         l="$2"
-                        bg={OVERLAY_BG}
+                        bg="$color1"
                         onPress={() => onMove(cell.index, cell.index - 1)}
                       >
-                        <CaretLeftIcon size={14} weight="bold" color="white" />
+                        <CaretLeftIcon
+                          size={14}
+                          weight="bold"
+                          color={theme.color12.val}
+                        />
                       </OverlayButton>
                     )}
 
@@ -240,10 +262,14 @@ export function PhotoGrid({
                       <OverlayButton
                         b="$2"
                         r="$2"
-                        bg={OVERLAY_BG}
+                        bg="$color1"
                         onPress={() => onMove(cell.index, cell.index + 1)}
                       >
-                        <CaretRightIcon size={14} weight="bold" color="white" />
+                        <CaretRightIcon
+                          size={14}
+                          weight="bold"
+                          color={theme.color12.val}
+                        />
                       </OverlayButton>
                     )}
                   </YStack>

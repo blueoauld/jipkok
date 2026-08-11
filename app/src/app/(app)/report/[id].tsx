@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -10,14 +10,15 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
-import { alertApiError, alertInfo } from "@/lib/alert";
 import { api, type ReportReason } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -25,6 +26,7 @@ import { uploadReportPhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const DETAIL_MAX_LENGTH = 1000;
+const SHADOW_OFFSET = 4;
 
 const REASONS: { label: string; value: ReportReason }[] = [
   { label: "음란물", value: "OBSCENITY" },
@@ -40,10 +42,12 @@ const REPORTED_MESSAGE = "신고를 접수했습니다.";
 function ReasonRow({
   label,
   selected,
+  divider,
   onPress,
 }: {
   label: string;
   selected: boolean;
+  divider: boolean;
   onPress: () => void;
 }) {
   const theme = useTheme();
@@ -54,7 +58,9 @@ function ReasonRow({
       justify="space-between"
       px="$4"
       py="$3"
-      pressStyle={{ bg: "$gray5" }}
+      borderBottomWidth={divider ? 2 : 0}
+      borderColor="$color12"
+      pressStyle={{ bg: "$color3" }}
       onPress={onPress}
     >
       <Text flex={1} numberOfLines={1} fontSize="$4">
@@ -68,6 +74,32 @@ function ReasonRow({
   );
 }
 
+function DetailField({ valueRef }: { valueRef: { current: string } }) {
+  const [length, setLength] = useState(0);
+
+  return (
+    <FormField
+      right={
+        <Text theme="gray" color="$color11">
+          {`${length} / ${DETAIL_MAX_LENGTH}`}
+        </Text>
+      }
+    >
+      <RetroInput
+        multiline
+        rows={7}
+        textAlignVertical="top"
+        placeholder="상세 내용"
+        maxLength={DETAIL_MAX_LENGTH}
+        onChangeText={(text) => {
+          valueRef.current = text;
+          setLength(text.length);
+        }}
+      />
+    </FormField>
+  );
+}
+
 export default function ReportScreen() {
   const { id, roomId } = useLocalSearchParams<{
     id: string;
@@ -76,8 +108,9 @@ export default function ReportScreen() {
   const memberId = Number(id);
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
-  const [detail, setDetail] = useState("");
+  const detailRef = useRef("");
   const photos = useUploadPhotos(uploadReportPhoto);
+  const { alertElement, show, showApiError } = useRetroAlert();
 
   const { data: member } = useMemberDetail(memberId);
   const title = roomId ? "채팅 신고" : "신고";
@@ -88,14 +121,11 @@ export default function ReportScreen() {
         reportedMemberId: memberId,
         roomId: roomId ? Number(roomId) : null,
         reason: value,
-        detail: detail || null,
+        detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,
       }),
-    onSuccess: () => {
-      router.back();
-      alertInfo(REPORTED_MESSAGE);
-    },
-    onError: alertApiError,
+    onSuccess: () => show("info", REPORTED_MESSAGE, () => router.back()),
+    onError: showApiError,
   });
 
   const busy = report.isPending || photos.uploading;
@@ -116,7 +146,7 @@ export default function ReportScreen() {
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <YStack gap="$2">
-            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
               증거 사진
             </Text>
             <PhotoGrid
@@ -127,50 +157,46 @@ export default function ReportScreen() {
             />
           </YStack>
 
-          <YStack bg="$gray4" rounded="$7" overflow="hidden">
-            {REASONS.map(({ label, value }) => (
-              <ReasonRow
-                key={value}
-                label={label}
-                selected={value === reason}
-                onPress={() => setReason(value)}
-              />
-            ))}
+          <YStack>
+            <YStack
+              position="absolute"
+              t={SHADOW_OFFSET}
+              b={-SHADOW_OFFSET}
+              l={SHADOW_OFFSET}
+              r={-SHADOW_OFFSET}
+              bg="$gray8"
+            />
+            <YStack borderWidth={2} borderColor="$color12" bg="$color1">
+              {REASONS.map(({ label, value }, index) => (
+                <ReasonRow
+                  key={value}
+                  label={label}
+                  selected={value === reason}
+                  divider={index < REASONS.length - 1}
+                  onPress={() => setReason(value)}
+                />
+              ))}
+            </YStack>
           </YStack>
 
-          <FormField
-            right={
-              <Text theme="gray" color="$color10">
-                {`${detail.length} / ${DETAIL_MAX_LENGTH}`}
-              </Text>
-            }
-          >
-            <FormInput
-              multiline
-              rows={7}
-              textAlignVertical="top"
-              placeholder="상세 내용"
-              maxLength={DETAIL_MAX_LENGTH}
-              value={detail}
-              onChangeText={setDetail}
-            />
-          </FormField>
+          <DetailField valueRef={detailRef} />
         </YStack>
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button
-            size="$4"
+          <RetroButton
             theme="red"
-            rounded="$7"
+            disabled={!reason || busy}
             opacity={!reason || busy ? DISABLED_OPACITY : 1}
-            onPress={() => reason && !busy && report.mutate(reason)}
+            onPress={() => reason && report.mutate(reason)}
           >
             신고하기
-          </Button>
+          </RetroButton>
         </YStack>
       </KeyboardStickyView>
+
+      {alertElement}
     </SafeAreaView>
   );
 }
