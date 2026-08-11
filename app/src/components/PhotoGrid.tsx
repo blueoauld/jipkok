@@ -144,11 +144,11 @@ export function PhotoGrid({
                       rounded={0}
                       borderWidth={2}
                       borderColor="$color12"
-                      bg="$gray4"
+                      bg="$color1"
                       items="center"
                       justify="center"
                     >
-                      <ImageIcon size={24} color={theme.gray9.val} />
+                      <ImageIcon size={24} color={theme.color12.val} />
                     </YStack>
                   </YStack>
                 );
@@ -163,7 +163,7 @@ export function PhotoGrid({
                       rounded={0}
                       borderWidth={2}
                       borderColor="$color12"
-                      bg="$gray4"
+                      bg="$color1"
                       items="center"
                       justify="center"
                       pressStyle={{
@@ -176,7 +176,7 @@ export function PhotoGrid({
                       <PlusIcon
                         size={24}
                         weight="bold"
-                        color={theme.gray9.val}
+                        color={theme.color12.val}
                       />
                     </YStack>
                   </YStack>
@@ -192,7 +192,7 @@ export function PhotoGrid({
                     borderWidth={2}
                     borderColor="$color12"
                     overflow="hidden"
-                    bg="$gray4"
+                    bg="$color1"
                     pressStyle={
                       onPressPhoto
                         ? {

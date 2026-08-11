@@ -36,11 +36,11 @@ export function PhotoPager({
     return (
       <YStack
         height={width * PHOTO_RATIO}
-        bg="$gray4"
+        bg="$color1"
         items="center"
         justify="center"
       >
-        <ImageIcon size={PLACEHOLDER_ICON_SIZE} color={theme.gray9.val} />
+        <ImageIcon size={PLACEHOLDER_ICON_SIZE} color={theme.color12.val} />
       </YStack>
     );
   }
@@ -58,7 +58,7 @@ export function PhotoPager({
         }
         renderItem={({ item, index: photoIndex }) => (
           <XStack
-            bg="$gray4"
+            bg="$color1"
             pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
             onPress={openViewer}
           >

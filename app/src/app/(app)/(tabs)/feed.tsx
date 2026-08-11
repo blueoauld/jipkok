@@ -156,7 +156,7 @@ function FeedCard({
       width="100%"
       aspectRatio={CARD_RATIO}
       overflow="hidden"
-      bg="$gray4"
+      bg="$color1"
       onPress={onPress}
     >
       <Image
@@ -270,7 +270,6 @@ function PickerTile({
       flex={1}
       p={0}
       aspectRatio={1}
-      bg="$gray4"
       items="center"
       justify="center"
       onPress={onPress}
