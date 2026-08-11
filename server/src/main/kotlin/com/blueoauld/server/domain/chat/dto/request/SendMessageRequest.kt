@@ -14,4 +14,7 @@ data class SendMessageRequest(
     val objectKey: String? = null,
 
     val replyToMessageId: Long? = null,
+
+    @field:Size(max = ChatMessage.CLIENT_MESSAGE_ID_MAX_LENGTH, message = "클라이언트 메시지 id가 너무 깁니다.")
+    val clientMessageId: String? = null,
 )

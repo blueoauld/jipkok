@@ -14,6 +14,7 @@ data class ChatMessageResponse(
     val imageUrl: String?,
     val createdAt: Instant,
     val replyMessage: ReplyMessageResponse? = null,
+    val clientMessageId: String? = null,
 ) {
 
     data class ReplyMessageResponse(
@@ -52,6 +53,7 @@ data class ChatMessageResponse(
             imageUrl = imageUrl,
             createdAt = message.createdAt,
             replyMessage = replyMessage,
+            clientMessageId = message.clientMessageId,
         )
     }
 }

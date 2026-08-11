@@ -11,6 +11,8 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
 
     fun findByRoomIdAndIdLessThanOrderByIdDesc(roomId: Long, id: Long, limit: Limit): List<ChatMessage>
 
+    fun findByRoomIdAndClientMessageId(roomId: Long, clientMessageId: String): ChatMessage?
+
     @Query(
         """
         select m.objectKey

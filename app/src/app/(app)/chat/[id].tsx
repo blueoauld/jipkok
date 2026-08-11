@@ -61,7 +61,7 @@ function toGiftedMessage(
   room: ChatRoomResponse,
 ): IMessage {
   return {
-    _id: message.messageId,
+    _id: message.clientMessageId ?? message.messageId,
     text: message.content ?? "",
     createdAt: new Date(message.createdAt),
     user:

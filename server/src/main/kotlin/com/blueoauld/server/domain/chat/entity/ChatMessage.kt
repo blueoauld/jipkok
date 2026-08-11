@@ -12,11 +12,18 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
 @Entity
 @Table(
     name = "chat_message",
     indexes = [Index(name = "idx_chat_message_room_id_id", columnList = "room_id, id")],
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uk_chat_message_room_id_client_message_id",
+            columnNames = ["room_id", "client_message_id"],
+        ),
+    ],
 )
 class ChatMessage(
 
@@ -38,6 +45,9 @@ class ChatMessage(
 
     @Column(name = "reply_to_message_id", updatable = false)
     val replyToMessageId: Long? = null,
+
+    @Column(name = "client_message_id", updatable = false, length = CLIENT_MESSAGE_ID_MAX_LENGTH)
+    val clientMessageId: String? = null,
 ) : BaseEntity() {
 
     @Id
@@ -49,5 +59,6 @@ class ChatMessage(
 
         const val CONTENT_MAX_LENGTH = 1000
         const val PHOTO_MAX_COUNT = 6
+        const val CLIENT_MESSAGE_ID_MAX_LENGTH = 36
     }
 }

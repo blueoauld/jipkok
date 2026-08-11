@@ -69,6 +69,9 @@ class ChatMessageService(
     @Transactional
     fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse {
         val room = findRoom(memberId, roomId)
+
+        findAlreadySent(roomId, request.clientMessageId)?.let { return it }
+
         val replyTarget = findReplyTarget(roomId, request.replyToMessageId)
 
         return append(room, memberId, toMessage(memberId, roomId, request, replyTarget), replyTarget)
@@ -115,6 +118,20 @@ class ChatMessageService(
         .filter { it.contains(memberId) }
         .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
 
+    private fun findAlreadySent(roomId: Long, clientMessageId: String?): ChatMessageResponse? {
+        val message = clientMessageId
+            ?.let { chatMessageRepository.findByRoomIdAndClientMessageId(roomId, it) }
+            ?: return null
+
+        return ChatMessageResponse.of(
+            message,
+            message.objectKey?.let(photoStorage::createSignedViewUrl),
+            message.replyToMessageId
+                ?.let { chatMessageRepository.findById(it).orElse(null) }
+                ?.let(::toReplyResponse),
+        )
+    }
+
     private fun findReplyTarget(roomId: Long, replyToMessageId: Long?): ChatMessage? {
         if (replyToMessageId == null) {
             return null
@@ -142,6 +159,7 @@ class ChatMessageService(
             type = ChatMessageType.TEXT,
             content = request.content?.trim()?.ifEmpty { null } ?: throw BusinessException(ErrorCode.INVALID_REQUEST),
             replyToMessageId = replyTarget?.id,
+            clientMessageId = request.clientMessageId,
         )
 
         ChatMessageType.PHOTO -> ChatMessage(
@@ -150,6 +168,7 @@ class ChatMessageService(
             type = ChatMessageType.PHOTO,
             objectKey = validatePhotoKey(memberId, request.objectKey),
             replyToMessageId = replyTarget?.id,
+            clientMessageId = request.clientMessageId,
         )
     }
 

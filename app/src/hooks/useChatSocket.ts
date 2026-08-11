@@ -44,7 +44,11 @@ export function useChatSocket() {
           });
         }
 
-        queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+        // 메시지는 위에서 직접 넣었고, 피드 재조회는 전송 중인 자리표시자를 지운다.
+        queryClient.invalidateQueries({
+          queryKey: CHAT_ROOMS_KEY,
+          predicate: (query) => query.queryKey[1] !== "messages",
+        });
       },
     });
 

@@ -102,6 +102,39 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `응답에 클라이언트 메시지 id가 담긴다`() {
+        // given
+        every { chatMessageRepository.findByRoomIdAndClientMessageId(ROOM_ID, CLIENT_MESSAGE_ID) } returns null
+
+        // when
+        val response = chatMessageService.send(ME_ID, ROOM_ID, text("안녕하세요.", CLIENT_MESSAGE_ID))
+
+        // then
+        assertThat(response.clientMessageId).isEqualTo(CLIENT_MESSAGE_ID)
+    }
+
+    @Test
+    fun `같은 클라이언트 메시지 id로 다시 보내면 저장 없이 기존 메시지를 준다`() {
+        // given
+        val existing = ChatMessage(
+            roomId = ROOM_ID,
+            senderId = ME_ID,
+            type = ChatMessageType.TEXT,
+            content = "안녕하세요.",
+            clientMessageId = CLIENT_MESSAGE_ID,
+        )
+        every { chatMessageRepository.findByRoomIdAndClientMessageId(ROOM_ID, CLIENT_MESSAGE_ID) } returns existing
+
+        // when
+        val response = chatMessageService.send(ME_ID, ROOM_ID, text("안녕하세요.", CLIENT_MESSAGE_ID))
+
+        // then
+        assertThat(response.clientMessageId).isEqualTo(CLIENT_MESSAGE_ID)
+        verify(exactly = 0) { chatMessageRepository.save(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
+    }
+
+    @Test
     fun `빈 글 메시지는 보낼 수 없다`() {
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -301,7 +334,11 @@ class ChatMessageServiceTest {
         objectKey = objectKey,
     )
 
-    private fun text(content: String) = SendMessageRequest(type = ChatMessageType.TEXT, content = content)
+    private fun text(content: String, clientMessageId: String? = null) = SendMessageRequest(
+        type = ChatMessageType.TEXT,
+        content = content,
+        clientMessageId = clientMessageId,
+    )
 
     private fun reply(content: String, replyToMessageId: Long) = SendMessageRequest(
         type = ChatMessageType.TEXT,
@@ -333,6 +370,8 @@ class ChatMessageServiceTest {
         private const val STRANGER_ID = 3L
         private const val LAST_READ_MESSAGE_ID = 99L
         private const val REPLY_ID = 7L
+
+        private const val CLIENT_MESSAGE_ID = "client-1"
 
         private const val OBJECT_KEY = "chats/$ME_ID/a.jpg"
         private const val SIGNED_URL = "https://r2.example.com/chats/1/a.jpg?signature=x"

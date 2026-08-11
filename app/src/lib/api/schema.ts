@@ -158,9 +158,9 @@ export interface paths {
         get?: never;
         put?: never;
         /** 비밀 사진 공개 */
-        post: operations["grant"];
+        post: operations["grantSecretPhoto"];
         /** 비밀 사진 공개 해제 */
-        delete: operations["revoke"];
+        delete: operations["revokeSecretPhoto"];
         options?: never;
         head?: never;
         patch?: never;
@@ -179,7 +179,7 @@ export interface paths {
          * 쪽지 전송
          * @description 채팅방이 없으면 새로 만들고 포인트를 차감한다.
          */
-        post: operations["send"];
+        post: operations["sendNote"];
         delete?: never;
         options?: never;
         head?: never;
@@ -196,9 +196,9 @@ export interface paths {
         get?: never;
         put?: never;
         /** 좋아요 */
-        post: operations["like"];
+        post: operations["likeMember"];
         /** 좋아요 취소 */
-        delete: operations["cancel"];
+        delete: operations["cancelMemberLike"];
         options?: never;
         head?: never;
         patch?: never;
@@ -214,9 +214,9 @@ export interface paths {
         get?: never;
         put?: never;
         /** 즐겨찾기 추가 */
-        post: operations["add"];
+        post: operations["addFavorite"];
         /** 즐겨찾기 해제 */
-        delete: operations["remove"];
+        delete: operations["removeFavorite"];
         options?: never;
         head?: never;
         patch?: never;
@@ -267,7 +267,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 사진 업로드 URL 발급 */
-        post: operations["createPhotoUploadUrl_1"];
+        post: operations["createMemberPhotoUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -331,7 +331,7 @@ export interface paths {
          * 피드 작성
          * @description 한 시간대에 하나만 올릴 수 있다.
          */
-        post: operations["create"];
+        post: operations["createFeedPost"];
         delete?: never;
         options?: never;
         head?: never;
@@ -348,7 +348,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 피드 신고 */
-        post: operations["report_1"];
+        post: operations["reportFeedPost"];
         delete?: never;
         options?: never;
         head?: never;
@@ -365,7 +365,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 피드 좋아요 */
-        post: operations["like_1"];
+        post: operations["likeFeedPost"];
         /** 피드 좋아요 취소 */
         delete: operations["cancelLike"];
         options?: never;
@@ -383,7 +383,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 피드 사진 업로드 URL 발급 */
-        post: operations["createPhotoUploadUrl_2"];
+        post: operations["createFeedPhotoUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -424,7 +424,7 @@ export interface paths {
          * 메시지 전송
          * @description 사진은 한 장에 메시지 하나다.
          */
-        post: operations["send_1"];
+        post: operations["sendChatMessage"];
         delete?: never;
         options?: never;
         head?: never;
@@ -441,7 +441,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 채팅 사진 업로드 URL 발급 */
-        post: operations["createPhotoUploadUrl_3"];
+        post: operations["createChatPhotoUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -458,7 +458,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 인증번호 발송 */
-        post: operations["send_2"];
+        post: operations["sendVerificationCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -683,7 +683,7 @@ export interface paths {
             cookie?: never;
         };
         /** 나에게 공개된 목록 */
-        get: operations["findReceived"];
+        get: operations["findReceivedSecretPhotos"];
         put?: never;
         post?: never;
         delete?: never;
@@ -700,7 +700,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내가 공개한 목록 */
-        get: operations["findGranted"];
+        get: operations["findGrantedSecretPhotos"];
         put?: never;
         post?: never;
         delete?: never;
@@ -771,7 +771,7 @@ export interface paths {
             cookie?: never;
         };
         /** 받은 좋아요 목록 */
-        get: operations["findReceived_1"];
+        get: operations["findReceivedLikes"];
         put?: never;
         post?: never;
         delete?: never;
@@ -805,7 +805,7 @@ export interface paths {
             cookie?: never;
         };
         /** 받은 즐겨찾기 목록 */
-        get: operations["findReceived_2"];
+        get: operations["findReceivedFavorites"];
         put?: never;
         post?: never;
         delete?: never;
@@ -934,7 +934,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 푸시 토큰 해제 */
-        delete: operations["remove_1"];
+        delete: operations["removeDeviceToken"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1054,6 +1054,7 @@ export interface components {
             objectKey?: string | null;
             /** Format: int64 */
             replyToMessageId?: number | null;
+            clientMessageId?: string | null;
         };
         ChatMessageResponse: {
             /** Format: int64 */
@@ -1069,6 +1070,7 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             replyMessage: components["schemas"]["ReplyMessageResponse"] | null;
+            clientMessageId?: string | null;
         };
         ReplyMessageResponse: {
             /** Format: int64 */
@@ -1665,7 +1667,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ReportPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["ReportPhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -1717,7 +1719,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ScrollResponseMemberListItemResponse"];
+                    "application/json": components["schemas"]["ScrollResponseMemberListItemResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -1768,7 +1770,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SignupResponse"];
+                    "application/json": components["schemas"]["SignupResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -1800,7 +1802,7 @@ export interface operations {
             };
         };
     };
-    grant: {
+    grantSecretPhoto: {
         parameters: {
             query?: never;
             header?: never;
@@ -1847,7 +1849,7 @@ export interface operations {
             };
         };
     };
-    revoke: {
+    revokeSecretPhoto: {
         parameters: {
             query?: never;
             header?: never;
@@ -1894,7 +1896,7 @@ export interface operations {
             };
         };
     };
-    send: {
+    sendNote: {
         parameters: {
             query?: never;
             header?: never;
@@ -1915,7 +1917,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SendNoteResponse"];
+                    "application/json": components["schemas"]["SendNoteResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -1947,7 +1949,7 @@ export interface operations {
             };
         };
     };
-    like: {
+    likeMember: {
         parameters: {
             query?: never;
             header?: never;
@@ -1994,7 +1996,7 @@ export interface operations {
             };
         };
     };
-    cancel: {
+    cancelMemberLike: {
         parameters: {
             query?: never;
             header?: never;
@@ -2041,7 +2043,7 @@ export interface operations {
             };
         };
     };
-    add: {
+    addFavorite: {
         parameters: {
             query?: never;
             header?: never;
@@ -2088,7 +2090,7 @@ export interface operations {
             };
         };
     };
-    remove: {
+    removeFavorite: {
         parameters: {
             query?: never;
             header?: never;
@@ -2274,7 +2276,7 @@ export interface operations {
             };
         };
     };
-    createPhotoUploadUrl_1: {
+    createMemberPhotoUploadUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -2293,7 +2295,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2344,7 +2346,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PointRewardResponse"];
+                    "application/json": components["schemas"]["PointRewardResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2446,7 +2448,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseFeedPostResponse"];
+                    "application/json": components["schemas"]["CursorResponseFeedPostResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2478,7 +2480,7 @@ export interface operations {
             };
         };
     };
-    create: {
+    createFeedPost: {
         parameters: {
             query?: never;
             header?: never;
@@ -2527,7 +2529,7 @@ export interface operations {
             };
         };
     };
-    report_1: {
+    reportFeedPost: {
         parameters: {
             query?: never;
             header?: never;
@@ -2574,7 +2576,7 @@ export interface operations {
             };
         };
     };
-    like_1: {
+    likeFeedPost: {
         parameters: {
             query?: never;
             header?: never;
@@ -2668,7 +2670,7 @@ export interface operations {
             };
         };
     };
-    createPhotoUploadUrl_2: {
+    createFeedPhotoUploadUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -2687,7 +2689,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["FeedPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["FeedPhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2790,7 +2792,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseChatMessageResponse"];
+                    "application/json": components["schemas"]["CursorResponseChatMessageResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2822,7 +2824,7 @@ export interface operations {
             };
         };
     };
-    send_1: {
+    sendChatMessage: {
         parameters: {
             query?: never;
             header?: never;
@@ -2843,7 +2845,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ChatMessageResponse"];
+                    "application/json": components["schemas"]["ChatMessageResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2875,7 +2877,7 @@ export interface operations {
             };
         };
     };
-    createPhotoUploadUrl_3: {
+    createChatPhotoUploadUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -2894,7 +2896,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ChatPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["ChatPhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2926,7 +2928,7 @@ export interface operations {
             };
         };
     };
-    send_2: {
+    sendVerificationCode: {
         parameters: {
             query?: never;
             header?: never;
@@ -2994,7 +2996,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TokenResponse"];
+                    "application/json": components["schemas"]["TokenResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3094,7 +3096,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TokenResponse"];
+                    "application/json": components["schemas"]["TokenResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3141,7 +3143,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AttendanceResponse"];
+                    "application/json": components["schemas"]["AttendanceResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3233,7 +3235,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": number;
+                    "application/json": number;
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3283,7 +3285,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponsePointHistoryResponse"];
+                    "application/json": components["schemas"]["CursorResponsePointHistoryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3332,7 +3334,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberDetailResponse"];
+                    "application/json": components["schemas"]["MemberDetailResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3381,7 +3383,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": string[];
+                    "application/json": string[];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3432,7 +3434,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["ScrollResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3483,7 +3485,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ScrollResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["ScrollResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3530,7 +3532,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MyProfileResponse"];
+                    "application/json": components["schemas"]["MyProfileResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3607,7 +3609,7 @@ export interface operations {
             };
         };
     };
-    findReceived: {
+    findReceivedSecretPhotos: {
         parameters: {
             query?: {
                 cursor?: number;
@@ -3625,7 +3627,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3657,7 +3659,7 @@ export interface operations {
             };
         };
     };
-    findGranted: {
+    findGrantedSecretPhotos: {
         parameters: {
             query?: {
                 cursor?: number;
@@ -3675,7 +3677,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3725,7 +3727,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ScrollResponseProfileViewResponse"];
+                    "application/json": components["schemas"]["ScrollResponseProfileViewResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3772,7 +3774,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": number;
+                    "application/json": number;
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3822,7 +3824,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3854,7 +3856,7 @@ export interface operations {
             };
         };
     };
-    findReceived_1: {
+    findReceivedLikes: {
         parameters: {
             query?: {
                 cursor?: number;
@@ -3872,7 +3874,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3922,7 +3924,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3954,7 +3956,7 @@ export interface operations {
             };
         };
     };
-    findReceived_2: {
+    findReceivedFavorites: {
         parameters: {
             query?: {
                 cursor?: number;
@@ -3972,7 +3974,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4022,7 +4024,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["CursorResponseMemberSummaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4073,7 +4075,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseChatRoomResponse"];
+                    "application/json": components["schemas"]["CursorResponseChatRoomResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4122,7 +4124,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ChatRoomResponse"];
+                    "application/json": components["schemas"]["ChatRoomResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4216,7 +4218,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": number;
+                    "application/json": number;
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4267,7 +4269,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorResponseChatRoomResponse"];
+                    "application/json": components["schemas"]["CursorResponseChatRoomResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4349,7 +4351,7 @@ export interface operations {
             };
         };
     };
-    remove_1: {
+    removeDeviceToken: {
         parameters: {
             query?: never;
             header?: never;
