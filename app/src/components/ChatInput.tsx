@@ -23,6 +23,11 @@ const ICON_SIZE = 20;
 
 const TOOLBAR_PADDING = getTokens().space.$3.val;
 
+// 22는 gifted Composer의 기본 줄높이다.
+const COMPOSER_LINE_HEIGHT = 22;
+const COMPOSER_MAX_LINES = 7;
+const COMPOSER_VERTICAL_PADDING = 7;
+
 function RetroBox({
   theme,
   bg,
@@ -147,11 +152,12 @@ const styles = StyleSheet.create({
   send: {
     justifyContent: "flex-end",
   },
-  // gifted 기본 상하 패딩(8/10)이면 한 줄 높이가 버튼(40)보다 커진다.
-  // 좌우 10은 버블 텍스트의 안쪽 여백과 같은 값이다.
+  // 상하 7이면 한 줄 높이가 버튼(40)과 같아지고, 좌우 10은 버블 텍스트의 안쪽 여백과 같다.
   composerText: {
-    paddingTop: 7,
-    paddingBottom: 7,
+    paddingTop: COMPOSER_VERTICAL_PADDING,
+    paddingBottom: COMPOSER_VERTICAL_PADDING,
     paddingHorizontal: 10,
+    maxHeight:
+      COMPOSER_LINE_HEIGHT * COMPOSER_MAX_LINES + COMPOSER_VERTICAL_PADDING * 2,
   },
 });
