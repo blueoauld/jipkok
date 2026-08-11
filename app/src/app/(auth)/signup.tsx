@@ -18,11 +18,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
-import {
-  BROWSER_FAILED_MESSAGE,
-  PRIVACY_URL,
-  TERMS_URL,
-} from "@/lib/support";
+import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
