@@ -158,7 +158,7 @@ export default function MainScreen() {
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$2.val,
-            paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
+            paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

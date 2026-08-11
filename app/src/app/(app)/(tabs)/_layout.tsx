@@ -6,23 +6,22 @@ import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
-import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
-import { TAB_BAR_HEIGHT, tabBarBottom } from "@/lib/design";
+import { TAB_BAR_HEIGHT } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
-const TAB_BAR_MARGIN = 16;
 const TAB_ITEM_PADDING = 5;
+const BORDER_WIDTH = 2;
 
 const BADGE_FONT_SIZE = 11;
 const BADGE_TOP = (TAB_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
@@ -85,26 +84,25 @@ export default function TabsLayout() {
         headerBackButtonDisplayMode: "minimal",
         headerTitleAlign: "center",
         tabBarShowLabel: false,
-        tabBarActiveTintColor: theme.color10.val,
-        tabBarInactiveTintColor: theme.color10.val,
+        tabBarActiveTintColor: theme.blue10.val,
+        tabBarInactiveTintColor: theme.color12.val,
         tabBarStyle: {
           position: "absolute",
-          bottom: tabBarBottom(insets.bottom),
-          marginHorizontal: TAB_BAR_MARGIN,
-          height: TAB_BAR_HEIGHT,
-          borderRadius: TAB_BAR_HEIGHT / 2,
+          bottom: 0,
+          height: TAB_BAR_HEIGHT + insets.bottom,
+          paddingBottom: insets.bottom,
           borderTopWidth: 0,
           backgroundColor: "transparent",
-          overflow: "hidden",
           elevation: 0,
         },
         tabBarBackground: () => (
-          <GlassSurface
+          <View
             style={[
               StyleSheet.absoluteFill,
               {
-                borderRadius: TAB_BAR_HEIGHT / 2,
-                overflow: "hidden",
+                backgroundColor: theme.color1.val,
+                borderTopWidth: BORDER_WIDTH,
+                borderColor: theme.color12.val,
               },
             ]}
           />
@@ -133,12 +131,8 @@ export default function TabsLayout() {
               color: "white",
               fontSize: BADGE_FONT_SIZE,
             },
-            tabBarIcon: ({ color, focused }) => (
-              <Icon
-                color={color as string}
-                size={ICON_SIZE}
-                weight={focused ? "fill" : "regular"}
-              />
+            tabBarIcon: ({ color }) => (
+              <Icon color={color as string} size={ICON_SIZE} weight="fill" />
             ),
           }}
         />
