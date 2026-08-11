@@ -39,7 +39,7 @@ function validateBirthYear(value: string) {
   const age = new Date().getFullYear() - Number(value);
 
   if (age < MIN_AGE || age > MAX_AGE) {
-    return `만 ${MIN_AGE}세 이상 ${MAX_AGE}세 이하만 가입할 수 있습니다.`;
+    return `${MIN_AGE}세 이상 ${MAX_AGE}세 이하만 가입할 수 있습니다.`;
   }
 
   return true;
@@ -81,6 +81,8 @@ export default function SetupScreen() {
                 value: NICKNAME_PATTERN,
                 message: "닉네임이 올바르지 않습니다.",
               },
+              validate: (value) =>
+                value.trim().length > 0 || "닉네임을 입력해주시길 바랍니다.",
             }}
             placeholder="닉네임"
             maxLength={NICKNAME_MAX_LENGTH}
@@ -137,7 +139,7 @@ export default function SetupScreen() {
             opacity={setupProfile.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) =>
               setupProfile.mutate({
-                nickname: values.nickname,
+                nickname: values.nickname.trim(),
                 birthYear: Number(values.birthYear),
                 bio: values.bio || undefined,
               }),
