@@ -6,7 +6,7 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -16,15 +16,17 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type Gender, isApiError, type MemberSort } from "@/lib/api";
 import { tabBarOverlayHeight } from "@/lib/design";
 import { useMemberFilterStore } from "@/lib/filter/store";
+import { genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
@@ -43,10 +45,6 @@ const GENDER_VALUES: Record<GenderLabel, Gender | null> = {
   전체: null,
   남자: "MALE",
   여자: "FEMALE",
-};
-const GENDER_LABELS: Record<string, GenderLabel> = {
-  MALE: "남자",
-  FEMALE: "여자",
 };
 
 const COMMENT_MAX_LENGTH = 100;
@@ -74,14 +72,15 @@ export default function MainScreen() {
   const setGender = useMemberFilterStore((state) => state.setGender);
   const feed = useMemberFeed(sort, gender);
   const { data: profile } = useMyProfile();
+  const { alertElement, show, showApiError } = useRetroAlert();
 
   const updateComment = useMutation({
     mutationFn: api.members.updateComment,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      alertInfo(COMMENT_SAVED_MESSAGE);
+      show("info", COMMENT_SAVED_MESSAGE);
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     feed;
@@ -194,14 +193,9 @@ export default function MainScreen() {
                 {isApiError(error) ? error.message : ERROR_MESSAGE}
               </Text>
 
-              <Button
-                size="$3"
-                theme="blue"
-                rounded="$7"
-                onPress={() => feed.refetch()}
-              >
+              <RetroButton onPress={() => feed.refetch()}>
                 다시 시도
-              </Button>
+              </RetroButton>
             </>
           ) : (
             <Spinner size="small" />
@@ -229,10 +223,12 @@ export default function MainScreen() {
         onOpenChange={setGenderOpen}
         items={GENDERS.map((label) => ({
           label,
-          selected: label === (GENDER_LABELS[gender ?? ""] ?? "전체"),
+          selected: label === (gender ? genderLabel(gender) : "전체"),
           onPress: () => setGender(GENDER_VALUES[label]),
         }))}
       />
+
+      {alertElement}
     </YStack>
   );
 }

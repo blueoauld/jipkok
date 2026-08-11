@@ -16,7 +16,7 @@ export function RetroButton({
         b={-SHADOW_OFFSET}
         l={SHADOW_OFFSET}
         r={-SHADOW_OFFSET}
-        bg="$color12"
+        bg="$gray12"
       />
       <Button
         size="$4"
