@@ -42,15 +42,15 @@ export function useRetroAlert(initial?: AlertState) {
     [],
   );
 
-  const alertElement = (
+  const alertElement = alert && (
     <RetroAlert
-      visible={alert !== null}
-      variant={alert?.variant}
-      title={alert ? TITLES[alert.variant] : ""}
-      message={alert?.message ?? ""}
-      confirmLabel={alert?.confirmLabel}
-      destructive={alert?.destructive}
-      onConfirm={alert?.onConfirm}
+      visible
+      variant={alert.variant}
+      title={TITLES[alert.variant]}
+      message={alert.message}
+      confirmLabel={alert.confirmLabel}
+      destructive={alert.destructive}
+      onConfirm={alert.onConfirm}
       onClose={() => setAlert(null)}
     />
   );
