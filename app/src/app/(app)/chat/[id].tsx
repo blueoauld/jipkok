@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
-import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
@@ -43,6 +42,7 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import { apiErrorMessage } from "@/lib/alert";
 import {
   api,
@@ -52,7 +52,6 @@ import {
 } from "@/lib/api";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { PRESS_OPACITY } from "@/lib/design";
-import { uploadChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
@@ -78,7 +77,8 @@ function toGiftedMessage(
   room: ChatRoomResponse,
 ): IMessage {
   return {
-    _id: message.messageId,
+    // 자리표시자가 서버 메시지로 바뀌어도 행이 리마운트되지 않게 clientMessageId를 키로 쓴다.
+    _id: message.clientMessageId ?? message.messageId,
     text: message.content ?? "",
     createdAt: new Date(message.createdAt),
     user:
@@ -131,30 +131,11 @@ export default function ChatRoomScreen() {
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useChatMessages(roomId);
 
-  const { mutate: sendMessage } = useMutation({
-    mutationFn: ({
-      content,
-      replyToMessageId,
-    }: {
-      content: string;
-      replyToMessageId: number | null;
-    }) => api.chats.send(roomId, { type: "TEXT", content, replyToMessageId }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
-    onError: showApiError,
-  });
-
-  const { mutate: sendPhotos, isPending: uploading } = useMutation({
-    mutationFn: async (assets: ImagePickerAsset[]) => {
-      for (const asset of assets) {
-        const objectKey = await uploadChatPhoto(asset);
-        await api.chats.send(roomId, { type: "PHOTO", objectKey });
-      }
-    },
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
-    onError: showApiError,
-  });
+  const { sendText, sendPhotos, uploading } = useSendMessage(
+    roomId,
+    profile?.memberId ?? 0,
+    showApiError,
+  );
 
   const handlePickPhotos = useCallback(async () => {
     const assets = await pickPhotos(MAX_PHOTOS);
@@ -277,23 +258,21 @@ export default function ChatRoomScreen() {
 
       if (text) {
         sentCountRef.current += 1;
-        sendMessage({
-          content: text,
-          replyToMessageId: replyTarget?.messageId ?? null,
-        });
+        sendText(text, replyTarget);
         setReplyTarget(null);
       }
     },
-    [sendMessage, replyTarget],
+    [sendText, replyTarget],
   );
 
   const handleSwipeReply = useCallback(
     (message: IMessage) => {
       const source = (messages ?? []).find(
-        (it) => it.messageId === message._id,
+        (it) => (it.clientMessageId ?? it.messageId) === message._id,
       );
 
-      if (!source) {
+      // 전송 중인 자리표시자는 아직 서버 id가 없어 답장 대상이 될 수 없다.
+      if (!source || source.messageId < 0) {
         return;
       }
 
