@@ -91,12 +91,9 @@ export default function LoginScreen() {
           </YStack>
 
           <RetroButton
+            disabled={login.isPending}
             opacity={login.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) => {
-              if (!login.isPending) {
-                login.mutate(values);
-              }
-            })}
+            onPress={handleSubmit((values) => login.mutate(values))}
           >
             {login.isPending ? <Spinner color="white" /> : "로그인"}
           </RetroButton>

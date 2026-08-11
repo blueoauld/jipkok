@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -15,7 +15,7 @@ import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
-import { RetroAlert } from "@/components/ui/RetroAlert";
+import { RetroAlert, type RetroAlertVariant } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { apiErrorMessage } from "@/lib/alert";
@@ -42,9 +42,15 @@ const GENDERS = [
   { value: "FEMALE", label: "여자" },
 ] as const;
 
+type AlertState = {
+  variant: RetroAlertVariant;
+  title: string;
+  message: string;
+};
+
 export default function SignupScreen() {
   const insets = useSafeAreaInsets();
-  const { control, handleSubmit, watch, getValues } = useForm<SignupRequest>({
+  const { control, handleSubmit } = useForm<SignupRequest>({
     defaultValues: {
       phoneNumber: "",
       verificationCode: "",
@@ -53,30 +59,37 @@ export default function SignupScreen() {
     },
   });
 
-  const [minorNoticeVisible, setMinorNoticeVisible] = useState(true);
+  const [alert, setAlert] = useState<AlertState | null>({
+    variant: "warning",
+    title: "경고",
+    message: MINOR_NOTICE,
+  });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const showError = (message: string) =>
+    setAlert({ variant: "error", title: "에러", message });
 
   const openLegal = (url: string) =>
     WebBrowser.openBrowserAsync(url).catch(() =>
-      setErrorMessage(BROWSER_FAILED_MESSAGE),
+      showError(BROWSER_FAILED_MESSAGE),
     );
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
-    onSuccess: () => setInfoMessage(CODE_SENT_MESSAGE),
-    onError: (error) => setErrorMessage(apiErrorMessage(error)),
+    onSuccess: () =>
+      setAlert({ variant: "info", title: "알림", message: CODE_SENT_MESSAGE }),
+    onError: (error) => showError(apiErrorMessage(error)),
   });
 
   const signup = useMutation({
     mutationFn: api.members.signup,
     onSuccess: () => router.replace("/setup"),
-    onError: (error) => setErrorMessage(apiErrorMessage(error)),
+    onError: (error) => showError(apiErrorMessage(error)),
   });
 
+  const phoneNumber = useWatch({ control, name: "phoneNumber" });
+
   const canSendCode =
-    PHONE_NUMBER_PATTERN.test(watch("phoneNumber")) && !sendCode.isPending;
+    PHONE_NUMBER_PATTERN.test(phoneNumber) && !sendCode.isPending;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -112,7 +125,7 @@ export default function SignupScreen() {
             <RetroButton
               disabled={!canSendCode}
               opacity={canSendCode ? 1 : DISABLED_OPACITY}
-              onPress={() => sendCode.mutate(getValues("phoneNumber"))}
+              onPress={() => sendCode.mutate(phoneNumber)}
             >
               전송
             </RetroButton>
@@ -201,12 +214,9 @@ export default function SignupScreen() {
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
           <RetroButton
+            disabled={signup.isPending}
             opacity={signup.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) => {
-              if (!signup.isPending) {
-                signup.mutate(values);
-              }
-            })}
+            onPress={handleSubmit((values) => signup.mutate(values))}
           >
             {signup.isPending ? <Spinner color="white" /> : "회원가입"}
           </RetroButton>
@@ -236,26 +246,11 @@ export default function SignupScreen() {
       </KeyboardStickyView>
 
       <RetroAlert
-        visible={errorMessage !== null}
-        title="에러"
-        message={errorMessage ?? ""}
-        onClose={() => setErrorMessage(null)}
-      />
-
-      <RetroAlert
-        visible={infoMessage !== null}
-        variant="info"
-        title="알림"
-        message={infoMessage ?? ""}
-        onClose={() => setInfoMessage(null)}
-      />
-
-      <RetroAlert
-        visible={minorNoticeVisible}
-        variant="warning"
-        title="경고"
-        message={MINOR_NOTICE}
-        onClose={() => setMinorNoticeVisible(false)}
+        visible={alert !== null}
+        variant={alert?.variant}
+        title={alert?.title ?? ""}
+        message={alert?.message ?? ""}
+        onClose={() => setAlert(null)}
       />
     </SafeAreaView>
   );

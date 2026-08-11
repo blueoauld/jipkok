@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Modal, Platform, Text as NativeText } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 
@@ -14,6 +15,8 @@ const VARIANTS = {
   warning: { label: "WARNING.EXE", barColor: "$yellow9", labelColor: "black" },
 } as const;
 
+export type RetroAlertVariant = keyof typeof VARIANTS;
+
 export function RetroAlert({
   visible,
   variant = "error",
@@ -22,11 +25,22 @@ export function RetroAlert({
   onClose,
 }: {
   visible: boolean;
-  variant?: keyof typeof VARIANTS;
+  variant?: RetroAlertVariant;
   title: string;
   message: string;
   onClose: () => void;
 }) {
+  const [content, setContent] = useState({ variant, title, message });
+
+  if (
+    visible &&
+    (content.variant !== variant ||
+      content.title !== title ||
+      content.message !== message)
+  ) {
+    setContent({ variant, title, message });
+  }
+
   return (
     <Modal
       transparent
@@ -47,7 +61,7 @@ export function RetroAlert({
 
           <YStack borderWidth={2} borderColor="$color12" bg="$color1">
             <XStack
-              bg={VARIANTS[variant].barColor}
+              bg={VARIANTS[content.variant].barColor}
               px="$3"
               py="$2.5"
               items="center"
@@ -60,19 +74,19 @@ export function RetroAlert({
                   fontFamily: MONO_FONT,
                   fontWeight: "700",
                   fontSize: 18,
-                  color: VARIANTS[variant].labelColor,
+                  color: VARIANTS[content.variant].labelColor,
                 }}
               >
-                {VARIANTS[variant].label}
+                {VARIANTS[content.variant].label}
               </NativeText>
             </XStack>
 
             <YStack p="$4" gap="$2">
               <Text fontSize="$6" fontWeight="700" color="$color12">
-                {title}
+                {content.title}
               </Text>
               <Text color="$color12" fontSize="$3">
-                {message}
+                {content.message}
               </Text>
             </YStack>
 
