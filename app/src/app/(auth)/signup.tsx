@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert } from "react-native";
 import {
@@ -12,12 +12,14 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Spinner, Text, XStack, YStack } from "tamagui";
+import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
-import { FormButton } from "@/components/FormButton";
 import { FormField } from "@/components/FormField";
-import { alertApiError, alertInfo, alertMessage } from "@/lib/alert";
+import { RetroAlert } from "@/components/ui/RetroAlert";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
+import { alertInfo, alertMessage, apiErrorMessage } from "@/lib/alert";
 import { api, type SignupRequest } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
 
@@ -60,16 +62,18 @@ export default function SignupScreen() {
       alertMessage(BROWSER_FAILED_MESSAGE),
     );
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
     onSuccess: () => Alert.alert("알림", "인증번호를 보냈습니다."),
-    onError: alertApiError,
+    onError: (error) => setErrorMessage(apiErrorMessage(error)),
   });
 
   const signup = useMutation({
     mutationFn: api.members.signup,
     onSuccess: () => router.replace("/setup"),
-    onError: alertApiError,
+    onError: (error) => setErrorMessage(apiErrorMessage(error)),
   });
 
   const canSendCode =
@@ -90,6 +94,7 @@ export default function SignupScreen() {
               <ControlledInput
                 control={control}
                 name="phoneNumber"
+                input={RetroInput}
                 rules={{
                   required: "휴대폰 번호를 입력해주시길 바랍니다.",
                   pattern: {
@@ -105,21 +110,19 @@ export default function SignupScreen() {
               />
             </YStack>
 
-            <FormButton
+            <RetroButton
+              disabled={!canSendCode}
               opacity={canSendCode ? 1 : DISABLED_OPACITY}
-              onPress={() => {
-                if (canSendCode) {
-                  sendCode.mutate(getValues("phoneNumber"));
-                }
-              }}
+              onPress={() => sendCode.mutate(getValues("phoneNumber"))}
             >
               전송
-            </FormButton>
+            </RetroButton>
           </XStack>
 
           <ControlledInput
             control={control}
             name="verificationCode"
+            input={RetroInput}
             rules={{
               required: "인증번호를 입력해주시길 바랍니다.",
               pattern: {
@@ -137,6 +140,7 @@ export default function SignupScreen() {
           <ControlledInput
             control={control}
             name="password"
+            input={RetroInput}
             rules={{
               required: "비밀번호를 입력해주시길 바랍니다.",
               minLength: {
@@ -158,6 +162,7 @@ export default function SignupScreen() {
           <ControlledInput
             control={control}
             name="passwordConfirm"
+            input={RetroInput}
             rules={{
               required: "비밀번호를 한 번 더 입력해주시길 바랍니다.",
               validate: (value, values) =>
@@ -176,16 +181,16 @@ export default function SignupScreen() {
             rules={{ required: "성별을 선택해주시길 바랍니다." }}
             render={({ field, fieldState }) => (
               <FormField error={fieldState.error?.message}>
-                <XStack gap="$2">
+                <XStack gap="$3">
                   {GENDERS.map(({ value, label }) => (
-                    <FormButton
+                    <RetroButton
                       key={value}
                       flex={1}
-                      theme={field.value === value ? "blue" : undefined}
+                      theme={field.value === value ? "blue" : "gray"}
                       onPress={() => field.onChange(value)}
                     >
                       {label}
-                    </FormButton>
+                    </RetroButton>
                   ))}
                 </XStack>
               </FormField>
@@ -196,10 +201,7 @@ export default function SignupScreen() {
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button
-            size="$4"
-            theme="blue"
-            rounded="$7"
+          <RetroButton
             opacity={signup.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) => {
               if (!signup.isPending) {
@@ -207,8 +209,8 @@ export default function SignupScreen() {
               }
             })}
           >
-            {signup.isPending ? <Spinner /> : "회원가입"}
-          </Button>
+            {signup.isPending ? <Spinner color="white" /> : "회원가입"}
+          </RetroButton>
 
           <XStack justify="center" items="center" gap="$2" pt="$3">
             <Text
@@ -233,6 +235,13 @@ export default function SignupScreen() {
           </XStack>
         </YStack>
       </KeyboardStickyView>
+
+      <RetroAlert
+        visible={errorMessage !== null}
+        title="에러"
+        message={errorMessage ?? ""}
+        onClose={() => setErrorMessage(null)}
+      />
     </SafeAreaView>
   );
 }

@@ -5,10 +5,11 @@ const SHADOW_OFFSET = 4;
 export function RetroButton({
   theme = "blue",
   opacity,
+  flex,
   ...buttonProps
 }: ButtonProps) {
   return (
-    <YStack theme={theme} opacity={opacity}>
+    <YStack theme={theme} opacity={opacity} flex={flex}>
       <YStack
         position="absolute"
         t={SHADOW_OFFSET}
