@@ -11,7 +11,7 @@ export function RetroInput({ theme = "gray", ...inputProps }: InputProps) {
         b={-SHADOW_OFFSET}
         l={SHADOW_OFFSET}
         r={-SHADOW_OFFSET}
-        bg="$color8"
+        bg="$color12"
       />
       <Input
         size="$4"

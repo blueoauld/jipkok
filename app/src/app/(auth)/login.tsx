@@ -1,14 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
+import { RetroAlert } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { alertApiError } from "@/lib/alert";
+import { apiErrorMessage } from "@/lib/alert";
 import { api, type LoginRequest } from "@/lib/api";
 import { DISABLED_OPACITY, PRESS_OPACITY } from "@/lib/design";
 
@@ -20,10 +22,12 @@ export default function LoginScreen() {
     defaultValues: { phoneNumber: "", password: "" },
   });
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const login = useMutation({
     mutationFn: api.auth.login,
     onSuccess: () => router.replace("/main"),
-    onError: alertApiError,
+    onError: (error) => setErrorMessage(apiErrorMessage(error)),
   });
 
   return (
@@ -98,6 +102,13 @@ export default function LoginScreen() {
           </RetroButton>
         </YStack>
       </KeyboardAvoidingView>
+
+      <RetroAlert
+        visible={errorMessage !== null}
+        title="에러"
+        message={errorMessage ?? ""}
+        onClose={() => setErrorMessage(null)}
+      />
     </SafeAreaView>
   );
 }
