@@ -59,14 +59,14 @@ export function UserRow({ member }: { member: RowMember }) {
             </XStack>
 
             {locatedAt && (
-              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
+              <Text shrink={0} fontSize="$2">
                 {formatRelativeTime(locatedAt, now)}
               </Text>
             )}
           </XStack>
 
           <XStack items="center">
-            <Text theme="gray" color="$color11" fontSize="$3">
+            <Text fontSize="$3">
               {`${genderLabel(gender)} · ${age}살 · `}
             </Text>
 
@@ -74,28 +74,20 @@ export function UserRow({ member }: { member: RowMember }) {
               <HeartIcon
                 size={LIKE_ICON_SIZE}
                 weight="fill"
-                color={theme.gray10.val}
+                color={theme.color12.val}
               />
 
-              <Text theme="gray" color="$color11" fontSize="$3">
-                {receivedLikeCount}
-              </Text>
+              <Text fontSize="$3">{receivedLikeCount}</Text>
             </XStack>
           </XStack>
 
           <XStack items="center" justify="space-between" gap="$2">
-            <Text
-              flex={1}
-              numberOfLines={1}
-              theme="gray"
-              color="$color11"
-              fontSize="$3"
-            >
+            <Text flex={1} numberOfLines={1} fontSize="$3">
               {comment || EMPTY_COMMENT}
             </Text>
 
             {distance !== undefined && distance !== null && (
-              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
+              <Text shrink={0} fontSize="$2">
                 {formatDistance(distance)}
               </Text>
             )}

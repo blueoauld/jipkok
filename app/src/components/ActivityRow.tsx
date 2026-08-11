@@ -82,14 +82,14 @@ export function ActivityRow({
             </Text>
 
             {caption && (
-              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
+              <Text shrink={0} fontSize="$2">
                 {caption}
               </Text>
             )}
           </XStack>
 
           <XStack items="center">
-            <Text theme="gray" color="$color11" fontSize="$3">
+            <Text fontSize="$3">
               {`${genderLabel(gender)} · ${age}살 · `}
             </Text>
 
@@ -97,16 +97,14 @@ export function ActivityRow({
               <HeartIcon
                 size={LIKE_ICON_SIZE}
                 weight="fill"
-                color={theme.gray10.val}
+                color={theme.color12.val}
               />
 
-              <Text theme="gray" color="$color11" fontSize="$3">
-                {receivedLikeCount}
-              </Text>
+              <Text fontSize="$3">{receivedLikeCount}</Text>
             </XStack>
           </XStack>
 
-          <Text numberOfLines={1} theme="gray" color="$color11" fontSize="$3">
+          <Text numberOfLines={1} fontSize="$3">
             {comment || EMPTY_COMMENT}
           </Text>
         </YStack>

@@ -292,19 +292,13 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
                     )}
                   </XStack>
 
-                  <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
+                  <Text shrink={0} fontSize="$2">
                     {formatChatTime(room.lastMessageAt)}
                   </Text>
                 </XStack>
 
                 <XStack items="center" justify="space-between" gap="$2">
-                  <Text
-                    flex={1}
-                    numberOfLines={2}
-                    theme="gray"
-                    color="$color11"
-                    fontSize="$3"
-                  >
+                  <Text flex={1} numberOfLines={2} fontSize="$3">
                     {room.lastMessageType === "PHOTO"
                       ? PHOTO_MESSAGE
                       : room.lastMessageContent}

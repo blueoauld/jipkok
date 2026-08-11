@@ -77,7 +77,7 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
               {nickname}
             </Text>
             <XStack items="center">
-              <Text theme="gray" color="$color11" fontSize="$4">
+              <Text fontSize="$4">
                 {`${genderLabel(gender)} · ${age}살 · `}
               </Text>
 
@@ -85,12 +85,10 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
                 <HeartIcon
                   size={LIKE_ICON_SIZE}
                   weight="fill"
-                  color={theme.gray10.val}
+                  color={theme.color12.val}
                 />
 
-                <Text theme="gray" color="$color11" fontSize="$4">
-                  {receivedLikeCount}
-                </Text>
+                <Text fontSize="$4">{receivedLikeCount}</Text>
               </XStack>
             </XStack>
           </YStack>

@@ -425,12 +425,7 @@ export default function MemberProfileScreen() {
                   </Text>
 
                   {member.locatedAt && (
-                    <Text
-                      shrink={0}
-                      theme="gray"
-                      color="$color11"
-                      fontSize="$2"
-                    >
+                    <Text shrink={0} fontSize="$2">
                       {formatRelativeTime(member.locatedAt, now)}
                     </Text>
                   )}
@@ -438,7 +433,7 @@ export default function MemberProfileScreen() {
 
                 <XStack items="center" justify="space-between" gap="$2">
                   <XStack flex={1} items="center">
-                    <Text theme="gray" color="$color11" fontSize="$4">
+                    <Text fontSize="$4">
                       {`${genderLabel(member.gender)} · ${member.age}살 · `}
                     </Text>
 
@@ -446,23 +441,16 @@ export default function MemberProfileScreen() {
                       <HeartIcon
                         size={LIKE_ICON_SIZE}
                         weight="fill"
-                        color={theme.gray10.val}
+                        color={theme.color12.val}
                       />
 
-                      <Text theme="gray" color="$color11" fontSize="$4">
-                        {member.receivedLikeCount}
-                      </Text>
+                      <Text fontSize="$4">{member.receivedLikeCount}</Text>
                     </XStack>
                   </XStack>
 
                   {member.distance !== undefined &&
                     member.distance !== null && (
-                      <Text
-                        shrink={0}
-                        theme="gray"
-                        color="$color11"
-                        fontSize="$2"
-                      >
+                      <Text shrink={0} fontSize="$2">
                         {formatDistance(member.distance)}
                       </Text>
                     )}
