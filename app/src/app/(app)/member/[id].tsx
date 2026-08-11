@@ -23,7 +23,7 @@ import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
@@ -409,7 +409,6 @@ export default function MemberProfileScreen() {
               ) : (
                 <PhotoPager photos={member.publicPhotoUrls} />
               )}
-
             </YStack>
 
             <YStack gap="$4" p="$4">
@@ -507,13 +506,10 @@ export default function MemberProfileScreen() {
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
           {error ? (
-            <>
-              <Text color="$gray10" fontSize="$4" text="center">
-                {isApiError(error) ? error.message : ERROR_MESSAGE}
-              </Text>
-
-              <RetroButton onPress={() => refetch()}>다시 시도</RetroButton>
-            </>
+            <ErrorState
+              message={isApiError(error) ? error.message : ERROR_MESSAGE}
+              onRetry={() => refetch()}
+            />
           ) : (
             <Spinner size="small" />
           )}

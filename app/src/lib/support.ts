@@ -8,6 +8,10 @@ const EMAIL = "hello@jipkok.app";
 
 export const MAIL_FAILED_MESSAGE = `${EMAIL}으로 메일을 보내주시길 바랍니다.`;
 
+export const TERMS_URL = "https://jipkok.app/terms";
+export const PRIVACY_URL = "https://jipkok.app/privacy";
+export const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
+
 const APP_NAME = "집콕";
 const PLACEHOLDER = "(여기에 내용을 적어주세요)";
 const DIVIDER = "────────────";

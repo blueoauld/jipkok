@@ -9,7 +9,7 @@ import {
 import type { InputProps } from "tamagui";
 
 import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
+import { RetroInput } from "@/components/ui/RetroInput";
 
 type ControlledInputProps<T extends FieldValues> = InputProps & {
   control: Control<T>;
@@ -24,7 +24,7 @@ export function ControlledInput<T extends FieldValues>({
   name,
   rules,
   renderRight,
-  input: InputComponent = FormInput,
+  input: InputComponent = RetroInput,
   ...inputProps
 }: ControlledInputProps<T>) {
   return (

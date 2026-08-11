@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import { Dialog, YStack } from "tamagui";
 
-import { OVERLAY_BG } from "@/lib/design";
-
-const SHADOW_OFFSET = 4;
+import { OVERLAY_BG, RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 export function RetroDialogContent({
   y,
@@ -30,10 +28,10 @@ export function RetroDialogContent({
         <YStack>
           <YStack
             position="absolute"
-            t={SHADOW_OFFSET}
-            b={-SHADOW_OFFSET}
-            l={SHADOW_OFFSET}
-            r={-SHADOW_OFFSET}
+            t={RETRO_SHADOW_OFFSET}
+            b={-RETRO_SHADOW_OFFSET}
+            l={RETRO_SHADOW_OFFSET}
+            r={-RETRO_SHADOW_OFFSET}
             bg="$gray12"
           />
           <YStack

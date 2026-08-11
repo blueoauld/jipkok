@@ -1,6 +1,6 @@
 import { Button, type ButtonProps, YStack } from "tamagui";
 
-const SHADOW_OFFSET = 4;
+import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 export function RetroButton({
   theme = "blue",
@@ -12,10 +12,10 @@ export function RetroButton({
     <YStack theme={theme} opacity={opacity} flex={flex}>
       <YStack
         position="absolute"
-        t={SHADOW_OFFSET}
-        b={-SHADOW_OFFSET}
-        l={SHADOW_OFFSET}
-        r={-SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET}
+        b={-RETRO_SHADOW_OFFSET}
+        l={RETRO_SHADOW_OFFSET}
+        r={-RETRO_SHADOW_OFFSET}
         bg="$gray12"
       />
       <Button
@@ -27,8 +27,8 @@ export function RetroButton({
         color="white"
         fontWeight="700"
         pressStyle={{
-          x: SHADOW_OFFSET,
-          y: SHADOW_OFFSET,
+          x: RETRO_SHADOW_OFFSET,
+          y: RETRO_SHADOW_OFFSET,
           bg: "$color11",
           borderColor: "$color12",
         }}

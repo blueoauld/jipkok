@@ -20,14 +20,12 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
+import { DISABLED_OPACITY, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const DETAIL_MAX_LENGTH = 1000;
-const SHADOW_OFFSET = 4;
-
 const REASONS: { label: string; value: ReportReason }[] = [
   { label: "음란물", value: "OBSCENITY" },
   { label: "미성년자", value: "MINOR" },
@@ -160,10 +158,10 @@ export default function ReportScreen() {
           <YStack>
             <YStack
               position="absolute"
-              t={SHADOW_OFFSET}
-              b={-SHADOW_OFFSET}
-              l={SHADOW_OFFSET}
-              r={-SHADOW_OFFSET}
+              t={RETRO_SHADOW_OFFSET}
+              b={-RETRO_SHADOW_OFFSET}
+              l={RETRO_SHADOW_OFFSET}
+              r={-RETRO_SHADOW_OFFSET}
               bg="$gray8"
             />
             <YStack borderWidth={2} borderColor="$color12" bg="$color1">

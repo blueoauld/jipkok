@@ -3,7 +3,7 @@ import { FlatList } from "react-native";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ActivityRow } from "@/components/ActivityRow";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
@@ -36,15 +36,7 @@ export function ActivityList({
     return (
       <Centered>
         {isError ? (
-          <>
-            <Text color="$gray10" fontSize="$4">
-              {ERROR_MESSAGE}
-            </Text>
-
-            <RetroButton onPress={() => query.refetch()}>
-              다시 시도
-            </RetroButton>
-          </>
+          <ErrorState message={ERROR_MESSAGE} onRetry={() => query.refetch()} />
         ) : (
           <Spinner size="small" />
         )}

@@ -13,7 +13,6 @@ import { Spinner, Text, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
@@ -61,7 +60,6 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="nickname"
-            input={RetroInput}
             rules={{
               required: "닉네임을 입력해주시길 바랍니다.",
               pattern: {
@@ -81,7 +79,6 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="birthYear"
-            input={RetroInput}
             rules={{
               required: "출생연도를 입력해주시길 바랍니다.",
               pattern: {
@@ -98,7 +95,6 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="bio"
-            input={RetroInput}
             rules={{
               maxLength: {
                 value: BIO_MAX_LENGTH,
@@ -106,7 +102,7 @@ export default function SetupScreen() {
               },
             }}
             renderRight={(value) => (
-              <Text theme="gray" color="$color10">
+              <Text theme="gray" color="$color11">
                 {`${value.length} / ${BIO_MAX_LENGTH}`}
               </Text>
             )}

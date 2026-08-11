@@ -35,20 +35,21 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
-import { tabBarOverlayHeight } from "@/lib/design";
+import { RETRO_SHADOW_OFFSET, tabBarOverlayHeight } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
-import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
+import {
+  BROWSER_FAILED_MESSAGE,
+  MAIL_FAILED_MESSAGE,
+  openSupportMail,
+  PRIVACY_URL,
+  TERMS_URL,
+} from "@/lib/support";
 
 const ICON_SIZE = 22;
 
 const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
-
-const TERMS_URL = "https://jipkok.app/terms";
-const PRIVACY_URL = "https://jipkok.app/privacy";
-
-const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
@@ -67,8 +68,6 @@ const PROFILE_VIEW_HREF = "/activity/profile-view";
 
 const BADGE_SIZE = 20;
 const BADGE_FONT_SIZE = 11;
-
-const SHADOW_OFFSET = 4;
 
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
@@ -189,10 +188,10 @@ function SettingSection({
     <YStack mx="$4">
       <YStack
         position="absolute"
-        t={SHADOW_OFFSET}
-        b={-SHADOW_OFFSET}
-        l={SHADOW_OFFSET}
-        r={-SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET}
+        b={-RETRO_SHADOW_OFFSET}
+        l={RETRO_SHADOW_OFFSET}
+        r={-RETRO_SHADOW_OFFSET}
         bg="$gray8"
       />
       <YStack borderWidth={2} borderColor="$color12" bg="$color1">

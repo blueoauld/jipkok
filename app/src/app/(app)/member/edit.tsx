@@ -15,6 +15,7 @@ import { Spinner, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
@@ -246,11 +247,7 @@ export default function MemberEditScreen() {
         <EditForm profile={data} />
       ) : isError ? (
         <Centered>
-          <Text color="$gray10" fontSize="$4">
-            {ERROR_MESSAGE}
-          </Text>
-
-          <RetroButton onPress={() => refetch()}>다시 시도</RetroButton>
+          <ErrorState message={ERROR_MESSAGE} onRetry={() => refetch()} />
         </Centered>
       ) : (
         <Centered>

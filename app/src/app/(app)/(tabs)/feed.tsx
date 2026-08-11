@@ -41,6 +41,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroDialogContent } from "@/components/ui/RetroDialogContent";
@@ -62,6 +63,7 @@ import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import {
   DISABLED_OPACITY,
   OVERLAY_BG,
+  RETRO_SHADOW_OFFSET_SM,
   tabBarOverlayHeight,
 } from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
@@ -91,7 +93,6 @@ type Sort = (typeof SORTS)[number];
 const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
-const SMALL_SHADOW_OFFSET = 2;
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = 40;
 
@@ -108,10 +109,10 @@ function CardButton({ children, ...props }: XStackProps) {
     <YStack>
       <YStack
         position="absolute"
-        t={SMALL_SHADOW_OFFSET}
-        b={-SMALL_SHADOW_OFFSET}
-        l={SMALL_SHADOW_OFFSET}
-        r={-SMALL_SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET_SM}
+        b={-RETRO_SHADOW_OFFSET_SM}
+        l={RETRO_SHADOW_OFFSET_SM}
+        r={-RETRO_SHADOW_OFFSET_SM}
         bg="$gray12"
       />
       <XStack
@@ -121,8 +122,8 @@ function CardButton({ children, ...props }: XStackProps) {
         items="center"
         justify="center"
         pressStyle={{
-          x: SMALL_SHADOW_OFFSET,
-          y: SMALL_SHADOW_OFFSET,
+          x: RETRO_SHADOW_OFFSET_SM,
+          y: RETRO_SHADOW_OFFSET_SM,
           bg: "$color3",
         }}
         {...props}
@@ -296,10 +297,10 @@ function ComposeForm({
           <YStack position="absolute" t="$3" r="$3">
             <YStack
               position="absolute"
-              t={SMALL_SHADOW_OFFSET}
-              b={-SMALL_SHADOW_OFFSET}
-              l={SMALL_SHADOW_OFFSET}
-              r={-SMALL_SHADOW_OFFSET}
+              t={RETRO_SHADOW_OFFSET_SM}
+              b={-RETRO_SHADOW_OFFSET_SM}
+              l={RETRO_SHADOW_OFFSET_SM}
+              r={-RETRO_SHADOW_OFFSET_SM}
               bg="$gray12"
             />
             <XStack
@@ -311,7 +312,10 @@ function ComposeForm({
               bg="$red10"
               items="center"
               justify="center"
-              pressStyle={{ x: SMALL_SHADOW_OFFSET, y: SMALL_SHADOW_OFFSET }}
+              pressStyle={{
+                x: RETRO_SHADOW_OFFSET_SM,
+                y: RETRO_SHADOW_OFFSET_SM,
+              }}
               onPress={() => setPhoto(null)}
             >
               <XIcon size={14} weight="bold" color="white" />
@@ -330,7 +334,7 @@ function ComposeForm({
 
       <FormField
         right={
-          <Text theme="gray" color="$color10">
+          <Text theme="gray" color="$color11">
             {`${length} / ${CAPTION_MAX_LENGTH}`}
           </Text>
         }
@@ -540,7 +544,7 @@ export default function FeedScreen() {
     <YStack flex={1}>
       <Tabs.Screen options={screenOptions} />
 
-      <YStack px="$4" pt="$4" pb="$2">
+      <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           values={SORTS}
           value={SORT_LABELS[sort]}
@@ -579,7 +583,7 @@ export default function FeedScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
-            paddingTop: space.$3.val,
+            paddingTop: space.$2.val,
             paddingBottom: space.$4.val + tabBarOverlay,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
@@ -611,15 +615,10 @@ export default function FeedScreen() {
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
           {error ? (
-            <>
-              <Text color="$gray10" fontSize="$4" text="center">
-                {isApiError(error) ? error.message : ERROR_MESSAGE}
-              </Text>
-
-              <RetroButton onPress={() => feed.refetch()}>
-                다시 시도
-              </RetroButton>
-            </>
+            <ErrorState
+              message={isApiError(error) ? error.message : ERROR_MESSAGE}
+              onRetry={() => feed.refetch()}
+            />
           ) : (
             <Spinner size="small" />
           )}

@@ -9,13 +9,11 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
-import { PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { PHOTO_PRESS_OPACITY, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 
 const COLUMNS = 3;
 
 const PHOTO_TRANSITION = 200;
-const CELL_SHADOW_OFFSET = 2;
-
 type Cell =
   | { kind: "photo"; uri: string; index: number }
   | { kind: "add" }
@@ -59,10 +57,10 @@ function CellShadow() {
   return (
     <YStack
       position="absolute"
-      t={CELL_SHADOW_OFFSET}
-      b={-CELL_SHADOW_OFFSET}
-      l={CELL_SHADOW_OFFSET}
-      r={-CELL_SHADOW_OFFSET}
+      t={RETRO_SHADOW_OFFSET_SM}
+      b={-RETRO_SHADOW_OFFSET_SM}
+      l={RETRO_SHADOW_OFFSET_SM}
+      r={-RETRO_SHADOW_OFFSET_SM}
       bg="$gray8"
     />
   );
@@ -82,10 +80,10 @@ function OverlayButton({
     <YStack position="absolute" {...position}>
       <YStack
         position="absolute"
-        t={CELL_SHADOW_OFFSET}
-        b={-CELL_SHADOW_OFFSET}
-        l={CELL_SHADOW_OFFSET}
-        r={-CELL_SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET_SM}
+        b={-RETRO_SHADOW_OFFSET_SM}
+        l={RETRO_SHADOW_OFFSET_SM}
+        r={-RETRO_SHADOW_OFFSET_SM}
         bg="$gray12"
       />
       <XStack
@@ -97,7 +95,7 @@ function OverlayButton({
         bg={bg}
         items="center"
         justify="center"
-        pressStyle={{ x: CELL_SHADOW_OFFSET, y: CELL_SHADOW_OFFSET }}
+        pressStyle={{ x: RETRO_SHADOW_OFFSET_SM, y: RETRO_SHADOW_OFFSET_SM }}
         onPress={onPress}
       >
         {children}
@@ -169,9 +167,9 @@ export function PhotoGrid({
                       items="center"
                       justify="center"
                       pressStyle={{
-                        x: CELL_SHADOW_OFFSET,
-                        y: CELL_SHADOW_OFFSET,
-                        bg: "$gray5",
+                        x: RETRO_SHADOW_OFFSET_SM,
+                        y: RETRO_SHADOW_OFFSET_SM,
+                        bg: "$gray6",
                       }}
                       onPress={onAdd}
                     >
@@ -198,8 +196,8 @@ export function PhotoGrid({
                     pressStyle={
                       onPressPhoto
                         ? {
-                            x: CELL_SHADOW_OFFSET,
-                            y: CELL_SHADOW_OFFSET,
+                            x: RETRO_SHADOW_OFFSET_SM,
+                            y: RETRO_SHADOW_OFFSET_SM,
                             opacity: PHOTO_PRESS_OPACITY,
                           }
                         : undefined

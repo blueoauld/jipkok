@@ -16,7 +16,7 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
@@ -183,15 +183,10 @@ export default function MainScreen() {
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
           {error ? (
-            <>
-              <Text color="$gray10" fontSize="$4" text="center">
-                {isApiError(error) ? error.message : ERROR_MESSAGE}
-              </Text>
-
-              <RetroButton onPress={() => feed.refetch()}>
-                다시 시도
-              </RetroButton>
-            </>
+            <ErrorState
+              message={isApiError(error) ? error.message : ERROR_MESSAGE}
+              onRetry={() => feed.refetch()}
+            />
           ) : (
             <Spinner size="small" />
           )}

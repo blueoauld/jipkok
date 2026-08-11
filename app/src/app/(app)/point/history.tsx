@@ -4,7 +4,7 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
@@ -121,15 +121,10 @@ export default function PointHistoryScreen() {
         ) : (
           <Centered>
             {isError ? (
-              <>
-                <Text color="$gray10" fontSize="$4">
-                  {ERROR_MESSAGE}
-                </Text>
-
-                <RetroButton onPress={() => query.refetch()}>
-                  다시 시도
-                </RetroButton>
-              </>
+              <ErrorState
+                message={ERROR_MESSAGE}
+                onRetry={() => query.refetch()}
+              />
             ) : (
               <Spinner size="small" />
             )}

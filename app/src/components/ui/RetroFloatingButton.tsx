@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { XStack, YStack } from "tamagui";
 
-import { RETRO_SHADOW_OFFSET } from "@/components/ui/RetroCard";
+import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 const BUTTON_SIZE = 40;
 

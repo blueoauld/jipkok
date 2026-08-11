@@ -1,8 +1,9 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Spinner, Text, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
+import { ErrorState } from "@/components/ui/ErrorState";
 import { restoreSession } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 
@@ -33,15 +34,7 @@ export default function IndexScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
         {failed ? (
-          <>
-            <Text color="$gray10" fontSize="$4">
-              연결에 실패했습니다.
-            </Text>
-
-            <Button size="$3" theme="blue" rounded="$7" onPress={retry}>
-              다시 시도
-            </Button>
-          </>
+          <ErrorState message="연결에 실패했습니다." onRetry={retry} />
         ) : (
           <Spinner size="small" />
         )}

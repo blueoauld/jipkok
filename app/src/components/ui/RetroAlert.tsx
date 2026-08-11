@@ -2,9 +2,7 @@ import { Modal, Platform, Text as NativeText } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
-import { OVERLAY_BG } from "@/lib/design";
-
-const SHADOW_OFFSET = 4;
+import { OVERLAY_BG, RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
@@ -46,11 +44,11 @@ export function RetroAlert({
         <YStack>
           <YStack
             position="absolute"
-            t={SHADOW_OFFSET}
-            b={-SHADOW_OFFSET}
-            l={SHADOW_OFFSET}
-            r={-SHADOW_OFFSET}
-            bg="$color12"
+            t={RETRO_SHADOW_OFFSET}
+            b={-RETRO_SHADOW_OFFSET}
+            l={RETRO_SHADOW_OFFSET}
+            r={-RETRO_SHADOW_OFFSET}
+            bg="$gray12"
           />
 
           <YStack borderWidth={2} borderColor="$color12" bg="$color1">

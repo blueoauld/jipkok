@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { RETRO_SHADOW_OFFSET, RetroCard } from "@/components/ui/RetroCard";
+import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
@@ -28,13 +28,13 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
 import { formatChatTime } from "@/lib/date";
+import { RETRO_SHADOW_OFFSET, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const PHOTO_MESSAGE = "사진";
 
 const LEAVE_ACTION_WIDTH = 56;
 const LEAVE_ACTION_GAP = 12;
-const ACTION_SHADOW_OFFSET = 2;
 const LEAVE_ICON_SIZE = 24;
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -69,8 +69,8 @@ function ActionButton({
             borderColor: theme.gray12.val,
             transform: pressed
               ? [
-                  { translateX: ACTION_SHADOW_OFFSET },
-                  { translateY: ACTION_SHADOW_OFFSET },
+                  { translateX: RETRO_SHADOW_OFFSET_SM },
+                  { translateY: RETRO_SHADOW_OFFSET_SM },
                 ]
               : [],
           },
@@ -98,7 +98,7 @@ function LeaveAction({
           drag.value +
           LEAVE_ACTION_WIDTH +
           LEAVE_ACTION_GAP +
-          ACTION_SHADOW_OFFSET,
+          RETRO_SHADOW_OFFSET_SM,
       },
     ],
   }));
@@ -109,7 +109,7 @@ function LeaveAction({
         color={theme.red10.val}
         margin={{
           marginLeft: LEAVE_ACTION_GAP,
-          marginRight: ACTION_SHADOW_OFFSET,
+          marginRight: RETRO_SHADOW_OFFSET_SM,
         }}
         onPress={onPress}
       >
@@ -337,9 +337,9 @@ const styles = StyleSheet.create({
   },
   actionShadow: {
     position: "absolute",
-    top: ACTION_SHADOW_OFFSET,
-    bottom: -ACTION_SHADOW_OFFSET,
-    left: ACTION_SHADOW_OFFSET,
-    right: -ACTION_SHADOW_OFFSET,
+    top: RETRO_SHADOW_OFFSET_SM,
+    bottom: -RETRO_SHADOW_OFFSET_SM,
+    left: RETRO_SHADOW_OFFSET_SM,
+    right: -RETRO_SHADOW_OFFSET_SM,
   },
 });

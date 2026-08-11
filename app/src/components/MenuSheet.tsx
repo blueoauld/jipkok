@@ -50,7 +50,7 @@ export function MenuSheet({
             gap="$2"
             p="$3"
             rounded={0}
-            pressStyle={{ bg: "$color4" }}
+            pressStyle={{ bg: "$color3" }}
             onPress={() => {
               onOpenChange(false);
               onPress?.();

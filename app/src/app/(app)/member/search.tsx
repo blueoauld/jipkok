@@ -5,7 +5,7 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { UserRow } from "@/components/UserRow";
 import { MIN_KEYWORD_LENGTH, useMemberSearch } from "@/hooks/useMemberSearch";
@@ -101,15 +101,10 @@ export default function MemberSearchScreen() {
                   {HINT_MESSAGE}
                 </Text>
               ) : error ? (
-                <>
-                  <Text color="$gray10" fontSize="$4" text="center">
-                    {isApiError(error) ? error.message : ERROR_MESSAGE}
-                  </Text>
-
-                  <RetroButton onPress={() => search.refetch()}>
-                    다시 시도
-                  </RetroButton>
-                </>
+                <ErrorState
+                  message={isApiError(error) ? error.message : ERROR_MESSAGE}
+                  onRetry={() => search.refetch()}
+                />
               ) : isFetching ? (
                 <Spinner size="small" />
               ) : (

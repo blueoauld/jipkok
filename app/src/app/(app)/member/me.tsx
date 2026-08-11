@@ -13,7 +13,7 @@ import { PhotoPager } from "@/components/PhotoPager";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
@@ -154,11 +154,7 @@ export default function MyProfileScreen() {
         <Profile profile={data} />
       ) : isError ? (
         <Centered>
-          <Text color="$gray10" fontSize="$4">
-            {ERROR_MESSAGE}
-          </Text>
-
-          <RetroButton onPress={() => refetch()}>다시 시도</RetroButton>
+          <ErrorState message={ERROR_MESSAGE} onRetry={() => refetch()} />
         </Centered>
       ) : (
         <Centered>

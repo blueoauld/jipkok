@@ -8,7 +8,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
@@ -86,15 +86,10 @@ export default function RankScreen() {
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
           {error ? (
-            <>
-              <Text color="$gray10" fontSize="$4" text="center">
-                {isApiError(error) ? error.message : ERROR_MESSAGE}
-              </Text>
-
-              <RetroButton onPress={() => ranking.refetch()}>
-                다시 시도
-              </RetroButton>
-            </>
+            <ErrorState
+              message={isApiError(error) ? error.message : ERROR_MESSAGE}
+              onRetry={() => ranking.refetch()}
+            />
           ) : (
             <Spinner size="small" />
           )}

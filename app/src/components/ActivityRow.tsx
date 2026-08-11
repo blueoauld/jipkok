@@ -6,6 +6,7 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
+import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 
 const EMPTY_COMMENT = "-";
@@ -13,8 +14,6 @@ const LIKE_ICON_SIZE = 13;
 
 const DELETE_BUTTON_SIZE = 44;
 const DELETE_ICON_SIZE = 22;
-const DELETE_SHADOW_OFFSET = 2;
-
 function DeleteButton({ onPress }: { onPress: () => void }) {
   const press = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -25,10 +24,10 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
     <YStack shrink={0}>
       <YStack
         position="absolute"
-        t={DELETE_SHADOW_OFFSET}
-        b={-DELETE_SHADOW_OFFSET}
-        l={DELETE_SHADOW_OFFSET}
-        r={-DELETE_SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET_SM}
+        b={-RETRO_SHADOW_OFFSET_SM}
+        l={RETRO_SHADOW_OFFSET_SM}
+        r={-RETRO_SHADOW_OFFSET_SM}
         bg="$gray12"
       />
       <XStack
@@ -40,8 +39,8 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
         items="center"
         justify="center"
         pressStyle={{
-          x: DELETE_SHADOW_OFFSET,
-          y: DELETE_SHADOW_OFFSET,
+          x: RETRO_SHADOW_OFFSET_SM,
+          y: RETRO_SHADOW_OFFSET_SM,
           bg: "$red11",
         }}
         onPress={press}

@@ -34,7 +34,7 @@ function DialogForm({
 
       <FormField
         right={
-          <Text theme="gray" color="$color10">
+          <Text theme="gray" color="$color11">
             {`${length} / ${maxLength}`}
           </Text>
         }

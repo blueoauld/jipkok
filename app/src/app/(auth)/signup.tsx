@@ -15,10 +15,14 @@ import { Spinner, Text, XStack, YStack } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
+import {
+  BROWSER_FAILED_MESSAGE,
+  PRIVACY_URL,
+  TERMS_URL,
+} from "@/lib/support";
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
@@ -31,9 +35,6 @@ const BOTTOM_BAR_HEIGHT = 80;
 const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
 
-const TERMS_URL = "https://jipkok.app/terms";
-const PRIVACY_URL = "https://jipkok.app/privacy";
-const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 const CODE_SENT_MESSAGE = "인증번호가 전송되었습니다.";
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
@@ -96,7 +97,6 @@ export default function SignupScreen() {
               <ControlledInput
                 control={control}
                 name="phoneNumber"
-                input={RetroInput}
                 rules={PHONE_NUMBER_RULES}
                 placeholder="휴대폰 번호"
                 keyboardType="number-pad"
@@ -118,7 +118,6 @@ export default function SignupScreen() {
           <ControlledInput
             control={control}
             name="verificationCode"
-            input={RetroInput}
             rules={{
               required: "인증번호를 입력해주시길 바랍니다.",
               pattern: {
@@ -136,7 +135,6 @@ export default function SignupScreen() {
           <ControlledInput
             control={control}
             name="password"
-            input={RetroInput}
             rules={{
               required: "비밀번호를 입력해주시길 바랍니다.",
               minLength: {
@@ -159,7 +157,6 @@ export default function SignupScreen() {
           <ControlledInput
             control={control}
             name="passwordConfirm"
-            input={RetroInput}
             rules={{
               required: "비밀번호를 한 번 더 입력해주시길 바랍니다.",
               validate: (value, values) =>

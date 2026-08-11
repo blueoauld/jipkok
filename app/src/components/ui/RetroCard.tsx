@@ -1,8 +1,6 @@
 import { YStack, type YStackProps } from "tamagui";
 
-export const RETRO_SHADOW_OFFSET = 4;
-
-const SHADOW_OFFSET = RETRO_SHADOW_OFFSET;
+import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 export function RetroCard({
   theme = "gray",
@@ -16,10 +14,10 @@ export function RetroCard({
     <YStack theme={theme} flex={flex}>
       <YStack
         position="absolute"
-        t={SHADOW_OFFSET}
-        b={-SHADOW_OFFSET}
-        l={SHADOW_OFFSET}
-        r={-SHADOW_OFFSET}
+        t={RETRO_SHADOW_OFFSET}
+        b={-RETRO_SHADOW_OFFSET}
+        l={RETRO_SHADOW_OFFSET}
+        r={-RETRO_SHADOW_OFFSET}
         bg={shadow}
       />
       <YStack
@@ -30,7 +28,7 @@ export function RetroCard({
         onPress={onPress}
         pressStyle={
           onPress
-            ? { x: SHADOW_OFFSET, y: SHADOW_OFFSET, bg: "$color3" }
+            ? { x: RETRO_SHADOW_OFFSET, y: RETRO_SHADOW_OFFSET, bg: "$color3" }
             : undefined
         }
         {...props}
