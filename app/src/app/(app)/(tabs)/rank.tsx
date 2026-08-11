@@ -1,27 +1,24 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import {
   SCROLL_EVENT_THROTTLE,
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
-import { type Gender, isApiError } from "@/lib/api";
+import { isApiError } from "@/lib/api";
 import { tabBarOverlayHeight } from "@/lib/design";
-
-const FILTERS = ["전체", "남자", "여자"] as const;
-type Filter = (typeof FILTERS)[number];
-
-const GENDER_VALUES: Record<Filter, Gender | null> = {
-  전체: null,
-  남자: "MALE",
-  여자: "FEMALE",
-};
+import {
+  GENDER_FILTER_VALUES,
+  GENDER_FILTERS,
+  type GenderFilter,
+} from "@/lib/member";
 
 const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "회원이 없습니다.";
@@ -29,21 +26,24 @@ const EMPTY_MESSAGE = "회원이 없습니다.";
 export default function RankScreen() {
   const space = getTokens().space;
   const insets = useSafeAreaInsets();
-  const [filter, setFilter] = useState<Filter>("전체");
+  const [filter, setFilter] = useState<GenderFilter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
-  const ranking = useMemberRanking(GENDER_VALUES[filter]);
+  const ranking = useMemberRanking(GENDER_FILTER_VALUES[filter]);
   const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     ranking;
 
   return (
     <YStack flex={1}>
-      <YStack px="$4" pt="$4" pb="$2">
+      <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={FILTERS}
+          values={GENDER_FILTERS}
           value={filter}
-          onChange={setFilter}
+          onChange={(next) => {
+            setFilter(next);
+            listRef.current?.scrollToOffset({ offset: 0, animated: false });
+          }}
         />
       </YStack>
 
@@ -57,8 +57,8 @@ export default function RankScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
-            paddingTop: space.$3.val,
-            paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
+            paddingTop: space.$2.val,
+            paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}
@@ -91,14 +91,9 @@ export default function RankScreen() {
                 {isApiError(error) ? error.message : ERROR_MESSAGE}
               </Text>
 
-              <Button
-                size="$3"
-                theme="blue"
-                rounded="$7"
-                onPress={() => ranking.refetch()}
-              >
+              <RetroButton onPress={() => ranking.refetch()}>
                 다시 시도
-              </Button>
+              </RetroButton>
             </>
           ) : (
             <Spinner size="small" />

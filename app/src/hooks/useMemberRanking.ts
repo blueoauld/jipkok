@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { api, type Gender, type MemberSearchPage } from "@/lib/api";
 
@@ -9,6 +9,7 @@ export function useMemberRanking(gender: Gender | null) {
       api.members.ranking({ gender: gender ?? undefined, cursor: pageParam }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (page: MemberSearchPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   return {

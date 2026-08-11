@@ -23,28 +23,23 @@ import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { api, type Gender, isApiError, type MemberSort } from "@/lib/api";
+import { api, isApiError, type MemberSort } from "@/lib/api";
 import { tabBarOverlayHeight } from "@/lib/design";
 import { useMemberFilterStore } from "@/lib/filter/store";
-import { genderLabel } from "@/lib/member";
+import {
+  GENDER_FILTER_VALUES,
+  GENDER_FILTERS,
+  genderLabel,
+} from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
 type Filter = (typeof FILTERS)[number];
 
-const GENDERS = ["전체", "남자", "여자"] as const;
-type GenderLabel = (typeof GENDERS)[number];
-
 const SORTS: Record<Filter, MemberSort> = { 최근: "RECENT", 거리: "DISTANCE" };
 const SORT_LABELS: Record<MemberSort, Filter> = {
   RECENT: "최근",
   DISTANCE: "거리",
-};
-
-const GENDER_VALUES: Record<GenderLabel, Gender | null> = {
-  전체: null,
-  남자: "MALE",
-  여자: "FEMALE",
 };
 
 const COMMENT_MAX_LENGTH = 100;
@@ -221,10 +216,10 @@ export default function MainScreen() {
       <MenuSheet
         open={genderOpen}
         onOpenChange={setGenderOpen}
-        items={GENDERS.map((label) => ({
+        items={GENDER_FILTERS.map((label) => ({
           label,
           selected: label === (gender ? genderLabel(gender) : "전체"),
-          onPress: () => setGender(GENDER_VALUES[label]),
+          onPress: () => setGender(GENDER_FILTER_VALUES[label]),
         }))}
       />
 

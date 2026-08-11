@@ -5,6 +5,15 @@ const GENDER_LABELS: Record<Gender, string> = {
   FEMALE: "여자",
 };
 
+export const GENDER_FILTERS = ["전체", "남자", "여자"] as const;
+export type GenderFilter = (typeof GENDER_FILTERS)[number];
+
+export const GENDER_FILTER_VALUES: Record<GenderFilter, Gender | null> = {
+  전체: null,
+  남자: "MALE",
+  여자: "FEMALE",
+};
+
 export function genderLabel(gender: Gender) {
   return GENDER_LABELS[gender];
 }
