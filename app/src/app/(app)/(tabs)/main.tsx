@@ -81,15 +81,21 @@ export default function MainScreen() {
     feed;
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
+  const scrollToTop = useCallback(
+    () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
+    [],
+  );
+
   const changeFilter = useCallback(
     async (next: Filter) => {
       setSort(SORTS[next]);
+      scrollToTop();
 
       if (next === "거리" && (await location.update())) {
         queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
       }
     },
-    [location, queryClient, setSort],
+    [location, queryClient, scrollToTop, setSort],
   );
 
   const refreshLocation = location.refresh;
@@ -214,7 +220,10 @@ export default function MainScreen() {
         items={GENDER_FILTERS.map((label) => ({
           label,
           selected: label === (gender ? genderLabel(gender) : "전체"),
-          onPress: () => setGender(GENDER_FILTER_VALUES[label]),
+          onPress: () => {
+            setGender(GENDER_FILTER_VALUES[label]);
+            scrollToTop();
+          },
         }))}
       />
 

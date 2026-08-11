@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 import {
   api,
@@ -18,6 +18,7 @@ export function useMemberFeed(sort: MemberSort, gender: Gender | null) {
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (page: MemberListPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   return {
