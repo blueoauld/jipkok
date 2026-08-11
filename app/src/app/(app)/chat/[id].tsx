@@ -160,6 +160,13 @@ export default function ChatRoomScreen() {
             isInfiniteScrollEnabled: true,
             onPress: fetchNextPage,
           }}
+          renderLoadEarlier={({ isLoading }) =>
+            isLoading ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
+          }
         />
       ) : (
         <YStack flex={1} justify="center" items="center">
