@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct ChatView: View {
-    
+
     @State private var router = ChatRouter()
     @State private var viewModel = ChatViewModel()
-    
+
     init() {}
-    
+
     fileprivate init(viewModel: ChatViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         NavigationStack(path: $router.path) {
             roomList
@@ -30,7 +30,7 @@ struct ChatView: View {
                             router.push(ChatRoute.search)
                         }
                     }
-                    
+
                     ToolbarItem(placement: .topBarTrailing) {
                         noteReceiveButton
                     }
@@ -39,7 +39,7 @@ struct ChatView: View {
                     Button("나가기", role: .destructive) {
                         Task { await viewModel.leave(room) }
                     }
-                    
+
                     Button("닫기", role: .cancel) {}
                 } message: { _ in
                     Text("나가면 대화 내역이 모두 사라집니다.")
@@ -55,7 +55,7 @@ struct ChatView: View {
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
-    
+
     @ViewBuilder
     private var roomList: some View {
         switch viewModel.displayState {
@@ -83,7 +83,7 @@ struct ChatView: View {
                         }
                         .task { await loadMoreIfNeeded(for: room) }
                 }
-                
+
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)
@@ -95,13 +95,13 @@ struct ChatView: View {
             .contentMargins(.bottom, listBottomPadding - rowSpacing / 2, for: .scrollContent)
         }
     }
-    
+
     private func loadMoreIfNeeded(for room: ChatRoom) async {
         guard room.id == viewModel.rooms.last?.id else { return }
-        
+
         await viewModel.loadMore()
     }
-    
+
     private var filterPicker: some View {
         Picker("필터", selection: $viewModel.filter) {
             ForEach(ChatViewModel.Filter.allCases, id: \.self) { item in
@@ -114,7 +114,7 @@ struct ChatView: View {
         .padding(.vertical, 8)
         .background(.bar)
     }
-    
+
     private func notificationAction(for room: ChatRoom) -> some View {
         Button {
             Task { await viewModel.toggleNotification(room) }
@@ -127,16 +127,17 @@ struct ChatView: View {
         }
         .tint(.accentColor)
     }
-    
+
     private func leaveAction(for room: ChatRoom) -> some View {
-        Button(role: .destructive) {
+        Button {
             viewModel.leavingRoom = room
         } label: {
             Label("나가기", systemImage: "rectangle.portrait.and.arrow.right.fill")
                 .labelStyle(.iconOnly)
         }
+        .tint(.red)
     }
-    
+
     private var noteReceiveButton: some View {
         Button {
             Task { await viewModel.toggleNoteReceive() }
