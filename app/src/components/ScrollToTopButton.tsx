@@ -49,6 +49,7 @@ export function ScrollToTopButton({
     >
       <RetroCard
         theme="blue"
+        shadow="$gray12"
         bg="$color10"
         p={0}
         width={BUTTON_SIZE}

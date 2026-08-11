@@ -56,7 +56,7 @@ export function RetroAlert({
             b={-SHADOW_OFFSET}
             l={SHADOW_OFFSET}
             r={-SHADOW_OFFSET}
-            bg="$color8"
+            bg="$color12"
           />
 
           <YStack borderWidth={2} borderColor="$color12" bg="$color1">
