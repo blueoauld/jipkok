@@ -3,13 +3,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/ActivityList";
 import { useMemberList, useRemoveFromMemberList } from "@/hooks/useMemberList";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
 const FAVORITES_KEY = ["favorites", "mine"];
 
 export default function FavoriteListScreen() {
   const query = useMemberList(FAVORITES_KEY, api.favorites.mine);
-  const remove = useRemoveFromMemberList(FAVORITES_KEY, api.favorites.remove);
+  const { alertElement, showApiError } = useRetroAlert();
+  const remove = useRemoveFromMemberList(
+    FAVORITES_KEY,
+    api.favorites.remove,
+    showApiError,
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -19,6 +25,8 @@ export default function FavoriteListScreen() {
         query={query}
         onDelete={(member) => remove.mutate(member.memberId)}
       />
+
+      {alertElement}
     </SafeAreaView>
   );
 }

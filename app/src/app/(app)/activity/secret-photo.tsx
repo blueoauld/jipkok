@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/ActivityList";
 import { useMemberList, useRemoveFromMemberList } from "@/hooks/useMemberList";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
 const GRANTED_SECRET_PHOTOS_KEY = ["secretPhotos", "granted"];
@@ -12,9 +13,11 @@ export default function SecretPhotoListScreen() {
     GRANTED_SECRET_PHOTOS_KEY,
     api.secretPhotos.granted,
   );
+  const { alertElement, showApiError } = useRetroAlert();
   const remove = useRemoveFromMemberList(
     GRANTED_SECRET_PHOTOS_KEY,
     api.secretPhotos.remove,
+    showApiError,
   );
 
   return (
@@ -25,6 +28,8 @@ export default function SecretPhotoListScreen() {
         query={query}
         onDelete={(member) => remove.mutate(member.memberId)}
       />
+
+      {alertElement}
     </SafeAreaView>
   );
 }

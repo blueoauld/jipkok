@@ -3,16 +3,17 @@ import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 
 const EMPTY_COMMENT = "-";
 const LIKE_ICON_SIZE = 13;
 
-const DELETE_BUTTON_SIZE = 48;
-const DELETE_ICON_SIZE = 24;
+const DELETE_BUTTON_SIZE = 44;
+const DELETE_ICON_SIZE = 22;
+const DELETE_SHADOW_OFFSET = 2;
 
 function DeleteButton({ onPress }: { onPress: () => void }) {
   const press = () => {
@@ -21,19 +22,33 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
   };
 
   return (
-    <XStack
-      shrink={0}
-      width={DELETE_BUTTON_SIZE}
-      height={DELETE_BUTTON_SIZE}
-      rounded={9999}
-      bg="$red10"
-      items="center"
-      justify="center"
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      onPress={press}
-    >
-      <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
-    </XStack>
+    <YStack shrink={0}>
+      <YStack
+        position="absolute"
+        t={DELETE_SHADOW_OFFSET}
+        b={-DELETE_SHADOW_OFFSET}
+        l={DELETE_SHADOW_OFFSET}
+        r={-DELETE_SHADOW_OFFSET}
+        bg="$gray12"
+      />
+      <XStack
+        width={DELETE_BUTTON_SIZE}
+        height={DELETE_BUTTON_SIZE}
+        borderWidth={2}
+        borderColor="$gray12"
+        bg="$red10"
+        items="center"
+        justify="center"
+        pressStyle={{
+          x: DELETE_SHADOW_OFFSET,
+          y: DELETE_SHADOW_OFFSET,
+          bg: "$red11",
+        }}
+        onPress={press}
+      >
+        <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
+      </XStack>
+    </YStack>
   );
 }
 
@@ -53,15 +68,13 @@ export function ActivityRow({
     member;
 
   return (
-    <XStack gap="$3" items="center">
-      <XStack
-        flex={1}
-        gap="$3"
-        items="center"
-        pressStyle={onPress && { opacity: PRESS_OPACITY }}
-        onPress={onPress}
-      >
-        <UserAvatar id={String(memberId)} url={member.profileImageUrl} />
+    <RetroCard onPress={onPress}>
+      <XStack gap="$3" items="center">
+        <UserAvatar
+          id={String(memberId)}
+          url={member.profileImageUrl}
+          gender={gender}
+        />
 
         <YStack flex={1} gap="$1">
           <XStack items="center" gap="$2">
@@ -70,14 +83,14 @@ export function ActivityRow({
             </Text>
 
             {caption && (
-              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
                 {caption}
               </Text>
             )}
           </XStack>
 
           <XStack items="center">
-            <Text theme="gray" color="$color10" fontSize="$3">
+            <Text theme="gray" color="$color11" fontSize="$3">
               {`${genderLabel(gender)} · ${age}살 · `}
             </Text>
 
@@ -88,19 +101,19 @@ export function ActivityRow({
                 color={theme.gray10.val}
               />
 
-              <Text theme="gray" color="$color10" fontSize="$3">
+              <Text theme="gray" color="$color11" fontSize="$3">
                 {receivedLikeCount}
               </Text>
             </XStack>
           </XStack>
 
-          <Text numberOfLines={1} theme="gray" color="$color10" fontSize="$3">
+          <Text numberOfLines={1} theme="gray" color="$color11" fontSize="$3">
             {comment || EMPTY_COMMENT}
           </Text>
         </YStack>
-      </XStack>
 
-      {onDelete && <DeleteButton onPress={onDelete} />}
-    </XStack>
+        {onDelete && <DeleteButton onPress={onDelete} />}
+      </XStack>
+    </RetroCard>
   );
 }

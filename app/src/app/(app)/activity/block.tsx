@@ -3,13 +3,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/ActivityList";
 import { useMemberList, useRemoveFromMemberList } from "@/hooks/useMemberList";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
 const BLOCKS_KEY = ["blocks", "mine"];
 
 export default function BlockListScreen() {
   const query = useMemberList(BLOCKS_KEY, api.blocks.mine);
-  const remove = useRemoveFromMemberList(BLOCKS_KEY, api.blocks.remove);
+  const { alertElement, showApiError } = useRetroAlert();
+  const remove = useRemoveFromMemberList(
+    BLOCKS_KEY,
+    api.blocks.remove,
+    showApiError,
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -19,6 +25,8 @@ export default function BlockListScreen() {
         query={query}
         onDelete={(member) => remove.mutate(member.memberId)}
       />
+
+      {alertElement}
     </SafeAreaView>
   );
 }

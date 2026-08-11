@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";
-import { alertApiError } from "@/lib/alert";
 import type { MemberSummaryPage, MemberSummaryResponse } from "@/lib/api";
 
 type Page = InfiniteData<MemberSummaryPage>;
@@ -39,6 +38,7 @@ export function useMemberList(queryKey: string[], fetcher: Fetcher) {
 export function useRemoveFromMemberList(
   queryKey: string[],
   remove: (memberId: number) => Promise<void>,
+  onError: (error: unknown) => void,
 ) {
   const queryClient = useQueryClient();
 
@@ -66,7 +66,7 @@ export function useRemoveFromMemberList(
       queryClient.invalidateQueries({ queryKey: memberDetailKey(memberId) }),
     onError: (error, _memberId, context) => {
       queryClient.setQueryData(queryKey, context?.previous);
-      alertApiError(error);
+      onError(error);
     },
   });
 }

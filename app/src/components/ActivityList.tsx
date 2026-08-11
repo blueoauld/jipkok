@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { FlatList } from "react-native";
-import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ActivityRow } from "@/components/ActivityRow";
+import { RetroButton } from "@/components/ui/RetroButton";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { pushOnce } from "@/lib/router";
@@ -40,14 +41,9 @@ export function ActivityList({
               {ERROR_MESSAGE}
             </Text>
 
-            <Button
-              size="$3"
-              theme="blue"
-              rounded="$7"
-              onPress={() => query.refetch()}
-            >
+            <RetroButton onPress={() => query.refetch()}>
               다시 시도
-            </Button>
+            </RetroButton>
           </>
         ) : (
           <Spinner size="small" />
