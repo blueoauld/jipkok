@@ -1,9 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Alert } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -19,7 +18,7 @@ import { FormField } from "@/components/FormField";
 import { RetroAlert } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { alertInfo, alertMessage, apiErrorMessage } from "@/lib/alert";
+import { apiErrorMessage } from "@/lib/alert";
 import { api, type SignupRequest } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
 
@@ -31,6 +30,7 @@ const MINOR_NOTICE =
 const TERMS_URL = "https://jipkok.app/terms";
 const PRIVACY_URL = "https://jipkok.app/privacy";
 const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
+const CODE_SENT_MESSAGE = "인증번호가 전송되었습니다.";
 
 const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
@@ -53,20 +53,19 @@ export default function SignupScreen() {
     },
   });
 
-  useEffect(() => {
-    alertInfo(MINOR_NOTICE);
-  }, []);
+  const [minorNoticeVisible, setMinorNoticeVisible] = useState(true);
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   const openLegal = (url: string) =>
     WebBrowser.openBrowserAsync(url).catch(() =>
-      alertMessage(BROWSER_FAILED_MESSAGE),
+      setErrorMessage(BROWSER_FAILED_MESSAGE),
     );
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
-    onSuccess: () => Alert.alert("알림", "인증번호를 보냈습니다."),
+    onSuccess: () => setInfoMessage(CODE_SENT_MESSAGE),
     onError: (error) => setErrorMessage(apiErrorMessage(error)),
   });
 
@@ -241,6 +240,22 @@ export default function SignupScreen() {
         title="에러"
         message={errorMessage ?? ""}
         onClose={() => setErrorMessage(null)}
+      />
+
+      <RetroAlert
+        visible={infoMessage !== null}
+        variant="info"
+        title="알림"
+        message={infoMessage ?? ""}
+        onClose={() => setInfoMessage(null)}
+      />
+
+      <RetroAlert
+        visible={minorNoticeVisible}
+        variant="warning"
+        title="경고"
+        message={MINOR_NOTICE}
+        onClose={() => setMinorNoticeVisible(false)}
       />
     </SafeAreaView>
   );

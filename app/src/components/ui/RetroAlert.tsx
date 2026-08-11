@@ -8,13 +8,21 @@ const SHADOW_OFFSET = 4;
 
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
+const VARIANTS = {
+  error: { label: "ERROR.EXE", barColor: "$red9", labelColor: "white" },
+  info: { label: "INFO.EXE", barColor: "$blue9", labelColor: "white" },
+  warning: { label: "WARNING.EXE", barColor: "$yellow9", labelColor: "black" },
+} as const;
+
 export function RetroAlert({
   visible,
+  variant = "error",
   title,
   message,
   onClose,
 }: {
   visible: boolean;
+  variant?: keyof typeof VARIANTS;
   title: string;
   message: string;
   onClose: () => void;
@@ -39,7 +47,7 @@ export function RetroAlert({
 
           <YStack borderWidth={2} borderColor="$color12" bg="$color1">
             <XStack
-              bg="$red9"
+              bg={VARIANTS[variant].barColor}
               px="$3"
               py="$2.5"
               items="center"
@@ -52,10 +60,10 @@ export function RetroAlert({
                   fontFamily: MONO_FONT,
                   fontWeight: "700",
                   fontSize: 18,
-                  color: "white",
+                  color: VARIANTS[variant].labelColor,
                 }}
               >
-                ERROR.EXE
+                {VARIANTS[variant].label}
               </NativeText>
             </XStack>
 
