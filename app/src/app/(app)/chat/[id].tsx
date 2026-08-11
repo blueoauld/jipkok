@@ -7,6 +7,7 @@ import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
+import { ChatBubble } from "@/components/ChatBubble";
 import { ChatDay } from "@/components/ChatDay";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
@@ -148,6 +149,7 @@ export default function ChatRoomScreen() {
           user={{ _id: profile.memberId }}
           isDayAnimationEnabled={false}
           renderDay={(props) => <ChatDay {...props} />}
+          renderBubble={(props) => <ChatBubble {...props} />}
           keyboardAvoidingViewProps={{
             behavior: "padding",
             keyboardVerticalOffset: headerHeight,
