@@ -58,7 +58,10 @@ import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 
 const AVATAR_SIZE = 36;
-const MINUTE_GROUP_GAP = 10;
+
+// 아래 간격을 2로 통일해야 스와이프 답장 아이콘이 버블 중앙에 온다.
+const MESSAGE_GAP_BOTTOM = 2;
+const GROUP_GAP_TOP = 8;
 
 const REVIEW_SENT_THRESHOLD = 5;
 
@@ -391,20 +394,20 @@ export default function ChatRoomScreen() {
           renderDay={(props) => <ChatDay {...props} />}
           renderMessage={(props) => {
             const { currentMessage, previousMessage } = props;
-            const newMinuteSameUser =
+            const grouped =
               !!previousMessage?.createdAt &&
               previousMessage.user._id === currentMessage.user._id &&
-              displayMinute(previousMessage.createdAt) !==
+              displayMinute(previousMessage.createdAt) ===
                 displayMinute(currentMessage.createdAt);
-            const marginTop = newMinuteSameUser ? MINUTE_GROUP_GAP : 0;
+            const style = {
+              marginTop: grouped ? 0 : GROUP_GAP_TOP,
+              marginBottom: MESSAGE_GAP_BOTTOM,
+            };
 
             return (
               <Message
                 {...props}
-                containerStyle={{
-                  left: { marginTop },
-                  right: { marginTop },
-                }}
+                containerStyle={{ left: style, right: style }}
               />
             );
           }}

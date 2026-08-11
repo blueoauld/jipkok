@@ -26,6 +26,7 @@ import {
 const ICON_SIZE = 20;
 
 const TOOLBAR_PADDING = getTokens().space.$3.val;
+const TOOLBAR_H_PADDING = getTokens().space.$4.val;
 
 // 22는 gifted Composer의 기본 줄높이다.
 const COMPOSER_LINE_HEIGHT = 22;
@@ -127,8 +128,8 @@ export function ChatReplyPreview({
   return (
     <YStack
       theme="gray"
-      ml={TOOLBAR_PADDING}
-      mr={TOOLBAR_PADDING - RETRO_SHADOW_OFFSET}
+      ml={TOOLBAR_H_PADDING}
+      mr={TOOLBAR_H_PADDING - RETRO_SHADOW_OFFSET}
       mt={TOOLBAR_PADDING}
     >
       <YStack
@@ -212,9 +213,9 @@ const styles = StyleSheet.create({
   primary: {
     alignItems: "flex-end",
     gap: TOOLBAR_PADDING,
-    paddingLeft: TOOLBAR_PADDING,
+    paddingLeft: TOOLBAR_H_PADDING,
     paddingTop: TOOLBAR_PADDING,
-    paddingRight: TOOLBAR_PADDING - RETRO_SHADOW_OFFSET,
+    paddingRight: TOOLBAR_H_PADDING - RETRO_SHADOW_OFFSET,
     paddingBottom: TOOLBAR_PADDING - RETRO_SHADOW_OFFSET,
   },
   send: {
