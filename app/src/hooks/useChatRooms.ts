@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { api, type ChatRoomPage } from "@/lib/api";
 
@@ -14,6 +14,7 @@ export function useChatRooms(unreadOnly: boolean) {
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: ChatRoomPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   return {
