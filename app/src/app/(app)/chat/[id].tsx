@@ -3,11 +3,11 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useCallback, useMemo, useState } from "react";
-import { GiftedChat, type IMessage } from "react-native-gifted-chat";
+import { GiftedChat, type IMessage, Message } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
-import { ChatBubble } from "@/components/ChatBubble";
+import { ChatBubble, displayMinute } from "@/components/ChatBubble";
 import { ChatDay } from "@/components/ChatDay";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
@@ -26,6 +26,7 @@ import { PRESS_OPACITY } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const AVATAR_SIZE = 36;
+const MINUTE_GROUP_GAP = 10;
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -152,21 +153,53 @@ export default function ChatRoomScreen() {
           onSend={onSend}
           user={{ _id: profile.memberId }}
           isAvatarOnTop
+          isAvatarVisibleForEveryMessage
           isDayAnimationEnabled={false}
           renderDay={(props) => <ChatDay {...props} />}
-          renderBubble={(props) => <ChatBubble {...props} />}
-          renderAvatar={() => (
-            <YStack
-              pressStyle={{ opacity: PRESS_OPACITY }}
-              onPress={() => pushOnce(`/member/${room.memberId}`)}
-            >
-              <UserAvatar
-                id={String(room.memberId)}
-                url={room.profileImageUrl}
-                size={AVATAR_SIZE}
+          renderMessage={(props) => {
+            const { currentMessage, previousMessage } = props;
+            const newMinuteSameUser =
+              !!previousMessage?.createdAt &&
+              previousMessage.user._id === currentMessage.user._id &&
+              displayMinute(previousMessage.createdAt) !==
+                displayMinute(currentMessage.createdAt);
+            const marginTop = newMinuteSameUser ? MINUTE_GROUP_GAP : 0;
+
+            return (
+              <Message
+                {...props}
+                containerStyle={{
+                  left: { marginTop },
+                  right: { marginTop },
+                }}
               />
-            </YStack>
-          )}
+            );
+          }}
+          renderBubble={(props) => <ChatBubble {...props} />}
+          renderAvatar={({ currentMessage, previousMessage }) => {
+            const grouped =
+              !!previousMessage?.createdAt &&
+              previousMessage.user._id === currentMessage.user._id &&
+              displayMinute(previousMessage.createdAt) ===
+                displayMinute(currentMessage.createdAt);
+
+            if (grouped) {
+              return <YStack width={AVATAR_SIZE} />;
+            }
+
+            return (
+              <YStack
+                pressStyle={{ opacity: PRESS_OPACITY }}
+                onPress={() => pushOnce(`/member/${room.memberId}`)}
+              >
+                <UserAvatar
+                  id={String(room.memberId)}
+                  url={room.profileImageUrl}
+                  size={AVATAR_SIZE}
+                />
+              </YStack>
+            );
+          }}
           keyboardAvoidingViewProps={{
             behavior: "padding",
             keyboardVerticalOffset: headerHeight,

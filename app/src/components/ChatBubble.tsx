@@ -12,12 +12,23 @@ const PHOTO_SIZE = 200;
 
 const MIN_HEIGHT = 36;
 
+export function displayMinute(createdAt: number | Date) {
+  return Math.floor(new Date(createdAt).getTime() / 60_000);
+}
+
 export function ChatBubble(props: BubbleProps<IMessage>) {
   const theme = useTheme();
   const mine = props.position === "right";
   const photoOnly = !!props.currentMessage.image && !props.currentMessage.text;
 
-  const time = (
+  const next = props.nextMessage;
+  const showTime =
+    !next?.createdAt ||
+    next.user._id !== props.currentMessage.user._id ||
+    displayMinute(next.createdAt) !==
+      displayMinute(props.currentMessage.createdAt);
+
+  const time = showTime && (
     <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
       {formatMessageTime(new Date(props.currentMessage.createdAt))}
     </Text>
