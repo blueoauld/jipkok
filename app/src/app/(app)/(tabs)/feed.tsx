@@ -20,7 +20,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  Button,
   Dialog,
   getTokens,
   Spinner,
@@ -32,8 +31,6 @@ import {
 
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
-import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -42,6 +39,9 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroCard } from "@/components/ui/RetroCard";
+import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
@@ -54,7 +54,6 @@ import {
   type FeedPostPage,
   type FeedPostResponse,
   type FeedSort,
-  type Gender,
   isApiError,
 } from "@/lib/api";
 import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
@@ -65,6 +64,11 @@ import {
   tabBarOverlayHeight,
 } from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
+import {
+  GENDER_FILTER_VALUES,
+  GENDER_FILTERS,
+  genderLabel,
+} from "@/lib/member";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 
@@ -90,24 +94,13 @@ const FEEDS_KEY = ["feeds"];
 
 const PICKER_LOCALE = "ko-KR";
 
-const FILTERS = ["전체", "남자", "여자"] as const;
-type Filter = (typeof FILTERS)[number];
-
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];
 
 const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
-const GENDER_VALUES: Record<Filter, Gender | null> = {
-  전체: null,
-  남자: "MALE",
-  여자: "FEMALE",
-};
-const GENDER_LABELS: Record<string, Filter> = {
-  MALE: "남자",
-  FEMALE: "여자",
-};
+const SHADOW_OFFSET = 4;
 
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
@@ -131,10 +124,10 @@ function FeedCard({
   onToggleLike: () => void;
 }) {
   return (
-    <YStack
+    <RetroCard
+      p={0}
       width="100%"
       aspectRatio={CARD_RATIO}
-      rounded="$7"
       overflow="hidden"
       bg="$gray4"
       onPress={onPress}
@@ -233,27 +226,15 @@ function FeedCard({
           </Text>
         )}
       </YStack>
-    </YStack>
+    </RetroCard>
   );
 }
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   return (
-    <GlassSurface
-      style={{
-        borderRadius: 9999,
-        overflow: "hidden",
-      }}
-    >
-      <XStack
-        px="$4"
-        py="$2"
-        pressStyle={{ opacity: PRESS_OPACITY }}
-        onPress={onPress}
-      >
-        <Text fontSize="$4">{formatDateLabel(date)}</Text>
-      </XStack>
-    </GlassSurface>
+    <RetroCard shadow="$gray12" px="$4" py="$2" onPress={onPress}>
+      <Text fontSize="$4">{formatDateLabel(date)}</Text>
+    </RetroCard>
   );
 }
 
@@ -270,7 +251,9 @@ function PickerTile({
     <YStack
       flex={1}
       aspectRatio={1}
-      rounded="$7"
+      rounded={0}
+      borderWidth={2}
+      borderColor="$color12"
       bg="$gray4"
       items="center"
       justify="center"
@@ -306,7 +289,13 @@ function ComposeForm({
       <Dialog.Title fontSize="$6">피드</Dialog.Title>
 
       {photo ? (
-        <YStack aspectRatio={CARD_RATIO} rounded="$7" overflow="hidden">
+        <YStack
+          aspectRatio={CARD_RATIO}
+          rounded={0}
+          borderWidth={2}
+          borderColor="$color12"
+          overflow="hidden"
+        >
           <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
 
           <XStack
@@ -315,7 +304,7 @@ function ComposeForm({
             r="$3"
             width={24}
             height={24}
-            rounded={9999}
+            rounded={0}
             bg="$red10"
             items="center"
             justify="center"
@@ -342,7 +331,7 @@ function ComposeForm({
           </Text>
         }
       >
-        <FormInput
+        <RetroInput
           onChangeText={(text) => {
             captionRef.current = text;
             setLength(text.length);
@@ -354,30 +343,25 @@ function ComposeForm({
         />
       </FormField>
 
-      <XStack gap="$2">
+      <XStack gap="$3">
         <Dialog.Close asChild>
-          <Button
+          <RetroButton
             flex={1}
-            size="$4"
-            rounded="$7"
+            theme="gray"
             opacity={pending ? DISABLED_OPACITY : 1}
           >
             닫기
-          </Button>
+          </RetroButton>
         </Dialog.Close>
 
-        <Button
+        <RetroButton
           flex={1}
-          size="$4"
-          theme="blue"
-          rounded="$7"
-          opacity={!photo ? DISABLED_OPACITY : 1}
-          onPress={() =>
-            photo && !pending && onSubmit(photo, captionRef.current)
-          }
+          disabled={!photo || pending}
+          opacity={!photo || pending ? DISABLED_OPACITY : 1}
+          onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
-          {pending ? <Spinner size="small" color="$color" /> : "작성"}
-        </Button>
+          {pending ? <Spinner size="small" color="white" /> : "작성"}
+        </RetroButton>
       </XStack>
     </>
   );
@@ -403,20 +387,42 @@ function ComposeDialog({
       onOpenChange={(next) => !pending && onOpenChange(next)}
     >
       <Dialog.Portal>
-        <Dialog.Overlay opacity={SHEET_OVERLAY_OPACITY} />
+        <Dialog.Overlay bg="black" opacity={SHEET_OVERLAY_OPACITY} />
 
         <Dialog.Content
           width="85%"
           maxW={400}
-          p="$4"
-          gap="$4"
+          p={0}
+          bg="transparent"
+          rounded={0}
+          borderWidth={0}
+          elevation={0}
+          shadowOpacity={0}
           y={keyboardOffset}
         >
-          <ComposeForm
-            key={String(open)}
-            pending={pending}
-            onSubmit={onSubmit}
-          />
+          <YStack>
+            <YStack
+              position="absolute"
+              t={SHADOW_OFFSET}
+              b={-SHADOW_OFFSET}
+              l={SHADOW_OFFSET}
+              r={-SHADOW_OFFSET}
+              bg="$gray12"
+            />
+            <YStack
+              borderWidth={2}
+              borderColor="$color12"
+              bg="$color1"
+              p="$4"
+              gap="$4"
+            >
+              <ComposeForm
+                key={String(open)}
+                pending={pending}
+                onSubmit={onSubmit}
+              />
+            </YStack>
+          </YStack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>
@@ -634,14 +640,9 @@ export default function FeedScreen() {
                 {isApiError(error) ? error.message : ERROR_MESSAGE}
               </Text>
 
-              <Button
-                size="$3"
-                theme="blue"
-                rounded="$7"
-                onPress={() => feed.refetch()}
-              >
+              <RetroButton onPress={() => feed.refetch()}>
                 다시 시도
-              </Button>
+              </RetroButton>
             </>
           ) : (
             <Spinner size="small" />
@@ -668,7 +669,7 @@ export default function FeedScreen() {
         <>
           <YStack
             fullscreen
-            bg="$background"
+            bg="black"
             opacity={SHEET_OVERLAY_OPACITY}
             onPress={() => setPickerOpen(false)}
           />
@@ -682,6 +683,8 @@ export default function FeedScreen() {
             pt="$2"
             pb={space.$4.val + tabBarOverlay}
             bg="$background"
+            borderTopWidth={2}
+            borderColor="$color12"
           >
             <DateTimePicker
               value={date}
@@ -715,10 +718,10 @@ export default function FeedScreen() {
       <MenuSheet
         open={genderOpen}
         onOpenChange={setGenderOpen}
-        items={FILTERS.map((label) => ({
+        items={GENDER_FILTERS.map((label) => ({
           label,
-          selected: label === (GENDER_LABELS[gender ?? ""] ?? "전체"),
-          onPress: () => setGender(GENDER_VALUES[label]),
+          selected: label === (gender ? genderLabel(gender) : "전체"),
+          onPress: () => setGender(GENDER_FILTER_VALUES[label]),
         }))}
       />
     </YStack>
