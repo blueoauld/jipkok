@@ -17,7 +17,7 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, RefreshControl, type ViewStyle } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Dialog,
@@ -26,6 +26,7 @@ import {
   Text,
   useTheme,
   XStack,
+  type XStackProps,
   YStack,
 } from "tamagui";
 
@@ -36,6 +37,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import {
   SCROLL_EVENT_THROTTLE,
+  SCROLL_TO_TOP_BOTTOM_GAP,
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
@@ -43,7 +45,6 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
-import { UserAvatar } from "@/components/UserAvatar";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -59,7 +60,6 @@ import {
 import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import {
   DISABLED_OPACITY,
-  PRESS_OPACITY,
   SHEET_OVERLAY_OPACITY,
   tabBarOverlayHeight,
 } from "@/lib/design";
@@ -74,19 +74,9 @@ import { pushOnce } from "@/lib/router";
 
 const CARD_RATIO = 2;
 
-const AVATAR_SIZE = 36;
+const REPORT_BUTTON_SPACE = 56;
 
 const PHOTO_TRANSITION = 200;
-
-const GRADIENT_HEIGHT = "35%";
-const TOP_GRADIENT: ViewStyle = {
-  experimental_backgroundImage:
-    "linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent)",
-};
-const BOTTOM_GRADIENT: ViewStyle = {
-  experimental_backgroundImage:
-    "linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent)",
-};
 
 const CAPTION_MAX_LENGTH = 30;
 
@@ -101,7 +91,9 @@ const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST"
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
 const SHADOW_OFFSET = 4;
-const CLOSE_SHADOW_OFFSET = 2;
+const SMALL_SHADOW_OFFSET = 2;
+const CARD_ICON_SIZE = 22;
+const CARD_ICON_BUTTON_SIZE = 40;
 
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
@@ -110,6 +102,36 @@ const REPORTED_MESSAGE = "신고를 접수했습니다.";
 
 const FEED_NOTIFICATION_ON_MESSAGE = "이제 피드 알림을 받을 수 있습니다.";
 const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니다.";
+
+function CardButton({ children, ...props }: XStackProps) {
+  return (
+    <YStack>
+      <YStack
+        position="absolute"
+        t={SMALL_SHADOW_OFFSET}
+        b={-SMALL_SHADOW_OFFSET}
+        l={SMALL_SHADOW_OFFSET}
+        r={-SMALL_SHADOW_OFFSET}
+        bg="$gray12"
+      />
+      <XStack
+        borderWidth={2}
+        borderColor="$gray12"
+        bg="$color1"
+        items="center"
+        justify="center"
+        pressStyle={{
+          x: SMALL_SHADOW_OFFSET,
+          y: SMALL_SHADOW_OFFSET,
+          bg: "$color3",
+        }}
+        {...props}
+      >
+        {children}
+      </XStack>
+    </YStack>
+  );
+}
 
 function FeedCard({
   post,
@@ -124,6 +146,8 @@ function FeedCard({
   onReport: () => void;
   onToggleLike: () => void;
 }) {
+  const theme = useTheme();
+
   return (
     <RetroCard
       p={0}
@@ -141,80 +165,53 @@ function FeedCard({
         style={{ flex: 1 }}
       />
 
-      <YStack
-        position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        height={GRADIENT_HEIGHT}
-        pointerEvents="none"
-        style={TOP_GRADIENT}
-      />
-
-      <YStack
-        position="absolute"
-        b={0}
-        l={0}
-        r={0}
-        height={GRADIENT_HEIGHT}
-        pointerEvents="none"
-        style={BOTTOM_GRADIENT}
-      />
-
-      <XStack
-        position="absolute"
-        t="$3"
-        l="$3"
-        items="center"
-        gap="$2"
-        pressStyle={{ opacity: PRESS_OPACITY }}
-        onPress={() =>
-          pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
-        }
-      >
-        <UserAvatar
-          id={String(post.memberId)}
-          url={post.profileImageUrl}
-          size={AVATAR_SIZE}
-          circular
-        />
-
-        <Text
-          numberOfLines={1}
-          maxW="60%"
-          color="white"
-          fontSize="$3"
-          fontWeight="600"
+      <XStack position="absolute" t="$3" l="$3" r={REPORT_BUTTON_SPACE}>
+        <CardButton
+          px="$3"
+          py="$2"
+          onPress={() =>
+            pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
+          }
         >
-          {post.nickname}
-        </Text>
+          <Text
+            shrink={1}
+            numberOfLines={1}
+            color="$color12"
+            fontSize="$3"
+            fontWeight="600"
+          >
+            {post.nickname}
+          </Text>
+        </CardButton>
       </XStack>
 
-      <XStack
-        position="absolute"
-        t="$2"
-        r="$2"
-        p="$2"
-        pressStyle={{ opacity: PRESS_OPACITY }}
-        onPress={onReport}
-      >
-        <SirenIcon size={28} weight="bold" color="white" />
-      </XStack>
+      <YStack position="absolute" t="$3" r="$3">
+        <CardButton
+          width={CARD_ICON_BUTTON_SIZE}
+          height={CARD_ICON_BUTTON_SIZE}
+          onPress={onReport}
+        >
+          <SirenIcon
+            size={CARD_ICON_SIZE}
+            weight="bold"
+            color={theme.color12.val}
+          />
+        </CardButton>
+      </YStack>
 
-      <XStack
-        position="absolute"
-        b="$2"
-        r="$2"
-        p="$2"
-        pressStyle={{ opacity: PRESS_OPACITY }}
-        onPress={onToggleLike}
-      >
-        <HeartIcon
-          size={28}
-          weight={post.likedByMe ? "fill" : "bold"}
-          color="white"
-        />
-      </XStack>
+      <YStack position="absolute" b="$3" r="$3">
+        <CardButton
+          width={CARD_ICON_BUTTON_SIZE}
+          height={CARD_ICON_BUTTON_SIZE}
+          onPress={onToggleLike}
+        >
+          <HeartIcon
+            size={CARD_ICON_SIZE}
+            weight={post.likedByMe ? "fill" : "bold"}
+            color={post.likedByMe ? theme.red10.val : theme.color12.val}
+          />
+        </CardButton>
+      </YStack>
 
       <YStack fullscreen items="center" justify="center" px="$4">
         <Text color="white" fontSize="$9" fontWeight="800">
@@ -299,10 +296,10 @@ function ComposeForm({
           <YStack position="absolute" t="$3" r="$3">
             <YStack
               position="absolute"
-              t={CLOSE_SHADOW_OFFSET}
-              b={-CLOSE_SHADOW_OFFSET}
-              l={CLOSE_SHADOW_OFFSET}
-              r={-CLOSE_SHADOW_OFFSET}
+              t={SMALL_SHADOW_OFFSET}
+              b={-SMALL_SHADOW_OFFSET}
+              l={SMALL_SHADOW_OFFSET}
+              r={-SMALL_SHADOW_OFFSET}
               bg="$gray12"
             />
             <XStack
@@ -314,7 +311,7 @@ function ComposeForm({
               bg="$red10"
               items="center"
               justify="center"
-              pressStyle={{ x: CLOSE_SHADOW_OFFSET, y: CLOSE_SHADOW_OFFSET }}
+              pressStyle={{ x: SMALL_SHADOW_OFFSET, y: SMALL_SHADOW_OFFSET }}
               onPress={() => setPhoto(null)}
             >
               <XIcon size={14} weight="bold" color="white" />
@@ -664,7 +661,7 @@ export default function FeedScreen() {
 
       <XStack
         position="absolute"
-        b={space.$4.val + tabBarOverlay}
+        b={SCROLL_TO_TOP_BOTTOM_GAP + tabBarOverlay}
         l={0}
         r={0}
         justify="center"

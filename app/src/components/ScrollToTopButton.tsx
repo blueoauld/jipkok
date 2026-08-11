@@ -9,7 +9,8 @@ import { tabBarOverlayHeight } from "@/lib/design";
 
 const BUTTON_SIZE = 40;
 const ICON_SIZE = 20;
-const BUTTON_GAP = 12;
+
+export const SCROLL_TO_TOP_BOTTOM_GAP = 12;
 
 const SHOW_OFFSET = 600;
 
@@ -44,8 +45,8 @@ export function ScrollToTopButton({
   return (
     <XStack
       position="absolute"
-      r={BUTTON_GAP}
-      b={tabBarOverlayHeight(insets.bottom) + BUTTON_GAP}
+      r={SCROLL_TO_TOP_BOTTOM_GAP}
+      b={tabBarOverlayHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
     >
       <RetroCard
         theme="blue"
