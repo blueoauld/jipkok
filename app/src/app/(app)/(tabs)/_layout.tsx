@@ -23,6 +23,8 @@ const ICON_SIZE = 30;
 const TAB_ITEM_PADDING = 5;
 const BORDER_WIDTH = 2;
 
+const HEADER_EDGE_PADDING = 4;
+
 const BADGE_FONT_SIZE = 11;
 const BADGE_TOP = (TAB_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
@@ -83,6 +85,8 @@ export default function TabsLayout() {
         headerShadowVisible: false,
         headerBackButtonDisplayMode: "minimal",
         headerTitleAlign: "center",
+        headerLeftContainerStyle: { paddingLeft: HEADER_EDGE_PADDING },
+        headerRightContainerStyle: { paddingRight: HEADER_EDGE_PADDING },
         tabBarShowLabel: false,
         tabBarActiveTintColor: theme.blue10.val,
         tabBarInactiveTintColor: theme.color12.val,
