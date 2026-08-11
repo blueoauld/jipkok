@@ -455,6 +455,11 @@ export default function FeedScreen() {
     }
   }, [feed]);
 
+  const scrollToTop = useCallback(
+    () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
+    [],
+  );
+
   const toggleLike = useMutation({
     mutationFn: (post: FeedPostResponse) =>
       post.likedByMe
@@ -539,7 +544,10 @@ export default function FeedScreen() {
         <RetroSegmentedControl
           values={SORTS}
           value={SORT_LABELS[sort]}
-          onChange={(label) => setSort(SORT_VALUES[label])}
+          onChange={(label) => {
+            setSort(SORT_VALUES[label]);
+            scrollToTop();
+          }}
         />
       </YStack>
 
@@ -663,6 +671,7 @@ export default function FeedScreen() {
               onValueChange={(_event, selected) => {
                 setPickerOpen(false);
                 setDate(selected);
+                scrollToTop();
               }}
             />
           </YStack>
@@ -689,7 +698,10 @@ export default function FeedScreen() {
         items={GENDER_FILTERS.map((label) => ({
           label,
           selected: label === (gender ? genderLabel(gender) : "전체"),
-          onPress: () => setGender(GENDER_FILTER_VALUES[label]),
+          onPress: () => {
+            setGender(GENDER_FILTER_VALUES[label]);
+            scrollToTop();
+          },
         }))}
       />
 

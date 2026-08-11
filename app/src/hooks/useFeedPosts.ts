@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { api, type FeedPostPage, type FeedSort, type Gender } from "@/lib/api";
 import { toDateParam } from "@/lib/date";
@@ -27,6 +27,7 @@ export function useFeedPosts(
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: FeedPostPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   return {
