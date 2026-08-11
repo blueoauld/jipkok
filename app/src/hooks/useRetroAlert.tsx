@@ -6,6 +6,9 @@ import { apiErrorMessage } from "@/lib/alert";
 type AlertState = {
   variant: RetroAlertVariant;
   message: string;
+  confirmLabel?: string;
+  destructive?: boolean;
+  onConfirm?: () => void;
 };
 
 const TITLES: Record<RetroAlertVariant, string> = {
@@ -23,15 +26,26 @@ export function useRetroAlert(initial?: AlertState) {
   const showApiError = (error: unknown) =>
     show("error", apiErrorMessage(error));
 
+  const confirm = (options: {
+    message: string;
+    confirmLabel: string;
+    destructive?: boolean;
+    onConfirm: () => void;
+    variant?: RetroAlertVariant;
+  }) => setAlert({ variant: "warning", ...options });
+
   const alertElement = (
     <RetroAlert
       visible={alert !== null}
       variant={alert?.variant}
       title={alert ? TITLES[alert.variant] : ""}
       message={alert?.message ?? ""}
+      confirmLabel={alert?.confirmLabel}
+      destructive={alert?.destructive}
+      onConfirm={alert?.onConfirm}
       onClose={() => setAlert(null)}
     />
   );
 
-  return { alertElement, show, showApiError };
+  return { alertElement, show, showApiError, confirm };
 }

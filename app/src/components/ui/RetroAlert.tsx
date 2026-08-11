@@ -22,23 +22,37 @@ export function RetroAlert({
   variant = "error",
   title,
   message,
+  confirmLabel,
+  destructive,
+  onConfirm,
   onClose,
 }: {
   visible: boolean;
   variant?: RetroAlertVariant;
   title: string;
   message: string;
+  confirmLabel?: string;
+  destructive?: boolean;
+  onConfirm?: () => void;
   onClose: () => void;
 }) {
-  const [content, setContent] = useState({ variant, title, message });
+  const [content, setContent] = useState({
+    variant,
+    title,
+    message,
+    confirmLabel,
+    destructive,
+  });
 
   if (
     visible &&
     (content.variant !== variant ||
       content.title !== title ||
-      content.message !== message)
+      content.message !== message ||
+      content.confirmLabel !== confirmLabel ||
+      content.destructive !== destructive)
   ) {
-    setContent({ variant, title, message });
+    setContent({ variant, title, message, confirmLabel, destructive });
   }
 
   return (
@@ -92,9 +106,28 @@ export function RetroAlert({
 
             <YStack mx="$4" borderWidth={1} borderColor="$color8" />
 
-            <XStack justify="flex-end" p="$4">
-              <RetroButton onPress={onClose}>확인</RetroButton>
-            </XStack>
+            {content.confirmLabel ? (
+              <XStack p="$4" gap="$3">
+                <RetroButton flex={1} theme="gray" onPress={onClose}>
+                  닫기
+                </RetroButton>
+
+                <RetroButton
+                  flex={1}
+                  theme={content.destructive ? "red" : "blue"}
+                  onPress={() => {
+                    onClose();
+                    onConfirm?.();
+                  }}
+                >
+                  {content.confirmLabel}
+                </RetroButton>
+              </XStack>
+            ) : (
+              <XStack justify="flex-end" p="$4">
+                <RetroButton onPress={onClose}>확인</RetroButton>
+              </XStack>
+            )}
           </YStack>
         </YStack>
       </YStack>

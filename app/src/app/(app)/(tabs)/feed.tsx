@@ -49,7 +49,7 @@ import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
-import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   api,
   type FeedPostPage,
@@ -98,7 +98,7 @@ const CARD_ICON_BUTTON_SIZE = 40;
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
-const REPORTED_MESSAGE = "신고를 접수했습니다.";
+const REPORTED_MESSAGE = "신고가 접수되었습니다.";
 
 const FEED_NOTIFICATION_ON_MESSAGE = "이제 피드 알림을 받을 수 있습니다.";
 const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니다.";
@@ -454,6 +454,7 @@ export default function FeedScreen() {
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [genderOpen, setGenderOpen] = useState(false);
@@ -520,7 +521,7 @@ export default function FeedScreen() {
     },
     onError: (mutationError, _post, context) => {
       queryClient.setQueryData(queryKey, context?.previous);
-      alertApiError(mutationError);
+      showApiError(mutationError);
     },
   });
 
@@ -528,9 +529,9 @@ export default function FeedScreen() {
     mutationFn: api.feeds.report,
     onSuccess: async () => {
       await invalidate();
-      alertInfo(REPORTED_MESSAGE);
+      show("info", REPORTED_MESSAGE);
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const compose = useMutation({
@@ -548,9 +549,9 @@ export default function FeedScreen() {
     onSuccess: async () => {
       setComposeOpen(false);
       await invalidate();
-      alertInfo(POSTED_MESSAGE);
+      show("info", POSTED_MESSAGE);
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const screenOptions = useMemo(
@@ -589,8 +590,7 @@ export default function FeedScreen() {
               mine={item.memberId === profile?.memberId}
               onPress={() => setViewerUrl(item.imageUrl)}
               onReport={() =>
-                confirmAlert({
-                  title: "피드",
+                confirm({
                   message: "신고한 피드는 검토 후 조치됩니다.",
                   confirmLabel: "신고",
                   destructive: true,
@@ -728,6 +728,8 @@ export default function FeedScreen() {
           onPress: () => setGender(GENDER_FILTER_VALUES[label]),
         }))}
       />
+
+      {alertElement}
     </YStack>
   );
 }
