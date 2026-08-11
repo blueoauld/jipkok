@@ -5,6 +5,7 @@ import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import {
   type ComponentProps,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -16,6 +17,7 @@ import {
   GiftedChat,
   type IMessage,
   Message,
+  type MessageProps,
   type ReplyMessage,
 } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -71,6 +73,32 @@ const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
+
+function RowMessage(props: MessageProps<IMessage>) {
+  const { currentMessage, previousMessage } = props;
+  const grouped =
+    !!previousMessage?.createdAt &&
+    previousMessage.user._id === currentMessage.user._id &&
+    displayMinute(previousMessage.createdAt) ===
+      displayMinute(currentMessage.createdAt);
+  const style = {
+    marginTop: grouped ? 0 : GROUP_GAP_TOP,
+    marginBottom: MESSAGE_GAP_BOTTOM,
+    maxWidth: BUBBLE_MAX_WIDTH,
+  };
+
+  return <Message {...props} containerStyle={{ left: style, right: style }} />;
+}
+
+// 타이핑 같은 화면 상태 변화에 행 전체가 다시 그려지지 않게 행 데이터만 비교한다.
+const MemoRowMessage = memo(
+  RowMessage,
+  (prev, next) =>
+    prev.currentMessage === next.currentMessage &&
+    prev.previousMessage === next.previousMessage &&
+    prev.nextMessage === next.nextMessage &&
+    prev.position === next.position,
+);
 
 function toGiftedMessage(
   message: ChatMessageResponse,
@@ -374,26 +402,7 @@ export default function ChatRoomScreen() {
           isAvatarVisibleForEveryMessage
           isDayAnimationEnabled={false}
           renderDay={(props) => <ChatDay {...props} />}
-          renderMessage={(props) => {
-            const { currentMessage, previousMessage } = props;
-            const grouped =
-              !!previousMessage?.createdAt &&
-              previousMessage.user._id === currentMessage.user._id &&
-              displayMinute(previousMessage.createdAt) ===
-                displayMinute(currentMessage.createdAt);
-            const style = {
-              marginTop: grouped ? 0 : GROUP_GAP_TOP,
-              marginBottom: MESSAGE_GAP_BOTTOM,
-              maxWidth: BUBBLE_MAX_WIDTH,
-            };
-
-            return (
-              <Message
-                {...props}
-                containerStyle={{ left: style, right: style }}
-              />
-            );
-          }}
+          renderMessage={(props) => <MemoRowMessage {...props} />}
           renderBubble={(props) => (
             <ChatBubble {...props} onPressPhoto={setViewerUrl} />
           )}
