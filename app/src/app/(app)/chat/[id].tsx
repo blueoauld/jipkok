@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
@@ -9,6 +10,12 @@ import { Spinner, YStack } from "tamagui";
 
 import { ChatBubble, displayMinute } from "@/components/ChatBubble";
 import { ChatDay } from "@/components/ChatDay";
+import {
+  ChatActions,
+  ChatComposer,
+  ChatInputToolbar,
+  ChatSend,
+} from "@/components/ChatInput";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -16,6 +23,7 @@ import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   api,
@@ -23,6 +31,7 @@ import {
   type ChatRoomResponse,
 } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
+import { uploadChatPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 
 const AVATAR_SIZE = 36;
@@ -72,6 +81,26 @@ export default function ChatRoomScreen() {
       queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
     onError: showApiError,
   });
+
+  const { mutate: sendPhotos, isPending: uploading } = useMutation({
+    mutationFn: async (assets: ImagePickerAsset[]) => {
+      for (const asset of assets) {
+        const objectKey = await uploadChatPhoto(asset);
+        await api.chats.send(roomId, { type: "PHOTO", objectKey });
+      }
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
+    onError: showApiError,
+  });
+
+  const handlePickPhotos = useCallback(async () => {
+    const assets = await pickPhotos(MAX_PHOTOS);
+
+    if (assets.length > 0) {
+      sendPhotos(assets);
+    }
+  }, [sendPhotos]);
 
   const leave = useMutation({
     mutationFn: () => api.chats.leave(roomId),
@@ -217,6 +246,13 @@ export default function ChatRoomScreen() {
               </YStack>
             ) : null
           }
+          textInputProps={{ placeholder: "메시지 입력", maxLength: 1000 }}
+          renderInputToolbar={(props) => <ChatInputToolbar {...props} />}
+          renderComposer={(props) => <ChatComposer {...props} />}
+          renderSend={(props) => <ChatSend {...props} />}
+          renderActions={() => (
+            <ChatActions uploading={uploading} onPress={handlePickPhotos} />
+          )}
         />
       ) : (
         <YStack flex={1} justify="center" items="center">
