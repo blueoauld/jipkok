@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import {
   type ComponentProps,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -42,18 +43,26 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { apiErrorMessage } from "@/lib/alert";
 import {
   api,
   type ChatMessageResponse,
   type ChatRoomResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
+import { useDeletedRoomStore } from "@/lib/chat/store";
 import { PRESS_OPACITY } from "@/lib/design";
 import { uploadChatPhoto } from "@/lib/photo";
+import { dismissRoomNotifications } from "@/lib/push/notifications";
+import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 
 const AVATAR_SIZE = 36;
 const MINUTE_GROUP_GAP = 10;
+
+const REVIEW_SENT_THRESHOLD = 5;
+
+const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -104,10 +113,15 @@ export default function ChatRoomScreen() {
 
   const textInputRef = useRef<TextInput>(null!);
   const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
-  const { alertElement, confirm, showApiError } = useRetroAlert();
+  const { alertElement, confirm, show, showApiError } = useRetroAlert();
+
+  const isFocused = useIsFocused();
+  const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
+  const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
+  const partnerLeft = deletedRoomId === roomId;
 
   const { data: profile } = useMyProfile();
-  const { data: room } = useChatRoom(roomId, true);
+  const { data: room, error: roomError } = useChatRoom(roomId, !partnerLeft);
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useChatMessages(roomId);
 
@@ -143,6 +157,60 @@ export default function ChatRoomScreen() {
       sendPhotos(assets);
     }
   }, [sendPhotos]);
+
+  // 조건이 여러 번 바뀌어도 알림과 뒤로가기는 한 번만 일어나야 한다.
+  // 프로필처럼 위에 떠 있는 화면이 대신 닫히지 않도록 돌아올 때까지 미룬다.
+  const leftRef = useRef(false);
+
+  useEffect(() => {
+    if (leftRef.current || !isFocused || (!partnerLeft && !roomError)) {
+      return;
+    }
+
+    leftRef.current = true;
+
+    if (partnerLeft) {
+      clearDeletedRoom();
+      show("info", PARTNER_LEFT_MESSAGE, () => router.back());
+    } else {
+      show("error", apiErrorMessage(roomError), () => router.back());
+    }
+  }, [clearDeletedRoom, isFocused, partnerLeft, roomError, show]);
+
+  // 대화가 이어진 방에서 나올 때가 평점을 부탁하기 좋은 순간이다.
+  const sentCountRef = useRef(0);
+
+  useEffect(
+    () => () => {
+      if (sentCountRef.current >= REVIEW_SENT_THRESHOLD) {
+        maybeRequestReview();
+      }
+    },
+    [],
+  );
+
+  const { mutate: markRead } = useMutation({
+    mutationFn: (lastReadMessageId: number) =>
+      api.chats.markRead(roomId, lastReadMessageId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: CHAT_ROOMS_KEY,
+        predicate: (query) => query.queryKey[1] !== "messages",
+      }),
+  });
+
+  const newestMessageId = messages?.[0]?.messageId ?? 0;
+  const unreadCount = room?.unreadCount ?? 0;
+
+  useEffect(() => {
+    if (unreadCount > 0 && newestMessageId > 0) {
+      markRead(newestMessageId);
+    }
+  }, [markRead, newestMessageId, unreadCount]);
+
+  useEffect(() => {
+    dismissRoomNotifications(roomId).catch(() => undefined);
+  }, [newestMessageId, roomId]);
 
   const leave = useMutation({
     mutationFn: () => api.chats.leave(roomId),
@@ -202,6 +270,7 @@ export default function ChatRoomScreen() {
       const text = sent[0]?.text.trim();
 
       if (text) {
+        sentCountRef.current += 1;
         sendMessage({
           content: text,
           replyToMessageId: replyTarget?.messageId ?? null,
