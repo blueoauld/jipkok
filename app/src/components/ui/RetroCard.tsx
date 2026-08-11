@@ -2,11 +2,7 @@ import { YStack, type YStackProps } from "tamagui";
 
 const SHADOW_OFFSET = 4;
 
-export function RetroCard({
-  theme = "gray",
-  children,
-  ...props
-}: YStackProps) {
+export function RetroCard({ theme = "gray", children, ...props }: YStackProps) {
   return (
     <YStack theme={theme}>
       <YStack
@@ -15,7 +11,7 @@ export function RetroCard({
         b={-SHADOW_OFFSET}
         l={SHADOW_OFFSET}
         r={-SHADOW_OFFSET}
-        bg="$color12"
+        bg="$gray12"
       />
       <YStack
         borderWidth={2}
