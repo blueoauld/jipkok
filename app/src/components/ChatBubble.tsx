@@ -1,12 +1,13 @@
+import { Image } from "expo-image";
 import {
   Bubble,
   type BubbleProps,
   type IMessage,
-  MessageImage,
 } from "react-native-gifted-chat";
-import { Text, useTheme, XStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { formatMessageTime } from "@/lib/date";
+import { PHOTO_PRESS_OPACITY } from "@/lib/design";
 
 const PHOTO_SIZE = 200;
 
@@ -16,7 +17,12 @@ export function displayMinute(createdAt: number | Date) {
   return Math.floor(new Date(createdAt).getTime() / 60_000);
 }
 
-export function ChatBubble(props: BubbleProps<IMessage>) {
+const PHOTO_TRANSITION = 200;
+
+export function ChatBubble({
+  onPressPhoto,
+  ...props
+}: BubbleProps<IMessage> & { onPressPhoto: (url: string) => void }) {
   const theme = useTheme();
   const mine = props.position === "right";
   const photoOnly = !!props.currentMessage.image && !props.currentMessage.text;
@@ -85,19 +91,30 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
           left: { paddingHorizontal: 0, paddingBottom: 0 },
           right: { paddingHorizontal: 0, paddingBottom: 0 },
         }}
-        renderMessageImage={(imageProps) => (
-          <MessageImage
-            {...imageProps}
-            imageStyle={{
-              width: PHOTO_SIZE,
-              height: PHOTO_SIZE,
-              borderRadius: 0,
-              borderWidth: 2,
-              borderColor: theme.color12.val,
-              margin: 0,
-            }}
-          />
-        )}
+        renderMessageImage={({ currentMessage }) =>
+          currentMessage.image ? (
+            <YStack
+              pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
+              onPress={() => onPressPhoto(currentMessage.image!)}
+            >
+              <Image
+                source={{
+                  uri: currentMessage.image,
+                  // 서명 URL은 매번 달라져서 메시지 id를 캐시 키로 쓴다.
+                  cacheKey: String(currentMessage._id),
+                }}
+                contentFit="cover"
+                transition={PHOTO_TRANSITION}
+                style={{
+                  width: PHOTO_SIZE,
+                  height: PHOTO_SIZE,
+                  borderWidth: 2,
+                  borderColor: theme.color12.val,
+                }}
+              />
+            </YStack>
+          ) : null
+        }
         renderTime={() => null}
       />
 

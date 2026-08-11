@@ -18,6 +18,7 @@ import {
 } from "@/components/ChatInput";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { PhotoViewer } from "@/components/PhotoViewer";
 import { UserAvatar } from "@/components/UserAvatar";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
@@ -67,6 +68,7 @@ export default function ChatRoomScreen() {
 
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const { data: profile } = useMyProfile();
@@ -204,7 +206,9 @@ export default function ChatRoomScreen() {
               />
             );
           }}
-          renderBubble={(props) => <ChatBubble {...props} />}
+          renderBubble={(props) => (
+            <ChatBubble {...props} onPressPhoto={setViewerUrl} />
+          )}
           renderAvatar={({ currentMessage, previousMessage }) => {
             const grouped =
               !!previousMessage?.createdAt &&
@@ -259,6 +263,13 @@ export default function ChatRoomScreen() {
           <Spinner size="small" />
         </YStack>
       )}
+
+      <PhotoViewer
+        photos={viewerUrl ? [viewerUrl] : []}
+        initialIndex={0}
+        open={viewerUrl !== null}
+        onClose={() => setViewerUrl(null)}
+      />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
 
