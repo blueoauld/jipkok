@@ -74,6 +74,26 @@ final class ChatViewModel {
         await load(cursor: nil)
     }
 
+    func refresh() async {
+        guard hasLoaded else { return }
+
+        generation += 1
+        nextCursor = nil
+
+        await load(cursor: nil)
+    }
+
+    func observeSocket() async {
+        for await event in ChatSocket.shared.events() {
+            switch event {
+            case .connected, .message:
+                await refresh()
+            case .roomDeleted(let roomId):
+                rooms.removeAll { $0.id == roomId }
+            }
+        }
+    }
+
     func loadMore() async {
         guard !isLoading, let cursor = nextCursor else { return }
 

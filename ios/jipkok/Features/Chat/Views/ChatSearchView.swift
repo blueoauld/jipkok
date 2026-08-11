@@ -54,6 +54,10 @@ struct ChatSearchView: View {
         List {
             ForEach(viewModel.rooms) { room in
                 ChatRow(room: room)
+                    .background {
+                        NavigationLink(value: ChatRoute.room(room)) { EmptyView() }
+                            .opacity(0)
+                    }
                     .listRowInsets(EdgeInsets(
                         top: rowSpacing / 2,
                         leading: listHorizontalPadding,

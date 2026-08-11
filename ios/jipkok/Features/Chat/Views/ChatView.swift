@@ -20,6 +20,7 @@ struct ChatView: View {
                 .navigationDestination(for: ChatRoute.self) { route in
                     switch route {
                     case .search: ChatSearchView()
+                    case .room(let room): ChatRoomView(room: room)
                     }
                 }
                 .navigationTitle("채팅")
@@ -51,6 +52,8 @@ struct ChatView: View {
                 }
                 .loadingOverlay(viewModel.isProcessing)
                 .task { await viewModel.loadIfNeeded() }
+                .task { await viewModel.observeSocket() }
+                .onAppear { Task { await viewModel.refresh() } }
                 .onChange(of: viewModel.filter) { _, _ in Task { await viewModel.reload() } }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
@@ -67,21 +70,26 @@ struct ChatView: View {
         case .content:
             List {
                 ForEach(viewModel.rooms) { room in
-                    ChatRow(room: room)
-                        .listRowInsets(EdgeInsets(
-                            top: rowSpacing / 2,
-                            leading: listHorizontalPadding,
-                            bottom: rowSpacing / 2,
-                            trailing: listHorizontalPadding
-                        ))
-                        .listRowSeparator(.hidden)
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            notificationAction(for: room)
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            leaveAction(for: room)
-                        }
-                        .task { await loadMoreIfNeeded(for: room) }
+                    Button {
+                        router.push(ChatRoute.room(room))
+                    } label: {
+                        ChatRow(room: room)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(
+                        top: rowSpacing / 2,
+                        leading: listHorizontalPadding,
+                        bottom: rowSpacing / 2,
+                        trailing: listHorizontalPadding
+                    ))
+                    .listRowSeparator(.hidden)
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        notificationAction(for: room)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        leaveAction(for: room)
+                    }
+                    .task { await loadMoreIfNeeded(for: room) }
                 }
 
                 if viewModel.isLoading {
