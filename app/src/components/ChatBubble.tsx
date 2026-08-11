@@ -2,14 +2,18 @@ import {
   Bubble,
   type BubbleProps,
   type IMessage,
+  MessageImage,
 } from "react-native-gifted-chat";
 import { Text, useTheme, XStack } from "tamagui";
 
 import { formatMessageTime } from "@/lib/date";
 
+const PHOTO_SIZE = 200;
+
 export function ChatBubble(props: BubbleProps<IMessage>) {
   const theme = useTheme();
   const mine = props.position === "right";
+  const photoOnly = !!props.currentMessage.image && !props.currentMessage.text;
 
   const time = (
     <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
@@ -27,20 +31,27 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
           left: { flexShrink: 1 },
           right: { flexShrink: 1 },
         }}
-        wrapperStyle={{
-          left: {
-            backgroundColor: theme.color1.val,
-            borderWidth: 2,
-            borderColor: theme.color12.val,
-            borderRadius: 0,
-          },
-          right: {
-            backgroundColor: theme.blue10.val,
-            borderWidth: 2,
-            borderColor: theme.color12.val,
-            borderRadius: 0,
-          },
-        }}
+        wrapperStyle={
+          photoOnly
+            ? {
+                left: { backgroundColor: "transparent", borderRadius: 0 },
+                right: { backgroundColor: "transparent", borderRadius: 0 },
+              }
+            : {
+                left: {
+                  backgroundColor: theme.color1.val,
+                  borderWidth: 2,
+                  borderColor: theme.color12.val,
+                  borderRadius: 0,
+                },
+                right: {
+                  backgroundColor: theme.blue10.val,
+                  borderWidth: 2,
+                  borderColor: theme.color12.val,
+                  borderRadius: 0,
+                },
+              }
+        }
         containerToPreviousStyle={{
           left: { borderTopLeftRadius: 0 },
           right: { borderTopRightRadius: 0 },
@@ -57,6 +68,19 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
           left: { paddingHorizontal: 0, paddingBottom: 0 },
           right: { paddingHorizontal: 0, paddingBottom: 0 },
         }}
+        renderMessageImage={(imageProps) => (
+          <MessageImage
+            {...imageProps}
+            imageStyle={{
+              width: PHOTO_SIZE,
+              height: PHOTO_SIZE,
+              borderRadius: 0,
+              borderWidth: 2,
+              borderColor: theme.color12.val,
+              margin: 0,
+            }}
+          />
+        )}
         renderTime={() => null}
       />
 
