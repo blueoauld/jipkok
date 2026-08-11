@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   KeyboardAwareScrollView,
@@ -9,11 +10,14 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Text, YStack } from "tamagui";
+import { Spinner, Text, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
+import { RetroAlert } from "@/components/ui/RetroAlert";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
-import { alertApiError } from "@/lib/alert";
+import { apiErrorMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
 
@@ -49,10 +53,12 @@ export default function SetupScreen() {
 
   useBlockGoBack();
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const setupProfile = useMutation({
     mutationFn: api.members.setupProfile,
     onSuccess: () => router.replace("/main"),
-    onError: alertApiError,
+    onError: (error) => setErrorMessage(apiErrorMessage(error)),
   });
 
   return (
@@ -68,6 +74,7 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="nickname"
+            input={RetroInput}
             rules={{
               required: "닉네임을 입력해주시길 바랍니다.",
               pattern: {
@@ -85,6 +92,7 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="birthYear"
+            input={RetroInput}
             rules={{
               required: "출생연도를 입력해주시길 바랍니다.",
               pattern: {
@@ -101,6 +109,7 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="bio"
+            input={RetroInput}
             rules={{
               maxLength: {
                 value: BIO_MAX_LENGTH,
@@ -123,27 +132,28 @@ export default function SetupScreen() {
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button
-            size="$4"
-            theme="blue"
-            rounded="$7"
+          <RetroButton
+            disabled={setupProfile.isPending}
             opacity={setupProfile.isPending ? DISABLED_OPACITY : 1}
-            onPress={handleSubmit((values) => {
-              if (setupProfile.isPending) {
-                return;
-              }
-
+            onPress={handleSubmit((values) =>
               setupProfile.mutate({
                 nickname: values.nickname,
                 birthYear: Number(values.birthYear),
                 bio: values.bio || undefined,
-              });
-            })}
+              }),
+            )}
           >
-            들어가기
-          </Button>
+            {setupProfile.isPending ? <Spinner color="white" /> : "들어가기"}
+          </RetroButton>
         </YStack>
       </KeyboardStickyView>
+
+      <RetroAlert
+        visible={errorMessage !== null}
+        title="에러"
+        message={errorMessage ?? ""}
+        onClose={() => setErrorMessage(null)}
+      />
     </SafeAreaView>
   );
 }
