@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   KeyboardAwareScrollView,
@@ -13,11 +12,10 @@ import {
 import { Spinner, Text, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
-import { RetroAlert } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
-import { apiErrorMessage } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
 
@@ -53,12 +51,12 @@ export default function SetupScreen() {
 
   useBlockGoBack();
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { alertElement, showApiError } = useRetroAlert();
 
   const setupProfile = useMutation({
     mutationFn: api.members.setupProfile,
     onSuccess: () => router.replace("/main"),
-    onError: (error) => setErrorMessage(apiErrorMessage(error)),
+    onError: showApiError,
   });
 
   return (
@@ -150,12 +148,7 @@ export default function SetupScreen() {
         </YStack>
       </KeyboardStickyView>
 
-      <RetroAlert
-        visible={errorMessage !== null}
-        title="에러"
-        message={errorMessage ?? ""}
-        onClose={() => setErrorMessage(null)}
-      />
+      {alertElement}
     </SafeAreaView>
   );
 }

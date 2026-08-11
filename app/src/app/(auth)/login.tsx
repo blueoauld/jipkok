@@ -1,33 +1,29 @@
 import { useMutation } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
-import { RetroAlert } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { apiErrorMessage } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type LoginRequest } from "@/lib/api";
 import { DISABLED_OPACITY, PRESS_OPACITY } from "@/lib/design";
-
-const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
-const PASSWORD_MIN_LENGTH = 8;
+import { PHONE_NUMBER_RULES } from "@/lib/validation";
 
 export default function LoginScreen() {
   const { control, handleSubmit } = useForm<LoginRequest>({
     defaultValues: { phoneNumber: "", password: "" },
   });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { alertElement, showApiError } = useRetroAlert();
 
   const login = useMutation({
     mutationFn: api.auth.login,
     onSuccess: () => router.replace("/main"),
-    onError: (error) => setErrorMessage(apiErrorMessage(error)),
+    onError: showApiError,
   });
 
   return (
@@ -43,13 +39,7 @@ export default function LoginScreen() {
               control={control}
               name="phoneNumber"
               input={RetroInput}
-              rules={{
-                required: "휴대폰 번호를 입력해주시길 바랍니다.",
-                pattern: {
-                  value: PHONE_NUMBER_PATTERN,
-                  message: "휴대폰 번호가 올바르지 않습니다.",
-                },
-              }}
+              rules={PHONE_NUMBER_RULES}
               placeholder="휴대폰 번호"
               keyboardType="number-pad"
               textContentType="telephoneNumber"
@@ -61,13 +51,7 @@ export default function LoginScreen() {
               control={control}
               name="password"
               input={RetroInput}
-              rules={{
-                required: "비밀번호를 입력해주시길 바랍니다.",
-                minLength: {
-                  value: PASSWORD_MIN_LENGTH,
-                  message: "비밀번호가 올바르지 않습니다.",
-                },
-              }}
+              rules={{ required: "비밀번호를 입력해주시길 바랍니다." }}
               placeholder="비밀번호"
               secureTextEntry
               textContentType="password"
@@ -100,12 +84,7 @@ export default function LoginScreen() {
         </YStack>
       </KeyboardAvoidingView>
 
-      <RetroAlert
-        visible={errorMessage !== null}
-        title="에러"
-        message={errorMessage ?? ""}
-        onClose={() => setErrorMessage(null)}
-      />
+      {alertElement}
     </SafeAreaView>
   );
 }

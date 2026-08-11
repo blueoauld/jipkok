@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   KeyboardAwareScrollView,
@@ -15,12 +14,17 @@ import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
-import { RetroAlert, type RetroAlertVariant } from "@/components/ui/RetroAlert";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { apiErrorMessage } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PHONE_NUMBER_PATTERN,
+  PHONE_NUMBER_RULES,
+} from "@/lib/validation";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
@@ -32,21 +36,12 @@ const PRIVACY_URL = "https://jipkok.app/privacy";
 const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
 const CODE_SENT_MESSAGE = "인증번호가 전송되었습니다.";
 
-const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 30;
 
 const GENDERS = [
   { value: "MALE", label: "남자" },
   { value: "FEMALE", label: "여자" },
 ] as const;
-
-type AlertState = {
-  variant: RetroAlertVariant;
-  title: string;
-  message: string;
-};
 
 export default function SignupScreen() {
   const insets = useSafeAreaInsets();
@@ -59,31 +54,26 @@ export default function SignupScreen() {
     },
   });
 
-  const [alert, setAlert] = useState<AlertState | null>({
+  const { alertElement, show, showApiError } = useRetroAlert({
     variant: "warning",
-    title: "경고",
     message: MINOR_NOTICE,
   });
 
-  const showError = (message: string) =>
-    setAlert({ variant: "error", title: "에러", message });
-
   const openLegal = (url: string) =>
     WebBrowser.openBrowserAsync(url).catch(() =>
-      showError(BROWSER_FAILED_MESSAGE),
+      show("error", BROWSER_FAILED_MESSAGE),
     );
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
-    onSuccess: () =>
-      setAlert({ variant: "info", title: "알림", message: CODE_SENT_MESSAGE }),
-    onError: (error) => showError(apiErrorMessage(error)),
+    onSuccess: () => show("info", CODE_SENT_MESSAGE),
+    onError: showApiError,
   });
 
   const signup = useMutation({
     mutationFn: api.members.signup,
     onSuccess: () => router.replace("/setup"),
-    onError: (error) => showError(apiErrorMessage(error)),
+    onError: showApiError,
   });
 
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
@@ -107,13 +97,7 @@ export default function SignupScreen() {
                 control={control}
                 name="phoneNumber"
                 input={RetroInput}
-                rules={{
-                  required: "휴대폰 번호를 입력해주시길 바랍니다.",
-                  pattern: {
-                    value: PHONE_NUMBER_PATTERN,
-                    message: "휴대폰 번호가 올바르지 않습니다.",
-                  },
-                }}
+                rules={PHONE_NUMBER_RULES}
                 placeholder="휴대폰 번호"
                 keyboardType="number-pad"
                 textContentType="telephoneNumber"
@@ -163,6 +147,7 @@ export default function SignupScreen() {
                 value: PASSWORD_MAX_LENGTH,
                 message: `비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상 ${PASSWORD_MAX_LENGTH}자 이하여야 합니다.`,
               },
+              deps: "passwordConfirm",
             }}
             placeholder="비밀번호"
             secureTextEntry
@@ -245,13 +230,7 @@ export default function SignupScreen() {
         </YStack>
       </KeyboardStickyView>
 
-      <RetroAlert
-        visible={alert !== null}
-        variant={alert?.variant}
-        title={alert?.title ?? ""}
-        message={alert?.message ?? ""}
-        onClose={() => setAlert(null)}
-      />
+      {alertElement}
     </SafeAreaView>
   );
 }
