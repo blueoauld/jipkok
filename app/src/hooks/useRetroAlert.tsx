@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { RetroAlert, type RetroAlertVariant } from "@/components/ui/RetroAlert";
 import { apiErrorMessage } from "@/lib/alert";
@@ -20,19 +20,27 @@ const TITLES: Record<RetroAlertVariant, string> = {
 export function useRetroAlert(initial?: AlertState) {
   const [alert, setAlert] = useState<AlertState | null>(initial ?? null);
 
-  const show = (variant: RetroAlertVariant, message: string) =>
-    setAlert({ variant, message });
+  const show = useCallback(
+    (variant: RetroAlertVariant, message: string) =>
+      setAlert({ variant, message }),
+    [],
+  );
 
-  const showApiError = (error: unknown) =>
-    show("error", apiErrorMessage(error));
+  const showApiError = useCallback(
+    (error: unknown) => show("error", apiErrorMessage(error)),
+    [show],
+  );
 
-  const confirm = (options: {
-    message: string;
-    confirmLabel: string;
-    destructive?: boolean;
-    onConfirm: () => void;
-    variant?: RetroAlertVariant;
-  }) => setAlert({ variant: "warning", ...options });
+  const confirm = useCallback(
+    (options: {
+      message: string;
+      confirmLabel: string;
+      destructive?: boolean;
+      onConfirm: () => void;
+      variant?: RetroAlertVariant;
+    }) => setAlert({ variant: "warning", ...options }),
+    [],
+  );
 
   const alertElement = (
     <RetroAlert

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Dialog, YStack } from "tamagui";
 
-import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
+import { OVERLAY_BG } from "@/lib/design";
 
 const SHADOW_OFFSET = 4;
 
@@ -14,7 +14,7 @@ export function RetroDialogContent({
 }) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay bg="black" opacity={SHEET_OVERLAY_OPACITY} />
+      <Dialog.Overlay bg={OVERLAY_BG} />
 
       <Dialog.Content
         width="85%"

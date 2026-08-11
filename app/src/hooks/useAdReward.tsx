@@ -4,8 +4,8 @@ import { useRewardedAd } from "react-native-google-mobile-ads";
 
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
-import { alertInfo, alertMessage } from "@/lib/alert";
 
 const REWARD_DELAY = 2000;
 
@@ -15,15 +15,19 @@ const NOT_READY_MESSAGE =
 
 export function useAdReward() {
   const queryClient = useQueryClient();
+  const { alertElement, show } = useRetroAlert();
   const { data } = useMyProfile();
   const memberId = data?.memberId;
 
-  const { isLoaded, isClosed, isEarnedReward, load, show } = useRewardedAd(
-    memberId === undefined ? null : REWARDED_AD_UNIT_ID,
-    {
-      serverSideVerificationOptions: { userId: String(memberId) },
-    },
-  );
+  const {
+    isLoaded,
+    isClosed,
+    isEarnedReward,
+    load,
+    show: showAd,
+  } = useRewardedAd(memberId === undefined ? null : REWARDED_AD_UNIT_ID, {
+    serverSideVerificationOptions: { userId: String(memberId) },
+  });
 
   useEffect(() => {
     load();
@@ -43,14 +47,15 @@ export function useAdReward() {
     const timer = setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      alertInfo(REWARD_MESSAGE);
+      show("info", REWARD_MESSAGE);
     }, REWARD_DELAY);
 
     return () => clearTimeout(timer);
-  }, [isEarnedReward, queryClient]);
+  }, [isEarnedReward, queryClient, show]);
 
   return {
     ready: isLoaded,
-    watch: () => (isLoaded ? show() : alertMessage(NOT_READY_MESSAGE)),
+    watch: () => (isLoaded ? showAd() : show("info", NOT_READY_MESSAGE)),
+    adRewardElement: alertElement,
   };
 }

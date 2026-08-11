@@ -2,7 +2,7 @@ import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
-import { SHEET_OVERLAY_OPACITY } from "@/lib/design";
+import { OVERLAY_BG } from "@/lib/design";
 
 export type MenuSheetItem = {
   label: string;
@@ -31,7 +31,7 @@ export function MenuSheet({
       snapPointsMode="fit"
       dismissOnSnapToBottom
     >
-      <Sheet.Overlay bg="black" opacity={SHEET_OVERLAY_OPACITY} />
+      <Sheet.Overlay bg={OVERLAY_BG} />
 
       <Sheet.Frame
         bg="$color1"

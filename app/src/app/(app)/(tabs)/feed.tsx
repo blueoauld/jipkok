@@ -61,7 +61,7 @@ import {
 import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import {
   DISABLED_OPACITY,
-  SHEET_OVERLAY_OPACITY,
+  OVERLAY_BG,
   tabBarOverlayHeight,
 } from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
@@ -645,8 +645,7 @@ export default function FeedScreen() {
         <>
           <YStack
             fullscreen
-            bg="black"
-            opacity={SHEET_OVERLAY_OPACITY}
+            bg={OVERLAY_BG}
             onPress={() => setPickerOpen(false)}
           />
 

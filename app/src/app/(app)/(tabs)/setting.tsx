@@ -36,6 +36,7 @@ import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
 import { tabBarOverlayHeight } from "@/lib/design";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
@@ -252,6 +253,8 @@ export default function SettingScreen() {
   const adReward = useAdReward();
   const gate = useInterstitialGate();
 
+  useLoadingOverlay(logout.isPending);
+
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
     onSuccess: async (reward) => {
@@ -269,7 +272,9 @@ export default function SettingScreen() {
 
   const pendingAction: SettingAction | null = earnAttendanceReward.isPending
     ? "attendanceReward"
-    : null;
+    : !adReward.ready
+      ? "adReward"
+      : null;
 
   const handleAction = useCallback(
     (action: SettingAction) => {
@@ -381,6 +386,7 @@ export default function SettingScreen() {
 
       {alertElement}
       {withdrawElement}
+      {adReward.adRewardElement}
     </ScrollView>
   );
 }
