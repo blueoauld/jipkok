@@ -42,7 +42,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
-import { SegmentedControl } from "@/components/SegmentedControl";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
@@ -561,7 +561,7 @@ export default function FeedScreen() {
       <Tabs.Screen options={screenOptions} />
 
       <YStack px="$4" pt="$4" pb="$2">
-        <SegmentedControl
+        <RetroSegmentedControl
           values={SORTS}
           value={SORT_LABELS[sort]}
           onChange={(label) => setSort(SORT_VALUES[label])}

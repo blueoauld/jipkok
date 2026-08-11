@@ -8,7 +8,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
-import { SegmentedControl } from "@/components/SegmentedControl";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { type Gender, isApiError } from "@/lib/api";
@@ -40,7 +40,7 @@ export default function RankScreen() {
   return (
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$2">
-        <SegmentedControl
+        <RetroSegmentedControl
           values={FILTERS}
           value={filter}
           onChange={setFilter}

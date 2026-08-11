@@ -9,7 +9,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
-import { SegmentedControl } from "@/components/SegmentedControl";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
 import { tabBarOverlayHeight } from "@/lib/design";
@@ -34,7 +34,7 @@ export default function ChatScreen() {
   return (
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$2">
-        <SegmentedControl
+        <RetroSegmentedControl
           values={FILTERS}
           value={filter}
           onChange={setFilter}
