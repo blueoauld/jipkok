@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import { XStack, YStack } from "tamagui";
 
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
-
-const BUTTON_SIZE = 40;
+import { FLOATING_BUTTON_SIZE, RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 export function RetroFloatingButton({
   children,
@@ -23,8 +21,8 @@ export function RetroFloatingButton({
         bg="$gray12"
       />
       <XStack
-        width={BUTTON_SIZE}
-        height={BUTTON_SIZE}
+        width={FLOATING_BUTTON_SIZE}
+        height={FLOATING_BUTTON_SIZE}
         borderWidth={2}
         borderColor="$gray12"
         bg="$color10"

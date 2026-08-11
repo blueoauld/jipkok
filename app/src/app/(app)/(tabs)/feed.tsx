@@ -62,6 +62,7 @@ import {
 import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import {
   DISABLED_OPACITY,
+  FLOATING_BUTTON_SIZE,
   OVERLAY_BG,
   RETRO_SHADOW_OFFSET_SM,
   tabBarOverlayHeight,
@@ -168,8 +169,14 @@ function FeedCard({
 
       <XStack position="absolute" t="$3" l="$3" r={REPORT_BUTTON_SPACE}>
         <CardButton
+          bg="$yellow9"
           px="$3"
           py="$2"
+          pressStyle={{
+            x: RETRO_SHADOW_OFFSET_SM,
+            y: RETRO_SHADOW_OFFSET_SM,
+            bg: "$yellow10",
+          }}
           onPress={() =>
             pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
           }
@@ -177,7 +184,7 @@ function FeedCard({
           <Text
             shrink={1}
             numberOfLines={1}
-            color="$color12"
+            color="black"
             fontSize="$3"
             fontWeight="600"
           >
@@ -231,8 +238,20 @@ function FeedCard({
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   return (
-    <RetroCard shadow="$gray12" px="$4" py="$2" onPress={onPress}>
-      <Text fontSize="$4">{formatDateLabel(date)}</Text>
+    <RetroCard
+      theme="blue"
+      shadow="$gray12"
+      bg="$color10"
+      pressBg="$color11"
+      height={FLOATING_BUTTON_SIZE}
+      px="$4"
+      py={0}
+      justify="center"
+      onPress={onPress}
+    >
+      <Text fontSize="$4" color="white">
+        {formatDateLabel(date)}
+      </Text>
     </RetroCard>
   );
 }

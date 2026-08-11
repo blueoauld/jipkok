@@ -5,9 +5,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
-import { tabBarOverlayHeight } from "@/lib/design";
+import { FLOATING_BUTTON_SIZE, tabBarOverlayHeight } from "@/lib/design";
 
-const BUTTON_SIZE = 40;
 const ICON_SIZE = 20;
 
 export const SCROLL_TO_TOP_BOTTOM_GAP = 12;
@@ -54,8 +53,8 @@ export function ScrollToTopButton({
         bg="$color10"
         pressBg="$color11"
         p={0}
-        width={BUTTON_SIZE}
-        height={BUTTON_SIZE}
+        width={FLOATING_BUTTON_SIZE}
+        height={FLOATING_BUTTON_SIZE}
         items="center"
         justify="center"
         onPress={onPress}
