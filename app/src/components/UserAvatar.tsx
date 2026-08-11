@@ -2,20 +2,29 @@ import { Image } from "expo-image";
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useTheme, YStack } from "tamagui";
 
+import type { Gender } from "@/lib/api";
+
 const SIZE = 64;
 const TRANSITION = 200;
 const ICON_RATIO = 0.5;
+
+const GENDER_BG = {
+  MALE: "$blue6",
+  FEMALE: "$pink6",
+} as const satisfies Record<Gender, string>;
 
 export function UserAvatar({
   id,
   url,
   size = SIZE,
   circular,
+  gender,
 }: {
   id: string;
   url?: string | null;
   size?: number;
   circular?: boolean;
+  gender?: Gender;
 }) {
   const theme = useTheme();
 
@@ -24,9 +33,11 @@ export function UserAvatar({
       shrink={0}
       width={size}
       height={size}
-      rounded={circular ? 9999 : "$7"}
+      rounded={circular ? 9999 : 0}
       overflow="hidden"
-      bg="$gray5"
+      borderWidth={2}
+      borderColor="$color12"
+      bg={gender ? GENDER_BG[gender] : "$gray6"}
       items="center"
       justify="center"
     >
@@ -39,7 +50,7 @@ export function UserAvatar({
           style={{ width: "100%", height: "100%" }}
         />
       ) : (
-        <UserIcon size={size * ICON_RATIO} color={theme.gray9.val} />
+        <UserIcon size={size * ICON_RATIO} color={theme.color12.val} />
       )}
     </YStack>
   );

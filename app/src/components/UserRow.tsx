@@ -2,12 +2,12 @@ import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useNow } from "@/hooks/useNow";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
-import { PRESS_OPACITY } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -34,73 +34,74 @@ export function UserRow({ member }: { member: RowMember }) {
   } = member;
 
   return (
-    <XStack
-      gap="$3"
-      items="center"
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      onPress={() => pushOnce(`/member/${memberId}`)}
-    >
-      <UserAvatar id={String(memberId)} url={profileImageUrl} />
+    <RetroCard onPress={() => pushOnce(`/member/${memberId}`)}>
+      <XStack gap="$3" items="center">
+        <UserAvatar
+          id={String(memberId)}
+          url={profileImageUrl}
+          gender={gender}
+        />
 
-      <YStack flex={1} gap="$1">
-        <XStack items="center" justify="space-between" gap="$2">
-          <XStack flex={1} items="center" gap="$1.5">
-            <Text shrink={1} numberOfLines={1} fontSize="$4" fontWeight="600">
-              {nickname}
-            </Text>
+        <YStack flex={1} gap="$1">
+          <XStack items="center" justify="space-between" gap="$2">
+            <XStack flex={1} items="center" gap="$1.5">
+              <Text shrink={1} numberOfLines={1} fontSize="$4" fontWeight="600">
+                {nickname}
+              </Text>
 
-            {favoritedByMe && (
-              <StarIcon
-                size={FAVORITE_ICON_SIZE}
-                weight="fill"
-                color={FAVORITE_COLOR}
-              />
+              {favoritedByMe && (
+                <StarIcon
+                  size={FAVORITE_ICON_SIZE}
+                  weight="fill"
+                  color={FAVORITE_COLOR}
+                />
+              )}
+            </XStack>
+
+            {locatedAt && (
+              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+                {formatRelativeTime(locatedAt, now)}
+              </Text>
             )}
           </XStack>
 
-          {locatedAt && (
-            <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
-              {formatRelativeTime(locatedAt, now)}
-            </Text>
-          )}
-        </XStack>
-
-        <XStack items="center">
-          <Text theme="gray" color="$color10" fontSize="$3">
-            {`${genderLabel(gender)} · ${age}살 · `}
-          </Text>
-
-          <XStack items="center" gap="$1">
-            <HeartIcon
-              size={LIKE_ICON_SIZE}
-              weight="fill"
-              color={theme.gray10.val}
-            />
-
+          <XStack items="center">
             <Text theme="gray" color="$color10" fontSize="$3">
-              {receivedLikeCount}
+              {`${genderLabel(gender)} · ${age}살 · `}
             </Text>
+
+            <XStack items="center" gap="$1">
+              <HeartIcon
+                size={LIKE_ICON_SIZE}
+                weight="fill"
+                color={theme.gray10.val}
+              />
+
+              <Text theme="gray" color="$color10" fontSize="$3">
+                {receivedLikeCount}
+              </Text>
+            </XStack>
           </XStack>
-        </XStack>
 
-        <XStack items="center" justify="space-between" gap="$2">
-          <Text
-            flex={1}
-            numberOfLines={1}
-            theme="gray"
-            color="$color10"
-            fontSize="$3"
-          >
-            {comment || EMPTY_COMMENT}
-          </Text>
-
-          {distance !== undefined && distance !== null && (
-            <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
-              {formatDistance(distance)}
+          <XStack items="center" justify="space-between" gap="$2">
+            <Text
+              flex={1}
+              numberOfLines={1}
+              theme="gray"
+              color="$color10"
+              fontSize="$3"
+            >
+              {comment || EMPTY_COMMENT}
             </Text>
-          )}
-        </XStack>
-      </YStack>
-    </XStack>
+
+            {distance !== undefined && distance !== null && (
+              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+                {formatDistance(distance)}
+              </Text>
+            )}
+          </XStack>
+        </YStack>
+      </XStack>
+    </RetroCard>
   );
 }

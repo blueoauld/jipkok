@@ -139,7 +139,7 @@ export default function MainScreen() {
     <YStack flex={1}>
       <Tabs.Screen options={screenOptions} />
 
-      <YStack px="$4" pt="$4" pb="$2">
+      <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           values={FILTERS}
           value={SORT_LABELS[sort]}
