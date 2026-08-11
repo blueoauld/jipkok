@@ -59,7 +59,7 @@ export default function ChatScreen() {
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
             paddingLeft: space.$4.val,
             paddingRight: space.$4.val - RETRO_SHADOW_OFFSET,
-            gap: space.$3.val,
+            gap: space.$4.val - RETRO_SHADOW_OFFSET,
           }}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
