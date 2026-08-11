@@ -8,7 +8,12 @@ import type { ImagePickerAsset } from "expo-image-picker";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
-import { api, type ChatMessagePage, type ChatMessageResponse } from "@/lib/api";
+import {
+  api,
+  type ChatMessagePage,
+  type ChatMessageResponse,
+  type ReplyMessageResponse,
+} from "@/lib/api";
 import { uploadChatPhoto } from "@/lib/photo";
 
 type Feed = InfiniteData<ChatMessagePage>;
@@ -23,14 +28,16 @@ function createClientMessageId() {
 
 function createTemp(
   senderId: number,
-  message: Pick<ChatMessageResponse, "type" | "content" | "imageUrl">,
+  message: Pick<
+    ChatMessageResponse,
+    "type" | "content" | "imageUrl" | "replyMessage"
+  >,
 ): ChatMessageResponse {
   return {
     messageId: --lastTempId,
     roomId: 0,
     senderId,
     createdAt: new Date().toISOString(),
-    replyMessage: null,
     clientMessageId: createClientMessageId(),
     ...message,
   };
@@ -91,14 +98,17 @@ export function useSendMessage(
   const sendText = useMutation({
     mutationFn: ({
       content,
+      replyToMessageId,
       temp,
     }: {
       content: string;
+      replyToMessageId: number | null;
       temp: ChatMessageResponse;
     }) =>
       api.chats.send(roomId, {
         type: "TEXT",
         content,
+        replyToMessageId,
         clientMessageId: temp.clientMessageId,
       }),
     onMutate: ({ temp }) => prepend([temp]),
@@ -141,13 +151,15 @@ export function useSendMessage(
   });
 
   return {
-    sendText: (content: string) =>
+    sendText: (content: string, replyTo: ReplyMessageResponse | null = null) =>
       sendText.mutate({
         content,
+        replyToMessageId: replyTo?.messageId ?? null,
         temp: createTemp(senderId, {
           type: "TEXT",
           content,
           imageUrl: null,
+          replyMessage: replyTo,
         }),
       }),
 
@@ -159,6 +171,7 @@ export function useSendMessage(
             type: "PHOTO",
             content: null,
             imageUrl: asset.uri,
+            replyMessage: null,
           }),
         ),
       }),

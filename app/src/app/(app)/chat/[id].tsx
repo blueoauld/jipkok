@@ -1,6 +1,7 @@
 import "dayjs/locale/ko";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
@@ -11,8 +12,13 @@ import {
   useRef,
   useState,
 } from "react";
-import type { FlatList } from "react-native";
-import { GiftedChat, type IMessage, Message } from "react-native-gifted-chat";
+import type { FlatList, TextInput } from "react-native";
+import {
+  GiftedChat,
+  type IMessage,
+  Message,
+  type ReplyMessage,
+} from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, YStack } from "tamagui";
 
@@ -22,6 +28,7 @@ import {
   ChatActions,
   ChatComposer,
   ChatInputToolbar,
+  ChatReplyPreview,
   ChatSend,
 } from "@/components/ChatInput";
 import {
@@ -29,6 +36,7 @@ import {
   CHAT_SCROLL_TO_BOTTOM_STYLE,
   ChatScrollToBottom,
 } from "@/components/ChatScrollToBottom";
+import { ChatSwipeReplyAction } from "@/components/ChatSwipeReplyAction";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -44,6 +52,7 @@ import {
   api,
   type ChatMessageResponse,
   type ChatRoomResponse,
+  type ReplyMessageResponse,
 } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
@@ -73,7 +82,19 @@ function toGiftedMessage(
           }
         : { _id: message.senderId },
     image: message.imageUrl ?? undefined,
+    replyMessage: message.replyMessage
+      ? toGiftedReply(message.replyMessage)
+      : undefined,
     pending: message.messageId < 0,
+  };
+}
+
+function toGiftedReply(reply: ReplyMessageResponse): ReplyMessage {
+  return {
+    _id: reply.messageId,
+    text: reply.content ?? "",
+    user: { _id: reply.senderId },
+    image: reply.imageUrl ?? undefined,
   };
 }
 
@@ -90,6 +111,10 @@ export default function ChatRoomScreen() {
   const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
+  const textInputRef = useRef<TextInput>(null!);
+  const [replyTarget, setReplyTarget] = useState<ReplyMessageResponse | null>(
+    null,
+  );
 
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId, true);
@@ -118,15 +143,65 @@ export default function ChatRoomScreen() {
     [messages, room],
   );
 
+  const replyPreview = useMemo(
+    () => (replyTarget ? toGiftedReply(replyTarget) : null),
+    [replyTarget],
+  );
+
   const handleSend = useCallback(
     (sent: IMessage[]) => {
       const text = sent[0]?.text.trim();
 
       if (text) {
-        sendText(text);
+        sendText(text, replyTarget);
+        setReplyTarget(null);
       }
     },
-    [sendText],
+    [replyTarget, sendText],
+  );
+
+  // 전송 중인 자리표시자는 아직 서버 id가 없어 답장 대상이 될 수 없다.
+  const handleSwipeReply = useCallback(
+    (message: IMessage) => {
+      const source = (messages ?? []).find(
+        (it) => (it.clientMessageId ?? it.messageId) === message._id,
+      );
+
+      if (!source || source.messageId < 0) {
+        return;
+      }
+
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setReplyTarget({
+        messageId: source.messageId,
+        senderId: source.senderId,
+        type: source.type,
+        content: source.content ?? null,
+        imageUrl: source.imageUrl ?? null,
+      });
+      textInputRef.current?.focus();
+    },
+    [messages],
+  );
+
+  const handlePressReply = useCallback(
+    (reply: ReplyMessage) => {
+      const index = (messages ?? []).findIndex(
+        (it) => it.messageId === reply._id,
+      );
+
+      if (index < 0) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        return;
+      }
+
+      messagesContainerRef.current?.scrollToIndex({
+        index,
+        viewPosition: 0.5,
+        animated: true,
+      });
+    },
+    [messages],
   );
 
   const handlePickPhotos = useCallback(async () => {
@@ -196,6 +271,31 @@ export default function ChatRoomScreen() {
               typeof GiftedChat<IMessage>
             >["messagesContainerRef"]
           }
+          textInputRef={textInputRef}
+          listProps={{
+            onScrollToIndexFailed: (info) =>
+              messagesContainerRef.current?.scrollToOffset({
+                offset: info.averageItemLength * info.index,
+                animated: true,
+              }),
+          }}
+          reply={{
+            message: replyPreview,
+            onClear: () => setReplyTarget(null),
+            renderPreview: (previewProps) => (
+              <ChatReplyPreview
+                {...previewProps}
+                name={
+                  replyTarget?.senderId === room.memberId ? room.nickname : "나"
+                }
+              />
+            ),
+            swipe: {
+              isEnabled: true,
+              onSwipe: handleSwipeReply,
+              renderAction: () => <ChatSwipeReplyAction />,
+            },
+          }}
           user={{ _id: profile.memberId }}
           locale="ko"
           colorScheme={scheme}
@@ -238,7 +338,13 @@ export default function ChatRoomScreen() {
           )}
           renderDay={(props) => <ChatDay {...props} />}
           renderBubble={(props) => (
-            <ChatBubble {...props} onPressPhoto={setViewerUrl} />
+            <ChatBubble
+              {...props}
+              onPressPhoto={setViewerUrl}
+              onPressReply={handlePressReply}
+              partnerId={room.memberId}
+              partnerName={room.nickname}
+            />
           )}
           renderAvatar={() => (
             <YStack
