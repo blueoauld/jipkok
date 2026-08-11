@@ -31,11 +31,13 @@ export function MenuSheet({
       snapPointsMode="fit"
       dismissOnSnapToBottom
     >
-      <Sheet.Overlay opacity={SHEET_OVERLAY_OPACITY} />
-      <Sheet.Handle bg="$color3" />
+      <Sheet.Overlay bg="black" opacity={SHEET_OVERLAY_OPACITY} />
 
       <Sheet.Frame
-        bg="$color3"
+        bg="$color1"
+        rounded={0}
+        borderTopWidth={2}
+        borderColor="$color12"
         p="$4"
         pb={getTokens().space.$6.val + insets.bottom}
         gap="$2"
@@ -47,7 +49,7 @@ export function MenuSheet({
             justify="space-between"
             gap="$2"
             p="$3"
-            rounded="$5"
+            rounded={0}
             pressStyle={{ bg: "$color4" }}
             onPress={() => {
               onOpenChange(false);
