@@ -13,6 +13,7 @@ import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
 const COLUMNS = 3;
 
 const PHOTO_TRANSITION = 200;
+const CELL_SHADOW_OFFSET = 2;
 
 type Cell =
   | { kind: "photo"; uri: string; index: number }
@@ -53,6 +54,19 @@ function toRows(
   return rows;
 }
 
+function CellShadow() {
+  return (
+    <YStack
+      position="absolute"
+      t={CELL_SHADOW_OFFSET}
+      b={-CELL_SHADOW_OFFSET}
+      l={CELL_SHADOW_OFFSET}
+      r={-CELL_SHADOW_OFFSET}
+      bg="$gray8"
+    />
+  );
+}
+
 function OverlayButton({
   children,
   ...rest
@@ -62,7 +76,7 @@ function OverlayButton({
       position="absolute"
       width={24}
       height={24}
-      rounded={9999}
+      rounded={0}
       items="center"
       justify="center"
       pressStyle={{ opacity: PRESS_OPACITY }}
@@ -104,108 +118,135 @@ export function PhotoGrid({
 
               if (cell.kind === "placeholder") {
                 return (
-                  <YStack
-                    key={`placeholder-${columnIndex}`}
-                    flex={1}
-                    aspectRatio={1}
-                    rounded="$7"
-                    bg="$gray4"
-                    items="center"
-                    justify="center"
-                  >
-                    <ImageIcon size={24} color={theme.gray9.val} />
+                  <YStack key={`placeholder-${columnIndex}`} flex={1}>
+                    <CellShadow />
+                    <YStack
+                      aspectRatio={1}
+                      rounded={0}
+                      borderWidth={2}
+                      borderColor="$color12"
+                      bg="$gray4"
+                      items="center"
+                      justify="center"
+                    >
+                      <ImageIcon size={24} color={theme.gray9.val} />
+                    </YStack>
                   </YStack>
                 );
               }
 
               if (cell.kind === "add") {
                 return (
-                  <YStack
-                    key="add"
-                    flex={1}
-                    aspectRatio={1}
-                    rounded="$7"
-                    bg="$gray4"
-                    items="center"
-                    justify="center"
-                    pressStyle={{ opacity: PRESS_OPACITY }}
-                    onPress={onAdd}
-                  >
-                    <PlusIcon size={24} weight="bold" color={theme.gray9.val} />
+                  <YStack key="add" flex={1}>
+                    <CellShadow />
+                    <YStack
+                      aspectRatio={1}
+                      rounded={0}
+                      borderWidth={2}
+                      borderColor="$color12"
+                      bg="$gray4"
+                      items="center"
+                      justify="center"
+                      pressStyle={{
+                        x: CELL_SHADOW_OFFSET,
+                        y: CELL_SHADOW_OFFSET,
+                        bg: "$gray5",
+                      }}
+                      onPress={onAdd}
+                    >
+                      <PlusIcon
+                        size={24}
+                        weight="bold"
+                        color={theme.gray9.val}
+                      />
+                    </YStack>
                   </YStack>
                 );
               }
 
               return (
-                <YStack
-                  key={cell.uri}
-                  flex={1}
-                  aspectRatio={1}
-                  rounded="$7"
-                  overflow="hidden"
-                  bg="$gray4"
-                  pressStyle={
-                    onPressPhoto ? { opacity: PHOTO_PRESS_OPACITY } : undefined
-                  }
-                  onPress={
-                    onPressPhoto ? () => onPressPhoto(cell.index) : undefined
-                  }
-                >
-                  <Image
-                    source={cell.uri}
-                    contentFit="cover"
-                    transition={PHOTO_TRANSITION}
-                    style={{ width: "100%", height: "100%" }}
-                  />
+                <YStack key={cell.uri} flex={1}>
+                  <CellShadow />
+                  <YStack
+                    aspectRatio={1}
+                    rounded={0}
+                    borderWidth={2}
+                    borderColor="$color12"
+                    overflow="hidden"
+                    bg="$gray4"
+                    pressStyle={
+                      onPressPhoto
+                        ? {
+                            x: CELL_SHADOW_OFFSET,
+                            y: CELL_SHADOW_OFFSET,
+                            opacity: PHOTO_PRESS_OPACITY,
+                          }
+                        : undefined
+                    }
+                    onPress={
+                      onPressPhoto ? () => onPressPhoto(cell.index) : undefined
+                    }
+                  >
+                    <Image
+                      source={cell.uri}
+                      contentFit="cover"
+                      transition={PHOTO_TRANSITION}
+                      style={{ width: "100%", height: "100%" }}
+                    />
 
-                  {showPrimaryBadge && cell.index === 0 && (
-                    <XStack
-                      position="absolute"
-                      t="$2"
-                      l="$2"
-                      width={24}
-                      height={24}
-                      rounded={9999}
-                      bg="$blue10"
-                      items="center"
-                      justify="center"
-                    >
-                      <CrownSimpleIcon size={14} weight="fill" color="white" />
-                    </XStack>
-                  )}
+                    {showPrimaryBadge && cell.index === 0 && (
+                      <XStack
+                        position="absolute"
+                        t="$2"
+                        l="$2"
+                        width={24}
+                        height={24}
+                        rounded={0}
+                        bg="$blue10"
+                        items="center"
+                        justify="center"
+                      >
+                        <CrownSimpleIcon
+                          size={14}
+                          weight="fill"
+                          color="white"
+                        />
+                      </XStack>
+                    )}
 
-                  {onRemove && (
-                    <OverlayButton
-                      t="$2"
-                      r="$2"
-                      bg="$red10"
-                      onPress={() => onRemove(cell.index)}
-                    >
-                      <XIcon size={14} weight="bold" color="white" />
-                    </OverlayButton>
-                  )}
+                    {onRemove && (
+                      <OverlayButton
+                        t="$2"
+                        r="$2"
+                        bg="$red10"
+                        onPress={() => onRemove(cell.index)}
+                      >
+                        <XIcon size={14} weight="bold" color="white" />
+                      </OverlayButton>
+                    )}
 
-                  {onMove && cell.index > 0 && (
-                    <OverlayButton
-                      b="$2"
-                      l="$2"
-                      bg={OVERLAY_BG}
-                      onPress={() => onMove(cell.index, cell.index - 1)}
-                    >
-                      <CaretLeftIcon size={14} weight="bold" color="white" />
-                    </OverlayButton>
-                  )}
+                    {onMove && cell.index > 0 && (
+                      <OverlayButton
+                        b="$2"
+                        l="$2"
+                        bg={OVERLAY_BG}
+                        onPress={() => onMove(cell.index, cell.index - 1)}
+                      >
+                        <CaretLeftIcon size={14} weight="bold" color="white" />
+                      </OverlayButton>
+                    )}
 
-                  {onMove && cell.index < photos.length - 1 && (
-                    <OverlayButton
-                      b="$2"
-                      r="$2"
-                      bg={OVERLAY_BG}
-                      onPress={() => onMove(cell.index, cell.index + 1)}
-                    >
-                      <CaretRightIcon size={14} weight="bold" color="white" />
-                    </OverlayButton>
-                  )}
+                    {onMove && cell.index < photos.length - 1 && (
+                      <OverlayButton
+                        b="$2"
+                        r="$2"
+                        bg={OVERLAY_BG}
+                        onPress={() => onMove(cell.index, cell.index + 1)}
+                      >
+                        <CaretRightIcon size={14} weight="bold" color="white" />
+                      </OverlayButton>
+                    )}
+                  </YStack>
                 </YStack>
               );
             })}

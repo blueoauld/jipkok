@@ -13,40 +13,36 @@ import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { GlassSurface } from "@/components/GlassSurface";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { PhotoPager } from "@/components/PhotoPager";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
+import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { RetroButton } from "@/components/ui/RetroButton";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
-import { alertApiError, alertInfo, confirmAlert } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
-import {
-  OVERLAY_BG,
-  PRESS_OPACITY,
-  TAB_BAR_HEIGHT,
-  tabBarBottom,
-  tabBarOverlayHeight,
-} from "@/lib/design";
+import { TAB_BAR_HEIGHT, tabBarOverlayHeight } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { usePhotoGridStore } from "@/lib/photo-grid/store";
 import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
-const ACTION_BAR_MARGIN = 16;
 const LIKE_ICON_SIZE = 14;
+
+const SMALL_SHADOW_OFFSET = 4;
 
 const NOTE_MAX_LENGTH = 100;
 
@@ -66,8 +62,8 @@ const BIO_PLACEHOLDER = "자기소개가 없습니다.";
 const BLOCK_DESCRIPTION =
   "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다.";
 
-const GRID_BUTTON_SIZE = 32;
-const GRID_ICON_SIZE = 18;
+const GRID_BUTTON_SIZE = 40;
+const GRID_ICON_SIZE = 20;
 
 const LIKES_KEY = ["likes"];
 const FAVORITES_KEY = ["favorites"];
@@ -146,46 +142,38 @@ function ActionBar({
   return (
     <XStack
       position="absolute"
-      b={tabBarBottom(insets.bottom)}
-      l={ACTION_BAR_MARGIN}
-      r={ACTION_BAR_MARGIN}
+      b={0}
+      l={0}
+      r={0}
+      height={TAB_BAR_HEIGHT + insets.bottom}
+      pb={insets.bottom}
+      bg="$color1"
+      borderTopWidth={2}
+      borderColor="$color12"
     >
-      <GlassSurface
-        style={{
-          flex: 1,
-          borderRadius: TAB_BAR_HEIGHT / 2,
-          overflow: "hidden",
-        }}
-      >
-        <XStack height={TAB_BAR_HEIGHT} items="center">
-          {ACTIONS.map(({ key, icon: Icon }) => (
-            <XStack
-              key={key}
-              flex={1}
-              height="100%"
-              items="center"
-              justify="center"
-              opacity={pending === key ? 0.4 : 1}
-              pressStyle={
-                disabled[key] ? undefined : { opacity: PRESS_OPACITY }
-              }
-              onPress={disabled[key] ? undefined : () => onPress(key)}
-            >
-              <YStack>
-                <Icon
-                  size={ACTION_ICON_SIZE}
-                  weight={filled[key] && key !== "block" ? "fill" : "regular"}
-                  color={filled[key] ? colors[key] : theme.color10.val}
-                />
+      {ACTIONS.map(({ key, icon: Icon }) => (
+        <XStack
+          key={key}
+          flex={1}
+          height="100%"
+          items="center"
+          justify="center"
+          opacity={pending === key || disabled[key] ? 0.4 : 1}
+          onPress={disabled[key] ? undefined : () => onPress(key)}
+        >
+          <YStack>
+            <Icon
+              size={ACTION_ICON_SIZE}
+              weight={filled[key] && key !== "block" ? "fill" : "regular"}
+              color={filled[key] ? colors[key] : theme.color12.val}
+            />
 
-                {key === "secretPhoto" && (
-                  <CountBadge count={member.secretPhotoCount} />
-                )}
-              </YStack>
-            </XStack>
-          ))}
+            {key === "secretPhoto" && (
+              <CountBadge count={member.secretPhotoCount} />
+            )}
+          </YStack>
         </XStack>
-      </GlassSurface>
+      ))}
     </XStack>
   );
 }
@@ -203,6 +191,7 @@ export default function MemberProfileScreen() {
   const [noteOpen, setNoteOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
 
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const photoGridOpen = usePhotoGridStore((state) => state.open);
   const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
   const noteContent = useNoteStore((state) => state.content);
@@ -218,9 +207,9 @@ export default function MemberProfileScreen() {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      alertInfo(NOTE_SENT_MESSAGE);
+      show("info", NOTE_SENT_MESSAGE);
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const relate = useMutation({
@@ -229,7 +218,7 @@ export default function MemberProfileScreen() {
       queryClient.invalidateQueries({ queryKey: listKey }),
     onError: (mutationError) => {
       queryClient.invalidateQueries({ queryKey });
-      alertApiError(mutationError);
+      showApiError(mutationError);
     },
   });
 
@@ -251,7 +240,7 @@ export default function MemberProfileScreen() {
   const copyMemberId = async (id: number) => {
     await Clipboard.setStringAsync(String(id));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    alertInfo(ID_COPIED_MESSAGE);
+    show("info", ID_COPIED_MESSAGE);
   };
 
   const handleAction = useCallback(
@@ -292,7 +281,7 @@ export default function MemberProfileScreen() {
           loadSecretPhotos.mutate(undefined, {
             onSuccess: (photos) =>
               photos.length === 0
-                ? alertInfo(SECRET_PHOTO_EMPTY_MESSAGE)
+                ? show("info", SECRET_PHOTO_EMPTY_MESSAGE)
                 : setSecretPhotoOpen(true),
           });
         }
@@ -310,10 +299,9 @@ export default function MemberProfileScreen() {
             api.blocks.remove(memberId),
           );
         } else {
-          confirmAlert({
-            title: "차단",
+          confirm({
             message: BLOCK_DESCRIPTION,
-            confirmLabel: "확인",
+            confirmLabel: "차단",
             destructive: true,
             onConfirm: () =>
               run({ blockedByMe: true }, BLOCKS_KEY, () =>
@@ -323,7 +311,7 @@ export default function MemberProfileScreen() {
         }
       }
     },
-    [loadSecretPhotos, member, memberId, run],
+    [confirm, loadSecretPhotos, member, memberId, run, show],
   );
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
@@ -392,25 +380,6 @@ export default function MemberProfileScreen() {
                 <PhotoPager photos={member.publicPhotoUrls} />
               )}
 
-              <XStack
-                position="absolute"
-                t="$2"
-                r="$4"
-                width={GRID_BUTTON_SIZE}
-                height={GRID_BUTTON_SIZE}
-                rounded={9999}
-                bg={OVERLAY_BG}
-                items="center"
-                justify="center"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                onPress={togglePhotoGrid}
-              >
-                <SquaresFourIcon
-                  size={GRID_ICON_SIZE}
-                  weight={photoGridOpen ? "fill" : "regular"}
-                  color="white"
-                />
-              </XStack>
             </YStack>
 
             <YStack gap="$4" p="$4">
@@ -430,7 +399,7 @@ export default function MemberProfileScreen() {
                     <Text
                       shrink={0}
                       theme="gray"
-                      color="$color10"
+                      color="$color11"
                       fontSize="$2"
                     >
                       {formatRelativeTime(member.locatedAt, now)}
@@ -440,7 +409,7 @@ export default function MemberProfileScreen() {
 
                 <XStack items="center" justify="space-between" gap="$2">
                   <XStack flex={1} items="center">
-                    <Text theme="gray" color="$color10" fontSize="$4">
+                    <Text theme="gray" color="$color11" fontSize="$4">
                       {`${genderLabel(member.gender)} · ${member.age}살 · `}
                     </Text>
 
@@ -451,7 +420,7 @@ export default function MemberProfileScreen() {
                         color={theme.gray10.val}
                       />
 
-                      <Text theme="gray" color="$color10" fontSize="$4">
+                      <Text theme="gray" color="$color11" fontSize="$4">
                         {member.receivedLikeCount}
                       </Text>
                     </XStack>
@@ -462,7 +431,7 @@ export default function MemberProfileScreen() {
                       <Text
                         shrink={0}
                         theme="gray"
-                        color="$color10"
+                        color="$color11"
                         fontSize="$2"
                       >
                         {formatDistance(member.distance)}
@@ -490,6 +459,43 @@ export default function MemberProfileScreen() {
             pending={loadSecretPhotos.isPending ? "secretPhoto" : null}
             onPress={handleAction}
           />
+
+          <YStack
+            position="absolute"
+            r={SCROLL_TO_TOP_BOTTOM_GAP}
+            b={tabBarOverlayHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
+          >
+            <YStack
+              position="absolute"
+              t={SMALL_SHADOW_OFFSET}
+              b={-SMALL_SHADOW_OFFSET}
+              l={SMALL_SHADOW_OFFSET}
+              r={-SMALL_SHADOW_OFFSET}
+              bg="$gray12"
+            />
+            <XStack
+              theme="blue"
+              width={GRID_BUTTON_SIZE}
+              height={GRID_BUTTON_SIZE}
+              borderWidth={2}
+              borderColor="$gray12"
+              bg="$color10"
+              items="center"
+              justify="center"
+              pressStyle={{
+                x: SMALL_SHADOW_OFFSET,
+                y: SMALL_SHADOW_OFFSET,
+                bg: "$color11",
+              }}
+              onPress={togglePhotoGrid}
+            >
+              <SquaresFourIcon
+                size={GRID_ICON_SIZE}
+                weight={photoGridOpen ? "fill" : "regular"}
+                color="white"
+              />
+            </XStack>
+          </YStack>
         </>
       ) : (
         <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
@@ -499,14 +505,7 @@ export default function MemberProfileScreen() {
                 {isApiError(error) ? error.message : ERROR_MESSAGE}
               </Text>
 
-              <Button
-                size="$3"
-                theme="blue"
-                rounded="$7"
-                onPress={() => refetch()}
-              >
-                다시 시도
-              </Button>
+              <RetroButton onPress={() => refetch()}>다시 시도</RetroButton>
             </>
           ) : (
             <Spinner size="small" />
@@ -544,6 +543,8 @@ export default function MemberProfileScreen() {
       />
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
+
+      {alertElement}
     </YStack>
   );
 }

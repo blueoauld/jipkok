@@ -1,5 +1,7 @@
 import { Text, YStack } from "tamagui";
 
+import { RetroCard } from "@/components/ui/RetroCard";
+
 export function ProfileSection({
   title,
   body,
@@ -13,18 +15,14 @@ export function ProfileSection({
 
   return (
     <YStack gap="$2">
-      <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+      <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
         {title}
       </Text>
-      <Text
-        fontSize="$4"
-        bg="$gray4"
-        rounded="$5"
-        p="$3"
-        color={empty ? "$gray10" : undefined}
-      >
-        {empty ? placeholder : body}
-      </Text>
+      <RetroCard>
+        <Text fontSize="$4" color={empty ? "$gray10" : undefined}>
+          {empty ? placeholder : body}
+        </Text>
+      </RetroCard>
     </YStack>
   );
 }
