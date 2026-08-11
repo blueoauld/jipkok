@@ -15,8 +15,8 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
@@ -140,7 +140,7 @@ export default function MainScreen() {
       <Tabs.Screen options={screenOptions} />
 
       <YStack px="$4" pt="$4" pb="$2">
-        <SegmentedControl
+        <RetroSegmentedControl
           values={FILTERS}
           value={SORT_LABELS[sort]}
           onChange={changeFilter}
