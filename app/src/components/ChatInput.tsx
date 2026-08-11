@@ -145,7 +145,8 @@ export function ChatReplyPreview({
         borderColor="$gray12"
         bg="$color1"
         items="center"
-        px="$3"
+        pl="$2"
+        pr="$3"
         py="$2"
         gap="$2.5"
       >

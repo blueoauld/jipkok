@@ -63,6 +63,9 @@ const AVATAR_SIZE = 36;
 const MESSAGE_GAP_BOTTOM = 2;
 const GROUP_GAP_TOP = 8;
 
+// 기본 70%면 아바타 + 사진 200 + 시간이 안 들어가서 시간이 사진을 덮는다.
+const BUBBLE_MAX_WIDTH = "88%" as const;
+
 const REVIEW_SENT_THRESHOLD = 5;
 
 const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
@@ -402,6 +405,7 @@ export default function ChatRoomScreen() {
             const style = {
               marginTop: grouped ? 0 : GROUP_GAP_TOP,
               marginBottom: MESSAGE_GAP_BOTTOM,
+              maxWidth: BUBBLE_MAX_WIDTH,
             };
 
             return (
