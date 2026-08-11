@@ -2,6 +2,7 @@ import "dayjs/locale/ko";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import {
   type ComponentProps,
@@ -18,6 +19,12 @@ import { getTokens, Spinner, YStack } from "tamagui";
 import { CHAT_BUBBLE_MIN_HEIGHT, ChatBubble } from "@/components/ChatBubble";
 import { ChatDay } from "@/components/ChatDay";
 import {
+  ChatActions,
+  ChatComposer,
+  ChatInputToolbar,
+  ChatSend,
+} from "@/components/ChatInput";
+import {
   CHAT_SCROLL_TO_BOTTOM_CONTENT_STYLE,
   CHAT_SCROLL_TO_BOTTOM_STYLE,
   ChatScrollToBottom,
@@ -30,7 +37,9 @@ import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import {
   api,
   type ChatMessageResponse,
@@ -41,6 +50,8 @@ import { pushOnce } from "@/lib/router";
 import { useThemeStore } from "@/lib/theme/store";
 
 const AVATAR_SIZE = CHAT_BUBBLE_MIN_HEIGHT;
+
+const MESSAGE_MAX_LENGTH = 1000;
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -70,6 +81,7 @@ export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
   const space = getTokens().space;
+  const headerHeight = useHeaderHeight();
 
   const queryClient = useQueryClient();
   const scheme = useThemeStore((state) => state.mode);
@@ -95,10 +107,35 @@ export default function ChatRoomScreen() {
     onError: showApiError,
   });
 
+  const { sendText, sendPhotos, uploading } = useSendMessage(
+    roomId,
+    profile?.memberId ?? 0,
+    showApiError,
+  );
+
   const giftedMessages = useMemo(
     () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),
     [messages, room],
   );
+
+  const handleSend = useCallback(
+    (sent: IMessage[]) => {
+      const text = sent[0]?.text.trim();
+
+      if (text) {
+        sendText(text);
+      }
+    },
+    [sendText],
+  );
+
+  const handlePickPhotos = useCallback(async () => {
+    const assets = await pickPhotos(MAX_PHOTOS);
+
+    if (assets.length > 0) {
+      sendPhotos(assets);
+    }
+  }, [sendPhotos]);
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
 
@@ -153,6 +190,7 @@ export default function ChatRoomScreen() {
       {room && profile ? (
         <GiftedChat
           messages={giftedMessages}
+          onSend={handleSend}
           messagesContainerRef={
             messagesContainerRef as ComponentProps<
               typeof GiftedChat<IMessage>
@@ -214,7 +252,21 @@ export default function ChatRoomScreen() {
               />
             </YStack>
           )}
-          renderInputToolbar={() => null}
+          keyboardAvoidingViewProps={{
+            behavior: "padding",
+            keyboardVerticalOffset: headerHeight,
+          }}
+          textInputProps={{
+            placeholder: "메시지 입력",
+            maxLength: MESSAGE_MAX_LENGTH,
+          }}
+          renderInputToolbar={(props) => <ChatInputToolbar {...props} />}
+          renderComposer={(props) => <ChatComposer {...props} />}
+          renderSend={(props) => <ChatSend {...props} />}
+          renderActions={(props) => (
+            <ChatActions {...props} uploading={uploading} />
+          )}
+          onPressActionButton={handlePickPhotos}
         />
       ) : (
         <YStack flex={1} justify="center" items="center">

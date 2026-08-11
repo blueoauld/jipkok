@@ -3,7 +3,7 @@ import type { BubbleProps, IMessage } from "react-native-gifted-chat";
 import { Text, XStack, YStack } from "tamagui";
 
 import { formatMessageTime } from "@/lib/date";
-import { DISABLED_OPACITY, PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { PHOTO_PRESS_OPACITY } from "@/lib/design";
 
 const PHOTO_SIZE = 200;
 const PHOTO_TRANSITION = 200;
@@ -37,7 +37,6 @@ export function ChatBubble({
         rounded={0}
         overflow="hidden"
         bg={mine && !photo ? "$blue10" : "$color1"}
-        opacity={currentMessage.pending ? DISABLED_OPACITY : 1}
       >
         {photo ? (
           <YStack
