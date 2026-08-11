@@ -44,7 +44,7 @@ export function RetroSegmentedControl<T extends string>({
               bg={selected ? "$color10" : "transparent"}
               borderColor="$color12"
               borderLeftWidth={index === 0 ? 0 : 2}
-              pressStyle={{ bg: selected ? "$color10" : "$color4" }}
+              pressStyle={{ bg: selected ? "$color10" : "$color3" }}
               onPressIn={() => setPressed(true)}
               onPressOut={() => setPressed(false)}
               onPress={() => onChange(item)}
