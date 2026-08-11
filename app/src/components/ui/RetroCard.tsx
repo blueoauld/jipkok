@@ -5,11 +5,12 @@ const SHADOW_OFFSET = 4;
 export function RetroCard({
   theme = "gray",
   shadow = "$gray8",
+  flex,
   children,
   ...props
 }: YStackProps & { shadow?: YStackProps["bg"] }) {
   return (
-    <YStack theme={theme}>
+    <YStack theme={theme} flex={flex}>
       <YStack
         position="absolute"
         t={SHADOW_OFFSET}

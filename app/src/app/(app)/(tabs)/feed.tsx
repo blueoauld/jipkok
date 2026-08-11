@@ -101,6 +101,7 @@ const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST"
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
 const SHADOW_OFFSET = 4;
+const CLOSE_SHADOW_OFFSET = 2;
 
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
@@ -248,20 +249,17 @@ function PickerTile({
   const theme = useTheme();
 
   return (
-    <YStack
+    <RetroCard
       flex={1}
+      p={0}
       aspectRatio={1}
-      rounded={0}
-      borderWidth={2}
-      borderColor="$color12"
       bg="$gray4"
       items="center"
       justify="center"
-      pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Icon size={36} color={theme.gray9.val} />
-    </YStack>
+      <Icon size={36} color={theme.color12.val} />
+    </RetroCard>
   );
 }
 
@@ -298,21 +296,30 @@ function ComposeForm({
         >
           <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
 
-          <XStack
-            position="absolute"
-            t="$3"
-            r="$3"
-            width={24}
-            height={24}
-            rounded={0}
-            bg="$red10"
-            items="center"
-            justify="center"
-            pressStyle={{ opacity: PRESS_OPACITY }}
-            onPress={() => setPhoto(null)}
-          >
-            <XIcon size={14} weight="bold" color="white" />
-          </XStack>
+          <YStack position="absolute" t="$3" r="$3">
+            <YStack
+              position="absolute"
+              t={CLOSE_SHADOW_OFFSET}
+              b={-CLOSE_SHADOW_OFFSET}
+              l={CLOSE_SHADOW_OFFSET}
+              r={-CLOSE_SHADOW_OFFSET}
+              bg="$gray12"
+            />
+            <XStack
+              width={24}
+              height={24}
+              rounded={0}
+              borderWidth={2}
+              borderColor="$gray12"
+              bg="$red10"
+              items="center"
+              justify="center"
+              pressStyle={{ x: CLOSE_SHADOW_OFFSET, y: CLOSE_SHADOW_OFFSET }}
+              onPress={() => setPhoto(null)}
+            >
+              <XIcon size={14} weight="bold" color="white" />
+            </XStack>
+          </YStack>
         </YStack>
       ) : (
         <XStack gap="$2">
