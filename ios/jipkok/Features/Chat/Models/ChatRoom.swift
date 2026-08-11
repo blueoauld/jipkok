@@ -1,11 +1,11 @@
 import Foundation
 
 struct ChatRoom: Identifiable, Hashable {
-
+    
     enum LastMessage: Hashable {
         case text(String)
         case photo
-
+        
         var preview: String {
             switch self {
             case .text(let content): content
@@ -13,14 +13,15 @@ struct ChatRoom: Identifiable, Hashable {
             }
         }
     }
-
+    
     let id: Int
+    let memberId: Int
     let nickname: String
     let profileImageURL: URL?
     let lastMessage: LastMessage
     let lastMessageAt: Date
-    let unreadCount: Int
-    let isNotificationEnabled: Bool
+    var unreadCount: Int
+    var isNotificationEnabled: Bool
 }
 
 private let sampleMessages: [ChatRoom.LastMessage] = [
@@ -43,10 +44,11 @@ private let sampleNicknames = [
 ]
 
 extension ChatRoom {
-
+    
     static let samples: [ChatRoom] = sampleNicknames.enumerated().map { index, nickname in
         ChatRoom(
             id: index + 1,
+            memberId: index + 1,
             nickname: nickname,
             profileImageURL: nil,
             lastMessage: sampleMessages[index % sampleMessages.count],

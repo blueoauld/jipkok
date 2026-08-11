@@ -2,28 +2,13 @@ import SwiftUI
 
 struct ChatView: View {
     
-    private enum Filter: CaseIterable {
-        case all
-        case unread
-        
-        var label: String {
-            switch self {
-            case .all: "전체"
-            case .unread: "안읽음"
-            }
-        }
-    }
-    
     @State private var router = ChatRouter()
-    @State private var filter: Filter = .all
-    @State private var isNoteReceiveEnabled = true
-    @State private var rooms = ChatRoom.samples
+    @State private var viewModel = ChatViewModel()
     
-    private var filteredRooms: [ChatRoom] {
-        switch filter {
-        case .all: rooms
-        case .unread: rooms.filter { $0.unreadCount > 0 }
-        }
+    init() {}
+    
+    fileprivate init(viewModel: ChatViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -50,35 +35,76 @@ struct ChatView: View {
                         noteReceiveButton
                     }
                 }
+                .alert("알림", isPresented: $viewModel.isConfirmingLeave, presenting: viewModel.leavingRoom) { room in
+                    Button("나가기", role: .destructive) {
+                        Task { await viewModel.leave(room) }
+                    }
+                    
+                    Button("닫기", role: .cancel) {}
+                } message: { _ in
+                    Text("나가면 대화 내역이 모두 사라집니다.")
+                }
+                .alert("알림", isPresented: $viewModel.isShowingMessage) {
+                    Button("확인", role: .cancel) {}
+                } message: {
+                    Text(viewModel.message ?? "")
+                }
+                .loadingOverlay(viewModel.isProcessing)
+                .task { await viewModel.loadIfNeeded() }
+                .onChange(of: viewModel.filter) { _, _ in Task { await viewModel.reload() } }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
     
+    @ViewBuilder
     private var roomList: some View {
-        List(filteredRooms) { room in
-            ChatRow(room: room)
-                .listRowInsets(EdgeInsets(
-                    top: rowSpacing / 2,
-                    leading: listHorizontalPadding,
-                    bottom: rowSpacing / 2,
-                    trailing: listHorizontalPadding
-                ))
-                .listRowSeparator(.hidden)
-                .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                    notificationAction(for: room)
+        switch viewModel.displayState {
+        case .loading:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .empty:
+            ContentUnavailableView("채팅이 없습니다.", systemImage: "bubble.left.and.bubble.right")
+        case .content:
+            List {
+                ForEach(viewModel.rooms) { room in
+                    ChatRow(room: room)
+                        .listRowInsets(EdgeInsets(
+                            top: rowSpacing / 2,
+                            leading: listHorizontalPadding,
+                            bottom: rowSpacing / 2,
+                            trailing: listHorizontalPadding
+                        ))
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            notificationAction(for: room)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            leaveAction(for: room)
+                        }
+                        .task { await loadMoreIfNeeded(for: room) }
                 }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    leaveAction
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .listRowSeparator(.hidden)
                 }
+            }
+            .listStyle(.plain)
+            .contentMargins(.top, listTopPadding - rowSpacing / 2, for: .scrollContent)
+            .contentMargins(.bottom, listBottomPadding - rowSpacing / 2, for: .scrollContent)
         }
-        .listStyle(.plain)
-        .contentMargins(.top, listTopPadding - rowSpacing / 2, for: .scrollContent)
-        .contentMargins(.bottom, listBottomPadding - rowSpacing / 2, for: .scrollContent)
+    }
+    
+    private func loadMoreIfNeeded(for room: ChatRoom) async {
+        guard room.id == viewModel.rooms.last?.id else { return }
+        
+        await viewModel.loadMore()
     }
     
     private var filterPicker: some View {
-        Picker("필터", selection: $filter) {
-            ForEach(Filter.allCases, id: \.self) { item in
+        Picker("필터", selection: $viewModel.filter) {
+            ForEach(ChatViewModel.Filter.allCases, id: \.self) { item in
                 Text(item.label)
                     .tag(item)
             }
@@ -91,6 +117,7 @@ struct ChatView: View {
     
     private func notificationAction(for room: ChatRoom) -> some View {
         Button {
+            Task { await viewModel.toggleNotification(room) }
         } label: {
             Label(
                 room.isNotificationEnabled ? "알림 끄기" : "알림 켜기",
@@ -101,8 +128,9 @@ struct ChatView: View {
         .tint(.accentColor)
     }
     
-    private var leaveAction: some View {
+    private func leaveAction(for room: ChatRoom) -> some View {
         Button(role: .destructive) {
+            viewModel.leavingRoom = room
         } label: {
             Label("나가기", systemImage: "rectangle.portrait.and.arrow.right.fill")
                 .labelStyle(.iconOnly)
@@ -111,15 +139,32 @@ struct ChatView: View {
     
     private var noteReceiveButton: some View {
         Button {
-            withAnimation { isNoteReceiveEnabled.toggle() }
+            Task { await viewModel.toggleNoteReceive() }
         } label: {
-            Image(systemName: isNoteReceiveEnabled ? "bell" : "bell.slash")
+            Image(systemName: viewModel.isNoteReceiveEnabled ? "bell" : "bell.slash")
                 .contentTransition(.symbolEffect(.replace))
+                .animation(.easeOut(duration: 0.15), value: viewModel.isNoteReceiveEnabled)
         }
-        .accessibilityLabel(isNoteReceiveEnabled ? "쪽지 받지 않기" : "쪽지 받기")
+        .accessibilityLabel(viewModel.isNoteReceiveEnabled ? "쪽지 받지 않기" : "쪽지 받기")
     }
 }
 
-#Preview {
+#Preview("기본") {
     ChatView()
+}
+
+#Preview("목록") {
+    ChatView(viewModel: .preview(rooms: ChatRoom.samples))
+}
+
+#Preview("추가 로딩") {
+    ChatView(viewModel: .preview(rooms: ChatRoom.samples, isLoading: true))
+}
+
+#Preview("로딩 중") {
+    ChatView(viewModel: .preview(isLoading: true))
+}
+
+#Preview("빈 상태") {
+    ChatView(viewModel: .preview())
 }
