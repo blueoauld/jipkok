@@ -1,5 +1,7 @@
+import { Image } from "expo-image";
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
+import { XIcon } from "phosphor-react-native/src/icons/X";
 import type { ReactNode } from "react";
 import { StyleSheet } from "react-native";
 import {
@@ -11,11 +13,13 @@ import {
   Send,
   type SendProps,
 } from "react-native-gifted-chat";
-import { getTokens, Spinner, useTheme, XStack, YStack } from "tamagui";
+import type { ReplyPreviewProps } from "react-native-gifted-chat/lib/components/ReplyPreview";
+import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import {
   DISABLED_OPACITY,
   FLOATING_BUTTON_SIZE,
+  PRESS_OPACITY,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
 
@@ -107,6 +111,70 @@ export function ChatSend(props: SendProps<IMessage>) {
         </RetroBox>
       </YStack>
     </Send>
+  );
+}
+
+const PREVIEW_PHOTO_SIZE = 40;
+const PREVIEW_CLOSE_ICON_SIZE = 18;
+
+export function ChatReplyPreview({
+  name,
+  replyMessage,
+  onClearReply,
+}: ReplyPreviewProps & { name: string }) {
+  const theme = useTheme();
+
+  return (
+    <YStack
+      theme="gray"
+      ml={TOOLBAR_PADDING}
+      mr={TOOLBAR_PADDING - RETRO_SHADOW_OFFSET}
+      mt={TOOLBAR_PADDING}
+    >
+      <YStack
+        position="absolute"
+        t={RETRO_SHADOW_OFFSET}
+        b={-RETRO_SHADOW_OFFSET}
+        l={RETRO_SHADOW_OFFSET}
+        r={-RETRO_SHADOW_OFFSET}
+        bg="$gray12"
+      />
+      <XStack
+        borderWidth={2}
+        borderColor="$gray12"
+        bg="$color1"
+        items="center"
+        px="$3"
+        py="$2"
+        gap="$2.5"
+      >
+        {replyMessage.image && (
+          <Image
+            source={replyMessage.image}
+            contentFit="cover"
+            style={{ width: PREVIEW_PHOTO_SIZE, height: PREVIEW_PHOTO_SIZE }}
+          />
+        )}
+
+        <YStack flex={1} gap="$1">
+          <Text fontSize="$2" fontWeight="600" color="$color12">
+            {name}에게 답장
+          </Text>
+
+          <Text fontSize="$3" color="$color11" numberOfLines={1}>
+            {replyMessage.text || "사진"}
+          </Text>
+        </YStack>
+
+        <XStack
+          py="$2"
+          pressStyle={{ opacity: PRESS_OPACITY }}
+          onPress={onClearReply}
+        >
+          <XIcon size={PREVIEW_CLOSE_ICON_SIZE} color={theme.color11.val} />
+        </XStack>
+      </XStack>
+    </YStack>
   );
 }
 

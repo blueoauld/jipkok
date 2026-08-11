@@ -1,10 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
-import { useCallback, useMemo, useState } from "react";
-import { GiftedChat, type IMessage, Message } from "react-native-gifted-chat";
+import {
+  type ComponentProps,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { FlatList, TextInput } from "react-native";
+import {
+  GiftedChat,
+  type IMessage,
+  Message,
+  type ReplyMessage,
+} from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
@@ -14,8 +27,11 @@ import {
   ChatActions,
   ChatComposer,
   ChatInputToolbar,
+  ChatReplyPreview,
   ChatSend,
 } from "@/components/ChatInput";
+import { ChatMessageReply } from "@/components/ChatMessageReply";
+import { ChatSwipeReplyAction } from "@/components/ChatSwipeReplyAction";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -30,6 +46,7 @@ import {
   api,
   type ChatMessageResponse,
   type ChatRoomResponse,
+  type ReplyMessageResponse,
 } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
 import { uploadChatPhoto } from "@/lib/photo";
@@ -58,6 +75,18 @@ function toGiftedMessage(
           }
         : { _id: message.senderId },
     image: message.imageUrl ?? undefined,
+    replyMessage: message.replyMessage
+      ? toGiftedReply(message.replyMessage)
+      : undefined,
+  };
+}
+
+function toGiftedReply(reply: ReplyMessageResponse): ReplyMessage {
+  return {
+    _id: reply.messageId,
+    text: reply.content ?? "",
+    user: { _id: reply.senderId },
+    image: reply.imageUrl ?? undefined,
   };
 }
 
@@ -69,6 +98,12 @@ export default function ChatRoomScreen() {
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [replyTarget, setReplyTarget] = useState<ReplyMessageResponse | null>(
+    null,
+  );
+
+  const textInputRef = useRef<TextInput>(null!);
+  const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
   const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const { data: profile } = useMyProfile();
@@ -77,8 +112,13 @@ export default function ChatRoomScreen() {
     useChatMessages(roomId);
 
   const { mutate: sendMessage } = useMutation({
-    mutationFn: (content: string) =>
-      api.chats.send(roomId, { type: "TEXT", content }),
+    mutationFn: ({
+      content,
+      replyToMessageId,
+    }: {
+      content: string;
+      replyToMessageId: number | null;
+    }) => api.chats.send(roomId, { type: "TEXT", content, replyToMessageId }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
     onError: showApiError,
@@ -152,15 +192,67 @@ export default function ChatRoomScreen() {
     [messages, room],
   );
 
+  const replyPreview = useMemo(
+    () => (replyTarget ? toGiftedReply(replyTarget) : null),
+    [replyTarget],
+  );
+
   const onSend = useCallback(
     (sent: IMessage[]) => {
       const text = sent[0]?.text.trim();
 
       if (text) {
-        sendMessage(text);
+        sendMessage({
+          content: text,
+          replyToMessageId: replyTarget?.messageId ?? null,
+        });
+        setReplyTarget(null);
       }
     },
-    [sendMessage],
+    [sendMessage, replyTarget],
+  );
+
+  const handleSwipeReply = useCallback(
+    (message: IMessage) => {
+      const source = (messages ?? []).find(
+        (it) => it.messageId === message._id,
+      );
+
+      if (!source) {
+        return;
+      }
+
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setReplyTarget({
+        messageId: source.messageId,
+        senderId: source.senderId,
+        type: source.type,
+        content: source.content ?? null,
+        imageUrl: source.imageUrl ?? null,
+      });
+      textInputRef.current?.focus();
+    },
+    [messages],
+  );
+
+  const handlePressReply = useCallback(
+    (reply: ReplyMessage) => {
+      const index = (messages ?? []).findIndex(
+        (it) => it.messageId === reply._id,
+      );
+
+      if (index < 0) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        return;
+      }
+
+      messagesContainerRef.current?.scrollToIndex({
+        index,
+        viewPosition: 0.5,
+        animated: true,
+      });
+    },
+    [messages],
   );
 
   return (
@@ -183,6 +275,47 @@ export default function ChatRoomScreen() {
           messages={giftedMessages}
           onSend={onSend}
           user={{ _id: profile.memberId }}
+          textInputRef={textInputRef}
+          messagesContainerRef={
+            messagesContainerRef as ComponentProps<
+              typeof GiftedChat<IMessage>
+            >["messagesContainerRef"]
+          }
+          listProps={{
+            onScrollToIndexFailed: (info) =>
+              messagesContainerRef.current?.scrollToOffset({
+                offset: info.averageItemLength * info.index,
+                animated: true,
+              }),
+          }}
+          reply={{
+            message: replyPreview,
+            onClear: () => setReplyTarget(null),
+            onPress: handlePressReply,
+            renderPreview: (previewProps) => (
+              <ChatReplyPreview
+                {...previewProps}
+                name={
+                  replyTarget?.senderId === room.memberId ? room.nickname : "나"
+                }
+              />
+            ),
+            renderMessageReply: (replyProps) => (
+              <ChatMessageReply
+                {...replyProps}
+                name={
+                  replyProps.replyMessage.user._id === room.memberId
+                    ? room.nickname
+                    : "나"
+                }
+              />
+            ),
+            swipe: {
+              isEnabled: true,
+              onSwipe: handleSwipeReply,
+              renderAction: () => <ChatSwipeReplyAction />,
+            },
+          }}
           isAvatarOnTop
           isAvatarVisibleForEveryMessage
           isDayAnimationEnabled={false}
