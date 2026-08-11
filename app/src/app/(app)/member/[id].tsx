@@ -24,6 +24,7 @@ import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
@@ -42,8 +43,6 @@ import { pushOnce } from "@/lib/router";
 
 const ACTION_ICON_SIZE = 30;
 const LIKE_ICON_SIZE = 14;
-
-const SMALL_SHADOW_OFFSET = 4;
 
 const NOTE_MAX_LENGTH = 100;
 
@@ -69,7 +68,6 @@ const UNBLOCK_DESCRIPTION = "차단을 해제하시겠습니까?";
 const BLOCK_DESCRIPTION =
   "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다.";
 
-const GRID_BUTTON_SIZE = 40;
 const GRID_ICON_SIZE = 20;
 
 const LIKES_KEY = ["likes"];
@@ -497,36 +495,13 @@ export default function MemberProfileScreen() {
             r={SCROLL_TO_TOP_BOTTOM_GAP}
             b={tabBarOverlayHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
           >
-            <YStack
-              position="absolute"
-              t={SMALL_SHADOW_OFFSET}
-              b={-SMALL_SHADOW_OFFSET}
-              l={SMALL_SHADOW_OFFSET}
-              r={-SMALL_SHADOW_OFFSET}
-              bg="$gray12"
-            />
-            <XStack
-              theme="blue"
-              width={GRID_BUTTON_SIZE}
-              height={GRID_BUTTON_SIZE}
-              borderWidth={2}
-              borderColor="$gray12"
-              bg="$color10"
-              items="center"
-              justify="center"
-              pressStyle={{
-                x: SMALL_SHADOW_OFFSET,
-                y: SMALL_SHADOW_OFFSET,
-                bg: "$color11",
-              }}
-              onPress={togglePhotoGrid}
-            >
+            <RetroFloatingButton onPress={togglePhotoGrid}>
               <SquaresFourIcon
                 size={GRID_ICON_SIZE}
                 weight={photoGridOpen ? "fill" : "regular"}
                 color="white"
               />
-            </XStack>
+            </RetroFloatingButton>
           </YStack>
         </>
       ) : (

@@ -3,6 +3,7 @@ import { CaretLeftIcon } from "phosphor-react-native/src/icons/CaretLeft";
 import { CaretRightIcon } from "phosphor-react-native/src/icons/CaretRight";
 import { CrownSimpleIcon } from "phosphor-react-native/src/icons/CrownSimple";
 import { ImageIcon } from "phosphor-react-native/src/icons/Image";
+import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
@@ -113,6 +114,7 @@ export function PhotoGrid({
   onPressPhoto,
   showPrimaryBadge,
   showPlaceholders,
+  secretFrom,
 }: {
   photos: string[];
   onAdd?: () => void;
@@ -121,6 +123,7 @@ export function PhotoGrid({
   onPressPhoto?: (index: number) => void;
   showPrimaryBadge?: boolean;
   showPlaceholders?: boolean;
+  secretFrom?: number;
 }) {
   const theme = useTheme();
 
@@ -211,6 +214,22 @@ export function PhotoGrid({
                       transition={PHOTO_TRANSITION}
                       style={{ width: "100%", height: "100%" }}
                     />
+
+                    {secretFrom !== undefined && cell.index >= secretFrom && (
+                      <XStack
+                        position="absolute"
+                        t="$2"
+                        l="$2"
+                        width={24}
+                        height={24}
+                        rounded={0}
+                        bg="$gray12"
+                        items="center"
+                        justify="center"
+                      >
+                        <LockSimpleIcon size={14} weight="fill" color="white" />
+                      </XStack>
+                    )}
 
                     {showPrimaryBadge && cell.index === 0 && (
                       <XStack

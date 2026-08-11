@@ -3,10 +3,10 @@ import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { useState } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { PhotoViewer } from "@/components/PhotoViewer";
-import { OVERLAY_BG, PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { PHOTO_PRESS_OPACITY } from "@/lib/design";
 
 const PHOTO_RATIO = 0.8;
 
@@ -14,7 +14,7 @@ const PHOTO_TRANSITION = 200;
 
 const PLACEHOLDER_ICON_SIZE = 48;
 
-const BADGE_ICON_SIZE = 12;
+const BADGE_ICON_SIZE = 14;
 
 export function PhotoPager({
   photos,
@@ -74,22 +74,18 @@ export function PhotoPager({
                 position="absolute"
                 t="$3"
                 l="$3"
+                width={24}
+                height={24}
+                rounded={0}
+                bg="$gray12"
                 items="center"
-                gap="$1.5"
-                px="$2"
-                py="$1.5"
-                rounded={9999}
-                bg={OVERLAY_BG}
+                justify="center"
               >
                 <LockSimpleIcon
                   size={BADGE_ICON_SIZE}
                   weight="fill"
                   color="white"
                 />
-
-                <Text fontSize="$1" color="white">
-                  비밀 사진
-                </Text>
               </XStack>
             )}
           </XStack>
@@ -102,7 +98,7 @@ export function PhotoPager({
             key={`${photoIndex}-${uri}`}
             width={6}
             height={6}
-            rounded={9999}
+            rounded={0}
             bg="white"
             opacity={photoIndex === index ? 1 : 0.4}
           />
