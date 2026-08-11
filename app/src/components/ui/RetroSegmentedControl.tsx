@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Text, XStack, YStack } from "tamagui";
 
 const SHADOW_OFFSET = 4;
@@ -12,8 +11,6 @@ export function RetroSegmentedControl<T extends string>({
   value: T;
   onChange: (value: T) => void;
 }) {
-  const [pressed, setPressed] = useState(false);
-
   return (
     <YStack theme="gray">
       <YStack
@@ -24,13 +21,7 @@ export function RetroSegmentedControl<T extends string>({
         r={-SHADOW_OFFSET}
         bg="$color8"
       />
-      <XStack
-        borderWidth={2}
-        borderColor="$color12"
-        bg="$color1"
-        x={pressed ? SHADOW_OFFSET : 0}
-        y={pressed ? SHADOW_OFFSET : 0}
-      >
+      <XStack borderWidth={2} borderColor="$color12" bg="$color1">
         {values.map((item, index) => {
           const selected = item === value;
 
@@ -45,8 +36,6 @@ export function RetroSegmentedControl<T extends string>({
               borderColor="$color12"
               borderLeftWidth={index === 0 ? 0 : 2}
               pressStyle={{ bg: selected ? "$color10" : "$color3" }}
-              onPressIn={() => setPressed(true)}
-              onPressOut={() => setPressed(false)}
               onPress={() => onChange(item)}
             >
               <Text

@@ -127,16 +127,12 @@ function SettingRow({
   divider,
   badge,
   onPress,
-  onPressIn,
-  onPressOut,
 }: {
   item: SettingItem;
   pending: boolean;
   divider: boolean;
   badge?: number;
   onPress?: () => void;
-  onPressIn?: () => void;
-  onPressOut?: () => void;
 }) {
   const theme = useTheme();
   const { label, icon: Icon } = item;
@@ -151,8 +147,6 @@ function SettingRow({
       borderColor="$color12"
       pressStyle={{ bg: "$color3" }}
       onPress={onPress}
-      onPressIn={onPress ? onPressIn : undefined}
-      onPressOut={onPress ? onPressOut : undefined}
     >
       <Icon size={ICON_SIZE} color={theme.color12.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
@@ -191,8 +185,6 @@ function SettingSection({
   profileViewCount?: number;
   onItemPress: (item: SettingItem) => void;
 }) {
-  const [pressed, setPressed] = useState(false);
-
   return (
     <YStack mx="$4">
       <YStack
@@ -203,13 +195,7 @@ function SettingSection({
         r={-SHADOW_OFFSET}
         bg="$gray8"
       />
-      <YStack
-        borderWidth={2}
-        borderColor="$color12"
-        bg="$color1"
-        x={pressed ? SHADOW_OFFSET : 0}
-        y={pressed ? SHADOW_OFFSET : 0}
-      >
+      <YStack borderWidth={2} borderColor="$color12" bg="$color1">
         {items.map((item, index) => (
           <SettingRow
             key={item.label}
@@ -224,8 +210,6 @@ function SettingSection({
                 ? () => onItemPress(item)
                 : undefined
             }
-            onPressIn={() => setPressed(true)}
-            onPressOut={() => setPressed(false)}
           />
         ))}
       </YStack>
