@@ -23,6 +23,15 @@ struct ChatRepository {
         return ChatRoomPage(rooms: page.items.map(ChatRoom.init), nextCursor: page.nextCursor)
     }
     
+    func searchRooms(keyword: String, cursor: Int64?) async throws -> ChatRoomPage {
+        let output = try await client.searchRooms(
+            .init(query: .init(keyword: keyword, cursor: cursor))
+        )
+        let page = try output.ok.body.json
+        
+        return ChatRoomPage(rooms: page.items.map(ChatRoom.init), nextCursor: page.nextCursor)
+    }
+    
     func setNotificationEnabled(_ enabled: Bool, roomId: Int) async throws {
         _ = try await client.updateNotification(
             .init(path: .init(roomId: Int64(roomId)), body: .json(.init(enabled: enabled)))
