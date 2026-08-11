@@ -5,11 +5,15 @@ import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 export function RetroCard({
   theme = "gray",
   shadow = "$gray8",
+  pressBg = "$color3",
   flex,
   onPress,
   children,
   ...props
-}: YStackProps & { shadow?: YStackProps["bg"] }) {
+}: YStackProps & {
+  shadow?: YStackProps["bg"];
+  pressBg?: YStackProps["bg"];
+}) {
   return (
     <YStack theme={theme} flex={flex}>
       <YStack
@@ -28,7 +32,7 @@ export function RetroCard({
         onPress={onPress}
         pressStyle={
           onPress
-            ? { x: RETRO_SHADOW_OFFSET, y: RETRO_SHADOW_OFFSET, bg: "$color3" }
+            ? { x: RETRO_SHADOW_OFFSET, y: RETRO_SHADOW_OFFSET, bg: pressBg }
             : undefined
         }
         {...props}

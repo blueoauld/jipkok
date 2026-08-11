@@ -1,10 +1,10 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { type ReactNode, useEffect, useMemo } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { TamaguiProvider, useTheme, YStack } from "tamagui";
+import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useChatSocket } from "@/hooks/useChatSocket";
@@ -15,29 +15,36 @@ import { initializeAds } from "@/lib/ads";
 import { initializeAnalytics } from "@/lib/analytics";
 import { QueryProvider } from "@/lib/query";
 import { useReviewStore } from "@/lib/review/store";
+import { useThemeStore } from "@/lib/theme/store";
 import { tamaguiConfig } from "@/tamagui.config";
 
 export default function RootLayout() {
-  const scheme = useColorScheme() === "dark" ? "dark" : "light";
+  const scheme = useThemeStore((state) => state.mode);
+
+  useEffect(() => {
+    Appearance.setColorScheme(scheme);
+  }, [scheme]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryProvider>
         <KeyboardProvider>
-          <TamaguiProvider config={tamaguiConfig} defaultTheme={scheme}>
-            <NavigationTheme scheme={scheme}>
-              <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-              <SessionGuard />
-              <ChatSocket />
-              <Push />
-              <Ads />
-              <Analytics />
-              <Review />
-              <YStack flex={1}>
-                <Stack screenOptions={{ headerShown: false }} />
-                <LoadingOverlay />
-              </YStack>
-            </NavigationTheme>
+          <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+            <Theme name={scheme}>
+              <NavigationTheme scheme={scheme}>
+                <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+                <SessionGuard />
+                <ChatSocket />
+                <Push />
+                <Ads />
+                <Analytics />
+                <Review />
+                <YStack flex={1}>
+                  <Stack screenOptions={{ headerShown: false }} />
+                  <LoadingOverlay />
+                </YStack>
+              </NavigationTheme>
+            </Theme>
           </TamaguiProvider>
         </KeyboardProvider>
       </QueryProvider>

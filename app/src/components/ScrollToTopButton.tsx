@@ -52,12 +52,12 @@ export function ScrollToTopButton({
         theme="blue"
         shadow="$gray12"
         bg="$color10"
+        pressBg="$color11"
         p={0}
         width={BUTTON_SIZE}
         height={BUTTON_SIZE}
         items="center"
         justify="center"
-        pressStyle={{ x: 4, y: 4, bg: "$color11" }}
         onPress={onPress}
       >
         <CaretUpIcon size={ICON_SIZE} weight="bold" color="white" />

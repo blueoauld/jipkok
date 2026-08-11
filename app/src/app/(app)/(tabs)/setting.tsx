@@ -26,6 +26,7 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -46,12 +47,21 @@ import {
   PRIVACY_URL,
   TERMS_URL,
 } from "@/lib/support";
+import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
 
 const ICON_SIZE = 22;
 
 const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
+
+const THEME_LABELS = ["라이트", "다크"] as const;
+type ThemeLabel = (typeof THEME_LABELS)[number];
+
+const THEME_VALUES: Record<ThemeLabel, ThemeMode> = {
+  라이트: "light",
+  다크: "dark",
+};
 
 type SettingAction = "attendanceReward" | "adReward" | "contact" | "suggest";
 
@@ -224,6 +234,8 @@ export default function SettingScreen() {
 
   const { data: profile } = useMyProfile();
   const profileViewCount = useProfileViewNewCount();
+  const themeMode = useThemeStore((state) => state.mode);
+  const setThemeMode = useThemeStore((state) => state.setMode);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const logout = useMutation({
@@ -339,37 +351,47 @@ export default function SettingScreen() {
   );
 
   return (
-    <ScrollView
-      style={{ flex: 1 }}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        paddingTop: space.$4.val,
-        paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
-      }}
-    >
-      <YStack gap="$5">
-        {SECTIONS.map((items) => (
-          <SettingSection
-            key={items[0].label}
-            items={items}
-            pendingAction={pendingAction}
-            profileViewCount={profileViewCount}
-            onItemPress={handlePress}
-          />
-        ))}
+    <YStack flex={1}>
+      <YStack px="$4" pt="$4" pb="$3">
+        <RetroSegmentedControl
+          values={THEME_LABELS}
+          value={themeMode === "dark" ? "다크" : "라이트"}
+          onChange={(label) => setThemeMode(THEME_VALUES[label])}
+        />
       </YStack>
 
-      <Tabs.Screen options={screenOptions} />
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: space.$2.val,
+          paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
+        }}
+      >
+        <YStack gap="$5">
+          {SECTIONS.map((items) => (
+            <SettingSection
+              key={items[0].label}
+              items={items}
+              pendingAction={pendingAction}
+              profileViewCount={profileViewCount}
+              onItemPress={handlePress}
+            />
+          ))}
+        </YStack>
 
-      <MenuSheet
-        open={menuOpen}
-        onOpenChange={setMenuOpen}
-        items={accountMenu}
-      />
+        <Tabs.Screen options={screenOptions} />
 
-      {alertElement}
-      {withdrawElement}
-      {adReward.adRewardElement}
-    </ScrollView>
+        <MenuSheet
+          open={menuOpen}
+          onOpenChange={setMenuOpen}
+          items={accountMenu}
+        />
+
+        {alertElement}
+        {withdrawElement}
+        {adReward.adRewardElement}
+      </ScrollView>
+    </YStack>
   );
 }
