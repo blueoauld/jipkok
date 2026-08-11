@@ -1,11 +1,13 @@
 import { Stack } from "expo-router";
 import { useState } from "react";
 import { FlatList } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatRow } from "@/components/ChatRow";
-import { FormInput } from "@/components/FormInput";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
 import { isApiError } from "@/lib/api";
 
@@ -31,14 +33,25 @@ export default function ChatSearchScreen() {
     fetchNextPage,
   } = search;
 
-  const submit = () => setSubmitted(keyword.trim());
+  const submit = () => {
+    const next = keyword.trim();
+
+    if (next === submitted) {
+      if (enabled) {
+        search.refetch();
+      }
+      return;
+    }
+
+    setSubmitted(next);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "채팅 검색" }} />
 
-      <YStack px="$4" pt="$4" pb="$2">
-        <FormInput
+      <YStack px="$4" pt="$4" pb="$3">
+        <RetroInput
           value={keyword}
           onChangeText={setKeyword}
           onSubmitEditing={submit}
@@ -51,62 +64,63 @@ export default function ChatSearchScreen() {
         />
       </YStack>
 
-      <FlatList
-        data={rooms}
-        keyExtractor={(room) => String(room.roomId)}
-        renderItem={({ item }) => <ChatRow room={item} />}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: space.$3.val,
-          paddingBottom: space.$4.val,
-          paddingHorizontal: space.$4.val,
-          gap: space.$4.val,
-        }}
-        onEndReachedThreshold={0.5}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior="padding"
+        automaticOffset
+      >
+        <FlatList
+          data={rooms}
+          keyExtractor={(room) => String(room.roomId)}
+          renderItem={({ item }) => <ChatRow room={item} />}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: space.$2.val,
+            paddingBottom: space.$4.val,
+            paddingHorizontal: space.$4.val,
+            gap: space.$3.val,
+          }}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <YStack items="center" py="$4">
+                <Spinner size="small" />
+              </YStack>
+            ) : null
           }
-        }}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <YStack items="center" py="$4">
-              <Spinner size="small" />
-            </YStack>
-          ) : null
-        }
-        ListEmptyComponent={
-          <YStack items="center" gap="$4" py="$8">
-            {!enabled ? (
-              <Text theme="gray" color="$color10" fontSize="$4">
-                {HINT_MESSAGE}
-              </Text>
-            ) : error ? (
-              <>
-                <Text color="$gray10" fontSize="$4" text="center">
-                  {isApiError(error) ? error.message : ERROR_MESSAGE}
+          ListEmptyComponent={
+            <YStack items="center" gap="$4" py="$8">
+              {!enabled ? (
+                <Text theme="gray" color="$color10" fontSize="$4">
+                  {HINT_MESSAGE}
                 </Text>
+              ) : error ? (
+                <>
+                  <Text color="$gray10" fontSize="$4" text="center">
+                    {isApiError(error) ? error.message : ERROR_MESSAGE}
+                  </Text>
 
-                <Button
-                  size="$3"
-                  theme="blue"
-                  rounded="$7"
-                  onPress={() => search.refetch()}
-                >
-                  다시 시도
-                </Button>
-              </>
-            ) : isFetching ? (
-              <Spinner size="small" />
-            ) : (
-              <Text theme="gray" color="$color10" fontSize="$4">
-                {EMPTY_MESSAGE}
-              </Text>
-            )}
-          </YStack>
-        }
-      />
+                  <RetroButton onPress={() => search.refetch()}>
+                    다시 시도
+                  </RetroButton>
+                </>
+              ) : isFetching ? (
+                <Spinner size="small" />
+              ) : (
+                <Text theme="gray" color="$color10" fontSize="$4">
+                  {EMPTY_MESSAGE}
+                </Text>
+              )}
+            </YStack>
+          }
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
