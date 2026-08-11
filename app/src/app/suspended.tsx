@@ -22,7 +22,7 @@ const MAIL_TITLE = "정지문의";
 
 export default function SuspendedScreen() {
   const theme = useTheme();
-  const confirmWithdraw = useWithdraw();
+  const { confirmWithdraw, withdrawElement } = useWithdraw();
 
   const { data: profile } = useMyProfile();
   const suspension = findServiceSuspension(profile);
@@ -86,6 +86,8 @@ export default function SuspendedScreen() {
           </Button>
         </YStack>
       </YStack>
+
+      {withdrawElement}
     </SafeAreaView>
   );
 }

@@ -31,13 +31,8 @@ import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useProfileViewNewCount } from "@/hooks/useProfileViews";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
-import {
-  alertApiError,
-  alertInfo,
-  alertMessage,
-  confirmAlert,
-} from "@/lib/alert";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
 import { tabBarOverlayHeight } from "@/lib/design";
@@ -69,8 +64,10 @@ type SettingItem = {
 
 const PROFILE_VIEW_HREF = "/activity/profile-view";
 
-const BADGE_SIZE = 18;
+const BADGE_SIZE = 20;
 const BADGE_FONT_SIZE = 11;
+
+const SHADOW_OFFSET = 4;
 
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
@@ -126,13 +123,19 @@ const SECTIONS: SettingItem[][] = [
 function SettingRow({
   item,
   pending,
+  divider,
   badge,
   onPress,
+  onPressIn,
+  onPressOut,
 }: {
   item: SettingItem;
   pending: boolean;
+  divider: boolean;
   badge?: number;
   onPress?: () => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
 }) {
   const theme = useTheme();
   const { label, icon: Icon } = item;
@@ -143,10 +146,14 @@ function SettingRow({
       gap="$3"
       px="$4"
       py="$3"
-      pressStyle={{ bg: "$gray5" }}
+      borderBottomWidth={divider ? 2 : 0}
+      borderColor="$color12"
+      pressStyle={{ bg: "$color3" }}
       onPress={onPress}
+      onPressIn={onPress ? onPressIn : undefined}
+      onPressOut={onPress ? onPressOut : undefined}
     >
-      <Icon size={ICON_SIZE} color={theme.color10.val} />
+      <Icon size={ICON_SIZE} color={theme.color12.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
@@ -155,7 +162,9 @@ function SettingRow({
           minW={BADGE_SIZE}
           height={BADGE_SIZE}
           px="$1.5"
-          rounded={9999}
+          rounded={0}
+          borderWidth={2}
+          borderColor="$color12"
           bg="$red10"
           items="center"
           justify="center"
@@ -170,6 +179,59 @@ function SettingRow({
   );
 }
 
+function SettingSection({
+  items,
+  pendingAction,
+  profileViewCount,
+  onItemPress,
+}: {
+  items: SettingItem[];
+  pendingAction: SettingAction | null;
+  profileViewCount?: number;
+  onItemPress: (item: SettingItem) => void;
+}) {
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <YStack mx="$4">
+      <YStack
+        position="absolute"
+        t={SHADOW_OFFSET}
+        b={-SHADOW_OFFSET}
+        l={SHADOW_OFFSET}
+        r={-SHADOW_OFFSET}
+        bg="$gray8"
+      />
+      <YStack
+        borderWidth={2}
+        borderColor="$color12"
+        bg="$color1"
+        x={pressed ? SHADOW_OFFSET : 0}
+        y={pressed ? SHADOW_OFFSET : 0}
+      >
+        {items.map((item, index) => (
+          <SettingRow
+            key={item.label}
+            item={item}
+            pending={item.action === pendingAction}
+            divider={index < items.length - 1}
+            badge={
+              item.href === PROFILE_VIEW_HREF ? profileViewCount : undefined
+            }
+            onPress={
+              item.href || item.url || item.action
+                ? () => onItemPress(item)
+                : undefined
+            }
+            onPressIn={() => setPressed(true)}
+            onPressOut={() => setPressed(false)}
+          />
+        ))}
+      </YStack>
+    </YStack>
+  );
+}
+
 export default function SettingScreen() {
   const space = getTokens().space;
   const insets = useSafeAreaInsets();
@@ -178,6 +240,7 @@ export default function SettingScreen() {
 
   const { data: profile } = useMyProfile();
   const profileViewCount = useProfileViewNewCount();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const logout = useMutation({
     mutationFn: async () => {
@@ -193,15 +256,15 @@ export default function SettingScreen() {
     mutationFn: api.attendances.checkIn,
     onSuccess: async (reward) => {
       if (!reward.earned) {
-        alertMessage(ALREADY_EARNED_MESSAGE);
+        show("info", ALREADY_EARNED_MESSAGE);
         return;
       }
 
       queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
       await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      alertInfo(`${reward.amount.toLocaleString()} 포인트를 받았습니다.`);
+      show("info", `${reward.amount.toLocaleString()} 포인트를 받았습니다.`);
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const pendingAction: SettingAction | null = earnAttendanceReward.isPending
@@ -214,7 +277,7 @@ export default function SettingScreen() {
         openSupportMail(
           action === "contact" ? "문의하기" : "건의하기",
           profile?.memberId,
-        ).catch(() => alertMessage(MAIL_FAILED_MESSAGE));
+        ).catch(() => show("error", MAIL_FAILED_MESSAGE));
         return;
       }
 
@@ -227,7 +290,7 @@ export default function SettingScreen() {
         earnAttendanceReward.mutate();
       }
     },
-    [adReward, earnAttendanceReward, profile?.memberId],
+    [adReward, earnAttendanceReward, profile?.memberId, show],
   );
 
   const handlePress = useCallback(
@@ -239,7 +302,7 @@ export default function SettingScreen() {
 
       if (item.url) {
         WebBrowser.openBrowserAsync(item.url).catch(() =>
-          alertMessage(BROWSER_FAILED_MESSAGE),
+          show("error", BROWSER_FAILED_MESSAGE),
         );
         return;
       }
@@ -255,17 +318,16 @@ export default function SettingScreen() {
 
       pushOnce(item.href);
     },
-    [gate, handleAction],
+    [gate, handleAction, show],
   );
 
-  const confirmWithdraw = useWithdraw();
+  const { confirmWithdraw, withdrawElement } = useWithdraw();
 
   const accountMenu: MenuSheetItem[] = [
     {
       label: "로그아웃",
       onPress: () =>
-        confirmAlert({
-          title: "로그아웃",
+        confirm({
           message: LOGOUT_DESCRIPTION,
           confirmLabel: "확인",
           onConfirm: () => logout.mutate(),
@@ -297,31 +359,15 @@ export default function SettingScreen() {
         paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
       }}
     >
-      <YStack gap="$4">
+      <YStack gap="$5">
         {SECTIONS.map((items) => (
-          <YStack
+          <SettingSection
             key={items[0].label}
-            mx="$4"
-            bg="$gray4"
-            rounded="$7"
-            overflow="hidden"
-          >
-            {items.map((item) => (
-              <SettingRow
-                key={item.label}
-                item={item}
-                pending={item.action === pendingAction}
-                badge={
-                  item.href === PROFILE_VIEW_HREF ? profileViewCount : undefined
-                }
-                onPress={
-                  item.href || item.url || item.action
-                    ? () => handlePress(item)
-                    : undefined
-                }
-              />
-            ))}
-          </YStack>
+            items={items}
+            pendingAction={pendingAction}
+            profileViewCount={profileViewCount}
+            onItemPress={handlePress}
+          />
         ))}
       </YStack>
 
@@ -332,6 +378,9 @@ export default function SettingScreen() {
         onOpenChange={setMenuOpen}
         items={accountMenu}
       />
+
+      {alertElement}
+      {withdrawElement}
     </ScrollView>
   );
 }
