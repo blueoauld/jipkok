@@ -1,6 +1,8 @@
 import { YStack, type YStackProps } from "tamagui";
 
-const SHADOW_OFFSET = 4;
+export const RETRO_SHADOW_OFFSET = 4;
+
+const SHADOW_OFFSET = RETRO_SHADOW_OFFSET;
 
 export function RetroCard({
   theme = "gray",

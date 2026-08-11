@@ -8,7 +8,7 @@ import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { useRef } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
@@ -19,21 +19,22 @@ import Animated, {
 } from "react-native-reanimated";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RETRO_SHADOW_OFFSET, RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
-import { alertApiError, confirmAlert } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat/unread";
 import { formatChatTime } from "@/lib/date";
-import { PRESS_OPACITY } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const PHOTO_MESSAGE = "사진";
 
 const LEAVE_ACTION_WIDTH = 56;
 const LEAVE_ACTION_GAP = 12;
+const ACTION_SHADOW_OFFSET = 2;
 const LEAVE_ICON_SIZE = 24;
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -41,6 +42,46 @@ const LEAVE_DESCRIPTION =
 // 스와이프 액션은 투명한 반대쪽 컨테이너에 덮여 있어, 일반 프레서블은
 // 안드로이드에서 탭을 받지 못한다. 제스처 시스템에 직접 등록되는
 // 제스처 핸들러의 Pressable을 쓴다.
+function ActionButton({
+  color,
+  margin,
+  onPress,
+  children,
+}: {
+  color: string;
+  margin: { marginLeft?: number; marginRight?: number };
+  onPress: () => void;
+  children: React.ReactNode;
+}) {
+  const theme = useTheme();
+
+  return (
+    <View style={margin}>
+      <View
+        style={[styles.actionShadow, { backgroundColor: theme.gray12.val }]}
+      />
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          styles.actionButton,
+          {
+            backgroundColor: color,
+            borderColor: theme.gray12.val,
+            transform: pressed
+              ? [
+                  { translateX: ACTION_SHADOW_OFFSET },
+                  { translateY: ACTION_SHADOW_OFFSET },
+                ]
+              : [],
+          },
+        ]}
+      >
+        {children}
+      </Pressable>
+    </View>
+  );
+}
+
 function LeaveAction({
   drag,
   onPress,
@@ -52,25 +93,28 @@ function LeaveAction({
 
   const slideIn = useAnimatedStyle(() => ({
     transform: [
-      { translateX: drag.value + LEAVE_ACTION_WIDTH + LEAVE_ACTION_GAP },
+      {
+        translateX:
+          drag.value +
+          LEAVE_ACTION_WIDTH +
+          LEAVE_ACTION_GAP +
+          ACTION_SHADOW_OFFSET,
+      },
     ],
   }));
 
   return (
     <Animated.View style={[slideIn, styles.action]}>
-      <Pressable
+      <ActionButton
+        color={theme.red10.val}
+        margin={{
+          marginLeft: LEAVE_ACTION_GAP,
+          marginRight: ACTION_SHADOW_OFFSET,
+        }}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.actionButton,
-          {
-            marginLeft: LEAVE_ACTION_GAP,
-            backgroundColor: theme.red10.val,
-            opacity: pressed ? PRESS_OPACITY : 1,
-          },
-        ]}
       >
         <SignOutIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
-      </Pressable>
+      </ActionButton>
     </Animated.View>
   );
 }
@@ -94,23 +138,17 @@ function NotificationAction({
 
   return (
     <Animated.View style={[slideIn, styles.action]}>
-      <Pressable
+      <ActionButton
+        color={theme.blue10.val}
+        margin={{ marginRight: LEAVE_ACTION_GAP }}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.actionButton,
-          {
-            marginRight: LEAVE_ACTION_GAP,
-            backgroundColor: theme.blue10.val,
-            opacity: pressed ? PRESS_OPACITY : 1,
-          },
-        ]}
       >
         {enabled ? (
           <BellSlashIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
         ) : (
           <BellIcon size={LEAVE_ICON_SIZE} weight="fill" color="white" />
         )}
-      </Pressable>
+      </ActionButton>
     </Animated.View>
   );
 }
@@ -124,9 +162,11 @@ function UnreadBadge({ count }: { count: number }) {
     <XStack
       shrink={0}
       bg="$red10"
-      rounded={9999}
-      height={20}
-      minW={20}
+      rounded={0}
+      borderWidth={2}
+      borderColor="$color12"
+      height={22}
+      minW={22}
       px={6}
       items="center"
       justify="center"
@@ -142,6 +182,7 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const swipeable = useRef<SwipeableMethods>(null);
+  const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const leave = useMutation({
     mutationFn: () => api.chats.leave(room.roomId),
@@ -150,7 +191,7 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
       queryClient.removeQueries({ queryKey: chatMessagesKey(room.roomId) });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const applyNotification = (enabled: boolean) =>
@@ -180,7 +221,7 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
       queryClient.invalidateQueries({ queryKey: chatRoomKey(room.roomId) }),
     onError: (error, enabled) => {
       applyNotification(!enabled);
-      alertApiError(error);
+      showApiError(error);
     },
   });
 
@@ -195,78 +236,90 @@ export function ChatRow({ room }: { room: ChatRoomResponse }) {
 
   const confirmLeave = () => {
     swipeable.current?.close();
-    confirmAlert({
-      title: "채팅",
+    confirm({
       message: LEAVE_DESCRIPTION,
       confirmLabel: "나가기",
+      destructive: true,
       onConfirm: () => leave.mutate(),
     });
   };
 
   return (
-    <ReanimatedSwipeable
-      ref={swipeable}
-      friction={2}
-      overshootRight={false}
-      overshootLeft={false}
-      renderRightActions={(_progress, drag) => (
-        <LeaveAction drag={drag} onPress={confirmLeave} />
-      )}
-      renderLeftActions={(_progress, drag) => (
-        <NotificationAction
-          enabled={room.notificationEnabled}
-          drag={drag}
-          onPress={toggle}
-        />
-      )}
-    >
-      <XStack
-        gap="$3"
-        items="center"
-        pressStyle={{ opacity: PRESS_OPACITY }}
-        onPress={() => pushOnce(`/chat/${room.roomId}`)}
+    <>
+      <ReanimatedSwipeable
+        ref={swipeable}
+        friction={2}
+        overshootRight={false}
+        overshootLeft={false}
+        renderRightActions={(_progress, drag) => (
+          <LeaveAction drag={drag} onPress={confirmLeave} />
+        )}
+        renderLeftActions={(_progress, drag) => (
+          <NotificationAction
+            enabled={room.notificationEnabled}
+            drag={drag}
+            onPress={toggle}
+          />
+        )}
       >
-        <UserAvatar id={String(room.memberId)} url={room.profileImageUrl} />
+        {/* 스와이프 컨테이너가 overflow hidden이라 그림자 공간을 안쪽에 확보한다. */}
+        <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
+          <RetroCard onPress={() => pushOnce(`/chat/${room.roomId}`)}>
+            <XStack gap="$3" items="center">
+              <UserAvatar
+                id={String(room.memberId)}
+                url={room.profileImageUrl}
+              />
 
-        <YStack flex={1} gap="$2">
-          <XStack items="center" justify="space-between" gap="$2">
-            <XStack flex={1} items="center" gap="$1.5">
-              <Text shrink={1} numberOfLines={1} fontSize="$4" fontWeight="600">
-                {room.nickname}
-              </Text>
+              <YStack flex={1} gap="$2">
+                <XStack items="center" justify="space-between" gap="$2">
+                  <XStack flex={1} items="center" gap="$1.5">
+                    <Text
+                      shrink={1}
+                      numberOfLines={1}
+                      fontSize="$4"
+                      fontWeight="600"
+                    >
+                      {room.nickname}
+                    </Text>
 
-              {!room.notificationEnabled && (
-                <BellSlashIcon
-                  size={14}
-                  weight="fill"
-                  color={theme.gray9.val}
-                />
-              )}
+                    {!room.notificationEnabled && (
+                      <BellSlashIcon
+                        size={14}
+                        weight="fill"
+                        color={theme.gray9.val}
+                      />
+                    )}
+                  </XStack>
+
+                  <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
+                    {formatChatTime(room.lastMessageAt)}
+                  </Text>
+                </XStack>
+
+                <XStack items="center" justify="space-between" gap="$2">
+                  <Text
+                    flex={1}
+                    numberOfLines={2}
+                    theme="gray"
+                    color="$color11"
+                    fontSize="$3"
+                  >
+                    {room.lastMessageType === "PHOTO"
+                      ? PHOTO_MESSAGE
+                      : room.lastMessageContent}
+                  </Text>
+
+                  <UnreadBadge count={room.unreadCount} />
+                </XStack>
+              </YStack>
             </XStack>
-
-            <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
-              {formatChatTime(room.lastMessageAt)}
-            </Text>
-          </XStack>
-
-          <XStack items="center" justify="space-between" gap="$2">
-            <Text
-              flex={1}
-              numberOfLines={2}
-              theme="gray"
-              color="$color10"
-              fontSize="$3"
-            >
-              {room.lastMessageType === "PHOTO"
-                ? PHOTO_MESSAGE
-                : room.lastMessageContent}
-            </Text>
-
-            <UnreadBadge count={room.unreadCount} />
-          </XStack>
+          </RetroCard>
         </YStack>
-      </XStack>
-    </ReanimatedSwipeable>
+      </ReanimatedSwipeable>
+
+      {alertElement}
+    </>
   );
 }
 
@@ -277,8 +330,16 @@ const styles = StyleSheet.create({
   actionButton: {
     width: LEAVE_ACTION_WIDTH,
     height: LEAVE_ACTION_WIDTH,
-    borderRadius: 9999,
+    borderRadius: 0,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
+  },
+  actionShadow: {
+    position: "absolute",
+    top: ACTION_SHADOW_OFFSET,
+    bottom: -ACTION_SHADOW_OFFSET,
+    left: ACTION_SHADOW_OFFSET,
+    right: -ACTION_SHADOW_OFFSET,
   },
 });

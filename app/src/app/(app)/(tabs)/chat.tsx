@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button, getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatRow } from "@/components/ChatRow";
 import {
@@ -9,6 +9,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
@@ -33,11 +34,14 @@ export default function ChatScreen() {
 
   return (
     <YStack flex={1}>
-      <YStack px="$4" pt="$4" pb="$2">
+      <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           values={FILTERS}
           value={filter}
-          onChange={setFilter}
+          onChange={(next) => {
+            setFilter(next);
+            listRef.current?.scrollToOffset({ offset: 0, animated: false });
+          }}
         />
       </YStack>
 
@@ -51,10 +55,10 @@ export default function ChatScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
-            paddingTop: space.$3.val,
+            paddingTop: space.$2.val,
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
+            gap: space.$3.val,
           }}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
@@ -85,14 +89,9 @@ export default function ChatScreen() {
                 {isApiError(error) ? error.message : ERROR_MESSAGE}
               </Text>
 
-              <Button
-                size="$3"
-                theme="blue"
-                rounded="$7"
-                onPress={() => query.refetch()}
-              >
+              <RetroButton onPress={() => query.refetch()}>
                 다시 시도
-              </Button>
+              </RetroButton>
             </>
           ) : (
             <Spinner size="small" />
