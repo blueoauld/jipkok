@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { Platform } from "react-native";
 
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import { alertApiError, alertInfo } from "@/lib/alert";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
@@ -39,6 +39,7 @@ async function resolveCachedCoords() {
 
 export function useLocationUpdate() {
   const queryClient = useQueryClient();
+  const { alertElement, show, showApiError } = useRetroAlert();
   const [updating, setUpdating] = useState(false);
   const { mutateAsync: heartbeat } = useMutation({
     mutationFn: api.members.heartbeat,
@@ -78,19 +79,19 @@ export function useLocationUpdate() {
       const permission = await Location.requestForegroundPermissionsAsync();
 
       if (!permission.granted) {
-        alertInfo(DENIED_MESSAGE);
+        show("info", DENIED_MESSAGE);
         return false;
       }
 
       if (!(await enableServices())) {
-        alertInfo(SERVICES_OFF_MESSAGE);
+        show("info", SERVICES_OFF_MESSAGE);
         return false;
       }
 
       const coords = await resolveCoords();
 
       if (!coords) {
-        alertInfo(FAILED_MESSAGE);
+        show("info", FAILED_MESSAGE);
         return false;
       }
 
@@ -101,12 +102,12 @@ export function useLocationUpdate() {
 
       return true;
     } catch (error) {
-      alertApiError(error);
+      showApiError(error);
       return false;
     } finally {
       setUpdating(false);
     }
-  }, [enableServices, heartbeat, updating]);
+  }, [enableServices, heartbeat, show, showApiError, updating]);
 
   const refresh = useCallback(async () => {
     try {
@@ -125,9 +126,9 @@ export function useLocationUpdate() {
           : {},
       );
     } catch (error) {
-      alertApiError(error);
+      showApiError(error);
     }
-  }, [heartbeat]);
+  }, [heartbeat, showApiError]);
 
-  return { updating, update, refresh };
+  return { updating, update, refresh, locationAlertElement: alertElement };
 }

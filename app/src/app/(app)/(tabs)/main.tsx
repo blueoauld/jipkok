@@ -219,6 +219,7 @@ export default function MainScreen() {
       />
 
       {alertElement}
+      {location.locationAlertElement}
     </YStack>
   );
 }

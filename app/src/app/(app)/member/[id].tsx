@@ -205,7 +205,7 @@ export default function MemberProfileScreen() {
   const setNoteContent = useNoteStore((state) => state.setContent);
 
   const { data: member, error, refetch } = useMemberDetail(memberId);
-  const loadSecretPhotos = useSecretPhotos(memberId);
+  const loadSecretPhotos = useSecretPhotos(memberId, showApiError);
   const queryKey = memberDetailKey(memberId);
 
   const sendNote = useMutation({

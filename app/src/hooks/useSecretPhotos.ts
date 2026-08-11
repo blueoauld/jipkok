@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";
-import { alertApiError } from "@/lib/alert";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 
 const FORBIDDEN_CODE = "SECRET_PHOTO_002";
 
-export function useSecretPhotos(memberId: number) {
+export function useSecretPhotos(
+  memberId: number,
+  onError: (error: unknown) => void,
+) {
   const queryClient = useQueryClient();
 
   const setGranted = (granted: boolean) =>
@@ -23,7 +25,7 @@ export function useSecretPhotos(memberId: number) {
         setGranted(false);
       }
 
-      alertApiError(error);
+      onError(error);
     },
   });
 }
