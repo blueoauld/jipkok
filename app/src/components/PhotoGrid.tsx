@@ -230,23 +230,32 @@ export function PhotoGrid({
                     )}
 
                     {showPrimaryBadge && cell.index === 0 && (
-                      <XStack
-                        position="absolute"
-                        t="$2"
-                        l="$2"
-                        width={24}
-                        height={24}
-                        rounded={0}
-                        bg="$blue10"
-                        items="center"
-                        justify="center"
-                      >
-                        <CrownSimpleIcon
-                          size={14}
-                          weight="fill"
-                          color="white"
+                      <YStack position="absolute" t="$2" l="$2">
+                        <YStack
+                          position="absolute"
+                          t={RETRO_SHADOW_OFFSET_SM}
+                          b={-RETRO_SHADOW_OFFSET_SM}
+                          l={RETRO_SHADOW_OFFSET_SM}
+                          r={-RETRO_SHADOW_OFFSET_SM}
+                          bg="$gray12"
                         />
-                      </XStack>
+                        <XStack
+                          width={24}
+                          height={24}
+                          rounded={0}
+                          borderWidth={2}
+                          borderColor="$gray12"
+                          bg="$blue10"
+                          items="center"
+                          justify="center"
+                        >
+                          <CrownSimpleIcon
+                            size={14}
+                            weight="fill"
+                            color="white"
+                          />
+                        </XStack>
+                      </YStack>
                     )}
 
                     {onRemove && (
