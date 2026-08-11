@@ -2,11 +2,11 @@ import type { ImagePickerAsset } from "expo-image-picker";
 import { useCallback, useState } from "react";
 
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
-import { alertApiError } from "@/lib/alert";
 import type { ProfilePhoto } from "@/lib/api";
 
 export function useUploadPhotos(
   upload: (asset: ImagePickerAsset) => Promise<ProfilePhoto>,
+  onError: (error: unknown) => void,
   initial: ProfilePhoto[] = [],
 ) {
   const [photos, setPhotos] = useState(initial);
@@ -25,11 +25,11 @@ export function useUploadPhotos(
       const uploaded = await Promise.all(assets.map(upload));
       setPhotos((current) => [...current, ...uploaded].slice(0, MAX_PHOTOS));
     } catch (error) {
-      alertApiError(error);
+      onError(error);
     } finally {
       setUploading(false);
     }
-  }, [photos.length, upload]);
+  }, [onError, photos.length, upload]);
 
   const remove = useCallback((index: number) => {
     setPhotos((current) => current.filter((_, i) => i !== index));

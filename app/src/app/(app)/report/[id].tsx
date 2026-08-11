@@ -109,8 +109,8 @@ export default function ReportScreen() {
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const detailRef = useRef("");
-  const photos = useUploadPhotos(uploadReportPhoto);
   const { alertElement, show, showApiError } = useRetroAlert();
+  const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
   const { data: member } = useMemberDetail(memberId);
   const title = roomId ? "채팅 신고" : "신고";

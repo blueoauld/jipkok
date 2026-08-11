@@ -5,6 +5,19 @@ const GENDER_LABELS: Record<Gender, string> = {
   FEMALE: "여자",
 };
 
+const MIN_AGE = 19;
+const MAX_AGE = 90;
+
+export function validateBirthYear(value: string) {
+  const age = new Date().getFullYear() - Number(value);
+
+  if (age < MIN_AGE || age > MAX_AGE) {
+    return `${MIN_AGE}세 이상 ${MAX_AGE}세 이하만 가입할 수 있습니다.`;
+  }
+
+  return true;
+}
+
 export const GENDER_FILTERS = ["전체", "남자", "여자"] as const;
 export type GenderFilter = (typeof GENDER_FILTERS)[number];
 

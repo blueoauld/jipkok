@@ -11,18 +11,21 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Spinner, Text, YStack } from "tamagui";
+import { Spinner, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
-import { FormInput } from "@/components/FormInput";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
-import { alertApiError, alertMessage } from "@/lib/alert";
 import { api, type MyProfileResponse } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
+import { validateBirthYear } from "@/lib/member";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
+import { NICKNAME_PATTERN } from "@/lib/validation";
 
 const BOTTOM_BAR_HEIGHT = 80;
 const NICKNAME_MAX_LENGTH = 10;
@@ -35,7 +38,10 @@ const uploadSecretPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "SECRET");
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
+const NICKNAME_REQUIRED_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
+const INVALID_NICKNAME_MESSAGE = "닉네임이 올바르지 않습니다.";
 const INVALID_BIRTH_YEAR_MESSAGE = "출생연도가 올바르지 않습니다.";
+const EDITED_MESSAGE = "프로필이 편집되었습니다.";
 
 function Centered({ children }: { children: ReactNode }) {
   return (
@@ -45,31 +51,72 @@ function Centered({ children }: { children: ReactNode }) {
   );
 }
 
+function BioField({
+  valueRef,
+  initialValue,
+}: {
+  valueRef: { current: string };
+  initialValue: string;
+}) {
+  const [length, setLength] = useState(initialValue.length);
+
+  return (
+    <FormField
+      right={
+        <Text theme="gray" color="$color11">
+          {`${length} / ${BIO_MAX_LENGTH}`}
+        </Text>
+      }
+    >
+      <RetroInput
+        multiline
+        rows={7}
+        textAlignVertical="top"
+        defaultValue={initialValue}
+        onChangeText={(text) => {
+          valueRef.current = text;
+          setLength(text.length);
+        }}
+        placeholder="자기소개"
+        maxLength={BIO_MAX_LENGTH}
+      />
+    </FormField>
+  );
+}
+
 function EditForm({ profile }: { profile: MyProfileResponse }) {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const publicPhotos = useUploadPhotos(uploadPublicPhoto, profile.publicPhotos);
-  const secretPhotos = useUploadPhotos(uploadSecretPhoto, profile.secretPhotos);
+  const { alertElement, show, showApiError } = useRetroAlert();
+  const publicPhotos = useUploadPhotos(
+    uploadPublicPhoto,
+    showApiError,
+    profile.publicPhotos,
+  );
+  const secretPhotos = useUploadPhotos(
+    uploadSecretPhoto,
+    showApiError,
+    profile.secretPhotos,
+  );
 
   const nicknameRef = useRef(profile.nickname);
   const birthYearRef = useRef(String(profile.birthYear));
   const bioRef = useRef(profile.bio ?? "");
-  const [bioLength, setBioLength] = useState((profile.bio ?? "").length);
 
   const save = useMutation({
-    mutationFn: (birthYear: number) =>
+    mutationFn: (values: { nickname: string; birthYear: number }) =>
       api.members.editProfile({
-        nickname: nicknameRef.current,
-        birthYear,
+        nickname: values.nickname,
+        birthYear: values.birthYear,
         bio: bioRef.current || null,
         publicPhotoKeys: publicPhotos.objectKeys,
         secretPhotoKeys: secretPhotos.objectKeys,
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      router.back();
+      show("info", EDITED_MESSAGE, () => router.back());
     },
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   const uploading = publicPhotos.uploading || secretPhotos.uploading;
@@ -78,14 +125,33 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   const busy = save.isPending || uploading;
 
   const submit = () => {
-    const birthYear = Number(birthYearRef.current);
+    const nickname = nicknameRef.current.trim();
 
-    if (birthYearRef.current.length !== BIRTH_YEAR_LENGTH || !birthYear) {
-      alertMessage(INVALID_BIRTH_YEAR_MESSAGE);
+    if (!nickname) {
+      show("error", NICKNAME_REQUIRED_MESSAGE);
       return;
     }
 
-    save.mutate(birthYear);
+    if (!NICKNAME_PATTERN.test(nickname)) {
+      show("error", INVALID_NICKNAME_MESSAGE);
+      return;
+    }
+
+    const birthYear = Number(birthYearRef.current);
+
+    if (birthYearRef.current.length !== BIRTH_YEAR_LENGTH || !birthYear) {
+      show("error", INVALID_BIRTH_YEAR_MESSAGE);
+      return;
+    }
+
+    const range = validateBirthYear(birthYearRef.current);
+
+    if (range !== true) {
+      show("error", range);
+      return;
+    }
+
+    save.mutate({ nickname, birthYear });
   };
 
   return (
@@ -98,7 +164,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       >
         <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
           <YStack gap="$2">
-            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
               공개 사진
             </Text>
             <PhotoGrid
@@ -111,7 +177,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </YStack>
 
           <YStack gap="$2">
-            <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
+            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
               비밀 사진
             </Text>
             <PhotoGrid
@@ -123,7 +189,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </YStack>
 
           <FormField>
-            <FormInput
+            <RetroInput
               defaultValue={profile.nickname}
               onChangeText={(text) => {
                 nicknameRef.current = text;
@@ -137,7 +203,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </FormField>
 
           <FormField>
-            <FormInput
+            <RetroInput
               defaultValue={String(profile.birthYear)}
               onChangeText={(text) => {
                 birthYearRef.current = text;
@@ -148,46 +214,23 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
             />
           </FormField>
 
-          <FormField
-            right={
-              <Text theme="gray" color="$color10">
-                {`${bioLength} / ${BIO_MAX_LENGTH}`}
-              </Text>
-            }
-          >
-            <FormInput
-              multiline
-              rows={7}
-              textAlignVertical="top"
-              defaultValue={profile.bio ?? ""}
-              onChangeText={(text) => {
-                bioRef.current = text;
-                setBioLength(text.length);
-              }}
-              placeholder="자기소개"
-              maxLength={BIO_MAX_LENGTH}
-            />
-          </FormField>
+          <BioField valueRef={bioRef} initialValue={profile.bio ?? ""} />
         </YStack>
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <YStack px="$4" py="$4" bg="$background">
-          <Button
-            size="$4"
-            theme="blue"
-            rounded="$7"
+          <RetroButton
+            disabled={busy}
             opacity={busy ? DISABLED_OPACITY : 1}
-            onPress={() => {
-              if (!busy) {
-                submit();
-              }
-            }}
+            onPress={submit}
           >
-            저장
-          </Button>
+            {save.isPending ? <Spinner color="white" /> : "저장"}
+          </RetroButton>
         </YStack>
       </KeyboardStickyView>
+
+      {alertElement}
     </>
   );
 }
@@ -207,9 +250,7 @@ export default function MemberEditScreen() {
             {ERROR_MESSAGE}
           </Text>
 
-          <Button size="$3" theme="blue" rounded="$7" onPress={() => refetch()}>
-            다시 시도
-          </Button>
+          <RetroButton onPress={() => refetch()}>다시 시도</RetroButton>
         </Centered>
       ) : (
         <Centered>

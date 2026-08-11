@@ -18,30 +18,19 @@ import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 import { DISABLED_OPACITY } from "@/lib/design";
+import { validateBirthYear } from "@/lib/member";
+import { NICKNAME_PATTERN } from "@/lib/validation";
 
 const BOTTOM_BAR_HEIGHT = 80;
 
 const NICKNAME_MAX_LENGTH = 10;
-const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$/;
 const BIO_MAX_LENGTH = 1000;
-const MIN_AGE = 19;
-const MAX_AGE = 90;
 
 type SetupForm = {
   nickname: string;
   birthYear: string;
   bio: string;
 };
-
-function validateBirthYear(value: string) {
-  const age = new Date().getFullYear() - Number(value);
-
-  if (age < MIN_AGE || age > MAX_AGE) {
-    return `${MIN_AGE}세 이상 ${MAX_AGE}세 이하만 가입할 수 있습니다.`;
-  }
-
-  return true;
-}
 
 export default function SetupScreen() {
   const insets = useSafeAreaInsets();

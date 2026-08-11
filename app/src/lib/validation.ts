@@ -1,5 +1,7 @@
 export const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 
+export const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$/;
+
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
 
