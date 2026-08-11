@@ -59,6 +59,10 @@ function formatClockTime(date: Date) {
   return `${hours < 12 ? "오전" : "오후"} ${hours % 12 || 12}:${pad(date.getMinutes())}`;
 }
 
+export function formatMessageTime(date: Date) {
+  return formatClockTime(date);
+}
+
 export function formatChatTime(isoString: string) {
   const date = new Date(isoString);
   const today = new Date();
