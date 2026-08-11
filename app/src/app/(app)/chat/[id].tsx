@@ -11,6 +11,7 @@ import { ChatBubble } from "@/components/ChatBubble";
 import { ChatDay } from "@/components/ChatDay";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { UserAvatar } from "@/components/UserAvatar";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -21,7 +22,10 @@ import {
   type ChatMessageResponse,
   type ChatRoomResponse,
 } from "@/lib/api";
+import { PRESS_OPACITY } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
+
+const AVATAR_SIZE = 36;
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -147,9 +151,22 @@ export default function ChatRoomScreen() {
           messages={giftedMessages}
           onSend={onSend}
           user={{ _id: profile.memberId }}
+          isAvatarOnTop
           isDayAnimationEnabled={false}
           renderDay={(props) => <ChatDay {...props} />}
           renderBubble={(props) => <ChatBubble {...props} />}
+          renderAvatar={() => (
+            <YStack
+              pressStyle={{ opacity: PRESS_OPACITY }}
+              onPress={() => pushOnce(`/member/${room.memberId}`)}
+            >
+              <UserAvatar
+                id={String(room.memberId)}
+                url={room.profileImageUrl}
+                size={AVATAR_SIZE}
+              />
+            </YStack>
+          )}
           keyboardAvoidingViewProps={{
             behavior: "padding",
             keyboardVerticalOffset: headerHeight,

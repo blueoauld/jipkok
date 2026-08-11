@@ -10,6 +10,8 @@ import { formatMessageTime } from "@/lib/date";
 
 const PHOTO_SIZE = 200;
 
+const MIN_HEIGHT = 36;
+
 export function ChatBubble(props: BubbleProps<IMessage>) {
   const theme = useTheme();
   const mine = props.position === "right";
@@ -43,12 +45,16 @@ export function ChatBubble(props: BubbleProps<IMessage>) {
                   borderWidth: 2,
                   borderColor: theme.color12.val,
                   borderRadius: 0,
+                  minHeight: MIN_HEIGHT,
+                  justifyContent: "center",
                 },
                 right: {
                   backgroundColor: theme.blue10.val,
                   borderWidth: 2,
                   borderColor: theme.color12.val,
                   borderRadius: 0,
+                  minHeight: MIN_HEIGHT,
+                  justifyContent: "center",
                 },
               }
         }
