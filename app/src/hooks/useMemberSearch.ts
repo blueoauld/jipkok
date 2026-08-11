@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { api, type MemberSearchPage } from "@/lib/api";
 
@@ -14,6 +14,7 @@ export function useMemberSearch(keyword: string) {
       api.members.search({ keyword, cursor: pageParam }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (page: MemberSearchPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   return {
