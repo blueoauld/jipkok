@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Modal, Platform, Text as NativeText } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 
@@ -36,30 +35,11 @@ export function RetroAlert({
   onConfirm?: () => void;
   onClose: () => void;
 }) {
-  const [content, setContent] = useState({
-    variant,
-    title,
-    message,
-    confirmLabel,
-    destructive,
-  });
-
-  if (
-    visible &&
-    (content.variant !== variant ||
-      content.title !== title ||
-      content.message !== message ||
-      content.confirmLabel !== confirmLabel ||
-      content.destructive !== destructive)
-  ) {
-    setContent({ variant, title, message, confirmLabel, destructive });
-  }
-
   return (
     <Modal
       transparent
       visible={visible}
-      animationType="fade"
+      animationType="none"
       onRequestClose={onClose}
     >
       <YStack flex={1} bg={OVERLAY_BG} justify="center" p="$4">
@@ -75,7 +55,7 @@ export function RetroAlert({
 
           <YStack borderWidth={2} borderColor="$color12" bg="$color1">
             <XStack
-              bg={VARIANTS[content.variant].barColor}
+              bg={VARIANTS[variant].barColor}
               px="$3"
               py="$2.5"
               items="center"
@@ -88,25 +68,25 @@ export function RetroAlert({
                   fontFamily: MONO_FONT,
                   fontWeight: "700",
                   fontSize: 18,
-                  color: VARIANTS[content.variant].labelColor,
+                  color: VARIANTS[variant].labelColor,
                 }}
               >
-                {VARIANTS[content.variant].label}
+                {VARIANTS[variant].label}
               </NativeText>
             </XStack>
 
             <YStack p="$4" gap="$2">
               <Text fontSize="$6" fontWeight="700" color="$color12">
-                {content.title}
+                {title}
               </Text>
               <Text color="$color12" fontSize="$3">
-                {content.message}
+                {message}
               </Text>
             </YStack>
 
             <YStack mx="$4" borderWidth={1} borderColor="$color8" />
 
-            {content.confirmLabel ? (
+            {confirmLabel ? (
               <XStack p="$4" gap="$3">
                 <RetroButton flex={1} theme="gray" onPress={onClose}>
                   닫기
@@ -114,13 +94,13 @@ export function RetroAlert({
 
                 <RetroButton
                   flex={1}
-                  theme={content.destructive ? "red" : "blue"}
+                  theme={destructive ? "red" : "blue"}
                   onPress={() => {
                     onClose();
                     onConfirm?.();
                   }}
                 >
-                  {content.confirmLabel}
+                  {confirmLabel}
                 </RetroButton>
               </XStack>
             ) : (

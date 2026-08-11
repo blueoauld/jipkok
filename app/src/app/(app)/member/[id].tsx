@@ -36,6 +36,7 @@ import { formatRelativeTime } from "@/lib/date";
 import { TAB_BAR_HEIGHT, tabBarOverlayHeight } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo-grid/store";
 import { pushOnce } from "@/lib/router";
 
@@ -51,6 +52,11 @@ const ID_COPIED_MESSAGE = "회원 아이디를 복사했습니다.";
 
 const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
+const BLOCKED_MESSAGE = "차단했습니다.";
+const UNBLOCKED_MESSAGE = "차단이 해제되었습니다.";
+const SECRET_PHOTO_OPENED_MESSAGE = "비밀 사진을 공개했습니다.";
+const SECRET_PHOTO_CLOSED_MESSAGE = "비밀 사진을 닫았습니다.";
+
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
 const BADGE_OPACITY = 0.9;
@@ -59,6 +65,7 @@ const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
 
+const UNBLOCK_DESCRIPTION = "차단을 해제하시겠습니까?";
 const BLOCK_DESCRIPTION =
   "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다.";
 
@@ -71,6 +78,8 @@ const SECRET_PHOTOS_KEY = ["secretPhotos"];
 const BLOCKS_KEY = ["blocks"];
 
 type Relation = { listKey: string[]; call: () => Promise<void> };
+
+type AwaitedRelation = Relation & { successMessage: string };
 
 type ActionKey = "like" | "favorite" | "note" | "secretPhoto" | "block";
 
@@ -222,6 +231,18 @@ export default function MemberProfileScreen() {
     },
   });
 
+  const relateAwaited = useMutation({
+    mutationFn: ({ call }: AwaitedRelation) => call(),
+    onSuccess: (_data, { listKey, successMessage }) => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: listKey });
+      show("info", successMessage);
+    },
+    onError: showApiError,
+  });
+
+  useLoadingOverlay(relateAwaited.isPending);
+
   const run = useCallback(
     (
       changes: Partial<MemberDetailResponse>,
@@ -295,23 +316,32 @@ export default function MemberProfileScreen() {
 
       if (key === "block") {
         if (member.blockedByMe) {
-          run({ blockedByMe: false }, BLOCKS_KEY, () =>
-            api.blocks.remove(memberId),
-          );
+          confirm({
+            message: UNBLOCK_DESCRIPTION,
+            confirmLabel: "해제",
+            onConfirm: () =>
+              relateAwaited.mutate({
+                listKey: BLOCKS_KEY,
+                call: () => api.blocks.remove(memberId),
+                successMessage: UNBLOCKED_MESSAGE,
+              }),
+          });
         } else {
           confirm({
             message: BLOCK_DESCRIPTION,
             confirmLabel: "차단",
             destructive: true,
             onConfirm: () =>
-              run({ blockedByMe: true }, BLOCKS_KEY, () =>
-                api.blocks.add(memberId),
-              ),
+              relateAwaited.mutate({
+                listKey: BLOCKS_KEY,
+                call: () => api.blocks.add(memberId),
+                successMessage: BLOCKED_MESSAGE,
+              }),
           });
         }
       }
     },
-    [confirm, loadSecretPhotos, member, memberId, run, show],
+    [confirm, loadSecretPhotos, member, memberId, relateAwaited, run, show],
   );
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
@@ -336,14 +366,16 @@ export default function MemberProfileScreen() {
         : "비밀 사진 공개",
       onPress: () => {
         if (member) {
-          run(
-            { secretPhotoGrantedByMe: !member.secretPhotoGrantedByMe },
-            SECRET_PHOTOS_KEY,
-            () =>
+          relateAwaited.mutate({
+            listKey: SECRET_PHOTOS_KEY,
+            call: () =>
               member.secretPhotoGrantedByMe
                 ? api.secretPhotos.remove(memberId)
                 : api.secretPhotos.add(memberId),
-          );
+            successMessage: member.secretPhotoGrantedByMe
+              ? SECRET_PHOTO_CLOSED_MESSAGE
+              : SECRET_PHOTO_OPENED_MESSAGE,
+          });
         }
       },
     },
