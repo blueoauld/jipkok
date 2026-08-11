@@ -59,14 +59,14 @@ export function UserRow({ member }: { member: RowMember }) {
             </XStack>
 
             {locatedAt && (
-              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
                 {formatRelativeTime(locatedAt, now)}
               </Text>
             )}
           </XStack>
 
           <XStack items="center">
-            <Text theme="gray" color="$color10" fontSize="$3">
+            <Text theme="gray" color="$color11" fontSize="$3">
               {`${genderLabel(gender)} · ${age}살 · `}
             </Text>
 
@@ -77,7 +77,7 @@ export function UserRow({ member }: { member: RowMember }) {
                 color={theme.gray10.val}
               />
 
-              <Text theme="gray" color="$color10" fontSize="$3">
+              <Text theme="gray" color="$color11" fontSize="$3">
                 {receivedLikeCount}
               </Text>
             </XStack>
@@ -88,14 +88,14 @@ export function UserRow({ member }: { member: RowMember }) {
               flex={1}
               numberOfLines={1}
               theme="gray"
-              color="$color10"
+              color="$color11"
               fontSize="$3"
             >
               {comment || EMPTY_COMMENT}
             </Text>
 
             {distance !== undefined && distance !== null && (
-              <Text shrink={0} theme="gray" color="$color10" fontSize="$2">
+              <Text shrink={0} theme="gray" color="$color11" fontSize="$2">
                 {formatDistance(distance)}
               </Text>
             )}
