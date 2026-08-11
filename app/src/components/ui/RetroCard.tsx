@@ -6,6 +6,7 @@ export function RetroCard({
   theme = "gray",
   shadow = "$gray8",
   flex,
+  onPress,
   children,
   ...props
 }: YStackProps & { shadow?: YStackProps["bg"] }) {
@@ -24,7 +25,12 @@ export function RetroCard({
         borderColor="$color12"
         bg="$color1"
         p="$3"
-        pressStyle={{ x: SHADOW_OFFSET, y: SHADOW_OFFSET, bg: "$color3" }}
+        onPress={onPress}
+        pressStyle={
+          onPress
+            ? { x: SHADOW_OFFSET, y: SHADOW_OFFSET, bg: "$color3" }
+            : undefined
+        }
         {...props}
       >
         {children}

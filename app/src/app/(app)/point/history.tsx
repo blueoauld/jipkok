@@ -1,16 +1,13 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import type { ReactNode } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, getTokens, Spinner, Text, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
-import { POINT_HISTORIES_KEY, usePointBalance } from "@/hooks/usePoints";
-import {
-  api,
-  type PointHistoryPage,
-  type PointHistoryResponse,
-} from "@/lib/api";
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroCard } from "@/components/ui/RetroCard";
+import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
+import type { PointHistoryResponse } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
 
@@ -29,23 +26,19 @@ function Balance() {
   const { data } = usePointBalance();
 
   return (
-    <XStack
-      items="center"
-      justify="space-between"
-      gap="$3"
-      mx="$4"
-      p="$4"
-      bg="$gray4"
-      rounded="$7"
-    >
-      <Text theme="gray" color="$color10" fontSize="$3" fontWeight="600">
-        보유 포인트
-      </Text>
+    <YStack mx="$4">
+      <RetroCard p="$4">
+        <XStack items="center" justify="space-between" gap="$3">
+          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+            보유 포인트
+          </Text>
 
-      <Text fontSize="$6" fontWeight="700">
-        {data === undefined ? "-" : data.toLocaleString()}
-      </Text>
-    </XStack>
+          <Text fontSize="$6" fontWeight="700">
+            {data === undefined ? "-" : data.toLocaleString()}
+          </Text>
+        </XStack>
+      </RetroCard>
+    </YStack>
   );
 }
 
@@ -54,42 +47,37 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   const earned = amount > 0;
 
   return (
-    <XStack items="center" gap="$3" px="$4">
-      <YStack flex={1} gap="$1">
-        <Text numberOfLines={1} fontSize="$4" fontWeight="600">
-          {pointTypeLabel(type)}
-        </Text>
+    <RetroCard>
+      <XStack items="center" gap="$3">
+        <YStack flex={1} gap="$1">
+          <Text numberOfLines={1} fontSize="$4" fontWeight="600">
+            {pointTypeLabel(type)}
+          </Text>
 
-        <Text theme="gray" color="$color10" fontSize="$3">
-          {formatDateTime(recordedAt)}
-        </Text>
-      </YStack>
+          <Text theme="gray" color="$color11" fontSize="$3">
+            {formatDateTime(recordedAt)}
+          </Text>
+        </YStack>
 
-      <Text
-        shrink={0}
-        fontSize="$4"
-        fontWeight="700"
-        color={earned ? "$red10" : "$blue10"}
-      >
-        {formatAmount(amount)}
-      </Text>
-    </XStack>
+        <Text
+          shrink={0}
+          fontSize="$4"
+          fontWeight="700"
+          color={earned ? "$red10" : "$blue10"}
+        >
+          {formatAmount(amount)}
+        </Text>
+      </XStack>
+    </RetroCard>
   );
 }
 
 export default function PointHistoryScreen() {
   const space = getTokens().space;
 
-  const query = useInfiniteQuery({
-    queryKey: POINT_HISTORIES_KEY,
-    queryFn: ({ pageParam }) => api.points.histories({ cursor: pageParam }),
-    initialPageParam: undefined as number | undefined,
-    getNextPageParam: (page: PointHistoryPage) => page.nextCursor,
-  });
-
-  const { data, isError, isFetchingNextPage, hasNextPage, fetchNextPage } =
+  const query = usePointHistories();
+  const { histories, isError, isFetchingNextPage, hasNextPage, fetchNextPage } =
     query;
-  const histories = data?.pages.flatMap((page) => page.items);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -105,6 +93,7 @@ export default function PointHistoryScreen() {
             renderItem={({ item }) => <HistoryRow history={item} />}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
+              paddingHorizontal: space.$4.val,
               paddingBottom: space.$4.val,
               gap: space.$4.val,
             }}
@@ -137,14 +126,9 @@ export default function PointHistoryScreen() {
                   {ERROR_MESSAGE}
                 </Text>
 
-                <Button
-                  size="$3"
-                  theme="blue"
-                  rounded="$7"
-                  onPress={() => query.refetch()}
-                >
+                <RetroButton onPress={() => query.refetch()}>
                   다시 시도
-                </Button>
+                </RetroButton>
               </>
             ) : (
               <Spinner size="small" />
