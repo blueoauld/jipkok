@@ -1,13 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
-import { useCallback, useMemo } from "react";
+import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
+import { useCallback, useMemo, useState } from "react";
 import { GiftedChat, type IMessage } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
+import { ChatDay } from "@/components/ChatDay";
+import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
-import { useChatRoom } from "@/hooks/useChatRoom";
+import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
+import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
@@ -15,6 +20,10 @@ import {
   type ChatMessageResponse,
   type ChatRoomResponse,
 } from "@/lib/api";
+import { pushOnce } from "@/lib/router";
+
+const LEAVE_DESCRIPTION =
+  "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 function toGiftedMessage(
   message: ChatMessageResponse,
@@ -42,7 +51,8 @@ export default function ChatRoomScreen() {
   const headerHeight = useHeaderHeight();
 
   const queryClient = useQueryClient();
-  const { alertElement, showApiError } = useRetroAlert();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const { data: profile } = useMyProfile();
   const { data: room } = useChatRoom(roomId, true);
@@ -56,6 +66,49 @@ export default function ChatRoomScreen() {
       queryClient.invalidateQueries({ queryKey: chatMessagesKey(roomId) }),
     onError: showApiError,
   });
+
+  const leave = useMutation({
+    mutationFn: () => api.chats.leave(roomId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
+      queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      router.back();
+    },
+    onError: showApiError,
+  });
+
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+
+  const menuItems: MenuSheetItem[] = [
+    {
+      label: "프로필",
+      onPress: () => {
+        if (room) {
+          pushOnce(`/member/${room.memberId}`);
+        }
+      },
+    },
+    {
+      label: "나가기",
+      onPress: () =>
+        confirm({
+          message: LEAVE_DESCRIPTION,
+          confirmLabel: "나가기",
+          destructive: true,
+          onConfirm: () => leave.mutate(),
+        }),
+    },
+    {
+      label: "신고하기",
+      destructive: true,
+      onPress: () => {
+        if (room) {
+          pushOnce(`/report/${room.memberId}?roomId=${roomId}`);
+        }
+      },
+    },
+  ];
 
   const giftedMessages = useMemo(
     () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),
@@ -75,13 +128,26 @@ export default function ChatRoomScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: room?.nickname ?? "" }} />
+      <Stack.Screen
+        options={{
+          title: room?.nickname ?? "",
+          headerRight: () => (
+            <HeaderCircleIconButton
+              icon={DotsThreeIcon}
+              weight="bold"
+              onPress={openMenu}
+            />
+          ),
+        }}
+      />
 
       {room && profile ? (
         <GiftedChat
           messages={giftedMessages}
           onSend={onSend}
           user={{ _id: profile.memberId }}
+          isDayAnimationEnabled={false}
+          renderDay={(props) => <ChatDay {...props} />}
           keyboardAvoidingViewProps={{
             behavior: "padding",
             keyboardVerticalOffset: headerHeight,
@@ -98,6 +164,8 @@ export default function ChatRoomScreen() {
           <Spinner size="small" />
         </YStack>
       )}
+
+      <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
 
       {alertElement}
     </SafeAreaView>
