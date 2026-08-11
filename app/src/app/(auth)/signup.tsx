@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Button, Text, XStack, YStack } from "tamagui";
+import { Button, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormButton } from "@/components/FormButton";
@@ -207,7 +207,7 @@ export default function SignupScreen() {
               }
             })}
           >
-            회원가입
+            {signup.isPending ? <Spinner /> : "회원가입"}
           </Button>
 
           <XStack justify="center" items="center" gap="$2" pt="$3">
