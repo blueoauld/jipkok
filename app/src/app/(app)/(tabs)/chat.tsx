@@ -13,7 +13,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
-import { tabBarOverlayHeight } from "@/lib/design";
+import { RETRO_SHADOW_OFFSET, tabBarOverlayHeight } from "@/lib/design";
 
 const FILTERS = ["전체", "안읽음"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -57,7 +57,8 @@ export default function ChatScreen() {
           contentContainerStyle={{
             paddingTop: space.$2.val,
             paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
-            paddingHorizontal: space.$4.val,
+            paddingLeft: space.$4.val,
+            paddingRight: space.$4.val - RETRO_SHADOW_OFFSET,
             gap: space.$3.val,
           }}
           onEndReachedThreshold={0.5}

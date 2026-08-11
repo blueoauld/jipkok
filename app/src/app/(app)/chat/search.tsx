@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
 import { isApiError } from "@/lib/api";
+import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 const NICKNAME_MAX_LENGTH = 10;
 
@@ -78,7 +79,8 @@ export default function ChatSearchScreen() {
           contentContainerStyle={{
             paddingTop: space.$2.val,
             paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
+            paddingLeft: space.$4.val,
+            paddingRight: space.$4.val - RETRO_SHADOW_OFFSET,
             gap: space.$3.val,
           }}
           onEndReachedThreshold={0.5}
