@@ -8,6 +8,8 @@ import { storage } from "@/lib/storage";
 const MEMBER_STORAGE_KEY = "jipkok.memberFilter";
 const FEED_STORAGE_KEY = "jipkok.feedFilter";
 
+const DEFAULT_FEED_SORT: FeedSort = "LATEST";
+
 type MemberFilterState = {
   sort: MemberSort;
   gender: Gender | null;
@@ -43,7 +45,7 @@ type FeedFilterState = {
 export const useFeedFilterStore = create<FeedFilterState>()(
   persist(
     (set) => ({
-      sort: "LATEST",
+      sort: DEFAULT_FEED_SORT,
       gender: null,
       date: toDateParam(new Date()),
       setSort: (sort) => set({ sort }),
@@ -54,10 +56,15 @@ export const useFeedFilterStore = create<FeedFilterState>()(
       name: FEED_STORAGE_KEY,
       storage,
       version: 1,
-      migrate: (persisted) => ({
-        gender:
-          (persisted as { gender: Gender | null } | undefined)?.gender ?? null,
-      }),
+      migrate: (persisted) => {
+        const previous = persisted as
+          { sort?: FeedSort; gender?: Gender | null } | undefined;
+
+        return {
+          sort: previous?.sort ?? DEFAULT_FEED_SORT,
+          gender: previous?.gender ?? null,
+        };
+      },
       partialize: (state) => ({ sort: state.sort, gender: state.gender }),
     },
   ),
