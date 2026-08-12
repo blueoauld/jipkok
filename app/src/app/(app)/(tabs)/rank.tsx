@@ -2,17 +2,17 @@ import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
-import {
-  SCROLL_EVENT_THROTTLE,
-  ScrollToTopButton,
-  useScrollToTopVisible,
-} from "@/components/ScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { usePagedList } from "@/hooks/usePagedList";
+import {
+  SCROLL_EVENT_THROTTLE,
+  useScrollToTopVisible,
+} from "@/hooks/useScrollToTopVisible";
 import {
   GENDER_FILTER_VALUES,
   GENDER_FILTERS,

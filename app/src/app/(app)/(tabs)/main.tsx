@@ -9,11 +9,7 @@ import { XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
-import {
-  SCROLL_EVENT_THROTTLE,
-  ScrollToTopButton,
-  useScrollToTopVisible,
-} from "@/components/ScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
@@ -24,6 +20,10 @@ import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import {
+  SCROLL_EVENT_THROTTLE,
+  useScrollToTopVisible,
+} from "@/hooks/useScrollToTopVisible";
 import { api, type MemberSort } from "@/lib/api";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import {

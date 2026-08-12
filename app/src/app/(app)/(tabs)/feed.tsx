@@ -19,11 +19,7 @@ import { FeedNotificationButton } from "@/components/FeedNotificationButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
-import {
-  SCROLL_EVENT_THROTTLE,
-  ScrollToTopButton,
-  useScrollToTopVisible,
-} from "@/components/ScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -31,6 +27,10 @@ import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import {
+  SCROLL_EVENT_THROTTLE,
+  useScrollToTopVisible,
+} from "@/hooks/useScrollToTopVisible";
 import {
   api,
   type FeedPostPage,

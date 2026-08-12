@@ -10,7 +10,7 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
@@ -45,16 +45,7 @@ function ReasonRow({
   const theme = useTheme();
 
   return (
-    <XStack
-      items="center"
-      justify="space-between"
-      px="$4"
-      py="$3"
-      borderBottomWidth={divider ? 2 : 0}
-      borderColor="$color12"
-      pressStyle={{ bg: "$color3" }}
-      onPress={onPress}
-    >
+    <RetroListRow divider={divider} justify="space-between" onPress={onPress}>
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
@@ -62,7 +53,7 @@ function ReasonRow({
       <XStack opacity={selected ? 1 : 0}>
         <CheckIcon size={20} weight="bold" color={theme.color.val} />
       </XStack>
-    </XStack>
+    </RetroListRow>
   );
 }
 
@@ -156,20 +147,17 @@ export default function ReportScreen() {
           />
         </YStack>
 
-        <YStack>
-          <RetroShadow color="$gray8" />
-          <YStack borderWidth={2} borderColor="$color12" bg="$color1">
-            {REASONS.map(({ label, value }, index) => (
-              <ReasonRow
-                key={value}
-                label={label}
-                selected={value === reason}
-                divider={index < REASONS.length - 1}
-                onPress={() => setReason(value)}
-              />
-            ))}
-          </YStack>
-        </YStack>
+        <RetroListPanel>
+          {REASONS.map(({ label, value }, index) => (
+            <ReasonRow
+              key={value}
+              label={label}
+              selected={value === reason}
+              divider={index < REASONS.length - 1}
+              onPress={() => setReason(value)}
+            />
+          ))}
+        </RetroListPanel>
 
         <DetailField valueRef={detailRef} />
       </FormScreen>

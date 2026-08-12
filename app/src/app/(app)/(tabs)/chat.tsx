@@ -3,17 +3,17 @@ import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/ChatRoomRow";
-import {
-  SCROLL_EVENT_THROTTLE,
-  ScrollToTopButton,
-  useScrollToTopVisible,
-} from "@/components/ScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { usePagedList } from "@/hooks/usePagedList";
+import {
+  SCROLL_EVENT_THROTTLE,
+  useScrollToTopVisible,
+} from "@/hooks/useScrollToTopVisible";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "채팅방이 없습니다.";

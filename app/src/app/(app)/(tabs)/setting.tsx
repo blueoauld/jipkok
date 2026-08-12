@@ -25,8 +25,8 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
-import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -151,16 +151,7 @@ function SettingRow({
   const { label, icon: Icon } = item;
 
   return (
-    <XStack
-      items="center"
-      gap="$3"
-      px="$4"
-      py="$3"
-      borderBottomWidth={divider ? 2 : 0}
-      borderColor="$color12"
-      pressStyle={{ bg: "$color3" }}
-      onPress={onPress}
-    >
+    <RetroListRow divider={divider} gap="$3" onPress={onPress}>
       <Icon size={ICON_SIZE} color={theme.color12.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
@@ -183,7 +174,7 @@ function SettingRow({
         </XStack>
       )}
       {pending && <Spinner size="small" />}
-    </XStack>
+    </RetroListRow>
   );
 }
 
@@ -200,8 +191,7 @@ function SettingSection({
 }) {
   return (
     <YStack mx="$4">
-      <RetroShadow color="$gray8" />
-      <YStack borderWidth={2} borderColor="$color12" bg="$color1">
+      <RetroListPanel>
         {items.map((item, index) => (
           <SettingRow
             key={item.label}
@@ -218,7 +208,7 @@ function SettingSection({
             }
           />
         ))}
-      </YStack>
+      </RetroListPanel>
     </YStack>
   );
 }
