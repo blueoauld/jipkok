@@ -35,7 +35,6 @@ const EMPTY_MESSAGE = "대화 내용이 없습니다.";
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
-
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
@@ -50,6 +49,15 @@ export default function ChatRoomScreen() {
     null,
   );
   const listRef = useRef<FlatList<ChatRow>>(null);
+
+  // 키보드가 열리면 뒤집힌 리스트 위쪽에 인셋이 붙어 오프셋 0이 끝이 아니게 된다.
+  const insetTop = useRef(0);
+
+  const scrollToBottom = () =>
+    listRef.current?.scrollToOffset({
+      offset: -insetTop.current,
+      animated: false,
+    });
 
   const queryClient = useQueryClient();
   const { alertElement, confirm, showApiError } = useRetroAlert();
@@ -136,7 +144,13 @@ export default function ChatRoomScreen() {
           data={toChatRows(messages)}
           inverted
           renderScrollComponent={(props: ScrollViewProps) => (
-            <ChatScrollView {...props} offset={keyboardOffset} />
+            <ChatScrollView
+              {...props}
+              offset={keyboardOffset}
+              onInsetChange={(top) => {
+                insetTop.current = top;
+              }}
+            />
           )}
           keyExtractor={(row) => row.key}
           renderItem={({ item }) =>
@@ -211,7 +225,7 @@ export default function ChatRoomScreen() {
           onSend={(content) => {
             sendText(content, replyTarget?.messageId ?? null);
             setReplyTarget(null);
-            listRef.current?.scrollToOffset({ offset: 0, animated: true });
+            scrollToBottom();
           }}
           onPickPhotos={handlePickPhotos}
           onCancelReply={() => setReplyTarget(null)}
