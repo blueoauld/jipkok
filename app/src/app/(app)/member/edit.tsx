@@ -3,17 +3,11 @@ import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack } from "expo-router";
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
-import {
-  KeyboardAwareScrollView,
-  KeyboardStickyView,
-} from "react-native-keyboard-controller";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
+import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroButton } from "@/components/ui/RetroButton";
@@ -22,7 +16,7 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
-import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
+import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 import {
@@ -83,7 +77,6 @@ function BioField({
 }
 
 function EditForm({ profile }: { profile: MyProfileResponse }) {
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { alertElement, show, showApiError } = useRetroAlert();
   const publicPhotos = useUploadPhotos(
@@ -145,70 +138,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
   return (
     <>
-      <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        bottomOffset={FORM_FOOTER_HEIGHT}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
-          <YStack gap="$2">
-            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-              공개 사진
-            </Text>
-            <PhotoGrid
-              photos={publicPhotos.urls}
-              onAdd={publicPhotos.add}
-              onRemove={publicPhotos.remove}
-              onMove={publicPhotos.move}
-              showPrimaryBadge
-            />
-          </YStack>
-
-          <YStack gap="$2">
-            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-              비밀 사진
-            </Text>
-            <PhotoGrid
-              photos={secretPhotos.urls}
-              onAdd={secretPhotos.add}
-              onRemove={secretPhotos.remove}
-              onMove={secretPhotos.move}
-            />
-          </YStack>
-
-          <FormField>
-            <RetroInput
-              defaultValue={profile.nickname}
-              onChangeText={(text) => {
-                nicknameRef.current = text;
-              }}
-              placeholder="닉네임"
-              maxLength={NICKNAME_MAX_LENGTH}
-              textContentType="nickname"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </FormField>
-
-          <FormField>
-            <RetroInput
-              defaultValue={String(profile.birthYear)}
-              onChangeText={(text) => {
-                birthYearRef.current = text;
-              }}
-              placeholder="출생연도"
-              keyboardType="number-pad"
-              maxLength={BIRTH_YEAR_LENGTH}
-            />
-          </FormField>
-
-          <BioField valueRef={bioRef} initialValue={profile.bio ?? ""} />
-        </YStack>
-      </KeyboardAwareScrollView>
-
-      <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <YStack px="$4" py="$4" bg="$background">
+      <FormScreen
+        footer={
           <RetroButton
             disabled={busy}
             opacity={busy ? DISABLED_OPACITY : 1}
@@ -216,8 +147,61 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           >
             {save.isPending ? <Spinner color="white" /> : "저장"}
           </RetroButton>
+        }
+      >
+        <YStack gap="$2">
+          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+            공개 사진
+          </Text>
+          <PhotoGrid
+            photos={publicPhotos.urls}
+            onAdd={publicPhotos.add}
+            onRemove={publicPhotos.remove}
+            onMove={publicPhotos.move}
+            showPrimaryBadge
+          />
         </YStack>
-      </KeyboardStickyView>
+
+        <YStack gap="$2">
+          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+            비밀 사진
+          </Text>
+          <PhotoGrid
+            photos={secretPhotos.urls}
+            onAdd={secretPhotos.add}
+            onRemove={secretPhotos.remove}
+            onMove={secretPhotos.move}
+          />
+        </YStack>
+
+        <FormField>
+          <RetroInput
+            defaultValue={profile.nickname}
+            onChangeText={(text) => {
+              nicknameRef.current = text;
+            }}
+            placeholder="닉네임"
+            maxLength={NICKNAME_MAX_LENGTH}
+            textContentType="nickname"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </FormField>
+
+        <FormField>
+          <RetroInput
+            defaultValue={String(profile.birthYear)}
+            onChangeText={(text) => {
+              birthYearRef.current = text;
+            }}
+            placeholder="출생연도"
+            keyboardType="number-pad"
+            maxLength={BIRTH_YEAR_LENGTH}
+          />
+        </FormField>
+
+        <BioField valueRef={bioRef} initialValue={profile.bio ?? ""} />
+      </FormScreen>
 
       {alertElement}
     </>

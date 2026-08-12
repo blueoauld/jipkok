@@ -2,17 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useMemo, useRef, useState } from "react";
-import {
-  KeyboardAwareScrollView,
-  KeyboardStickyView,
-} from "react-native-keyboard-controller";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormField } from "@/components/FormField";
+import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
@@ -21,7 +15,7 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
+import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
@@ -104,7 +98,6 @@ export default function ReportScreen() {
     roomId?: string;
   }>();
   const memberId = Number(id);
-  const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const detailRef = useRef("");
   const { alertElement, show, showApiError } = useRetroAlert();
@@ -139,46 +132,8 @@ export default function ReportScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={screenOptions} />
 
-      <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        bottomOffset={FORM_FOOTER_HEIGHT}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
-          <YStack gap="$2">
-            <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-              증거 사진
-            </Text>
-            <PhotoGrid
-              photos={photos.urls}
-              onAdd={photos.add}
-              onRemove={photos.remove}
-              onMove={photos.move}
-            />
-          </YStack>
-
-          <YStack>
-            <RetroShadow color="$gray8" />
-            <YStack borderWidth={2} borderColor="$color12" bg="$color1">
-              {REASONS.map(({ label, value }, index) => (
-                <ReasonRow
-                  key={value}
-                  label={label}
-                  selected={value === reason}
-                  divider={index < REASONS.length - 1}
-                  onPress={() => setReason(value)}
-                />
-              ))}
-            </YStack>
-          </YStack>
-
-          <DetailField valueRef={detailRef} />
-        </YStack>
-      </KeyboardAwareScrollView>
-
-      <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <YStack px="$4" py="$4" bg="$background">
+      <FormScreen
+        footer={
           <RetroButton
             theme="red"
             disabled={!reason || busy}
@@ -187,8 +142,37 @@ export default function ReportScreen() {
           >
             신고하기
           </RetroButton>
+        }
+      >
+        <YStack gap="$2">
+          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+            증거 사진
+          </Text>
+          <PhotoGrid
+            photos={photos.urls}
+            onAdd={photos.add}
+            onRemove={photos.remove}
+            onMove={photos.move}
+          />
         </YStack>
-      </KeyboardStickyView>
+
+        <YStack>
+          <RetroShadow color="$gray8" />
+          <YStack borderWidth={2} borderColor="$color12" bg="$color1">
+            {REASONS.map(({ label, value }, index) => (
+              <ReasonRow
+                key={value}
+                label={label}
+                selected={value === reason}
+                divider={index < REASONS.length - 1}
+                onPress={() => setReason(value)}
+              />
+            ))}
+          </YStack>
+        </YStack>
+
+        <DetailField valueRef={detailRef} />
+      </FormScreen>
 
       {alertElement}
     </SafeAreaView>
