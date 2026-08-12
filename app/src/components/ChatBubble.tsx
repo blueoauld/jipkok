@@ -5,7 +5,7 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { replySummary } from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
-import { PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
@@ -98,16 +98,22 @@ function ReplyMessage({
   replyName,
   reply,
   content,
+  onPressReply,
 }: {
   mine: boolean;
   replyName: string;
   reply: ReplyMessageResponse;
   content: string;
+  onPressReply: (messageId: number) => void;
 }) {
   return (
     <BubbleFrame mine={mine}>
       <YStack px={H_PADDING} py={V_PADDING} gap={SECTION_GAP}>
-        <YStack gap={2}>
+        <YStack
+          gap={2}
+          pressStyle={{ opacity: PRESS_OPACITY }}
+          onPress={() => onPressReply(reply.messageId)}
+        >
           <Text
             fontSize="$1"
             fontWeight="600"
@@ -140,12 +146,14 @@ export function ChatBubble({
   showTime,
   replyName,
   onPressPhoto,
+  onPressReply,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
   showTime: boolean;
   replyName: string;
   onPressPhoto: (url: string) => void;
+  onPressReply: (messageId: number) => void;
 }) {
   const time = showTime && (
     <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
@@ -169,6 +177,7 @@ export function ChatBubble({
           replyName={replyName}
           reply={message.replyMessage}
           content={message.content ?? ""}
+          onPressReply={onPressReply}
         />
       ) : (
         <TextMessage mine={mine} content={message.content ?? ""} />

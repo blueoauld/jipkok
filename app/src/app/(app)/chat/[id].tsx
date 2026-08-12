@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useRef, useState } from "react";
@@ -73,6 +74,24 @@ export default function ChatRoomScreen() {
     chatMessages;
 
   const failure = roomError ?? error;
+  const rows = messages ? toChatRows(messages) : [];
+
+  const handlePressReply = (messageId: number) => {
+    const index = rows.findIndex(
+      (row) => row.kind === "message" && row.message.messageId === messageId,
+    );
+
+    if (index < 0) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      return;
+    }
+
+    listRef.current?.scrollToIndex({
+      index,
+      viewPosition: 0.5,
+      animated: false,
+    });
+  };
 
   const leave = useMutation({
     mutationFn: () => api.chats.leave(roomId),
@@ -141,7 +160,7 @@ export default function ChatRoomScreen() {
       {room && profile && messages ? (
         <FlatList
           ref={listRef}
-          data={toChatRows(messages)}
+          data={rows}
           inverted
           renderScrollComponent={(props: ScrollViewProps) => (
             <ChatScrollView
@@ -171,9 +190,16 @@ export default function ChatRoomScreen() {
                 partnerImageUrl={room.profileImageUrl ?? null}
                 onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
                 onPressPhoto={setViewerUrl}
+                onPressReply={handlePressReply}
                 onReply={setReplyTarget}
               />
             )
+          }
+          onScrollToIndexFailed={({ index, averageItemLength }) =>
+            listRef.current?.scrollToOffset({
+              offset: averageItemLength * index,
+              animated: false,
+            })
           }
           showsVerticalScrollIndicator={true}
           contentContainerStyle={{ paddingVertical: space.$3.val }}
