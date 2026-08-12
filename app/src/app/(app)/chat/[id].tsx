@@ -3,7 +3,7 @@ import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
@@ -96,8 +96,15 @@ export default function ChatRoomScreen() {
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 
+  const partnerId = room?.memberId ?? 0;
   const failure = roomError ?? error;
-  const rows = messages ? toChatRows(messages) : [];
+  const rows = useMemo(() => (messages ? toChatRows(messages) : []), [messages]);
+
+  const rowsRef = useRef(rows);
+
+  useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
 
   useEffect(() => {
     if (partnerLeft) {
@@ -130,8 +137,8 @@ export default function ChatRoomScreen() {
     dismissRoomNotifications(roomId).catch(() => undefined);
   }, [newestMessageId, roomId]);
 
-  const handlePressReply = (messageId: number) => {
-    const index = rows.findIndex(
+  const handlePressReply = useCallback((messageId: number) => {
+    const index = rowsRef.current.findIndex(
       (row) => row.kind === "message" && row.message.messageId === messageId,
     );
 
@@ -145,7 +152,7 @@ export default function ChatRoomScreen() {
       viewPosition: 0.5,
       animated: false,
     });
-  };
+  }, []);
 
   const leave = useMutation({
     mutationFn: () => api.chats.leave(roomId),
@@ -188,28 +195,45 @@ export default function ChatRoomScreen() {
     },
   ];
 
-  const handleCopy = async (content: string) => {
-    if (!content) {
-      return;
-    }
-
-    await Clipboard.setStringAsync(content);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    show("info", COPIED_MESSAGE);
-  };
-
-  const handleSavePhoto = async (url: string) => {
-    try {
-      if (await saveChatPhoto(url)) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        show("info", PHOTO_SAVED_MESSAGE);
-      } else {
-        show("error", PHOTO_PERMISSION_MESSAGE);
+  const handleCopy = useCallback(
+    async (content: string) => {
+      if (!content) {
+        return;
       }
-    } catch {
-      show("error", PHOTO_SAVE_FAILED_MESSAGE);
+
+      await Clipboard.setStringAsync(content);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      show("info", COPIED_MESSAGE);
+    },
+    [show],
+  );
+
+  const handleSavePhoto = useCallback(
+    async (url: string) => {
+      try {
+        if (await saveChatPhoto(url)) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          show("info", PHOTO_SAVED_MESSAGE);
+        } else {
+          show("error", PHOTO_PERMISSION_MESSAGE);
+        }
+      } catch {
+        show("error", PHOTO_SAVE_FAILED_MESSAGE);
+      }
+    },
+    [show],
+  );
+
+  const handlePressAvatar = useCallback(
+    () => pushOnce(`/member/${partnerId}`),
+    [partnerId],
+  );
+
+  const handleReply = useCallback((message: ChatMessageResponse) => {
+    if (!isPending(message)) {
+      setReplyTarget(message);
     }
-  };
+  }, []);
 
   const handlePickPhotos = async () => {
     const assets = await pickPhotos(MAX_PHOTOS);
@@ -266,16 +290,12 @@ export default function ChatRoomScreen() {
                 }
                 partnerId={room.memberId}
                 partnerImageUrl={room.profileImageUrl ?? null}
-                onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
+                onPressAvatar={handlePressAvatar}
                 onPressPhoto={setViewerUrl}
                 onPressReply={handlePressReply}
                 onCopy={handleCopy}
                 onSavePhoto={handleSavePhoto}
-                onReply={(message) => {
-                  if (!isPending(message)) {
-                    setReplyTarget(message);
-                  }
-                }}
+                onReply={handleReply}
               />
             )
           }

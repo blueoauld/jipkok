@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { ArrowBendUpLeftIcon } from "phosphor-react-native/src/icons/ArrowBendUpLeft";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -44,7 +44,7 @@ function ReplyAction() {
   );
 }
 
-export function ChatMessageRow({
+function Row({
   message,
   mine,
   grouped,
@@ -123,3 +123,5 @@ export function ChatMessageRow({
     </YStack>
   );
 }
+
+export const ChatMessageRow = memo(Row);
