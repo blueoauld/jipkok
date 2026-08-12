@@ -4,10 +4,11 @@ import { api, type ChatRoomPage } from "@/lib/api";
 
 export const CHAT_ROOMS_KEY = ["chats", "rooms"];
 
-export function useChatRooms() {
+export function useChatRooms(unreadOnly: boolean) {
   const query = useInfiniteQuery({
-    queryKey: CHAT_ROOMS_KEY,
-    queryFn: ({ pageParam }) => api.chats.list({ cursor: pageParam }),
+    queryKey: [...CHAT_ROOMS_KEY, unreadOnly],
+    queryFn: ({ pageParam }) =>
+      api.chats.list({ cursor: pageParam, unreadOnly }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: ChatRoomPage) => page.nextCursor,
   });

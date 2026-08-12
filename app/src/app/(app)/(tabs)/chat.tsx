@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
@@ -10,25 +10,43 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
 import { tabBarOverlayHeight } from "@/lib/design";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "채팅방이 없습니다.";
+const UNREAD_EMPTY_MESSAGE = "안 읽은 채팅방이 없습니다.";
+
+const FILTERS = ["전체", "안읽음"] as const;
+type Filter = (typeof FILTERS)[number];
 
 export default function ChatScreen() {
   const space = getTokens().space;
   const insets = useSafeAreaInsets();
+  const [filter, setFilter] = useState<Filter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
-  const chatRooms = useChatRooms();
+  const unreadOnly = filter === "안읽음";
+  const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatRooms;
 
   return (
     <YStack flex={1}>
+      <YStack px="$4" pt="$4" pb="$3">
+        <RetroSegmentedControl
+          values={FILTERS}
+          value={filter}
+          onChange={(next) => {
+            setFilter(next);
+            listRef.current?.scrollToOffset({ offset: 0, animated: false });
+          }}
+        />
+      </YStack>
+
       {rooms ? (
         <FlatList
           ref={listRef}
@@ -39,7 +57,7 @@ export default function ChatScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
-            paddingTop: space.$4.val,
+            paddingTop: space.$2.val,
             paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
@@ -59,7 +77,9 @@ export default function ChatScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text fontSize="$4">{EMPTY_MESSAGE}</Text>
+              <Text fontSize="$4">
+                {unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}
+              </Text>
             </YStack>
           }
         />
