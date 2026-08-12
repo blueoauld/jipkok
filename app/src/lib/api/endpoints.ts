@@ -4,6 +4,7 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
+  ChatRoomPage,
   CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -34,6 +35,8 @@ import type {
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
+
+type ChatRoomListParams = CursorParams & { unreadOnly?: boolean };
 
 type ScrollParams = { cursor?: string; size?: number };
 
@@ -279,6 +282,11 @@ export const feeds = {
       method: "POST",
       body: { contentType },
     }),
+};
+
+export const chats = {
+  list: (params: ChatRoomListParams = {}) =>
+    request<ChatRoomPage>("/api/chats", { query: params }),
 };
 
 export const push = {

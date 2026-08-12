@@ -35,6 +35,9 @@ export type DevicePlatform = RegisterDeviceTokenRequest["platform"];
 export type SuspensionType = SuspensionResponse["type"];
 export type SuspensionReason = SuspensionResponse["reason"];
 
+export type ChatRoomResponse = Schemas["ChatRoomResponse"];
+export type ChatRoomPage = Schemas["CursorResponseChatRoomResponse"];
+
 export type SendNoteRequest = Schemas["SendNoteRequest"];
 export type SendNoteResponse = Schemas["SendNoteResponse"];
 
