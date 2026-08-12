@@ -458,7 +458,14 @@ export default function FeedScreen() {
   const setDate = useFeedFilterStore((state) => state.setDate);
   const date = useMemo(() => fromDateParam(storedDate), [storedDate]);
   const feed = useFeedPosts(date, gender, sort);
-  const { posts, error, isFetchingNextPage, hasNextPage, fetchNextPage } = feed;
+  const {
+    posts,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch: refetchFeed,
+  } = feed;
 
   const queryKey = feedPostsKey(date, gender, sort);
   const invalidate = useCallback(
@@ -470,11 +477,11 @@ export default function FeedScreen() {
     setRefreshing(true);
 
     try {
-      await feed.refetch();
+      await refetchFeed();
     } finally {
       setRefreshing(false);
     }
-  }, [feed]);
+  }, [refetchFeed]);
 
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
@@ -646,7 +653,7 @@ export default function FeedScreen() {
           {error ? (
             <ErrorState
               message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={() => feed.refetch()}
+              onRetry={refetchFeed}
             />
           ) : (
             <Spinner size="small" />

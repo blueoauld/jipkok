@@ -74,8 +74,15 @@ export default function MainScreen() {
     },
     onError: showApiError,
   });
-  const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    feed;
+  const {
+    members,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch: refetchFeed,
+  } = feed;
+  const { update: updateLocation, refresh: refreshLocation } = location;
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
   const scrollToTop = useCallback(
@@ -88,14 +95,12 @@ export default function MainScreen() {
       setSort(SORTS[next]);
       scrollToTop();
 
-      if (next === "거리" && (await location.update())) {
+      if (next === "거리" && (await updateLocation())) {
         queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
       }
     },
-    [location, queryClient, scrollToTop, setSort],
+    [queryClient, scrollToTop, setSort, updateLocation],
   );
-
-  const refreshLocation = location.refresh;
 
   useEffect(() => {
     refreshLocation();
@@ -105,11 +110,11 @@ export default function MainScreen() {
     setRefreshing(true);
 
     try {
-      await Promise.all([location.refresh(), feed.refetch()]);
+      await Promise.all([refreshLocation(), refetchFeed()]);
     } finally {
       setRefreshing(false);
     }
-  }, [feed, location]);
+  }, [refetchFeed, refreshLocation]);
 
   const openGender = useCallback(() => setGenderOpen(true), []);
   const openComment = useCallback(() => setCommentOpen(true), []);
@@ -188,7 +193,7 @@ export default function MainScreen() {
           {error ? (
             <ErrorState
               message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={() => feed.refetch()}
+              onRetry={refetchFeed}
             />
           ) : (
             <Spinner size="small" />
