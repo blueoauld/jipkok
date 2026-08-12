@@ -168,7 +168,7 @@ export function ChatBubble({
       {message.imageUrl ? (
         <PhotoMessage
           url={message.imageUrl}
-          cacheKey={String(message.messageId)}
+          cacheKey={message.clientMessageId ?? String(message.messageId)}
           onPress={onPressPhoto}
         />
       ) : message.replyMessage ? (

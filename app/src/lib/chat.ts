@@ -15,6 +15,20 @@ export function replySummary(reply: ReplyMessageResponse) {
   return reply.content || PHOTO_SUMMARY;
 }
 
+export function toReply(message: ChatMessageResponse): ReplyMessageResponse {
+  return {
+    messageId: message.messageId,
+    senderId: message.senderId,
+    type: message.type,
+    content: message.content ?? null,
+    imageUrl: message.imageUrl ?? null,
+  };
+}
+
+export function isPending(message: ChatMessageResponse) {
+  return message.messageId < 0;
+}
+
 export type ChatRow =
   | {
       kind: "message";
@@ -52,7 +66,7 @@ export function toChatRows(messages: ChatMessageResponse[]) {
 
     rows.push({
       kind: "message",
-      key: String(message.messageId),
+      key: message.clientMessageId ?? String(message.messageId),
       message,
       grouped: !!older && sameGroup(older, message),
       showTime: !newer || !sameGroup(newer, message),

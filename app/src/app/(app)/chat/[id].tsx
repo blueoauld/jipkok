@@ -28,7 +28,13 @@ import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
-import { type ChatRow, LEAVE_DESCRIPTION, toChatRows } from "@/lib/chat";
+import {
+  type ChatRow,
+  isPending,
+  LEAVE_DESCRIPTION,
+  toChatRows,
+  toReply,
+} from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat-store";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -77,6 +83,7 @@ export default function ChatRoomScreen() {
   } = useChatRoom(roomId, !partnerLeft);
   const { sendText, sendPhotos, sending, uploading } = useSendMessage(
     roomId,
+    profile?.memberId ?? 0,
     showApiError,
   );
   const chatMessages = useChatMessages(roomId, !partnerLeft);
@@ -233,7 +240,11 @@ export default function ChatRoomScreen() {
                 onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
                 onPressPhoto={setViewerUrl}
                 onPressReply={handlePressReply}
-                onReply={setReplyTarget}
+                onReply={(message) => {
+                  if (!isPending(message)) {
+                    setReplyTarget(message);
+                  }
+                }}
               />
             )
           }
@@ -291,7 +302,7 @@ export default function ChatRoomScreen() {
               : "나"
           }
           onSend={(content) => {
-            sendText(content, replyTarget?.messageId ?? null);
+            sendText(content, replyTarget && toReply(replyTarget));
             setReplyTarget(null);
             scrollToBottom();
           }}
