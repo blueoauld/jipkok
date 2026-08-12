@@ -2,9 +2,8 @@ import { useRef, useState } from "react";
 import { Dialog, Text, XStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroDialogContent } from "@/components/ui/RetroDialogContent";
+import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 
 import { FormField } from "./FormField";
 
@@ -93,22 +92,17 @@ export function TextInputDialog({
   rows?: number;
   onSubmit: (value: string) => void;
 }) {
-  const keyboardOffset = useDialogKeyboardOffset();
-
   return (
-    <Dialog modal open={open} onOpenChange={onOpenChange}>
-      <RetroDialogContent y={keyboardOffset}>
-        <DialogForm
-          key={String(open)}
-          title={title}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          defaultValue={defaultValue}
-          submitLabel={submitLabel}
-          rows={rows}
-          onSubmit={onSubmit}
-        />
-      </RetroDialogContent>
-    </Dialog>
+    <RetroFormDialog open={open} onOpenChange={onOpenChange}>
+      <DialogForm
+        title={title}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        defaultValue={defaultValue}
+        submitLabel={submitLabel}
+        rows={rows}
+        onSubmit={onSubmit}
+      />
+    </RetroFormDialog>
   );
 }

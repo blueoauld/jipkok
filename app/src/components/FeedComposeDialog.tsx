@@ -11,10 +11,9 @@ import { CARD_RATIO } from "@/components/FeedCard";
 import { FormField } from "@/components/FormField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroDialogContent } from "@/components/ui/RetroDialogContent";
+import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroShadow } from "@/components/ui/RetroShadow";
-import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import { DISABLED_OPACITY, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 
@@ -173,22 +172,12 @@ export function FeedComposeDialog({
   onOpenChange: (open: boolean) => void;
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
-  const keyboardOffset = useDialogKeyboardOffset();
-
   return (
-    <Dialog
-      modal
+    <RetroFormDialog
       open={open}
       onOpenChange={(next) => !pending && onOpenChange(next)}
     >
-      <RetroDialogContent y={keyboardOffset}>
-        <ComposeForm
-          key={String(open)}
-          pending={pending}
-          onError={onError}
-          onSubmit={onSubmit}
-        />
-      </RetroDialogContent>
-    </Dialog>
+      <ComposeForm pending={pending} onError={onError} onSubmit={onSubmit} />
+    </RetroFormDialog>
   );
 }
