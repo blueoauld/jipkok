@@ -1,11 +1,11 @@
 import { Image } from "expo-image";
 import type { ReactNode } from "react";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
-import { replySummary } from "@/lib/chat";
+import { isPending, replySummary } from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
-import { PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
+import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
@@ -55,18 +55,20 @@ function BodyText({ mine, content }: { mine: boolean; content: string }) {
 function PhotoMessage({
   url,
   cacheKey,
+  sending,
   onPress,
 }: {
   url: string;
   cacheKey: string;
+  sending: boolean;
   onPress: (url: string) => void;
 }) {
   const theme = useTheme();
 
   return (
     <YStack
-      pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
-      onPress={() => onPress(url)}
+      pressStyle={sending ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
+      onPress={sending ? undefined : () => onPress(url)}
     >
       <Image
         source={{ uri: url, cacheKey }}
@@ -79,6 +81,12 @@ function PhotoMessage({
           borderColor: theme.color12.val,
         }}
       />
+
+      {sending && (
+        <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
+          <Spinner size="small" color="white" />
+        </YStack>
+      )}
     </YStack>
   );
 }
@@ -169,6 +177,7 @@ export function ChatBubble({
         <PhotoMessage
           url={message.imageUrl}
           cacheKey={message.clientMessageId ?? String(message.messageId)}
+          sending={isPending(message)}
           onPress={onPressPhoto}
         />
       ) : message.replyMessage ? (
