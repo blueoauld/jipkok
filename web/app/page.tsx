@@ -16,11 +16,13 @@ export default function Home() {
             priority
             className="size-14"
           />
-          <h1 className="text-3xl font-bold tracking-tight text-accent">집콕</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-accent">
+            집콕
+          </h1>
           <p className="text-base leading-7 font-medium">
-            집에서 보내는 하루도
+            가까운 이웃의 프로필을 구경하고
             <br />
-            동네 친구와 함께
+            쪽지 한 통으로 가볍게 말을 걸어 보세요.
           </p>
         </div>
 
