@@ -40,6 +40,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -655,9 +656,7 @@ export default function FeedScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text theme="gray" color="$color10" fontSize="$4">
-                {EMPTY_MESSAGE}
-              </Text>
+              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />

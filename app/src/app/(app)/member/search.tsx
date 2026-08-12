@@ -3,8 +3,9 @@ import { useState } from "react";
 import { FlatList } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { UserRow } from "@/components/UserRow";
@@ -99,9 +100,7 @@ export default function MemberSearchScreen() {
           ListEmptyComponent={
             <YStack items="center" gap="$4" py="$8">
               {!enabled ? (
-                <Text theme="gray" color="$color10" fontSize="$4">
-                  {HINT_MESSAGE}
-                </Text>
+                <EmptyMessage>{HINT_MESSAGE}</EmptyMessage>
               ) : error ? (
                 <ErrorState
                   message={isApiError(error) ? error.message : ERROR_MESSAGE}
@@ -110,9 +109,7 @@ export default function MemberSearchScreen() {
               ) : isFetching ? (
                 <Spinner size="small" />
               ) : (
-                <Text theme="gray" color="$color10" fontSize="$4">
-                  {EMPTY_MESSAGE}
-                </Text>
+                <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
               )}
             </YStack>
           }

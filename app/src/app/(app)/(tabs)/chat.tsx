@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/ChatRoomRow";
 import {
@@ -8,6 +8,7 @@ import {
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
@@ -83,9 +84,9 @@ export default function ChatScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text fontSize="$4">
+              <EmptyMessage>
                 {unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}
-              </Text>
+              </EmptyMessage>
             </YStack>
           }
         />

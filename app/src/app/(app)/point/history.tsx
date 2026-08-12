@@ -4,6 +4,7 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
@@ -114,9 +115,7 @@ export default function PointHistoryScreen() {
             }
             ListEmptyComponent={
               <Centered>
-                <Text theme="gray" color="$color10" fontSize="$4">
-                  {EMPTY_MESSAGE}
-                </Text>
+                <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
               </Centered>
             }
           />

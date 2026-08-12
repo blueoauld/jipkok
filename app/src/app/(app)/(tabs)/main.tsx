@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingG
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -15,6 +15,7 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
@@ -182,9 +183,7 @@ export default function MainScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text theme="gray" color="$color10" fontSize="$4">
-                {EMPTY_MESSAGE}
-              </Text>
+              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />

@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
 import {
   SCROLL_EVENT_THROTTLE,
   ScrollToTopButton,
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
@@ -74,9 +75,7 @@ export default function RankScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text theme="gray" color="$color10" fontSize="$4">
-                {EMPTY_MESSAGE}
-              </Text>
+              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />

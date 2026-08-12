@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ChatDay } from "@/components/ChatDay";
 import { ChatInputBar } from "@/components/ChatInputBar";
@@ -19,6 +19,7 @@ import { ChatScrollView } from "@/components/ChatScrollView";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
@@ -338,7 +339,7 @@ export default function ChatRoomScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <Text fontSize="$4">{EMPTY_MESSAGE}</Text>
+              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />

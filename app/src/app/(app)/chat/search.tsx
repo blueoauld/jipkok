@@ -3,9 +3,10 @@ import { useState } from "react";
 import { FlatList } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/ChatRoomRow";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
@@ -108,7 +109,7 @@ export default function ChatSearchScreen() {
           ListEmptyComponent={
             <YStack items="center" gap="$4" py="$8">
               {!enabled ? (
-                <Text fontSize="$4">{HINT_MESSAGE}</Text>
+                <EmptyMessage>{HINT_MESSAGE}</EmptyMessage>
               ) : error ? (
                 <ErrorState
                   message={isApiError(error) ? error.message : ERROR_MESSAGE}
@@ -117,7 +118,7 @@ export default function ChatSearchScreen() {
               ) : isFetching ? (
                 <Spinner size="small" />
               ) : (
-                <Text fontSize="$4">{EMPTY_MESSAGE}</Text>
+                <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
               )}
             </YStack>
           }

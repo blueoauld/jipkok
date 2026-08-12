@@ -1,8 +1,9 @@
 import { type ReactNode, useMemo } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, Text, YStack } from "tamagui";
+import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ActivityRow } from "@/components/ActivityRow";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import type { MemberSummaryResponse } from "@/lib/api";
@@ -71,9 +72,7 @@ export function ActivityList({
       }
       ListEmptyComponent={
         <Centered>
-          <Text theme="gray" color="$color10" fontSize="$4">
-            {EMPTY_MESSAGE}
-          </Text>
+          <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
         </Centered>
       }
     />
