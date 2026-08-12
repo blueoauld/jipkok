@@ -145,7 +145,7 @@ export function PhotoViewer({
                 <FlatList
                   ref={listRef}
                   data={photos}
-                  keyExtractor={(uri) => uri}
+                  keyExtractor={(uri, photoIndex) => `${photoIndex}-${uri}`}
                   horizontal
                   pagingEnabled
                   showsHorizontalScrollIndicator={false}
@@ -193,7 +193,7 @@ export function PhotoViewer({
               <XStack justify="center" gap="$2" pb="$6">
                 {photos.map((uri, photoIndex) => (
                   <YStack
-                    key={uri}
+                    key={`${photoIndex}-${uri}`}
                     width={6}
                     height={6}
                     rounded={9999}
