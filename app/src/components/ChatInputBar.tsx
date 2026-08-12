@@ -58,7 +58,6 @@ export function ChatInputBar({
     }
   }, [reply]);
 
-  // 값만 비우면 iOS가 높이를 다시 재지 않아 여러 줄 높이가 남는다.
   const send = () => {
     onSend(trimmed);
     inputRef.current?.clear();

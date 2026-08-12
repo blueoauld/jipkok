@@ -56,7 +56,6 @@ function sameDay(a: ChatMessageResponse, b: ChatMessageResponse) {
   );
 }
 
-// 최신순 배열을 뒤집힌 리스트용으로 편다. 뒤에 넣은 항목이 화면에서 위로 간다.
 export function toChatRows(messages: ChatMessageResponse[]) {
   const rows: ChatRow[] = [];
 

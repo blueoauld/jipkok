@@ -27,7 +27,6 @@ export function createChatSocket(onEvent: (event: ChatEvent) => void) {
     reconnectDelay: RECONNECT_DELAY,
     heartbeatIncoming: HEARTBEAT_INTERVAL,
     heartbeatOutgoing: HEARTBEAT_INTERVAL,
-    // 토큰이 갱신될 수 있어 연결 직전에 헤더를 다시 만든다.
     beforeConnect: () => {
       client.connectHeaders = { Authorization: `Bearer ${getAccessToken()}` };
     },

@@ -57,7 +57,6 @@ export default function ChatRoomScreen() {
   const roomId = Number(id);
   const space = getTokens().space;
 
-  // 키보드가 열리면 하단 안전 영역을 덮으므로, 목록과 입력창 둘 다 그만큼 덜 올라가야 한다.
   const keyboardOffset = useSafeAreaInsets().bottom;
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
@@ -67,7 +66,6 @@ export default function ChatRoomScreen() {
   );
   const listRef = useRef<FlatList<ChatRow>>(null);
 
-  // 키보드가 열리면 뒤집힌 리스트 위쪽에 인셋이 붙어 오프셋 0이 끝이 아니게 된다.
   const insetTop = useRef(0);
 
   const scrollToBottom = () =>
@@ -119,7 +117,6 @@ export default function ChatRoomScreen() {
 
   const newestMessageId = messages?.[0]?.messageId ?? 0;
 
-  // 방 상세의 안읽음 수는 들어올 때 값에 멈춰 있어 기준으로 쓸 수 없다.
   const markedMessageId = useRef(0);
 
   useEffect(() => {
