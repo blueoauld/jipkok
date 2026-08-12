@@ -3,11 +3,12 @@ import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Text, useTheme, YStack } from "tamagui";
+import { Text, useTheme, YStack } from "tamagui";
 
+import { RetroButton } from "@/components/ui/RetroButton";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
-import { alertApiError, alertMessage } from "@/lib/alert";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
@@ -22,6 +23,7 @@ const MAIL_TITLE = "정지문의";
 
 export default function SuspendedScreen() {
   const theme = useTheme();
+  const { alertElement, show, showApiError } = useRetroAlert();
   const { confirmWithdraw, withdrawElement } = useWithdraw();
 
   const { data: profile } = useMyProfile();
@@ -29,7 +31,7 @@ export default function SuspendedScreen() {
 
   const logout = useMutation({
     mutationFn: api.auth.logout,
-    onError: alertApiError,
+    onError: showApiError,
   });
 
   useEffect(() => {
@@ -63,30 +65,28 @@ export default function SuspendedScreen() {
           )}
         </YStack>
 
-        <YStack width="100%" gap="$3">
-          <Button
-            size="$4"
-            theme="blue"
-            rounded="$7"
+        <YStack width="100%" gap="$4">
+          <RetroButton
             onPress={() =>
               openSupportMail(MAIL_TITLE, profile?.memberId).catch(() =>
-                alertMessage(MAIL_FAILED_MESSAGE),
+                show("error", MAIL_FAILED_MESSAGE),
               )
             }
           >
             문의하기
-          </Button>
+          </RetroButton>
 
-          <Button size="$4" rounded="$7" onPress={() => logout.mutate()}>
+          <RetroButton theme="gray" onPress={() => logout.mutate()}>
             로그아웃
-          </Button>
+          </RetroButton>
 
-          <Button size="$4" theme="red" rounded="$7" onPress={confirmWithdraw}>
+          <RetroButton theme="red" onPress={confirmWithdraw}>
             회원탈퇴
-          </Button>
+          </RetroButton>
         </YStack>
       </YStack>
 
+      {alertElement}
       {withdrawElement}
     </SafeAreaView>
   );

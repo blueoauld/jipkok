@@ -1,15 +1,36 @@
 import * as ImagePicker from "expo-image-picker";
-import { Alert } from "react-native";
+
+import { ApiError } from "@/lib/api";
 
 export const MAX_PHOTOS = 6;
 
-export async function pickPhotos(remaining: number) {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+const PERMISSION_DENIED_CODE = "PERMISSION_DENIED";
+const LIBRARY_DENIED_MESSAGE = "사진 접근 권한이 필요합니다.";
+const CAMERA_DENIED_MESSAGE = "카메라 권한이 필요합니다.";
 
-  if (!permission.granted) {
-    Alert.alert("사진 접근 권한이 필요합니다.");
-    return [];
+// 취소는 빈 결과로, 권한 거부는 예외로 갈라 호출부가 구분할 수 있게 한다.
+function denied(message: string) {
+  return new ApiError(0, PERMISSION_DENIED_CODE, message);
+}
+
+async function requireLibrary() {
+  const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (!granted) {
+    throw denied(LIBRARY_DENIED_MESSAGE);
   }
+}
+
+async function requireCamera() {
+  const { granted } = await ImagePicker.requestCameraPermissionsAsync();
+
+  if (!granted) {
+    throw denied(CAMERA_DENIED_MESSAGE);
+  }
+}
+
+export async function pickPhotos(remaining: number) {
+  await requireLibrary();
 
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -22,12 +43,7 @@ export async function pickPhotos(remaining: number) {
 }
 
 export async function pickSinglePhoto() {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-  if (!permission.granted) {
-    Alert.alert("사진 접근 권한이 필요합니다.");
-    return null;
-  }
+  await requireLibrary();
 
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -38,12 +54,7 @@ export async function pickSinglePhoto() {
 }
 
 export async function takePhoto() {
-  const permission = await ImagePicker.requestCameraPermissionsAsync();
-
-  if (!permission.granted) {
-    Alert.alert("카메라 권한이 필요합니다.");
-    return null;
-  }
+  await requireCamera();
 
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images"],

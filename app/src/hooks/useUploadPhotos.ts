@@ -13,15 +13,15 @@ export function useUploadPhotos(
   const [uploading, setUploading] = useState(false);
 
   const add = useCallback(async () => {
-    const assets = await pickPhotos(MAX_PHOTOS - photos.length);
-
-    if (assets.length === 0) {
-      return;
-    }
-
-    setUploading(true);
-
     try {
+      const assets = await pickPhotos(MAX_PHOTOS - photos.length);
+
+      if (assets.length === 0) {
+        return;
+      }
+
+      setUploading(true);
+
       const uploaded = await Promise.all(assets.map(upload));
       setPhotos((current) => [...current, ...uploaded].slice(0, MAX_PHOTOS));
     } catch (error) {

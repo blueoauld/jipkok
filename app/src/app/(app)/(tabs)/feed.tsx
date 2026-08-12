@@ -282,9 +282,11 @@ function PickerTile({
 
 function ComposeForm({
   pending,
+  onError,
   onSubmit,
 }: {
   pending: boolean;
+  onError: (error: unknown) => void;
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
   const [photo, setPhoto] = useState<ImagePickerAsset | null>(null);
@@ -292,10 +294,14 @@ function ComposeForm({
   const [length, setLength] = useState(0);
 
   const choose = async (pick: () => Promise<ImagePickerAsset | null>) => {
-    const picked = await pick();
+    try {
+      const picked = await pick();
 
-    if (picked) {
-      setPhoto(picked);
+      if (picked) {
+        setPhoto(picked);
+      }
+    } catch (error) {
+      onError(error);
     }
   };
 
@@ -397,11 +403,13 @@ function ComposeForm({
 function ComposeDialog({
   open,
   pending,
+  onError,
   onOpenChange,
   onSubmit,
 }: {
   open: boolean;
   pending: boolean;
+  onError: (error: unknown) => void;
   onOpenChange: (open: boolean) => void;
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
@@ -414,7 +422,12 @@ function ComposeDialog({
       onOpenChange={(next) => !pending && onOpenChange(next)}
     >
       <RetroDialogContent y={keyboardOffset}>
-        <ComposeForm key={String(open)} pending={pending} onSubmit={onSubmit} />
+        <ComposeForm
+          key={String(open)}
+          pending={pending}
+          onError={onError}
+          onSubmit={onSubmit}
+        />
       </RetroDialogContent>
     </Dialog>
   );
@@ -716,6 +729,7 @@ export default function FeedScreen() {
       <ComposeDialog
         open={composeOpen}
         pending={compose.isPending}
+        onError={showApiError}
         onOpenChange={setComposeOpen}
         onSubmit={(photo, caption) => compose.mutate({ photo, caption })}
       />

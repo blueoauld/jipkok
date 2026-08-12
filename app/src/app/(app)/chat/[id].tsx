@@ -244,11 +244,15 @@ export default function ChatRoomScreen() {
   }, []);
 
   const handlePickPhotos = async () => {
-    const assets = await pickPhotos(MAX_PHOTOS);
+    try {
+      const assets = await pickPhotos(MAX_PHOTOS);
 
-    if (assets.length > 0) {
-      sendPhotos(assets);
-      scrollToBottom();
+      if (assets.length > 0) {
+        sendPhotos(assets);
+        scrollToBottom();
+      }
+    } catch (error) {
+      showApiError(error);
     }
   };
 
