@@ -38,6 +38,8 @@ type CursorParams = { cursor?: number; size?: number };
 
 type ChatRoomListParams = CursorParams & { unreadOnly?: boolean };
 
+type ChatRoomSearchParams = CursorParams & { keyword: string };
+
 type ScrollParams = { cursor?: string; size?: number };
 
 type HeartbeatLocation = Omit<HeartbeatRequest, "platform" | "deviceName">;
@@ -287,6 +289,9 @@ export const feeds = {
 export const chats = {
   list: (params: ChatRoomListParams = {}) =>
     request<ChatRoomPage>("/api/chats", { query: params }),
+
+  search: (params: ChatRoomSearchParams) =>
+    request<ChatRoomPage>("/api/chats/search", { query: params }),
 };
 
 export const push = {
