@@ -14,6 +14,11 @@ export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
 export const BOTTOM_BAR_HEIGHT = 64;
 
+// 폼 화면 아래 고정 버튼이 스크롤 내용을 가리지 않게 띄우는 높이다.
+export const FORM_FOOTER_HEIGHT = 80;
+
+export const IMAGE_TRANSITION = 200;
+
 export function bottomBarHeight(bottomInset: number) {
   return BOTTOM_BAR_HEIGHT + bottomInset;
 }

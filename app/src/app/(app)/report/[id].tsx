@@ -20,11 +20,14 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import { DISABLED_OPACITY, RETRO_SHADOW_OFFSET } from "@/lib/design";
+import {
+  DISABLED_OPACITY,
+  FORM_FOOTER_HEIGHT,
+  RETRO_SHADOW_OFFSET,
+} from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
-const BOTTOM_BAR_HEIGHT = 80;
 const DETAIL_MAX_LENGTH = 1000;
 const REASONS: { label: string; value: ReportReason }[] = [
   { label: "음란물", value: "OBSCENITY" },
@@ -141,11 +144,11 @@ export default function ReportScreen() {
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
-        bottomOffset={BOTTOM_BAR_HEIGHT}
+        bottomOffset={FORM_FOOTER_HEIGHT}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
           <YStack gap="$2">
             <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
               증거 사진

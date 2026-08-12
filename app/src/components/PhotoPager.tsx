@@ -6,12 +6,10 @@ import { FlatList, useWindowDimensions } from "react-native";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { PhotoViewer } from "@/components/PhotoViewer";
-import { PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { IMAGE_TRANSITION, PHOTO_PRESS_OPACITY } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
-
-const PHOTO_TRANSITION = 200;
 
 const PLACEHOLDER_ICON_SIZE = 48;
 
@@ -66,7 +64,7 @@ export function PhotoPager({
             <Image
               source={{ uri: item, cacheKey: photoCacheKey(item) }}
               contentFit="cover"
-              transition={PHOTO_TRANSITION}
+              transition={IMAGE_TRANSITION}
               style={{ width, height: width * PHOTO_RATIO }}
             />
 

@@ -5,13 +5,17 @@ import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isPending, replySummary } from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
-import { OVERLAY_BG, PHOTO_PRESS_OPACITY, PRESS_OPACITY } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  OVERLAY_BG,
+  PHOTO_PRESS_OPACITY,
+  PRESS_OPACITY,
+} from "@/lib/design";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 
 const PHOTO_SIZE = 200;
-const PHOTO_TRANSITION = 200;
 
 const MIN_HEIGHT = 36;
 
@@ -77,7 +81,7 @@ function PhotoMessage({
         source={{ uri: url, cacheKey }}
         recyclingKey={cacheKey}
         contentFit="cover"
-        transition={PHOTO_TRANSITION}
+        transition={IMAGE_TRANSITION}
         style={{
           width: PHOTO_SIZE,
           height: PHOTO_SIZE,

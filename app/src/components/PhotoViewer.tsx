@@ -27,13 +27,11 @@ import Zoom from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
-import { PRESS_OPACITY } from "@/lib/design";
+import { IMAGE_TRANSITION, PRESS_OPACITY } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
-
-const PHOTO_TRANSITION = 200;
 
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
@@ -181,7 +179,7 @@ export function PhotoViewer({
                           source={{ uri: item, cacheKey: photoCacheKey(item) }}
                           cachePolicy={secret ? "memory" : "disk"}
                           contentFit="contain"
-                          transition={PHOTO_TRANSITION}
+                          transition={IMAGE_TRANSITION}
                           style={{ width: screen.width, height: screen.height }}
                         />
                       </Zoom>

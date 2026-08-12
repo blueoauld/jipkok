@@ -22,16 +22,16 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
-import { validateBirthYear } from "@/lib/member";
+import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
-import { NICKNAME_PATTERN } from "@/lib/validation";
-
-const BOTTOM_BAR_HEIGHT = 80;
-const NICKNAME_MAX_LENGTH = 10;
-const BIO_MAX_LENGTH = 1000;
-const BIRTH_YEAR_LENGTH = 4;
+import {
+  BIO_MAX_LENGTH,
+  BIRTH_YEAR_LENGTH,
+  NICKNAME_MAX_LENGTH,
+  validateBirthYear,
+  validateNickname,
+} from "@/lib/validation";
 
 const uploadPublicPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "PUBLIC");
@@ -39,9 +39,6 @@ const uploadSecretPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "SECRET");
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
-const NICKNAME_REQUIRED_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
-const INVALID_NICKNAME_MESSAGE = "닉네임이 올바르지 않습니다.";
-const INVALID_BIRTH_YEAR_MESSAGE = "출생연도가 올바르지 않습니다.";
 const EDITED_MESSAGE = "프로필이 편집되었습니다.";
 
 function Centered({ children }: { children: ReactNode }) {
@@ -126,44 +123,35 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   const busy = save.isPending || uploading;
 
   const submit = () => {
-    const nickname = nicknameRef.current.trim();
+    const nickname = validateNickname(nicknameRef.current);
 
-    if (!nickname) {
-      show("error", NICKNAME_REQUIRED_MESSAGE);
+    if (nickname !== true) {
+      show("error", nickname);
       return;
     }
 
-    if (!NICKNAME_PATTERN.test(nickname)) {
-      show("error", INVALID_NICKNAME_MESSAGE);
+    const birthYear = validateBirthYear(birthYearRef.current);
+
+    if (birthYear !== true) {
+      show("error", birthYear);
       return;
     }
 
-    const birthYear = Number(birthYearRef.current);
-
-    if (birthYearRef.current.length !== BIRTH_YEAR_LENGTH || !birthYear) {
-      show("error", INVALID_BIRTH_YEAR_MESSAGE);
-      return;
-    }
-
-    const range = validateBirthYear(birthYearRef.current);
-
-    if (range !== true) {
-      show("error", range);
-      return;
-    }
-
-    save.mutate({ nickname, birthYear });
+    save.mutate({
+      nickname: nicknameRef.current.trim(),
+      birthYear: Number(birthYearRef.current),
+    });
   };
 
   return (
     <>
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
-        bottomOffset={BOTTOM_BAR_HEIGHT}
+        bottomOffset={FORM_FOOTER_HEIGHT}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
           <YStack gap="$2">
             <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
               공개 사진

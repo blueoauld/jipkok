@@ -17,7 +17,7 @@ import { FormField } from "@/components/FormField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
+import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
 import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import {
   PASSWORD_MAX_LENGTH,
@@ -25,8 +25,6 @@ import {
   PHONE_NUMBER_PATTERN,
   PHONE_NUMBER_RULES,
 } from "@/lib/validation";
-
-const BOTTOM_BAR_HEIGHT = 80;
 
 const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
@@ -83,11 +81,11 @@ export default function SignupScreen() {
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         mode="layout"
-        bottomOffset={BOTTOM_BAR_HEIGHT}
+        bottomOffset={FORM_FOOTER_HEIGHT}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
           <XStack gap="$2" items="flex-start">
             <YStack flex={1}>
               <ControlledInput

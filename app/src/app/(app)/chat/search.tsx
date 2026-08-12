@@ -12,8 +12,7 @@ import { RetroInput } from "@/components/ui/RetroInput";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
 import { isApiError } from "@/lib/api";
-
-const NICKNAME_MAX_LENGTH = 10;
+import { NICKNAME_MAX_LENGTH } from "@/lib/validation";
 
 const HINT_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
 const EMPTY_MESSAGE = "검색 결과가 없습니다.";

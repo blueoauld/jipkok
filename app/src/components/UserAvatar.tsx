@@ -3,9 +3,9 @@ import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useTheme, YStack } from "tamagui";
 
 import type { Gender } from "@/lib/api";
+import { IMAGE_TRANSITION } from "@/lib/design";
 
 const SIZE = 64;
-const TRANSITION = 200;
 const ICON_RATIO = 0.5;
 
 const GENDER_BG = {
@@ -46,7 +46,7 @@ export function UserAvatar({
           source={url}
           recyclingKey={id}
           contentFit="cover"
-          transition={TRANSITION}
+          transition={IMAGE_TRANSITION}
           style={{ width: "100%", height: "100%" }}
         />
       ) : (

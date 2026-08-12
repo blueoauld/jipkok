@@ -3,7 +3,7 @@ import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 export const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
-const PHOTO_SUMMARY = "사진";
+export const PHOTO_SUMMARY = "사진";
 
 const MAX_UNREAD_COUNT = 99;
 
@@ -11,7 +11,8 @@ export function formatUnreadCount(count: number) {
   return count > MAX_UNREAD_COUNT ? `${MAX_UNREAD_COUNT}+` : `${count}`;
 }
 
-export function replySummary(reply: ReplyMessageResponse) {
+// 답장 대상은 원본 메시지일 수도, 서버가 줄인 응답일 수도 있다.
+export function replySummary(reply: { content?: string | null }) {
   return reply.content || PHOTO_SUMMARY;
 }
 
@@ -52,7 +53,8 @@ function sameGroup(a: ChatMessageResponse, b: ChatMessageResponse) {
 
 function sameDay(a: ChatMessageResponse, b: ChatMessageResponse) {
   return (
-    new Date(a.createdAt).toDateString() === new Date(b.createdAt).toDateString()
+    new Date(a.createdAt).toDateString() ===
+    new Date(b.createdAt).toDateString()
   );
 }
 

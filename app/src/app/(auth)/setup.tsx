@@ -16,14 +16,14 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
-import { validateBirthYear } from "@/lib/member";
-import { NICKNAME_PATTERN } from "@/lib/validation";
-
-const BOTTOM_BAR_HEIGHT = 80;
-
-const NICKNAME_MAX_LENGTH = 10;
-const BIO_MAX_LENGTH = 1000;
+import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
+import {
+  BIO_MAX_LENGTH,
+  BIRTH_YEAR_LENGTH,
+  BIRTH_YEAR_RULES,
+  NICKNAME_MAX_LENGTH,
+  NICKNAME_RULES,
+} from "@/lib/validation";
 
 type SetupForm = {
   nickname: string;
@@ -52,23 +52,15 @@ export default function SetupScreen() {
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         mode="layout"
-        bottomOffset={BOTTOM_BAR_HEIGHT}
+        bottomOffset={FORM_FOOTER_HEIGHT}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$4" p="$4" pb={BOTTOM_BAR_HEIGHT}>
+        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
           <ControlledInput
             control={control}
             name="nickname"
-            rules={{
-              required: "닉네임을 입력해주시길 바랍니다.",
-              pattern: {
-                value: NICKNAME_PATTERN,
-                message: "닉네임이 올바르지 않습니다.",
-              },
-              validate: (value) =>
-                value.trim().length > 0 || "닉네임을 입력해주시길 바랍니다.",
-            }}
+            rules={NICKNAME_RULES}
             placeholder="닉네임"
             maxLength={NICKNAME_MAX_LENGTH}
             textContentType="nickname"
@@ -79,17 +71,10 @@ export default function SetupScreen() {
           <ControlledInput
             control={control}
             name="birthYear"
-            rules={{
-              required: "출생연도를 입력해주시길 바랍니다.",
-              pattern: {
-                value: /^\d{4}$/,
-                message: "출생연도가 올바르지 않습니다.",
-              },
-              validate: validateBirthYear,
-            }}
+            rules={BIRTH_YEAR_RULES}
             placeholder="출생연도"
             keyboardType="number-pad"
-            maxLength={4}
+            maxLength={BIRTH_YEAR_LENGTH}
           />
 
           <ControlledInput

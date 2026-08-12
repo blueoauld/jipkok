@@ -6,6 +6,7 @@ import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import type { ChatMessageResponse } from "@/lib/api";
+import { replySummary } from "@/lib/chat";
 import {
   DISABLED_OPACITY,
   FLOATING_BUTTON_SIZE,
@@ -15,8 +16,6 @@ import {
 
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
-
-const PHOTO_SUMMARY = "사진";
 
 const BAR_PADDING = getTokens().space.$3.val;
 const BAR_H_PADDING = getTokens().space.$4.val;
@@ -97,7 +96,7 @@ export function ChatInputBar({
               </Text>
 
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
-                {reply.content || PHOTO_SUMMARY}
+                {replySummary(reply)}
               </Text>
             </YStack>
 

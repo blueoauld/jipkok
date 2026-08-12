@@ -63,6 +63,7 @@ import { formatDateLabel, formatSlotTime, fromDateParam } from "@/lib/date";
 import {
   DISABLED_OPACITY,
   FLOATING_BUTTON_SIZE,
+  IMAGE_TRANSITION,
   OVERLAY_BG,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
@@ -78,8 +79,6 @@ import { pushOnce } from "@/lib/router";
 const CARD_RATIO = 2;
 
 const REPORT_BUTTON_SPACE = 56;
-
-const PHOTO_TRANSITION = 200;
 
 const CAPTION_MAX_LENGTH = 30;
 
@@ -163,7 +162,7 @@ function Card({
         source={post.imageUrl}
         recyclingKey={String(post.postId)}
         contentFit="cover"
-        transition={PHOTO_TRANSITION}
+        transition={IMAGE_TRANSITION}
         style={{ flex: 1 }}
       />
 

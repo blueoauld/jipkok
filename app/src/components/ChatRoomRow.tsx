@@ -11,12 +11,10 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
-import { formatUnreadCount } from "@/lib/chat";
+import { formatUnreadCount, PHOTO_SUMMARY } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
-
-const PHOTO_MESSAGE = "사진";
 
 const MUTE_ICON_SIZE = 14;
 
@@ -169,7 +167,7 @@ function Row({
                 <XStack items="center" justify="space-between" gap="$2">
                   <Text flex={1} numberOfLines={2} fontSize="$3">
                     {room.lastMessageType === "PHOTO"
-                      ? PHOTO_MESSAGE
+                      ? PHOTO_SUMMARY
                       : room.lastMessageContent}
                   </Text>
 
