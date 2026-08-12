@@ -8,6 +8,8 @@ import { api } from "@/lib/api";
 
 const LIKES_KEY = ["likes", "mine"];
 
+const SCREEN_OPTIONS = { title: "좋아요 목록" };
+
 export default function LikeListScreen() {
   const query = useMemberList(LIKES_KEY, api.likes.mine);
   const { alertElement, showApiError } = useRetroAlert();
@@ -19,7 +21,7 @@ export default function LikeListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "좋아요 목록" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

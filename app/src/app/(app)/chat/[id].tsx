@@ -244,20 +244,24 @@ export default function ChatRoomScreen() {
     }
   };
 
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+  const screenOptions = useMemo(
+    () => ({
+      title: room?.nickname ?? "",
+      headerRight: () => (
+        <HeaderCircleIconButton
+          icon={DotsThreeIcon}
+          weight="bold"
+          onPress={openMenu}
+        />
+      ),
+    }),
+    [openMenu, room?.nickname],
+  );
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen
-        options={{
-          title: room?.nickname ?? "",
-          headerRight: () => (
-            <HeaderCircleIconButton
-              icon={DotsThreeIcon}
-              weight="bold"
-              onPress={() => setMenuOpen(true)}
-            />
-          ),
-        }}
-      />
+      <Stack.Screen options={screenOptions} />
 
       {room && profile && messages ? (
         <FlatList

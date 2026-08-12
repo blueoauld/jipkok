@@ -8,6 +8,8 @@ import { api } from "@/lib/api";
 
 const FAVORITES_KEY = ["favorites", "mine"];
 
+const SCREEN_OPTIONS = { title: "즐겨찾기 목록" };
+
 export default function FavoriteListScreen() {
   const query = useMemberList(FAVORITES_KEY, api.favorites.mine);
   const { alertElement, showApiError } = useRetroAlert();
@@ -19,7 +21,7 @@ export default function FavoriteListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "즐겨찾기 목록" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

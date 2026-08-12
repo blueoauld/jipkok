@@ -8,6 +8,8 @@ import {
   useProfileViews,
 } from "@/hooks/useProfileViews";
 
+const SCREEN_OPTIONS = { title: "내 프로필 조회 목록" };
+
 export default function ProfileViewListScreen() {
   const query = useProfileViews();
 
@@ -28,7 +30,7 @@ export default function ProfileViewListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "내 프로필 조회 목록" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <ActivityList
         query={{ ...query, members }}

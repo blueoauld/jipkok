@@ -8,6 +8,8 @@ import { api } from "@/lib/api";
 
 const BLOCKS_KEY = ["blocks", "mine"];
 
+const SCREEN_OPTIONS = { title: "차단 목록" };
+
 export default function BlockListScreen() {
   const query = useMemberList(BLOCKS_KEY, api.blocks.mine);
   const { alertElement, showApiError } = useRetroAlert();
@@ -19,7 +21,7 @@ export default function BlockListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "차단 목록" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

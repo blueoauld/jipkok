@@ -18,6 +18,8 @@ const HINT_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
 const EMPTY_MESSAGE = "검색 결과가 없습니다.";
 const ERROR_MESSAGE = "검색하지 못했습니다.";
 
+const SCREEN_OPTIONS = { title: "채팅 검색" };
+
 export default function ChatSearchScreen() {
   const space = getTokens().space;
   const [keyword, setKeyword] = useState("");
@@ -51,7 +53,7 @@ export default function ChatSearchScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "채팅 검색" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <YStack px="$4" pt="$4" pb="$3">
         <RetroInput

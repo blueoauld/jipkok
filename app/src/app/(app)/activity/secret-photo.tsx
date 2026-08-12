@@ -8,6 +8,8 @@ import { api } from "@/lib/api";
 
 const GRANTED_SECRET_PHOTOS_KEY = ["secretPhotos", "granted"];
 
+const SCREEN_OPTIONS = { title: "비밀 사진 목록" };
+
 export default function SecretPhotoListScreen() {
   const query = useMemberList(
     GRANTED_SECRET_PHOTOS_KEY,
@@ -22,7 +24,7 @@ export default function SecretPhotoListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "비밀 사진 목록" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

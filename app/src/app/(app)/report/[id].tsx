@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -130,11 +130,14 @@ export default function ReportScreen() {
 
   useLoadingOverlay(busy);
 
+  const screenOptions = useMemo(
+    () => ({ title: member ? `${title} (${member.nickname})` : title }),
+    [member, title],
+  );
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen
-        options={{ title: member ? `${title} (${member.nickname})` : title }}
-      />
+      <Stack.Screen options={screenOptions} />
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}

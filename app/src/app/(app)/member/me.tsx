@@ -132,22 +132,22 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
   );
 }
 
+const SCREEN_OPTIONS = {
+  title: "내 프로필",
+  headerRight: () => (
+    <HeaderCircleIconButton
+      icon={PencilSimpleIcon}
+      onPress={() => pushOnce("/member/edit")}
+    />
+  ),
+};
+
 export default function MyProfileScreen() {
   const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen
-        options={{
-          title: "내 프로필",
-          headerRight: () => (
-            <HeaderCircleIconButton
-              icon={PencilSimpleIcon}
-              onPress={() => pushOnce("/member/edit")}
-            />
-          ),
-        }}
-      />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       {data ? (
         <Profile profile={data} />

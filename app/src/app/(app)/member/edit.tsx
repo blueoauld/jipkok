@@ -236,12 +236,14 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   );
 }
 
+const SCREEN_OPTIONS = { title: "프로필 편집" };
+
 export default function MemberEditScreen() {
   const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "프로필 편집" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       {data ? (
         <EditForm profile={data} />

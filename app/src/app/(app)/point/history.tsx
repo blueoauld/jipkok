@@ -72,6 +72,8 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   );
 }
 
+const SCREEN_OPTIONS = { title: "포인트 내역" };
+
 export default function PointHistoryScreen() {
   const space = getTokens().space;
 
@@ -81,7 +83,7 @@ export default function PointHistoryScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "포인트 내역" }} />
+      <Stack.Screen options={SCREEN_OPTIONS} />
 
       <YStack flex={1} gap="$4" pt="$4">
         <Balance />
