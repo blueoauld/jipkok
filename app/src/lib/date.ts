@@ -53,14 +53,18 @@ export function formatDateLabel(date: Date) {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
+export function formatClockTime(date: Date) {
+  const hours = date.getHours();
+
+  return `${hours < 12 ? "오전" : "오후"} ${hours % 12 || 12}:${pad(date.getMinutes())}`;
+}
+
 export function formatChatTime(isoString: string) {
   const date = new Date(isoString);
   const today = new Date();
 
   if (isSameDay(date, today)) {
-    const hours = date.getHours();
-
-    return `${hours < 12 ? "오전" : "오후"} ${hours % 12 || 12}:${pad(date.getMinutes())}`;
+    return formatClockTime(date);
   }
 
   const yesterday = new Date(today);

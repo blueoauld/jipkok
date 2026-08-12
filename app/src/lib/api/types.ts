@@ -37,6 +37,8 @@ export type SuspensionReason = SuspensionResponse["reason"];
 
 export type ChatRoomResponse = Schemas["ChatRoomResponse"];
 export type ChatRoomPage = Schemas["CursorResponseChatRoomResponse"];
+export type ChatMessageResponse = Schemas["ChatMessageResponse"];
+export type ChatMessagePage = Schemas["CursorResponseChatMessageResponse"];
 
 export type SendNoteRequest = Schemas["SendNoteRequest"];
 export type SendNoteResponse = Schemas["SendNoteResponse"];
