@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlatList, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
@@ -22,6 +22,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
+import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -75,6 +76,27 @@ export default function ChatRoomScreen() {
 
   const failure = roomError ?? error;
   const rows = messages ? toChatRows(messages) : [];
+
+  const { mutate: markRead } = useMutation({
+    mutationFn: (lastReadMessageId: number) =>
+      api.chats.markRead(roomId, lastReadMessageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+    },
+  });
+
+  const newestMessageId = messages?.[0]?.messageId ?? 0;
+
+  // 방 상세의 안읽음 수는 들어올 때 값에 멈춰 있어 기준으로 쓸 수 없다.
+  const markedMessageId = useRef(0);
+
+  useEffect(() => {
+    if (newestMessageId > markedMessageId.current) {
+      markedMessageId.current = newestMessageId;
+      markRead(newestMessageId);
+    }
+  }, [markRead, newestMessageId]);
 
   const handlePressReply = (messageId: number) => {
     const index = rows.findIndex(

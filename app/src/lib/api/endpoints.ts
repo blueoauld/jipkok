@@ -318,6 +318,14 @@ export const chats = {
 
   leave: (roomId: number) =>
     request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
+
+  unreadCount: () => request<number>("/api/chats/unread-count"),
+
+  markRead: (roomId: number, lastReadMessageId: number) =>
+    request<void>(`/api/chats/${roomId}/read`, {
+      method: "POST",
+      body: { lastReadMessageId },
+    }),
 };
 
 export const push = {

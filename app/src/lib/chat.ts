@@ -2,6 +2,12 @@ import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 
 const PHOTO_SUMMARY = "사진";
 
+const MAX_UNREAD_COUNT = 99;
+
+export function formatUnreadCount(count: number) {
+  return count > MAX_UNREAD_COUNT ? `${MAX_UNREAD_COUNT}+` : `${count}`;
+}
+
 export function replySummary(reply: ReplyMessageResponse) {
   return reply.content || PHOTO_SUMMARY;
 }

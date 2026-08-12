@@ -4,6 +4,7 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { pushOnce } from "@/lib/router";
 
@@ -13,11 +14,6 @@ const MUTE_ICON_SIZE = 14;
 
 const BADGE_SIZE = 20;
 const BADGE_FONT_SIZE = 11;
-const MAX_UNREAD_COUNT = 99;
-
-function formatUnreadCount(count: number) {
-  return count > MAX_UNREAD_COUNT ? `${MAX_UNREAD_COUNT}+` : `${count}`;
-}
 
 function UnreadBadge({ count }: { count: number }) {
   return (

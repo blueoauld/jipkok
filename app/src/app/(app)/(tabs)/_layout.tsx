@@ -12,8 +12,10 @@ import { useTheme } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat";
 import { bottomBarHeight } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
@@ -21,6 +23,8 @@ const ICON_SIZE = 30;
 const BORDER_WIDTH = 2;
 
 const HEADER_EDGE_PADDING = 4;
+
+const BADGE_FONT_SIZE = 11;
 
 type Tab = {
   name: string;
@@ -69,6 +73,7 @@ function NoteReceiveButton() {
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const unreadCount = useChatUnreadCount();
 
   return (
     <Tabs
@@ -116,6 +121,15 @@ export default function TabsLayout() {
             title,
             headerLeft,
             headerRight,
+            tabBarBadge:
+              name === "chat" && unreadCount > 0
+                ? formatUnreadCount(unreadCount)
+                : undefined,
+            tabBarBadgeStyle: {
+              backgroundColor: theme.red10.val,
+              color: "white",
+              fontSize: BADGE_FONT_SIZE,
+            },
             tabBarIcon: ({ color }) => (
               <Icon color={color as string} size={ICON_SIZE} weight="fill" />
             ),
