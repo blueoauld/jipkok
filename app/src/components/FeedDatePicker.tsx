@@ -1,16 +1,48 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { getTokens, Text, XStack, YStack } from "tamagui";
+import { Calendar, type DateData, LocaleConfig } from "react-native-calendars";
+import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { formatDateLabel } from "@/lib/date";
+import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import { FLOATING_BUTTON_SIZE, OVERLAY_BG } from "@/lib/design";
 
-const PICKER_LOCALE = "ko-KR";
+const MONTH_NAMES = [
+  "1월",
+  "2월",
+  "3월",
+  "4월",
+  "5월",
+  "6월",
+  "7월",
+  "8월",
+  "9월",
+  "10월",
+  "11월",
+  "12월",
+];
 
-// 네이티브 달력이 측정되기 전에는 패널이 납작하게 떠서 번쩍인다.
-const DATE_PICKER_HEIGHT = 330;
+const DAY_NAMES = [
+  "일요일",
+  "월요일",
+  "화요일",
+  "수요일",
+  "목요일",
+  "금요일",
+  "토요일",
+];
+
+LocaleConfig.locales.ko = {
+  monthNames: MONTH_NAMES,
+  monthNamesShort: MONTH_NAMES,
+  dayNames: DAY_NAMES,
+  dayNamesShort: ["일", "월", "화", "수", "목", "금", "토"],
+  today: "오늘",
+};
+
+LocaleConfig.defaultLocale = "ko";
+
+const DAY_SIZE = 36;
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   return (
@@ -32,6 +64,49 @@ function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   );
 }
 
+function CalendarDay({
+  date,
+  state,
+  marking,
+  onPress,
+}: {
+  date?: DateData;
+  state?: string;
+  marking?: { selected?: boolean };
+  onPress?: (date?: DateData) => void;
+}) {
+  const selected = state === "selected" || Boolean(marking?.selected);
+  const disabled = state === "disabled";
+  const today = state === "today";
+
+  return (
+    <XStack
+      width={DAY_SIZE}
+      height={DAY_SIZE}
+      items="center"
+      justify="center"
+      bg={selected ? "$blue10" : "transparent"}
+      onPress={disabled ? undefined : () => onPress?.(date)}
+    >
+      <Text
+        fontSize="$4"
+        fontWeight={selected || today ? "700" : "400"}
+        color={
+          selected
+            ? "white"
+            : disabled
+              ? "$color8"
+              : today
+                ? "$blue10"
+                : "$color12"
+        }
+      >
+        {date?.day}
+      </Text>
+    </XStack>
+  );
+}
+
 export function FeedDatePicker({
   date,
   onChange,
@@ -39,7 +114,9 @@ export function FeedDatePicker({
   date: Date;
   onChange: (date: Date) => void;
 }) {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const selected = toDateParam(date);
 
   return (
     <>
@@ -62,23 +139,30 @@ export function FeedDatePicker({
             b={0}
             l={0}
             r={0}
-            minH={DATE_PICKER_HEIGHT}
-            items="center"
             pt="$2"
             pb={getTokens().space.$4.val}
             bg="$background"
             borderTopWidth={2}
             borderColor="$color12"
           >
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="inline"
-              locale={PICKER_LOCALE}
-              maximumDate={new Date()}
-              onValueChange={(_event, selected) => {
+            <Calendar
+              initialDate={selected}
+              maxDate={toDateParam(new Date())}
+              markedDates={{ [selected]: { selected: true } }}
+              monthFormat="yyyy년 M월"
+              showSixWeeks
+              dayComponent={CalendarDay}
+              onDayPress={(day) => {
                 setOpen(false);
-                onChange(selected);
+                onChange(fromDateParam(day.dateString));
+              }}
+              theme={{
+                calendarBackground: "transparent",
+                monthTextColor: theme.color12.val,
+                textMonthFontWeight: "700",
+                textSectionTitleColor: theme.color11.val,
+                arrowColor: theme.color12.val,
+                disabledArrowColor: theme.color8.val,
               }}
             />
           </YStack>
