@@ -11,7 +11,6 @@ import { FormScreen } from "@/components/FormScreen";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
 import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import {
   PASSWORD_MAX_LENGTH,
@@ -77,7 +76,6 @@ export default function SignupScreen() {
           <>
             <RetroButton
               disabled={signup.isPending}
-              opacity={signup.isPending ? DISABLED_OPACITY : 1}
               onPress={handleSubmit((values) => signup.mutate(values))}
             >
               {signup.isPending ? <Spinner color="white" /> : "회원가입"}
@@ -123,7 +121,6 @@ export default function SignupScreen() {
 
           <RetroButton
             disabled={!canSendCode}
-            opacity={canSendCode ? 1 : DISABLED_OPACITY}
             onPress={() => sendCode.mutate(phoneNumber)}
           >
             전송

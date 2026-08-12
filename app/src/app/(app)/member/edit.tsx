@@ -15,7 +15,6 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 import {
@@ -131,11 +130,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     <>
       <FormScreen
         footer={
-          <RetroButton
-            disabled={busy}
-            opacity={busy ? DISABLED_OPACITY : 1}
-            onPress={submit}
-          >
+          <RetroButton disabled={busy} onPress={submit}>
             {save.isPending ? <Spinner color="white" /> : "저장"}
           </RetroButton>
         }

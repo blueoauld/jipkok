@@ -9,7 +9,7 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type LoginRequest } from "@/lib/api";
-import { DISABLED_OPACITY, PRESS_OPACITY } from "@/lib/design";
+import { PRESS_OPACITY } from "@/lib/design";
 import { PHONE_NUMBER_RULES } from "@/lib/validation";
 
 export default function LoginScreen() {
@@ -73,7 +73,6 @@ export default function LoginScreen() {
 
           <RetroButton
             disabled={login.isPending}
-            opacity={login.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) => login.mutate(values))}
           >
             {login.isPending ? <Spinner color="white" /> : "로그인"}

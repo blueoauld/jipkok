@@ -9,7 +9,6 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
 import { replySummary } from "@/lib/chat";
 import {
-  DISABLED_OPACITY,
   FLOATING_BUTTON_SIZE,
   PRESS_OPACITY,
   RETRO_SHADOW_OFFSET,
@@ -106,14 +105,14 @@ export function ChatInputBar({
       )}
 
       <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
-        <YStack theme="gray" opacity={uploading ? DISABLED_OPACITY : 1}>
+        <YStack theme="gray">
           <RetroShadow color="$gray12" />
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}
             borderWidth={2}
             borderColor="$gray12"
-            bg="$yellow9"
+            bg={uploading ? "$gray8" : "$yellow9"}
             items="center"
             justify="center"
             pressStyle={
@@ -128,7 +127,7 @@ export function ChatInputBar({
             onPress={uploading ? undefined : onPickPhotos}
           >
             {uploading ? (
-              <Spinner size="small" color="black" />
+              <Spinner size="small" color="white" />
             ) : (
               <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
             )}
@@ -151,14 +150,14 @@ export function ChatInputBar({
           </XStack>
         </XStack>
 
-        <YStack theme="blue" opacity={sendable ? 1 : DISABLED_OPACITY}>
+        <YStack theme="blue">
           <RetroShadow color="$gray12" />
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}
             borderWidth={2}
             borderColor="$gray12"
-            bg="$color10"
+            bg={sendable ? "$color10" : "$gray8"}
             items="center"
             justify="center"
             pressStyle={

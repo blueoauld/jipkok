@@ -10,7 +10,6 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
-import { DISABLED_OPACITY } from "@/lib/design";
 import {
   BIO_MAX_LENGTH,
   BIRTH_YEAR_LENGTH,
@@ -47,7 +46,6 @@ export default function SetupScreen() {
         footer={
           <RetroButton
             disabled={setupProfile.isPending}
-            opacity={setupProfile.isPending ? DISABLED_OPACITY : 1}
             onPress={handleSubmit((values) =>
               setupProfile.mutate({
                 nickname: values.nickname.trim(),

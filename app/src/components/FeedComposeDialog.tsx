@@ -15,7 +15,7 @@ import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
-import { DISABLED_OPACITY, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 
 const CAPTION_MAX_LENGTH = 30;
 
@@ -137,11 +137,7 @@ function ComposeForm({
 
       <XStack gap="$3">
         <Dialog.Close asChild>
-          <RetroButton
-            flex={1}
-            theme="gray"
-            opacity={pending ? DISABLED_OPACITY : 1}
-          >
+          <RetroButton flex={1} theme="gray" disabled={pending}>
             닫기
           </RetroButton>
         </Dialog.Close>
@@ -149,7 +145,6 @@ function ComposeForm({
         <RetroButton
           flex={1}
           disabled={!photo || pending}
-          opacity={!photo || pending ? DISABLED_OPACITY : 1}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
           {pending ? <Spinner size="small" color="white" /> : "작성"}

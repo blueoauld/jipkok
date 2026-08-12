@@ -2,8 +2,6 @@ export const PRESS_OPACITY = 0.6;
 
 export const PHOTO_PRESS_OPACITY = 0.8;
 
-export const DISABLED_OPACITY = 0.6;
-
 export const FLOATING_BUTTON_SIZE = 40;
 
 export const RETRO_SHADOW_OFFSET = 4;
