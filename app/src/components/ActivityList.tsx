@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { FlatList } from "react-native";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
@@ -6,7 +6,6 @@ import { ActivityRow } from "@/components/ActivityRow";
 import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "목록이 비어있습니다.";
@@ -26,9 +25,13 @@ export function ActivityList({
 }: {
   query: MemberListQuery;
   captionOf?: (member: MemberSummaryResponse) => string | undefined;
-  onDelete?: (member: MemberSummaryResponse) => void;
+  onDelete?: (memberId: number) => void;
 }) {
-  const space = getTokens().space;
+  const contentStyle = useMemo(() => {
+    const space = getTokens().space;
+
+    return { padding: space.$4.val, gap: space.$4.val };
+  }, []);
   const { members, isError, isFetchingNextPage, hasNextPage, fetchNextPage } =
     query;
 
@@ -52,12 +55,11 @@ export function ActivityList({
         <ActivityRow
           member={item}
           caption={captionOf?.(item)}
-          onPress={() => pushOnce(`/member/${item.memberId}`)}
-          onDelete={onDelete && (() => onDelete(item))}
+          onDelete={onDelete}
         />
       )}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ padding: space.$4.val, gap: space.$4.val }}
+      contentContainerStyle={contentStyle}
       onEndReachedThreshold={0.5}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) {

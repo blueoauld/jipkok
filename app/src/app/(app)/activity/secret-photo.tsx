@@ -24,10 +24,7 @@ export default function SecretPhotoListScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "비밀 사진 목록" }} />
 
-      <ActivityList
-        query={query}
-        onDelete={(member) => remove.mutate(member.memberId)}
-      />
+      <ActivityList query={query} onDelete={remove.mutate} />
 
       {alertElement}
     </SafeAreaView>

@@ -21,10 +21,7 @@ export default function LikeListScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "좋아요 목록" }} />
 
-      <ActivityList
-        query={query}
-        onDelete={(member) => remove.mutate(member.memberId)}
-      />
+      <ActivityList query={query} onDelete={remove.mutate} />
 
       {alertElement}
     </SafeAreaView>

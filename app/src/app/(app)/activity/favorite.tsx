@@ -21,10 +21,7 @@ export default function FavoriteListScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "즐겨찾기 목록" }} />
 
-      <ActivityList
-        query={query}
-        onDelete={(member) => remove.mutate(member.memberId)}
-      />
+      <ActivityList query={query} onDelete={remove.mutate} />
 
       {alertElement}
     </SafeAreaView>

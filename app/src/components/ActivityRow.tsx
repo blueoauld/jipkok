@@ -9,6 +9,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
+import { pushOnce } from "@/lib/router";
 
 const EMPTY_COMMENT = "-";
 const LIKE_ICON_SIZE = 13;
@@ -55,20 +56,18 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
 function Row({
   member,
   caption,
-  onPress,
   onDelete,
 }: {
   member: MemberSummaryResponse;
   caption?: string;
-  onPress?: () => void;
-  onDelete?: () => void;
+  onDelete?: (memberId: number) => void;
 }) {
   const theme = useTheme();
   const { memberId, nickname, gender, age, receivedLikeCount, comment } =
     member;
 
   return (
-    <RetroCard onPress={onPress}>
+    <RetroCard onPress={() => pushOnce(`/member/${memberId}`)}>
       <XStack gap="$3" items="center">
         <UserAvatar
           id={String(memberId)}
@@ -108,7 +107,7 @@ function Row({
           </Text>
         </YStack>
 
-        {onDelete && <DeleteButton onPress={onDelete} />}
+        {onDelete && <DeleteButton onPress={() => onDelete(memberId)} />}
       </XStack>
     </RetroCard>
   );
