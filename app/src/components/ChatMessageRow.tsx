@@ -22,6 +22,8 @@ const REPLY_ACTION_SIZE = 32;
 const REPLY_ICON_SIZE = 18;
 const REPLY_FRICTION = 2;
 
+const DISABLE_RIGHTWARD_DRAG = Number.MAX_SAFE_INTEGER;
+
 function ReplyAction() {
   const theme = useTheme();
 
@@ -75,6 +77,7 @@ export function ChatMessageRow({
         ref={swipeable}
         friction={REPLY_FRICTION}
         overshootRight={false}
+        dragOffsetFromLeftEdge={DISABLE_RIGHTWARD_DRAG}
         renderRightActions={() => <ReplyAction />}
         onSwipeableWillOpen={() => {
           swipeable.current?.close();
