@@ -1,11 +1,12 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, type ScrollViewProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatDay } from "@/components/ChatDay";
 import { ChatMessageRow } from "@/components/ChatMessageRow";
+import { ChatScrollView } from "@/components/ChatScrollView";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useChatMessages } from "@/hooks/useChatMessages";
@@ -17,6 +18,10 @@ import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
+
+const renderScrollComponent = (props: ScrollViewProps) => (
+  <ChatScrollView {...props} />
+);
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -43,6 +48,7 @@ export default function ChatRoomScreen() {
           ref={listRef}
           data={toChatRows(messages)}
           inverted
+          renderScrollComponent={renderScrollComponent}
           keyExtractor={(row) => row.key}
           renderItem={({ item }) =>
             item.kind === "day" ? (
