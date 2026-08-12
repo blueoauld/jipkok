@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Location from "expo-location";
-import { useCallback, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Platform } from "react-native";
 
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
@@ -40,7 +40,7 @@ async function resolveCachedCoords() {
 export function useLocationUpdate() {
   const queryClient = useQueryClient();
   const { alertElement, show, showApiError } = useRetroAlert();
-  const [updating, setUpdating] = useState(false);
+  const updating = useRef(false);
   const { mutateAsync: heartbeat } = useMutation({
     mutationFn: api.members.heartbeat,
     onSuccess: async (reward) => {
@@ -69,11 +69,11 @@ export function useLocationUpdate() {
   }, []);
 
   const update = useCallback(async () => {
-    if (updating) {
+    if (updating.current) {
       return false;
     }
 
-    setUpdating(true);
+    updating.current = true;
 
     try {
       const permission = await Location.requestForegroundPermissionsAsync();
@@ -105,9 +105,9 @@ export function useLocationUpdate() {
       showApiError(error);
       return false;
     } finally {
-      setUpdating(false);
+      updating.current = false;
     }
-  }, [enableServices, heartbeat, show, showApiError, updating]);
+  }, [enableServices, heartbeat, show, showApiError]);
 
   const refresh = useCallback(async () => {
     try {
@@ -130,5 +130,5 @@ export function useLocationUpdate() {
     }
   }, [heartbeat, showApiError]);
 
-  return { updating, update, refresh, locationAlertElement: alertElement };
+  return { update, refresh, locationAlertElement: alertElement };
 }
