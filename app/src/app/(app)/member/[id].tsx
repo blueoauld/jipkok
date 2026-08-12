@@ -25,7 +25,6 @@ import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
-import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
@@ -209,11 +208,10 @@ export default function MemberProfileScreen() {
   const queryKey = memberDetailKey(memberId);
 
   const sendNote = useMutation({
-    mutationFn: (content: string) => api.chats.sendNote(memberId, content),
+    mutationFn: (content: string) => api.members.sendNote(memberId, content),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       show("info", NOTE_SENT_MESSAGE);
     },
     onError: showApiError,

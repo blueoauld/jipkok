@@ -35,7 +35,6 @@ import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
-import { formatUnreadCount } from "@/lib/chat/unread";
 import { RETRO_SHADOW_OFFSET, tabBarOverlayHeight } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
@@ -50,6 +49,12 @@ import {
 import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
 
 const ICON_SIZE = 22;
+
+const MAX_BADGE_COUNT = 99;
+
+function formatBadgeCount(count: number) {
+  return count > MAX_BADGE_COUNT ? `${MAX_BADGE_COUNT}+` : `${count}`;
+}
 
 const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
 
@@ -174,7 +179,7 @@ function SettingRow({
           justify="center"
         >
           <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
-            {formatUnreadCount(badge)}
+            {formatBadgeCount(badge)}
           </Text>
         </XStack>
       )}

@@ -80,12 +80,6 @@ export function uploadFeedPhoto(asset: ImagePickerAsset) {
   );
 }
 
-export function uploadChatPhoto(asset: ImagePickerAsset) {
-  return upload(asset, api.chats.createPhotoUploadUrl).then(
-    (photo) => photo.objectKey,
-  );
-}
-
 export function uploadReportPhoto(asset: ImagePickerAsset) {
   return upload(asset, api.reports.createPhotoUploadUrl);
 }

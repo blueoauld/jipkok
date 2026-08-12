@@ -7,7 +7,6 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { useChatSocket } from "@/hooks/useChatSocket";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useScreenTracking } from "@/hooks/useScreenTracking";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
@@ -34,7 +33,6 @@ export default function RootLayout() {
               <NavigationTheme scheme={scheme}>
                 <StatusBar style={scheme === "dark" ? "light" : "dark"} />
                 <SessionGuard />
-                <ChatSocket />
                 <Push />
                 <Ads />
                 <Analytics />
@@ -54,12 +52,6 @@ export default function RootLayout() {
 
 function SessionGuard() {
   useSessionGuard();
-
-  return null;
-}
-
-function ChatSocket() {
-  useChatSocket();
 
   return null;
 }

@@ -99,10 +99,7 @@ function DetailField({ valueRef }: { valueRef: { current: string } }) {
 }
 
 export default function ReportScreen() {
-  const { id, roomId } = useLocalSearchParams<{
-    id: string;
-    roomId?: string;
-  }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -111,13 +108,12 @@ export default function ReportScreen() {
   const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
   const { data: member } = useMemberDetail(memberId);
-  const title = roomId ? "채팅 신고" : "신고";
+  const title = "신고";
 
   const report = useMutation({
     mutationFn: (value: ReportReason) =>
       api.reports.create({
         reportedMemberId: memberId,
-        roomId: roomId ? Number(roomId) : null,
         reason: value,
         detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,

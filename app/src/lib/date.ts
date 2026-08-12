@@ -53,38 +53,6 @@ export function formatDateLabel(date: Date) {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
-function formatClockTime(date: Date) {
-  const hours = date.getHours();
-
-  return `${hours < 12 ? "오전" : "오후"} ${hours % 12 || 12}:${pad(date.getMinutes())}`;
-}
-
-export function formatMessageTime(date: Date) {
-  return formatClockTime(date);
-}
-
-export function formatChatTime(isoString: string) {
-  const date = new Date(isoString);
-  const today = new Date();
-
-  if (isSameDay(date, today)) {
-    return formatClockTime(date);
-  }
-
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (isSameDay(date, yesterday)) {
-    return "어제";
-  }
-
-  if (date.getFullYear() === today.getFullYear()) {
-    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
-  }
-
-  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}.`;
-}
-
 export function formatSlotTime(isoString: string) {
   const date = new Date(isoString);
 

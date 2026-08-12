@@ -7,11 +7,7 @@ import { registerPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
 function hrefOf(response: Notifications.NotificationResponse) {
-  const { roomId, screen } = response.notification.request.content.data ?? {};
-
-  if (roomId) {
-    return `/chat/${roomId}` as const;
-  }
+  const { screen } = response.notification.request.content.data ?? {};
 
   return screen === "feed" ? ("/feed" as const) : null;
 }

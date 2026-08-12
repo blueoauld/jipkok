@@ -4,10 +4,6 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AttendanceResponse,
-  ChatMessagePage,
-  ChatMessageResponse,
-  ChatRoomPage,
-  ChatRoomResponse,
   CreateFeedPostRequest,
   CreatePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -29,7 +25,6 @@ import type {
   PointHistoryPage,
   PointRewardResponse,
   ProfileViewPage,
-  SendMessageRequest,
   SendNoteResponse,
   SetupProfileRequest,
   SignupRequest,
@@ -61,18 +56,6 @@ type MemberRankingParams = {
 type MemberSearchParams = {
   keyword: string;
   cursor?: string;
-  size?: number;
-};
-
-type ChatRoomListParams = {
-  unreadOnly?: boolean;
-  cursor?: number;
-  size?: number;
-};
-
-type ChatRoomSearchParams = {
-  keyword: string;
-  cursor?: number;
   size?: number;
 };
 
@@ -154,6 +137,12 @@ export const members = {
     request<void>("/api/members/me/note-receive", {
       method: "PUT",
       body: { enabled },
+    }),
+
+  sendNote: (memberId: number, content: string) =>
+    request<SendNoteResponse>(`/api/members/${memberId}/notes`, {
+      method: "POST",
+      body: { content },
     }),
 
   updateFeedNotification: (enabled: boolean) =>
@@ -289,56 +278,6 @@ export const feeds = {
     request<FeedPhotoUploadUrlResponse>("/api/feeds/photos/upload-url", {
       method: "POST",
       body: { contentType },
-    }),
-};
-
-export const chats = {
-  list: (params: ChatRoomListParams = {}) =>
-    request<ChatRoomPage>("/api/chats", { query: params }),
-
-  get: (roomId: number) => request<ChatRoomResponse>(`/api/chats/${roomId}`),
-
-  messages: (roomId: number, params: CursorParams = {}) =>
-    request<ChatMessagePage>(`/api/chats/${roomId}/messages`, {
-      query: params,
-    }),
-
-  unreadCount: () => request<number>("/api/chats/unread-count"),
-
-  markRead: (roomId: number, lastReadMessageId: number) =>
-    request<void>(`/api/chats/${roomId}/read`, {
-      method: "POST",
-      body: { lastReadMessageId },
-    }),
-
-  updateNotification: (roomId: number, enabled: boolean) =>
-    request<void>(`/api/chats/${roomId}/notification`, {
-      method: "PUT",
-      body: { enabled },
-    }),
-
-  leave: (roomId: number) =>
-    request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
-
-  send: (roomId: number, body: SendMessageRequest) =>
-    request<ChatMessageResponse>(`/api/chats/${roomId}/messages`, {
-      method: "POST",
-      body,
-    }),
-
-  createPhotoUploadUrl: (contentType: string) =>
-    request<PhotoUploadUrlResponse>("/api/chats/photos/upload-url", {
-      method: "POST",
-      body: { contentType },
-    }),
-
-  search: (params: ChatRoomSearchParams) =>
-    request<ChatRoomPage>("/api/chats/search", { query: params }),
-
-  sendNote: (memberId: number, content: string) =>
-    request<SendNoteResponse>(`/api/members/${memberId}/notes`, {
-      method: "POST",
-      body: { content },
     }),
 };
 

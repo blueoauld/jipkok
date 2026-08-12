@@ -1,32 +1,19 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
-import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { FireIcon } from "phosphor-react-native/src/icons/Fire";
 import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
-import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "tamagui";
 
-import { BellToggleButton } from "@/components/BellToggleButton";
-import { HeaderIconButton } from "@/components/HeaderIconButton";
-import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
-import { useMyProfile } from "@/hooks/useMyProfile";
-import { api } from "@/lib/api";
-import { formatUnreadCount } from "@/lib/chat/unread";
 import { TAB_BAR_HEIGHT } from "@/lib/design";
-import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
-const TAB_ITEM_PADDING = 5;
 const BORDER_WIDTH = 2;
 
 const HEADER_EDGE_PADDING = 4;
-
-const BADGE_FONT_SIZE = 11;
-const BADGE_TOP = (TAB_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
 type Tab = {
   name: string;
@@ -38,44 +25,14 @@ type Tab = {
 
 const TABS: Tab[] = [
   { name: "main", title: "메인", icon: HouseIcon },
-  {
-    name: "chat",
-    title: "채팅",
-    icon: ChatCircleIcon,
-    headerLeft: () => (
-      <HeaderIconButton
-        icon={MagnifyingGlassIcon}
-        onPress={() => pushOnce("/chat/search")}
-      />
-    ),
-    headerRight: () => <NoteReceiveButton />,
-  },
   { name: "feed", title: "피드", icon: FireIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   { name: "setting", title: "설정", icon: GearIcon },
 ];
 
-const NOTE_RECEIVE_ON_MESSAGE = "이제 새로운 쪽지를 받을 수 있습니다.";
-const NOTE_RECEIVE_OFF_MESSAGE = "이제 새로운 쪽지를 받지 않습니다.";
-
-function NoteReceiveButton() {
-  const { data: profile } = useMyProfile();
-
-  return (
-    <BellToggleButton
-      enabled={profile?.noteReceiveEnabled ?? true}
-      field="noteReceiveEnabled"
-      update={api.members.updateNoteReceive}
-      onMessage={NOTE_RECEIVE_ON_MESSAGE}
-      offMessage={NOTE_RECEIVE_OFF_MESSAGE}
-    />
-  );
-}
-
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const unreadCount = useChatUnreadCount();
 
   return (
     <Tabs
@@ -125,16 +82,6 @@ export default function TabsLayout() {
             title,
             headerLeft,
             headerRight,
-            tabBarBadge:
-              name === "chat" && unreadCount > 0
-                ? formatUnreadCount(unreadCount)
-                : undefined,
-            tabBarBadgeStyle: {
-              top: BADGE_TOP,
-              backgroundColor: theme.red10.val,
-              color: "white",
-              fontSize: BADGE_FONT_SIZE,
-            },
             tabBarIcon: ({ color }) => (
               <Icon color={color as string} size={ICON_SIZE} weight="fill" />
             ),
