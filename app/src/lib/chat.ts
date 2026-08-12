@@ -1,5 +1,8 @@
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 
+export const LEAVE_DESCRIPTION =
+  "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
+
 const PHOTO_SUMMARY = "사진";
 
 const MAX_UNREAD_COUNT = 99;

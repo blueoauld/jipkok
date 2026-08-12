@@ -321,6 +321,12 @@ export const chats = {
 
   unreadCount: () => request<number>("/api/chats/unread-count"),
 
+  updateNotification: (roomId: number, enabled: boolean) =>
+    request<void>(`/api/chats/${roomId}/notification`, {
+      method: "PUT",
+      body: { enabled },
+    }),
+
   markRead: (roomId: number, lastReadMessageId: number) =>
     request<void>(`/api/chats/${roomId}/read`, {
       method: "POST",

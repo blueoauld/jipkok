@@ -28,16 +28,13 @@ import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
-import { type ChatRow, toChatRows } from "@/lib/chat";
+import { type ChatRow, LEAVE_DESCRIPTION, toChatRows } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat-store";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
-
-const LEAVE_DESCRIPTION =
-  "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
