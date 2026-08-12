@@ -11,6 +11,8 @@ import { useAuthStore } from "@/lib/auth/store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat-socket";
 import { useDeletedRoomStore } from "@/lib/chat-store";
 
+const CHAT_KEY = ["chats"];
+
 export function useChatSocket() {
   const status = useAuthStore((state) => state.status);
   const queryClient = useQueryClient();
@@ -51,9 +53,11 @@ export function useChatSocket() {
 
     // 서버는 소켓이 붙어 있는 회원에게 푸시를 보내지 않는다. 백그라운드에서
     // 물고 있으면 알림도 못 받고 이벤트도 못 보므로 끊는다.
+    // 끊겨 있던 동안의 이벤트는 다시 오지 않으므로 복귀할 때 전부 다시 불러온다.
     const subscription = AppState.addEventListener("change", (next) => {
       if (next === "active") {
         client.activate();
+        queryClient.invalidateQueries({ queryKey: CHAT_KEY });
       } else {
         client.deactivate();
       }
