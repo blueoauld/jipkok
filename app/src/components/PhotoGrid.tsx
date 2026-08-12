@@ -6,6 +6,7 @@ import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
+import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
@@ -105,7 +106,7 @@ function OverlayButton({
   );
 }
 
-export function PhotoGrid({
+function Grid({
   photos,
   onAdd,
   onRemove,
@@ -312,3 +313,5 @@ export function PhotoGrid({
     </YStack>
   );
 }
+
+export const PhotoGrid = memo(Grid);

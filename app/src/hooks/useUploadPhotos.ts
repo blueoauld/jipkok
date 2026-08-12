@@ -1,5 +1,5 @@
 import type { ImagePickerAsset } from "expo-image-picker";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import type { ProfilePhoto } from "@/lib/api";
@@ -48,12 +48,11 @@ export function useUploadPhotos(
     });
   }, []);
 
-  return {
-    urls: photos.map((photo) => photo.url),
-    objectKeys: photos.map((photo) => photo.objectKey),
-    uploading,
-    add,
-    remove,
-    move,
-  };
+  const urls = useMemo(() => photos.map((photo) => photo.url), [photos]);
+  const objectKeys = useMemo(
+    () => photos.map((photo) => photo.objectKey),
+    [photos],
+  );
+
+  return { urls, objectKeys, uploading, add, remove, move };
 }

@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { PencilSimpleIcon } from "phosphor-react-native/src/icons/PencilSimple";
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
@@ -51,8 +51,9 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
     secretPhotos,
   } = profile;
 
-  const photoUrls = [...publicPhotos, ...secretPhotos].map(
-    (photo) => photo.url,
+  const photoUrls = useMemo(
+    () => [...publicPhotos, ...secretPhotos].map((photo) => photo.url),
+    [publicPhotos, secretPhotos],
   );
 
   return (
