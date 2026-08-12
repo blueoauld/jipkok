@@ -75,6 +75,7 @@ function PhotoMessage({
     >
       <Image
         source={{ uri: url, cacheKey }}
+        recyclingKey={cacheKey}
         contentFit="cover"
         transition={PHOTO_TRANSITION}
         style={{

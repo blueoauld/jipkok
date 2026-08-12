@@ -89,6 +89,10 @@ export function uploadChatPhoto(asset: ImagePickerAsset) {
   );
 }
 
+export function photoCacheKey(url: string) {
+  return url.split("?")[0];
+}
+
 export async function saveChatPhoto(url: string) {
   const permission = await MediaLibrary.requestPermissionsAsync(true);
 

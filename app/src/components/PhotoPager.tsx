@@ -7,6 +7,7 @@ import { useTheme, XStack, YStack } from "tamagui";
 
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { PHOTO_PRESS_OPACITY } from "@/lib/design";
+import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
 
@@ -63,7 +64,7 @@ export function PhotoPager({
             onPress={openViewer}
           >
             <Image
-              source={item}
+              source={{ uri: item, cacheKey: photoCacheKey(item) }}
               contentFit="cover"
               transition={PHOTO_TRANSITION}
               style={{ width, height: width * PHOTO_RATIO }}

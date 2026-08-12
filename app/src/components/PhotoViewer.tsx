@@ -28,6 +28,7 @@ import { XStack, YStack } from "tamagui";
 
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
 import { PRESS_OPACITY } from "@/lib/design";
+import { photoCacheKey } from "@/lib/photo";
 
 const CLOSE_BUTTON_SIZE = 40;
 const CLOSE_ICON_SIZE = 24;
@@ -177,7 +178,8 @@ export function PhotoViewer({
                         itemWidth={screen.width}
                       >
                         <Image
-                          source={item}
+                          source={{ uri: item, cacheKey: photoCacheKey(item) }}
+                          cachePolicy={secret ? "memory" : "disk"}
                           contentFit="contain"
                           transition={PHOTO_TRANSITION}
                           style={{ width: screen.width, height: screen.height }}

@@ -10,6 +10,7 @@ import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import { PHOTO_PRESS_OPACITY, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { photoCacheKey } from "@/lib/photo";
 
 const COLUMNS = 3;
 
@@ -207,7 +208,10 @@ export function PhotoGrid({
                     }
                   >
                     <Image
-                      source={cell.uri}
+                      source={{
+                        uri: cell.uri,
+                        cacheKey: photoCacheKey(cell.uri),
+                      }}
                       contentFit="cover"
                       transition={PHOTO_TRANSITION}
                       style={{ width: "100%", height: "100%" }}
