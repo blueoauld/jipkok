@@ -188,6 +188,7 @@ export default function ChatRoomScreen() {
 
     if (assets.length > 0) {
       sendPhotos(assets);
+      scrollToBottom();
     }
   };
 
