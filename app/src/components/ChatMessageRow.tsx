@@ -70,51 +70,47 @@ export function ChatMessageRow({
   const swipeable = useRef<SwipeableMethods>(null);
 
   return (
-    <ReanimatedSwipeable
-      ref={swipeable}
-      friction={REPLY_FRICTION}
-      overshootRight={false}
-      renderRightActions={() => <ReplyAction />}
-      onSwipeableWillOpen={() => {
-        swipeable.current?.close();
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onReply(message);
-      }}
-    >
-      <XStack
-        px="$3"
-        mt={grouped ? 0 : GROUP_GAP_TOP}
-        mb={MESSAGE_GAP_BOTTOM}
-        justify={mine ? "flex-end" : "flex-start"}
-        gap="$2"
+    <YStack mt={grouped ? 0 : GROUP_GAP_TOP} mb={MESSAGE_GAP_BOTTOM}>
+      <ReanimatedSwipeable
+        ref={swipeable}
+        friction={REPLY_FRICTION}
+        overshootRight={false}
+        renderRightActions={() => <ReplyAction />}
+        onSwipeableWillOpen={() => {
+          swipeable.current?.close();
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onReply(message);
+        }}
       >
-        {!mine &&
-          (grouped ? (
-            <YStack width={AVATAR_SIZE} />
-          ) : (
-            <YStack
-              pressStyle={{ opacity: PRESS_OPACITY }}
-              onPress={onPressAvatar}
-            >
-              <UserAvatar
-                id={String(partnerId)}
-                url={partnerImageUrl}
-                size={AVATAR_SIZE}
-              />
-            </YStack>
-          ))}
+        <XStack px="$3" justify={mine ? "flex-end" : "flex-start"} gap="$2">
+          {!mine &&
+            (grouped ? (
+              <YStack width={AVATAR_SIZE} />
+            ) : (
+              <YStack
+                pressStyle={{ opacity: PRESS_OPACITY }}
+                onPress={onPressAvatar}
+              >
+                <UserAvatar
+                  id={String(partnerId)}
+                  url={partnerImageUrl}
+                  size={AVATAR_SIZE}
+                />
+              </YStack>
+            ))}
 
-        <XStack shrink={1} maxW={BUBBLE_MAX_WIDTH}>
-          <ChatBubble
-            message={message}
-            mine={mine}
-            showTime={showTime}
-            replyName={replyName}
-            onPressPhoto={onPressPhoto}
-            onPressReply={onPressReply}
-          />
+          <XStack shrink={1} maxW={BUBBLE_MAX_WIDTH}>
+            <ChatBubble
+              message={message}
+              mine={mine}
+              showTime={showTime}
+              replyName={replyName}
+              onPressPhoto={onPressPhoto}
+              onPressReply={onPressReply}
+            />
+          </XStack>
         </XStack>
-      </XStack>
-    </ReanimatedSwipeable>
+      </ReanimatedSwipeable>
+    </YStack>
   );
 }
