@@ -13,5 +13,3 @@ export class ApiError extends Error {
 export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
-
-export const UNAUTHORIZED_CODES = ["AUTH_009", "AUTH_010"] as const;

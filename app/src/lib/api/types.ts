@@ -32,7 +32,6 @@ export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 export type SuspensionResponse = Schemas["SuspensionResponse"];
 export type RegisterDeviceTokenRequest = Schemas["RegisterDeviceTokenRequest"];
 export type DevicePlatform = RegisterDeviceTokenRequest["platform"];
-export type SuspensionType = SuspensionResponse["type"];
 export type SuspensionReason = SuspensionResponse["reason"];
 
 export type ChatRoomResponse = Schemas["ChatRoomResponse"];
@@ -64,8 +63,3 @@ export type MemberSearchPage = Schemas["ScrollResponseMemberSummaryResponse"];
 export type ProfileViewResponse = Schemas["ProfileViewResponse"];
 export type ProfileViewPage = Schemas["ScrollResponseProfileViewResponse"];
 export type PointHistoryPage = Schemas["CursorResponsePointHistoryResponse"];
-
-export type CursorPage<T> = {
-  items: T[];
-  nextCursor?: number;
-};

@@ -1,5 +1,4 @@
 import * as ImagePicker from "expo-image-picker";
-import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 
 export const MAX_PHOTOS = 6;
@@ -52,33 +51,4 @@ export async function takePhoto() {
   });
 
   return result.canceled ? null : result.assets[0];
-}
-
-export function usePhotos() {
-  const [photos, setPhotos] = useState<string[]>([]);
-
-  const add = useCallback(async () => {
-    const picked = await pickPhotos(MAX_PHOTOS - photos.length);
-    const uris = picked.map((asset) => asset.uri);
-    setPhotos((current) => [...current, ...uris].slice(0, MAX_PHOTOS));
-  }, [photos.length]);
-
-  const remove = useCallback((index: number) => {
-    setPhotos((current) => current.filter((_, i) => i !== index));
-  }, []);
-
-  const move = useCallback((from: number, to: number) => {
-    setPhotos((current) => {
-      if (to < 0 || to >= current.length) {
-        return current;
-      }
-
-      const next = [...current];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    });
-  }, []);
-
-  return { photos, add, remove, move };
 }

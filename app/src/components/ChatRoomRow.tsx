@@ -108,83 +108,81 @@ function Row({
   const swipeable = useRef<SwipeableMethods>(null);
 
   return (
-    <>
-      <YStack mr={-RETRO_SHADOW_OFFSET} mb={-RETRO_SHADOW_OFFSET}>
-        <ReanimatedSwipeable
-          ref={swipeable}
-          friction={ACTION_FRICTION}
-          overshootLeft={false}
-          overshootRight={false}
-          renderLeftActions={() => (
-            <NotificationAction
-              enabled={room.notificationEnabled}
-              onPress={() => {
-                swipeable.current?.close();
-                onToggleNotification(room);
-              }}
-            />
-          )}
-          renderRightActions={() => (
-            <LeaveAction
-              onPress={() => {
-                swipeable.current?.close();
-                onLeave(room);
-              }}
-            />
-          )}
-        >
-          <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
-            <RetroCard onPress={() => pushOnce(`/chat/${room.roomId}`)}>
-              <XStack gap="$3" items="center">
-                <UserAvatar
-                  id={String(room.memberId)}
-                  url={room.profileImageUrl}
-                />
+    <YStack mr={-RETRO_SHADOW_OFFSET} mb={-RETRO_SHADOW_OFFSET}>
+      <ReanimatedSwipeable
+        ref={swipeable}
+        friction={ACTION_FRICTION}
+        overshootLeft={false}
+        overshootRight={false}
+        renderLeftActions={() => (
+          <NotificationAction
+            enabled={room.notificationEnabled}
+            onPress={() => {
+              swipeable.current?.close();
+              onToggleNotification(room);
+            }}
+          />
+        )}
+        renderRightActions={() => (
+          <LeaveAction
+            onPress={() => {
+              swipeable.current?.close();
+              onLeave(room);
+            }}
+          />
+        )}
+      >
+        <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
+          <RetroCard onPress={() => pushOnce(`/chat/${room.roomId}`)}>
+            <XStack gap="$3" items="center">
+              <UserAvatar
+                id={String(room.memberId)}
+                url={room.profileImageUrl}
+              />
 
-                <YStack flex={1} gap="$2">
-                  <XStack items="center" justify="space-between" gap="$2">
-                    <XStack flex={1} items="center" gap="$1.5">
-                      <Text
-                        shrink={1}
-                        numberOfLines={1}
-                        fontSize="$4"
-                        fontWeight="600"
-                      >
-                        {room.nickname}
-                      </Text>
-
-                      {!room.notificationEnabled && (
-                        <BellSlashIcon
-                          size={MUTE_ICON_SIZE}
-                          weight="fill"
-                          color={theme.gray9.val}
-                        />
-                      )}
-                    </XStack>
-
-                    <Text shrink={0} fontSize="$2">
-                      {formatChatTime(room.lastMessageAt)}
-                    </Text>
-                  </XStack>
-
-                  <XStack items="center" justify="space-between" gap="$2">
-                    <Text flex={1} numberOfLines={2} fontSize="$3">
-                      {room.lastMessageType === "PHOTO"
-                        ? PHOTO_MESSAGE
-                        : room.lastMessageContent}
+              <YStack flex={1} gap="$2">
+                <XStack items="center" justify="space-between" gap="$2">
+                  <XStack flex={1} items="center" gap="$1.5">
+                    <Text
+                      shrink={1}
+                      numberOfLines={1}
+                      fontSize="$4"
+                      fontWeight="600"
+                    >
+                      {room.nickname}
                     </Text>
 
-                    {room.unreadCount > 0 && (
-                      <UnreadBadge count={room.unreadCount} />
+                    {!room.notificationEnabled && (
+                      <BellSlashIcon
+                        size={MUTE_ICON_SIZE}
+                        weight="fill"
+                        color={theme.gray9.val}
+                      />
                     )}
                   </XStack>
-                </YStack>
-              </XStack>
-            </RetroCard>
-          </YStack>
-        </ReanimatedSwipeable>
-      </YStack>
-    </>
+
+                  <Text shrink={0} fontSize="$2">
+                    {formatChatTime(room.lastMessageAt)}
+                  </Text>
+                </XStack>
+
+                <XStack items="center" justify="space-between" gap="$2">
+                  <Text flex={1} numberOfLines={2} fontSize="$3">
+                    {room.lastMessageType === "PHOTO"
+                      ? PHOTO_MESSAGE
+                      : room.lastMessageContent}
+                  </Text>
+
+                  {room.unreadCount > 0 && (
+                    <UnreadBadge count={room.unreadCount} />
+                  )}
+                </XStack>
+              </YStack>
+            </XStack>
+          </RetroCard>
+        </YStack>
+      </ReanimatedSwipeable>
+    </YStack>
   );
 }
 

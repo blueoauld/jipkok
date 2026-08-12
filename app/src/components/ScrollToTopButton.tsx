@@ -34,7 +34,6 @@ export function ScrollToTopButton({
   visible: boolean;
   onPress: () => void;
 }) {
-
   if (!visible) {
     return null;
   }
