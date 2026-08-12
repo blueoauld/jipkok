@@ -27,6 +27,10 @@ export function RetroButton({
           borderColor: "$color12",
         }}
         {...buttonProps}
+        // 안드로이드는 aria-disabled가 빠지면 setEnabled(true)로 되돌리지 않는다.
+        // 그러면 한 번 disabled였던 뷰가 계속 터치 대상에서 빠져 라벨만 눌리므로,
+        // false일 때도 값을 실어 보내 복구시킨다.
+        aria-disabled={Boolean(buttonProps.disabled)}
       />
     </YStack>
   );
