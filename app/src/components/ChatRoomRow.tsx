@@ -7,7 +7,7 @@ import * as Haptics from "expo-haptics";
 import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
@@ -106,7 +106,7 @@ function LeaveAction({ onPress }: { onPress: () => void }) {
   );
 }
 
-export function ChatRoomRow({ room }: { room: ChatRoomResponse }) {
+function Row({ room }: { room: ChatRoomResponse }) {
   const theme = useTheme();
   const swipeable = useRef<SwipeableMethods>(null);
   const queryClient = useQueryClient();
@@ -240,3 +240,5 @@ export function ChatRoomRow({ room }: { room: ChatRoomResponse }) {
     </>
   );
 }
+
+export const ChatRoomRow = memo(Row);

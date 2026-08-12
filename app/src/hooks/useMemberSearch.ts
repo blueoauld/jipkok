@@ -1,4 +1,5 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { api, type MemberSearchPage } from "@/lib/api";
 
@@ -17,9 +18,10 @@ export function useMemberSearch(keyword: string) {
     placeholderData: keepPreviousData,
   });
 
-  return {
-    ...query,
-    enabled,
-    members: enabled ? query.data?.pages.flatMap((page) => page.items) : [],
-  };
+  const members = useMemo(
+    () => (enabled ? query.data?.pages.flatMap((page) => page.items) : []),
+    [enabled, query.data],
+  );
+
+  return { ...query, enabled, members };
 }

@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { api, type PointHistoryPage } from "@/lib/api";
 
@@ -20,8 +21,10 @@ export function usePointHistories() {
     getNextPageParam: (page: PointHistoryPage) => page.nextCursor,
   });
 
-  return {
-    ...query,
-    histories: query.data?.pages.flatMap((page) => page.items),
-  };
+  const histories = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items),
+    [query.data],
+  );
+
+  return { ...query, histories };
 }

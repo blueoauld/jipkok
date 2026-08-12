@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
+import { memo } from "react";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -51,7 +52,7 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
   );
 }
 
-export function ActivityRow({
+function Row({
   member,
   caption,
   onPress,
@@ -89,9 +90,7 @@ export function ActivityRow({
           </XStack>
 
           <XStack items="center">
-            <Text fontSize="$3">
-              {`${genderLabel(gender)} · ${age}살 · `}
-            </Text>
+            <Text fontSize="$3">{`${genderLabel(gender)} · ${age}살 · `}</Text>
 
             <XStack items="center" gap="$1">
               <HeartIcon
@@ -114,3 +113,5 @@ export function ActivityRow({
     </RetroCard>
   );
 }
+
+export const ActivityRow = memo(Row);

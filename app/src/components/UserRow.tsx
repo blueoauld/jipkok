@@ -1,5 +1,6 @@
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
+import { memo } from "react";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -17,7 +18,7 @@ const LIKE_ICON_SIZE = 13;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
-export function UserRow({ member }: { member: RowMember }) {
+function Row({ member }: { member: RowMember }) {
   const now = useNow();
   const theme = useTheme();
   const {
@@ -66,9 +67,7 @@ export function UserRow({ member }: { member: RowMember }) {
           </XStack>
 
           <XStack items="center">
-            <Text fontSize="$3">
-              {`${genderLabel(gender)} · ${age}살 · `}
-            </Text>
+            <Text fontSize="$3">{`${genderLabel(gender)} · ${age}살 · `}</Text>
 
             <XStack items="center" gap="$1">
               <HeartIcon
@@ -97,3 +96,5 @@ export function UserRow({ member }: { member: RowMember }) {
     </RetroCard>
   );
 }
+
+export const UserRow = memo(Row);

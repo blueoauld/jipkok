@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { api, type ChatRoomPage } from "@/lib/api";
 
@@ -13,8 +14,10 @@ export function useChatRooms(unreadOnly: boolean) {
     getNextPageParam: (page: ChatRoomPage) => page.nextCursor,
   });
 
-  return {
-    ...query,
-    rooms: query.data?.pages.flatMap((page) => page.items),
-  };
+  const rooms = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items),
+    [query.data],
+  );
+
+  return { ...query, rooms };
 }

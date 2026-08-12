@@ -4,6 +4,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";
 import type { MemberSummaryPage, MemberSummaryResponse } from "@/lib/api";
@@ -29,10 +30,12 @@ export function useMemberList(queryKey: string[], fetcher: Fetcher) {
     getNextPageParam: (page: MemberSummaryPage) => page.nextCursor,
   });
 
-  return {
-    ...query,
-    members: query.data?.pages.flatMap((page) => page.items),
-  };
+  const members = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items),
+    [query.data],
+  );
+
+  return { ...query, members };
 }
 
 export function useRemoveFromMemberList(

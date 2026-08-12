@@ -1,4 +1,5 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import {
   api,
@@ -21,8 +22,10 @@ export function useMemberFeed(sort: MemberSort, gender: Gender | null) {
     placeholderData: keepPreviousData,
   });
 
-  return {
-    ...query,
-    members: query.data?.pages.flatMap((page) => page.items),
-  };
+  const members = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items),
+    [query.data],
+  );
+
+  return { ...query, members };
 }

@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { api, type ProfileViewPage } from "@/lib/api";
 
@@ -20,10 +20,12 @@ export function useProfileViews() {
     getNextPageParam: (page: ProfileViewPage) => page.nextCursor,
   });
 
-  return {
-    ...query,
-    views: query.data?.pages.flatMap((page) => page.items),
-  };
+  const views = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items),
+    [query.data],
+  );
+
+  return { ...query, views };
 }
 
 export function useProfileViewNewCount() {
