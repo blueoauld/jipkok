@@ -3,6 +3,7 @@ import { XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { FLOATING_BUTTON_SIZE, RETRO_SHADOW_OFFSET } from "@/lib/design";
+import { useAccent } from "@/lib/theme/accent";
 
 export function RetroFloatingButton({
   children,
@@ -11,8 +12,10 @@ export function RetroFloatingButton({
   children: ReactNode;
   onPress: () => void;
 }) {
+  const accent = useAccent();
+
   return (
-    <YStack theme="blue">
+    <YStack theme={accent}>
       <RetroShadow color="$gray12" />
       <XStack
         width={FLOATING_BUTTON_SIZE}

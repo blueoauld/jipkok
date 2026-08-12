@@ -59,12 +59,19 @@ const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
-const THEME_LABELS = ["라이트", "다크"] as const;
+const THEME_LABELS = ["블루", "핑크", "다크"] as const;
 type ThemeLabel = (typeof THEME_LABELS)[number];
 
 const THEME_VALUES: Record<ThemeLabel, ThemeMode> = {
-  라이트: "light",
+  블루: "blue",
+  핑크: "pink",
   다크: "dark",
+};
+
+const THEME_LABELS_BY_MODE: Record<ThemeMode, ThemeLabel> = {
+  blue: "블루",
+  pink: "핑크",
+  dark: "다크",
 };
 
 type SettingAction = "attendanceReward" | "adReward" | "contact" | "suggest";
@@ -341,7 +348,7 @@ export default function SettingScreen() {
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           values={THEME_LABELS}
-          value={themeMode === "dark" ? "다크" : "라이트"}
+          value={THEME_LABELS_BY_MODE[themeMode]}
           onChange={(label) => setThemeMode(THEME_VALUES[label])}
         />
       </YStack>

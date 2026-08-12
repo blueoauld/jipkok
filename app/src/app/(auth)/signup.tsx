@@ -12,6 +12,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type SignupRequest } from "@/lib/api";
 import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
+import { useAccent } from "@/lib/theme/accent";
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
@@ -45,6 +46,8 @@ export default function SignupScreen() {
     variant: "warning",
     message: MINOR_NOTICE,
   });
+
+  const accent = useAccent();
 
   const openLegal = (url: string) =>
     WebBrowser.openBrowserAsync(url).catch(() =>
@@ -192,7 +195,7 @@ export default function SignupScreen() {
                   <RetroButton
                     key={value}
                     flex={1}
-                    theme={field.value === value ? "blue" : "gray"}
+                    theme={field.value === value ? accent : "gray"}
                     onPress={() => field.onChange(value)}
                   >
                     {label}

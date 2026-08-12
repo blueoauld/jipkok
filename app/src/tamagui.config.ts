@@ -2,6 +2,8 @@ import { defaultConfig } from "@tamagui/config/v5";
 import { animations } from "@tamagui/config/v5-reanimated";
 import { createTamagui } from "tamagui";
 
+const PINK_BACKGROUND = "#FAEAF1";
+
 const DARK_INK = "hsla(0, 0%, 84%, 1)";
 const DARK_INK_THEME = { color: DARK_INK, color12: DARK_INK };
 const DARK_SURFACE = "hsla(218, 22%, 15%, 1)";
@@ -20,10 +22,15 @@ export const tamaguiConfig = createTamagui({
   },
   themes: {
     ...defaultConfig.themes,
-    light: { ...defaultConfig.themes.light, background: "#EAF1FA" },
+    light: {
+      ...defaultConfig.themes.light,
+      background: "#EAF1FA",
+      backgroundPink: PINK_BACKGROUND,
+    },
     dark: {
       ...defaultConfig.themes.dark,
       background: "#0C1424",
+      backgroundPink: "#0C1424",
       ...DARK_INK_THEME,
       gray12: DARK_INK,
       color1: DARK_SURFACE,

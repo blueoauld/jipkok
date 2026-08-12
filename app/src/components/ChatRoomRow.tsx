@@ -15,6 +15,7 @@ import { formatUnreadCount, PHOTO_SUMMARY } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
+import { useAccentToken } from "@/lib/theme/accent";
 
 const MUTE_ICON_SIZE = 14;
 
@@ -53,6 +54,7 @@ function NotificationAction({
   onPress: () => void;
 }) {
   const Icon = enabled ? BellSlashIcon : BellIcon;
+  const accent = useAccentToken();
 
   return (
     <YStack self="center" pr="$3">
@@ -62,7 +64,7 @@ function NotificationAction({
           height={ACTION_SIZE}
           borderWidth={2}
           borderColor="$gray12"
-          bg="$blue10"
+          bg={accent}
           items="center"
           justify="center"
         >

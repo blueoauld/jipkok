@@ -39,6 +39,7 @@ import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo-grid/store";
 import { pushOnce } from "@/lib/router";
+import { useAccentColor } from "@/lib/theme/accent";
 
 const ACTION_ICON_SIZE = 30;
 const LIKE_ICON_SIZE = 14;
@@ -128,11 +129,12 @@ function ActionBar({
     secretPhoto: member.secretPhotoGrantedToMe,
     block: member.blockedByMe,
   };
+  const accent = useAccentColor();
 
   const colors: Record<ActionKey, string> = {
     like: theme.red10.val,
     favorite: FAVORITE_COLOR,
-    note: theme.blue10.val,
+    note: accent,
     secretPhoto: theme.green10.val,
     block: theme.red10.val,
   };

@@ -36,6 +36,9 @@ export function PhotoPager({
       <YStack
         height={width * PHOTO_RATIO}
         bg="$color1"
+        borderTopWidth={2}
+        borderBottomWidth={2}
+        borderColor="$color12"
         items="center"
         justify="center"
       >
@@ -45,7 +48,7 @@ export function PhotoPager({
   }
 
   return (
-    <YStack>
+    <YStack borderTopWidth={2} borderBottomWidth={2} borderColor="$color12">
       <FlatList
         data={photos}
         keyExtractor={(uri, photoIndex) => `${photoIndex}-${uri}`}

@@ -3,6 +3,7 @@ import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
 import { FLOATING_BUTTON_SIZE } from "@/lib/design";
+import { useAccent } from "@/lib/theme/accent";
 
 const ICON_SIZE = 20;
 
@@ -15,6 +16,8 @@ export function ScrollToTopButton({
   visible: boolean;
   onPress: () => void;
 }) {
+  const accent = useAccent();
+
   if (!visible) {
     return null;
   }
@@ -26,7 +29,7 @@ export function ScrollToTopButton({
       b={SCROLL_TO_TOP_BOTTOM_GAP}
     >
       <RetroCard
-        theme="blue"
+        theme={accent}
         shadow="$gray12"
         bg="$color10"
         pressBg="$color11"

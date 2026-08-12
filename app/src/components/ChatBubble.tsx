@@ -11,6 +11,7 @@ import {
   PHOTO_PRESS_OPACITY,
   PRESS_OPACITY,
 } from "@/lib/design";
+import { useAccentToken } from "@/lib/theme/accent";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
@@ -33,10 +34,12 @@ function BubbleFrame({
   children: ReactNode;
   onLongPress: () => void;
 }) {
+  const accent = useAccentToken();
+
   return (
     <YStack
       shrink={1}
-      bg={mine ? "$blue10" : "$color1"}
+      bg={mine ? accent : "$color1"}
       borderWidth={2}
       borderColor="$color12"
       minH={MIN_HEIGHT}

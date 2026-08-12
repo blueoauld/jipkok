@@ -86,7 +86,7 @@ export function RetroAlert({
 
                 <RetroButton
                   flex={1}
-                  theme={destructive ? "red" : "blue"}
+                  theme={destructive ? "red" : undefined}
                   onPress={() => {
                     onClose();
                     onConfirm?.();

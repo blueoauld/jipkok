@@ -6,6 +6,11 @@ import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import { FLOATING_BUTTON_SIZE, OVERLAY_BG } from "@/lib/design";
+import {
+  useAccent,
+  useAccentToken,
+  useThemeBackground,
+} from "@/lib/theme/accent";
 
 const MONTH_NAMES = [
   "1월",
@@ -45,9 +50,11 @@ LocaleConfig.defaultLocale = "ko";
 const DAY_SIZE = 36;
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
+  const accent = useAccent();
+
   return (
     <RetroCard
-      theme="blue"
+      theme={accent}
       shadow="$gray12"
       bg="$color10"
       pressBg="$color11"
@@ -78,6 +85,7 @@ function CalendarDay({
   const selected = state === "selected" || Boolean(marking?.selected);
   const disabled = state === "disabled";
   const today = state === "today";
+  const accent = useAccentToken();
 
   return (
     <XStack
@@ -85,7 +93,7 @@ function CalendarDay({
       height={DAY_SIZE}
       items="center"
       justify="center"
-      bg={selected ? "$blue10" : "transparent"}
+      bg={selected ? accent : "transparent"}
       onPress={disabled ? undefined : () => onPress?.(date)}
     >
       <Text
@@ -97,7 +105,7 @@ function CalendarDay({
             : disabled
               ? "$color8"
               : today
-                ? "$blue10"
+                ? accent
                 : "$color12"
         }
       >
@@ -116,6 +124,7 @@ export function FeedDatePicker({
 }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const background = useThemeBackground();
   const selected = toDateParam(date);
 
   return (
@@ -141,7 +150,7 @@ export function FeedDatePicker({
             r={0}
             pt="$2"
             pb={getTokens().space.$4.val}
-            bg="$background"
+            bg={background}
             borderTopWidth={2}
             borderColor="$color12"
           >

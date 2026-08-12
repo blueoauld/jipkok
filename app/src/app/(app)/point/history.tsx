@@ -12,6 +12,7 @@ import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
+import { useAccentToken } from "@/lib/theme/accent";
 
 const ERROR_MESSAGE = "내역을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "내역이 비어있습니다.";
@@ -47,6 +48,7 @@ function Balance() {
 function HistoryRow({ history }: { history: PointHistoryResponse }) {
   const { type, amount, recordedAt } = history;
   const earned = amount > 0;
+  const accent = useAccentToken();
 
   return (
     <RetroCard>
@@ -65,7 +67,7 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
           shrink={0}
           fontSize="$4"
           fontWeight="700"
-          color={earned ? "$red10" : "$blue10"}
+          color={earned ? "$red10" : accent}
         >
           {formatAmount(amount)}
         </Text>

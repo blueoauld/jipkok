@@ -1,6 +1,7 @@
 import { Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { useAccent } from "@/lib/theme/accent";
 
 export function RetroSegmentedControl<T extends string>({
   values,
@@ -11,6 +12,8 @@ export function RetroSegmentedControl<T extends string>({
   value: T;
   onChange: (value: T) => void;
 }) {
+  const accent = useAccent();
+
   return (
     <YStack theme="gray">
       <RetroShadow color="$gray8" />
@@ -21,7 +24,7 @@ export function RetroSegmentedControl<T extends string>({
           return (
             <XStack
               key={item}
-              theme={selected ? "blue" : undefined}
+              theme={selected ? accent : undefined}
               flex={1}
               py="$1.5"
               justify="center"

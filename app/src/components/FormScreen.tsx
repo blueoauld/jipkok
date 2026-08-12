@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { YStack } from "tamagui";
 
 import { FORM_FOOTER_HEIGHT } from "@/lib/design";
+import { useThemeBackground } from "@/lib/theme/accent";
 
 type ScrollMode = ComponentProps<typeof KeyboardAwareScrollView>["mode"];
 
@@ -20,6 +21,7 @@ export function FormScreen({
   children: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
+  const background = useThemeBackground();
 
   return (
     <>
@@ -36,7 +38,7 @@ export function FormScreen({
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <YStack px="$4" py="$4" bg="$background">
+        <YStack px="$4" py="$4" bg={background}>
           {footer}
         </YStack>
       </KeyboardStickyView>

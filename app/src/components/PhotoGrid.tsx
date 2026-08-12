@@ -17,6 +17,7 @@ import {
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
+import { useAccentToken } from "@/lib/theme/accent";
 
 const COLUMNS = 3;
 
@@ -114,6 +115,7 @@ function Grid({
   secretFrom?: number;
 }) {
   const theme = useTheme();
+  const accent = useAccentToken();
 
   return (
     <YStack gap="$2">
@@ -234,7 +236,7 @@ function Grid({
                           rounded={0}
                           borderWidth={2}
                           borderColor="$gray12"
-                          bg="$blue10"
+                          bg={accent}
                           items="center"
                           justify="center"
                         >

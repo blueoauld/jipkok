@@ -13,6 +13,7 @@ import {
   PRESS_OPACITY,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
+import { useAccent } from "@/lib/theme/accent";
 
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
@@ -46,6 +47,7 @@ export function ChatInputBar({
   onCancelReply: () => void;
 }) {
   const theme = useTheme();
+  const accent = useAccent();
   const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState("");
   const trimmed = text.trim();
@@ -150,7 +152,7 @@ export function ChatInputBar({
           </XStack>
         </XStack>
 
-        <YStack theme="blue">
+        <YStack theme={accent}>
           <RetroShadow color="$gray12" />
           <XStack
             width={FLOATING_BUTTON_SIZE}

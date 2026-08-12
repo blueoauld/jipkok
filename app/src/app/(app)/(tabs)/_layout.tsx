@@ -18,6 +18,7 @@ import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat";
 import { BOTTOM_BAR_HEIGHT, bottomBarHeight } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
+import { useAccentColor } from "@/lib/theme/accent";
 
 const ICON_SIZE = 30;
 const TAB_ITEM_PADDING = 5;
@@ -76,6 +77,7 @@ function NoteReceiveButton() {
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const accent = useAccentColor();
   const unreadCount = useChatUnreadCount();
 
   return (
@@ -89,7 +91,7 @@ export default function TabsLayout() {
         headerLeftContainerStyle: { paddingLeft: HEADER_EDGE_PADDING },
         headerRightContainerStyle: { paddingRight: HEADER_EDGE_PADDING },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: theme.blue10.val,
+        tabBarActiveTintColor: accent,
         tabBarInactiveTintColor: theme.color12.val,
         tabBarStyle: {
           height: bottomBarHeight(insets.bottom),
