@@ -133,9 +133,17 @@ export default function ChatRoomScreen() {
     }
   }, [markRead, newestMessageId]);
 
+  // 알림은 상대 메시지로만 생기므로 내가 보낼 때는 정리할 것이 없다.
+  const newestPartnerMessageId = useMemo(
+    () =>
+      messages?.find((message) => message.senderId === partnerId)?.messageId ??
+      0,
+    [messages, partnerId],
+  );
+
   useEffect(() => {
     dismissRoomNotifications(roomId).catch(() => undefined);
-  }, [newestMessageId, roomId]);
+  }, [newestPartnerMessageId, roomId]);
 
   const handlePressReply = useCallback((messageId: number) => {
     const index = rowsRef.current.findIndex(
