@@ -17,6 +17,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import { isApiError } from "@/lib/api";
 import { type ChatRow, toChatRows } from "@/lib/chat";
 import { pushOnce } from "@/lib/router";
@@ -29,13 +31,18 @@ export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
+
+  // 키보드가 열리면 하단 안전 영역을 덮으므로, 목록과 입력창 둘 다 그만큼 덜 올라가야 한다.
+  const keyboardOffset = useSafeAreaInsets().bottom;
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
 
+  const { alertElement, showApiError } = useRetroAlert();
+
   const { data: profile } = useMyProfile();
   const { data: room, error: roomError, refetch } = useChatRoom(roomId);
+  const sendMessage = useSendMessage(roomId, showApiError);
   const chatMessages = useChatMessages(roomId);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
@@ -52,7 +59,7 @@ export default function ChatRoomScreen() {
           data={toChatRows(messages)}
           inverted
           renderScrollComponent={(props: ScrollViewProps) => (
-            <ChatScrollView {...props} offset={insets.bottom} />
+            <ChatScrollView {...props} offset={keyboardOffset} />
           )}
           keyExtractor={(row) => row.key}
           renderItem={({ item }) =>
@@ -108,9 +115,14 @@ export default function ChatRoomScreen() {
         </YStack>
       )}
 
-      <KeyboardStickyView offset={{ opened: insets.bottom }}>
-        <ChatInputBar />
+      <KeyboardStickyView offset={{ opened: keyboardOffset }}>
+        <ChatInputBar
+          sending={sendMessage.isPending}
+          onSend={sendMessage.mutate}
+        />
       </KeyboardStickyView>
+
+      {alertElement}
 
       <PhotoViewer
         photos={viewerUrl ? [viewerUrl] : []}

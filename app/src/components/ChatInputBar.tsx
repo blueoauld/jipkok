@@ -1,6 +1,6 @@
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, useTheme, XStack, YStack } from "tamagui";
 
@@ -23,10 +23,25 @@ const LINE_HEIGHT = 22;
 const MAX_LINES = 7;
 const VERTICAL_PADDING = 7;
 
-export function ChatInputBar() {
+export function ChatInputBar({
+  sending,
+  onSend,
+}: {
+  sending: boolean;
+  onSend: (content: string) => void;
+}) {
   const theme = useTheme();
+  const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState("");
-  const sendable = text.trim().length > 0;
+  const trimmed = text.trim();
+  const sendable = trimmed.length > 0 && !sending;
+
+  // 값만 비우면 iOS가 높이를 다시 재지 않아 여러 줄 높이가 남는다.
+  const send = () => {
+    onSend(trimmed);
+    inputRef.current?.clear();
+    setText("");
+  };
 
   return (
     <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
@@ -68,6 +83,7 @@ export function ChatInputBar() {
         />
         <XStack flex={1} borderWidth={2} borderColor="$gray12" bg="$color1">
           <TextInput
+            ref={inputRef}
             value={text}
             onChangeText={setText}
             placeholder={PLACEHOLDER}
@@ -105,6 +121,7 @@ export function ChatInputBar() {
                 }
               : undefined
           }
+          onPress={sendable ? send : undefined}
         >
           <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
         </XStack>
