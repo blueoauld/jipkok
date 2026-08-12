@@ -1,11 +1,10 @@
 import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
 import { useCallback, useState } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
-import { FLOATING_BUTTON_SIZE, tabBarOverlayHeight } from "@/lib/design";
+import { FLOATING_BUTTON_SIZE } from "@/lib/design";
 
 const ICON_SIZE = 20;
 
@@ -35,7 +34,6 @@ export function ScrollToTopButton({
   visible: boolean;
   onPress: () => void;
 }) {
-  const insets = useSafeAreaInsets();
 
   if (!visible) {
     return null;
@@ -45,7 +43,7 @@ export function ScrollToTopButton({
     <XStack
       position="absolute"
       r={SCROLL_TO_TOP_BOTTOM_GAP}
-      b={tabBarOverlayHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
+      b={SCROLL_TO_TOP_BOTTOM_GAP}
     >
       <RetroCard
         theme="blue"

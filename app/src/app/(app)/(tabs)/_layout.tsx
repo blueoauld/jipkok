@@ -14,7 +14,7 @@ import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
-import { TAB_BAR_HEIGHT } from "@/lib/design";
+import { bottomBarHeight } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 const ICON_SIZE = 30;
@@ -84,9 +84,7 @@ export default function TabsLayout() {
         tabBarActiveTintColor: theme.blue10.val,
         tabBarInactiveTintColor: theme.color12.val,
         tabBarStyle: {
-          position: "absolute",
-          bottom: 0,
-          height: TAB_BAR_HEIGHT + insets.bottom,
+          height: bottomBarHeight(insets.bottom),
           paddingBottom: insets.bottom,
           borderTopWidth: 0,
           backgroundColor: "transparent",

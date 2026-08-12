@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import {
@@ -13,7 +12,6 @@ import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { isApiError } from "@/lib/api";
-import { tabBarOverlayHeight } from "@/lib/design";
 import {
   GENDER_FILTER_VALUES,
   GENDER_FILTERS,
@@ -25,7 +23,6 @@ const EMPTY_MESSAGE = "회원이 없습니다.";
 
 export default function RankScreen() {
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<GenderFilter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
@@ -53,12 +50,12 @@ export default function RankScreen() {
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$2.val,
-            paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
+            paddingBottom: space.$4.val,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

@@ -5,7 +5,6 @@ import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingG
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -24,7 +23,6 @@ import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, isApiError, type MemberSort } from "@/lib/api";
-import { tabBarOverlayHeight } from "@/lib/design";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import {
   GENDER_FILTER_VALUES,
@@ -52,7 +50,6 @@ const MEMBERS_KEY = ["members"];
 
 export default function MainScreen() {
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -153,12 +150,12 @@ export default function MainScreen() {
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$2.val,
-            paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
+            paddingBottom: space.$4.val,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

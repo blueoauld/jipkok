@@ -33,7 +33,7 @@ import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/date";
-import { TAB_BAR_HEIGHT, tabBarOverlayHeight } from "@/lib/design";
+import { bottomBarHeight } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -151,7 +151,7 @@ function ActionBar({
       b={0}
       l={0}
       r={0}
-      height={TAB_BAR_HEIGHT + insets.bottom}
+      height={bottomBarHeight(insets.bottom)}
       pb={insets.bottom}
       bg="$color1"
       borderTopWidth={2}
@@ -392,7 +392,7 @@ export default function MemberProfileScreen() {
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              paddingBottom: tabBarOverlayHeight(insets.bottom),
+              paddingBottom: bottomBarHeight(insets.bottom),
             }}
           >
             <YStack>
@@ -478,7 +478,7 @@ export default function MemberProfileScreen() {
           <YStack
             position="absolute"
             r={SCROLL_TO_TOP_BOTTOM_GAP}
-            b={tabBarOverlayHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
+            b={bottomBarHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
           >
             <RetroFloatingButton onPress={togglePhotoGrid}>
               <SquaresFourIcon

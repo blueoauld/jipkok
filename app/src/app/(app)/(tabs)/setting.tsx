@@ -21,7 +21,6 @@ import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -35,7 +34,7 @@ import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
-import { RETRO_SHADOW_OFFSET, tabBarOverlayHeight } from "@/lib/design";
+import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -233,7 +232,6 @@ function SettingSection({
 
 export default function SettingScreen() {
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -370,7 +368,7 @@ export default function SettingScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: space.$2.val,
-          paddingBottom: space.$4.val + tabBarOverlayHeight(insets.bottom),
+          paddingBottom: space.$4.val,
         }}
       >
         <YStack gap="$5">

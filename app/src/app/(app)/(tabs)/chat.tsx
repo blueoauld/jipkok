@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/ChatRoomRow";
@@ -13,7 +12,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
-import { tabBarOverlayHeight } from "@/lib/design";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "채팅방이 없습니다.";
@@ -24,7 +22,6 @@ type Filter = (typeof FILTERS)[number];
 
 export default function ChatScreen() {
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<Filter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
@@ -53,12 +50,12 @@ export default function ChatScreen() {
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
           renderItem={({ item }) => <ChatRoomRow room={item} />}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$2.val,
-            paddingBottom: space.$3.val + tabBarOverlayHeight(insets.bottom),
+            paddingBottom: space.$4.val,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}

@@ -18,7 +18,6 @@ import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Dialog,
   getTokens,
@@ -65,7 +64,6 @@ import {
   FLOATING_BUTTON_SIZE,
   OVERLAY_BG,
   RETRO_SHADOW_OFFSET_SM,
-  tabBarOverlayHeight,
 } from "@/lib/design";
 import { useFeedFilterStore } from "@/lib/filter/store";
 import {
@@ -435,8 +433,6 @@ function FeedNotificationButton() {
 
 export default function FeedScreen() {
   const space = getTokens().space;
-  const insets = useSafeAreaInsets();
-  const tabBarOverlay = tabBarOverlayHeight(insets.bottom);
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
@@ -597,12 +593,12 @@ export default function FeedScreen() {
               }}
             />
           )}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           contentContainerStyle={{
             paddingTop: space.$2.val,
-            paddingBottom: space.$4.val + tabBarOverlay,
+            paddingBottom: space.$4.val,
             paddingHorizontal: space.$4.val,
             gap: space.$4.val,
           }}
@@ -650,7 +646,7 @@ export default function FeedScreen() {
 
       <XStack
         position="absolute"
-        b={SCROLL_TO_TOP_BOTTOM_GAP + tabBarOverlay}
+        b={SCROLL_TO_TOP_BOTTOM_GAP}
         l={0}
         r={0}
         justify="center"
@@ -673,7 +669,7 @@ export default function FeedScreen() {
             r={0}
             items="center"
             pt="$2"
-            pb={space.$4.val + tabBarOverlay}
+            pb={space.$4.val}
             bg="$background"
             borderTopWidth={2}
             borderColor="$color12"
