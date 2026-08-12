@@ -10,7 +10,7 @@ import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { Spinner, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { FeedCard } from "@/components/FeedCard";
 import { FeedComposeDialog } from "@/components/FeedComposeDialog";
@@ -25,8 +25,8 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -36,7 +36,6 @@ import {
   type FeedPostPage,
   type FeedPostResponse,
   type FeedSort,
-  isApiError,
 } from "@/lib/api";
 import { fromDateParam } from "@/lib/date";
 import { useFeedFilterStore } from "@/lib/filter/store";
@@ -247,16 +246,11 @@ export default function FeedScreen() {
           }
         />
       ) : (
-        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-          {error ? (
-            <ErrorState
-              message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={refetchFeed}
-            />
-          ) : (
-            <Spinner size="small" />
-          )}
-        </YStack>
+        <ScreenState
+          error={error}
+          message={ERROR_MESSAGE}
+          onRetry={refetchFeed}
+        />
       )}
 
       <ScrollToTopButton

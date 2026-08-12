@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingG
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { Spinner, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -16,15 +16,15 @@ import {
 } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { api, isApiError, type MemberSort } from "@/lib/api";
+import { api, type MemberSort } from "@/lib/api";
 import { useMemberFilterStore } from "@/lib/filter/store";
 import {
   GENDER_FILTER_VALUES,
@@ -164,16 +164,11 @@ export default function MainScreen() {
           }
         />
       ) : (
-        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-          {error ? (
-            <ErrorState
-              message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={refetchFeed}
-            />
-          ) : (
-            <Spinner size="small" />
-          )}
-        </YStack>
+        <ScreenState
+          error={error}
+          message={ERROR_MESSAGE}
+          onRetry={refetchFeed}
+        />
       )}
 
       <ScrollToTopButton

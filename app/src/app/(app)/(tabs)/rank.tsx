@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { Spinner, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import {
   SCROLL_EVENT_THROTTLE,
@@ -8,12 +8,11 @@ import {
   useScrollToTopVisible,
 } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { usePagedList } from "@/hooks/usePagedList";
-import { isApiError } from "@/lib/api";
 import {
   GENDER_FILTER_VALUES,
   GENDER_FILTERS,
@@ -62,16 +61,11 @@ export default function RankScreen() {
           }
         />
       ) : (
-        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-          {error ? (
-            <ErrorState
-              message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={() => ranking.refetch()}
-            />
-          ) : (
-            <Spinner size="small" />
-          )}
-        </YStack>
+        <ScreenState
+          error={error}
+          message={ERROR_MESSAGE}
+          onRetry={() => ranking.refetch()}
+        />
       )}
 
       <ScrollToTopButton

@@ -20,7 +20,7 @@ import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -29,7 +29,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
+import { api, type ChatMessageResponse } from "@/lib/api";
 import {
   type ChatRow,
   isPending,
@@ -99,7 +99,10 @@ export default function ChatRoomScreen() {
 
   const partnerId = room?.memberId ?? 0;
   const failure = roomError ?? error;
-  const rows = useMemo(() => (messages ? toChatRows(messages) : []), [messages]);
+  const rows = useMemo(
+    () => (messages ? toChatRows(messages) : []),
+    [messages],
+  );
 
   const rowsRef = useRef(rows);
 
@@ -344,19 +347,14 @@ export default function ChatRoomScreen() {
           }
         />
       ) : (
-        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-          {failure ? (
-            <ErrorState
-              message={isApiError(failure) ? failure.message : ERROR_MESSAGE}
-              onRetry={() => {
-                refetch();
-                chatMessages.refetch();
-              }}
-            />
-          ) : (
-            <Spinner size="small" />
-          )}
-        </YStack>
+        <ScreenState
+          error={failure}
+          message={ERROR_MESSAGE}
+          onRetry={() => {
+            refetch();
+            chatMessages.refetch();
+          }}
+        />
       )}
 
       <KeyboardStickyView offset={{ opened: keyboardOffset }}>

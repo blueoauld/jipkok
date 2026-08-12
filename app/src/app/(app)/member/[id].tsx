@@ -13,7 +13,7 @@ import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
@@ -23,15 +23,15 @@ import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
-import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
+import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
@@ -486,16 +486,11 @@ export default function MemberProfileScreen() {
           </YStack>
         </>
       ) : (
-        <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-          {error ? (
-            <ErrorState
-              message={isApiError(error) ? error.message : ERROR_MESSAGE}
-              onRetry={() => refetch()}
-            />
-          ) : (
-            <Spinner size="small" />
-          )}
-        </YStack>
+        <ScreenState
+          error={error}
+          message={ERROR_MESSAGE}
+          onRetry={() => refetch()}
+        />
       )}
 
       <TextInputDialog

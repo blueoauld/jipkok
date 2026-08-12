@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack } from "expo-router";
-import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
@@ -9,9 +8,9 @@ import { Spinner, Text, YStack } from "tamagui";
 import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
@@ -34,14 +33,6 @@ const uploadSecretPhoto = (asset: ImagePickerAsset) =>
 
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const EDITED_MESSAGE = "프로필이 편집되었습니다.";
-
-function Centered({ children }: { children: ReactNode }) {
-  return (
-    <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-      {children}
-    </YStack>
-  );
-}
 
 function BioField({
   valueRef,
@@ -219,14 +210,12 @@ export default function MemberEditScreen() {
 
       {data ? (
         <EditForm profile={data} />
-      ) : isError ? (
-        <Centered>
-          <ErrorState message={ERROR_MESSAGE} onRetry={() => refetch()} />
-        </Centered>
       ) : (
-        <Centered>
-          <Spinner size="small" />
-        </Centered>
+        <ScreenState
+          error={isError}
+          message={ERROR_MESSAGE}
+          onRetry={refetch}
+        />
       )}
     </SafeAreaView>
   );

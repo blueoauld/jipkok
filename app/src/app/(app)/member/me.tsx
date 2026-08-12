@@ -2,10 +2,10 @@ import { Stack } from "expo-router";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { PencilSimpleIcon } from "phosphor-react-native/src/icons/PencilSimple";
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
-import { type ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { PhotoGrid } from "@/components/PhotoGrid";
@@ -13,8 +13,8 @@ import { PhotoPager } from "@/components/PhotoPager";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
@@ -26,14 +26,6 @@ const LIKE_ICON_SIZE = 14;
 const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "아직 코멘트를 작성하지 않았습니다.";
 const BIO_PLACEHOLDER = "아직 자기소개를 작성하지 않았습니다.";
-
-function Centered({ children }: { children: ReactNode }) {
-  return (
-    <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
-      {children}
-    </YStack>
-  );
-}
 
 function Profile({ profile }: { profile: MyProfileResponse }) {
   const theme = useTheme();
@@ -151,14 +143,12 @@ export default function MyProfileScreen() {
 
       {data ? (
         <Profile profile={data} />
-      ) : isError ? (
-        <Centered>
-          <ErrorState message={ERROR_MESSAGE} onRetry={() => refetch()} />
-        </Centered>
       ) : (
-        <Centered>
-          <Spinner size="small" />
-        </Centered>
+        <ScreenState
+          error={isError}
+          message={ERROR_MESSAGE}
+          onRetry={refetch}
+        />
       )}
     </SafeAreaView>
   );
