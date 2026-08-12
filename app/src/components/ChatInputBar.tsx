@@ -62,31 +62,49 @@ export function ChatInputBar({
   return (
     <YStack>
       {reply && (
-        <XStack
-          items="center"
-          gap="$2.5"
-          px={BAR_H_PADDING}
-          pt={BAR_PADDING}
+        <YStack
           theme="gray"
+          ml={BAR_H_PADDING}
+          mr={BAR_H_PADDING - RETRO_SHADOW_OFFSET}
+          mt={BAR_PADDING}
         >
-          <YStack flex={1} gap={2}>
-            <Text fontSize="$2" fontWeight="600" color="$color12">
-              {replyName}에게 답장
-            </Text>
-
-            <Text fontSize="$3" color="$color11" numberOfLines={1}>
-              {reply.content || PHOTO_SUMMARY}
-            </Text>
-          </YStack>
-
+          <YStack
+            position="absolute"
+            t={RETRO_SHADOW_OFFSET}
+            b={-RETRO_SHADOW_OFFSET}
+            l={RETRO_SHADOW_OFFSET}
+            r={-RETRO_SHADOW_OFFSET}
+            bg="$gray12"
+          />
           <XStack
+            borderWidth={2}
+            borderColor="$gray12"
+            bg="$color1"
+            items="center"
+            pl="$3"
+            pr="$2"
             py="$2"
-            pressStyle={{ opacity: PRESS_OPACITY }}
-            onPress={onCancelReply}
+            gap="$2.5"
           >
-            <XIcon size={CANCEL_ICON_SIZE} color={theme.color11.val} />
+            <YStack flex={1} gap={2}>
+              <Text fontSize="$2" fontWeight="600" color="$color12">
+                {replyName}에게 답장
+              </Text>
+
+              <Text fontSize="$3" color="$color11" numberOfLines={1}>
+                {reply.content || PHOTO_SUMMARY}
+              </Text>
+            </YStack>
+
+            <XStack
+              p="$2"
+              pressStyle={{ opacity: PRESS_OPACITY }}
+              onPress={onCancelReply}
+            >
+              <XIcon size={CANCEL_ICON_SIZE} color={theme.color12.val} />
+            </XStack>
           </XStack>
-        </XStack>
+        </YStack>
       )}
 
       <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
