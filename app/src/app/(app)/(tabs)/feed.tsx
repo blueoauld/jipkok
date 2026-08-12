@@ -85,6 +85,7 @@ const CAPTION_MAX_LENGTH = 30;
 const FEEDS_KEY = ["feeds"];
 
 const PICKER_LOCALE = "ko-KR";
+const DATE_PICKER_HEIGHT = 330;
 
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];
@@ -667,6 +668,7 @@ export default function FeedScreen() {
             b={0}
             l={0}
             r={0}
+            minH={DATE_PICKER_HEIGHT}
             items="center"
             pt="$2"
             pb={space.$4.val}
