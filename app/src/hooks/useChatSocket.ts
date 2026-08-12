@@ -9,6 +9,7 @@ import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat-socket";
+import { useDeletedRoomStore } from "@/lib/chat-store";
 
 export function useChatSocket() {
   const status = useAuthStore((state) => state.status);
@@ -35,6 +36,7 @@ export function useChatSocket() {
       if (event.type === "MESSAGE") {
         prepend(event.roomId, event.message);
       } else {
+        useDeletedRoomStore.getState().markDeleted(event.roomId);
         queryClient.removeQueries({ queryKey: chatRoomKey(event.roomId) });
         queryClient.removeQueries({ queryKey: chatMessagesKey(event.roomId) });
       }

@@ -6,8 +6,9 @@ export function chatRoomKey(roomId: number) {
   return ["chats", "room", roomId];
 }
 
-export function useChatRoom(roomId: number) {
+export function useChatRoom(roomId: number, enabled = true) {
   return useQuery({
+    enabled,
     queryKey: chatRoomKey(roomId),
     queryFn: () => api.chats.get(roomId),
   });

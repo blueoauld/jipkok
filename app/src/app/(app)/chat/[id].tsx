@@ -29,6 +29,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
 import { type ChatRow, toChatRows } from "@/lib/chat";
+import { useDeletedRoomStore } from "@/lib/chat-store";
 import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
@@ -36,6 +37,8 @@ const EMPTY_MESSAGE = "대화 내용이 없습니다.";
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
+
+const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -62,20 +65,35 @@ export default function ChatRoomScreen() {
     });
 
   const queryClient = useQueryClient();
-  const { alertElement, confirm, showApiError } = useRetroAlert();
+  const { alertElement, confirm, show, showApiError } = useRetroAlert();
+
+  const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
+  const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
+  const partnerLeft = deletedRoomId === roomId;
 
   const { data: profile } = useMyProfile();
-  const { data: room, error: roomError, refetch } = useChatRoom(roomId);
+  const {
+    data: room,
+    error: roomError,
+    refetch,
+  } = useChatRoom(roomId, !partnerLeft);
   const { sendText, sendPhotos, sending, uploading } = useSendMessage(
     roomId,
     showApiError,
   );
-  const chatMessages = useChatMessages(roomId);
+  const chatMessages = useChatMessages(roomId, !partnerLeft);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 
   const failure = roomError ?? error;
   const rows = messages ? toChatRows(messages) : [];
+
+  useEffect(() => {
+    if (partnerLeft) {
+      clearDeletedRoom();
+      show("info", PARTNER_LEFT_MESSAGE, () => router.back());
+    }
+  }, [clearDeletedRoom, partnerLeft, show]);
 
   const { mutate: markRead } = useMutation({
     mutationFn: (lastReadMessageId: number) =>

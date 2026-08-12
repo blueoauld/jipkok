@@ -6,8 +6,9 @@ export function chatMessagesKey(roomId: number) {
   return ["chats", "messages", roomId];
 }
 
-export function useChatMessages(roomId: number) {
+export function useChatMessages(roomId: number, enabled = true) {
   const query = useInfiniteQuery({
+    enabled,
     queryKey: chatMessagesKey(roomId),
     queryFn: ({ pageParam }) =>
       api.chats.messages(roomId, { cursor: pageParam }),
