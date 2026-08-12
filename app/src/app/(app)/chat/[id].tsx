@@ -1,4 +1,6 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useRef, useState } from "react";
 import { FlatList, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
@@ -12,20 +14,26 @@ import { ChatDay } from "@/components/ChatDay";
 import { ChatInputBar } from "@/components/ChatInputBar";
 import { ChatMessageRow } from "@/components/ChatMessageRow";
 import { ChatScrollView } from "@/components/ChatScrollView";
+import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { useChatMessages } from "@/hooks/useChatMessages";
-import { useChatRoom } from "@/hooks/useChatRoom";
+import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
+import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
+import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { isApiError } from "@/lib/api";
+import { api, isApiError } from "@/lib/api";
 import { type ChatRow, toChatRows } from "@/lib/chat";
 import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
+
+const LEAVE_DESCRIPTION =
+  "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 
 export default function ChatRoomScreen() {
@@ -37,9 +45,11 @@ export default function ChatRoomScreen() {
   const keyboardOffset = useSafeAreaInsets().bottom;
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const listRef = useRef<FlatList<ChatRow>>(null);
 
-  const { alertElement, showApiError } = useRetroAlert();
+  const queryClient = useQueryClient();
+  const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const { data: profile } = useMyProfile();
   const { data: room, error: roomError, refetch } = useChatRoom(roomId);
@@ -53,6 +63,47 @@ export default function ChatRoomScreen() {
 
   const failure = roomError ?? error;
 
+  const leave = useMutation({
+    mutationFn: () => api.chats.leave(roomId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
+      queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      router.back();
+    },
+    onError: showApiError,
+  });
+
+  const menuItems: MenuSheetItem[] = [
+    {
+      label: "프로필",
+      onPress: () => {
+        if (room) {
+          pushOnce(`/member/${room.memberId}`);
+        }
+      },
+    },
+    {
+      label: "나가기",
+      onPress: () =>
+        confirm({
+          message: LEAVE_DESCRIPTION,
+          confirmLabel: "나가기",
+          destructive: true,
+          onConfirm: () => leave.mutate(),
+        }),
+    },
+    {
+      label: "신고하기",
+      destructive: true,
+      onPress: () => {
+        if (room) {
+          pushOnce(`/report/${room.memberId}?roomId=${roomId}`);
+        }
+      },
+    },
+  ];
+
   const handlePickPhotos = async () => {
     const assets = await pickPhotos(MAX_PHOTOS);
 
@@ -63,7 +114,18 @@ export default function ChatRoomScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: room?.nickname ?? "" }} />
+      <Stack.Screen
+        options={{
+          title: room?.nickname ?? "",
+          headerRight: () => (
+            <HeaderCircleIconButton
+              icon={DotsThreeIcon}
+              weight="bold"
+              onPress={() => setMenuOpen(true)}
+            />
+          ),
+        }}
+      />
 
       {room && profile && messages ? (
         <FlatList
@@ -135,6 +197,8 @@ export default function ChatRoomScreen() {
           onPickPhotos={handlePickPhotos}
         />
       </KeyboardStickyView>
+
+      <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
 
       {alertElement}
 

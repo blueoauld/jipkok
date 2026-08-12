@@ -315,6 +315,9 @@ export const chats = {
       method: "POST",
       body: { contentType },
     }),
+
+  leave: (roomId: number) =>
+    request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
 };
 
 export const push = {

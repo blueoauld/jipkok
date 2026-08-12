@@ -35,7 +35,7 @@ const REASONS: { label: string; value: ReportReason }[] = [
   { label: "기타", value: "ETC" },
 ];
 
-const REPORTED_MESSAGE = "신고를 접수했습니다.";
+const REPORTED_MESSAGE = "신고가 접수되었습니다.";
 
 function ReasonRow({
   label,
@@ -99,7 +99,10 @@ function DetailField({ valueRef }: { valueRef: { current: string } }) {
 }
 
 export default function ReportScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, roomId } = useLocalSearchParams<{
+    id: string;
+    roomId?: string;
+  }>();
   const memberId = Number(id);
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -108,12 +111,13 @@ export default function ReportScreen() {
   const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
   const { data: member } = useMemberDetail(memberId);
-  const title = "신고";
+  const title = roomId ? "채팅 신고" : "신고";
 
   const report = useMutation({
     mutationFn: (value: ReportReason) =>
       api.reports.create({
         reportedMemberId: memberId,
+        roomId: roomId ? Number(roomId) : null,
         reason: value,
         detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,
