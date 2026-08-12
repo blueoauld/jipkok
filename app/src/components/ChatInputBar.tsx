@@ -1,7 +1,7 @@
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -51,6 +51,12 @@ export function ChatInputBar({
   const [text, setText] = useState("");
   const trimmed = text.trim();
   const sendable = trimmed.length > 0 && !sending;
+
+  useEffect(() => {
+    if (reply) {
+      inputRef.current?.focus();
+    }
+  }, [reply]);
 
   // 값만 비우면 iOS가 높이를 다시 재지 않아 여러 줄 높이가 남는다.
   const send = () => {

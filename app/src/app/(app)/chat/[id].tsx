@@ -211,6 +211,7 @@ export default function ChatRoomScreen() {
           onSend={(content) => {
             sendText(content, replyTarget?.messageId ?? null);
             setReplyTarget(null);
+            listRef.current?.scrollToOffset({ offset: 0, animated: true });
           }}
           onPickPhotos={handlePickPhotos}
           onCancelReply={() => setReplyTarget(null)}
