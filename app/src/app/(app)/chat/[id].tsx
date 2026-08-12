@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
@@ -36,6 +37,7 @@ import {
   toReply,
 } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat-store";
+import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
@@ -43,6 +45,12 @@ const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
 
 const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
+
+const COPIED_MESSAGE = "메시지를 복사했습니다.";
+
+const PHOTO_SAVED_MESSAGE = "사진을 저장했습니다.";
+const PHOTO_PERMISSION_MESSAGE = "사진 접근 권한이 필요합니다.";
+const PHOTO_SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -183,6 +191,29 @@ export default function ChatRoomScreen() {
     },
   ];
 
+  const handleCopy = async (content: string) => {
+    if (!content) {
+      return;
+    }
+
+    await Clipboard.setStringAsync(content);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    show("info", COPIED_MESSAGE);
+  };
+
+  const handleSavePhoto = async (url: string) => {
+    try {
+      if (await saveChatPhoto(url)) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        show("info", PHOTO_SAVED_MESSAGE);
+      } else {
+        show("error", PHOTO_PERMISSION_MESSAGE);
+      }
+    } catch {
+      show("error", PHOTO_SAVE_FAILED_MESSAGE);
+    }
+  };
+
   const handlePickPhotos = async () => {
     const assets = await pickPhotos(MAX_PHOTOS);
 
@@ -241,6 +272,8 @@ export default function ChatRoomScreen() {
                 onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
                 onPressPhoto={setViewerUrl}
                 onPressReply={handlePressReply}
+                onCopy={handleCopy}
+                onSavePhoto={handleSavePhoto}
                 onReply={(message) => {
                   if (!isPending(message)) {
                     setReplyTarget(message);

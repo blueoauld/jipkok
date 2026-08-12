@@ -55,6 +55,8 @@ export function ChatMessageRow({
   onPressAvatar,
   onPressPhoto,
   onPressReply,
+  onCopy,
+  onSavePhoto,
   onReply,
 }: {
   message: ChatMessageResponse;
@@ -67,6 +69,8 @@ export function ChatMessageRow({
   onPressAvatar: () => void;
   onPressPhoto: (url: string) => void;
   onPressReply: (messageId: number) => void;
+  onCopy: (content: string) => void;
+  onSavePhoto: (url: string) => void;
   onReply: (message: ChatMessageResponse) => void;
 }) {
   const swipeable = useRef<SwipeableMethods>(null);
@@ -110,6 +114,8 @@ export function ChatMessageRow({
               replyName={replyName}
               onPressPhoto={onPressPhoto}
               onPressReply={onPressReply}
+              onCopy={onCopy}
+              onSavePhoto={onSavePhoto}
             />
           </XStack>
         </XStack>

@@ -1,6 +1,7 @@
-import { File } from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import type { ImagePickerAsset } from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
 
 import {
   api,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/api";
 
 const CONTENT_TYPE = "image/jpeg";
+
+const LOCAL_URI_PREFIX = "file://";
 
 const MAX_LENGTH = 1440;
 const COMPRESS = 0.8;
@@ -84,6 +87,22 @@ export function uploadChatPhoto(asset: ImagePickerAsset) {
   return upload(asset, api.chats.createPhotoUploadUrl).then(
     (photo) => photo.objectKey,
   );
+}
+
+export async function saveChatPhoto(url: string) {
+  const permission = await MediaLibrary.requestPermissionsAsync(true);
+
+  if (!permission.granted) {
+    return false;
+  }
+
+  const local = url.startsWith(LOCAL_URI_PREFIX)
+    ? url
+    : (await File.downloadFileAsync(url, Paths.cache)).uri;
+
+  await MediaLibrary.Asset.create(local);
+
+  return true;
 }
 
 export function uploadReportPhoto(asset: ImagePickerAsset) {

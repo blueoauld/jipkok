@@ -26,9 +26,11 @@ const SECTION_GAP = 6;
 function BubbleFrame({
   mine,
   children,
+  onLongPress,
 }: {
   mine: boolean;
   children: ReactNode;
+  onLongPress: () => void;
 }) {
   return (
     <YStack
@@ -38,6 +40,7 @@ function BubbleFrame({
       borderColor="$color12"
       minH={MIN_HEIGHT}
       justify="center"
+      onLongPress={onLongPress}
     >
       {children}
     </YStack>
@@ -57,11 +60,13 @@ function PhotoMessage({
   cacheKey,
   sending,
   onPress,
+  onLongPress,
 }: {
   url: string;
   cacheKey: string;
   sending: boolean;
   onPress: (url: string) => void;
+  onLongPress: (url: string) => void;
 }) {
   const theme = useTheme();
 
@@ -69,6 +74,7 @@ function PhotoMessage({
     <YStack
       pressStyle={sending ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
       onPress={sending ? undefined : () => onPress(url)}
+      onLongPress={sending ? undefined : () => onLongPress(url)}
     >
       <Image
         source={{ uri: url, cacheKey }}
@@ -91,9 +97,17 @@ function PhotoMessage({
   );
 }
 
-function TextMessage({ mine, content }: { mine: boolean; content: string }) {
+function TextMessage({
+  mine,
+  content,
+  onLongPress,
+}: {
+  mine: boolean;
+  content: string;
+  onLongPress: () => void;
+}) {
   return (
-    <BubbleFrame mine={mine}>
+    <BubbleFrame mine={mine} onLongPress={onLongPress}>
       <YStack px={H_PADDING} py={V_PADDING}>
         <BodyText mine={mine} content={content} />
       </YStack>
@@ -107,15 +121,17 @@ function ReplyMessage({
   reply,
   content,
   onPressReply,
+  onLongPress,
 }: {
   mine: boolean;
   replyName: string;
   reply: ReplyMessageResponse;
   content: string;
   onPressReply: (messageId: number) => void;
+  onLongPress: () => void;
 }) {
   return (
-    <BubbleFrame mine={mine}>
+    <BubbleFrame mine={mine} onLongPress={onLongPress}>
       <YStack px={H_PADDING} py={V_PADDING} gap={SECTION_GAP}>
         <YStack
           gap={2}
@@ -155,6 +171,8 @@ export function ChatBubble({
   replyName,
   onPressPhoto,
   onPressReply,
+  onCopy,
+  onSavePhoto,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
@@ -162,7 +180,10 @@ export function ChatBubble({
   replyName: string;
   onPressPhoto: (url: string) => void;
   onPressReply: (messageId: number) => void;
+  onCopy: (content: string) => void;
+  onSavePhoto: (url: string) => void;
 }) {
+  const copy = () => onCopy(message.content ?? "");
   const time = showTime && (
     <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
       {formatClockTime(new Date(message.createdAt))}
@@ -179,6 +200,7 @@ export function ChatBubble({
           cacheKey={message.clientMessageId ?? String(message.messageId)}
           sending={isPending(message)}
           onPress={onPressPhoto}
+          onLongPress={onSavePhoto}
         />
       ) : message.replyMessage ? (
         <ReplyMessage
@@ -187,9 +209,14 @@ export function ChatBubble({
           reply={message.replyMessage}
           content={message.content ?? ""}
           onPressReply={onPressReply}
+          onLongPress={copy}
         />
       ) : (
-        <TextMessage mine={mine} content={message.content ?? ""} />
+        <TextMessage
+          mine={mine}
+          content={message.content ?? ""}
+          onLongPress={copy}
+        />
       )}
 
       {!mine && time}
