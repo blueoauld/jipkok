@@ -123,12 +123,12 @@ function ReplyMessage({
           onPress={() => onPressReply(reply.messageId)}
         >
           <Text
-            fontSize="$1"
+            fontSize="$2"
             fontWeight="600"
             color={mine ? "white" : "$color12"}
             numberOfLines={1}
           >
-            {replyName}
+            {replyName}에게 답장
           </Text>
 
           <Text
