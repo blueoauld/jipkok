@@ -18,9 +18,6 @@ const MIN_HEIGHT = 36;
 const H_PADDING = 10;
 const FONT_SIZE = 16;
 
-const V_PADDING = 5;
-
-// 답장 인용과 본문을 가르는 구분선의 위아래 간격
 const SECTION_GAP = 6;
 
 function BubbleFrame({
@@ -108,7 +105,7 @@ function TextMessage({
 }) {
   return (
     <BubbleFrame mine={mine} onLongPress={onLongPress}>
-      <YStack px={H_PADDING} py={V_PADDING}>
+      <YStack px={H_PADDING} py={H_PADDING}>
         <BodyText mine={mine} content={content} />
       </YStack>
     </BubbleFrame>
@@ -132,7 +129,7 @@ function ReplyMessage({
 }) {
   return (
     <BubbleFrame mine={mine} onLongPress={onLongPress}>
-      <YStack px={H_PADDING} py={V_PADDING} gap={SECTION_GAP}>
+      <YStack px={H_PADDING} py={10} gap={SECTION_GAP}>
         <YStack
           gap={2}
           pressStyle={{ opacity: PRESS_OPACITY }}
@@ -148,7 +145,7 @@ function ReplyMessage({
           </Text>
 
           <Text
-            fontSize="$2"
+            fontSize={14}
             color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
             numberOfLines={2}
           >
