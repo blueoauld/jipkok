@@ -7,6 +7,7 @@ import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
@@ -79,8 +80,8 @@ export default function PointHistoryScreen() {
   const space = getTokens().space;
 
   const query = usePointHistories();
-  const { histories, isError, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    query;
+  const { histories, isError } = query;
+  const paged = usePagedList(query);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -91,6 +92,7 @@ export default function PointHistoryScreen() {
 
         {histories ? (
           <FlatList
+            {...paged}
             data={histories}
             keyExtractor={(history) => String(history.historyId)}
             renderItem={({ item }) => <HistoryRow history={item} />}
@@ -100,19 +102,6 @@ export default function PointHistoryScreen() {
               paddingBottom: space.$4.val,
               gap: space.$4.val,
             }}
-            onEndReachedThreshold={0.5}
-            onEndReached={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <Centered>
-                  <Spinner size="small" />
-                </Centered>
-              ) : null
-            }
             ListEmptyComponent={
               <Centered>
                 <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>

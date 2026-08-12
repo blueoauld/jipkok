@@ -6,6 +6,7 @@ import { ActivityRow } from "@/components/ActivityRow";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
+import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
 
 const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
@@ -33,8 +34,8 @@ export function ActivityList({
 
     return { padding: space.$4.val, gap: space.$4.val };
   }, []);
-  const { members, isError, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    query;
+  const { members, isError } = query;
+  const paged = usePagedList(query);
 
   if (!members) {
     return (
@@ -50,6 +51,7 @@ export function ActivityList({
 
   return (
     <FlatList
+      {...paged}
       data={members}
       keyExtractor={(member) => String(member.memberId)}
       renderItem={({ item }) => (
@@ -57,19 +59,6 @@ export function ActivityList({
       )}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={contentStyle}
-      onEndReachedThreshold={0.5}
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      }}
-      ListFooterComponent={
-        isFetchingNextPage ? (
-          <Centered>
-            <Spinner size="small" />
-          </Centered>
-        ) : null
-      }
       ListEmptyComponent={
         <Centered>
           <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
