@@ -4,13 +4,15 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
+import { ChatDay } from "@/components/ChatDay";
 import { ChatMessageRow } from "@/components/ChatMessageRow";
 import { PhotoViewer } from "@/components/PhotoViewer";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { type ChatMessageResponse, isApiError } from "@/lib/api";
+import { isApiError } from "@/lib/api";
+import { type ChatRow, toChatRows } from "@/lib/chat";
 import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
@@ -22,7 +24,7 @@ export default function ChatRoomScreen() {
   const space = getTokens().space;
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
-  const listRef = useRef<FlatList<ChatMessageResponse>>(null);
+  const listRef = useRef<FlatList<ChatRow>>(null);
 
   const { data: profile } = useMyProfile();
   const { data: room, error: roomError, refetch } = useChatRoom(roomId);
@@ -39,22 +41,26 @@ export default function ChatRoomScreen() {
       {room && profile && messages ? (
         <FlatList
           ref={listRef}
-          data={messages}
+          data={toChatRows(messages)}
           inverted
-          keyExtractor={(message) => String(message.messageId)}
-          renderItem={({ item, index }) => (
-            <ChatMessageRow
-              message={item}
-              older={messages[index + 1]}
-              newer={messages[index - 1]}
-              mine={item.senderId === profile.memberId}
-              partnerId={room.memberId}
-              partnerImageUrl={room.profileImageUrl ?? null}
-              onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
-              onPressPhoto={setViewerUrl}
-            />
-          )}
-          showsVerticalScrollIndicator={false}
+          keyExtractor={(row) => row.key}
+          renderItem={({ item }) =>
+            item.kind === "day" ? (
+              <ChatDay date={item.date} />
+            ) : (
+              <ChatMessageRow
+                message={item.message}
+                mine={item.message.senderId === profile.memberId}
+                grouped={item.grouped}
+                showTime={item.showTime}
+                partnerId={room.memberId}
+                partnerImageUrl={room.profileImageUrl ?? null}
+                onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
+                onPressPhoto={setViewerUrl}
+              />
+            )
+          }
+          showsVerticalScrollIndicator={true}
           contentContainerStyle={{ paddingVertical: space.$3.val }}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
