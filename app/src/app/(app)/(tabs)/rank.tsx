@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import {
   SCROLL_EVENT_THROTTLE,
@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
+import { usePagedList } from "@/hooks/usePagedList";
 import { isApiError } from "@/lib/api";
 import {
   GENDER_FILTER_VALUES,
@@ -23,14 +24,13 @@ const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "회원이 없습니다.";
 
 export default function RankScreen() {
-  const space = getTokens().space;
   const [filter, setFilter] = useState<GenderFilter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
   const ranking = useMemberRanking(GENDER_FILTER_VALUES[filter]);
-  const { members, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    ranking;
+  const { members, error } = ranking;
+  const paged = usePagedList(ranking);
 
   return (
     <YStack flex={1}>
@@ -47,6 +47,7 @@ export default function RankScreen() {
 
       {members ? (
         <FlatList
+          {...paged}
           ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
@@ -54,25 +55,6 @@ export default function RankScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          contentContainerStyle={{
-            paddingTop: space.$2.val,
-            paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
-          }}
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
-          }
           ListEmptyComponent={
             <YStack items="center" py="$8">
               <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>

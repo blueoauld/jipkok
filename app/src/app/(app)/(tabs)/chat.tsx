@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/ChatRoomRow";
 import {
@@ -13,6 +13,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
+import { usePagedList } from "@/hooks/usePagedList";
 import { isApiError } from "@/lib/api";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
@@ -23,7 +24,6 @@ const FILTERS = ["전체", "안읽음"] as const;
 type Filter = (typeof FILTERS)[number];
 
 export default function ChatScreen() {
-  const space = getTokens().space;
   const [filter, setFilter] = useState<Filter>("전체");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
@@ -32,8 +32,8 @@ export default function ChatScreen() {
   const { alertElement, toggleNotification, confirmLeave } =
     useChatRoomActions();
   const chatRooms = useChatRooms(unreadOnly);
-  const { rooms, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    chatRooms;
+  const { rooms, error } = chatRooms;
+  const paged = usePagedList(chatRooms);
 
   return (
     <YStack flex={1}>
@@ -50,6 +50,7 @@ export default function ChatScreen() {
 
       {rooms ? (
         <FlatList
+          {...paged}
           ref={listRef}
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
@@ -63,25 +64,6 @@ export default function ChatScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          contentContainerStyle={{
-            paddingTop: space.$2.val,
-            paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
-          }}
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
-          }
           ListEmptyComponent={
             <YStack items="center" py="$8">
               <EmptyMessage>

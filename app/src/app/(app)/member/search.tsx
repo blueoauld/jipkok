@@ -3,13 +3,14 @@ import { useState } from "react";
 import { FlatList } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { UserRow } from "@/components/UserRow";
 import { MIN_KEYWORD_LENGTH, useMemberSearch } from "@/hooks/useMemberSearch";
+import { usePagedList } from "@/hooks/usePagedList";
 import { isApiError } from "@/lib/api";
 import { NICKNAME_MAX_LENGTH } from "@/lib/validation";
 
@@ -20,20 +21,12 @@ const ERROR_MESSAGE = "검색하지 못했습니다.";
 const SCREEN_OPTIONS = { title: "회원 검색" };
 
 export default function MemberSearchScreen() {
-  const space = getTokens().space;
   const [keyword, setKeyword] = useState("");
   const [submitted, setSubmitted] = useState("");
 
   const search = useMemberSearch(submitted);
-  const {
-    members,
-    enabled,
-    error,
-    isFetching,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = search;
+  const { members, enabled, error, isFetching } = search;
+  const paged = usePagedList(search);
 
   const submit = () => {
     const next = keyword.trim();
@@ -72,30 +65,12 @@ export default function MemberSearchScreen() {
         automaticOffset
       >
         <FlatList
+          {...paged}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingTop: space.$2.val,
-            paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
-          }}
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
-          }
           ListEmptyComponent={
             <YStack items="center" gap="$4" py="$8">
               {!enabled ? (

@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingG
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { getTokens, Spinner, XStack, YStack } from "tamagui";
+import { Spinner, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -22,6 +22,7 @@ import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, isApiError, type MemberSort } from "@/lib/api";
 import { useMemberFilterStore } from "@/lib/filter/store";
@@ -50,7 +51,6 @@ const COMMENT_SAVED_MESSAGE = "코멘트가 작성되었습니다.";
 const MEMBERS_KEY = ["members"];
 
 export default function MainScreen() {
-  const space = getTokens().space;
   const [genderOpen, setGenderOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -75,14 +75,8 @@ export default function MainScreen() {
     },
     onError: showApiError,
   });
-  const {
-    members,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-    refetch: refetchFeed,
-  } = feed;
+  const { members, error, refetch: refetchFeed } = feed;
+  const paged = usePagedList(feed);
   const { update: updateLocation, refresh: refreshLocation } = location;
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
@@ -152,6 +146,7 @@ export default function MainScreen() {
 
       {members ? (
         <FlatList
+          {...paged}
           ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
@@ -159,27 +154,8 @@ export default function MainScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          contentContainerStyle={{
-            paddingTop: space.$2.val,
-            paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
-          }}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-          }
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">

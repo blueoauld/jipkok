@@ -51,6 +51,7 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { usePagedList } from "@/hooks/usePagedList";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
@@ -458,14 +459,8 @@ export default function FeedScreen() {
   const setDate = useFeedFilterStore((state) => state.setDate);
   const date = useMemo(() => fromDateParam(storedDate), [storedDate]);
   const feed = useFeedPosts(date, gender, sort);
-  const {
-    posts,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-    refetch: refetchFeed,
-  } = feed;
+  const { posts, error, refetch: refetchFeed } = feed;
+  const paged = usePagedList(feed);
 
   const queryKey = feedPostsKey(date, gender, sort);
   const invalidate = useCallback(
@@ -603,6 +598,7 @@ export default function FeedScreen() {
 
       {posts ? (
         <FlatList
+          {...paged}
           ref={listRef}
           data={posts}
           keyExtractor={(post) => String(post.postId)}
@@ -618,27 +614,8 @@ export default function FeedScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          contentContainerStyle={{
-            paddingTop: space.$2.val,
-            paddingBottom: space.$4.val,
-            paddingHorizontal: space.$4.val,
-            gap: space.$4.val,
-          }}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-          }
-          onEndReachedThreshold={0.5}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
