@@ -136,7 +136,7 @@ export function ChatRoomRow({ room }: { room: ChatRoomResponse }) {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: chatRoomKey(room.roomId) }),
     onError: (error) => {
-      apply(room.notificationEnabled);
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       showApiError(error);
     },
   });
