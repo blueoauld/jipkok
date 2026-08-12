@@ -12,7 +12,7 @@ export const RETRO_SHADOW_OFFSET_SM = 2;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
-const BOTTOM_BAR_HEIGHT = 64;
+export const BOTTOM_BAR_HEIGHT = 64;
 
 export function bottomBarHeight(bottomInset: number) {
   return BOTTOM_BAR_HEIGHT + bottomInset;
