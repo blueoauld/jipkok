@@ -2,20 +2,11 @@ import { Image } from "expo-image";
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import type { ReactNode } from "react";
-import { StyleSheet } from "react-native";
-import {
-  Composer,
-  type ComposerProps,
-  type IMessage,
-  InputToolbar,
-  type InputToolbarProps,
-  Send,
-  type SendProps,
-} from "react-native-gifted-chat";
-import type { ReplyPreviewProps } from "react-native-gifted-chat/lib/components/ReplyPreview";
+import { type ReactNode, type RefObject, useState } from "react";
+import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import type { ReplyMessageResponse } from "@/lib/api";
 import {
   DISABLED_OPACITY,
   FLOATING_BUTTON_SIZE,
@@ -28,7 +19,10 @@ const ICON_SIZE = 20;
 const TOOLBAR_PADDING = getTokens().space.$3.val;
 const TOOLBAR_H_PADDING = getTokens().space.$4.val;
 
-// 22는 gifted Composer의 기본 줄높이다.
+const PLACEHOLDER = "메시지 입력";
+const MAX_LENGTH = 1000;
+
+const COMPOSER_FONT_SIZE = 16;
 const COMPOSER_LINE_HEIGHT = 22;
 const COMPOSER_MAX_LINES = 7;
 const COMPOSER_VERTICAL_PADDING = 7;
@@ -67,62 +61,18 @@ function RetroBox({
   );
 }
 
-export function ChatInputToolbar(props: InputToolbarProps<IMessage>) {
-  return (
-    <InputToolbar
-      {...props}
-      containerStyle={styles.toolbar}
-      primaryStyle={styles.primary}
-    />
-  );
-}
-
-export function ChatComposer(props: ComposerProps) {
-  return (
-    <XStack flex={1} theme="gray">
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET}
-        b={-RETRO_SHADOW_OFFSET}
-        l={RETRO_SHADOW_OFFSET}
-        r={-RETRO_SHADOW_OFFSET}
-        bg="$gray12"
-      />
-      <XStack flex={1} borderWidth={2} borderColor="$gray12" bg="$color1">
-        <Composer
-          {...props}
-          textInputProps={{
-            ...props.textInputProps,
-            style: [styles.composerText, props.textInputProps?.style],
-          }}
-        />
-      </XStack>
-    </XStack>
-  );
-}
-
-export function ChatSend(props: SendProps<IMessage>) {
-  const disabled = !props.text?.trim();
-
-  return (
-    <Send {...props} isSendButtonAlwaysVisible containerStyle={styles.send}>
-      <YStack opacity={disabled ? DISABLED_OPACITY : 1}>
-        <RetroBox theme="blue" bg="$color10">
-          <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
-        </RetroBox>
-      </YStack>
-    </Send>
-  );
-}
-
 const PREVIEW_PHOTO_SIZE = 40;
 const PREVIEW_CLOSE_ICON_SIZE = 18;
 
-export function ChatReplyPreview({
+function ChatReplyPreview({
   name,
-  replyMessage,
-  onClearReply,
-}: ReplyPreviewProps & { name: string }) {
+  reply,
+  onClear,
+}: {
+  name: string;
+  reply: ReplyMessageResponse;
+  onClear: () => void;
+}) {
   const theme = useTheme();
 
   return (
@@ -150,9 +100,9 @@ export function ChatReplyPreview({
         py="$2"
         gap="$2.5"
       >
-        {replyMessage.image && (
+        {reply.imageUrl && (
           <Image
-            source={replyMessage.image}
+            source={reply.imageUrl}
             contentFit="cover"
             style={{ width: PREVIEW_PHOTO_SIZE, height: PREVIEW_PHOTO_SIZE }}
           />
@@ -164,14 +114,14 @@ export function ChatReplyPreview({
           </Text>
 
           <Text fontSize="$3" color="$color11" numberOfLines={1}>
-            {replyMessage.text || "사진"}
+            {reply.content || "사진"}
           </Text>
         </YStack>
 
         <XStack
           py="$2"
           pressStyle={{ opacity: PRESS_OPACITY }}
-          onPress={onClearReply}
+          onPress={onClear}
         >
           <XIcon size={PREVIEW_CLOSE_ICON_SIZE} color={theme.color11.val} />
         </XStack>
@@ -180,7 +130,7 @@ export function ChatReplyPreview({
   );
 }
 
-export function ChatActions({
+function ChatActions({
   uploading,
   onPress,
 }: {
@@ -206,24 +156,94 @@ export function ChatActions({
   );
 }
 
+export function ChatInputBar({
+  textInputRef,
+  uploading,
+  reply,
+  replyName,
+  onClearReply,
+  onPickPhotos,
+  onSendText,
+}: {
+  textInputRef: RefObject<TextInput>;
+  uploading: boolean;
+  reply: ReplyMessageResponse | null;
+  replyName: string;
+  onClearReply: () => void;
+  onPickPhotos: () => void;
+  onSendText: (text: string) => void;
+}) {
+  const theme = useTheme();
+  const [text, setText] = useState("");
+  const trimmed = text.trim();
+
+  const send = () => {
+    if (!trimmed) {
+      return;
+    }
+
+    onSendText(trimmed);
+    setText("");
+  };
+
+  return (
+    <YStack>
+      {reply && (
+        <ChatReplyPreview name={replyName} reply={reply} onClear={onClearReply} />
+      )}
+
+      <XStack items="flex-end" gap={TOOLBAR_PADDING} style={styles.primary}>
+        <ChatActions uploading={uploading} onPress={onPickPhotos} />
+
+        <XStack flex={1} theme="gray">
+          <YStack
+            position="absolute"
+            t={RETRO_SHADOW_OFFSET}
+            b={-RETRO_SHADOW_OFFSET}
+            l={RETRO_SHADOW_OFFSET}
+            r={-RETRO_SHADOW_OFFSET}
+            bg="$gray12"
+          />
+          <XStack flex={1} borderWidth={2} borderColor="$gray12" bg="$color1">
+            <TextInput
+              ref={textInputRef}
+              value={text}
+              onChangeText={setText}
+              placeholder={PLACEHOLDER}
+              placeholderTextColor={theme.color11.val}
+              maxLength={MAX_LENGTH}
+              multiline
+              style={[styles.composerText, { color: theme.color12.val }]}
+            />
+          </XStack>
+        </XStack>
+
+        <YStack
+          opacity={trimmed ? 1 : DISABLED_OPACITY}
+          pressStyle={trimmed ? { opacity: PRESS_OPACITY } : undefined}
+          onPress={trimmed ? send : undefined}
+        >
+          <RetroBox theme="blue" bg="$color10">
+            <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
+          </RetroBox>
+        </YStack>
+      </XStack>
+    </YStack>
+  );
+}
+
 const styles = StyleSheet.create({
-  toolbar: {
-    backgroundColor: "transparent",
-    borderTopWidth: 0,
-  },
   primary: {
-    alignItems: "flex-end",
-    gap: TOOLBAR_PADDING,
     paddingLeft: TOOLBAR_H_PADDING,
     paddingTop: TOOLBAR_PADDING,
     paddingRight: TOOLBAR_H_PADDING - RETRO_SHADOW_OFFSET,
     paddingBottom: TOOLBAR_PADDING - RETRO_SHADOW_OFFSET,
   },
-  send: {
-    justifyContent: "flex-end",
-  },
   // 상하 7이면 한 줄 높이가 버튼(40)과 같아지고, 좌우 10은 버블 텍스트의 안쪽 여백과 같다.
   composerText: {
+    flex: 1,
+    fontSize: COMPOSER_FONT_SIZE,
+    lineHeight: COMPOSER_LINE_HEIGHT,
     paddingTop: COMPOSER_VERTICAL_PADDING,
     paddingBottom: COMPOSER_VERTICAL_PADDING,
     paddingHorizontal: 10,

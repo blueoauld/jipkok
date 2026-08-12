@@ -3,41 +3,17 @@ import * as Haptics from "expo-haptics";
 import { router, Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useHeaderHeight } from "expo-router/react-navigation";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
-import {
-  type ComponentProps,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import type { FlatList, TextInput } from "react-native";
-import {
-  GiftedChat,
-  type IMessage,
-  Message,
-  type MessageProps,
-  type ReplyMessage,
-} from "react-native-gifted-chat";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, type TextInput } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, YStack } from "tamagui";
 
-import { ChatBubble, displayMinute } from "@/components/ChatBubble";
-import { ChatDay } from "@/components/ChatDay";
-import {
-  ChatActions,
-  ChatComposer,
-  ChatInputToolbar,
-  ChatReplyPreview,
-  ChatSend,
-} from "@/components/ChatInput";
-import { ChatMessageReply } from "@/components/ChatMessageReply";
-import { ChatSwipeReplyAction } from "@/components/ChatSwipeReplyAction";
+import { ChatInputBar } from "@/components/ChatInput";
+import { ChatMessageRow } from "@/components/ChatMessageRow";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/PhotoViewer";
-import { UserAvatar } from "@/components/UserAvatar";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -49,23 +25,12 @@ import { apiErrorMessage } from "@/lib/alert";
 import {
   api,
   type ChatMessageResponse,
-  type ChatRoomResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
 import { useDeletedRoomStore } from "@/lib/chat/store";
-import { PRESS_OPACITY } from "@/lib/design";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
-
-const AVATAR_SIZE = 36;
-
-// 아래 간격을 2로 통일해야 스와이프 답장 아이콘이 버블 중앙에 온다.
-const MESSAGE_GAP_BOTTOM = 2;
-const GROUP_GAP_TOP = 8;
-
-// 기본 70%면 아바타 + 사진 200 + 시간이 안 들어가서 시간이 사진을 덮는다.
-const BUBBLE_MAX_WIDTH = "88%" as const;
 
 const REVIEW_SENT_THRESHOLD = 5;
 
@@ -73,65 +38,6 @@ const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
-
-function RowMessage(props: MessageProps<IMessage>) {
-  const { currentMessage, previousMessage } = props;
-  const grouped =
-    !!previousMessage?.createdAt &&
-    previousMessage.user._id === currentMessage.user._id &&
-    displayMinute(previousMessage.createdAt) ===
-      displayMinute(currentMessage.createdAt);
-  const style = {
-    marginTop: grouped ? 0 : GROUP_GAP_TOP,
-    marginBottom: MESSAGE_GAP_BOTTOM,
-    maxWidth: BUBBLE_MAX_WIDTH,
-  };
-
-  return <Message {...props} containerStyle={{ left: style, right: style }} />;
-}
-
-// 타이핑 같은 화면 상태 변화에 행 전체가 다시 그려지지 않게 행 데이터만 비교한다.
-const MemoRowMessage = memo(
-  RowMessage,
-  (prev, next) =>
-    prev.currentMessage === next.currentMessage &&
-    prev.previousMessage === next.previousMessage &&
-    prev.nextMessage === next.nextMessage &&
-    prev.position === next.position,
-);
-
-function toGiftedMessage(
-  message: ChatMessageResponse,
-  room: ChatRoomResponse,
-): IMessage {
-  return {
-    // 자리표시자가 서버 메시지로 바뀌어도 행이 리마운트되지 않게 clientMessageId를 키로 쓴다.
-    _id: message.clientMessageId ?? message.messageId,
-    text: message.content ?? "",
-    createdAt: new Date(message.createdAt),
-    user:
-      message.senderId === room.memberId
-        ? {
-            _id: room.memberId,
-            name: room.nickname,
-            avatar: room.profileImageUrl ?? undefined,
-          }
-        : { _id: message.senderId },
-    image: message.imageUrl ?? undefined,
-    replyMessage: message.replyMessage
-      ? toGiftedReply(message.replyMessage)
-      : undefined,
-  };
-}
-
-function toGiftedReply(reply: ReplyMessageResponse): ReplyMessage {
-  return {
-    _id: reply.messageId,
-    text: reply.content ?? "",
-    user: { _id: reply.senderId },
-    image: reply.imageUrl ?? undefined,
-  };
-}
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -146,7 +52,7 @@ export default function ChatRoomScreen() {
   );
 
   const textInputRef = useRef<TextInput>(null!);
-  const messagesContainerRef = useRef<FlatList<IMessage>>(null!);
+  const listRef = useRef<FlatList<ChatMessageResponse>>(null!);
   const { alertElement, confirm, show, showApiError } = useRetroAlert();
 
   const isFocused = useIsFocused();
@@ -158,6 +64,13 @@ export default function ChatRoomScreen() {
   const { data: room, error: roomError } = useChatRoom(roomId, !partnerLeft);
   const { messages, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useChatMessages(roomId);
+
+  // 행 콜백이 메시지 배열에 묶이면 배열이 갱신될 때마다 모든 행이 다시 그려진다.
+  const messagesRef = useRef(messages);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const { sendText, sendPhotos, uploading } = useSendMessage(
     roomId,
@@ -270,72 +183,60 @@ export default function ChatRoomScreen() {
     },
   ];
 
-  const giftedMessages = useMemo(
-    () => (room ? (messages ?? []).map((it) => toGiftedMessage(it, room)) : []),
-    [messages, room],
-  );
-
-  const replyPreview = useMemo(
-    () => (replyTarget ? toGiftedReply(replyTarget) : null),
-    [replyTarget],
-  );
-
-  const onSend = useCallback(
-    (sent: IMessage[]) => {
-      const text = sent[0]?.text.trim();
-
-      if (text) {
-        sentCountRef.current += 1;
-        sendText(text, replyTarget);
-        setReplyTarget(null);
-      }
+  const handleSendText = useCallback(
+    (text: string) => {
+      sentCountRef.current += 1;
+      sendText(text, replyTarget);
+      setReplyTarget(null);
     },
     [sendText, replyTarget],
   );
 
-  const handleSwipeReply = useCallback(
-    (message: IMessage) => {
-      const source = (messages ?? []).find(
-        (it) => (it.clientMessageId ?? it.messageId) === message._id,
-      );
+  const handleSwipeReply = useCallback((message: ChatMessageResponse) => {
+    // 전송 중인 자리표시자는 아직 서버 id가 없어 답장 대상이 될 수 없다.
+    if (message.messageId < 0) {
+      return;
+    }
 
-      // 전송 중인 자리표시자는 아직 서버 id가 없어 답장 대상이 될 수 없다.
-      if (!source || source.messageId < 0) {
-        return;
-      }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setReplyTarget({
+      messageId: message.messageId,
+      senderId: message.senderId,
+      type: message.type,
+      content: message.content ?? null,
+      imageUrl: message.imageUrl ?? null,
+    });
+    textInputRef.current?.focus();
+  }, []);
 
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setReplyTarget({
-        messageId: source.messageId,
-        senderId: source.senderId,
-        type: source.type,
-        content: source.content ?? null,
-        imageUrl: source.imageUrl ?? null,
-      });
-      textInputRef.current?.focus();
-    },
-    [messages],
-  );
+  const handlePressReply = useCallback((reply: ReplyMessageResponse) => {
+    const index = (messagesRef.current ?? []).findIndex(
+      (it) => it.messageId === reply.messageId,
+    );
 
-  const handlePressReply = useCallback(
-    (reply: ReplyMessage) => {
-      const index = (messages ?? []).findIndex(
-        (it) => it.messageId === reply._id,
-      );
+    if (index < 0) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      return;
+    }
 
-      if (index < 0) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        return;
-      }
+    listRef.current?.scrollToIndex({
+      index,
+      viewPosition: 0.5,
+      animated: true,
+    });
+  }, []);
 
-      messagesContainerRef.current?.scrollToIndex({
-        index,
-        viewPosition: 0.5,
-        animated: true,
-      });
-    },
-    [messages],
-  );
+  const handlePressAvatar = useCallback(() => {
+    if (room) {
+      pushOnce(`/member/${room.memberId}`);
+    }
+  }, [room]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -353,108 +254,69 @@ export default function ChatRoomScreen() {
       />
 
       {room && profile ? (
-        <GiftedChat
-          messages={giftedMessages}
-          onSend={onSend}
-          user={{ _id: profile.memberId }}
-          textInputRef={textInputRef}
-          messagesContainerRef={
-            messagesContainerRef as ComponentProps<
-              typeof GiftedChat<IMessage>
-            >["messagesContainerRef"]
-          }
-          listProps={{
-            onScrollToIndexFailed: (info) =>
-              messagesContainerRef.current?.scrollToOffset({
-                offset: info.averageItemLength * info.index,
-                animated: true,
-              }),
-          }}
-          reply={{
-            message: replyPreview,
-            onClear: () => setReplyTarget(null),
-            onPress: handlePressReply,
-            renderPreview: (previewProps) => (
-              <ChatReplyPreview
-                {...previewProps}
-                name={
-                  replyTarget?.senderId === room.memberId ? room.nickname : "나"
-                }
-              />
-            ),
-            renderMessageReply: (replyProps) => (
-              <ChatMessageReply
-                {...replyProps}
-                name={
-                  replyProps.replyMessage.user._id === room.memberId
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior="padding"
+          keyboardVerticalOffset={headerHeight}
+        >
+          <FlatList
+            ref={listRef}
+            data={messages ?? []}
+            inverted
+            keyExtractor={(message) =>
+              message.clientMessageId ?? String(message.messageId)
+            }
+            renderItem={({ item, index }) => (
+              <ChatMessageRow
+                message={item}
+                older={messages?.[index + 1]}
+                newer={messages?.[index - 1]}
+                mine={item.senderId === profile.memberId}
+                replyName={
+                  item.replyMessage?.senderId === room.memberId
                     ? room.nickname
                     : "나"
                 }
+                partnerAvatarUrl={room.profileImageUrl ?? null}
+                partnerId={room.memberId}
+                onPressAvatar={handlePressAvatar}
+                onPressPhoto={setViewerUrl}
+                onPressReply={handlePressReply}
+                onSwipeReply={handleSwipeReply}
               />
-            ),
-            swipe: {
-              isEnabled: true,
-              onSwipe: handleSwipeReply,
-              renderAction: () => <ChatSwipeReplyAction />,
-            },
-          }}
-          isAvatarOnTop
-          isAvatarVisibleForEveryMessage
-          isDayAnimationEnabled={false}
-          renderDay={(props) => <ChatDay {...props} />}
-          renderMessage={(props) => <MemoRowMessage {...props} />}
-          renderBubble={(props) => (
-            <ChatBubble {...props} onPressPhoto={setViewerUrl} />
-          )}
-          renderAvatar={({ currentMessage, previousMessage }) => {
-            const grouped =
-              !!previousMessage?.createdAt &&
-              previousMessage.user._id === currentMessage.user._id &&
-              displayMinute(previousMessage.createdAt) ===
-                displayMinute(currentMessage.createdAt);
-
-            if (grouped) {
-              return <YStack width={AVATAR_SIZE} />;
+            )}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isFetchingNextPage ? (
+                <YStack items="center" py="$4">
+                  <Spinner size="small" />
+                </YStack>
+              ) : null
             }
+            onScrollToIndexFailed={(info) =>
+              listRef.current?.scrollToOffset({
+                offset: info.averageItemLength * info.index,
+                animated: true,
+              })
+            }
+            keyboardDismissMode="interactive"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          />
 
-            return (
-              <YStack
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                onPress={() => pushOnce(`/member/${room.memberId}`)}
-              >
-                <UserAvatar
-                  id={String(room.memberId)}
-                  url={room.profileImageUrl}
-                  size={AVATAR_SIZE}
-                />
-              </YStack>
-            );
-          }}
-          keyboardAvoidingViewProps={{
-            behavior: "padding",
-            keyboardVerticalOffset: headerHeight,
-          }}
-          loadEarlierMessagesProps={{
-            isAvailable: hasNextPage,
-            isLoading: isFetchingNextPage,
-            isInfiniteScrollEnabled: true,
-            onPress: fetchNextPage,
-          }}
-          renderLoadEarlier={({ isLoading }) =>
-            isLoading ? (
-              <YStack items="center" py="$4">
-                <Spinner size="small" />
-              </YStack>
-            ) : null
-          }
-          textInputProps={{ placeholder: "메시지 입력", maxLength: 1000 }}
-          renderInputToolbar={(props) => <ChatInputToolbar {...props} />}
-          renderComposer={(props) => <ChatComposer {...props} />}
-          renderSend={(props) => <ChatSend {...props} />}
-          renderActions={() => (
-            <ChatActions uploading={uploading} onPress={handlePickPhotos} />
-          )}
-        />
+          <ChatInputBar
+            textInputRef={textInputRef}
+            uploading={uploading}
+            reply={replyTarget}
+            replyName={
+              replyTarget?.senderId === room.memberId ? room.nickname : "나"
+            }
+            onClearReply={() => setReplyTarget(null)}
+            onPickPhotos={handlePickPhotos}
+            onSendText={handleSendText}
+          />
+        </KeyboardAvoidingView>
       ) : (
         <YStack flex={1} justify="center" items="center">
           <Spinner size="small" />
