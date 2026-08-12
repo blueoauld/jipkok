@@ -24,16 +24,15 @@ import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
-import { useNow } from "@/hooks/useNow";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { api, isApiError, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { formatRelativeTime } from "@/lib/date";
 import { bottomBarHeight } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
@@ -188,7 +187,6 @@ function ActionBar({
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
-  const now = useNow();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
@@ -424,11 +422,7 @@ export default function MemberProfileScreen() {
                     {member.nickname}
                   </Text>
 
-                  {member.locatedAt && (
-                    <Text shrink={0} fontSize="$2">
-                      {formatRelativeTime(member.locatedAt, now)}
-                    </Text>
-                  )}
+                  {member.locatedAt && <RelativeTime at={member.locatedAt} />}
                 </XStack>
 
                 <XStack items="center" justify="space-between" gap="$2">

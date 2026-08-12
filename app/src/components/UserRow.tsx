@@ -3,12 +3,11 @@ import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { memo } from "react";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
-import { useNow } from "@/hooks/useNow";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { formatRelativeTime } from "@/lib/date";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -19,7 +18,6 @@ const LIKE_ICON_SIZE = 13;
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
 function Row({ member }: { member: RowMember }) {
-  const now = useNow();
   const theme = useTheme();
   const {
     memberId,
@@ -59,11 +57,7 @@ function Row({ member }: { member: RowMember }) {
               )}
             </XStack>
 
-            {locatedAt && (
-              <Text shrink={0} fontSize="$2">
-                {formatRelativeTime(locatedAt, now)}
-              </Text>
-            )}
+            {locatedAt && <RelativeTime at={locatedAt} />}
           </XStack>
 
           <XStack items="center">

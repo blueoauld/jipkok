@@ -3,16 +3,13 @@ import { useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/ActivityList";
-import { useNow } from "@/hooks/useNow";
 import {
   useMarkProfileViewsSeen,
   useProfileViews,
 } from "@/hooks/useProfileViews";
-import { formatRelativeTime } from "@/lib/date";
 
 export default function ProfileViewListScreen() {
   const query = useProfileViews();
-  const now = useNow();
 
   useMarkProfileViewsSeen(!query.isPending);
 
@@ -35,11 +32,7 @@ export default function ProfileViewListScreen() {
 
       <ActivityList
         query={{ ...query, members }}
-        captionOf={(member) => {
-          const at = viewedAt.get(member.memberId);
-
-          return at ? formatRelativeTime(at, now) : undefined;
-        }}
+        timeOf={(member) => viewedAt.get(member.memberId)}
       />
     </SafeAreaView>
   );

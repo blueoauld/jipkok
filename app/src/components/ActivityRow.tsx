@@ -4,6 +4,7 @@ import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { memo } from "react";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
@@ -55,11 +56,11 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
 
 function Row({
   member,
-  caption,
+  at,
   onDelete,
 }: {
   member: MemberSummaryResponse;
-  caption?: string;
+  at?: string;
   onDelete?: (memberId: number) => void;
 }) {
   const theme = useTheme();
@@ -81,11 +82,7 @@ function Row({
               {nickname}
             </Text>
 
-            {caption && (
-              <Text shrink={0} fontSize="$2">
-                {caption}
-              </Text>
-            )}
+            {at && <RelativeTime at={at} />}
           </XStack>
 
           <XStack items="center">

@@ -20,11 +20,11 @@ function Centered({ children }: { children: ReactNode }) {
 
 export function ActivityList({
   query,
-  captionOf,
+  timeOf,
   onDelete,
 }: {
   query: MemberListQuery;
-  captionOf?: (member: MemberSummaryResponse) => string | undefined;
+  timeOf?: (member: MemberSummaryResponse) => string | undefined;
   onDelete?: (memberId: number) => void;
 }) {
   const contentStyle = useMemo(() => {
@@ -52,11 +52,7 @@ export function ActivityList({
       data={members}
       keyExtractor={(member) => String(member.memberId)}
       renderItem={({ item }) => (
-        <ActivityRow
-          member={item}
-          caption={captionOf?.(item)}
-          onDelete={onDelete}
-        />
+        <ActivityRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
       )}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={contentStyle}
