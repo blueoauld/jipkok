@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
 import { replySummary } from "@/lib/chat";
 import {
@@ -72,14 +73,7 @@ export function ChatInputBar({
           mr={BAR_H_PADDING - RETRO_SHADOW_OFFSET}
           mt={BAR_PADDING}
         >
-          <YStack
-            position="absolute"
-            t={RETRO_SHADOW_OFFSET}
-            b={-RETRO_SHADOW_OFFSET}
-            l={RETRO_SHADOW_OFFSET}
-            r={-RETRO_SHADOW_OFFSET}
-            bg="$gray12"
-          />
+          <RetroShadow color="$gray12" />
           <XStack
             borderWidth={2}
             borderColor="$gray12"
@@ -113,14 +107,7 @@ export function ChatInputBar({
 
       <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
         <YStack theme="gray" opacity={uploading ? DISABLED_OPACITY : 1}>
-          <YStack
-            position="absolute"
-            t={RETRO_SHADOW_OFFSET}
-            b={-RETRO_SHADOW_OFFSET}
-            l={RETRO_SHADOW_OFFSET}
-            r={-RETRO_SHADOW_OFFSET}
-            bg="$gray12"
-          />
+          <RetroShadow color="$gray12" />
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}
@@ -149,14 +136,7 @@ export function ChatInputBar({
         </YStack>
 
         <XStack flex={1} theme="gray">
-          <YStack
-            position="absolute"
-            t={RETRO_SHADOW_OFFSET}
-            b={-RETRO_SHADOW_OFFSET}
-            l={RETRO_SHADOW_OFFSET}
-            r={-RETRO_SHADOW_OFFSET}
-            bg="$gray12"
-          />
+          <RetroShadow color="$gray12" />
           <XStack flex={1} borderWidth={2} borderColor="$gray12" bg="$color1">
             <TextInput
               ref={inputRef}
@@ -172,14 +152,7 @@ export function ChatInputBar({
         </XStack>
 
         <YStack theme="blue" opacity={sendable ? 1 : DISABLED_OPACITY}>
-          <YStack
-            position="absolute"
-            t={RETRO_SHADOW_OFFSET}
-            b={-RETRO_SHADOW_OFFSET}
-            l={RETRO_SHADOW_OFFSET}
-            r={-RETRO_SHADOW_OFFSET}
-            bg="$gray12"
-          />
+          <RetroShadow color="$gray12" />
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}

@@ -9,6 +9,7 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
   IMAGE_TRANSITION,
@@ -59,16 +60,7 @@ function toRows(
 }
 
 function CellShadow() {
-  return (
-    <YStack
-      position="absolute"
-      t={RETRO_SHADOW_OFFSET_SM}
-      b={-RETRO_SHADOW_OFFSET_SM}
-      l={RETRO_SHADOW_OFFSET_SM}
-      r={-RETRO_SHADOW_OFFSET_SM}
-      bg="$gray8"
-    />
-  );
+  return <RetroShadow color="$gray8" offset={RETRO_SHADOW_OFFSET_SM} />;
 }
 
 function OverlayButton({
@@ -83,14 +75,7 @@ function OverlayButton({
 } & XStackProps) {
   return (
     <YStack position="absolute" {...position}>
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET_SM}
-        b={-RETRO_SHADOW_OFFSET_SM}
-        l={RETRO_SHADOW_OFFSET_SM}
-        r={-RETRO_SHADOW_OFFSET_SM}
-        bg="$gray12"
-      />
+      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
       <XStack
         width={24}
         height={24}
@@ -239,13 +224,9 @@ function Grid({
 
                     {showPrimaryBadge && cell.index === 0 && (
                       <YStack position="absolute" t="$2" l="$2">
-                        <YStack
-                          position="absolute"
-                          t={RETRO_SHADOW_OFFSET_SM}
-                          b={-RETRO_SHADOW_OFFSET_SM}
-                          l={RETRO_SHADOW_OFFSET_SM}
-                          r={-RETRO_SHADOW_OFFSET_SM}
-                          bg="$gray12"
+                        <RetroShadow
+                          color="$gray12"
+                          offset={RETRO_SHADOW_OFFSET_SM}
                         />
                         <XStack
                           width={24}

@@ -1,5 +1,6 @@
 import { YStack, type YStackProps } from "tamagui";
 
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
 export function RetroCard({
@@ -16,14 +17,7 @@ export function RetroCard({
 }) {
   return (
     <YStack theme={theme} flex={flex}>
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET}
-        b={-RETRO_SHADOW_OFFSET}
-        l={RETRO_SHADOW_OFFSET}
-        r={-RETRO_SHADOW_OFFSET}
-        bg={shadow}
-      />
+      <RetroShadow color={shadow} />
       <YStack
         borderWidth={2}
         borderColor="$color12"

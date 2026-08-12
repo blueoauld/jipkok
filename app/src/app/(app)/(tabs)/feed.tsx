@@ -47,6 +47,7 @@ import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroDialogContent } from "@/components/ui/RetroDialogContent";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -107,14 +108,7 @@ const FEED_NOTIFICATION_OFF_MESSAGE = "이제 피드 알림을 받지 않습니�
 function CardButton({ children, ...props }: XStackProps) {
   return (
     <YStack>
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET_SM}
-        b={-RETRO_SHADOW_OFFSET_SM}
-        l={RETRO_SHADOW_OFFSET_SM}
-        r={-RETRO_SHADOW_OFFSET_SM}
-        bg="$gray12"
-      />
+      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
       <XStack
         borderWidth={2}
         borderColor="$gray12"
@@ -320,14 +314,7 @@ function ComposeForm({
           <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
 
           <YStack position="absolute" t="$3" r="$3">
-            <YStack
-              position="absolute"
-              t={RETRO_SHADOW_OFFSET_SM}
-              b={-RETRO_SHADOW_OFFSET_SM}
-              l={RETRO_SHADOW_OFFSET_SM}
-              r={-RETRO_SHADOW_OFFSET_SM}
-              bg="$gray12"
-            />
+            <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
             <XStack
               width={24}
               height={24}

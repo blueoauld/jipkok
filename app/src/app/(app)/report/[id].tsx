@@ -16,15 +16,12 @@ import { FormField } from "@/components/FormField";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import {
-  DISABLED_OPACITY,
-  FORM_FOOTER_HEIGHT,
-  RETRO_SHADOW_OFFSET,
-} from "@/lib/design";
+import { DISABLED_OPACITY, FORM_FOOTER_HEIGHT } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
@@ -162,14 +159,7 @@ export default function ReportScreen() {
           </YStack>
 
           <YStack>
-            <YStack
-              position="absolute"
-              t={RETRO_SHADOW_OFFSET}
-              b={-RETRO_SHADOW_OFFSET}
-              l={RETRO_SHADOW_OFFSET}
-              r={-RETRO_SHADOW_OFFSET}
-              bg="$gray8"
-            />
+            <RetroShadow color="$gray8" />
             <YStack borderWidth={2} borderColor="$color12" bg="$color1">
               {REASONS.map(({ label, value }, index) => (
                 <ReasonRow

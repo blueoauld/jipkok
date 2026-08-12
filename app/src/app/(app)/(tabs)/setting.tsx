@@ -26,6 +26,7 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -34,7 +35,6 @@ import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -200,14 +200,7 @@ function SettingSection({
 }) {
   return (
     <YStack mx="$4">
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET}
-        b={-RETRO_SHADOW_OFFSET}
-        l={RETRO_SHADOW_OFFSET}
-        r={-RETRO_SHADOW_OFFSET}
-        bg="$gray8"
-      />
+      <RetroShadow color="$gray8" />
       <YStack borderWidth={2} borderColor="$color12" bg="$color1">
         {items.map((item, index) => (
           <SettingRow

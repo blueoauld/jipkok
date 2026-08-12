@@ -6,6 +6,7 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
@@ -25,14 +26,7 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
 
   return (
     <YStack shrink={0}>
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET_SM}
-        b={-RETRO_SHADOW_OFFSET_SM}
-        l={RETRO_SHADOW_OFFSET_SM}
-        r={-RETRO_SHADOW_OFFSET_SM}
-        bg="$gray12"
-      />
+      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
       <XStack
         width={DELETE_BUTTON_SIZE}
         height={DELETE_BUTTON_SIZE}

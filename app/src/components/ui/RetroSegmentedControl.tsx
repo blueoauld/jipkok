@@ -1,6 +1,6 @@
 import { Text, XStack, YStack } from "tamagui";
 
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 
 export function RetroSegmentedControl<T extends string>({
   values,
@@ -13,14 +13,7 @@ export function RetroSegmentedControl<T extends string>({
 }) {
   return (
     <YStack theme="gray">
-      <YStack
-        position="absolute"
-        t={RETRO_SHADOW_OFFSET}
-        b={-RETRO_SHADOW_OFFSET}
-        l={RETRO_SHADOW_OFFSET}
-        r={-RETRO_SHADOW_OFFSET}
-        bg="$gray8"
-      />
+      <RetroShadow color="$gray8" />
       <XStack borderWidth={2} borderColor="$color12" bg="$color1">
         {values.map((item, index) => {
           const selected = item === value;
