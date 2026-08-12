@@ -16,6 +16,8 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.blueoauld.jipkok",
+      "supportsTablet": true,
+      "requireFullScreen": true,
       "infoPlist": {
         "CFBundleDevelopmentRegion": "ko",
         "ITSAppUsesNonExemptEncryption": false
