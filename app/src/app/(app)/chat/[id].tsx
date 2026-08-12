@@ -30,6 +30,7 @@ import { useSendMessage } from "@/hooks/useSendMessage";
 import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
 import { type ChatRow, toChatRows } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat-store";
+import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
@@ -115,6 +116,10 @@ export default function ChatRoomScreen() {
       markRead(newestMessageId);
     }
   }, [markRead, newestMessageId]);
+
+  useEffect(() => {
+    dismissRoomNotifications(roomId).catch(() => undefined);
+  }, [newestMessageId, roomId]);
 
   const handlePressReply = (messageId: number) => {
     const index = rows.findIndex(

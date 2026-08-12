@@ -7,6 +7,7 @@ import { DEVICE_PLATFORM } from "@/lib/device";
 
 const ANDROID_CHANNELS = [
   { id: "default", name: "알림", importance: "DEFAULT" },
+  { id: "chat", name: "채팅", importance: "HIGH" },
   { id: "feed", name: "피드", importance: "HIGH" },
 ] as const;
 
@@ -66,6 +67,21 @@ export async function registerPushToken() {
 
 export function setBadgeCount(count: number) {
   Notifications.setBadgeCountAsync(count).catch(() => undefined);
+}
+
+export async function dismissRoomNotifications(roomId: number) {
+  const presented = await Notifications.getPresentedNotificationsAsync();
+
+  await Promise.all(
+    presented
+      .filter(
+        (notification) =>
+          notification.request.content.data?.roomId === String(roomId),
+      )
+      .map((notification) =>
+        Notifications.dismissNotificationAsync(notification.request.identifier),
+      ),
+  );
 }
 
 export async function unregisterPushToken() {
