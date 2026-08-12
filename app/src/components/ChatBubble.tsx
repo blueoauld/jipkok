@@ -2,8 +2,12 @@ import { Image } from "expo-image";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import type { ChatMessageResponse } from "@/lib/api";
+import { replySummary } from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
 import { PHOTO_PRESS_OPACITY } from "@/lib/design";
+
+const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
+const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 
 const PHOTO_SIZE = 200;
 const PHOTO_TRANSITION = 200;
@@ -19,11 +23,13 @@ export function ChatBubble({
   message,
   mine,
   showTime,
+  replyName,
   onPressPhoto,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
   showTime: boolean;
+  replyName: string;
   onPressPhoto: (url: string) => void;
 }) {
   const theme = useTheme();
@@ -67,6 +73,33 @@ export function ChatBubble({
           minH={MIN_HEIGHT}
           justify="center"
         >
+          {message.replyMessage && (
+            <YStack px={TEXT_H_PADDING} pt={TEXT_V_PADDING} gap={2}>
+              <Text
+                fontSize="$1"
+                fontWeight="600"
+                color={mine ? "white" : "$color12"}
+                numberOfLines={1}
+              >
+                {replyName}
+              </Text>
+
+              <Text
+                fontSize="$2"
+                color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
+                numberOfLines={2}
+              >
+                {replySummary(message.replyMessage)}
+              </Text>
+
+              <YStack
+                height={1}
+                mt={2}
+                bg={mine ? QUOTE_LINE_ON_BLUE : "$color8"}
+              />
+            </YStack>
+          )}
+
           <Text
             px={TEXT_H_PADDING}
             py={TEXT_V_PADDING}

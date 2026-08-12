@@ -25,7 +25,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { api, isApiError } from "@/lib/api";
+import { api, type ChatMessageResponse, isApiError } from "@/lib/api";
 import { type ChatRow, toChatRows } from "@/lib/chat";
 import { pushOnce } from "@/lib/router";
 
@@ -46,6 +46,9 @@ export default function ChatRoomScreen() {
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<ChatMessageResponse | null>(
+    null,
+  );
   const listRef = useRef<FlatList<ChatRow>>(null);
 
   const queryClient = useQueryClient();
@@ -145,10 +148,16 @@ export default function ChatRoomScreen() {
                 mine={item.message.senderId === profile.memberId}
                 grouped={item.grouped}
                 showTime={item.showTime}
+                replyName={
+                  item.message.replyMessage?.senderId === profile.memberId
+                    ? "나"
+                    : room.nickname
+                }
                 partnerId={room.memberId}
                 partnerImageUrl={room.profileImageUrl ?? null}
                 onPressAvatar={() => pushOnce(`/member/${room.memberId}`)}
                 onPressPhoto={setViewerUrl}
+                onReply={setReplyTarget}
               />
             )
           }
@@ -193,8 +202,18 @@ export default function ChatRoomScreen() {
         <ChatInputBar
           sending={sending}
           uploading={uploading}
-          onSend={sendText}
+          reply={replyTarget}
+          replyName={
+            replyTarget && replyTarget.senderId !== profile?.memberId
+              ? (room?.nickname ?? "")
+              : "나"
+          }
+          onSend={(content) => {
+            sendText(content, replyTarget?.messageId ?? null);
+            setReplyTarget(null);
+          }}
           onPickPhotos={handlePickPhotos}
+          onCancelReply={() => setReplyTarget(null)}
         />
       </KeyboardStickyView>
 

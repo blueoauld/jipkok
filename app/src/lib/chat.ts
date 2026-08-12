@@ -1,4 +1,10 @@
-import type { ChatMessageResponse } from "@/lib/api";
+import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
+
+const PHOTO_SUMMARY = "사진";
+
+export function replySummary(reply: ReplyMessageResponse) {
+  return reply.content || PHOTO_SUMMARY;
+}
 
 export type ChatRow =
   | {

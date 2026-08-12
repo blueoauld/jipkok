@@ -32,8 +32,13 @@ export function useSendMessage(
     queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
 
   const sendText = useMutation({
-    mutationFn: (content: string) =>
-      api.chats.send(roomId, { type: "TEXT", content }),
+    mutationFn: ({
+      content,
+      replyToMessageId,
+    }: {
+      content: string;
+      replyToMessageId: number | null;
+    }) => api.chats.send(roomId, { type: "TEXT", content, replyToMessageId }),
     onSuccess: prepend,
     onError,
     onSettled: refreshRooms,
@@ -52,7 +57,8 @@ export function useSendMessage(
   });
 
   return {
-    sendText: sendText.mutate,
+    sendText: (content: string, replyToMessageId: number | null = null) =>
+      sendText.mutate({ content, replyToMessageId }),
     sendPhotos: sendPhotos.mutate,
     sending: sendText.isPending,
     uploading: sendPhotos.isPending,
