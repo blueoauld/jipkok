@@ -309,6 +309,12 @@ export const chats = {
       method: "POST",
       body,
     }),
+
+  createPhotoUploadUrl: (contentType: string) =>
+    request<PhotoUploadUrlResponse>("/api/chats/photos/upload-url", {
+      method: "POST",
+      body: { contentType },
+    }),
 };
 
 export const push = {

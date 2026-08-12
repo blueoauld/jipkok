@@ -17,6 +17,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import { isApiError } from "@/lib/api";
@@ -42,12 +43,23 @@ export default function ChatRoomScreen() {
 
   const { data: profile } = useMyProfile();
   const { data: room, error: roomError, refetch } = useChatRoom(roomId);
-  const sendMessage = useSendMessage(roomId, showApiError);
+  const { sendText, sendPhotos, sending, uploading } = useSendMessage(
+    roomId,
+    showApiError,
+  );
   const chatMessages = useChatMessages(roomId);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 
   const failure = roomError ?? error;
+
+  const handlePickPhotos = async () => {
+    const assets = await pickPhotos(MAX_PHOTOS);
+
+    if (assets.length > 0) {
+      sendPhotos(assets);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -117,8 +129,10 @@ export default function ChatRoomScreen() {
 
       <KeyboardStickyView offset={{ opened: keyboardOffset }}>
         <ChatInputBar
-          sending={sendMessage.isPending}
-          onSend={sendMessage.mutate}
+          sending={sending}
+          uploading={uploading}
+          onSend={sendText}
+          onPickPhotos={handlePickPhotos}
         />
       </KeyboardStickyView>
 

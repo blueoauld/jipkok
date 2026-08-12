@@ -2,7 +2,7 @@ import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneR
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
-import { getTokens, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, useTheme, XStack, YStack } from "tamagui";
 
 import {
   DISABLED_OPACITY,
@@ -25,10 +25,14 @@ const VERTICAL_PADDING = 7;
 
 export function ChatInputBar({
   sending,
+  uploading,
   onSend,
+  onPickPhotos,
 }: {
   sending: boolean;
+  uploading: boolean;
   onSend: (content: string) => void;
+  onPickPhotos: () => void;
 }) {
   const theme = useTheme();
   const inputRef = useRef<TextInput>(null);
@@ -45,7 +49,7 @@ export function ChatInputBar({
 
   return (
     <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
-      <YStack theme="gray">
+      <YStack theme="gray" opacity={uploading ? DISABLED_OPACITY : 1}>
         <YStack
           position="absolute"
           t={RETRO_SHADOW_OFFSET}
@@ -62,13 +66,22 @@ export function ChatInputBar({
           bg="$yellow9"
           items="center"
           justify="center"
-          pressStyle={{
-            x: RETRO_SHADOW_OFFSET,
-            y: RETRO_SHADOW_OFFSET,
-            bg: "$yellow10",
-          }}
+          pressStyle={
+            uploading
+              ? undefined
+              : {
+                  x: RETRO_SHADOW_OFFSET,
+                  y: RETRO_SHADOW_OFFSET,
+                  bg: "$yellow10",
+                }
+          }
+          onPress={uploading ? undefined : onPickPhotos}
         >
-          <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
+          {uploading ? (
+            <Spinner size="small" color="black" />
+          ) : (
+            <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
+          )}
         </XStack>
       </YStack>
 
