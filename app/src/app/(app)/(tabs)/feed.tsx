@@ -16,7 +16,7 @@ import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import {
   Dialog,
@@ -134,18 +134,18 @@ function CardButton({ children, ...props }: XStackProps) {
   );
 }
 
-function FeedCard({
+function Card({
   post,
   mine,
-  onPress,
+  onPressPhoto,
   onReport,
   onToggleLike,
 }: {
   post: FeedPostResponse;
   mine: boolean;
-  onPress: () => void;
-  onReport: () => void;
-  onToggleLike: () => void;
+  onPressPhoto: (imageUrl: string) => void;
+  onReport: (postId: number) => void;
+  onToggleLike: (post: FeedPostResponse) => void;
 }) {
   const theme = useTheme();
 
@@ -156,7 +156,7 @@ function FeedCard({
       aspectRatio={CARD_RATIO}
       overflow="hidden"
       bg="$color1"
-      onPress={onPress}
+      onPress={() => onPressPhoto(post.imageUrl)}
     >
       <Image
         source={post.imageUrl}
@@ -196,7 +196,7 @@ function FeedCard({
         <CardButton
           width={CARD_ICON_BUTTON_SIZE}
           height={CARD_ICON_BUTTON_SIZE}
-          onPress={onReport}
+          onPress={() => onReport(post.postId)}
         >
           <SirenIcon
             size={CARD_ICON_SIZE}
@@ -210,7 +210,7 @@ function FeedCard({
         <CardButton
           width={CARD_ICON_BUTTON_SIZE}
           height={CARD_ICON_BUTTON_SIZE}
-          onPress={onToggleLike}
+          onPress={() => onToggleLike(post)}
         >
           <HeartIcon
             size={CARD_ICON_SIZE}
@@ -234,6 +234,8 @@ function FeedCard({
     </RetroCard>
   );
 }
+
+const FeedCard = memo(Card);
 
 function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
   return (
@@ -522,6 +524,28 @@ export default function FeedScreen() {
     onError: showApiError,
   });
 
+  const { mutate: toggleLikeMutate } = toggleLike;
+  const { mutate: reportMutate } = report;
+
+  const handleToggleLike = useCallback(
+    (post: FeedPostResponse) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      toggleLikeMutate(post);
+    },
+    [toggleLikeMutate],
+  );
+
+  const handleReport = useCallback(
+    (postId: number) =>
+      confirm({
+        message: "신고한 피드는 검토 후 조치됩니다.",
+        confirmLabel: "신고",
+        destructive: true,
+        onConfirm: () => reportMutate(postId),
+      }),
+    [confirm, reportMutate],
+  );
+
   const compose = useMutation({
     mutationFn: async ({
       photo,
@@ -579,19 +603,9 @@ export default function FeedScreen() {
             <FeedCard
               post={item}
               mine={item.memberId === profile?.memberId}
-              onPress={() => setViewerUrl(item.imageUrl)}
-              onReport={() =>
-                confirm({
-                  message: "신고한 피드는 검토 후 조치됩니다.",
-                  confirmLabel: "신고",
-                  destructive: true,
-                  onConfirm: () => report.mutate(item.postId),
-                })
-              }
-              onToggleLike={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                toggleLike.mutate(item);
-              }}
+              onPressPhoto={setViewerUrl}
+              onReport={handleReport}
+              onToggleLike={handleToggleLike}
             />
           )}
           showsVerticalScrollIndicator={true}
