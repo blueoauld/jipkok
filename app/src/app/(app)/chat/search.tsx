@@ -8,6 +8,7 @@ import { getTokens, Spinner, Text, YStack } from "tamagui";
 import { ChatRoomRow } from "@/components/ChatRoomRow";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
+import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
 import { isApiError } from "@/lib/api";
 
@@ -22,6 +23,8 @@ export default function ChatSearchScreen() {
   const [keyword, setKeyword] = useState("");
   const [submitted, setSubmitted] = useState("");
 
+  const { alertElement, toggleNotification, confirmLeave } =
+    useChatRoomActions();
   const search = useChatRoomSearch(submitted);
   const {
     rooms,
@@ -72,7 +75,13 @@ export default function ChatSearchScreen() {
         <FlatList
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
-          renderItem={({ item }) => <ChatRoomRow room={item} />}
+          renderItem={({ item }) => (
+            <ChatRoomRow
+              room={item}
+              onToggleNotification={toggleNotification}
+              onLeave={confirmLeave}
+            />
+          )}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -112,6 +121,8 @@ export default function ChatSearchScreen() {
           }
         />
       </KeyboardAvoidingView>
+
+      {alertElement}
     </SafeAreaView>
   );
 }

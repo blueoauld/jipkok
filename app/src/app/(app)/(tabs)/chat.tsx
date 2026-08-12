@@ -10,6 +10,7 @@ import {
 } from "@/components/ScrollToTopButton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { isApiError } from "@/lib/api";
 
@@ -27,6 +28,8 @@ export default function ChatScreen() {
   const scrollTop = useScrollToTopVisible();
 
   const unreadOnly = filter === "안읽음";
+  const { alertElement, toggleNotification, confirmLeave } =
+    useChatRoomActions();
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatRooms;
@@ -49,7 +52,13 @@ export default function ChatScreen() {
           ref={listRef}
           data={rooms}
           keyExtractor={(room) => String(room.roomId)}
-          renderItem={({ item }) => <ChatRoomRow room={item} />}
+          renderItem={({ item }) => (
+            <ChatRoomRow
+              room={item}
+              onToggleNotification={toggleNotification}
+              onLeave={confirmLeave}
+            />
+          )}
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
@@ -97,6 +106,8 @@ export default function ChatScreen() {
         visible={scrollTop.visible}
         onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
       />
+
+      {alertElement}
     </YStack>
   );
 }

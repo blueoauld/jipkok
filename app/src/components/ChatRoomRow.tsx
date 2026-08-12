@@ -1,9 +1,3 @@
-import {
-  type InfiniteData,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import * as Haptics from "expo-haptics";
 import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
@@ -16,13 +10,8 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
-import { chatMessagesKey } from "@/hooks/useChatMessages";
-import { chatRoomKey } from "@/hooks/useChatRoom";
-import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
-import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
-import { formatUnreadCount, LEAVE_DESCRIPTION } from "@/lib/chat";
+import type { ChatRoomResponse } from "@/lib/api";
+import { formatUnreadCount } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
@@ -106,51 +95,17 @@ function LeaveAction({ onPress }: { onPress: () => void }) {
   );
 }
 
-function Row({ room }: { room: ChatRoomResponse }) {
+function Row({
+  room,
+  onToggleNotification,
+  onLeave,
+}: {
+  room: ChatRoomResponse;
+  onToggleNotification: (room: ChatRoomResponse) => void;
+  onLeave: (room: ChatRoomResponse) => void;
+}) {
   const theme = useTheme();
   const swipeable = useRef<SwipeableMethods>(null);
-  const queryClient = useQueryClient();
-  const { alertElement, confirm, showApiError } = useRetroAlert();
-
-  const apply = (enabled: boolean) =>
-    queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
-      { queryKey: CHAT_ROOMS_KEY },
-      (current) =>
-        current && {
-          ...current,
-          pages: current.pages.map((page) => ({
-            ...page,
-            items: page.items.map((item) =>
-              item.roomId === room.roomId
-                ? { ...item, notificationEnabled: enabled }
-                : item,
-            ),
-          })),
-        },
-    );
-
-  const toggle = useMutation({
-    mutationFn: (enabled: boolean) =>
-      api.chats.updateNotification(room.roomId, enabled),
-    onMutate: apply,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: chatRoomKey(room.roomId) }),
-    onError: (error) => {
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      showApiError(error);
-    },
-  });
-
-  const leave = useMutation({
-    mutationFn: () => api.chats.leave(room.roomId),
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: chatRoomKey(room.roomId) });
-      queryClient.removeQueries({ queryKey: chatMessagesKey(room.roomId) });
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
-    },
-    onError: showApiError,
-  });
 
   return (
     <>
@@ -165,8 +120,7 @@ function Row({ room }: { room: ChatRoomResponse }) {
               enabled={room.notificationEnabled}
               onPress={() => {
                 swipeable.current?.close();
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                toggle.mutate(!room.notificationEnabled);
+                onToggleNotification(room);
               }}
             />
           )}
@@ -174,12 +128,7 @@ function Row({ room }: { room: ChatRoomResponse }) {
             <LeaveAction
               onPress={() => {
                 swipeable.current?.close();
-                confirm({
-                  message: LEAVE_DESCRIPTION,
-                  confirmLabel: "나가기",
-                  destructive: true,
-                  onConfirm: () => leave.mutate(),
-                });
+                onLeave(room);
               }}
             />
           )}
@@ -235,8 +184,6 @@ function Row({ room }: { room: ChatRoomResponse }) {
           </YStack>
         </ReanimatedSwipeable>
       </YStack>
-
-      {alertElement}
     </>
   );
 }
