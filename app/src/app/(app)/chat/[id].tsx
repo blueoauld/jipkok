@@ -1,10 +1,15 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
 import { FlatList, type ScrollViewProps } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { getTokens, Spinner, Text, YStack } from "tamagui";
 
 import { ChatDay } from "@/components/ChatDay";
+import { ChatInputBar } from "@/components/ChatInputBar";
 import { ChatMessageRow } from "@/components/ChatMessageRow";
 import { ChatScrollView } from "@/components/ChatScrollView";
 import { PhotoViewer } from "@/components/PhotoViewer";
@@ -19,14 +24,12 @@ import { pushOnce } from "@/lib/router";
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
 
-const renderScrollComponent = (props: ScrollViewProps) => (
-  <ChatScrollView {...props} />
-);
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
   const space = getTokens().space;
+  const insets = useSafeAreaInsets();
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
@@ -48,7 +51,9 @@ export default function ChatRoomScreen() {
           ref={listRef}
           data={toChatRows(messages)}
           inverted
-          renderScrollComponent={renderScrollComponent}
+          renderScrollComponent={(props: ScrollViewProps) => (
+            <ChatScrollView {...props} offset={insets.bottom} />
+          )}
           keyExtractor={(row) => row.key}
           renderItem={({ item }) =>
             item.kind === "day" ? (
@@ -102,6 +107,10 @@ export default function ChatRoomScreen() {
           )}
         </YStack>
       )}
+
+      <KeyboardStickyView offset={{ opened: insets.bottom }}>
+        <ChatInputBar />
+      </KeyboardStickyView>
 
       <PhotoViewer
         photos={viewerUrl ? [viewerUrl] : []}

@@ -7,14 +7,15 @@ import {
 
 export const ChatScrollView = forwardRef<
   KeyboardChatScrollViewRef,
-  ScrollViewProps
->((props, ref) => (
+  ScrollViewProps & { offset: number }
+>(({ offset, ...props }, ref) => (
   <KeyboardChatScrollView
     ref={ref}
-    inverted
     automaticallyAdjustContentInsets={false}
     contentInsetAdjustmentBehavior="never"
     {...props}
+    inverted
+    offset={offset}
   />
 ));
 
