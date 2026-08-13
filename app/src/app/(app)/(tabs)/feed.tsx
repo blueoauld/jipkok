@@ -18,7 +18,7 @@ import { FeedDatePicker } from "@/components/FeedDatePicker";
 import { FeedNotificationButton } from "@/components/FeedNotificationButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
-import { PhotoViewer } from "@/components/PhotoViewer";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";

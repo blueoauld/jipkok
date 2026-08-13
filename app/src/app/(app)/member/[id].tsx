@@ -17,9 +17,9 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { PhotoPager } from "@/components/photo/PhotoPager";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { PhotoGrid } from "@/components/PhotoGrid";
-import { PhotoPager } from "@/components/PhotoPager";
-import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";

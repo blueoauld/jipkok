@@ -8,9 +8,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { PhotoPager } from "@/components/photo/PhotoPager";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { PhotoGrid } from "@/components/PhotoGrid";
-import { PhotoPager } from "@/components/PhotoPager";
-import { PhotoViewer } from "@/components/PhotoViewer";
 import { ProfileSection } from "@/components/ProfileSection";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";

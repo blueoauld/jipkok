@@ -2,16 +2,19 @@ import { Image } from "expo-image";
 import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { useState } from "react";
-import { FlatList, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { useTheme, XStack, YStack } from "tamagui";
 
-import { PhotoViewer } from "@/components/PhotoViewer";
+import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { IMAGE_TRANSITION, PHOTO_PRESS_OPACITY } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
 
 const PLACEHOLDER_ICON_SIZE = 48;
+
+const BADGE_SIZE = 24;
 
 const BADGE_ICON_SIZE = 14;
 
@@ -27,14 +30,13 @@ export function PhotoPager({
   const [index, setIndex] = useState(0);
   const [viewerOpen, setViewerOpen] = useState(false);
 
-  const openViewer = () => setViewerOpen(true);
-  const isSecret = (photoIndex: number) =>
-    secretFrom !== undefined && photoIndex >= secretFrom;
+  const height = width * PHOTO_RATIO;
+  const hasSecret = secretFrom !== undefined;
 
   if (photos.length === 0) {
     return (
       <YStack
-        height={width * PHOTO_RATIO}
+        height={height}
         bg="$color1"
         borderTopWidth={2}
         borderBottomWidth={2}
@@ -49,36 +51,33 @@ export function PhotoPager({
 
   return (
     <YStack borderTopWidth={2} borderBottomWidth={2} borderColor="$color12">
-      <FlatList
-        data={photos}
-        keyExtractor={(uri, photoIndex) => `${photoIndex}-${uri}`}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(event) =>
-          setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
-        }
-        renderItem={({ item, index: photoIndex }) => (
+      <PagedPhotos
+        photos={photos}
+        itemWidth={width}
+        index={index}
+        onIndexChange={setIndex}
+        renderPhoto={(photo, photoIndex) => (
           <XStack
+            width={width}
+            height={height}
             bg="$color1"
             pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
-            onPress={openViewer}
+            onPress={() => setViewerOpen(true)}
           >
             <Image
-              source={{ uri: item, cacheKey: photoCacheKey(item) }}
+              source={{ uri: photo, cacheKey: photoCacheKey(photo) }}
               contentFit="cover"
               transition={IMAGE_TRANSITION}
-              style={{ width, height: width * PHOTO_RATIO }}
+              style={{ width, height }}
             />
 
-            {isSecret(photoIndex) && (
+            {hasSecret && photoIndex >= secretFrom && (
               <XStack
                 position="absolute"
                 t="$3"
                 l="$3"
-                width={24}
-                height={24}
-                rounded={0}
+                width={BADGE_SIZE}
+                height={BADGE_SIZE}
                 bg="$gray12"
                 items="center"
                 justify="center"
@@ -86,7 +85,7 @@ export function PhotoPager({
                 <LockSimpleIcon
                   size={BADGE_ICON_SIZE}
                   weight="fill"
-                  color="white"
+                  color={theme.color1.val}
                 />
               </XStack>
             )}
@@ -94,23 +93,15 @@ export function PhotoPager({
         )}
       />
 
-      <XStack position="absolute" b="$3" l={0} r={0} justify="center" gap="$2">
-        {photos.map((uri, photoIndex) => (
-          <YStack
-            key={`${photoIndex}-${uri}`}
-            width={6}
-            height={6}
-            rounded={0}
-            bg="white"
-            opacity={photoIndex === index ? 1 : 0.4}
-          />
-        ))}
-      </XStack>
+      <YStack position="absolute" b="$3" l={0} r={0}>
+        <PhotoDots count={photos.length} index={index} />
+      </YStack>
 
       <PhotoViewer
         photos={photos}
         initialIndex={index}
         open={viewerOpen}
+        secret={hasSecret}
         onClose={() => setViewerOpen(false)}
       />
     </YStack>

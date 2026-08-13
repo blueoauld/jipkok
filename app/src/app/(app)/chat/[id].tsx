@@ -18,7 +18,7 @@ import { ChatMessageRow } from "@/components/ChatMessageRow";
 import { ChatScrollView } from "@/components/ChatScrollView";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { PhotoViewer } from "@/components/PhotoViewer";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
