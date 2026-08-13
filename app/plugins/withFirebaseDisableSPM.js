@@ -11,6 +11,8 @@ const MODULAR_HEADER_PODS = [
   "FirebaseInstallations",
   "GoogleDataTransport",
   "nanopb",
+  // 퍼포먼스가 끌고 오는 FirebaseRemoteConfig가 스위프트 파드라 이게 필요하다
+  "FirebaseABTesting",
 ];
 
 const TARGET_LINE = "target 'app' do";
