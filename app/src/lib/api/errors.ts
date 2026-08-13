@@ -13,3 +13,7 @@ export class ApiError extends Error {
 export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
+
+export function apiErrorCode(error: unknown) {
+  return isApiError(error) ? error.code : "unknown";
+}

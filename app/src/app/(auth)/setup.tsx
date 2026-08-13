@@ -9,6 +9,7 @@ import { FormScreen } from "@/components/FormScreen";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api } from "@/lib/api";
 import {
   BIO_MAX_LENGTH,
@@ -35,7 +36,10 @@ export default function SetupScreen() {
 
   const setupProfile = useMutation({
     mutationFn: api.members.setupProfile,
-    onSuccess: () => router.replace("/main"),
+    onSuccess: () => {
+      logAppEvent(APP_EVENT.profileSetupCompleted);
+      router.replace("/main");
+    },
     onError: showApiError,
   });
 

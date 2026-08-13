@@ -10,7 +10,8 @@ import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { api, type SignupRequest } from "@/lib/api";
+import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
+import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
 import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
 import {
@@ -26,6 +27,8 @@ const MINOR_NOTICE =
 const CODE_SENT_MESSAGE = "인증번호가 전송되었습니다.";
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
+
+const SIGN_UP_METHOD = "phone";
 
 const GENDERS = [
   { value: "MALE", label: "남자" },
@@ -56,14 +59,28 @@ export default function SignupScreen() {
 
   const sendCode = useMutation({
     mutationFn: api.auth.sendVerificationCode,
-    onSuccess: () => show("info", CODE_SENT_MESSAGE),
-    onError: showApiError,
+    onSuccess: () => {
+      logAppEvent(APP_EVENT.verificationCodeSent);
+      show("info", CODE_SENT_MESSAGE);
+    },
+    onError: (error) => {
+      logAppEvent(APP_EVENT.verificationCodeFailed, {
+        reason: apiErrorCode(error),
+      });
+      showApiError(error);
+    },
   });
 
   const signup = useMutation({
     mutationFn: api.members.signup,
-    onSuccess: () => router.replace("/setup"),
-    onError: showApiError,
+    onSuccess: () => {
+      logSignUp(SIGN_UP_METHOD);
+      router.replace("/setup");
+    },
+    onError: (error) => {
+      logAppEvent(APP_EVENT.signUpFailed, { reason: apiErrorCode(error) });
+      showApiError(error);
+    },
   });
 
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
