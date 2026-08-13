@@ -17,10 +17,15 @@ export const APP_EVENT = {
   verificationCodeFailed: "verification_code_failed",
   signUpFailed: "sign_up_failed",
   profileSetupCompleted: "profile_setup_completed",
+  memberLiked: "member_liked",
+  chatStarted: "chat_started",
+  feedPostCreated: "feed_post_created",
 } as const;
 
+export type AppEventName = (typeof APP_EVENT)[keyof typeof APP_EVENT];
+
 export function logAppEvent(
-  name: (typeof APP_EVENT)[keyof typeof APP_EVENT],
+  name: AppEventName,
   params?: Record<string, string>,
 ) {
   if (!ANALYTICS_ENABLED) {

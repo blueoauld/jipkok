@@ -31,6 +31,7 @@ import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
+import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight } from "@/lib/design";
@@ -75,7 +76,11 @@ const FAVORITES_KEY = ["favorites"];
 const SECRET_PHOTOS_KEY = ["secretPhotos"];
 const BLOCKS_KEY = ["blocks"];
 
-type Relation = { listKey: string[]; call: () => Promise<void> };
+type Relation = {
+  listKey: string[];
+  call: () => Promise<void>;
+  event?: AppEventName;
+};
 
 type AwaitedRelation = Relation & { successMessage: string };
 
@@ -211,6 +216,7 @@ export default function MemberProfileScreen() {
   const sendNote = useMutation({
     mutationFn: (content: string) => api.members.sendNote(memberId, content),
     onSuccess: () => {
+      logAppEvent(APP_EVENT.chatStarted);
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
@@ -221,8 +227,13 @@ export default function MemberProfileScreen() {
 
   const relate = useMutation({
     mutationFn: ({ call }: Relation) => call(),
-    onSuccess: (_data, { listKey }) =>
-      queryClient.invalidateQueries({ queryKey: listKey }),
+    onSuccess: (_data, { listKey, event }) => {
+      if (event) {
+        logAppEvent(event);
+      }
+
+      queryClient.invalidateQueries({ queryKey: listKey });
+    },
     onError: (mutationError) => {
       queryClient.invalidateQueries({ queryKey });
       showApiError(mutationError);
@@ -246,12 +257,13 @@ export default function MemberProfileScreen() {
       changes: Partial<MemberDetailResponse>,
       listKey: string[],
       call: () => Promise<void>,
+      event?: AppEventName,
     ) => {
       queryClient.setQueryData<MemberDetailResponse>(
         queryKey,
         (current) => current && { ...current, ...changes },
       );
-      relate.mutate({ listKey, call });
+      relate.mutate({ listKey, call, event });
     },
     [queryClient, queryKey, relate],
   );
@@ -281,6 +293,7 @@ export default function MemberProfileScreen() {
             member.likedByMe
               ? api.likes.remove(memberId)
               : api.likes.add(memberId),
+          member.likedByMe ? undefined : APP_EVENT.memberLiked,
         );
         return;
       }

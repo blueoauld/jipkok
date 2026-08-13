@@ -31,6 +31,7 @@ import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
+import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import {
   api,
   type FeedPostPage,
@@ -183,6 +184,7 @@ export default function FeedScreen() {
       await api.feeds.create({ objectKey, caption: caption || null });
     },
     onSuccess: async () => {
+      logAppEvent(APP_EVENT.feedPostCreated);
       setComposeOpen(false);
       await invalidate();
       show("info", POSTED_MESSAGE);
