@@ -13,6 +13,7 @@ import { useScreenTracking } from "@/hooks/useScreenTracking";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { initializeAds } from "@/lib/ads";
 import { initializeAnalytics } from "@/lib/analytics";
+import { initializeCrashReporting } from "@/lib/crash";
 import { QueryProvider } from "@/lib/query";
 import { useReviewStore } from "@/lib/review/store";
 import { useAccentColor, useThemeBackgroundColor } from "@/lib/theme/accent";
@@ -44,6 +45,7 @@ export default function RootLayout() {
                 <Push />
                 <Ads />
                 <Analytics />
+                <CrashReporting />
                 <Review />
                 <YStack flex={1}>
                   <Stack screenOptions={{ headerShown: false }} />
@@ -90,6 +92,14 @@ function Review() {
   useEffect(() => {
     markFirstSeen();
   }, [markFirstSeen]);
+
+  return null;
+}
+
+function CrashReporting() {
+  useEffect(() => {
+    initializeCrashReporting();
+  }, []);
 
   return null;
 }
