@@ -1,13 +1,16 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.TestcontainersConfiguration
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest
 @Transactional
 class SphericalDistanceTest {

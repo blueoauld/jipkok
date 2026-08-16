@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.feed.repository
 
+import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.block.entity.MemberBlock
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.feed.entity.FeedPost
@@ -15,11 +16,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest
 @Transactional
 class FeedPostRepositoryTest {

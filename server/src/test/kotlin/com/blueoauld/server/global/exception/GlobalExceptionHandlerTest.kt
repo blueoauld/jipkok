@@ -1,10 +1,12 @@
 package com.blueoauld.server.global.exception
 
+import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.global.security.JwtProvider
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -14,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest(properties = ["spring.jpa.hibernate.ddl-auto=none"])
 @AutoConfigureMockMvc
 class GlobalExceptionHandlerTest {

@@ -1,11 +1,13 @@
 package com.blueoauld.server.global.config
 
+import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.global.security.JwtProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.context.annotation.Import
 import org.springframework.messaging.converter.StringMessageConverter
 import org.springframework.messaging.simp.stomp.StompHeaders
 import org.springframework.messaging.simp.stomp.StompSession
@@ -15,6 +17,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = ["spring.jpa.hibernate.ddl-auto=none"],

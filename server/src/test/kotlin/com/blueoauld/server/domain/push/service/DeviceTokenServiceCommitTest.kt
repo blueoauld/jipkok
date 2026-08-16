@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.push.service
 
+import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.push.entity.DeviceToken
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -29,6 +31,7 @@ class ExpiredTokenListener(
     }
 }
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest
 class DeviceTokenServiceCommitTest {
 

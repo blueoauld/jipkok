@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.web
 
+import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
@@ -14,6 +15,7 @@ import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -24,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
+@Import(TestcontainersConfiguration::class)
 @SpringBootTest(properties = ["spring.jpa.hibernate.ddl-auto=none"])
 @AutoConfigureMockMvc
 class MemberControllerTest {
