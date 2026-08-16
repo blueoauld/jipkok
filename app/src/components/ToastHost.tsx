@@ -12,7 +12,7 @@ const SLIDE_OFFSET = 12;
 const ACCENT_BAR_WIDTH = 8;
 
 const ACCENT_BAR_COLORS = {
-  info: "$blue9",
+  info: "$green9",
   warning: "$yellow9",
   error: "$red9",
 } as const;
