@@ -90,6 +90,7 @@ function CalendarDay({
   const disabled = state === "disabled";
   const today = state === "today";
   const accent = useAccentToken();
+  const weight = disabled ? "400" : selected || today ? "700" : "500";
 
   return (
     <XStack
@@ -102,7 +103,7 @@ function CalendarDay({
     >
       <Text
         fontSize="$4"
-        fontWeight={selected || today ? "700" : "400"}
+        fontWeight={weight}
         color={
           selected
             ? "white"
