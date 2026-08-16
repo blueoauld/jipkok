@@ -15,7 +15,7 @@ private val log = KotlinLogging.logger {}
 @ConditionalOnExpression("!'\${discord.token:}'.isEmpty()")
 class DiscordBot(
 
-    private val discordProperties: DiscordProperties,
+    discordProperties: DiscordProperties,
     adminCommandListener: AdminCommandListener,
 ) {
 
@@ -23,20 +23,11 @@ class DiscordBot(
         .addEventListeners(adminCommandListener)
         .build()
 
-    init {
-        jda.awaitReady()
-        jda.getGuildById(discordProperties.guildId)
-            ?.updateCommands()
-            ?.addCommands(AdminCommandListener.commands())
-            ?.queue()
-            ?: log.error { "디스코드 길드를 찾지 못했다. guildId=${discordProperties.guildId}" }
-    }
-
     fun send(channelId: String, embeds: List<MessageEmbed>) {
         jda.getTextChannelById(channelId)
             ?.sendMessageEmbeds(embeds)
             ?.queue()
-            ?: log.error { "채널을 찾지 못했다. channelId=$channelId" }
+            ?: log.error { "채널을 찾지 못했다. channelId=$channelId, status=${jda.status}" }
     }
 
     @PreDestroy

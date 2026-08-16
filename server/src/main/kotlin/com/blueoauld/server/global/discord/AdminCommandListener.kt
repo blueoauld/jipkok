@@ -20,6 +20,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -41,6 +42,14 @@ class AdminCommandListener(
     private val reportService: ReportService,
     private val discordProperties: DiscordProperties,
 ) : ListenerAdapter() {
+
+    override fun onReady(event: ReadyEvent) {
+        event.jda.getGuildById(discordProperties.guildId)
+            ?.updateCommands()
+            ?.addCommands(commands())
+            ?.queue()
+            ?: log.error { "디스코드 길드를 찾지 못했다. guildId=${discordProperties.guildId}" }
+    }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name !in COMMAND_NAMES) {
