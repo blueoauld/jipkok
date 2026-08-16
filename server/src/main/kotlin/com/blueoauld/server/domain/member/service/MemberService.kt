@@ -1,33 +1,22 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.access.dto.AccessInfo
-import com.blueoauld.server.domain.access.service.AccessLogService
-import com.blueoauld.server.domain.access.service.AccessRewardService
-import com.blueoauld.server.domain.auth.service.AuthService
-import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
-import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
-import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateFeedNotificationRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
-import com.blueoauld.server.domain.member.dto.response.AdminMemberDetail
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
-import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
-import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -37,67 +26,28 @@ import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.*
 
 @Service
 class MemberService(
 
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val photoUploadService: PhotoUploadService,
-    private val verificationCodeService: VerificationCodeService,
-    private val authService: AuthService,
-    private val passwordEncoder: PasswordEncoder,
     private val photoStorage: PhotoStorage,
     private val memberSuspensionService: MemberSuspensionService,
-    private val accessRewardService: AccessRewardService,
-    private val accessLogService: AccessLogService,
-    private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
     @Transactional
-    fun signup(request: SignupRequest): SignupResponse {
-        if (request.password != request.passwordConfirm) {
-            throw BusinessException(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
-        }
-
-        verificationCodeService.verify(request.phoneNumber, request.verificationCode)
-
-        if (memberRepository.existsByPhoneNumber(request.phoneNumber)) {
-            throw BusinessException(ErrorCode.DUPLICATE_PHONE_NUMBER)
-        }
-
-        memberSuspensionService.checkPhoneNumber(request.phoneNumber, SuspensionType.SERVICE)
-
-        val member = memberRepository.save(
-            Member(
-                phoneNumber = request.phoneNumber,
-                password = encodePassword(request.password),
-                gender = request.gender,
-                nickname = generateNickname(),
-                birthYear = DEFAULT_BIRTH_YEAR,
-            ),
-        )
-        val tokens = authService.issueTokens(member)
-
-        nicknameHistoryRepository.save(NicknameHistory(member.id, member.nickname))
-
-        return SignupResponse(member.id, tokens.accessToken, tokens.refreshToken)
-    }
-
-    @Transactional
     fun setupProfile(memberId: Long, request: SetupProfileRequest) {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        val member = findMember(memberId)
 
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
@@ -112,9 +62,7 @@ class MemberService(
 
     @Transactional(readOnly = true)
     fun getMyProfile(memberId: Long): MyProfileResponse {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        val member = findMember(memberId)
         val photos = memberPhotoRepository.findAllByMemberId(memberId)
 
         return MyProfileResponse(
@@ -138,9 +86,7 @@ class MemberService(
     fun editProfile(memberId: Long, request: EditProfileRequest) {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        val member = findMember(memberId)
 
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
@@ -162,7 +108,7 @@ class MemberService(
         memberPhotoRepository.flush()
         memberPhotoRepository.saveAll(
             toPhotos(memberId, request.publicPhotoKeys, PhotoVisibility.PUBLIC) +
-                    toPhotos(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET),
+                toPhotos(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET),
         )
         photoUploadService.confirm(keptKeys)
 
@@ -180,126 +126,27 @@ class MemberService(
         return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
     }
 
-    @Transactional(readOnly = true)
-    fun findForAdmin(memberId: Long): AdminMemberDetail {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-        val photos = memberPhotoRepository.findAllByMemberId(memberId)
-
-        return AdminMemberDetail(
-            memberId = member.id,
-            nickname = member.nickname,
-            phoneNumber = member.phoneNumber,
-            gender = member.gender,
-            birthYear = member.birthYear,
-            age = currentYear() - member.birthYear,
-            comment = member.comment,
-            bio = member.bio,
-            publicPhotoCount = photos.count { it.visibility == PhotoVisibility.PUBLIC },
-            secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
-            receivedLikeCount = member.receivedLikeCount,
-            pointBalance = member.pointBalance,
-            noteReceiveEnabled = member.noteReceiveEnabled,
-            locatedAt = member.locatedAt,
-            joinedAt = member.createdAt,
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun findPhotoUrls(memberId: Long, visibility: PhotoVisibility): List<String> {
-        val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
-            photoStorage::toPublicUrl
-        } else {
-            photoStorage::createSignedViewUrl
-        }
-
-        return memberPhotoRepository.findAllByMemberId(memberId)
-            .filter { it.visibility == visibility }
-            .sortedBy { it.displayOrder }
-            .map { toUrl(it.objectKey) }
-    }
-
-    @Transactional
-    fun resetProfile(memberId: Long, target: ProfileTarget): String {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        when (target) {
-            ProfileTarget.NICKNAME -> changeNickname(member, generateNickname())
-            ProfileTarget.COMMENT -> member.comment = null
-            ProfileTarget.BIO -> member.bio = null
-            ProfileTarget.PUBLIC_PHOTO -> deletePhotos(memberId, PhotoVisibility.PUBLIC)
-            ProfileTarget.SECRET_PHOTO -> deletePhotos(memberId, PhotoVisibility.SECRET)
-        }
-
-        return member.nickname
-    }
-
-    private fun deletePhotos(memberId: Long, visibility: PhotoVisibility) {
-        val photos = memberPhotoRepository.findAllByMemberId(memberId).filter { it.visibility == visibility }
-
-        if (photos.isEmpty()) {
-            return
-        }
-
-        memberPhotoRepository.deleteAll(photos)
-        eventPublisher.publishEvent(PhotosDeletedEvent(photos.map { it.objectKey }))
-    }
-
     @Transactional
     fun updateNoteReceive(memberId: Long, request: UpdateNoteReceiveRequest) {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        member.noteReceiveEnabled = request.enabled
+        findMember(memberId).noteReceiveEnabled = request.enabled
     }
 
     @Transactional
     fun updateFeedNotification(memberId: Long, request: UpdateFeedNotificationRequest) {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        member.feedNotificationEnabled = request.enabled
+        findMember(memberId).feedNotificationEnabled = request.enabled
     }
 
     @Transactional
     fun updateComment(memberId: Long, request: UpdateCommentRequest) {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        member.comment = request.comment?.ifEmpty { null }
+        findMember(memberId).comment = request.comment?.ifEmpty { null }
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
     }
 
-    @Transactional
-    fun heartbeat(memberId: Long, request: HeartbeatRequest, ipAddress: String): PointRewardResponse {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
-
-        if ((request.latitude == null) != (request.longitude == null)) {
-            throw BusinessException(ErrorCode.INVALID_LOCATION)
-        }
-
-        member.latitude = request.latitude
-        member.longitude = request.longitude
-        member.locatedAt = clock.instant()
-
-        val platform = request.platform ?: throw BusinessException(ErrorCode.INVALID_REQUEST)
-
-        val access = AccessInfo(platform, request.deviceName, ipAddress)
-
-        accessLogService.record(member, access)
-
-        return accessRewardService.earn(member, access)
+    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
+        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
     private fun changeNickname(member: Member, nickname: String) {
@@ -360,15 +207,8 @@ class MemberService(
 
     private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
 
-    private fun encodePassword(rawPassword: String) = checkNotNull(passwordEncoder.encode(rawPassword)) {
-        "비밀번호를 해싱하지 못했다."
-    }
-
-    private fun generateNickname() = UUID.randomUUID().toString().replace("-", "").take(Member.NICKNAME_MAX_LENGTH)
-
     companion object {
 
-        const val DEFAULT_BIRTH_YEAR = 1998
         const val MIN_AGE = 19
         const val MAX_AGE = 90
 

@@ -1,26 +1,17 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.access.service.AccessLogService
-import com.blueoauld.server.domain.access.service.AccessRewardService
-import com.blueoauld.server.domain.auth.dto.response.TokenResponse
-import com.blueoauld.server.domain.auth.service.AuthService
-import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
-import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
-import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
-import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
@@ -39,7 +30,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -51,162 +41,36 @@ class MemberServiceTest {
 
     private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
 
+    private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
+
     private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
-
-    private val verificationCodeService = mockk<VerificationCodeService>(relaxed = true)
-
-    private val passwordEncoder = mockk<PasswordEncoder>()
-
-    private val authService = mockk<AuthService>()
 
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
-    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
-
     private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
 
-    private val accessRewardService = mockk<AccessRewardService>(relaxed = true)
-
-    private val accessLogService = mockk<AccessLogService>(relaxed = true)
-
-    private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val memberService = MemberService(
         memberRepository,
         memberPhotoRepository,
+        nicknameHistoryRepository,
         photoUploadService,
-        verificationCodeService,
-        authService,
-        passwordEncoder,
         photoStorage,
         memberSuspensionService,
-        accessRewardService,
-        accessLogService,
-        nicknameHistoryRepository,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
     fun setUp() {
-        every { memberRepository.existsByPhoneNumber(PHONE_NUMBER) } returns false
         every { memberRepository.save(any()) } answers { firstArg() }
         every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
-        every { passwordEncoder.encode(PASSWORD) } returns ENCODED_PASSWORD
-        every { authService.issueTokens(any()) } returns TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN)
         every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
         every { photoUploadService.createUploadUrl(any(), any(), any()) } answers {
             IssuedPhotoUpload("https://upload.test/key", secondArg<String>() + "key.jpg")
         }
         every { photoStorage.createUploadUrl(any(), any()) } answers { "https://upload.test/${firstArg<String>()}" }
-    }
-
-    @Test
-    fun `인증번호가 확인되면 회원을 만들고 토큰을 발급한다`() {
-        // given
-        val saved = slot<Member>()
-
-        // when
-        val response = memberService.signup(signupRequest())
-
-        // then
-        verify { verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE) }
-        verify { memberRepository.save(capture(saved)) }
-        assertThat(saved.captured.phoneNumber).isEqualTo(PHONE_NUMBER)
-        assertThat(saved.captured.gender).isEqualTo(Gender.MALE)
-        assertThat(response.accessToken).isEqualTo(ACCESS_TOKEN)
-        assertThat(response.refreshToken).isEqualTo(REFRESH_TOKEN)
-    }
-
-    @Test
-    fun `비밀번호를 해싱해서 저장한다`() {
-        // given
-        val saved = slot<Member>()
-
-        // when
-        memberService.signup(signupRequest())
-
-        // then
-        verify { memberRepository.save(capture(saved)) }
-        assertThat(saved.captured.password).isEqualTo(ENCODED_PASSWORD)
-        assertThat(saved.captured.password).isNotEqualTo(PASSWORD)
-    }
-
-    @Test
-    fun `닉네임은 열 자리 임의 문자열로, 출생연도는 기본값으로 채운다`() {
-        // given
-        val saved = slot<Member>()
-
-        // when
-        memberService.signup(signupRequest())
-
-        // then
-        verify { memberRepository.save(capture(saved)) }
-        assertThat(saved.captured.nickname).hasSize(Member.NICKNAME_MAX_LENGTH)
-        assertThat(saved.captured.nickname).matches("[0-9a-f]+")
-        assertThat(saved.captured.birthYear).isEqualTo(MemberService.DEFAULT_BIRTH_YEAR)
-    }
-
-    @Test
-    fun `가입할 때마다 닉네임이 달라진다`() {
-        // given
-        val saved = mutableListOf<Member>()
-
-        // when
-        memberService.signup(signupRequest())
-        memberService.signup(signupRequest())
-
-        // then
-        verify { memberRepository.save(capture(saved)) }
-        assertThat(saved[0].nickname).isNotEqualTo(saved[1].nickname)
-    }
-
-    @Test
-    fun `비밀번호 확인이 다르면 인증번호를 확인하지 않고 실패한다`() {
-        // given
-        val request = signupRequest(passwordConfirm = "different-password")
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.signup(request)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
-        verify(exactly = 0) { verificationCodeService.verify(any(), any()) }
-        verify(exactly = 0) { memberRepository.save(any()) }
-    }
-
-    @Test
-    fun `이미 가입된 번호면 회원을 만들지 않는다`() {
-        // given
-        every { memberRepository.existsByPhoneNumber(PHONE_NUMBER) } returns true
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.signup(signupRequest())
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.DUPLICATE_PHONE_NUMBER)
-        verify(exactly = 0) { memberRepository.save(any()) }
-    }
-
-    @Test
-    fun `인증번호 확인에 실패하면 회원을 만들지 않는다`() {
-        // given
-        every {
-            verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE)
-        } throws BusinessException(ErrorCode.VERIFICATION_CODE_MISMATCH)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.signup(signupRequest())
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_MISMATCH)
-        verify(exactly = 0) { memberRepository.save(any()) }
     }
 
     @Test
@@ -432,68 +296,6 @@ class MemberServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
-    }
-
-    @Test
-    fun `정지된 휴대폰 번호로는 가입할 수 없다`() {
-        // given
-        every {
-            memberSuspensionService.checkPhoneNumber(PHONE_NUMBER, SuspensionType.SERVICE)
-        } throws BusinessException(ErrorCode.SERVICE_SUSPENDED)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.signup(signupRequest())
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.SERVICE_SUSPENDED)
-        verify(exactly = 0) { memberRepository.save(any()) }
-    }
-
-    @Test
-    fun `코멘트를 초기화하면 비운다`() {
-        // given
-        val member = member()
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-
-        // when
-        memberService.resetProfile(MEMBER_ID, ProfileTarget.COMMENT)
-
-        // then
-        assertThat(member.comment).isNull()
-    }
-
-    @Test
-    fun `닉네임을 초기화하면 새 닉네임을 준다`() {
-        // given
-        val member = member()
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-
-        // when
-        val nickname = memberService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME)
-
-        // then
-        assertThat(nickname).isEqualTo(member.nickname).isNotEqualTo(NICKNAME)
-    }
-
-    @Test
-    fun `공개 사진을 초기화하면 사진과 파일을 지운다`() {
-        // given
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, "public.jpg"),
-            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, "secret.jpg"),
-        )
-        val event = slot<PhotosDeletedEvent>()
-
-        // when
-        memberService.resetProfile(MEMBER_ID, ProfileTarget.PUBLIC_PHOTO)
-
-        // then
-        verify { memberPhotoRepository.deleteAll(any<List<MemberPhoto>>()) }
-        verify { eventPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.objectKeys).containsExactly("public.jpg")
     }
 
     @Test
@@ -767,74 +569,6 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `좌표를 보내면 위치와 시각이 갱신된다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
-
-        // then
-        assertThat(member.latitude).isEqualTo(37.5665)
-        assertThat(member.longitude).isEqualTo(126.9780)
-        assertThat(member.locatedAt).isEqualTo(NOW)
-    }
-
-    @Test
-    fun `좌표 없이 보내면 기존 좌표를 지우고 시각만 갱신한다`() {
-        // given
-        val member = member()
-        member.latitude = 37.5665
-        member.longitude = 126.9780
-        stubMember(member)
-
-        // when
-        memberService.heartbeat(MEMBER_ID, heartbeat(), IP_ADDRESS)
-
-        // then
-        assertThat(member.latitude).isNull()
-        assertThat(member.longitude).isNull()
-        assertThat(member.locatedAt).isEqualTo(NOW)
-    }
-
-    @Test
-    fun `좌표를 하나만 보내면 실패한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.heartbeat(MEMBER_ID, heartbeat(latitude = 37.5665), IP_ADDRESS)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_LOCATION)
-        assertThat(member.locatedAt).isNull()
-    }
-
-    @Test
-    fun `없는 회원이면 위치 갱신에 실패한다`() {
-        // given
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
-    }
-
-    private fun heartbeat(latitude: Double? = null, longitude: Double? = null) =
-        HeartbeatRequest(DevicePlatform.IOS, "iPhone 15 Pro", latitude, longitude)
-
-    private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
-        "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
-
-    @Test
     fun `닉네임을 바꾸면 이력이 남는다`() {
         // given
         val member = member()
@@ -864,25 +598,15 @@ class MemberServiceTest {
         verify(exactly = 0) { nicknameHistoryRepository.save(any()) }
     }
 
-    @Test
-    fun `하트비트마다 접속 기록을 남긴다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        memberService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
-
-        // then
-        verify { accessLogService.record(member, any()) }
-    }
+    private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
+        "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
 
     private fun member() = Member(
         phoneNumber = PHONE_NUMBER,
         password = ENCODED_PASSWORD,
         gender = Gender.MALE,
         nickname = "default000",
-        birthYear = MemberService.DEFAULT_BIRTH_YEAR,
+        birthYear = MemberSignupService.DEFAULT_BIRTH_YEAR,
     )
 
     private fun stubMember(member: Member) {
@@ -890,24 +614,10 @@ class MemberServiceTest {
         every { memberRepository.existsByNicknameIgnoreCase(any()) } returns false
     }
 
-    private fun signupRequest(passwordConfirm: String = PASSWORD) = SignupRequest(
-        phoneNumber = PHONE_NUMBER,
-        verificationCode = VERIFICATION_CODE,
-        password = PASSWORD,
-        passwordConfirm = passwordConfirm,
-        gender = Gender.MALE,
-    )
-
     companion object {
 
-        private const val IP_ADDRESS = "203.0.113.7"
-
         private const val PHONE_NUMBER = "01012345678"
-        private const val VERIFICATION_CODE = "123456"
-        private const val PASSWORD = "password1234"
         private const val ENCODED_PASSWORD = "encoded-password"
-        private const val ACCESS_TOKEN = "access-token"
-        private const val REFRESH_TOKEN = "refresh-token"
         private const val MEMBER_ID = 0L
         private const val NICKNAME = "닉네임"
         private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")

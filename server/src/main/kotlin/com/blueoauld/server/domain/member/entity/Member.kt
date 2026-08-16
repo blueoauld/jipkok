@@ -14,6 +14,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
 import java.time.Instant
+import java.util.UUID
 
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity
@@ -84,5 +85,7 @@ class Member(
         const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
         const val COMMENT_MAX_LENGTH = 100
         const val BIO_MAX_LENGTH = 1000
+
+        fun generateNickname() = UUID.randomUUID().toString().replace("-", "").take(NICKNAME_MAX_LENGTH)
     }
 }

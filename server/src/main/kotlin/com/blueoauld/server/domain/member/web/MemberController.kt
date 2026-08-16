@@ -17,10 +17,12 @@ import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.service.MemberDetailService
+import com.blueoauld.server.domain.member.service.MemberHeartbeatService
 import com.blueoauld.server.domain.member.service.MemberListService
 import com.blueoauld.server.domain.member.service.MemberRankingService
 import com.blueoauld.server.domain.member.service.MemberSearchService
 import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.member.service.MemberSignupService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.response.ScrollResponse
@@ -52,12 +54,14 @@ class MemberController(
     private val memberRankingService: MemberRankingService,
     private val memberDetailService: MemberDetailService,
     private val memberWithdrawService: MemberWithdrawService,
+    private val memberSignupService: MemberSignupService,
+    private val memberHeartbeatService: MemberHeartbeatService,
 ) {
 
     @Operation(summary = "회원가입")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberService.signup(request)
+    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberSignupService.signup(request)
 
     @Operation(summary = "회원 목록 조회", description = "거리순은 내 위치가 없으면 최근순으로 준다.")
     @GetMapping
@@ -168,7 +172,7 @@ class MemberController(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: HeartbeatRequest,
         servletRequest: HttpServletRequest,
-    ): PointRewardResponse = memberService.heartbeat(memberId, request, servletRequest.clientIp())
+    ): PointRewardResponse = memberHeartbeatService.heartbeat(memberId, request, servletRequest.clientIp())
 
     companion object {
 

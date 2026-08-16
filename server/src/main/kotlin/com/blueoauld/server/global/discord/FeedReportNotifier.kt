@@ -1,7 +1,7 @@
 package com.blueoauld.server.global.discord
 
 import com.blueoauld.server.domain.feed.event.FeedPostAutoDeletedEvent
-import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -22,7 +22,7 @@ class FeedReportNotifier(
 
     private val discordBot: DiscordBot,
     private val discordProperties: DiscordProperties,
-    private val memberService: MemberService,
+    private val memberAdminService: MemberAdminService,
     private val photoStorage: PhotoStorage,
 ) {
 
@@ -33,7 +33,7 @@ class FeedReportNotifier(
     }
 
     private fun toEmbeds(event: FeedPostAutoDeletedEvent): List<MessageEmbed> {
-        val nickname = memberService.findForAdmin(event.memberId).nickname
+        val nickname = memberAdminService.findForAdmin(event.memberId).nickname
 
         val body = listOf(
             DiscordEmbeds.field("ID", "`${event.postId}`"),

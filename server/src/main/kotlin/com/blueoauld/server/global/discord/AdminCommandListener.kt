@@ -4,7 +4,7 @@ import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.MemberView
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
-import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.response.ReportDetail
@@ -41,7 +41,7 @@ private val log = KotlinLogging.logger {}
 class AdminCommandListener(
 
     private val memberSuspensionService: MemberSuspensionService,
-    private val memberService: MemberService,
+    private val memberAdminService: MemberAdminService,
     private val reportService: ReportService,
     private val discordProperties: DiscordProperties,
 
@@ -220,7 +220,7 @@ class AdminCommandListener(
     }
 
     private fun photos(memberId: Long, view: MemberView, visibility: PhotoVisibility): Any {
-        val urls = memberService.findPhotoUrls(memberId, visibility)
+        val urls = memberAdminService.findPhotoUrls(memberId, visibility)
 
         if (urls.isEmpty()) {
             return "사진이 없습니다."
@@ -232,7 +232,7 @@ class AdminCommandListener(
     }
 
     private fun profile(memberId: Long): EmbedReply {
-        val member = memberService.findForAdmin(memberId)
+        val member = memberAdminService.findForAdmin(memberId)
 
         val body = listOf(
             "**ID**\n`${member.memberId}`",
@@ -264,7 +264,7 @@ class AdminCommandListener(
     private fun reset(event: SlashCommandInteractionEvent): String {
         val memberId = event.getOption(MEMBER_ID_OPTION)!!.asLong
         val target = ProfileTarget.valueOf(event.getOption(TARGET_OPTION)!!.asString)
-        val nickname = memberService.resetProfile(memberId, target)
+        val nickname = memberAdminService.resetProfile(memberId, target)
 
         val embed = EmbedBuilder()
             .setTitle(RESET)

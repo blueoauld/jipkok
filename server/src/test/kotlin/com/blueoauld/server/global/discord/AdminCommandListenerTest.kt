@@ -1,6 +1,6 @@
 package com.blueoauld.server.global.discord
 
-import com.blueoauld.server.domain.member.service.MemberService
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.service.ReportService
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.properties.DiscordProperties
@@ -21,7 +21,7 @@ class AdminCommandListenerTest {
 
     private val listener = AdminCommandListener(
         mockk<MemberSuspensionService>(relaxed = true),
-        mockk<MemberService>(relaxed = true),
+        mockk<MemberAdminService>(relaxed = true),
         mockk<ReportService>(relaxed = true),
         discordProperties(),
         SyncTaskExecutor(),
