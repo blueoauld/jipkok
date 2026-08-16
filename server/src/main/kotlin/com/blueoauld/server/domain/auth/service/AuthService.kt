@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.auth.service
 import com.blueoauld.server.domain.auth.dto.request.LoginRequest
 import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
+import com.blueoauld.server.domain.auth.repository.LoginAttemptCache
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -18,20 +19,33 @@ class AuthService(
 
     private val memberRepository: MemberRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val loginAttemptCache: LoginAttemptCache,
     private val passwordEncoder: PasswordEncoder,
     private val jwtProvider: JwtProvider,
 ) {
 
     @Transactional(readOnly = true)
-    fun login(request: LoginRequest): TokenResponse {
-        val member = memberRepository.findByPhoneNumber(request.phoneNumber)
-            ?: throw BusinessException(ErrorCode.LOGIN_FAILED)
+    fun login(request: LoginRequest, ipAddress: String): TokenResponse {
+        checkAttempts(request.phoneNumber, ipAddress)
 
-        if (!passwordEncoder.matches(request.password, member.password)) {
+        val member = memberRepository.findByPhoneNumber(request.phoneNumber)
+
+        if (member == null || !passwordEncoder.matches(request.password, member.password)) {
+            loginAttemptCache.increase(request.phoneNumber, ipAddress)
             throw BusinessException(ErrorCode.LOGIN_FAILED)
         }
 
+        loginAttemptCache.clear(request.phoneNumber)
+
         return issueTokens(member)
+    }
+
+    private fun checkAttempts(phoneNumber: String, ipAddress: String) {
+        val count = loginAttemptCache.find(phoneNumber, ipAddress)
+
+        if (count.phoneNumber >= PHONE_NUMBER_ATTEMPT_LIMIT || count.ipAddress >= IP_ADDRESS_ATTEMPT_LIMIT) {
+            throw BusinessException(ErrorCode.LOGIN_ATTEMPT_EXCEEDED)
+        }
     }
 
     @Transactional(readOnly = true)
@@ -63,5 +77,11 @@ class AuthService(
         refreshTokenRepository.save(member.id, refreshToken)
 
         return TokenResponse(jwtProvider.createAccessToken(member.id, member.role.name), refreshToken)
+    }
+
+    companion object {
+
+        const val PHONE_NUMBER_ATTEMPT_LIMIT = 5
+        const val IP_ADDRESS_ATTEMPT_LIMIT = 30
     }
 }

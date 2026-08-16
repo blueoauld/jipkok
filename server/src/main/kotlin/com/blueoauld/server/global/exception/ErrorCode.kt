@@ -45,6 +45,11 @@ enum class ErrorCode(
         "AUTH_011",
         "인증번호를 보내지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     ),
+    LOGIN_ATTEMPT_EXCEEDED(
+        HttpStatus.TOO_MANY_REQUESTS,
+        "AUTH_012",
+        "로그인 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+    ),
 
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),

@@ -2,6 +2,8 @@ package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.dto.request.LoginRequest
 import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
+import com.blueoauld.server.domain.auth.repository.LoginAttemptCache
+import com.blueoauld.server.domain.auth.repository.LoginAttemptCount
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -25,6 +27,8 @@ class AuthServiceTest {
 
     private val refreshTokenRepository = mockk<RefreshTokenRepository>(relaxed = true)
 
+    private val loginAttemptCache = mockk<LoginAttemptCache>(relaxed = true)
+
     private val passwordEncoder = mockk<PasswordEncoder>()
 
     private val jwtProvider = mockk<JwtProvider>()
@@ -32,6 +36,7 @@ class AuthServiceTest {
     private val authService = AuthService(
         memberRepository,
         refreshTokenRepository,
+        loginAttemptCache,
         passwordEncoder,
         jwtProvider,
     )
@@ -41,6 +46,7 @@ class AuthServiceTest {
         every { jwtProvider.createAccessToken(any(), any()) } returns ACCESS_TOKEN
         every { jwtProvider.createRefreshToken(MEMBER_ID) } returns NEW_REFRESH_TOKEN
         every { jwtProvider.parseRefreshTokenMemberId(REFRESH_TOKEN) } returns MEMBER_ID
+        stubAttemptCount(0, 0)
     }
 
     @Test
@@ -50,7 +56,7 @@ class AuthServiceTest {
         every { passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD) } returns true
 
         // when
-        val response = authService.login(LoginRequest(PHONE_NUMBER, PASSWORD))
+        val response = authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
 
         // then
         verify { refreshTokenRepository.save(MEMBER_ID, NEW_REFRESH_TOKEN) }
@@ -65,7 +71,7 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD))
+            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
         }
 
         // then
@@ -81,12 +87,71 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD))
+            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
         }
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.LOGIN_FAILED)
         verify(exactly = 0) { refreshTokenRepository.save(any(), any()) }
+    }
+
+    @Test
+    fun `로그인에 실패하면 시도 횟수를 올린다`() {
+        // given
+        stubMember(member())
+        every { passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD) } returns false
+
+        // when
+        assertThrows(BusinessException::class.java) {
+            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
+        }
+
+        // then
+        verify { loginAttemptCache.increase(PHONE_NUMBER, IP_ADDRESS) }
+    }
+
+    @Test
+    fun `로그인에 성공하면 번호의 시도 횟수를 지운다`() {
+        // given
+        stubMember(member())
+        every { passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD) } returns true
+
+        // when
+        authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
+
+        // then
+        verify { loginAttemptCache.clear(PHONE_NUMBER) }
+    }
+
+    @Test
+    fun `번호의 시도 횟수를 넘기면 비밀번호를 확인하지 않고 막는다`() {
+        // given
+        stubAttemptCount(AuthService.PHONE_NUMBER_ATTEMPT_LIMIT.toLong(), 0)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.LOGIN_ATTEMPT_EXCEEDED)
+        verify(exactly = 0) { passwordEncoder.matches(any(), any()) }
+        verify(exactly = 0) { loginAttemptCache.increase(any(), any()) }
+    }
+
+    @Test
+    fun `IP의 시도 횟수를 넘겨도 막는다`() {
+        // given
+        stubAttemptCount(0, AuthService.IP_ADDRESS_ATTEMPT_LIMIT.toLong())
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.LOGIN_ATTEMPT_EXCEEDED)
+        verify(exactly = 0) { passwordEncoder.matches(any(), any()) }
     }
 
     @Test
@@ -204,8 +269,14 @@ class AuthServiceTest {
         every { refreshTokenRepository.findToken(MEMBER_ID) } returns token
     }
 
+    private fun stubAttemptCount(phoneNumber: Long, ipAddress: Long) {
+        every { loginAttemptCache.find(PHONE_NUMBER, IP_ADDRESS) } returns
+                LoginAttemptCount(phoneNumber, ipAddress)
+    }
+
     companion object {
 
+        private const val IP_ADDRESS = "203.0.113.7"
         private const val PHONE_NUMBER = "01012345678"
         private const val PASSWORD = "password1234"
         private const val ENCODED_PASSWORD = "encoded-password"
