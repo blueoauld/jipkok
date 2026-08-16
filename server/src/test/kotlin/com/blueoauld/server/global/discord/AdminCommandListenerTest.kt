@@ -1,8 +1,5 @@
 package com.blueoauld.server.global.discord
 
-import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.domain.report.service.ReportService
-import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.mockk.every
 import io.mockk.mockk
@@ -19,13 +16,7 @@ import org.springframework.core.task.SyncTaskExecutor
 
 class AdminCommandListenerTest {
 
-    private val listener = AdminCommandListener(
-        mockk<MemberSuspensionService>(relaxed = true),
-        mockk<MemberAdminService>(relaxed = true),
-        mockk<ReportService>(relaxed = true),
-        discordProperties(),
-        SyncTaskExecutor(),
-    )
+    private val listener = AdminCommandListener(emptyList(), discordProperties(), SyncTaskExecutor())
 
     @Test
     fun `연결되면 길드에 명령을 등록한다`() {
@@ -49,7 +40,7 @@ class AdminCommandListenerTest {
         // then
         verify { updateAction.queue() }
         assertThat(commands.captured.map { it.name })
-            .contains(AdminCommandListener.SUSPEND, AdminCommandListener.REPORTS)
+            .contains(AdminCommands.SUSPEND, AdminCommands.REPORTS)
     }
 
     @Test
