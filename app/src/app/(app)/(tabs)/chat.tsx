@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
-import { ChatRoomRow } from "@/components/ChatRoomRow";
+import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";

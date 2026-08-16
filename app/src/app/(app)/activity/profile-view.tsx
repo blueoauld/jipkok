@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ActivityList } from "@/components/ActivityList";
+import { ActivityList } from "@/components/activity/ActivityList";
 import {
   useMarkProfileViewsSeen,
   useProfileViews,

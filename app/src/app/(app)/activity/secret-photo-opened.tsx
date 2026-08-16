@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ActivityList } from "@/components/ActivityList";
+import { ActivityList } from "@/components/activity/ActivityList";
 import { useMemberList } from "@/hooks/useMemberList";
 import { api } from "@/lib/api";
 

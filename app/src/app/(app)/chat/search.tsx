@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ChatRoomRow } from "@/components/ChatRoomRow";
+import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { SearchList } from "@/components/SearchList";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";

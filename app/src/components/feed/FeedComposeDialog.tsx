@@ -7,7 +7,7 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useRef, useState } from "react";
 import { Dialog, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { CARD_RATIO } from "@/components/FeedCard";
+import { CARD_RATIO } from "@/components/feed/FeedCard";
 import { FormField } from "@/components/FormField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";

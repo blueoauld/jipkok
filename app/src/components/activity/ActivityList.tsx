@@ -2,7 +2,7 @@ import { type ReactNode, useMemo } from "react";
 import { FlatList } from "react-native";
 import { getTokens, Spinner, YStack } from "tamagui";
 
-import { ActivityRow } from "@/components/ActivityRow";
+import { ActivityRow } from "@/components/activity/ActivityRow";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";

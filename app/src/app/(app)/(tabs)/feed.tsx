@@ -12,10 +12,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { XStack, YStack } from "tamagui";
 
-import { FeedCard } from "@/components/FeedCard";
-import { FeedComposeDialog } from "@/components/FeedComposeDialog";
-import { FeedDatePicker } from "@/components/FeedDatePicker";
-import { FeedNotificationButton } from "@/components/FeedNotificationButton";
+import { FeedCard } from "@/components/feed/FeedCard";
+import { FeedComposeDialog } from "@/components/feed/FeedComposeDialog";
+import { FeedDatePicker } from "@/components/feed/FeedDatePicker";
+import { FeedNotificationButton } from "@/components/feed/FeedNotificationButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";

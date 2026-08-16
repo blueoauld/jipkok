@@ -12,10 +12,10 @@ import {
 } from "react-native-safe-area-context";
 import { getTokens, Spinner, YStack } from "tamagui";
 
-import { ChatDay } from "@/components/ChatDay";
-import { ChatInputBar } from "@/components/ChatInputBar";
-import { ChatMessageRow } from "@/components/ChatMessageRow";
-import { ChatScrollView } from "@/components/ChatScrollView";
+import { ChatDay } from "@/components/chat/ChatDay";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
+import { ChatMessageRow } from "@/components/chat/ChatMessageRow";
+import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
