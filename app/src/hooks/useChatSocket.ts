@@ -8,8 +8,8 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
-import { type ChatEvent, createChatSocket } from "@/lib/chat-socket";
-import { useDeletedRoomStore } from "@/lib/chat-store";
+import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
+import { useDeletedRoomStore } from "@/lib/chat/store";
 
 const CHAT_KEY = ["chats"];
 

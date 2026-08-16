@@ -41,7 +41,7 @@ export function fromDateParam(value: string) {
   return new Date(year, month - 1, day);
 }
 
-export function isSameDay(left: Date, right: Date) {
+function isSameDay(left: Date, right: Date) {
   return toDateParam(left) === toDateParam(right);
 }
 

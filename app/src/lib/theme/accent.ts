@@ -2,7 +2,7 @@ import { useTheme } from "tamagui";
 
 import { useThemeStore } from "@/lib/theme/store";
 
-export type Accent = "blue" | "pink";
+type Accent = "blue" | "pink";
 
 export function useAccent(): Accent {
   return useThemeStore((state) => (state.mode === "pink" ? "pink" : "blue"));

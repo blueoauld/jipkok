@@ -41,7 +41,7 @@ import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
-import { usePhotoGridStore } from "@/lib/photo-grid/store";
+import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 

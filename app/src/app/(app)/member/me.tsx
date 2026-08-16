@@ -21,7 +21,7 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
-import { usePhotoGridStore } from "@/lib/photo-grid/store";
+import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 
 const LIKE_ICON_SIZE = 14;

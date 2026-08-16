@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
+type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 
 type AuthState = {
   status: AuthStatus;

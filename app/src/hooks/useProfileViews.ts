@@ -8,8 +8,8 @@ import { useEffect, useMemo } from "react";
 
 import { api, type ProfileViewPage } from "@/lib/api";
 
-export const PROFILE_VIEWS_KEY = ["profileViews"];
-export const PROFILE_VIEW_NEW_COUNT_KEY = ["profileViews", "newCount"];
+const PROFILE_VIEWS_KEY = ["profileViews"];
+const PROFILE_VIEW_NEW_COUNT_KEY = ["profileViews", "newCount"];
 
 export function useProfileViews() {
   const query = useInfiniteQuery({

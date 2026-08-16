@@ -37,7 +37,7 @@ import {
   toChatRows,
   toReply,
 } from "@/lib/chat";
-import { useDeletedRoomStore } from "@/lib/chat-store";
+import { useDeletedRoomStore } from "@/lib/chat/store";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
