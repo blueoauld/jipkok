@@ -6,10 +6,10 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -26,24 +26,18 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
 
   return (
     <YStack shrink={0}>
-      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
-      <XStack
+      <RetroPressable
+        offset={RETRO_SHADOW_OFFSET_SM}
         width={DELETE_BUTTON_SIZE}
         height={DELETE_BUTTON_SIZE}
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
         bg="$red10"
+        pressBg="$red11"
         items="center"
         justify="center"
-        pressStyle={{
-          x: RETRO_SHADOW_OFFSET_SM,
-          y: RETRO_SHADOW_OFFSET_SM,
-          bg: "$red11",
-        }}
         onPress={press}
       >
         <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
-      </XStack>
+      </RetroPressable>
     </YStack>
   );
 }

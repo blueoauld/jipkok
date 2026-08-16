@@ -9,6 +9,7 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
@@ -77,21 +78,18 @@ function OverlayButton({
 } & XStackProps) {
   return (
     <YStack position="absolute" {...position}>
-      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
-      <XStack
+      <RetroPressable
+        offset={RETRO_SHADOW_OFFSET_SM}
         width={24}
         height={24}
         rounded={0}
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
         bg={bg}
         items="center"
         justify="center"
-        pressStyle={{ x: RETRO_SHADOW_OFFSET_SM, y: RETRO_SHADOW_OFFSET_SM }}
         onPress={onPress}
       >
         {children}
-      </XStack>
+      </RetroPressable>
     </YStack>
   );
 }
@@ -227,16 +225,11 @@ function Grid({
 
                     {showPrimaryBadge && cell.index === 0 && (
                       <YStack position="absolute" t="$2" l="$2">
-                        <RetroShadow
-                          color="$gray12"
+                        <RetroPressable
                           offset={RETRO_SHADOW_OFFSET_SM}
-                        />
-                        <XStack
                           width={24}
                           height={24}
                           rounded={0}
-                          borderWidth={RETRO_BORDER_WIDTH}
-                          borderColor="$gray12"
                           bg={accent}
                           items="center"
                           justify="center"
@@ -246,7 +239,7 @@ function Grid({
                             weight="fill"
                             color="white"
                           />
-                        </XStack>
+                        </RetroPressable>
                       </YStack>
                     )}
 

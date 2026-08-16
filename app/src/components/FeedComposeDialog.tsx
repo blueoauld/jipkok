@@ -13,7 +13,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
-import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 
@@ -86,24 +86,18 @@ function ComposeForm({
           <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
 
           <YStack position="absolute" t="$3" r="$3">
-            <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
-            <XStack
+            <RetroPressable
+              offset={RETRO_SHADOW_OFFSET_SM}
               width={REMOVE_BUTTON_SIZE}
               height={REMOVE_BUTTON_SIZE}
               rounded={0}
-              borderWidth={RETRO_BORDER_WIDTH}
-              borderColor="$gray12"
               bg="$red10"
               items="center"
               justify="center"
-              pressStyle={{
-                x: RETRO_SHADOW_OFFSET_SM,
-                y: RETRO_SHADOW_OFFSET_SM,
-              }}
               onPress={() => setPhoto(null)}
             >
               <XIcon size={REMOVE_ICON_SIZE} weight="bold" color="white" />
-            </XStack>
+            </RetroPressable>
           </YStack>
         </YStack>
       ) : (

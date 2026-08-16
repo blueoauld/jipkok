@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
 import { replySummary } from "@/lib/chat";
@@ -108,34 +109,22 @@ export function ChatInputBar({
       )}
 
       <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
-        <YStack theme="gray">
-          <RetroShadow color="$gray12" />
-          <XStack
-            width={FLOATING_BUTTON_SIZE}
-            height={FLOATING_BUTTON_SIZE}
-            borderWidth={RETRO_BORDER_WIDTH}
-            borderColor="$gray12"
-            bg={uploading ? "$gray8" : "$yellow9"}
-            items="center"
-            justify="center"
-            pressStyle={
-              uploading
-                ? undefined
-                : {
-                    x: RETRO_SHADOW_OFFSET,
-                    y: RETRO_SHADOW_OFFSET,
-                    bg: "$yellow10",
-                  }
-            }
-            onPress={uploading ? undefined : onPickPhotos}
-          >
-            {uploading ? (
-              <Spinner size="small" color="white" />
-            ) : (
-              <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
-            )}
-          </XStack>
-        </YStack>
+        <RetroPressable
+          theme="gray"
+          width={FLOATING_BUTTON_SIZE}
+          height={FLOATING_BUTTON_SIZE}
+          bg={uploading ? "$gray8" : "$yellow9"}
+          pressBg="$yellow10"
+          items="center"
+          justify="center"
+          onPress={uploading ? undefined : onPickPhotos}
+        >
+          {uploading ? (
+            <Spinner size="small" color="white" />
+          ) : (
+            <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
+          )}
+        </RetroPressable>
 
         <XStack flex={1} theme="gray">
           <RetroShadow color="$gray12" />
@@ -158,30 +147,18 @@ export function ChatInputBar({
           </XStack>
         </XStack>
 
-        <YStack theme={accent}>
-          <RetroShadow color="$gray12" />
-          <XStack
-            width={FLOATING_BUTTON_SIZE}
-            height={FLOATING_BUTTON_SIZE}
-            borderWidth={RETRO_BORDER_WIDTH}
-            borderColor="$gray12"
-            bg={sendable ? "$color10" : "$gray8"}
-            items="center"
-            justify="center"
-            pressStyle={
-              sendable
-                ? {
-                    x: RETRO_SHADOW_OFFSET,
-                    y: RETRO_SHADOW_OFFSET,
-                    bg: "$color11",
-                  }
-                : undefined
-            }
-            onPress={sendable ? send : undefined}
-          >
-            <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
-          </XStack>
-        </YStack>
+        <RetroPressable
+          theme={accent}
+          width={FLOATING_BUTTON_SIZE}
+          height={FLOATING_BUTTON_SIZE}
+          bg={sendable ? "$color10" : "$gray8"}
+          pressBg="$color11"
+          items="center"
+          justify="center"
+          onPress={sendable ? send : undefined}
+        >
+          <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
+        </RetroPressable>
       </XStack>
     </YStack>
   );

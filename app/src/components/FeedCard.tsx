@@ -5,14 +5,10 @@ import { memo } from "react";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
-import {
-  IMAGE_TRANSITION,
-  RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET_SM,
-} from "@/lib/design";
+import { IMAGE_TRANSITION, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -24,24 +20,16 @@ const CARD_ICON_BUTTON_SIZE = 40;
 
 function CardButton({ children, ...props }: XStackProps) {
   return (
-    <YStack>
-      <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
-      <XStack
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        bg="$color1"
-        items="center"
-        justify="center"
-        pressStyle={{
-          x: RETRO_SHADOW_OFFSET_SM,
-          y: RETRO_SHADOW_OFFSET_SM,
-          bg: "$color3",
-        }}
-        {...props}
-      >
-        {children}
-      </XStack>
-    </YStack>
+    <RetroPressable
+      offset={RETRO_SHADOW_OFFSET_SM}
+      bg="$color1"
+      pressBg="$color3"
+      items="center"
+      justify="center"
+      {...props}
+    >
+      {children}
+    </RetroPressable>
   );
 }
 
