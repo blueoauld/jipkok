@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Terms() {
   return (
-    <LegalPage title="서비스 이용약관" effectiveDate="2026년 8월 4일">
+    <LegalPage title="서비스 이용약관" effectiveDate="2026년 8월 24일">
       <p>
         이 약관은 집콕(이하 &ldquo;서비스&rdquo;)을 이용할 때 회사와 이용자
         사이에 적용되는 내용을 정합니다. 서비스에 가입하면 이 약관에 동의한
@@ -35,7 +35,7 @@ export default function Terms() {
           <li>쪽지와 1대1 대화</li>
           <li>사진과 짧은 글을 올리는 피드</li>
           <li>좋아요, 즐겨찾기, 차단</li>
-          <li>출석과 광고 시청으로 쌓는 포인트</li>
+          <li>출석, 접속, 광고 시청으로 쌓는 포인트</li>
         </ul>
         <p>
           서비스 내용은 운영 사정에 따라 바뀔 수 있으며, 중요한 변경은 미리
@@ -61,7 +61,34 @@ export default function Terms() {
         </ul>
       </Section>
 
-      <Section title="4. 게시물의 관리">
+      <Section title="4. 아동과 청소년 보호">
+        <p>
+          서비스는 19세 이상만 이용할 수 있으며, 아동과 청소년을 성적으로
+          착취하거나 학대하는 행위를 어떤 경우에도 용납하지 않습니다.
+        </p>
+        <ul>
+          <li>
+            아동과 청소년이 등장하는 성착취물을 올리거나 주고받거나 요구하는
+            행위
+          </li>
+          <li>미성년자에게 성적인 목적으로 접근하거나 대화를 거는 행위</li>
+          <li>나이를 속여 가입하거나 미성년자의 가입을 돕는 행위</li>
+          <li>
+            아동과 청소년을 대상으로 한 성적 표현을 옹호하거나 미화하는 행위
+          </li>
+        </ul>
+        <p>
+          이런 행위가 확인되면 사전 통보 없이 계정을 영구 정지하고, 관련 자료를
+          보전해 청소년성보호법을 비롯한 관계 법령에 따라 수사기관에 신고합니다.
+          이 경우 이용 제한에 대한 이의 신청을 받지 않습니다.
+        </p>
+        <p>
+          미성년자로 의심되는 계정이나 아동과 청소년을 대상으로 한 행위를 보시면
+          앱의 신고 기능으로 알려주세요. 다른 신고보다 먼저 확인합니다.
+        </p>
+      </Section>
+
+      <Section title="5. 게시물의 관리">
         <ul>
           <li>
             이용자가 올린 사진과 글의 권리는 이용자에게 있습니다. 서비스는 이를
@@ -79,14 +106,14 @@ export default function Terms() {
         </ul>
       </Section>
 
-      <Section title="5. 신고와 차단">
+      <Section title="6. 신고와 차단">
         <p>
           불쾌한 프로필이나 대화를 만나면 언제든 신고하거나 차단할 수 있습니다.
           차단한 사람은 목록과 피드에서 보이지 않고 대화도 오갈 수 없습니다.
         </p>
       </Section>
 
-      <Section title="6. 포인트">
+      <Section title="7. 포인트">
         <Table
           head={["구분", "내용"]}
           rows={[
@@ -102,7 +129,7 @@ export default function Terms() {
         </p>
       </Section>
 
-      <Section title="7. 이용 제한">
+      <Section title="8. 이용 제한">
         <p>
           약관을 어기면 아래와 같이 단계적으로 제한합니다. 사안이 무거우면
           곧바로 영구 정지할 수 있습니다.
@@ -115,15 +142,16 @@ export default function Terms() {
         <p>제한 사유에 이의가 있으면 아래 연락처로 문의하실 수 있습니다.</p>
       </Section>
 
-      <Section title="8. 탈퇴">
+      <Section title="9. 탈퇴">
         <p>
           이용자는 앱의 설정에서 언제든 탈퇴할 수 있습니다. 탈퇴하면 대화, 피드
-          게시물, 좋아요, 포인트가 함께 사라지며 되돌릴 수 없습니다. 부정 이용을
-          막기 위해 탈퇴한 계정 정보는 90일 동안 보관한 뒤 완전히 지웁니다.
+          게시물, 좋아요, 포인트가 상대와 다른 이용자에게 보이지 않게 되며
+          되돌릴 수 없습니다. 부정 이용을 막기 위해 탈퇴한 계정 정보와 대화
+          내용은 90일 동안 보관한 뒤 완전히 지웁니다.
         </p>
       </Section>
 
-      <Section title="9. 책임의 한계">
+      <Section title="10. 책임의 한계">
         <ul>
           <li>
             서비스는 이용자끼리 주고받는 대화나 만남에서 생긴 일에 대해 책임지지
@@ -140,7 +168,7 @@ export default function Terms() {
         </ul>
       </Section>
 
-      <Section title="10. 약관 변경">
+      <Section title="11. 약관 변경">
         <p>
           이 약관을 고칠 때는 시행일 7일 전부터 서비스 안에서 알려드립니다.
           이용자에게 불리한 변경은 30일 전에 알려드리며, 변경에 동의하지 않으면
@@ -148,10 +176,12 @@ export default function Terms() {
         </p>
       </Section>
 
-      <Section title="11. 문의">
+      <Section title="12. 문의">
+        <p>서비스 이용에 관해 궁금한 점이 있으면 아래로 연락해 주세요.</p>
         <p>
-          서비스 이용에 관해 궁금한 점이 있으면 hello@jipkok.app 으로 연락해
-          주세요.
+          <a href="mailto:hello@jipkok.app" className="font-medium">
+            hello@jipkok.app
+          </a>
         </p>
       </Section>
     </LegalPage>

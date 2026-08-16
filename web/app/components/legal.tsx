@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 export function LegalPage({
   title,
@@ -40,34 +40,57 @@ export function Section({
   );
 }
 
+// 좁은 화면에서는 열이 한 글자 폭까지 찌그러진다. 행을 카드로 쌓아 라벨과 값으로 읽힌다.
 export function Table({ head, rows }: { head: string[]; rows: string[][] }) {
   return (
-    <div className="retro-panel overflow-x-auto">
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b-2 border-ink bg-subtle">
-            {head.map((cell) => (
-              <th key={cell} className="px-3 py-2.5 font-bold">
-                {cell}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row[0]} className="border-b border-border last:border-0">
-              {row.map((cell, index) => (
-                <td
-                  key={index}
-                  className={`px-3 py-2.5 align-top ${index === 0 ? "font-medium whitespace-nowrap" : "text-muted"}`}
-                >
+    <>
+      <div className="retro-panel hidden overflow-x-auto sm:block">
+        <table className="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b-2 border-ink bg-subtle">
+              {head.map((cell) => (
+                <th key={cell} className="px-3 py-2.5 font-bold">
                   {cell}
-                </td>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row[0]} className="border-b border-border last:border-0">
+                {row.map((cell, index) => (
+                  <td
+                    key={index}
+                    className={`px-3 py-2.5 align-top ${index === 0 ? "font-medium" : "text-muted"}`}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Section 이 안의 ul 을 글머리표 목록으로 꾸며서 여기서는 ul 을 쓰지 않는다. */}
+      <div className="retro-panel flex flex-col text-sm sm:hidden">
+        {rows.map(([title, ...details]) => (
+          <div
+            key={title}
+            // 라벨 열은 auto 라 그 카드에서 가장 긴 라벨 폭을 잡는다. 폭을 박으면 긴 라벨이 접힌다.
+            className="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-2 border-b border-border p-3 last:border-0"
+          >
+            <span className="col-span-2 font-bold">{title}</span>
+
+            {details.map((detail, index) => (
+              <Fragment key={index}>
+                <span className="text-muted">{head[index + 1]}</span>
+                <span>{detail}</span>
+              </Fragment>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
