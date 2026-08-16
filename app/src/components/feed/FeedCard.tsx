@@ -18,7 +18,10 @@ const REPORT_BUTTON_SPACE = 56;
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = 40;
 
-function CardButton({ children, ...props }: XStackProps) {
+function CardButton({
+  children,
+  ...props
+}: XStackProps & { pressBg?: XStackProps["bg"] }) {
   return (
     <RetroPressable
       offset={RETRO_SHADOW_OFFSET_SM}
@@ -70,11 +73,7 @@ function Card({
           bg="$yellow9"
           px="$3"
           py="$2"
-          pressStyle={{
-            x: RETRO_SHADOW_OFFSET_SM,
-            y: RETRO_SHADOW_OFFSET_SM,
-            bg: "$yellow10",
-          }}
+          pressBg="$yellow10"
           onPress={() =>
             pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
           }

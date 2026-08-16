@@ -10,12 +10,10 @@ import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { RetroPressable } from "@/components/ui/RetroPressable";
-import { RetroShadow } from "@/components/ui/RetroShadow";
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
@@ -60,10 +58,6 @@ function toRows(
   }
 
   return rows;
-}
-
-function CellShadow() {
-  return <RetroShadow color="$gray8" offset={RETRO_SHADOW_OFFSET_SM} />;
 }
 
 function OverlayButton({
@@ -128,163 +122,148 @@ function Grid({
 
               if (cell.kind === "placeholder") {
                 return (
-                  <YStack key={`placeholder-${columnIndex}`} flex={1}>
-                    <CellShadow />
-                    <YStack
-                      aspectRatio={1}
-                      rounded={0}
-                      borderWidth={RETRO_BORDER_WIDTH}
-                      borderColor="$gray12"
-                      bg="$color1"
-                      items="center"
-                      justify="center"
-                    >
-                      <ImageIcon size={24} color={theme.color12.val} />
-                    </YStack>
-                  </YStack>
+                  <RetroPressable
+                    key={`placeholder-${columnIndex}`}
+                    flex={1}
+                    shadow="$gray8"
+                    offset={RETRO_SHADOW_OFFSET_SM}
+                    aspectRatio={1}
+                    rounded={0}
+                    bg="$color1"
+                    items="center"
+                    justify="center"
+                  >
+                    <ImageIcon size={24} color={theme.color12.val} />
+                  </RetroPressable>
                 );
               }
 
               if (cell.kind === "add") {
                 return (
-                  <YStack key="add" flex={1}>
-                    <CellShadow />
-                    <YStack
-                      aspectRatio={1}
-                      rounded={0}
-                      borderWidth={RETRO_BORDER_WIDTH}
-                      borderColor="$gray12"
-                      bg="$color1"
-                      items="center"
-                      justify="center"
-                      pressStyle={{
-                        x: RETRO_SHADOW_OFFSET_SM,
-                        y: RETRO_SHADOW_OFFSET_SM,
-                        bg: "$gray6",
-                      }}
-                      onPress={onAdd}
-                    >
-                      <PlusIcon
-                        size={24}
-                        weight="bold"
-                        color={theme.color12.val}
-                      />
-                    </YStack>
-                  </YStack>
+                  <RetroPressable
+                    key="add"
+                    flex={1}
+                    shadow="$gray8"
+                    offset={RETRO_SHADOW_OFFSET_SM}
+                    aspectRatio={1}
+                    rounded={0}
+                    bg="$color1"
+                    pressBg="$gray6"
+                    items="center"
+                    justify="center"
+                    onPress={onAdd}
+                  >
+                    <PlusIcon
+                      size={24}
+                      weight="bold"
+                      color={theme.color12.val}
+                    />
+                  </RetroPressable>
                 );
               }
 
               return (
-                <YStack key={cell.uri} flex={1}>
-                  <CellShadow />
-                  <YStack
-                    aspectRatio={1}
-                    rounded={0}
-                    borderWidth={RETRO_BORDER_WIDTH}
-                    borderColor="$gray12"
-                    overflow="hidden"
-                    bg="$color1"
-                    pressStyle={
-                      onPressPhoto
-                        ? {
-                            x: RETRO_SHADOW_OFFSET_SM,
-                            y: RETRO_SHADOW_OFFSET_SM,
-                            opacity: PHOTO_PRESS_OPACITY,
-                          }
-                        : undefined
-                    }
-                    onPress={
-                      onPressPhoto ? () => onPressPhoto(cell.index) : undefined
-                    }
-                  >
-                    <Image
-                      source={{
-                        uri: cell.uri,
-                        cacheKey: photoCacheKey(cell.uri),
-                      }}
-                      contentFit="cover"
-                      transition={IMAGE_TRANSITION}
-                      style={{ width: "100%", height: "100%" }}
-                    />
+                <RetroPressable
+                  key={cell.uri}
+                  flex={1}
+                  shadow="$gray8"
+                  offset={RETRO_SHADOW_OFFSET_SM}
+                  aspectRatio={1}
+                  rounded={0}
+                  overflow="hidden"
+                  bg="$color1"
+                  pressOpacity={PHOTO_PRESS_OPACITY}
+                  onPress={
+                    onPressPhoto ? () => onPressPhoto(cell.index) : undefined
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: cell.uri,
+                      cacheKey: photoCacheKey(cell.uri),
+                    }}
+                    contentFit="cover"
+                    transition={IMAGE_TRANSITION}
+                    style={{ width: "100%", height: "100%" }}
+                  />
 
-                    {secretFrom !== undefined && cell.index >= secretFrom && (
-                      <XStack
-                        position="absolute"
-                        t="$2"
-                        l="$2"
+                  {secretFrom !== undefined && cell.index >= secretFrom && (
+                    <XStack
+                      position="absolute"
+                      t="$2"
+                      l="$2"
+                      width={24}
+                      height={24}
+                      rounded={0}
+                      bg="$gray12"
+                      items="center"
+                      justify="center"
+                    >
+                      <LockSimpleIcon size={14} weight="fill" color="white" />
+                    </XStack>
+                  )}
+
+                  {showPrimaryBadge && cell.index === 0 && (
+                    <YStack position="absolute" t="$2" l="$2">
+                      <RetroPressable
+                        offset={RETRO_SHADOW_OFFSET_SM}
                         width={24}
                         height={24}
                         rounded={0}
-                        bg="$gray12"
+                        bg={accent}
                         items="center"
                         justify="center"
                       >
-                        <LockSimpleIcon size={14} weight="fill" color="white" />
-                      </XStack>
-                    )}
-
-                    {showPrimaryBadge && cell.index === 0 && (
-                      <YStack position="absolute" t="$2" l="$2">
-                        <RetroPressable
-                          offset={RETRO_SHADOW_OFFSET_SM}
-                          width={24}
-                          height={24}
-                          rounded={0}
-                          bg={accent}
-                          items="center"
-                          justify="center"
-                        >
-                          <CrownSimpleIcon
-                            size={14}
-                            weight="fill"
-                            color="white"
-                          />
-                        </RetroPressable>
-                      </YStack>
-                    )}
-
-                    {onRemove && (
-                      <OverlayButton
-                        t="$2"
-                        r="$2"
-                        bg="$red10"
-                        onPress={() => onRemove(cell.index)}
-                      >
-                        <XIcon size={14} weight="bold" color="white" />
-                      </OverlayButton>
-                    )}
-
-                    {onMove && cell.index > 0 && (
-                      <OverlayButton
-                        b="$2"
-                        l="$2"
-                        bg="$color1"
-                        onPress={() => onMove(cell.index, cell.index - 1)}
-                      >
-                        <CaretLeftIcon
+                        <CrownSimpleIcon
                           size={14}
-                          weight="bold"
-                          color={theme.color12.val}
+                          weight="fill"
+                          color="white"
                         />
-                      </OverlayButton>
-                    )}
+                      </RetroPressable>
+                    </YStack>
+                  )}
 
-                    {onMove && cell.index < photos.length - 1 && (
-                      <OverlayButton
-                        b="$2"
-                        r="$2"
-                        bg="$color1"
-                        onPress={() => onMove(cell.index, cell.index + 1)}
-                      >
-                        <CaretRightIcon
-                          size={14}
-                          weight="bold"
-                          color={theme.color12.val}
-                        />
-                      </OverlayButton>
-                    )}
-                  </YStack>
-                </YStack>
+                  {onRemove && (
+                    <OverlayButton
+                      t="$2"
+                      r="$2"
+                      bg="$red10"
+                      onPress={() => onRemove(cell.index)}
+                    >
+                      <XIcon size={14} weight="bold" color="white" />
+                    </OverlayButton>
+                  )}
+
+                  {onMove && cell.index > 0 && (
+                    <OverlayButton
+                      b="$2"
+                      l="$2"
+                      bg="$color1"
+                      onPress={() => onMove(cell.index, cell.index - 1)}
+                    >
+                      <CaretLeftIcon
+                        size={14}
+                        weight="bold"
+                        color={theme.color12.val}
+                      />
+                    </OverlayButton>
+                  )}
+
+                  {onMove && cell.index < photos.length - 1 && (
+                    <OverlayButton
+                      b="$2"
+                      r="$2"
+                      bg="$color1"
+                      onPress={() => onMove(cell.index, cell.index + 1)}
+                    >
+                      <CaretRightIcon
+                        size={14}
+                        weight="bold"
+                        color={theme.color12.val}
+                      />
+                    </OverlayButton>
+                  )}
+                </RetroPressable>
               );
             })}
           </XStack>
