@@ -39,7 +39,6 @@ class MemberSuspensionService(
             throw BusinessException(ErrorCode.DUPLICATE_SUSPENSION)
         }
 
-
         return memberSuspensionRepository.save(
             MemberSuspension(
                 phoneNumber = member.phoneNumber,

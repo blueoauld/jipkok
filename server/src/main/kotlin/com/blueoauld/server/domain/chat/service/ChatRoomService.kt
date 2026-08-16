@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Limit
@@ -62,7 +63,7 @@ class ChatRoomService(
         val pageSize = CursorResponse.pageSize(size)
         val rows = chatRoomRepository.searchRooms(
             memberId = memberId,
-            keyword = "%${escapeLike(trimmed)}%",
+            keyword = "%${trimmed.escapeLike()}%",
             cursor = cursor ?: Long.MAX_VALUE,
             limit = Limit.of(pageSize),
         )
@@ -101,11 +102,6 @@ class ChatRoomService(
             nextCursor = rows.lastOrNull()?.getLastMessageId().takeIf { rows.size == pageSize },
         )
     }
-
-    private fun escapeLike(keyword: String) = keyword
-        .replace("""\""", """\\""")
-        .replace("%", """\%""")
-        .replace("_", """\_""")
 
     fun delete(room: ChatRoom, partnerId: Long) {
         chatRoomRepository.delete(room)

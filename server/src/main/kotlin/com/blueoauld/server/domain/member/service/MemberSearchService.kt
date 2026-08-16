@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberListRepository
+import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
 import org.springframework.stereotype.Service
@@ -31,7 +32,7 @@ class MemberSearchService(
         val decoded = ScrollResponse.decode(cursor)
         val rows = memberListRepository.findByNicknamePrefix(
             memberId = memberId,
-            keyword = escapeLike(trimmed),
+            keyword = trimmed.escapeLike(),
             cursorValue = decoded?.first,
             cursorId = decoded?.second,
             size = pageSize,
@@ -43,11 +44,6 @@ class MemberSearchService(
             nextCursor = last?.let { ScrollResponse.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }
-
-    private fun escapeLike(keyword: String) = keyword
-        .replace("""\""", """\\""")
-        .replace("%", """\%""")
-        .replace("_", """\_""")
 
     companion object {
 

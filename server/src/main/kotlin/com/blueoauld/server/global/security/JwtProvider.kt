@@ -43,8 +43,12 @@ class JwtProvider(
             .compact()
     }
 
-    fun parseAccessToken(token: String): JwtPayload? = parseClaims(token, ACCESS_TYPE)?.let {
-        JwtPayload(it.subject.toLong(), it[ROLE_CLAIM].toString())
+    fun parseAccessToken(token: String): JwtPayload? {
+        val claims = parseClaims(token, ACCESS_TYPE) ?: return null
+        val memberId = claims.subject?.toLongOrNull() ?: return null
+        val role = claims[ROLE_CLAIM]?.toString() ?: return null
+
+        return JwtPayload(memberId, role)
     }
 
     fun parseRefreshTokenMemberId(token: String): Long? = parseClaims(token, REFRESH_TYPE)?.subject?.toLongOrNull()

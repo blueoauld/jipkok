@@ -311,7 +311,6 @@ class AdminCommandListener(
             .forEach { event.hook.sendMessage(it).setSuppressEmbeds(true).queue() }
     }
 
-
     private fun isDuplicate(throwable: Throwable) =
         throwable is BusinessException && throwable.errorCode == ErrorCode.DUPLICATE_SUSPENSION
 

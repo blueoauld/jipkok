@@ -100,6 +100,9 @@ class OpenApiConfig {
         private val ERROR_RESPONSES = listOf(
             "400" to "요청이 올바르지 않다",
             "401" to "인증이 필요하다",
+            "403" to "이용이 정지되었거나 권한이 없다",
+            "404" to "찾을 수 없다",
+            "409" to "요청이 중복되었다",
             "500" to "서버에 문제가 발생했다",
         )
     }
