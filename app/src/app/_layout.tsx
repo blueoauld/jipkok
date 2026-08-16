@@ -7,6 +7,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { ToastHost } from "@/components/ToastHost";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useScreenTracking } from "@/hooks/useScreenTracking";
@@ -52,6 +53,7 @@ export default function RootLayout() {
                 <YStack flex={1}>
                   <Stack screenOptions={{ headerShown: false }} />
                   <LoadingOverlay />
+                  <ToastHost />
                 </YStack>
               </NavigationTheme>
             </Theme>

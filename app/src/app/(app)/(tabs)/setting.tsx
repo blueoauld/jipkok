@@ -47,6 +47,7 @@ import {
   TERMS_URL,
 } from "@/lib/support";
 import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
+import { showToast } from "@/lib/toast/store";
 
 const ICON_SIZE = 22;
 
@@ -248,13 +249,16 @@ export default function SettingScreen() {
     mutationFn: api.attendances.checkIn,
     onSuccess: async (reward) => {
       if (!reward.earned) {
-        show("info", ALREADY_EARNED_MESSAGE);
+        showToast("warning", ALREADY_EARNED_MESSAGE);
         return;
       }
 
       queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
       await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      show("info", `${reward.amount.toLocaleString()} 포인트를 받았습니다.`);
+      showToast(
+        "info",
+        `${reward.amount.toLocaleString()} 포인트를 받았습니다.`,
+      );
     },
     onError: showApiError,
   });
@@ -384,7 +388,6 @@ export default function SettingScreen() {
 
         {alertElement}
         {withdrawElement}
-        {adReward.adRewardElement}
       </ScrollView>
     </YStack>
   );

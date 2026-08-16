@@ -4,8 +4,8 @@ import { useRewardedAd } from "react-native-google-mobile-ads";
 
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
+import { showToast } from "@/lib/toast/store";
 
 const REWARD_DELAY = 2000;
 
@@ -15,7 +15,6 @@ const NOT_READY_MESSAGE =
 
 export function useAdReward() {
   const queryClient = useQueryClient();
-  const { alertElement, show } = useRetroAlert();
   const { data } = useMyProfile();
   const memberId = data?.memberId;
 
@@ -47,15 +46,15 @@ export function useAdReward() {
     const timer = setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      show("info", REWARD_MESSAGE);
+      showToast("info", REWARD_MESSAGE);
     }, REWARD_DELAY);
 
     return () => clearTimeout(timer);
-  }, [isEarnedReward, queryClient, show]);
+  }, [isEarnedReward, queryClient]);
 
   return {
     ready: isLoaded,
-    watch: () => (isLoaded ? showAd() : show("info", NOT_READY_MESSAGE)),
-    adRewardElement: alertElement,
+    watch: () =>
+      isLoaded ? showAd() : showToast("warning", NOT_READY_MESSAGE),
   };
 }

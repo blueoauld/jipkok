@@ -45,6 +45,7 @@ import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
+import { showToast } from "@/lib/toast/store";
 
 const ACTION_ICON_SIZE = 30;
 const LIKE_ICON_SIZE = 14;
@@ -274,7 +275,7 @@ export default function MemberProfileScreen() {
   const copyMemberId = async (id: number) => {
     await Clipboard.setStringAsync(String(id));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    show("info", ID_COPIED_MESSAGE);
+    showToast("info", ID_COPIED_MESSAGE);
   };
 
   const handleAction = useCallback(

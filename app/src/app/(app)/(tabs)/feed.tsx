@@ -47,6 +47,7 @@ import {
 } from "@/lib/member";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { uploadFeedPhoto } from "@/lib/photo";
+import { showToast } from "@/lib/toast/store";
 
 const FEEDS_KEY = ["feeds"];
 
@@ -187,7 +188,7 @@ export default function FeedScreen() {
       logAppEvent(APP_EVENT.feedPostCreated);
       setComposeOpen(false);
       await invalidate();
-      show("info", POSTED_MESSAGE);
+      showToast("info", POSTED_MESSAGE);
     },
     onError: showApiError,
   });

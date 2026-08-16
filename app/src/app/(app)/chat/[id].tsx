@@ -42,6 +42,7 @@ import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
+import { showToast } from "@/lib/toast/store";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
@@ -207,34 +208,28 @@ export default function ChatRoomScreen() {
     },
   ];
 
-  const handleCopy = useCallback(
-    async (content: string) => {
-      if (!content) {
-        return;
-      }
+  const handleCopy = useCallback(async (content: string) => {
+    if (!content) {
+      return;
+    }
 
-      await Clipboard.setStringAsync(content);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      show("info", COPIED_MESSAGE);
-    },
-    [show],
-  );
+    await Clipboard.setStringAsync(content);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    showToast("info", COPIED_MESSAGE);
+  }, []);
 
-  const handleSavePhoto = useCallback(
-    async (url: string) => {
-      try {
-        if (await saveChatPhoto(url)) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          show("info", PHOTO_SAVED_MESSAGE);
-        } else {
-          show("error", PHOTO_PERMISSION_MESSAGE);
-        }
-      } catch {
-        show("error", PHOTO_SAVE_FAILED_MESSAGE);
+  const handleSavePhoto = useCallback(async (url: string) => {
+    try {
+      if (await saveChatPhoto(url)) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        showToast("info", PHOTO_SAVED_MESSAGE);
+      } else {
+        showToast("error", PHOTO_PERMISSION_MESSAGE);
       }
-    },
-    [show],
-  );
+    } catch {
+      showToast("error", PHOTO_SAVE_FAILED_MESSAGE);
+    }
+  }, []);
 
   const handlePressAvatar = useCallback(
     () => pushOnce(`/member/${partnerId}`),

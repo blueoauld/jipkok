@@ -33,6 +33,7 @@ import {
 } from "@/lib/member";
 import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
 import { pushOnce } from "@/lib/router";
+import { showToast } from "@/lib/toast/store";
 
 const FILTERS = ["최근", "거리"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -64,13 +65,13 @@ export default function MainScreen() {
   const setGender = useMemberFilterStore((state) => state.setGender);
   const feed = useMemberFeed(sort, gender);
   const { data: profile } = useMyProfile();
-  const { alertElement, show, showApiError } = useRetroAlert();
+  const { alertElement, showApiError } = useRetroAlert();
 
   const updateComment = useMutation({
     mutationFn: api.members.updateComment,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      show("info", COMMENT_SAVED_MESSAGE);
+      showToast("info", COMMENT_SAVED_MESSAGE);
     },
     onError: showApiError,
   });
