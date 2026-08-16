@@ -9,18 +9,20 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.profileview.service.ProfileViewService
+import com.blueoauld.server.domain.profileview.event.ProfileViewedEvent
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -40,7 +42,7 @@ class MemberDetailServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
-    private val profileViewService = mockk<ProfileViewService>(relaxed = true)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
@@ -51,7 +53,7 @@ class MemberDetailServiceTest {
         memberFavoriteRepository,
         secretPhotoAccessRepository,
         memberBlockRepository,
-        profileViewService,
+        eventPublisher,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -90,6 +92,29 @@ class MemberDetailServiceTest {
         assertThat(response.distance).isCloseTo(1112.0, within(20.0))
         assertThat(response.comment).isEqualTo("코멘트")
         assertThat(response.bio).isEqualTo("자기소개")
+    }
+
+    @Test
+    fun `조회하면 기록을 이벤트로 알린다`() {
+        // given
+
+        // when
+        memberDetailService.findDetail(ME_ID, TARGET_ID)
+
+        // then
+        verify { eventPublisher.publishEvent(ProfileViewedEvent(ME_ID, TARGET_ID)) }
+    }
+
+    @Test
+    fun `차단 관계면 조회를 기록하지 않는다`() {
+        // given
+        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(TARGET_ID, ME_ID) } returns true
+
+        // when
+        memberDetailService.findDetail(ME_ID, TARGET_ID)
+
+        // then
+        verify(exactly = 0) { eventPublisher.publishEvent(any<ProfileViewedEvent>()) }
     }
 
     @Test

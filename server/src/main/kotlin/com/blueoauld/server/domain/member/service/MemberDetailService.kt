@@ -9,11 +9,12 @@ import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.profileview.service.ProfileViewService
+import com.blueoauld.server.domain.profileview.event.ProfileViewedEvent
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -29,7 +30,7 @@ class MemberDetailService(
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val memberBlockRepository: MemberBlockRepository,
-    private val profileViewService: ProfileViewService,
+    private val eventPublisher: ApplicationEventPublisher,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
@@ -47,7 +48,7 @@ class MemberDetailService(
         val photos = memberPhotoRepository.findAllByMemberId(targetId)
 
         if (!blockedByThem && !blockedByMe) {
-            profileViewService.record(memberId, targetId)
+            eventPublisher.publishEvent(ProfileViewedEvent(memberId, targetId))
         }
 
         return MemberDetailResponse(
