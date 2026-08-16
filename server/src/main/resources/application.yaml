@@ -5,6 +5,43 @@ spring:
   profiles:
     default: local
 
+  ai:
+    openai:
+      chat:
+        model: gpt-5.6-luna
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        default_batch_fetch_size: 100
+
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  jackson:
+    default-property-inclusion: non_null
+
+  web:
+    error:
+      include-message: always
+      include-binding-errors: always
+
 management:
   endpoints:
     web:
@@ -14,3 +51,21 @@ management:
   endpoint:
     health:
       show-details: never
+
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+
+server:
+  port: 8080
+
+jwt:
+  access-token-validity: 1h
+  refresh-token-validity: 14d
+
+admob:
+  verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
+
+r2:
+  upload-url-validity: 10m
+  view-url-validity: 10m

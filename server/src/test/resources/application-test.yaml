@@ -1,0 +1,44 @@
+spring:
+  ai:
+    openai:
+      api-key: ""
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:jipkok}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+logging:
+  level:
+    com.blueoauld.server: info
+
+jwt:
+  secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
+
+r2:
+  enabled: false
+  endpoint: ""
+  access-key-id: ""
+  secret-access-key: ""
+  bucket: ""
+  public-base-url: ""
+
+solapi:
+  api-key: ""
+  api-secret: ""
+  sender-number: ""
+
+discord:
+  token: ""
+  guild-id: ""
+  role-id: ""
+  suspension-channel-id: ""
+  reset-channel-id: ""
+  report-channel-id: ""
+  moderation-channel-id: ""
+  error-channel-id: ""
