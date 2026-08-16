@@ -51,12 +51,6 @@ import { showToast } from "@/lib/toast/store";
 
 const ICON_SIZE = 22;
 
-const MAX_BADGE_COUNT = 99;
-
-function formatBadgeCount(count: number) {
-  return count > MAX_BADGE_COUNT ? `${MAX_BADGE_COUNT}+` : `${count}`;
-}
-
 const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
@@ -147,13 +141,13 @@ function SettingRow({
   item,
   pending,
   divider,
-  badge,
+  hasNew,
   onPress,
 }: {
   item: SettingItem;
   pending: boolean;
   divider: boolean;
-  badge?: number;
+  hasNew: boolean;
   onPress?: () => void;
 }) {
   const theme = useTheme();
@@ -165,7 +159,7 @@ function SettingRow({
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
-      {!!badge && (
+      {hasNew && (
         <XStack
           minW={BADGE_SIZE}
           height={BADGE_SIZE}
@@ -178,7 +172,7 @@ function SettingRow({
           justify="center"
         >
           <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
-            {formatBadgeCount(badge)}
+            N
           </Text>
         </XStack>
       )}
@@ -195,7 +189,7 @@ function SettingSection({
 }: {
   items: SettingItem[];
   pendingAction: SettingAction | null;
-  profileViewCount?: number;
+  profileViewCount: number;
   onItemPress: (item: SettingItem) => void;
 }) {
   return (
@@ -207,9 +201,7 @@ function SettingSection({
             item={item}
             pending={item.action === pendingAction}
             divider={index < items.length - 1}
-            badge={
-              item.href === PROFILE_VIEW_HREF ? profileViewCount : undefined
-            }
+            hasNew={item.href === PROFILE_VIEW_HREF && profileViewCount > 0}
             onPress={
               item.href || item.url || item.action
                 ? () => onItemPress(item)
