@@ -11,6 +11,7 @@ import { HandHeartIcon } from "phosphor-react-native/src/icons/HandHeart";
 import { HeadsetIcon } from "phosphor-react-native/src/icons/Headset";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
+import { InfoIcon } from "phosphor-react-native/src/icons/Info";
 import { LightbulbIcon } from "phosphor-react-native/src/icons/Lightbulb";
 import { MonitorPlayIcon } from "phosphor-react-native/src/icons/MonitorPlay";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
@@ -20,7 +21,7 @@ import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView } from "react-native";
+import { Linking, ScrollView } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -36,6 +37,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
+import { APP_VERSION } from "@/lib/device";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -70,7 +72,8 @@ const THEME_LABELS_BY_MODE: Record<ThemeMode, ThemeLabel> = {
   dark: "다크",
 };
 
-type SettingAction = "attendanceReward" | "adReward" | "contact" | "suggest";
+type SettingAction =
+  "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
 
 type SettingItem = {
   label: string;
@@ -134,8 +137,28 @@ const SECTIONS: SettingItem[][] = [
     { label: "건의하기", icon: LightbulbIcon, action: "suggest" },
     { label: "서비스 이용약관", icon: FileTextIcon, url: TERMS_URL },
     { label: "개인정보 처리방침", icon: ShieldCheckIcon, url: PRIVACY_URL },
+    { label: "버전 확인", icon: InfoIcon, action: "version" },
   ],
 ];
+
+function versionText(latest: string, current: string) {
+  return `최신 버전: ${latest}\n현재 버전: ${current}`;
+}
+
+function isOutdated(current: string, latest: string) {
+  const currentParts = current.split(".").map(Number);
+  const latestParts = latest.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
+    const gap = (latestParts[i] ?? 0) - (currentParts[i] ?? 0);
+
+    if (gap !== 0) {
+      return gap > 0;
+    }
+  }
+
+  return false;
+}
 
 function SettingRow({
   item,
@@ -255,11 +278,36 @@ export default function SettingScreen() {
     onError: showApiError,
   });
 
+  const checkVersion = useMutation({
+    mutationFn: api.app.latestVersion,
+    onSuccess: ({ latestVersion, storeUrl }) => {
+      const detail = versionText(latestVersion, APP_VERSION);
+
+      if (!isOutdated(APP_VERSION, latestVersion)) {
+        show("info", detail);
+        return;
+      }
+
+      confirm({
+        variant: "info",
+        message: detail,
+        confirmLabel: "업데이트",
+        onConfirm: () =>
+          Linking.openURL(storeUrl).catch(() =>
+            show("error", BROWSER_FAILED_MESSAGE),
+          ),
+      });
+    },
+    onError: showApiError,
+  });
+
   const pendingAction: SettingAction | null = earnAttendanceReward.isPending
     ? "attendanceReward"
-    : !adReward.ready
-      ? "adReward"
-      : null;
+    : checkVersion.isPending
+      ? "version"
+      : !adReward.ready
+        ? "adReward"
+        : null;
 
   const handleAction = useCallback(
     (action: SettingAction) => {
@@ -276,11 +324,19 @@ export default function SettingScreen() {
         return;
       }
 
+      if (action === "version") {
+        if (!checkVersion.isPending) {
+          checkVersion.mutate();
+        }
+
+        return;
+      }
+
       if (!earnAttendanceReward.isPending) {
         earnAttendanceReward.mutate();
       }
     },
-    [adReward, earnAttendanceReward, profile?.memberId, show],
+    [adReward, checkVersion, earnAttendanceReward, profile?.memberId, show],
   );
 
   const handlePress = useCallback(

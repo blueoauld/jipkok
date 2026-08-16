@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.config
 
 import com.blueoauld.server.global.properties.AdMobProperties
+import com.blueoauld.server.global.properties.AppVersionProperties
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.properties.JwtProperties
 import com.blueoauld.server.global.properties.R2Properties
@@ -25,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     AdMobProperties::class,
     DiscordProperties::class,
     SolapiProperties::class,
+    AppVersionProperties::class,
 )
 class SecurityConfig(
 

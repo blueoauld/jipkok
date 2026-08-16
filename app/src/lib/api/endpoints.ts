@@ -3,6 +3,7 @@ import { DEVICE_NAME, DEVICE_PLATFORM } from "@/lib/device";
 import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
+  AppVersionResponse,
   AttendanceResponse,
   ChatMessagePage,
   ChatMessageResponse,
@@ -233,6 +234,13 @@ export const secretPhotos = {
   received: (params: CursorParams = {}) =>
     request<MemberSummaryPage>("/api/members/me/secret-photos/received", {
       query: params,
+    }),
+};
+
+export const app = {
+  latestVersion: () =>
+    request<AppVersionResponse>("/api/app/version", {
+      query: { platform: DEVICE_PLATFORM },
     }),
 };
 

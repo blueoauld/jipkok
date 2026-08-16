@@ -917,6 +917,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/app/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 최신 앱 버전 조회
+         * @description 스토어에 올라간 버전과 그 스토어 주소를 준다.
+         */
+        get: operations["findLatestVersion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ads/rewards/callback": {
         parameters: {
             query?: never;
@@ -1303,6 +1323,10 @@ export interface components {
             items: components["schemas"]["ChatMessageResponse"][];
             /** Format: int64 */
             nextCursor?: number | null;
+        };
+        AppVersionResponse: {
+            latestVersion: string;
+            storeUrl: string;
         };
         LeaveRoomsRequest: {
             roomIds: number[];
@@ -5987,6 +6011,82 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CursorResponseChatRoomResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findLatestVersion: {
+        parameters: {
+            query: {
+                platform: "IOS" | "ANDROID";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppVersionResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

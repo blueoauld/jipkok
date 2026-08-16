@@ -33,6 +33,7 @@ export type SuspensionResponse = Schemas["SuspensionResponse"];
 export type RegisterDeviceTokenRequest = Schemas["RegisterDeviceTokenRequest"];
 export type DevicePlatform = RegisterDeviceTokenRequest["platform"];
 export type SuspensionReason = SuspensionResponse["reason"];
+export type AppVersionResponse = Schemas["AppVersionResponse"];
 
 export type ChatRoomResponse = Schemas["ChatRoomResponse"];
 export type ChatRoomPage = Schemas["CursorResponseChatRoomResponse"];
