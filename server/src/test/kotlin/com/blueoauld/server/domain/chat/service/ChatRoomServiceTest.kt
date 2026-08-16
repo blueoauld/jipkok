@@ -232,6 +232,61 @@ class ChatRoomServiceTest {
     }
 
     @Test
+    fun `여러 방을 한 번에 나가면 모두 소프트 딜리트된다`() {
+        // given
+        val another = ChatRoom.of(ME_ID, ANOTHER_PARTNER_ID)
+        every { chatRoomRepository.findAllById(listOf(ROOM_ID, ANOTHER_ROOM_ID)) } returns listOf(room, another)
+
+        // when
+        chatRoomService.leaveAll(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
+
+        // then
+        verify { chatRoomRepository.delete(room) }
+        verify { chatRoomRepository.delete(another) }
+    }
+
+    @Test
+    fun `여러 방을 한 번에 나가면 상대마다 알린다`() {
+        // given
+        val another = ChatRoom.of(ME_ID, ANOTHER_PARTNER_ID)
+        every { chatRoomRepository.findAllById(listOf(ROOM_ID, ANOTHER_ROOM_ID)) } returns listOf(room, another)
+        val events = mutableListOf<Any>()
+
+        // when
+        chatRoomService.leaveAll(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
+
+        // then
+        verify { eventPublisher.publishEvent(capture(events)) }
+        assertThat(events.filterIsInstance<ChatRoomDeletedEvent>().map { it.receiverId })
+            .containsExactly(PARTNER_ID, ANOTHER_PARTNER_ID)
+    }
+
+    @Test
+    fun `내 방이 아니면 한 번에 나갈 때 건너뛴다`() {
+        // given
+        every { chatRoomRepository.findAllById(listOf(ROOM_ID)) } returns listOf(room)
+
+        // when
+        chatRoomService.leaveAll(STRANGER_ID, listOf(ROOM_ID))
+
+        // then
+        verify(exactly = 0) { chatRoomRepository.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
+    }
+
+    @Test
+    fun `없는 방이 섞여 있어도 나머지는 나간다`() {
+        // given
+        every { chatRoomRepository.findAllById(listOf(ROOM_ID, GONE_ROOM_ID)) } returns listOf(room)
+
+        // when
+        chatRoomService.leaveAll(ME_ID, listOf(ROOM_ID, GONE_ROOM_ID))
+
+        // then
+        verify(exactly = 1) { chatRoomRepository.delete(room) }
+    }
+
+    @Test
     fun `상대와의 방을 지우면 상대에게 알린다`() {
         // given
         every { chatRoomRepository.findByMembers(ME_ID, PARTNER_ID) } returns room
@@ -336,11 +391,14 @@ class ChatRoomServiceTest {
     companion object {
 
         private const val ROOM_ID = 10L
+        private const val ANOTHER_ROOM_ID = 11L
+        private const val GONE_ROOM_ID = 12L
         private const val LAST_MESSAGE_ID = 99L
         private const val CURSOR = 50L
         private const val ME_ID = 1L
         private const val PARTNER_ID = 2L
         private const val STRANGER_ID = 3L
+        private const val ANOTHER_PARTNER_ID = 4L
 
         private val NOW: Instant = Instant.parse("2026-08-02T05:00:00Z")
     }

@@ -84,6 +84,15 @@ class ChatMessageService(
     }
 
     @Transactional
+    fun markAllRead(memberId: Long, roomIds: List<Long>) {
+        if (roomIds.isEmpty()) {
+            return
+        }
+
+        chatRoomMemberRepository.markAllRead(memberId, roomIds)
+    }
+
+    @Transactional
     fun append(
         room: ChatRoom,
         senderId: Long,

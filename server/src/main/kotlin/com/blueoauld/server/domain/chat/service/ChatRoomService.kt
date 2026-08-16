@@ -89,6 +89,13 @@ class ChatRoomService(
     }
 
     @Transactional
+    fun leaveAll(memberId: Long, roomIds: List<Long>) {
+        chatRoomRepository.findAllById(roomIds)
+            .filter { it.contains(memberId) }
+            .forEach { delete(it, it.partnerIdOf(memberId)) }
+    }
+
+    @Transactional
     fun deleteBetween(memberId: Long, partnerId: Long) {
         chatRoomRepository.findByMembers(memberId, partnerId)?.let { delete(it, partnerId) }
     }

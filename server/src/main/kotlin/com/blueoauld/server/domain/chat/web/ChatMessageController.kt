@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.chat.web
 
 import com.blueoauld.server.domain.chat.dto.request.CreateChatPhotoUploadUrlRequest
 import com.blueoauld.server.domain.chat.dto.request.MarkReadRequest
+import com.blueoauld.server.domain.chat.dto.request.MarkRoomsReadRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatPhotoUploadUrlResponse
@@ -54,6 +55,16 @@ class ChatMessageController(
         @RequestBody request: MarkReadRequest,
     ) {
         chatMessageService.markRead(memberId, roomId, request.lastReadMessageId)
+    }
+
+    @Operation(summary = "여러 방 읽음 처리", description = "각 방의 마지막 메시지까지 읽은 것으로 본다. 없는 방은 건너뛴다.")
+    @PostMapping("/read")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun markAllRead(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: MarkRoomsReadRequest,
+    ) {
+        chatMessageService.markAllRead(memberId, request.roomIds)
     }
 
     @Operation(operationId = "createChatPhotoUploadUrl", summary = "채팅 사진 업로드 URL 발급")

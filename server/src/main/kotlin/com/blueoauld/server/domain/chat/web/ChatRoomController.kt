@@ -1,10 +1,12 @@
 package com.blueoauld.server.domain.chat.web
 
+import com.blueoauld.server.domain.chat.dto.request.LeaveRoomsRequest
 import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.service.ChatRoomService
 import com.blueoauld.server.global.response.CursorResponse
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -69,6 +71,16 @@ class ChatRoomController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun leave(@AuthenticationPrincipal memberId: Long, @PathVariable roomId: Long) {
         chatRoomService.leave(memberId, roomId)
+    }
+
+    @Operation(summary = "채팅방 여러 개 나가기", description = "내 방이 아니거나 이미 없어진 방은 건너뛴다.")
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun leaveAll(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: LeaveRoomsRequest,
+    ) {
+        chatRoomService.leaveAll(memberId, request.roomIds)
     }
 
     companion object {

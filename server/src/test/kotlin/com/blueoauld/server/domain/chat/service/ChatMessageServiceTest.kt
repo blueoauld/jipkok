@@ -187,7 +187,7 @@ class ChatMessageServiceTest {
     fun `다른 방의 메시지에는 답글을 달 수 없다`() {
         // given
         every { chatMessageRepository.findById(REPLY_ID) } returns
-                Optional.of(original(roomId = ROOM_ID + 1))
+            Optional.of(original(roomId = ROOM_ID + 1))
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -290,6 +290,24 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `여러 방을 한 번에 읽음 처리한다`() {
+        // when
+        chatMessageService.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
+
+        // then
+        verify { chatRoomMemberRepository.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID)) }
+    }
+
+    @Test
+    fun `읽음 처리할 방이 없으면 조회하지 않는다`() {
+        // when
+        chatMessageService.markAllRead(ME_ID, emptyList())
+
+        // then
+        verify(exactly = 0) { chatRoomMemberRepository.markAllRead(any(), any()) }
+    }
+
+    @Test
     fun `참여자가 아니면 읽음 처리할 수 없다`() {
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -365,6 +383,7 @@ class ChatMessageServiceTest {
     companion object {
 
         private const val ROOM_ID = 10L
+        private const val ANOTHER_ROOM_ID = 11L
         private const val ME_ID = 1L
         private const val PARTNER_ID = 2L
         private const val STRANGER_ID = 3L
