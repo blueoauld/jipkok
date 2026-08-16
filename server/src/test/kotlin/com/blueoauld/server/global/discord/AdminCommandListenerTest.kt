@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.core.task.SyncTaskExecutor
 
 class AdminCommandListenerTest {
 
@@ -23,6 +24,7 @@ class AdminCommandListenerTest {
         mockk<MemberService>(relaxed = true),
         mockk<ReportService>(relaxed = true),
         discordProperties(),
+        SyncTaskExecutor(),
     )
 
     @Test

@@ -13,6 +13,7 @@ import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
+import com.blueoauld.server.global.config.TaskExecutorConfig
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.DiscordProperties
@@ -27,6 +28,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.utils.FileUpload
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.ZoneId
@@ -41,6 +44,9 @@ class AdminCommandListener(
     private val memberService: MemberService,
     private val reportService: ReportService,
     private val discordProperties: DiscordProperties,
+
+    @Qualifier(TaskExecutorConfig.TASK_EXECUTOR)
+    private val taskExecutor: TaskExecutor,
 ) : ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
@@ -63,9 +69,11 @@ class AdminCommandListener(
 
         event.deferReply(true).queue()
 
-        runCatching { handle(event) }
-            .onSuccess { reply(event, it) }
-            .onFailure { reply(event, toMessage(it)) }
+        taskExecutor.execute {
+            runCatching { handle(event) }
+                .onSuccess { reply(event, it) }
+                .onFailure { reply(event, toMessage(it)) }
+        }
     }
 
     private fun record(event: SlashCommandInteractionEvent, suspension: SuspensionDetail) {

@@ -45,6 +45,16 @@ spring:
       include-message: always
       include-binding-errors: always
 
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 logging:
   pattern:
     correlation: "[%X{requestId:-}] "

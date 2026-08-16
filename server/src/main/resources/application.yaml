@@ -4,3 +4,13 @@ spring:
 
   profiles:
     default: local
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
