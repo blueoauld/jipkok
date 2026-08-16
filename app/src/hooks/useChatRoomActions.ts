@@ -12,7 +12,20 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
-import { LEAVE_DESCRIPTION } from "@/lib/chat";
+import {
+  LEAVE_DESCRIPTION,
+  LEAVE_SELECTED_DESCRIPTION,
+  toBulkChunks,
+} from "@/lib/chat";
+
+async function runInChunks(
+  roomIds: number[],
+  send: (chunk: number[]) => Promise<void>,
+) {
+  for (const chunk of toBulkChunks(roomIds)) {
+    await send(chunk);
+  }
+}
 
 export function useChatRoomActions() {
   const queryClient = useQueryClient();
@@ -58,6 +71,32 @@ export function useChatRoomActions() {
     onError: showApiError,
   });
 
+  const { mutate: leaveAll, isPending: leavingRooms } = useMutation({
+    mutationFn: (roomIds: number[]) => runInChunks(roomIds, api.chats.leaveAll),
+    onSuccess: (_data, roomIds) => {
+      roomIds.forEach((roomId) => {
+        queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
+        queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+      });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+    },
+    onError: showApiError,
+  });
+
+  const { mutate: markAllRead, isPending: markingRoomsRead } = useMutation({
+    mutationFn: (roomIds: number[]) =>
+      runInChunks(roomIds, api.chats.markAllRead),
+    onSuccess: (_data, roomIds) => {
+      roomIds.forEach((roomId) =>
+        queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) }),
+      );
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+    },
+    onError: showApiError,
+  });
+
   const toggleNotification = useCallback(
     (room: ChatRoomResponse) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -77,5 +116,29 @@ export function useChatRoomActions() {
     [confirm, leave],
   );
 
-  return { alertElement, toggleNotification, confirmLeave };
+  const markRoomsRead = useCallback(
+    (roomIds: number[], onDone: () => void) =>
+      markAllRead(roomIds, { onSuccess: onDone }),
+    [markAllRead],
+  );
+
+  const confirmLeaveRooms = useCallback(
+    (roomIds: number[], onDone: () => void) =>
+      confirm({
+        message: LEAVE_SELECTED_DESCRIPTION,
+        confirmLabel: "나가기",
+        destructive: true,
+        onConfirm: () => leaveAll(roomIds, { onSuccess: onDone }),
+      }),
+    [confirm, leaveAll],
+  );
+
+  return {
+    alertElement,
+    toggleNotification,
+    confirmLeave,
+    markRoomsRead,
+    confirmLeaveRooms,
+    bulkPending: leavingRooms || markingRoomsRead,
+  };
 }

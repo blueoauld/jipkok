@@ -3,7 +3,22 @@ import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 export const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
+export const LEAVE_SELECTED_DESCRIPTION =
+  "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
+
 export const PHOTO_SUMMARY = "사진";
+
+const BULK_CHUNK_SIZE = 500;
+
+export function toBulkChunks(roomIds: number[]) {
+  const chunks: number[][] = [];
+
+  for (let index = 0; index < roomIds.length; index += BULK_CHUNK_SIZE) {
+    chunks.push(roomIds.slice(index, index + BULK_CHUNK_SIZE));
+  }
+
+  return chunks;
+}
 
 const MAX_UNREAD_COUNT = 99;
 

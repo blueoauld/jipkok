@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
+import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
@@ -14,6 +15,9 @@ import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
+import type { ChatRoomResponse } from "@/lib/api";
+import { useChatSelectionStore } from "@/lib/chat/store";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "채팅방이 없습니다.";
@@ -28,11 +32,41 @@ export default function ChatScreen() {
   const scrollTop = useScrollToTopVisible();
 
   const unreadOnly = filter === "안읽음";
-  const { alertElement, toggleNotification, confirmLeave } =
-    useChatRoomActions();
+  const {
+    alertElement,
+    toggleNotification,
+    confirmLeave,
+    markRoomsRead,
+    confirmLeaveRooms,
+    bulkPending,
+  } = useChatRoomActions();
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error } = chatRooms;
   const paged = usePagedList(chatRooms);
+
+  const selecting = useChatSelectionStore((state) => state.active);
+  const selected = useChatSelectionStore((state) => state.selected);
+  const toggleSelected = useChatSelectionStore((state) => state.toggle);
+  const setRoomIds = useChatSelectionStore((state) => state.setRoomIds);
+  const clearSelected = useChatSelectionStore((state) => state.clear);
+  const endSelection = useChatSelectionStore((state) => state.end);
+
+  useEffect(() => {
+    setRoomIds(rooms?.map((room) => room.roomId) ?? []);
+  }, [rooms, setRoomIds]);
+
+  useEffect(() => endSelection, [endSelection]);
+
+  useLoadingOverlay(bulkPending);
+
+  const select = useCallback(
+    (room: ChatRoomResponse) => toggleSelected(room.roomId),
+    [toggleSelected],
+  );
+
+  const markSelectedRead = () => markRoomsRead([...selected], endSelection);
+
+  const leaveSelected = () => confirmLeaveRooms([...selected], endSelection);
 
   return (
     <YStack flex={1}>
@@ -42,6 +76,7 @@ export default function ChatScreen() {
           value={filter}
           onChange={(next) => {
             setFilter(next);
+            clearSelected();
             listRef.current?.scrollToOffset({ offset: 0, animated: false });
           }}
         />
@@ -52,10 +87,14 @@ export default function ChatScreen() {
           {...paged}
           ref={listRef}
           data={rooms}
+          extraData={selected}
           keyExtractor={(room) => String(room.roomId)}
           renderItem={({ item }) => (
             <ChatRoomRow
               room={item}
+              selectable={selecting}
+              selected={selected.has(item.roomId)}
+              onSelect={select}
               onToggleNotification={toggleNotification}
               onLeave={confirmLeave}
             />
@@ -79,10 +118,19 @@ export default function ChatScreen() {
         />
       )}
 
-      <ScrollToTopButton
-        visible={scrollTop.visible}
-        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
-      />
+      {selecting ? (
+        <ChatSelectionBar
+          count={selected.size}
+          pending={bulkPending}
+          onMarkRead={markSelectedRead}
+          onLeave={leaveSelected}
+        />
+      ) : (
+        <ScrollToTopButton
+          visible={scrollTop.visible}
+          onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+        />
+      )}
 
       {alertElement}
     </YStack>

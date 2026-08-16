@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
+import { CheckSquareIcon } from "phosphor-react-native/src/icons/CheckSquare";
 import { FireIcon } from "phosphor-react-native/src/icons/Fire";
 import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
@@ -8,7 +9,7 @@ import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingG
 import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "tamagui";
+import { Text, useTheme, XStack } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -16,9 +17,11 @@ import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat";
+import { useChatSelectionStore } from "@/lib/chat/store";
 import {
   BOTTOM_BAR_HEIGHT,
   bottomBarHeight,
+  PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
@@ -52,7 +55,7 @@ const TABS: Tab[] = [
         onPress={() => pushOnce("/chat/search")}
       />
     ),
-    headerRight: () => <NoteReceiveButton />,
+    headerRight: () => <ChatHeaderRight />,
   },
   { name: "feed", title: "피드", icon: FireIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
@@ -76,11 +79,69 @@ function NoteReceiveButton() {
   );
 }
 
+function HeaderTextButton({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <XStack
+      items="center"
+      justify="center"
+      px="$3"
+      py="$2"
+      pressStyle={{ opacity: PRESS_OPACITY }}
+      onPress={onPress}
+    >
+      <Text fontSize="$4" fontWeight="600">
+        {label}
+      </Text>
+    </XStack>
+  );
+}
+
+function ChatHeaderRight() {
+  const startSelection = useChatSelectionStore((state) => state.start);
+
+  return (
+    <XStack items="center">
+      <HeaderIconButton icon={CheckSquareIcon} onPress={startSelection} />
+      <NoteReceiveButton />
+    </XStack>
+  );
+}
+
+function SelectionCancelButton() {
+  const endSelection = useChatSelectionStore((state) => state.end);
+
+  return <HeaderTextButton label="취소" onPress={endSelection} />;
+}
+
+function SelectAllButton() {
+  const selectedCount = useChatSelectionStore((state) => state.selected.size);
+  const roomCount = useChatSelectionStore((state) => state.roomIds.length);
+  const selectAll = useChatSelectionStore((state) => state.selectAll);
+  const clear = useChatSelectionStore((state) => state.clear);
+
+  const all = roomCount > 0 && selectedCount >= roomCount;
+
+  return (
+    <HeaderTextButton
+      label={all ? "전체 해제" : "전체 선택"}
+      onPress={all ? clear : selectAll}
+    />
+  );
+}
+
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const accent = useAccentColor();
   const unreadCount = useChatUnreadCount();
+  const chatSelecting = useChatSelectionStore((state) => state.active);
+  const selectedCount = useChatSelectionStore((state) => state.selected.size);
 
   return (
     <Tabs
@@ -120,30 +181,36 @@ export default function TabsLayout() {
         },
       }}
     >
-      {TABS.map(({ name, title, icon: Icon, headerLeft, headerRight }) => (
-        <Tabs.Screen
-          key={name}
-          name={name}
-          options={{
-            title,
-            headerLeft,
-            headerRight,
-            tabBarBadge:
-              name === "chat" && unreadCount > 0
-                ? formatUnreadCount(unreadCount)
-                : undefined,
-            tabBarBadgeStyle: {
-              top: BADGE_TOP,
-              backgroundColor: theme.red10.val,
-              color: "white",
-              fontSize: BADGE_FONT_SIZE,
-            },
-            tabBarIcon: ({ color }) => (
-              <Icon color={color as string} size={ICON_SIZE} weight="fill" />
-            ),
-          }}
-        />
-      ))}
+      {TABS.map(({ name, title, icon: Icon, headerLeft, headerRight }) => {
+        const selecting = name === "chat" && chatSelecting;
+
+        return (
+          <Tabs.Screen
+            key={name}
+            name={name}
+            options={{
+              title: selecting ? `${selectedCount}개 선택` : title,
+              headerLeft: selecting
+                ? () => <SelectionCancelButton />
+                : headerLeft,
+              headerRight: selecting ? () => <SelectAllButton /> : headerRight,
+              tabBarBadge:
+                name === "chat" && unreadCount > 0
+                  ? formatUnreadCount(unreadCount)
+                  : undefined,
+              tabBarBadgeStyle: {
+                top: BADGE_TOP,
+                backgroundColor: theme.red10.val,
+                color: "white",
+                fontSize: BADGE_FONT_SIZE,
+              },
+              tabBarIcon: ({ color }) => (
+                <Icon color={color as string} size={ICON_SIZE} weight="fill" />
+              ),
+            }}
+          />
+        );
+      })}
     </Tabs>
   );
 }

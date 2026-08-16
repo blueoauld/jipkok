@@ -1,5 +1,6 @@
 import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
+import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { memo, useRef } from "react";
 import { Pressable } from "react-native-gesture-handler";
@@ -25,6 +26,9 @@ const BADGE_FONT_SIZE = 11;
 const ACTION_SIZE = 40;
 const ACTION_ICON_SIZE = 20;
 const ACTION_FRICTION = 2;
+
+const SELECT_BOX_SIZE = 22;
+const SELECT_ICON_SIZE = 14;
 
 function UnreadBadge({ count }: { count: number }) {
   return (
@@ -95,12 +99,39 @@ function LeaveAction({ onPress }: { onPress: () => void }) {
   );
 }
 
+function SelectBox({ selected }: { selected: boolean }) {
+  const accent = useAccentToken();
+
+  return (
+    <XStack
+      shrink={0}
+      width={SELECT_BOX_SIZE}
+      height={SELECT_BOX_SIZE}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg={selected ? accent : "transparent"}
+      items="center"
+      justify="center"
+    >
+      {selected && (
+        <CheckIcon size={SELECT_ICON_SIZE} weight="bold" color="white" />
+      )}
+    </XStack>
+  );
+}
+
 function Row({
   room,
+  selectable = false,
+  selected = false,
+  onSelect,
   onToggleNotification,
   onLeave,
 }: {
   room: ChatRoomResponse;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (room: ChatRoomResponse) => void;
   onToggleNotification: (room: ChatRoomResponse) => void;
   onLeave: (room: ChatRoomResponse) => void;
 }) {
@@ -111,6 +142,7 @@ function Row({
     <YStack mr={-RETRO_SHADOW_OFFSET} mb={-RETRO_SHADOW_OFFSET}>
       <ReanimatedSwipeable
         ref={swipeable}
+        enabled={!selectable}
         friction={ACTION_FRICTION}
         overshootLeft={false}
         overshootRight={false}
@@ -133,8 +165,14 @@ function Row({
         )}
       >
         <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
-          <RetroCard onPress={() => pushOnce(`/chat/${room.roomId}`)}>
+          <RetroCard
+            onPress={() =>
+              selectable ? onSelect?.(room) : pushOnce(`/chat/${room.roomId}`)
+            }
+          >
             <XStack gap="$3" items="center">
+              {selectable && <SelectBox selected={selected} />}
+
               <UserAvatar
                 id={String(room.memberId)}
                 url={room.profileImageUrl}

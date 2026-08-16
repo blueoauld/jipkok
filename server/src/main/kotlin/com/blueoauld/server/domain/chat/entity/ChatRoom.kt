@@ -36,7 +36,7 @@ class ChatRoom(
 
     companion object {
 
-        const val BULK_MAX_COUNT = 100
+        const val BULK_MAX_COUNT = 500
 
         fun of(memberId: Long, partnerId: Long) = ChatRoom(
             lowMemberId = minOf(memberId, partnerId),

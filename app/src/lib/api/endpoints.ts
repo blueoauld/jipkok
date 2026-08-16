@@ -319,6 +319,9 @@ export const chats = {
   leave: (roomId: number) =>
     request<void>(`/api/chats/${roomId}`, { method: "DELETE" }),
 
+  leaveAll: (roomIds: number[]) =>
+    request<void>("/api/chats", { method: "DELETE", body: { roomIds } }),
+
   unreadCount: () => request<number>("/api/chats/unread-count"),
 
   updateNotification: (roomId: number, enabled: boolean) =>
@@ -332,6 +335,9 @@ export const chats = {
       method: "POST",
       body: { lastReadMessageId },
     }),
+
+  markAllRead: (roomIds: number[]) =>
+    request<void>("/api/chats/read", { method: "POST", body: { roomIds } }),
 };
 
 export const push = {
