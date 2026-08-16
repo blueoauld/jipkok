@@ -30,7 +30,9 @@ export function Section({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="border-l-4 border-accent pl-2.5 text-lg font-bold">
+        {title}
+      </h2>
       <div className="flex flex-col gap-3 [&_li]:pl-1 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:pl-5">
         {children}
       </div>
@@ -38,20 +40,14 @@ export function Section({
   );
 }
 
-export function Table({
-  head,
-  rows,
-}: {
-  head: string[];
-  rows: string[][];
-}) {
+export function Table({ head, rows }: { head: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="retro-panel overflow-x-auto">
       <table className="w-full border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-border">
+          <tr className="border-b-2 border-ink bg-subtle">
             {head.map((cell) => (
-              <th key={cell} className="py-2.5 pr-4 font-semibold">
+              <th key={cell} className="px-3 py-2.5 font-bold">
                 {cell}
               </th>
             ))}
@@ -63,7 +59,7 @@ export function Table({
               {row.map((cell, index) => (
                 <td
                   key={index}
-                  className={`py-2.5 pr-4 align-top ${index === 0 ? "whitespace-nowrap" : "text-muted"}`}
+                  className={`px-3 py-2.5 align-top ${index === 0 ? "font-medium whitespace-nowrap" : "text-muted"}`}
                 >
                   {cell}
                 </td>

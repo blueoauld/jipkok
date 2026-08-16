@@ -3,6 +3,8 @@ import Link from "next/link";
 
 const CONTACT_EMAIL = "hello@jipkok.app";
 
+const STORES = ["App Store 준비 중", "Google Play 준비 중"];
+
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col px-6 py-10">
@@ -36,12 +38,14 @@ export default function Home() {
         />
 
         <div className="flex flex-wrap items-stretch justify-center gap-2.5">
-          <span className="flex w-44 items-center justify-center rounded-xl bg-black px-4 py-3.5 text-sm font-medium text-white/60">
-            App Store 준비 중
-          </span>
-          <span className="flex w-44 items-center justify-center rounded-xl bg-black px-4 py-3.5 text-sm font-medium text-white/60">
-            Google Play 준비 중
-          </span>
+          {STORES.map((store) => (
+            <span
+              key={store}
+              className="retro-panel flex w-44 items-center justify-center bg-disabled px-4 py-3 text-sm font-bold text-muted"
+            >
+              {store}
+            </span>
+          ))}
         </div>
       </main>
 
