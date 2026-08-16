@@ -7,7 +7,8 @@ import { useAccent } from "@/lib/theme/accent";
 
 const ICON_SIZE = 20;
 
-export const SCROLL_TO_TOP_BOTTOM_GAP = 12;
+export const SCROLL_TO_TOP_BOTTOM_GAP = 18;
+export const SCROLL_TO_TOP_SIDE_GAP = 16;
 
 export function ScrollToTopButton({
   visible,
@@ -25,7 +26,7 @@ export function ScrollToTopButton({
   return (
     <XStack
       position="absolute"
-      r={SCROLL_TO_TOP_BOTTOM_GAP}
+      r={SCROLL_TO_TOP_SIDE_GAP}
       b={SCROLL_TO_TOP_BOTTOM_GAP}
     >
       <RetroCard

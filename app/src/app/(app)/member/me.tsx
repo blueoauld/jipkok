@@ -12,7 +12,10 @@ import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { ProfileSection } from "@/components/ProfileSection";
-import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
+import {
+  SCROLL_TO_TOP_BOTTOM_GAP,
+  SCROLL_TO_TOP_SIDE_GAP,
+} from "@/components/ScrollToTopButton";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -102,7 +105,7 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
 
       <YStack
         position="absolute"
-        r={SCROLL_TO_TOP_BOTTOM_GAP}
+        r={SCROLL_TO_TOP_SIDE_GAP}
         b={SCROLL_TO_TOP_BOTTOM_GAP}
       >
         <RetroFloatingButton onPress={togglePhotoGrid}>
