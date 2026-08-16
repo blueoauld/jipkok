@@ -21,6 +21,11 @@ import { useAccentToken } from "@/lib/theme/accent";
 
 const COLUMNS = 3;
 
+const CELL_ICON_SIZE = 24;
+
+const BADGE_SIZE = 24;
+const BADGE_ICON_SIZE = 14;
+
 type Cell =
   | { kind: "photo"; uri: string; index: number }
   | { kind: "add" }
@@ -74,8 +79,8 @@ function OverlayButton({
     <YStack position="absolute" {...position}>
       <RetroPressable
         offset={RETRO_SHADOW_OFFSET_SM}
-        width={24}
-        height={24}
+        width={BADGE_SIZE}
+        height={BADGE_SIZE}
         rounded={0}
         bg={bg}
         items="center"
@@ -133,7 +138,10 @@ function Grid({
                     items="center"
                     justify="center"
                   >
-                    <ImageIcon size={24} color={theme.color12.val} />
+                    <ImageIcon
+                      size={CELL_ICON_SIZE}
+                      color={theme.color12.val}
+                    />
                   </RetroPressable>
                 );
               }
@@ -154,7 +162,7 @@ function Grid({
                     onPress={onAdd}
                   >
                     <PlusIcon
-                      size={24}
+                      size={CELL_ICON_SIZE}
                       weight="bold"
                       color={theme.color12.val}
                     />
@@ -192,14 +200,18 @@ function Grid({
                       position="absolute"
                       t="$2"
                       l="$2"
-                      width={24}
-                      height={24}
+                      width={BADGE_SIZE}
+                      height={BADGE_SIZE}
                       rounded={0}
                       bg="$gray12"
                       items="center"
                       justify="center"
                     >
-                      <LockSimpleIcon size={14} weight="fill" color="white" />
+                      <LockSimpleIcon
+                        size={BADGE_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
                     </XStack>
                   )}
 
@@ -207,15 +219,15 @@ function Grid({
                     <YStack position="absolute" t="$2" l="$2">
                       <RetroPressable
                         offset={RETRO_SHADOW_OFFSET_SM}
-                        width={24}
-                        height={24}
+                        width={BADGE_SIZE}
+                        height={BADGE_SIZE}
                         rounded={0}
                         bg={accent}
                         items="center"
                         justify="center"
                       >
                         <CrownSimpleIcon
-                          size={14}
+                          size={BADGE_ICON_SIZE}
                           weight="fill"
                           color="white"
                         />
@@ -230,7 +242,11 @@ function Grid({
                       bg="$red10"
                       onPress={() => onRemove(cell.index)}
                     >
-                      <XIcon size={14} weight="bold" color="white" />
+                      <XIcon
+                        size={BADGE_ICON_SIZE}
+                        weight="bold"
+                        color="white"
+                      />
                     </OverlayButton>
                   )}
 
@@ -242,7 +258,7 @@ function Grid({
                       onPress={() => onMove(cell.index, cell.index - 1)}
                     >
                       <CaretLeftIcon
-                        size={14}
+                        size={BADGE_ICON_SIZE}
                         weight="bold"
                         color={theme.color12.val}
                       />
@@ -257,7 +273,7 @@ function Grid({
                       onPress={() => onMove(cell.index, cell.index + 1)}
                     >
                       <CaretRightIcon
-                        size={14}
+                        size={BADGE_ICON_SIZE}
                         weight="bold"
                         color={theme.color12.val}
                       />

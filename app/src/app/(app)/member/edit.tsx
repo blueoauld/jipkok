@@ -15,6 +15,7 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
+import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 import {
@@ -30,7 +31,6 @@ const uploadPublicPhoto = (asset: ImagePickerAsset) =>
 const uploadSecretPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "SECRET");
 
-const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const EDITED_MESSAGE = "프로필이 편집되었습니다.";
 
 function BioField({
@@ -208,7 +208,7 @@ export default function MemberEditScreen() {
       ) : (
         <ScreenState
           error={isError}
-          message={ERROR_MESSAGE}
+          message={PROFILE_ERROR_MESSAGE}
           onRetry={refetch}
         />
       )}

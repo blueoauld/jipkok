@@ -38,6 +38,7 @@ import {
   toReply,
 } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat/store";
+import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -50,7 +51,6 @@ const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 const COPIED_MESSAGE = "메시지를 복사했습니다.";
 
 const PHOTO_SAVED_MESSAGE = "사진을 저장했습니다.";
-const PHOTO_PERMISSION_MESSAGE = "사진 접근 권한이 필요합니다.";
 const PHOTO_SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
 
 export default function ChatRoomScreen() {

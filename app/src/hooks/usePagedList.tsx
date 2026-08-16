@@ -17,10 +17,6 @@ function FooterSpinner() {
   );
 }
 
-/**
- * 무한 목록의 FlatList 속성을 모아준다. 여백이 다른 목록은 펼친 뒤
- * contentContainerStyle만 다시 지정하면 된다.
- */
 export function usePagedList({
   hasNextPage,
   isFetchingNextPage,

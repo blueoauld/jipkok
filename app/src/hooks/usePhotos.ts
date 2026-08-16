@@ -1,11 +1,11 @@
 import * as ImagePicker from "expo-image-picker";
 
 import { ApiError } from "@/lib/api";
+import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
 
 export const MAX_PHOTOS = 6;
 
 const PERMISSION_DENIED_CODE = "PERMISSION_DENIED";
-const LIBRARY_DENIED_MESSAGE = "사진 접근 권한이 필요합니다.";
 const CAMERA_DENIED_MESSAGE = "카메라 권한이 필요합니다.";
 
 // 취소는 빈 결과로, 권한 거부는 예외로 갈라 호출부가 구분할 수 있게 한다.
@@ -17,7 +17,7 @@ async function requireLibrary() {
   const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (!granted) {
-    throw denied(LIBRARY_DENIED_MESSAGE);
+    throw denied(PHOTO_PERMISSION_MESSAGE);
   }
 }
 

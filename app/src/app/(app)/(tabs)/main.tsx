@@ -31,6 +31,7 @@ import {
   GENDER_FILTERS,
   genderLabel,
 } from "@/lib/member";
+import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
 import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["최근", "거리"] as const;
@@ -44,8 +45,6 @@ const SORT_LABELS: Record<MemberSort, Filter> = {
 
 const COMMENT_MAX_LENGTH = 100;
 
-const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "회원이 없습니다.";
 const COMMENT_SAVED_MESSAGE = "코멘트가 작성되었습니다.";
 
 const MEMBERS_KEY = ["members"];
@@ -159,14 +158,14 @@ export default function MainScreen() {
           }
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
+              <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />
       ) : (
         <ScreenState
           error={error}
-          message={ERROR_MESSAGE}
+          message={LIST_ERROR_MESSAGE}
           onRetry={refetchFeed}
         />
       )}

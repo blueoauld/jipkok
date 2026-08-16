@@ -18,9 +18,9 @@ import {
   GENDER_FILTERS,
   type GenderFilter,
 } from "@/lib/member";
+import { MEMBER_EMPTY_MESSAGE } from "@/lib/message";
 
 const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "회원이 없습니다.";
 
 export default function RankScreen() {
   const [filter, setFilter] = useState<GenderFilter>("전체");
@@ -56,7 +56,7 @@ export default function RankScreen() {
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           ListEmptyComponent={
             <YStack items="center" py="$8">
-              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
+              <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
             </YStack>
           }
         />

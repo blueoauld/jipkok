@@ -8,8 +8,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
+import { LIST_ERROR_MESSAGE } from "@/lib/message";
 
-const ERROR_MESSAGE = "목록을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "목록이 비어있습니다.";
 
 function Centered({ children }: { children: ReactNode }) {
@@ -41,7 +41,10 @@ export function ActivityList({
     return (
       <Centered>
         {isError ? (
-          <ErrorState message={ERROR_MESSAGE} onRetry={() => query.refetch()} />
+          <ErrorState
+            message={LIST_ERROR_MESSAGE}
+            onRetry={() => query.refetch()}
+          />
         ) : (
           <Spinner size="small" />
         )}

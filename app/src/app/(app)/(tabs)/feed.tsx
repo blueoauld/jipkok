@@ -45,6 +45,7 @@ import {
   GENDER_FILTERS,
   genderLabel,
 } from "@/lib/member";
+import { REPORTED_MESSAGE } from "@/lib/message";
 import { uploadFeedPhoto } from "@/lib/photo";
 
 const FEEDS_KEY = ["feeds"];
@@ -58,7 +59,6 @@ const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거"
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
-const REPORTED_MESSAGE = "신고가 접수되었습니다.";
 
 export default function FeedScreen() {
   const queryClient = useQueryClient();

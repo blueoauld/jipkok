@@ -43,7 +43,6 @@ export function SearchList<T>({
   const [keyword, setKeyword] = useState("");
   const paged = usePagedList(query);
 
-  // 같은 말을 다시 넣고 검색하면 새로 받아본다.
   const submit = () => {
     const next = keyword.trim();
 

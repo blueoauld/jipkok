@@ -21,12 +21,12 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
+import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 
 const LIKE_ICON_SIZE = 14;
 
-const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "아직 코멘트를 작성하지 않았습니다.";
 const BIO_PLACEHOLDER = "아직 자기소개를 작성하지 않았습니다.";
 
@@ -149,7 +149,7 @@ export default function MyProfileScreen() {
       ) : (
         <ScreenState
           error={isError}
-          message={ERROR_MESSAGE}
+          message={PROFILE_ERROR_MESSAGE}
           onRetry={refetch}
         />
       )}

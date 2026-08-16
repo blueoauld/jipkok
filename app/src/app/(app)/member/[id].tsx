@@ -39,6 +39,7 @@ import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
+import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
@@ -64,7 +65,6 @@ const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
 const BADGE_OPACITY = 0.9;
 
-const ERROR_MESSAGE = "프로필을 불러오지 못했습니다.";
 const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
 const BIO_PLACEHOLDER = "자기소개가 없습니다.";
 
@@ -506,7 +506,7 @@ export default function MemberProfileScreen() {
       ) : (
         <ScreenState
           error={error}
-          message={ERROR_MESSAGE}
+          message={PROFILE_ERROR_MESSAGE}
           onRetry={() => refetch()}
         />
       )}

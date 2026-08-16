@@ -15,6 +15,7 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
+import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
@@ -27,8 +28,6 @@ const REASONS: { label: string; value: ReportReason }[] = [
   { label: "사칭 및 도용", value: "IMPERSONATION" },
   { label: "기타", value: "ETC" },
 ];
-
-const REPORTED_MESSAGE = "신고가 접수되었습니다.";
 
 function ReasonRow({
   label,
