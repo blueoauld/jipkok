@@ -54,6 +54,10 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: 린트
+        working-directory: server
+        run: ./gradlew ktlintCheck
+
       - name: 테스트
         working-directory: server
         run: ./gradlew test

@@ -130,15 +130,15 @@ class MemberLikeServiceTest {
             memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
                 LIKER_ID,
                 Long.MAX_VALUE,
-                any()
+                any(),
             )
         } returns likes
         every {
             memberSummaryService.findSummaries(
                 listOf(
                     LIKED_MEMBER_ID,
-                    3L
-                )
+                    3L,
+                ),
             )
         } returns listOf(summary(LIKED_MEMBER_ID), summary(3L))
 
@@ -170,7 +170,7 @@ class MemberLikeServiceTest {
             memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
                 LIKED_MEMBER_ID,
                 40L,
-                any()
+                any(),
             )
         } returns
                 listOf(memberLike(30L, LIKED_MEMBER_ID))
@@ -190,7 +190,7 @@ class MemberLikeServiceTest {
             memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
                 LIKER_ID,
                 any(),
-                capture(limit)
+                capture(limit),
             )
         } returns emptyList()
 
