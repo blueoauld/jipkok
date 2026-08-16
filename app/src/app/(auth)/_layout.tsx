@@ -6,6 +6,7 @@ export default function AuthLayout() {
       screenOptions={{
         headerShadowVisible: false,
         headerBackButtonDisplayMode: "minimal",
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen name="login" options={{ title: "로그인" }} />
