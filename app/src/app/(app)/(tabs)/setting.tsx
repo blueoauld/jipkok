@@ -35,6 +35,7 @@ import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -169,7 +170,7 @@ function SettingRow({
           height={BADGE_SIZE}
           px="$1.5"
           rounded={0}
-          borderWidth={2}
+          borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$color12"
           bg="$red10"
           items="center"

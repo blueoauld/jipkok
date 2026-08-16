@@ -8,7 +8,11 @@ import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
-import { IMAGE_TRANSITION, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  RETRO_BORDER_WIDTH,
+  RETRO_SHADOW_OFFSET_SM,
+} from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -23,7 +27,7 @@ function CardButton({ children, ...props }: XStackProps) {
     <YStack>
       <RetroShadow color="$gray12" offset={RETRO_SHADOW_OFFSET_SM} />
       <XStack
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         bg="$color1"
         items="center"

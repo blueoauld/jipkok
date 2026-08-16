@@ -2,12 +2,17 @@ import type { ReactNode } from "react";
 import { XStack, type XStackProps, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
 
 export function RetroListPanel({ children }: { children: ReactNode }) {
   return (
     <YStack>
       <RetroShadow color="$gray8" />
-      <YStack borderWidth={2} borderColor="$color12" bg="$color1">
+      <YStack
+        borderWidth={RETRO_BORDER_WIDTH}
+        borderColor="$color12"
+        bg="$color1"
+      >
         {children}
       </YStack>
     </YStack>

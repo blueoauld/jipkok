@@ -3,7 +3,7 @@ import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useTheme, YStack } from "tamagui";
 
 import type { Gender } from "@/lib/api";
-import { IMAGE_TRANSITION } from "@/lib/design";
+import { IMAGE_TRANSITION, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 const SIZE = 64;
 const ICON_RATIO = 0.5;
@@ -35,7 +35,7 @@ export function UserAvatar({
       height={size}
       rounded={circular ? 9999 : 0}
       overflow="hidden"
-      borderWidth={2}
+      borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$color12"
       bg={gender ? GENDER_BG[gender] : "$gray6"}
       items="center"

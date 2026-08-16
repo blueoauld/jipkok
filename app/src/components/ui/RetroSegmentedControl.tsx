@@ -1,6 +1,7 @@
 import { Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
 export function RetroSegmentedControl<T extends string>({
@@ -17,7 +18,11 @@ export function RetroSegmentedControl<T extends string>({
   return (
     <YStack theme="gray">
       <RetroShadow color="$gray8" />
-      <XStack borderWidth={2} borderColor="$color12" bg="$color1">
+      <XStack
+        borderWidth={RETRO_BORDER_WIDTH}
+        borderColor="$color12"
+        bg="$color1"
+      >
         {values.map((item, index) => {
           const selected = item === value;
 

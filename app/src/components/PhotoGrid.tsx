@@ -14,6 +14,7 @@ import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
@@ -81,7 +82,7 @@ function OverlayButton({
         width={24}
         height={24}
         rounded={0}
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         bg={bg}
         items="center"
@@ -134,7 +135,7 @@ function Grid({
                     <YStack
                       aspectRatio={1}
                       rounded={0}
-                      borderWidth={2}
+                      borderWidth={RETRO_BORDER_WIDTH}
                       borderColor="$color12"
                       bg="$color1"
                       items="center"
@@ -153,7 +154,7 @@ function Grid({
                     <YStack
                       aspectRatio={1}
                       rounded={0}
-                      borderWidth={2}
+                      borderWidth={RETRO_BORDER_WIDTH}
                       borderColor="$color12"
                       bg="$color1"
                       items="center"
@@ -181,7 +182,7 @@ function Grid({
                   <YStack
                     aspectRatio={1}
                     rounded={0}
-                    borderWidth={2}
+                    borderWidth={RETRO_BORDER_WIDTH}
                     borderColor="$color12"
                     overflow="hidden"
                     bg="$color1"
@@ -234,7 +235,7 @@ function Grid({
                           width={24}
                           height={24}
                           rounded={0}
-                          borderWidth={2}
+                          borderWidth={RETRO_BORDER_WIDTH}
                           borderColor="$gray12"
                           bg={accent}
                           items="center"

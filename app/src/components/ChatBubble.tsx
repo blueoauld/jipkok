@@ -10,6 +10,7 @@ import {
   OVERLAY_BG,
   PHOTO_PRESS_OPACITY,
   PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { useAccentToken } from "@/lib/theme/accent";
 
@@ -40,7 +41,7 @@ function BubbleFrame({
     <YStack
       shrink={1}
       bg={mine ? accent : "$color1"}
-      borderWidth={2}
+      borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$color12"
       minH={MIN_HEIGHT}
       justify="center"
@@ -88,7 +89,7 @@ function PhotoMessage({
         style={{
           width: PHOTO_SIZE,
           height: PHOTO_SIZE,
-          borderWidth: 2,
+          borderWidth: RETRO_BORDER_WIDTH,
           borderColor: theme.color12.val,
         }}
       />

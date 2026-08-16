@@ -3,7 +3,7 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroShadow } from "@/components/ui/RetroShadow";
-import { OVERLAY_BG } from "@/lib/design";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
@@ -45,7 +45,11 @@ export function RetroAlert({
         <YStack>
           <RetroShadow color="$gray12" />
 
-          <YStack borderWidth={2} borderColor="$color12" bg="$color1">
+          <YStack
+            borderWidth={RETRO_BORDER_WIDTH}
+            borderColor="$color12"
+            bg="$color1"
+          >
             <XStack
               bg={VARIANTS[variant].barColor}
               px="$3"

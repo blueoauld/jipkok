@@ -15,7 +15,7 @@ import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
-import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 
 const CAPTION_MAX_LENGTH = 30;
 
@@ -79,7 +79,7 @@ function ComposeForm({
         <YStack
           aspectRatio={CARD_RATIO}
           rounded={0}
-          borderWidth={2}
+          borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$color12"
           overflow="hidden"
         >
@@ -91,7 +91,7 @@ function ComposeForm({
               width={REMOVE_BUTTON_SIZE}
               height={REMOVE_BUTTON_SIZE}
               rounded={0}
-              borderWidth={2}
+              borderWidth={RETRO_BORDER_WIDTH}
               borderColor="$gray12"
               bg="$red10"
               items="center"

@@ -9,7 +9,7 @@ import { useTheme, XStack, YStack } from "tamagui";
 import { ChatBubble } from "@/components/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
-import { PRESS_OPACITY } from "@/lib/design";
+import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 const AVATAR_SIZE = 36;
 
@@ -32,7 +32,7 @@ function ReplyAction() {
       <XStack
         width={REPLY_ACTION_SIZE}
         height={REPLY_ACTION_SIZE}
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         bg="$color1"
         items="center"

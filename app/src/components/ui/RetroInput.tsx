@@ -1,6 +1,7 @@
 import { Input, type InputProps, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
 
 export function RetroInput({ theme = "gray", ...inputProps }: InputProps) {
   return (
@@ -9,7 +10,7 @@ export function RetroInput({ theme = "gray", ...inputProps }: InputProps) {
       <Input
         size="$4"
         bg="$color1"
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$color12"
         rounded={0}
         focusStyle={{ borderColor: "$color12" }}

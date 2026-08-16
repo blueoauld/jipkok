@@ -4,6 +4,8 @@ export const PHOTO_PRESS_OPACITY = 0.8;
 
 export const FLOATING_BUTTON_SIZE = 40;
 
+export const RETRO_BORDER_WIDTH = 2;
+
 export const RETRO_SHADOW_OFFSET = 4;
 
 export const RETRO_SHADOW_OFFSET_SM = 2;

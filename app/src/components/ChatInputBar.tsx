@@ -11,6 +11,7 @@ import { replySummary } from "@/lib/chat";
 import {
   FLOATING_BUTTON_SIZE,
   PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
@@ -76,7 +77,7 @@ export function ChatInputBar({
         >
           <RetroShadow color="$gray12" />
           <XStack
-            borderWidth={2}
+            borderWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
             bg="$color1"
             items="center"
@@ -112,7 +113,7 @@ export function ChatInputBar({
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}
-            borderWidth={2}
+            borderWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
             bg={uploading ? "$gray8" : "$yellow9"}
             items="center"
@@ -138,7 +139,12 @@ export function ChatInputBar({
 
         <XStack flex={1} theme="gray">
           <RetroShadow color="$gray12" />
-          <XStack flex={1} borderWidth={2} borderColor="$gray12" bg="$color1">
+          <XStack
+            flex={1}
+            borderWidth={RETRO_BORDER_WIDTH}
+            borderColor="$gray12"
+            bg="$color1"
+          >
             <TextInput
               ref={inputRef}
               value={text}
@@ -157,7 +163,7 @@ export function ChatInputBar({
           <XStack
             width={FLOATING_BUTTON_SIZE}
             height={FLOATING_BUTTON_SIZE}
-            borderWidth={2}
+            borderWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
             bg={sendable ? "$color10" : "$gray8"}
             items="center"

@@ -13,7 +13,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount, PHOTO_SUMMARY } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
+import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 import { useAccentToken } from "@/lib/theme/accent";
 
@@ -33,7 +33,7 @@ function UnreadBadge({ count }: { count: number }) {
       minW={BADGE_SIZE}
       height={BADGE_SIZE}
       px="$1.5"
-      borderWidth={2}
+      borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$color12"
       bg="$red10"
       items="center"
@@ -62,7 +62,7 @@ function NotificationAction({
         <XStack
           width={ACTION_SIZE}
           height={ACTION_SIZE}
-          borderWidth={2}
+          borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$gray12"
           bg={accent}
           items="center"
@@ -82,7 +82,7 @@ function LeaveAction({ onPress }: { onPress: () => void }) {
         <XStack
           width={ACTION_SIZE}
           height={ACTION_SIZE}
-          borderWidth={2}
+          borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$gray12"
           bg="$red10"
           items="center"

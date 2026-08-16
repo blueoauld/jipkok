@@ -3,7 +3,7 @@ import { Dialog, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
-import { OVERLAY_BG } from "@/lib/design";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 export function RetroFormDialog({
   open,
@@ -35,7 +35,7 @@ export function RetroFormDialog({
           <YStack>
             <RetroShadow color="$gray12" />
             <YStack
-              borderWidth={2}
+              borderWidth={RETRO_BORDER_WIDTH}
               borderColor="$color12"
               bg="$color1"
               p="$4"

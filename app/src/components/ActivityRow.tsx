@@ -9,7 +9,7 @@ import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -30,7 +30,7 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
       <XStack
         width={DELETE_BUTTON_SIZE}
         height={DELETE_BUTTON_SIZE}
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         bg="$red10"
         items="center"

@@ -1,7 +1,7 @@
 import { Button, type ButtonProps, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
+import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
 export function RetroButton({
@@ -18,7 +18,7 @@ export function RetroButton({
       <Button
         size="$4"
         bg={disabled ? "$color8" : "$color10"}
-        borderWidth={2}
+        borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$color12"
         rounded={0}
         color="white"
