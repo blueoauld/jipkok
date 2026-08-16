@@ -50,6 +50,11 @@ enum class ErrorCode(
         "AUTH_012",
         "로그인 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     ),
+    VERIFICATION_CODE_ALREADY_USED(
+        HttpStatus.BAD_REQUEST,
+        "AUTH_013",
+        "이미 사용한 인증번호입니다. 다시 요청해주시길 바랍니다.",
+    ),
 
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.service.ChatRoomService
@@ -32,6 +33,7 @@ class MemberWithdrawService(
     private val profileViewRepository: ProfileViewRepository,
     private val pointHistoryRepository: PointHistoryRepository,
     private val deviceTokenRepository: DeviceTokenRepository,
+    private val refreshTokenRepository: RefreshTokenRepository,
 ) {
 
     @Transactional
@@ -49,6 +51,7 @@ class MemberWithdrawService(
         profileViewRepository.deleteAllByMember(memberId)
         pointHistoryRepository.deleteAllByMemberId(memberId)
         deviceTokenRepository.deleteAllByMemberId(memberId)
+        refreshTokenRepository.delete(memberId)
 
         memberRepository.delete(member)
     }

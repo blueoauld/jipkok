@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -50,6 +51,8 @@ class MemberWithdrawServiceTest {
 
     private val deviceTokenRepository = mockk<DeviceTokenRepository>(relaxed = true)
 
+    private val refreshTokenRepository = mockk<RefreshTokenRepository>(relaxed = true)
+
     private val memberWithdrawService = MemberWithdrawService(
         memberRepository,
         chatRoomRepository,
@@ -63,6 +66,7 @@ class MemberWithdrawServiceTest {
         profileViewRepository,
         pointHistoryRepository,
         deviceTokenRepository,
+        refreshTokenRepository,
     )
 
     private val member = Member(
@@ -94,6 +98,15 @@ class MemberWithdrawServiceTest {
         verify { pointHistoryRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { deviceTokenRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberRepository.delete(member) }
+    }
+
+    @Test
+    fun `저장된 리프레시 토큰을 지운다`() {
+        // when
+        memberWithdrawService.withdraw(MEMBER_ID)
+
+        // then
+        verify { refreshTokenRepository.delete(MEMBER_ID) }
     }
 
     @Test

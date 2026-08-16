@@ -152,6 +152,39 @@ class VerificationCodeServiceTest {
 
         // then
         assertThat(latest.attemptCount).isEqualTo(1)
+        assertThat(latest.usedAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `한 번 쓴 인증번호는 다시 쓸 수 없다`() {
+        // given
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        stubLatest(latest)
+        verificationCodeService.verify(PHONE_NUMBER, CODE)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, CODE)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_ALREADY_USED)
+        assertThat(latest.attemptCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `확인에 실패하면 인증번호를 쓴 것으로 보지 않는다`() {
+        // given
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        stubLatest(latest)
+
+        // when
+        assertThrows(BusinessException::class.java) {
+            verificationCodeService.verify(PHONE_NUMBER, "999999")
+        }
+
+        // then
+        assertThat(latest.usedAt).isNull()
     }
 
     @Test

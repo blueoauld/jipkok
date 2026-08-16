@@ -41,8 +41,16 @@ class PhoneVerification(
     var attemptCount: Int = 0
         protected set
 
+    @Column(name = "used_at")
+    var usedAt: Instant? = null
+        protected set
+
     fun increaseAttemptCount() {
         attemptCount++
+    }
+
+    fun use(now: Instant) {
+        usedAt = now
     }
 
     companion object {

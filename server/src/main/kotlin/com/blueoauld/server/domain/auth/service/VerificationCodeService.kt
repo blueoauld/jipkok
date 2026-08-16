@@ -55,6 +55,10 @@ class VerificationCodeService(
         val latest = phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber)
             ?: throw BusinessException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
 
+        if (latest.usedAt != null) {
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_ALREADY_USED)
+        }
+
         if (!now.isBefore(latest.issuedAt.plus(CODE_TIME_TO_LIVE))) {
             throw BusinessException(ErrorCode.VERIFICATION_CODE_EXPIRED)
         }
@@ -68,6 +72,8 @@ class VerificationCodeService(
         if (latest.code != code) {
             throw BusinessException(ErrorCode.VERIFICATION_CODE_MISMATCH)
         }
+
+        latest.use(now)
     }
 
     private fun generateCode() = (1..PhoneVerification.CODE_LENGTH).joinToString("") {
