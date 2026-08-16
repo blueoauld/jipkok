@@ -36,7 +36,7 @@ export function UserAvatar({
       rounded={circular ? 9999 : 0}
       overflow="hidden"
       borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$color12"
+      borderColor="$gray12"
       bg={gender ? GENDER_BG[gender] : "$gray6"}
       items="center"
       justify="center"

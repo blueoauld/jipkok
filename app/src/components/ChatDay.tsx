@@ -11,7 +11,7 @@ export function ChatDay({ date }: { date: Date }) {
     <XStack justify="center" py="$3">
       <XStack
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         bg="$color1"
         px="$3"
         py="$1"

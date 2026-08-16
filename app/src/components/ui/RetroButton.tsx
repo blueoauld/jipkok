@@ -19,7 +19,7 @@ export function RetroButton({
         size="$4"
         bg={disabled ? "$color8" : "$color10"}
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         rounded={0}
         color="white"
         fontWeight="700"
@@ -27,7 +27,7 @@ export function RetroButton({
           x: RETRO_SHADOW_OFFSET,
           y: RETRO_SHADOW_OFFSET,
           bg: "$color11",
-          borderColor: "$color12",
+          borderColor: "$gray12",
         }}
         disabled={disabled}
         {...buttonProps}

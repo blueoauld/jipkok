@@ -136,7 +136,7 @@ function Grid({
                       aspectRatio={1}
                       rounded={0}
                       borderWidth={RETRO_BORDER_WIDTH}
-                      borderColor="$color12"
+                      borderColor="$gray12"
                       bg="$color1"
                       items="center"
                       justify="center"
@@ -155,7 +155,7 @@ function Grid({
                       aspectRatio={1}
                       rounded={0}
                       borderWidth={RETRO_BORDER_WIDTH}
-                      borderColor="$color12"
+                      borderColor="$gray12"
                       bg="$color1"
                       items="center"
                       justify="center"
@@ -183,7 +183,7 @@ function Grid({
                     aspectRatio={1}
                     rounded={0}
                     borderWidth={RETRO_BORDER_WIDTH}
-                    borderColor="$color12"
+                    borderColor="$gray12"
                     overflow="hidden"
                     bg="$color1"
                     pressStyle={

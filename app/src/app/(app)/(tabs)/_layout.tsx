@@ -16,14 +16,16 @@ import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat";
-import { BOTTOM_BAR_HEIGHT, bottomBarHeight } from "@/lib/design";
+import {
+  BOTTOM_BAR_HEIGHT,
+  bottomBarHeight,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
 const ICON_SIZE = 30;
 const TAB_ITEM_PADDING = 5;
-const BORDER_WIDTH = 2;
-
 const HEADER_EDGE_PADDING = 4;
 
 const BADGE_FONT_SIZE = 11;
@@ -106,8 +108,8 @@ export default function TabsLayout() {
               StyleSheet.absoluteFill,
               {
                 backgroundColor: theme.color1.val,
-                borderTopWidth: BORDER_WIDTH,
-                borderColor: theme.color12.val,
+                borderTopWidth: RETRO_BORDER_WIDTH,
+                borderColor: theme.gray12.val,
               },
             ]}
           />

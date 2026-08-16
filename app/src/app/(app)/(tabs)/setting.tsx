@@ -171,7 +171,7 @@ function SettingRow({
           px="$1.5"
           rounded={0}
           borderWidth={RETRO_BORDER_WIDTH}
-          borderColor="$color12"
+          borderColor="$gray12"
           bg="$red10"
           items="center"
           justify="center"

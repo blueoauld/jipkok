@@ -34,7 +34,7 @@ function UnreadBadge({ count }: { count: number }) {
       height={BADGE_SIZE}
       px="$1.5"
       borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$color12"
+      borderColor="$gray12"
       bg="$red10"
       items="center"
       justify="center"

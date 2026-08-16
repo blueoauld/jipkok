@@ -20,7 +20,7 @@ export function RetroSegmentedControl<T extends string>({
       <RetroShadow color="$gray8" />
       <XStack
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         bg="$color1"
       >
         {values.map((item, index) => {
@@ -34,8 +34,8 @@ export function RetroSegmentedControl<T extends string>({
               py="$1.5"
               justify="center"
               bg={selected ? "$color10" : "transparent"}
-              borderColor="$color12"
-              borderLeftWidth={index === 0 ? 0 : 2}
+              borderColor="$gray12"
+              borderLeftWidth={index === 0 ? 0 : RETRO_BORDER_WIDTH}
               pressStyle={{ bg: selected ? "$color10" : "$color3" }}
               onPress={() => onChange(item)}
             >

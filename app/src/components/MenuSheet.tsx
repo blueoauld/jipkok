@@ -2,7 +2,7 @@ import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
-import { OVERLAY_BG } from "@/lib/design";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 export type MenuSheetItem = {
   label: string;
@@ -36,8 +36,8 @@ export function MenuSheet({
       <Sheet.Frame
         bg="$color1"
         rounded={0}
-        borderTopWidth={2}
-        borderColor="$color12"
+        borderTopWidth={RETRO_BORDER_WIDTH}
+        borderColor="$gray12"
         p="$4"
         pb={getTokens().space.$6.val + insets.bottom}
         gap="$2"

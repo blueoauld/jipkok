@@ -11,9 +11,9 @@ export function RetroInput({ theme = "gray", ...inputProps }: InputProps) {
         size="$4"
         bg="$color1"
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         rounded={0}
-        focusStyle={{ borderColor: "$color12" }}
+        focusStyle={{ borderColor: "$gray12" }}
         color="$color12"
         px="$3"
         {...inputProps}

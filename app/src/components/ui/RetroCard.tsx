@@ -20,7 +20,7 @@ export function RetroCard({
       <RetroShadow color={shadow} />
       <YStack
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         bg="$color1"
         p="$3"
         onPress={onPress}

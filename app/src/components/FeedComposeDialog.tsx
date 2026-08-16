@@ -80,7 +80,7 @@ function ComposeForm({
           aspectRatio={CARD_RATIO}
           rounded={0}
           borderWidth={RETRO_BORDER_WIDTH}
-          borderColor="$color12"
+          borderColor="$gray12"
           overflow="hidden"
         >
           <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />

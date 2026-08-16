@@ -7,7 +7,11 @@ import { useTheme, XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
-import { IMAGE_TRANSITION, PHOTO_PRESS_OPACITY } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  PHOTO_PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
@@ -38,9 +42,9 @@ export function PhotoPager({
       <YStack
         height={height}
         bg="$color1"
-        borderTopWidth={2}
-        borderBottomWidth={2}
-        borderColor="$color12"
+        borderTopWidth={RETRO_BORDER_WIDTH}
+        borderBottomWidth={RETRO_BORDER_WIDTH}
+        borderColor="$gray12"
         items="center"
         justify="center"
       >
@@ -50,7 +54,11 @@ export function PhotoPager({
   }
 
   return (
-    <YStack borderTopWidth={2} borderBottomWidth={2} borderColor="$color12">
+    <YStack
+      borderTopWidth={RETRO_BORDER_WIDTH}
+      borderBottomWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+    >
       <PagedPhotos
         photos={photos}
         itemWidth={width}

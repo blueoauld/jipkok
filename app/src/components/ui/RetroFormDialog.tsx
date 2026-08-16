@@ -36,7 +36,7 @@ export function RetroFormDialog({
             <RetroShadow color="$gray12" />
             <YStack
               borderWidth={RETRO_BORDER_WIDTH}
-              borderColor="$color12"
+              borderColor="$gray12"
               bg="$color1"
               p="$4"
               gap="$4"

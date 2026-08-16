@@ -5,7 +5,11 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
-import { FLOATING_BUTTON_SIZE, OVERLAY_BG } from "@/lib/design";
+import {
+  FLOATING_BUTTON_SIZE,
+  OVERLAY_BG,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
 import {
   useAccent,
   useAccentToken,
@@ -151,8 +155,8 @@ export function FeedDatePicker({
             pt="$2"
             pb={getTokens().space.$4.val}
             bg={background}
-            borderTopWidth={2}
-            borderColor="$color12"
+            borderTopWidth={RETRO_BORDER_WIDTH}
+            borderColor="$gray12"
           >
             <Calendar
               initialDate={selected}

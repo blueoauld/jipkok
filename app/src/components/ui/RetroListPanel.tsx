@@ -10,7 +10,7 @@ export function RetroListPanel({ children }: { children: ReactNode }) {
       <RetroShadow color="$gray8" />
       <YStack
         borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$color12"
+        borderColor="$gray12"
         bg="$color1"
       >
         {children}
@@ -30,8 +30,8 @@ export function RetroListRow({
       items="center"
       px="$4"
       py="$3"
-      borderBottomWidth={divider ? 2 : 0}
-      borderColor="$color12"
+      borderBottomWidth={divider ? RETRO_BORDER_WIDTH : 0}
+      borderColor="$gray12"
       pressStyle={{ bg: "$color3" }}
       {...props}
     >

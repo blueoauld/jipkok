@@ -34,7 +34,7 @@ import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { bottomBarHeight } from "@/lib/design";
+import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance, genderLabel } from "@/lib/member";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -161,8 +161,8 @@ function ActionBar({
       height={bottomBarHeight(insets.bottom)}
       pb={insets.bottom}
       bg="$color1"
-      borderTopWidth={2}
-      borderColor="$color12"
+      borderTopWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
     >
       {ACTIONS.map(({ key, icon: Icon }) => (
         <XStack

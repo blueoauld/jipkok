@@ -42,7 +42,7 @@ function BubbleFrame({
       shrink={1}
       bg={mine ? accent : "$color1"}
       borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$color12"
+      borderColor="$gray12"
       minH={MIN_HEIGHT}
       justify="center"
       onLongPress={onLongPress}
@@ -90,7 +90,7 @@ function PhotoMessage({
           width: PHOTO_SIZE,
           height: PHOTO_SIZE,
           borderWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.color12.val,
+          borderColor: theme.gray12.val,
         }}
       />
 

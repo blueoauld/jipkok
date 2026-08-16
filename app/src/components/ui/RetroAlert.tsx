@@ -47,7 +47,7 @@ export function RetroAlert({
 
           <YStack
             borderWidth={RETRO_BORDER_WIDTH}
-            borderColor="$color12"
+            borderColor="$gray12"
             bg="$color1"
           >
             <XStack
@@ -55,8 +55,8 @@ export function RetroAlert({
               px="$3"
               py="$2.5"
               items="center"
-              borderBottomWidth={2}
-              borderColor="$color12"
+              borderBottomWidth={RETRO_BORDER_WIDTH}
+              borderColor="$gray12"
             >
               <NativeText
                 style={{
