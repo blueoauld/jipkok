@@ -1,8 +1,5 @@
 package com.blueoauld.server.domain.push.service
 
-import com.blueoauld.server.domain.push.entity.DeviceToken
-import com.blueoauld.server.domain.push.entity.type.DevicePlatform
-import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.global.push.ExpoPushClient
 import com.blueoauld.server.global.push.ExpoPushMessage
 import io.mockk.every
@@ -16,20 +13,17 @@ import org.springframework.messaging.simp.user.SimpUserRegistry
 
 class PushServiceTest {
 
-    private val deviceTokenRepository = mockk<DeviceTokenRepository>(relaxed = true)
+    private val deviceTokenService = mockk<DeviceTokenService>(relaxed = true)
 
     private val expoPushClient = mockk<ExpoPushClient>(relaxed = true)
 
     private val simpUserRegistry = mockk<SimpUserRegistry>(relaxed = true)
 
-    private val pushService = PushService(deviceTokenRepository, expoPushClient, simpUserRegistry)
+    private val pushService = PushService(deviceTokenService, expoPushClient, simpUserRegistry)
 
     @BeforeEach
     fun setUp() {
-        every { deviceTokenRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            DeviceToken(MEMBER_ID, TOKEN, DevicePlatform.IOS),
-            DeviceToken(MEMBER_ID, OTHER_TOKEN, DevicePlatform.ANDROID),
-        )
+        every { deviceTokenService.findTokens(MEMBER_ID) } returns listOf(TOKEN, OTHER_TOKEN)
         every { expoPushClient.send(any()) } returns emptyList()
     }
 
@@ -70,28 +64,26 @@ class PushServiceTest {
         pushService.send(MEMBER_ID, TITLE, BODY)
 
         // then
-        verify { deviceTokenRepository.deleteAllByTokenIn(listOf(TOKEN)) }
+        verify { deviceTokenService.removeExpired(listOf(TOKEN)) }
     }
 
     @Test
     fun `보낼 기기가 없으면 지우지 않는다`() {
         // given
-        every { deviceTokenRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
+        every { deviceTokenService.findTokens(MEMBER_ID) } returns emptyList()
 
         // when
         pushService.send(MEMBER_ID, TITLE, BODY)
 
         // then
-        verify(exactly = 0) { deviceTokenRepository.deleteAllByTokenIn(any()) }
+        verify(exactly = 0) { deviceTokenService.removeExpired(match { it.isNotEmpty() }) }
     }
 
     @Test
     fun `묶음 발송은 이전 알림을 대체하도록 키를 실어 보낸다`() {
         // given
         val messages = slot<List<ExpoPushMessage>>()
-        every { deviceTokenRepository.findAllByMemberIdIn(listOf(MEMBER_ID)) } returns listOf(
-            DeviceToken(MEMBER_ID, TOKEN, DevicePlatform.IOS),
-        )
+        every { deviceTokenService.findTokens(listOf(MEMBER_ID)) } returns listOf(TOKEN)
 
         // when
         pushService.sendAll(listOf(MEMBER_ID), TITLE, BODY, collapseKey = COLLAPSE_KEY)

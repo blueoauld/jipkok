@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -20,6 +21,7 @@ class ChatPushNotifier(
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
 ) {
 
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun notifySent(event: ChatMessageSentEvent) {
         if (pushService.isConnected(event.receiverId)) {

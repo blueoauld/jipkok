@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.push.dto.request.RegisterDeviceTokenRequest
 import com.blueoauld.server.domain.push.entity.DeviceToken
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -28,5 +29,18 @@ class DeviceTokenService(
     @Transactional
     fun remove(token: String) {
         deviceTokenRepository.deleteByToken(token)
+    }
+
+    @Transactional(readOnly = true)
+    fun findTokens(memberId: Long) = deviceTokenRepository.findAllByMemberId(memberId).map { it.token }
+
+    @Transactional(readOnly = true)
+    fun findTokens(memberIds: List<Long>) = deviceTokenRepository.findAllByMemberIdIn(memberIds).map { it.token }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun removeExpired(tokens: List<String>) {
+        if (tokens.isNotEmpty()) {
+            deviceTokenRepository.deleteAllByTokenIn(tokens)
+        }
     }
 }

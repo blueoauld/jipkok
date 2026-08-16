@@ -5,7 +5,6 @@ import com.blueoauld.server.domain.push.service.PushService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -22,7 +21,6 @@ class FeedReminder(
 ) {
 
     @Scheduled(cron = REMIND_CRON, zone = KOREA)
-    @Transactional
     fun remind() {
         val now = clock.instant()
         val targets = memberRepository.findFeedReminderTargets(now.truncatedTo(ChronoUnit.HOURS), now)

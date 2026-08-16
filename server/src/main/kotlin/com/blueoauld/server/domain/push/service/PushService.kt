@@ -1,23 +1,20 @@
 package com.blueoauld.server.domain.push.service
 
-import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.global.push.ExpoPushClient
 import com.blueoauld.server.global.push.ExpoPushMessage
 import org.springframework.messaging.simp.user.SimpUserRegistry
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PushService(
 
-    private val deviceTokenRepository: DeviceTokenRepository,
+    private val deviceTokenService: DeviceTokenService,
     private val expoPushClient: ExpoPushClient,
     private val simpUserRegistry: SimpUserRegistry,
 ) {
 
     fun isConnected(memberId: Long) = simpUserRegistry.getUser(memberId.toString()) != null
 
-    @Transactional
     fun send(
         memberId: Long,
         title: String,
@@ -27,10 +24,10 @@ class PushService(
         channelId: String? = null,
         priority: String? = null,
     ) {
-        val messages = deviceTokenRepository.findAllByMemberId(memberId)
+        val messages = deviceTokenService.findTokens(memberId)
             .map {
                 ExpoPushMessage(
-                    to = it.token,
+                    to = it,
                     title = title,
                     body = body,
                     data = data,
@@ -40,10 +37,9 @@ class PushService(
                 )
             }
 
-        removeExpired(expoPushClient.send(messages))
+        deviceTokenService.removeExpired(expoPushClient.send(messages))
     }
 
-    @Transactional
     fun sendAll(
         memberIds: List<Long>,
         title: String,
@@ -57,10 +53,10 @@ class PushService(
             return
         }
 
-        deviceTokenRepository.findAllByMemberIdIn(memberIds)
+        deviceTokenService.findTokens(memberIds)
             .map {
                 ExpoPushMessage(
-                    to = it.token,
+                    to = it,
                     title = title,
                     body = body,
                     data = data,
@@ -71,13 +67,7 @@ class PushService(
                 )
             }
             .chunked(BATCH_SIZE)
-            .forEach { removeExpired(expoPushClient.send(it)) }
-    }
-
-    private fun removeExpired(tokens: List<String>) {
-        if (tokens.isNotEmpty()) {
-            deviceTokenRepository.deleteAllByTokenIn(tokens)
-        }
+            .forEach { deviceTokenService.removeExpired(expoPushClient.send(it)) }
     }
 
     companion object {
