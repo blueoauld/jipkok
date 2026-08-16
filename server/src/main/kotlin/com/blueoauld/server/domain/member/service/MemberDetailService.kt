@@ -19,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Service
 class MemberDetailService(
@@ -85,11 +82,7 @@ class MemberDetailService(
         val targetLatitude = target.latitude ?: return null
         val targetLongitude = target.longitude ?: return null
 
-        val cosine = cos(Math.toRadians(myLatitude)) * cos(Math.toRadians(targetLatitude)) *
-                cos(Math.toRadians(targetLongitude) - Math.toRadians(myLongitude)) +
-                sin(Math.toRadians(myLatitude)) * sin(Math.toRadians(targetLatitude))
-
-        return EARTH_RADIUS_METERS * acos(cosine.coerceIn(-1.0, 1.0))
+        return sphericalDistanceMeters(myLatitude, myLongitude, targetLatitude, targetLongitude)
     }
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
@@ -99,8 +92,6 @@ class MemberDetailService(
     private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
 
     companion object {
-
-        private const val EARTH_RADIUS_METERS = 6_371_008.8
 
         private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
