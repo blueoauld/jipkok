@@ -18,6 +18,8 @@ import com.blueoauld.server.domain.report.entity.ReportPhoto
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
+import com.blueoauld.server.domain.report.event.PhotoCopy
+import com.blueoauld.server.domain.report.event.ReportPhotosCopiedEvent
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
@@ -152,34 +154,32 @@ class ReportServiceTest {
             MemberPhoto(REPORTED_MEMBER_ID, PhotoVisibility.PUBLIC, 0, "members/2/a.jpg"),
             MemberPhoto(REPORTED_MEMBER_ID, PhotoVisibility.SECRET, 0, "members/2/s.jpg"),
         )
+        val events = mutableListOf<Any>()
         val snapshot = slot<ReportSnapshot>()
 
         // when
         reportService.report(REPORTER_ID, createReportRequest())
 
         // then
-        verify { photoStorage.copy("members/2/a.jpg", "reports/snapshot/0/a.jpg") }
-        verify(exactly = 0) { photoStorage.copy("members/2/s.jpg", any()) }
+        verify { eventPublisher.publishEvent(capture(events)) }
         verify { reportSnapshotRepository.save(capture(snapshot)) }
+        assertThat(events.filterIsInstance<ReportPhotosCopiedEvent>().single().copies)
+            .containsExactly(PhotoCopy("members/2/a.jpg", "reports/snapshot/0/a.jpg"))
         assertThat(snapshot.captured.content).contains("reports/snapshot/0/a.jpg")
     }
 
     @Test
-    fun `사진 복사가 실패해도 신고는 접수된다`() {
+    fun `사진 복사는 신고를 저장하는 동안 하지 않는다`() {
         // given
         every { memberPhotoRepository.findAllByMemberId(REPORTED_MEMBER_ID) } returns listOf(
             MemberPhoto(REPORTED_MEMBER_ID, PhotoVisibility.PUBLIC, 0, "members/2/a.jpg"),
         )
-        every { photoStorage.copy(any(), any()) } throws IllegalStateException("R2 오류")
-        val snapshot = slot<ReportSnapshot>()
 
         // when
         reportService.report(REPORTER_ID, createReportRequest())
 
         // then
-        verify { reportRepository.save(any()) }
-        verify { reportSnapshotRepository.save(capture(snapshot)) }
-        assertThat(snapshot.captured.content).contains("\"photoKeys\":[]")
+        verify(exactly = 0) { photoStorage.copy(any(), any()) }
     }
 
     @Test
