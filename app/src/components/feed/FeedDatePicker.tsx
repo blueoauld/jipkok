@@ -68,7 +68,7 @@ function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
       justify="center"
       onPress={onPress}
     >
-      <Text fontSize="$4" color="white">
+      <Text fontSize="$4" fontWeight="700" color="white">
         {formatDateLabel(date)}
       </Text>
     </RetroCard>

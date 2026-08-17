@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { memo } from "react";
+import { Platform, Text as NativeText } from "react-native";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -17,6 +18,28 @@ const REPORT_BUTTON_SPACE = 56;
 
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = 40;
+
+const HARD_SHADOW = {
+  width: RETRO_SHADOW_OFFSET_SM,
+  height: RETRO_SHADOW_OFFSET_SM,
+};
+
+const HARD_SHADOW_RADIUS = Platform.select({ ios: 0, default: 1 });
+
+const SLOT_FONT = Platform.select({
+  ios: { fontFamily: "Menlo", fontWeight: "800" },
+  default: { fontFamily: "monospace", fontWeight: "bold" },
+} as const);
+
+const SLOT_STYLE = {
+  ...SLOT_FONT,
+  fontSize: 30,
+  letterSpacing: 1,
+  color: "white",
+  textShadowColor: "black",
+  textShadowOffset: HARD_SHADOW,
+  textShadowRadius: HARD_SHADOW_RADIUS,
+} as const;
 
 function CardButton({
   children,
@@ -118,13 +141,21 @@ function Card({
         </CardButton>
       </YStack>
 
-      <YStack fullscreen items="center" justify="center" px="$4">
-        <Text color="white" fontSize="$9" fontWeight="800">
+      <YStack fullscreen items="center" justify="center" px="$4" gap="$1">
+        <NativeText style={SLOT_STYLE}>
           {formatSlotTime(post.slotAt)}
-        </Text>
+        </NativeText>
 
         {post.caption && (
-          <Text numberOfLines={1} color="white" fontSize="$5" fontWeight="600">
+          <Text
+            numberOfLines={1}
+            color="white"
+            fontSize="$5"
+            fontWeight="600"
+            textShadowColor="black"
+            textShadowOffset={HARD_SHADOW}
+            textShadowRadius={HARD_SHADOW_RADIUS}
+          >
             {post.caption}
           </Text>
         )}
