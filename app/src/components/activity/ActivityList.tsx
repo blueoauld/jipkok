@@ -8,9 +8,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { LIST_ERROR_MESSAGE } from "@/lib/message";
-
-const EMPTY_MESSAGE = "목록이 비어있습니다.";
+import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
 
 function Centered({ children }: { children: ReactNode }) {
   return (
@@ -64,7 +62,7 @@ export function ActivityList({
       contentContainerStyle={contentStyle}
       ListEmptyComponent={
         <Centered>
-          <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
+          <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
         </Centered>
       }
     />

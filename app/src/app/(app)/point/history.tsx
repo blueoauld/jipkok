@@ -15,7 +15,7 @@ import { formatAmount, pointTypeLabel } from "@/lib/point";
 import { useAccentToken } from "@/lib/theme/accent";
 
 const ERROR_MESSAGE = "내역을 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "내역이 비어있습니다.";
+const EMPTY_MESSAGE = "내역이 없습니다.";
 
 function Centered({ children }: { children: ReactNode }) {
   return (

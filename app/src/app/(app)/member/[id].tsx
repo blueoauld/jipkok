@@ -58,7 +58,7 @@ const ID_COPIED_MESSAGE = "회원 아이디를 복사했습니다.";
 const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
 
 const BLOCKED_MESSAGE = "차단했습니다.";
-const UNBLOCKED_MESSAGE = "차단이 해제되었습니다.";
+const UNBLOCKED_MESSAGE = "차단을 해제했습니다.";
 const SECRET_PHOTO_OPENED_MESSAGE = "비밀 사진을 공개했습니다.";
 const SECRET_PHOTO_CLOSED_MESSAGE = "비밀 사진을 닫았습니다.";
 

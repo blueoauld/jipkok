@@ -31,7 +31,7 @@ const uploadPublicPhoto = (asset: ImagePickerAsset) =>
 const uploadSecretPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "SECRET");
 
-const EDITED_MESSAGE = "프로필이 편집되었습니다.";
+const EDITED_MESSAGE = "프로필을 저장했습니다.";
 
 function BioField({
   valueRef,

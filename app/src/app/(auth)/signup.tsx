@@ -24,7 +24,7 @@ import {
 const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
 
-const CODE_SENT_MESSAGE = "인증번호가 전송되었습니다.";
+const CODE_SENT_MESSAGE = "인증번호를 보냈습니다.";
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 

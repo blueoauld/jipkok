@@ -10,7 +10,8 @@ import { api } from "@/lib/api";
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
 const SERVICES_OFF_MESSAGE =
   "기기의 위치 기능을 켜야 거리순으로 볼 수 있습니다.";
-const FAILED_MESSAGE = "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.";
+const FAILED_MESSAGE =
+  "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.";
 
 const LOCATION_TIMEOUT = 10_000;
 

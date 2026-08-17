@@ -47,7 +47,7 @@ const SORT_LABELS: Record<MemberSort, Filter> = {
 
 const COMMENT_MAX_LENGTH = 100;
 
-const COMMENT_SAVED_MESSAGE = "코멘트가 작성되었습니다.";
+const COMMENT_SAVED_MESSAGE = "코멘트를 저장했습니다.";
 
 const MEMBERS_KEY = ["members"];
 

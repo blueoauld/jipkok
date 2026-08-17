@@ -9,7 +9,7 @@ import { showToast } from "@/lib/toast/store";
 
 const REWARD_DELAY = 2000;
 
-const REWARD_MESSAGE = "광고 보상이 적립되었습니다.";
+const REWARD_MESSAGE = "광고 보상을 받았습니다.";
 const NOT_READY_MESSAGE =
   "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.";
 
