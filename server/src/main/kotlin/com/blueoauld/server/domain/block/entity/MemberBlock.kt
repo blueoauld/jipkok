@@ -19,7 +19,12 @@ import jakarta.persistence.UniqueConstraint
             columnNames = ["blocker_id", "blocked_member_id"],
         ),
     ],
-    indexes = [Index(name = "idx_member_block_blocked_member_id", columnList = "blocked_member_id")],
+    indexes = [
+        Index(
+            name = "idx_member_block_blocked_member_id_blocker_id",
+            columnList = "blocked_member_id, blocker_id",
+        ),
+    ],
 )
 class MemberBlock(
 

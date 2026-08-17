@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
-import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
@@ -11,6 +10,7 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.repository.escapeLike
+import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.response.CursorResponse
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Limit
@@ -72,7 +72,7 @@ class ChatRoomService(
     }
 
     @Transactional
-    fun updateNotification(memberId: Long, roomId: Long, request: UpdateChatNotificationRequest) {
+    fun updateNotification(memberId: Long, roomId: Long, request: EnabledRequest) {
         val roomMember = chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
             ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
 
@@ -108,11 +108,13 @@ class ChatRoomService(
         )
     }
 
+    @Transactional
     fun delete(room: ChatRoom, partnerId: Long) {
         chatRoomRepository.delete(room)
         eventPublisher.publishEvent(ChatRoomDeletedEvent(partnerId, room.id))
     }
 
+    @Transactional
     fun deleteAll(memberId: Long, rooms: List<ChatRoom>) {
         if (rooms.isEmpty()) {
             return

@@ -1,15 +1,15 @@
 package com.blueoauld.server.domain.chat.web
 
-import com.blueoauld.server.domain.chat.dto.request.CreateChatPhotoUploadUrlRequest
 import com.blueoauld.server.domain.chat.dto.request.MarkReadRequest
 import com.blueoauld.server.domain.chat.dto.request.MarkRoomsReadRequest
 import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
-import com.blueoauld.server.domain.chat.dto.response.ChatPhotoUploadUrlResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
 import com.blueoauld.server.domain.chat.service.ChatMessageService
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -56,7 +56,7 @@ class ChatMessageController(
         @AuthenticationPrincipal memberId: Long,
         @PathVariable roomId: Long,
         @PathVariable messageId: Long,
-        @RequestBody request: ReactMessageRequest,
+        @Valid @RequestBody request: ReactMessageRequest,
     ): ChatReactionsResponse = chatMessageService.react(memberId, roomId, messageId, request)
 
     @Operation(operationId = "unreactChatMessage", summary = "메시지 반응 취소")
@@ -73,7 +73,7 @@ class ChatMessageController(
     fun markRead(
         @AuthenticationPrincipal memberId: Long,
         @PathVariable roomId: Long,
-        @RequestBody request: MarkReadRequest,
+        @Valid @RequestBody request: MarkReadRequest,
     ) {
         chatMessageService.markRead(memberId, roomId, request.lastReadMessageId)
     }
@@ -92,8 +92,8 @@ class ChatMessageController(
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,
-        @RequestBody request: CreateChatPhotoUploadUrlRequest,
-    ): ChatPhotoUploadUrlResponse = chatMessageService.createPhotoUploadUrl(memberId, request)
+        @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
+    ): PhotoUploadUrlResponse = chatMessageService.createPhotoUploadUrl(memberId, request)
 
     companion object {
 

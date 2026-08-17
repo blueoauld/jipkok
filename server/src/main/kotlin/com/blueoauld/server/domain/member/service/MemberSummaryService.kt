@@ -6,11 +6,10 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class MemberSummaryService(
@@ -44,14 +43,9 @@ class MemberSummaryService(
         memberId = member.id,
         nickname = member.nickname,
         gender = member.gender,
-        age = LocalDate.now(clock.withZone(KOREA)).year - member.birthYear,
+        age = clock.currentYear() - member.birthYear,
         receivedLikeCount = member.receivedLikeCount,
         comment = member.comment,
         profileImageUrl = profileImageUrl,
     )
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
-    }
 }

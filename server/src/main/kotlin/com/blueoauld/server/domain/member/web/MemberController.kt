@@ -1,19 +1,16 @@
 package com.blueoauld.server.domain.member.web
 
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
-import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
-import com.blueoauld.server.domain.member.dto.request.UpdateFeedNotificationRequest
-import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
 import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
-import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.service.MemberDetailService
@@ -25,7 +22,9 @@ import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberSignupService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
+import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.response.ScrollResponse
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.web.clientIp
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
@@ -117,7 +116,9 @@ class MemberController(
 
     @Operation(summary = "내 프로필 조회")
     @GetMapping("/me")
-    fun getMyProfile(@AuthenticationPrincipal memberId: Long): MyProfileResponse = memberService.getMyProfile(memberId)
+    fun findMyProfile(
+        @AuthenticationPrincipal memberId: Long,
+    ): MyProfileResponse = memberService.findMyProfile(memberId)
 
     @Operation(summary = "프로필 편집")
     @PutMapping("/me/profile")
@@ -133,7 +134,7 @@ class MemberController(
     @PostMapping("/me/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,
-        @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
+        @Valid @RequestBody request: CreateProfilePhotoUploadUrlRequest,
     ): PhotoUploadUrlResponse = memberService.createPhotoUploadUrl(memberId, request)
 
     @Operation(summary = "쪽지 수신 설정", description = "끄면 새 쪽지로 방이 열리지 않는다.")
@@ -141,7 +142,7 @@ class MemberController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun updateNoteReceive(
         @AuthenticationPrincipal memberId: Long,
-        @RequestBody request: UpdateNoteReceiveRequest,
+        @Valid @RequestBody request: EnabledRequest,
     ) {
         memberService.updateNoteReceive(memberId, request)
     }
@@ -151,7 +152,7 @@ class MemberController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun updateFeedNotification(
         @AuthenticationPrincipal memberId: Long,
-        @RequestBody request: UpdateFeedNotificationRequest,
+        @Valid @RequestBody request: EnabledRequest,
     ) {
         memberService.updateFeedNotification(memberId, request)
     }

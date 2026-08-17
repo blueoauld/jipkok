@@ -1,9 +1,9 @@
 package com.blueoauld.server.domain.report.web
 
-import com.blueoauld.server.domain.report.dto.request.CreateReportPhotoUploadUrlRequest
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
-import com.blueoauld.server.domain.report.dto.response.ReportPhotoUploadUrlResponse
 import com.blueoauld.server.domain.report.service.ReportService
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -31,10 +31,10 @@ class ReportController(
         reportService.report(memberId, request)
     }
 
-    @Operation(summary = "사진 업로드 URL 발급")
+    @Operation(operationId = "createReportPhotoUploadUrl", summary = "사진 업로드 URL 발급")
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,
-        @Valid @RequestBody request: CreateReportPhotoUploadUrlRequest,
-    ): ReportPhotoUploadUrlResponse = reportService.createPhotoUploadUrl(memberId, request)
+        @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
+    ): PhotoUploadUrlResponse = reportService.createPhotoUploadUrl(memberId, request)
 }

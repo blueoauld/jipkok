@@ -10,9 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 private val log = KotlinLogging.logger {}
 
@@ -39,7 +36,7 @@ class FeedReportNotifier(
             DiscordEmbeds.field("ID", "`${event.postId}`"),
             DiscordEmbeds.field("회원", "$nickname(`${event.memberId}`)"),
             DiscordEmbeds.field("신고", "${event.reportCount}회"),
-            DiscordEmbeds.field("시간", format(event.slotAt)),
+            DiscordEmbeds.field("시간", DiscordEmbeds.format(event.slotAt)),
             DiscordEmbeds.field("문구", event.caption ?: NONE),
             DiscordEmbeds.field("사진", photoStorage.toPublicUrl(event.objectKey)),
         ).joinToString("\n\n")
@@ -47,15 +44,9 @@ class FeedReportNotifier(
         return DiscordEmbeds.of(TITLE, body)
     }
 
-    private fun format(instant: Instant) = FORMATTER.format(instant.atZone(KOREA))
-
     companion object {
 
         private const val TITLE = "피드 삭제"
         private const val NONE = "없음"
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
-
-        private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     }
 }

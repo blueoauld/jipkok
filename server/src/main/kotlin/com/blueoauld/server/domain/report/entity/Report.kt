@@ -17,7 +17,10 @@ import java.time.Instant
 @Entity
 @Table(
     name = "report",
-    indexes = [Index(name = "idx_report_reported_member_id", columnList = "reported_member_id")],
+    indexes = [
+        Index(name = "idx_report_reported_member_id", columnList = "reported_member_id"),
+        Index(name = "idx_report_handled_at", columnList = "handled_at"),
+    ],
 )
 class Report(
 

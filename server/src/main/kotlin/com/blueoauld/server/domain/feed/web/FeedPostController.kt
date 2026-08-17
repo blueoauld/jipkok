@@ -1,8 +1,6 @@
 package com.blueoauld.server.domain.feed.web
 
-import com.blueoauld.server.domain.feed.dto.request.CreateFeedPhotoUploadUrlRequest
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
-import com.blueoauld.server.domain.feed.dto.response.FeedPhotoUploadUrlResponse
 import com.blueoauld.server.domain.feed.dto.response.FeedPostResponse
 import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.service.FeedPostLikeService
@@ -10,6 +8,8 @@ import com.blueoauld.server.domain.feed.service.FeedPostReportService
 import com.blueoauld.server.domain.feed.service.FeedPostService
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
@@ -81,8 +81,8 @@ class FeedPostController(
     @PostMapping("/photos/upload-url")
     fun createPhotoUploadUrl(
         @AuthenticationPrincipal memberId: Long,
-        @Valid @RequestBody request: CreateFeedPhotoUploadUrlRequest,
-    ): FeedPhotoUploadUrlResponse = feedPostService.createPhotoUploadUrl(memberId, request)
+        @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
+    ): PhotoUploadUrlResponse = feedPostService.createPhotoUploadUrl(memberId, request)
 
     companion object {
 

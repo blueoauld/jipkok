@@ -3,11 +3,10 @@ package com.blueoauld.server.domain.access.service
 import com.blueoauld.server.domain.access.dto.AccessInfo
 import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class AccessLogService(
@@ -24,13 +23,8 @@ class AccessLogService(
             platform = access.platform.name,
             deviceName = access.deviceName,
             ipAddress = access.ipAddress,
-            accessedOn = LocalDate.now(clock.withZone(KOREA)),
+            accessedOn = clock.today(),
             now = clock.instant(),
         )
-    }
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

@@ -12,12 +12,11 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.time.currentYear
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class MemberAdminService(
@@ -41,7 +40,7 @@ class MemberAdminService(
             phoneNumber = member.phoneNumber,
             gender = member.gender,
             birthYear = member.birthYear,
-            age = currentYear() - member.birthYear,
+            age = clock.currentYear() - member.birthYear,
             comment = member.comment,
             bio = member.bio,
             publicPhotoCount = photos.count { it.visibility == PhotoVisibility.PUBLIC },
@@ -101,12 +100,5 @@ class MemberAdminService(
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
-
-    private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

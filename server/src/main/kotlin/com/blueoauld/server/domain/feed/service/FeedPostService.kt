@@ -1,8 +1,6 @@
 package com.blueoauld.server.domain.feed.service
 
-import com.blueoauld.server.domain.feed.dto.request.CreateFeedPhotoUploadUrlRequest
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
-import com.blueoauld.server.domain.feed.dto.response.FeedPhotoUploadUrlResponse
 import com.blueoauld.server.domain.feed.dto.response.FeedPostResponse
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.type.FeedSort
@@ -12,14 +10,17 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
+import com.blueoauld.server.global.time.KOREA
+import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -42,7 +43,7 @@ class FeedPostService(
         size: Int,
     ): CursorResponse<FeedPostResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val from = (date ?: today()).atStartOfDay(KOREA).toInstant()
+        val from = (date ?: clock.today()).atStartOfDay(KOREA).toInstant()
         val to = from.plus(1, ChronoUnit.DAYS)
         val rows = when (sort) {
             FeedSort.LATEST -> feedPostRepository.findByDateLatestFirst(
@@ -105,11 +106,8 @@ class FeedPostService(
         photoUploadService.confirm(listOf(request.objectKey))
     }
 
-    fun createPhotoUploadUrl(memberId: Long, request: CreateFeedPhotoUploadUrlRequest): FeedPhotoUploadUrlResponse {
-        val issued = photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
-
-        return FeedPhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
-    }
+    fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
+        photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
 
     private fun validatePhotoKey(memberId: Long, objectKey: String) {
         if (!objectKey.startsWith(photoKeyPrefix(memberId))) {
@@ -119,14 +117,10 @@ class FeedPostService(
 
     private fun currentSlot(): Instant = clock.instant().truncatedTo(ChronoUnit.HOURS)
 
-    private fun today(): LocalDate = LocalDate.now(clock.withZone(KOREA))
-
     private fun photoKeyPrefix(memberId: Long) = "$PHOTO_KEY_ROOT/$memberId/"
 
     companion object {
 
         private const val PHOTO_KEY_ROOT = "feeds"
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

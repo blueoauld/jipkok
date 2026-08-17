@@ -58,7 +58,6 @@ class ChatMessage(
     companion object {
 
         const val CONTENT_MAX_LENGTH = 1000
-        const val PHOTO_MAX_COUNT = 6
         const val CLIENT_MESSAGE_ID_MAX_LENGTH = 36
     }
 }

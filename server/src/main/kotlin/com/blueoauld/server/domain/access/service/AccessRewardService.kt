@@ -7,11 +7,10 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
+import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class AccessRewardService(
@@ -23,7 +22,7 @@ class AccessRewardService(
 
     @Transactional
     fun earn(member: Member, access: AccessInfo): PointRewardResponse {
-        val today = today()
+        val today = clock.today()
 
         if (accessRewardRepository.existsByPhoneNumberAndAccessedOn(member.phoneNumber, today)) {
             return PointRewardResponse(earned = false, amount = 0, balance = member.pointBalance)
@@ -41,12 +40,5 @@ class AccessRewardService(
         )
 
         return pointService.earn(member.id, PointType.ACCESS_REWARD)
-    }
-
-    private fun today() = LocalDate.now(clock.withZone(KOREA))
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

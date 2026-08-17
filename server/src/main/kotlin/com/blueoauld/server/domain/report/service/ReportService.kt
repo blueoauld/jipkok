@@ -11,11 +11,9 @@ import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
 import com.blueoauld.server.domain.report.dto.ReporterSnapshot
-import com.blueoauld.server.domain.report.dto.request.CreateReportPhotoUploadUrlRequest
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
 import com.blueoauld.server.domain.report.dto.response.PendingReport
 import com.blueoauld.server.domain.report.dto.response.ReportDetail
-import com.blueoauld.server.domain.report.dto.response.ReportPhotoUploadUrlResponse
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
@@ -28,6 +26,8 @@ import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
@@ -139,14 +139,8 @@ class ReportService(
         )
     }
 
-    fun createPhotoUploadUrl(
-        reporterId: Long,
-        request: CreateReportPhotoUploadUrlRequest,
-    ): ReportPhotoUploadUrlResponse {
-        val issued = photoUploadService.createUploadUrl(reporterId, evidenceKeyPrefix(reporterId), request.contentType)
-
-        return ReportPhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
-    }
+    fun createPhotoUploadUrl(reporterId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
+        photoUploadService.createUploadUrl(reporterId, evidenceKeyPrefix(reporterId), request.contentType)
 
     private fun findRoom(reporterId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
         .filter { it.contains(reporterId) }

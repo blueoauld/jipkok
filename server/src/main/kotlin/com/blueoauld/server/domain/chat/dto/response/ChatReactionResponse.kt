@@ -11,7 +11,7 @@ data class ChatReactionResponse(
 
     companion object {
 
-        fun of(reaction: ChatMessageReaction) = ChatReactionResponse(
+        fun from(reaction: ChatMessageReaction) = ChatReactionResponse(
             memberId = reaction.memberId,
             type = reaction.type,
         )

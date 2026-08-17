@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.attendance.web
 
-import com.blueoauld.server.domain.attendance.dto.response.AttendanceResponse
 import com.blueoauld.server.domain.attendance.service.AttendanceService
+import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -20,5 +20,5 @@ class AttendanceController(
     @Operation(summary = "출석 체크")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun checkIn(@AuthenticationPrincipal memberId: Long): AttendanceResponse = attendanceService.checkIn(memberId)
+    fun checkIn(@AuthenticationPrincipal memberId: Long): PointRewardResponse = attendanceService.checkIn(memberId)
 }

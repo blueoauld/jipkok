@@ -8,11 +8,10 @@ import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class AdRewardService(
@@ -37,7 +36,7 @@ class AdRewardService(
         val member = memberRepository.findById(userId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
-        val today = today()
+        val today = clock.today()
 
         if (adRewardRepository.countByPhoneNumberAndRewardedOn(member.phoneNumber, today) >= AdReward.DAILY_LIMIT) {
             return
@@ -47,12 +46,5 @@ class AdRewardService(
             AdReward(request.transactionId, member.phoneNumber, userId, today),
         )
         pointService.earn(userId, PointType.AD_REWARD)
-    }
-
-    private fun today() = LocalDate.now(clock.withZone(KOREA))
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

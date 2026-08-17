@@ -1,13 +1,13 @@
 package com.blueoauld.server.domain.feed.service
 
-import com.blueoauld.server.domain.feed.dto.request.CreateFeedPhotoUploadUrlRequest
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
@@ -108,12 +108,12 @@ class FeedPostServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                IssuedPhotoUpload("https://upload.test/key", "feeds/$MEMBER_ID/key.jpg")
+                PhotoUploadUrlResponse("https://upload.test/key", "feeds/$MEMBER_ID/key.jpg")
 
         // when
         val response = feedPostService.createPhotoUploadUrl(
             MEMBER_ID,
-            CreateFeedPhotoUploadUrlRequest("image/jpeg"),
+            CreatePhotoUploadUrlRequest("image/jpeg"),
         )
 
         // then

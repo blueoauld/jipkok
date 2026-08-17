@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
-import java.time.Duration
 import java.time.Instant
 
 @Entity
@@ -61,17 +60,5 @@ class MemberSuspension(
     companion object {
 
         const val DETAIL_MAX_LENGTH = 500
-
-        val SCREEN_CAPTURE_DURATION: Duration = Duration.ofDays(7)
-
-        fun screenCapture(member: Member, now: Instant) = MemberSuspension(
-            phoneNumber = member.phoneNumber,
-            memberId = member.id,
-            nickname = member.nickname,
-            type = SuspensionType.SECRET_PHOTO,
-            reason = SuspensionReason.SCREEN_CAPTURE,
-            startedAt = now,
-            expiresAt = now.plus(SCREEN_CAPTURE_DURATION),
-        )
     }
 }

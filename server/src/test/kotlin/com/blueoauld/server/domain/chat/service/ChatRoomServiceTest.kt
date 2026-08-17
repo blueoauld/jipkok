@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
-import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
@@ -13,6 +12,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.request.EnabledRequest
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -367,7 +367,7 @@ class ChatRoomServiceTest {
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
 
         // when
-        chatRoomService.updateNotification(ME_ID, ROOM_ID, UpdateChatNotificationRequest(false))
+        chatRoomService.updateNotification(ME_ID, ROOM_ID, EnabledRequest(false))
 
         // then
         assertThat(roomMember.notificationEnabled).isFalse()
@@ -380,7 +380,7 @@ class ChatRoomServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            chatRoomService.updateNotification(STRANGER_ID, ROOM_ID, UpdateChatNotificationRequest(false))
+            chatRoomService.updateNotification(STRANGER_ID, ROOM_ID, EnabledRequest(false))
         }
 
         // then

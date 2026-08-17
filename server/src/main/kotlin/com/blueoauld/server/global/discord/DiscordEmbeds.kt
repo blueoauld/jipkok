@@ -1,16 +1,14 @@
 package com.blueoauld.server.global.discord
 
+import com.blueoauld.server.global.time.KOREA
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object DiscordEmbeds {
 
     const val DESCRIPTION_MAX_LENGTH = 4096
-
-    private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
 
     private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 

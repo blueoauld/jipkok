@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.dto.request
 
+import com.blueoauld.server.domain.member.entity.Member
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -49,6 +50,6 @@ class SetupProfileRequestTest {
 
     companion object {
 
-        private val PATTERN = Regex(SetupProfileRequest.NICKNAME_PATTERN)
+        private val PATTERN = Regex(Member.NICKNAME_PATTERN)
     }
 }

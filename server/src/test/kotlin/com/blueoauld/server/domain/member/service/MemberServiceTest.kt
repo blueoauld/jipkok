@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
@@ -16,7 +16,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
@@ -68,7 +68,7 @@ class MemberServiceTest {
         every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
         every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
         every { photoUploadService.createUploadUrl(any(), any(), any()) } answers {
-            IssuedPhotoUpload("https://upload.test/key", secondArg<String>() + "key.jpg")
+            PhotoUploadUrlResponse("https://upload.test/key", secondArg<String>() + "key.jpg")
         }
         every { photoStorage.createUploadUrl(any(), any()) } answers { "https://upload.test/${firstArg<String>()}" }
     }
@@ -251,7 +251,7 @@ class MemberServiceTest {
         every { photoStorage.createSignedViewUrl(any()) } answers { "https://signed.test/${firstArg<String>()}" }
 
         // when
-        val response = memberService.getMyProfile(MEMBER_ID)
+        val response = memberService.findMyProfile(MEMBER_ID)
 
         // then
         assertThat(response.publicPhotos).containsExactly(
@@ -277,7 +277,7 @@ class MemberServiceTest {
         stubMember(member)
 
         // when
-        val response = memberService.getMyProfile(MEMBER_ID)
+        val response = memberService.findMyProfile(MEMBER_ID)
 
         // then
         assertThat(response.birthYear).isEqualTo(2000)
@@ -291,7 +291,7 @@ class MemberServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberService.getMyProfile(MEMBER_ID)
+            memberService.findMyProfile(MEMBER_ID)
         }
 
         // then
@@ -430,12 +430,12 @@ class MemberServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                IssuedPhotoUpload("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
+                PhotoUploadUrlResponse("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
 
         // when
         val response = memberService.createPhotoUploadUrl(
             MEMBER_ID,
-            CreatePhotoUploadUrlRequest("image/jpeg", PhotoVisibility.SECRET),
+            CreateProfilePhotoUploadUrlRequest("image/jpeg", PhotoVisibility.SECRET),
         )
 
         // then

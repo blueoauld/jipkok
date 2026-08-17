@@ -1,13 +1,10 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
-import com.blueoauld.server.domain.member.dto.request.UpdateFeedNotificationRequest
-import com.blueoauld.server.domain.member.dto.request.UpdateNoteReceiveRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
-import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
@@ -22,15 +19,16 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.request.EnabledRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
+import com.blueoauld.server.global.time.currentYear
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class MemberService(
@@ -61,7 +59,7 @@ class MemberService(
     }
 
     @Transactional(readOnly = true)
-    fun getMyProfile(memberId: Long): MyProfileResponse {
+    fun findMyProfile(memberId: Long): MyProfileResponse {
         val member = findMember(memberId)
         val photos = memberPhotoRepository.findAllByMemberId(memberId)
 
@@ -70,7 +68,7 @@ class MemberService(
             nickname = member.nickname,
             gender = member.gender,
             birthYear = member.birthYear,
-            age = currentYear() - member.birthYear,
+            age = clock.currentYear() - member.birthYear,
             receivedLikeCount = member.receivedLikeCount,
             comment = member.comment,
             bio = member.bio,
@@ -117,22 +115,20 @@ class MemberService(
         }
     }
 
-    fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse {
+    fun createPhotoUploadUrl(memberId: Long, request: CreateProfilePhotoUploadUrlRequest): PhotoUploadUrlResponse {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
         val prefix = photoKeyPrefix(memberId, request.visibility)
-        val issued = photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
-
-        return PhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
+        return photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
     }
 
     @Transactional
-    fun updateNoteReceive(memberId: Long, request: UpdateNoteReceiveRequest) {
+    fun updateNoteReceive(memberId: Long, request: EnabledRequest) {
         findMember(memberId).noteReceiveEnabled = request.enabled
     }
 
     @Transactional
-    fun updateFeedNotification(memberId: Long, request: UpdateFeedNotificationRequest) {
+    fun updateFeedNotification(memberId: Long, request: EnabledRequest) {
         findMember(memberId).feedNotificationEnabled = request.enabled
     }
 
@@ -167,7 +163,7 @@ class MemberService(
     }
 
     private fun validateBirthYear(birthYear: Int) {
-        if (currentYear() - birthYear !in MIN_AGE..MAX_AGE) {
+        if (clock.currentYear() - birthYear !in MIN_AGE..MAX_AGE) {
             throw BusinessException(ErrorCode.INVALID_BIRTH_YEAR)
         }
     }
@@ -205,15 +201,11 @@ class MemberService(
     private fun photoKeyPrefix(memberId: Long, visibility: PhotoVisibility) =
         "$PHOTO_KEY_ROOT/$memberId/${visibility.name.lowercase()}/"
 
-    private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
-
     companion object {
 
         const val MIN_AGE = 19
         const val MAX_AGE = 90
 
         private const val PHOTO_KEY_ROOT = "members"
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

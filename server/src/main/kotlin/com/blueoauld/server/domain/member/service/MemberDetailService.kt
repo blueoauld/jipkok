@@ -14,12 +14,11 @@ import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepos
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.time.currentYear
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Service
 class MemberDetailService(
@@ -57,7 +56,7 @@ class MemberDetailService(
             secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
             nickname = target.nickname,
             gender = target.gender,
-            age = currentYear() - target.birthYear,
+            age = clock.currentYear() - target.birthYear,
             receivedLikeCount = target.receivedLikeCount,
             locatedAt = target.locatedAt,
             distance = distanceBetween(me, target),
@@ -88,12 +87,5 @@ class MemberDetailService(
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
-
-    private fun currentYear() = LocalDate.now(clock.withZone(KOREA)).year
-
-    companion object {
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

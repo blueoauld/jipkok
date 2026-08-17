@@ -1,9 +1,9 @@
 package com.blueoauld.server.domain.chat.web
 
 import com.blueoauld.server.domain.chat.dto.request.LeaveRoomsRequest
-import com.blueoauld.server.domain.chat.dto.request.UpdateChatNotificationRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.service.ChatRoomService
+import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.response.CursorResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
@@ -61,7 +61,7 @@ class ChatRoomController(
     fun updateNotification(
         @AuthenticationPrincipal memberId: Long,
         @PathVariable roomId: Long,
-        @RequestBody request: UpdateChatNotificationRequest,
+        @Valid @RequestBody request: EnabledRequest,
     ) {
         chatRoomService.updateNotification(memberId, roomId, request)
     }

@@ -1,10 +1,8 @@
 package com.blueoauld.server.domain.chat.service
 
-import com.blueoauld.server.domain.chat.dto.request.CreateChatPhotoUploadUrlRequest
 import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
-import com.blueoauld.server.domain.chat.dto.response.ChatPhotoUploadUrlResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
@@ -20,6 +18,8 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
@@ -64,7 +64,7 @@ class ChatMessageService(
         val reactions = messages.ifEmpty { null }
             ?.let { chatMessageReactionRepository.findByMessageIdIn(it.map(ChatMessage::id)) }
             .orEmpty()
-            .groupBy({ it.messageId }, ChatReactionResponse::of)
+            .groupBy({ it.messageId }, ChatReactionResponse::from)
 
         return CursorResponse(
             items = messages.map { message ->
@@ -163,11 +163,8 @@ class ChatMessageService(
         return response
     }
 
-    fun createPhotoUploadUrl(memberId: Long, request: CreateChatPhotoUploadUrlRequest): ChatPhotoUploadUrlResponse {
-        val issued = photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
-
-        return ChatPhotoUploadUrlResponse(issued.uploadUrl, issued.objectKey)
-    }
+    fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
+        photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
 
     private fun findRoom(memberId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
         .filter { it.contains(memberId) }
@@ -180,7 +177,7 @@ class ChatMessageService(
     private fun publishReactions(room: ChatRoom, memberId: Long, message: ChatMessage): ChatReactionsResponse {
         val response = ChatReactionsResponse(
             messageId = message.id,
-            reactions = chatMessageReactionRepository.findByMessageId(message.id).map(ChatReactionResponse::of),
+            reactions = chatMessageReactionRepository.findByMessageId(message.id).map(ChatReactionResponse::from),
         )
 
         eventPublisher.publishEvent(ChatReactionChangedEvent(room.partnerIdOf(memberId), message.roomId, response))

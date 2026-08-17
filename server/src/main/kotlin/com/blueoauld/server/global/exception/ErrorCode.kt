@@ -62,9 +62,10 @@ enum class ErrorCode(
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_004", "이미 사용 중인 닉네임입니다."),
     INVALID_BIRTH_YEAR(HttpStatus.BAD_REQUEST, "MEMBER_005", "19세 이상 90세 이하만 가입할 수 있습니다."),
     INVALID_LOCATION(HttpStatus.BAD_REQUEST, "MEMBER_006", "위치 정보가 올바르지 않습니다."),
-    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "MEMBER_007", "지원하지 않는 이미지 형식입니다."),
-    INVALID_PHOTO_KEY(HttpStatus.BAD_REQUEST, "MEMBER_008", "사진 정보가 올바르지 않습니다."),
     SELF_MEMBER_DETAIL(HttpStatus.BAD_REQUEST, "MEMBER_009", "자기 자신은 조회할 수 없습니다."),
+
+    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "PHOTO_001", "지원하지 않는 이미지 형식입니다."),
+    INVALID_PHOTO_KEY(HttpStatus.BAD_REQUEST, "PHOTO_002", "사진 정보가 올바르지 않습니다."),
 
     SELF_LIKE(HttpStatus.BAD_REQUEST, "LIKE_001", "자기 자신에게는 좋아요를 누를 수 없습니다."),
 

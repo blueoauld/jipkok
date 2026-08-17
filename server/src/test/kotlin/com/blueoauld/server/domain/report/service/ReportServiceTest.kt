@@ -11,7 +11,6 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.report.dto.request.CreateReportPhotoUploadUrlRequest
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
@@ -25,7 +24,8 @@ import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.IssuedPhotoUpload
+import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
@@ -295,12 +295,12 @@ class ReportServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                IssuedPhotoUpload("https://upload.test/key", "reports/evidence/$REPORTER_ID/key.jpg")
+                PhotoUploadUrlResponse("https://upload.test/key", "reports/evidence/$REPORTER_ID/key.jpg")
 
         // when
         val response = reportService.createPhotoUploadUrl(
             REPORTER_ID,
-            CreateReportPhotoUploadUrlRequest("image/jpeg"),
+            CreatePhotoUploadUrlRequest("image/jpeg"),
         )
 
         // then
