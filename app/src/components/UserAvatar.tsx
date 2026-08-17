@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import { UserIcon } from "phosphor-react-native/src/icons/User";
+import { useState } from "react";
 import { useTheme, YStack } from "tamagui";
 
 import type { Gender } from "@/lib/api";
@@ -27,6 +28,8 @@ export function UserAvatar({
   gender?: Gender;
 }) {
   const theme = useTheme();
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const failed = !!url && failedUrl === url;
 
   return (
     <YStack
@@ -41,13 +44,14 @@ export function UserAvatar({
       items="center"
       justify="center"
     >
-      {url ? (
+      {url && !failed ? (
         <Image
           source={url}
           recyclingKey={id}
           contentFit="cover"
           transition={IMAGE_TRANSITION}
           style={{ width: "100%", height: "100%" }}
+          onError={() => setFailedUrl(url)}
         />
       ) : (
         <UserIcon size={size * ICON_RATIO} color={theme.color12.val} />

@@ -5,6 +5,8 @@ import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
 
 export const MAX_PHOTOS = 6;
 
+const PICK_QUALITY = 1;
+
 const PERMISSION_DENIED_CODE = "PERMISSION_DENIED";
 const CAMERA_DENIED_MESSAGE = "카메라 권한이 필요합니다.";
 
@@ -36,7 +38,7 @@ export async function pickPhotos(remaining: number) {
     mediaTypes: ["images"],
     allowsMultipleSelection: true,
     selectionLimit: remaining,
-    quality: 0.8,
+    quality: PICK_QUALITY,
   });
 
   return result.canceled ? [] : result.assets;
@@ -47,7 +49,7 @@ export async function pickSinglePhoto() {
 
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
-    quality: 0.8,
+    quality: PICK_QUALITY,
   });
 
   return result.canceled ? null : result.assets[0];
@@ -58,7 +60,7 @@ export async function takePhoto() {
 
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images"],
-    quality: 0.8,
+    quality: PICK_QUALITY,
   });
 
   return result.canceled ? null : result.assets[0];

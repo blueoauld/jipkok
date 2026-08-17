@@ -74,6 +74,9 @@ export function PhotoPager({
           >
             <Image
               source={{ uri: photo, cacheKey: photoCacheKey(photo) }}
+              cachePolicy={
+                hasSecret && photoIndex >= secretFrom ? "memory" : "disk"
+              }
               contentFit="cover"
               transition={IMAGE_TRANSITION}
               style={{ width, height }}

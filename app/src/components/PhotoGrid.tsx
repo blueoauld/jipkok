@@ -190,6 +190,11 @@ function Grid({
                       uri: cell.uri,
                       cacheKey: photoCacheKey(cell.uri),
                     }}
+                    cachePolicy={
+                      secretFrom !== undefined && cell.index >= secretFrom
+                        ? "memory"
+                        : "disk"
+                    }
                     contentFit="cover"
                     transition={IMAGE_TRANSITION}
                     style={{ width: "100%", height: "100%" }}
