@@ -99,6 +99,7 @@ enum class ErrorCode(
     NOTE_BLOCKED(HttpStatus.BAD_REQUEST, "CHAT_003", "쪽지를 보낼 수 없습니다."),
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_004", "채팅방을 찾을 수 없습니다."),
     REPLY_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_005", "답글 대상 메시지를 찾을 수 없습니다."),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_006", "메시지를 찾을 수 없습니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_002", "신고를 찾을 수 없습니다."),

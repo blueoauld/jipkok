@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
+import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -19,6 +20,7 @@ class ChatRoomCleaner(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
+    private val chatMessageReactionRepository: ChatMessageReactionRepository,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
@@ -34,6 +36,7 @@ class ChatRoomCleaner(
 
         val objectKeys = chatMessageRepository.findObjectKeysByRoomIdIn(roomIds)
 
+        chatMessageReactionRepository.deleteByRoomIdIn(roomIds)
         chatMessageRepository.deleteByRoomIdIn(roomIds)
         chatRoomMemberRepository.deleteByRoomIdIn(roomIds)
         chatRoomRepository.deleteAllByIdIn(roomIds)

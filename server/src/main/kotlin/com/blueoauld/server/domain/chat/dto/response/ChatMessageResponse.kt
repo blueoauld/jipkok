@@ -15,6 +15,7 @@ data class ChatMessageResponse(
     val createdAt: Instant,
     val replyMessage: ReplyMessageResponse? = null,
     val clientMessageId: String? = null,
+    val reactions: List<ChatReactionResponse> = emptyList(),
 ) {
 
     data class ReplyMessageResponse(
@@ -44,6 +45,7 @@ data class ChatMessageResponse(
             message: ChatMessage,
             imageUrl: String?,
             replyMessage: ReplyMessageResponse? = null,
+            reactions: List<ChatReactionResponse> = emptyList(),
         ) = ChatMessageResponse(
             messageId = message.id,
             roomId = message.roomId,
@@ -54,6 +56,7 @@ data class ChatMessageResponse(
             createdAt = message.createdAt,
             replyMessage = replyMessage,
             clientMessageId = message.clientMessageId,
+            reactions = reactions,
         )
     }
 }

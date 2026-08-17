@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
+import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -21,12 +22,15 @@ class ChatRoomCleanerTest {
 
     private val chatMessageRepository = mockk<ChatMessageRepository>(relaxed = true)
 
+    private val chatMessageReactionRepository = mockk<ChatMessageReactionRepository>(relaxed = true)
+
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
     private val chatRoomCleaner = ChatRoomCleaner(
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageRepository,
+        chatMessageReactionRepository,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )

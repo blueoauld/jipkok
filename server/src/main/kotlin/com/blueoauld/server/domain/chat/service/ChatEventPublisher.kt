@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.response.ChatEventResponse
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
+import com.blueoauld.server.domain.chat.event.ChatReactionChangedEvent
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -20,6 +21,11 @@ class ChatEventPublisher(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun publishMessage(event: ChatMessageSentEvent) {
         send(event.receiverId, ChatEventResponse.message(event.message))
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    fun publishReaction(event: ChatReactionChangedEvent) {
+        send(event.receiverId, ChatEventResponse.reaction(event.roomId, event.reactions))
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

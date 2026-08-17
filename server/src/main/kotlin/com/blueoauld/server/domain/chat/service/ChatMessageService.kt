@@ -1,13 +1,19 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.chat.dto.request.CreateChatPhotoUploadUrlRequest
+import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatPhotoUploadUrlResponse
+import com.blueoauld.server.domain.chat.dto.response.ChatReactionResponse
+import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
+import com.blueoauld.server.domain.chat.entity.ChatMessageReaction
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
+import com.blueoauld.server.domain.chat.event.ChatReactionChangedEvent
+import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -27,6 +33,7 @@ class ChatMessageService(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
+    private val chatMessageReactionRepository: ChatMessageReactionRepository,
     private val photoUploadService: PhotoUploadService,
     private val photoStorage: PhotoStorage,
     private val eventPublisher: ApplicationEventPublisher,
@@ -54,12 +61,18 @@ class ChatMessageService(
             ?.associateBy { it.id }
             .orEmpty()
 
+        val reactions = messages.ifEmpty { null }
+            ?.let { chatMessageReactionRepository.findByMessageIdIn(it.map(ChatMessage::id)) }
+            .orEmpty()
+            .groupBy({ it.messageId }, ChatReactionResponse::of)
+
         return CursorResponse(
             items = messages.map { message ->
                 ChatMessageResponse.of(
                     message,
                     message.objectKey?.let(photoStorage::createSignedViewUrl),
                     message.replyToMessageId?.let(originals::get)?.let(::toReplyResponse),
+                    reactions[message.id].orEmpty(),
                 )
             },
             nextCursor = messages.lastOrNull()?.id.takeIf { messages.size == pageSize },
@@ -75,6 +88,39 @@ class ChatMessageService(
         val replyTarget = findReplyTarget(roomId, request.replyToMessageId)
 
         return append(room, memberId, toMessage(memberId, roomId, request, replyTarget), replyTarget)
+    }
+
+    @Transactional
+    fun react(memberId: Long, roomId: Long, messageId: Long, request: ReactMessageRequest): ChatReactionsResponse {
+        val room = findRoom(memberId, roomId)
+        val message = findMessage(roomId, messageId)
+
+        val reaction = chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)
+            ?.also { it.type = request.type }
+            ?: chatMessageReactionRepository.save(
+                ChatMessageReaction(
+                    roomId = roomId,
+                    messageId = message.id,
+                    memberId = memberId,
+                    type = request.type,
+                ),
+            )
+        chatMessageReactionRepository.flush()
+
+        return publishReactions(room, memberId, message)
+    }
+
+    @Transactional
+    fun unreact(memberId: Long, roomId: Long, messageId: Long): ChatReactionsResponse {
+        val room = findRoom(memberId, roomId)
+        val message = findMessage(roomId, messageId)
+
+        chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)?.let {
+            chatMessageReactionRepository.delete(it)
+            chatMessageReactionRepository.flush()
+        }
+
+        return publishReactions(room, memberId, message)
     }
 
     @Transactional
@@ -126,6 +172,21 @@ class ChatMessageService(
     private fun findRoom(memberId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
         .filter { it.contains(memberId) }
         .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
+
+    private fun findMessage(roomId: Long, messageId: Long) = chatMessageRepository.findById(messageId)
+        .filter { it.roomId == roomId }
+        .orElseThrow { BusinessException(ErrorCode.CHAT_MESSAGE_NOT_FOUND) }
+
+    private fun publishReactions(room: ChatRoom, memberId: Long, message: ChatMessage): ChatReactionsResponse {
+        val response = ChatReactionsResponse(
+            messageId = message.id,
+            reactions = chatMessageReactionRepository.findByMessageId(message.id).map(ChatReactionResponse::of),
+        )
+
+        eventPublisher.publishEvent(ChatReactionChangedEvent(room.partnerIdOf(memberId), message.roomId, response))
+
+        return response
+    }
 
     private fun findAlreadySent(roomId: Long, clientMessageId: String?): ChatMessageResponse? {
         val message = clientMessageId
