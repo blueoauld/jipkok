@@ -52,6 +52,8 @@ const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const COPIED_MESSAGE = "메시지를 복사했습니다.";
 
+const REPLY_NOT_LOADED_MESSAGE = "원문을 아직 불러오지 못했습니다.";
+
 const PHOTO_SAVED_MESSAGE = "사진을 저장했습니다.";
 const PHOTO_SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
 
@@ -157,7 +159,7 @@ export default function ChatRoomScreen() {
     );
 
     if (index < 0) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      showToast("warning", REPLY_NOT_LOADED_MESSAGE);
       return;
     }
 
