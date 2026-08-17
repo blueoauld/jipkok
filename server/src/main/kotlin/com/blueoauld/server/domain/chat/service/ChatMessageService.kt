@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
+import com.blueoauld.server.domain.chat.dto.response.ChatVideoUrlResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatMessageReaction
 import com.blueoauld.server.domain.chat.entity.ChatRoom
@@ -70,7 +71,7 @@ class ChatMessageService(
             items = messages.map { message ->
                 ChatMessageResponse.of(
                     message,
-                    message.objectKey?.let(photoStorage::createSignedViewUrl),
+                    toMediaUrls(message),
                     message.replyToMessageId?.let(originals::get)?.let(::toReplyResponse),
                     reactions[message.id].orEmpty(),
                 )
@@ -150,13 +151,9 @@ class ChatMessageService(
 
         room.lastMessageId = saved.id
         chatRoomMemberRepository.increaseUnreadCount(room.id, partnerId)
-        saved.objectKey?.let { photoUploadService.confirm(listOf(it)) }
+        photoUploadService.confirm(listOfNotNull(saved.objectKey, saved.thumbnailObjectKey))
 
-        val response = ChatMessageResponse.of(
-            saved,
-            saved.objectKey?.let(photoStorage::createSignedViewUrl),
-            replyTarget?.let(::toReplyResponse),
-        )
+        val response = ChatMessageResponse.of(saved, toMediaUrls(saved), replyTarget?.let(::toReplyResponse))
 
         eventPublisher.publishEvent(ChatMessageSentEvent(partnerId, response))
 
@@ -165,6 +162,27 @@ class ChatMessageService(
 
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
         photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
+
+    @Transactional(readOnly = true)
+    fun findVideoUrl(memberId: Long, roomId: Long, messageId: Long): ChatVideoUrlResponse {
+        findRoom(memberId, roomId)
+        val message = findMessage(roomId, messageId)
+        val objectKey = message.objectKey?.takeIf { message.type == ChatMessageType.VIDEO }
+            ?: throw BusinessException(ErrorCode.NOT_VIDEO_MESSAGE)
+
+        return ChatVideoUrlResponse(photoStorage.createSignedViewUrl(objectKey))
+    }
+
+    private fun toMediaUrls(message: ChatMessage) = when (message.type) {
+        ChatMessageType.TEXT -> ChatMessageResponse.MediaUrls.NONE
+        ChatMessageType.PHOTO -> ChatMessageResponse.MediaUrls(
+            imageUrl = message.objectKey?.let(photoStorage::createSignedViewUrl),
+        )
+        ChatMessageType.VIDEO -> ChatMessageResponse.MediaUrls(
+            videoUrl = message.objectKey?.let(photoStorage::createSignedViewUrl),
+            thumbnailUrl = message.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
+        )
+    }
 
     private fun findRoom(memberId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
         .filter { it.contains(memberId) }
@@ -192,7 +210,7 @@ class ChatMessageService(
 
         return ChatMessageResponse.of(
             message,
-            message.objectKey?.let(photoStorage::createSignedViewUrl),
+            toMediaUrls(message),
             message.replyToMessageId
                 ?.let { chatMessageRepository.findById(it).orElse(null) }
                 ?.let(::toReplyResponse),
@@ -234,6 +252,45 @@ class ChatMessageService(
             replyToMessageId = replyTarget?.id,
             clientMessageId = request.clientMessageId,
         )
+
+        ChatMessageType.VIDEO -> ChatMessage(
+            roomId = roomId,
+            senderId = memberId,
+            type = ChatMessageType.VIDEO,
+            objectKey = validateVideoKey(memberId, request.objectKey),
+            thumbnailObjectKey = validatePhotoKey(memberId, request.thumbnailKey),
+            durationSeconds = validateDuration(request.durationSeconds),
+            replyToMessageId = replyTarget?.id,
+            clientMessageId = request.clientMessageId,
+        )
+    }
+
+    private fun validateVideoKey(memberId: Long, objectKey: String?): String {
+        val key = validatePhotoKey(memberId, objectKey)
+        val stored = photoStorage.head(key) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+
+        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == false) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        }
+
+        if (stored.contentLength > ChatMessage.VIDEO_MAX_BYTES) {
+            photoStorage.delete(listOf(key))
+            throw BusinessException(ErrorCode.VIDEO_TOO_LARGE)
+        }
+
+        return key
+    }
+
+    private fun validateDuration(durationSeconds: Int?): Int {
+        if (durationSeconds == null || durationSeconds <= 0) {
+            throw BusinessException(ErrorCode.INVALID_REQUEST)
+        }
+
+        if (durationSeconds > ChatMessage.VIDEO_MAX_SECONDS) {
+            throw BusinessException(ErrorCode.VIDEO_TOO_LONG)
+        }
+
+        return durationSeconds
     }
 
     private fun validatePhotoKey(memberId: Long, objectKey: String?): String {
@@ -249,5 +306,6 @@ class ChatMessageService(
     companion object {
 
         private const val PHOTO_KEY_ROOT = "chats"
+        private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
     }
 }

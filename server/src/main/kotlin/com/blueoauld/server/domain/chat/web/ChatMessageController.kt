@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
+import com.blueoauld.server.domain.chat.dto.response.ChatVideoUrlResponse
 import com.blueoauld.server.domain.chat.service.ChatMessageService
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
@@ -87,6 +88,14 @@ class ChatMessageController(
     ) {
         chatMessageService.markAllRead(memberId, request.roomIds)
     }
+
+    @Operation(operationId = "findChatVideoUrl", summary = "영상 재생 URL 발급", description = "서명 URL은 짧게 만료되므로 재생 직전에 받는다.")
+    @GetMapping("/{roomId}/messages/{messageId}/video-url")
+    fun findVideoUrl(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable roomId: Long,
+        @PathVariable messageId: Long,
+    ): ChatVideoUrlResponse = chatMessageService.findVideoUrl(memberId, roomId, messageId)
 
     @Operation(operationId = "createChatPhotoUploadUrl", summary = "채팅 사진 업로드 URL 발급")
     @PostMapping("/photos/upload-url")

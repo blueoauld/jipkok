@@ -15,6 +15,7 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
@@ -74,6 +75,109 @@ class ChatMessageServiceTest {
         assertThat(response.type).isEqualTo(ChatMessageType.TEXT)
         assertThat(response.content).isEqualTo("안녕하세요.")
         assertThat(response.imageUrl).isNull()
+    }
+
+    @Test
+    fun `영상 메시지는 영상과 썸네일 URL, 길이를 준다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(10L * 1024 * 1024, "video/mp4")
+
+        // when
+        val response = chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 120))
+
+        // then
+        assertThat(response.type).isEqualTo(ChatMessageType.VIDEO)
+        assertThat(response.videoUrl).isEqualTo(SIGNED_URL)
+        assertThat(response.thumbnailUrl).isEqualTo(SIGNED_URL)
+        assertThat(response.imageUrl).isNull()
+        assertThat(response.durationSeconds).isEqualTo(120)
+        verify { photoUploadService.confirm(listOf(VIDEO_KEY, THUMBNAIL_KEY)) }
+    }
+
+    @Test
+    fun `영상이 상한보다 크면 지우고 거절한다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns
+            StoredObject(ChatMessage.VIDEO_MAX_BYTES + 1, "video/mp4")
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 120))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VIDEO_TOO_LARGE)
+        verify { photoStorage.delete(listOf(VIDEO_KEY)) }
+        verify(exactly = 0) { chatMessageRepository.save(any()) }
+    }
+
+    @Test
+    fun `영상이 5분을 넘으면 보낼 수 없다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, "video/mp4")
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, ChatMessage.VIDEO_MAX_SECONDS + 1))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VIDEO_TOO_LONG)
+    }
+
+    @Test
+    fun `올라오지 않은 영상 키로는 보낼 수 없다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns null
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 10))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+    }
+
+    @Test
+    fun `영상이 아닌 파일이 올라와 있으면 보낼 수 없다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, "image/jpeg")
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 10))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+    }
+
+    @Test
+    fun `영상 메시지의 재생 URL을 새로 발급한다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(videoMessage())
+
+        // when
+        val response = chatMessageService.findVideoUrl(ME_ID, ROOM_ID, REPLY_ID)
+
+        // then
+        assertThat(response.url).isEqualTo(SIGNED_URL)
+        verify { photoStorage.createSignedViewUrl(VIDEO_KEY) }
+    }
+
+    @Test
+    fun `영상이 아닌 메시지의 재생 URL은 발급하지 않는다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original())
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.findVideoUrl(ME_ID, ROOM_ID, REPLY_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.NOT_VIDEO_MESSAGE)
     }
 
     @Test
@@ -500,6 +604,22 @@ class ChatMessageServiceTest {
 
     private fun photo(objectKey: String?) = SendMessageRequest(type = ChatMessageType.PHOTO, objectKey = objectKey)
 
+    private fun video(objectKey: String, thumbnailKey: String, durationSeconds: Int) = SendMessageRequest(
+        type = ChatMessageType.VIDEO,
+        objectKey = objectKey,
+        thumbnailKey = thumbnailKey,
+        durationSeconds = durationSeconds,
+    )
+
+    private fun videoMessage() = ChatMessage(
+        roomId = ROOM_ID,
+        senderId = PARTNER_ID,
+        type = ChatMessageType.VIDEO,
+        objectKey = VIDEO_KEY,
+        thumbnailObjectKey = THUMBNAIL_KEY,
+        durationSeconds = 30,
+    )
+
     companion object {
 
         private const val ROOM_ID = 10L
@@ -513,6 +633,8 @@ class ChatMessageServiceTest {
         private const val CLIENT_MESSAGE_ID = "client-1"
 
         private const val OBJECT_KEY = "chats/$ME_ID/a.jpg"
+        private const val VIDEO_KEY = "chats/$ME_ID/v.mp4"
+        private const val THUMBNAIL_KEY = "chats/$ME_ID/t.jpg"
         private const val SIGNED_URL = "https://r2.example.com/chats/1/a.jpg?signature=x"
     }
 }

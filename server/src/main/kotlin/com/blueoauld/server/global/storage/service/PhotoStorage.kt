@@ -1,5 +1,7 @@
 package com.blueoauld.server.global.storage.service
 
+import com.blueoauld.server.global.storage.dto.StoredObject
+
 interface PhotoStorage {
 
     fun createUploadUrl(objectKey: String, contentType: String): String
@@ -7,6 +9,8 @@ interface PhotoStorage {
     fun toPublicUrl(objectKey: String): String
 
     fun createSignedViewUrl(objectKey: String): String
+
+    fun head(objectKey: String): StoredObject?
 
     fun copy(sourceKey: String, targetKey: String)
 

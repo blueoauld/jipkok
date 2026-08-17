@@ -22,6 +22,15 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
     )
     fun findObjectKeysByRoomIdIn(@Param("roomIds") roomIds: List<Long>): List<String>
 
+    @Query(
+        """
+        select m.thumbnailObjectKey
+        from ChatMessage m
+        where m.roomId in :roomIds and m.thumbnailObjectKey is not null
+        """,
+    )
+    fun findThumbnailKeysByRoomIdIn(@Param("roomIds") roomIds: List<Long>): List<String>
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from ChatMessage m where m.roomId in :roomIds")
     fun deleteByRoomIdIn(@Param("roomIds") roomIds: List<Long>)

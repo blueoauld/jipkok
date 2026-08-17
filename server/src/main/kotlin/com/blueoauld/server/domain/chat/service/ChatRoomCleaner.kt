@@ -34,7 +34,8 @@ class ChatRoomCleaner(
             return
         }
 
-        val objectKeys = chatMessageRepository.findObjectKeysByRoomIdIn(roomIds)
+        val objectKeys = chatMessageRepository.findObjectKeysByRoomIdIn(roomIds) +
+            chatMessageRepository.findThumbnailKeysByRoomIdIn(roomIds)
 
         chatMessageReactionRepository.deleteByRoomIdIn(roomIds)
         chatMessageRepository.deleteByRoomIdIn(roomIds)

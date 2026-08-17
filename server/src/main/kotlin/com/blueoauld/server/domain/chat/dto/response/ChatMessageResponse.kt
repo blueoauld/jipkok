@@ -12,11 +12,27 @@ data class ChatMessageResponse(
     val type: ChatMessageType,
     val content: String?,
     val imageUrl: String?,
+    val videoUrl: String? = null,
+    val thumbnailUrl: String? = null,
+    val durationSeconds: Int? = null,
     val createdAt: Instant,
     val replyMessage: ReplyMessageResponse? = null,
     val clientMessageId: String? = null,
     val reactions: List<ChatReactionResponse> = emptyList(),
 ) {
+
+    data class MediaUrls(
+
+        val imageUrl: String? = null,
+        val videoUrl: String? = null,
+        val thumbnailUrl: String? = null,
+    ) {
+
+        companion object {
+
+            val NONE = MediaUrls()
+        }
+    }
 
     data class ReplyMessageResponse(
 
@@ -39,7 +55,7 @@ data class ChatMessageResponse(
 
         fun of(
             message: ChatMessage,
-            imageUrl: String?,
+            media: MediaUrls,
             replyMessage: ReplyMessageResponse? = null,
             reactions: List<ChatReactionResponse> = emptyList(),
         ) = ChatMessageResponse(
@@ -48,7 +64,10 @@ data class ChatMessageResponse(
             senderId = message.senderId,
             type = message.type,
             content = message.content,
-            imageUrl = imageUrl,
+            imageUrl = media.imageUrl,
+            videoUrl = media.videoUrl,
+            thumbnailUrl = media.thumbnailUrl,
+            durationSeconds = message.durationSeconds,
             createdAt = message.createdAt,
             replyMessage = replyMessage,
             clientMessageId = message.clientMessageId,

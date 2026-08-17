@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.storage.service
 
 import com.blueoauld.server.global.properties.R2Properties
+import com.blueoauld.server.global.storage.dto.StoredObject
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
@@ -11,6 +12,8 @@ import software.amazon.awssdk.services.s3.model.CopyObjectRequest
 import software.amazon.awssdk.services.s3.model.Delete
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
@@ -71,6 +74,12 @@ class R2PhotoStorage(
 
         return presigner.presignGetObject(presignRequest).url().toString()
     }
+
+    override fun head(objectKey: String): StoredObject? = runCatching {
+        client.headObject(HeadObjectRequest.builder().bucket(r2Properties.bucket).key(objectKey).build())
+    }.map { StoredObject(it.contentLength(), it.contentType()) }
+        .recover { if (it is NoSuchKeyException) null else throw it }
+        .getOrThrow()
 
     override fun copy(sourceKey: String, targetKey: String) {
         client.copyObject(

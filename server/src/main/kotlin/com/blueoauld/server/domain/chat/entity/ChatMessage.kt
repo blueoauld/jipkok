@@ -43,6 +43,12 @@ class ChatMessage(
     @Column(name = "object_key", updatable = false, length = PhotoUpload.OBJECT_KEY_MAX_LENGTH)
     val objectKey: String? = null,
 
+    @Column(name = "thumbnail_object_key", updatable = false, length = PhotoUpload.OBJECT_KEY_MAX_LENGTH)
+    val thumbnailObjectKey: String? = null,
+
+    @Column(name = "duration_seconds", updatable = false)
+    val durationSeconds: Int? = null,
+
     @Column(name = "reply_to_message_id", updatable = false)
     val replyToMessageId: Long? = null,
 
@@ -59,5 +65,7 @@ class ChatMessage(
 
         const val CONTENT_MAX_LENGTH = 1000
         const val CLIENT_MESSAGE_ID_MAX_LENGTH = 36
+        const val VIDEO_MAX_SECONDS = 300
+        const val VIDEO_MAX_BYTES = 150L * 1024 * 1024
     }
 }

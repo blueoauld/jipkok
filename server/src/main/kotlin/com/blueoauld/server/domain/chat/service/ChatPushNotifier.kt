@@ -59,13 +59,17 @@ class ChatPushNotifier(
         )
     }
 
-    private fun toBody(event: ChatMessageSentEvent) =
-        if (event.message.type == ChatMessageType.PHOTO) PHOTO_BODY else event.message.content.orEmpty()
+    private fun toBody(event: ChatMessageSentEvent) = when (event.message.type) {
+        ChatMessageType.TEXT -> event.message.content.orEmpty()
+        ChatMessageType.PHOTO -> PHOTO_BODY
+        ChatMessageType.VIDEO -> VIDEO_BODY
+    }
 
     companion object {
 
         private const val ROOM_ID_KEY = "roomId"
         private const val PHOTO_BODY = "사진을 보냈습니다."
+        private const val VIDEO_BODY = "영상을 보냈습니다."
         private const val CHANNEL_ID = "chat"
         private const val HIGH_PRIORITY = "high"
     }

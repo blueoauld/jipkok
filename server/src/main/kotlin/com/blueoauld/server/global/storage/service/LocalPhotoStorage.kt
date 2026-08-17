@@ -1,5 +1,6 @@
 package com.blueoauld.server.global.storage.service
 
+import com.blueoauld.server.global.storage.dto.StoredObject
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
@@ -19,6 +20,12 @@ class LocalPhotoStorage : PhotoStorage {
     override fun toPublicUrl(objectKey: String) = "$BASE_URL/$objectKey"
 
     override fun createSignedViewUrl(objectKey: String) = "$BASE_URL/$objectKey?signed=true"
+
+    override fun head(objectKey: String): StoredObject {
+        log.info { "객체 정보를 읽는다. objectKey=$objectKey" }
+
+        return StoredObject(contentLength = 0, contentType = null)
+    }
 
     override fun copy(sourceKey: String, targetKey: String) {
         log.info { "사진을 복사한다. sourceKey=$sourceKey, targetKey=$targetKey" }

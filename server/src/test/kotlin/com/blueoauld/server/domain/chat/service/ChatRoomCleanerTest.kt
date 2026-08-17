@@ -39,6 +39,20 @@ class ChatRoomCleanerTest {
     fun setUp() {
         every { chatRoomRepository.findIdsDeletedBefore(any()) } returns ROOM_IDS
         every { chatMessageRepository.findObjectKeysByRoomIdIn(ROOM_IDS) } returns emptyList()
+        every { chatMessageRepository.findThumbnailKeysByRoomIdIn(ROOM_IDS) } returns emptyList()
+    }
+
+    @Test
+    fun `영상 썸네일도 함께 지운다`() {
+        // given
+        every { chatMessageRepository.findObjectKeysByRoomIdIn(ROOM_IDS) } returns listOf("chats/10/v.mp4")
+        every { chatMessageRepository.findThumbnailKeysByRoomIdIn(ROOM_IDS) } returns listOf("chats/10/t.jpg")
+
+        // when
+        chatRoomCleaner.cleanUpLeftRooms()
+
+        // then
+        verify { photoStorage.delete(listOf("chats/10/v.mp4", "chats/10/t.jpg")) }
     }
 
     @Test

@@ -20,7 +20,7 @@ class PhotoUploadService(
 
     @Transactional
     fun createUploadUrl(memberId: Long, keyPrefix: String, contentType: String): PhotoUploadUrlResponse {
-        val extension = IMAGE_EXTENSIONS[contentType] ?: throw BusinessException(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
+        val extension = MEDIA_EXTENSIONS[contentType] ?: throw BusinessException(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
         val objectKey = "$keyPrefix${UUID.randomUUID()}.$extension"
 
         photoUploadRepository.save(PhotoUpload(memberId, objectKey, clock.instant()))
@@ -37,10 +37,11 @@ class PhotoUploadService(
 
     companion object {
 
-        private val IMAGE_EXTENSIONS = mapOf(
+        private val MEDIA_EXTENSIONS = mapOf(
             "image/jpeg" to "jpg",
             "image/png" to "png",
             "image/webp" to "webp",
+            "video/mp4" to "mp4",
         )
     }
 }
