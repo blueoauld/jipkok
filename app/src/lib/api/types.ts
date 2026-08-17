@@ -8,6 +8,9 @@ export type SignupResponse = Schemas["SignupResponse"];
 export type LoginRequest = Schemas["LoginRequest"];
 export type TokenResponse = Schemas["TokenResponse"];
 export type ReissueRequest = Schemas["ReissueRequest"];
+export type ResetPasswordRequest = Schemas["ResetPasswordRequest"];
+export type VerificationPurpose =
+  Schemas["SendVerificationCodeRequest"]["purpose"];
 
 export type MyProfileResponse = Schemas["MyProfileResponse"];
 export type MemberSummaryResponse = Schemas["MemberSummaryResponse"];

@@ -477,7 +477,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 인증번호 발송 */
+        /**
+         * 인증번호 발송
+         * @description 가입과 비밀번호 재설정은 서로의 인증번호를 쓸 수 없다.
+         */
         post: operations["sendVerificationCode"];
         delete?: never;
         options?: never;
@@ -496,6 +499,26 @@ export interface paths {
         put?: never;
         /** 토큰 재발급 */
         post: operations["reissue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 비밀번호 재설정
+         * @description 인증번호를 확인하고 바꾼다. 다른 기기의 로그인은 모두 끊긴다.
+         */
+        post: operations["resetPassword"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1125,6 +1148,8 @@ export interface components {
         };
         SendVerificationCodeRequest: {
             phoneNumber: string;
+            /** @enum {string} */
+            purpose: "SIGNUP" | "PASSWORD_RESET";
         };
         ReissueRequest: {
             refreshToken: string;
@@ -1132,6 +1157,12 @@ export interface components {
         TokenResponse: {
             accessToken: string;
             refreshToken: string;
+        };
+        ResetPasswordRequest: {
+            phoneNumber: string;
+            verificationCode: string;
+            password: string;
+            passwordConfirm: string;
         };
         LoginRequest: {
             phoneNumber: string;
@@ -4033,6 +4064,82 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TokenResponse"];
                 };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description 요청이 올바르지 않다 */
             400: {

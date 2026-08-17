@@ -30,6 +30,7 @@ import type {
   PointHistoryPage,
   PointRewardResponse,
   ProfileViewPage,
+  ResetPasswordRequest,
   SendMessageRequest,
   SendNoteResponse,
   SetupProfileRequest,
@@ -37,6 +38,7 @@ import type {
   SignupResponse,
   TokenResponse,
   UpdateCommentRequest,
+  VerificationPurpose,
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
@@ -77,10 +79,17 @@ type MemberListParams = {
 };
 
 export const auth = {
-  sendVerificationCode: (phoneNumber: string) =>
+  sendVerificationCode: (phoneNumber: string, purpose: VerificationPurpose) =>
     request<void>("/api/auth/verification-codes", {
       method: "POST",
-      body: { phoneNumber },
+      body: { phoneNumber, purpose },
+      auth: false,
+    }),
+
+  resetPassword: (body: ResetPasswordRequest) =>
+    request<void>("/api/auth/password", {
+      method: "POST",
+      body,
       auth: false,
     }),
 

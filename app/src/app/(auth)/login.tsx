@@ -3,7 +3,7 @@ import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, YStack } from "tamagui";
+import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { RetroButton } from "@/components/ui/RetroButton";
@@ -58,19 +58,35 @@ export default function LoginScreen() {
               autoCapitalize="none"
             />
 
-            <Link href="/signup" asChild>
-              <Text
-                theme={accent}
-                color="$color10"
-                fontSize="$4"
-                textDecorationLine="underline"
-                mt="$2"
-                self="center"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-              >
-                회원가입
+            <XStack justify="center" items="center" gap="$3" mt="$2">
+              <Link href="/signup" asChild>
+                <Text
+                  theme={accent}
+                  color="$color10"
+                  fontSize="$4"
+                  textDecorationLine="underline"
+                  pressStyle={{ opacity: PRESS_OPACITY }}
+                >
+                  회원가입
+                </Text>
+              </Link>
+
+              <Text theme="gray" color="$color8" fontSize="$4">
+                |
               </Text>
-            </Link>
+
+              <Link href="/password" asChild>
+                <Text
+                  theme={accent}
+                  color="$color10"
+                  fontSize="$4"
+                  textDecorationLine="underline"
+                  pressStyle={{ opacity: PRESS_OPACITY }}
+                >
+                  비밀번호 찾기
+                </Text>
+              </Link>
+            </XStack>
           </YStack>
 
           <RetroButton

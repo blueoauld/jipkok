@@ -11,6 +11,7 @@ export default function AuthLayout() {
     >
       <Stack.Screen name="login" options={{ title: "로그인" }} />
       <Stack.Screen name="signup" options={{ title: "회원가입" }} />
+      <Stack.Screen name="password" options={{ title: "비밀번호 찾기" }} />
       <Stack.Screen
         name="setup"
         options={{
