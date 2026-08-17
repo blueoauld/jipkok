@@ -81,6 +81,7 @@ export default function PasswordScreen() {
               textContentType="telephoneNumber"
               autoComplete="tel"
               maxLength={11}
+              clearable
             />
           </YStack>
 
@@ -107,6 +108,7 @@ export default function PasswordScreen() {
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
           maxLength={6}
+          clearable
         />
 
         <ControlledInput

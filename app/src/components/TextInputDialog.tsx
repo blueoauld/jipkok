@@ -14,6 +14,7 @@ function DialogForm({
   defaultValue,
   submitLabel,
   rows,
+  clearable,
   onSubmit,
 }: {
   title: string;
@@ -22,6 +23,7 @@ function DialogForm({
   defaultValue: string;
   submitLabel: string;
   rows?: number;
+  clearable?: boolean;
   onSubmit: (value: string) => void;
 }) {
   const valueRef = useRef(defaultValue);
@@ -46,6 +48,7 @@ function DialogForm({
           }}
           placeholder={placeholder}
           maxLength={maxLength}
+          clearable={clearable}
           multiline={rows !== undefined}
           rows={rows}
           textAlignVertical={rows === undefined ? undefined : "top"}
@@ -80,6 +83,7 @@ export function TextInputDialog({
   defaultValue = "",
   submitLabel = "작성",
   rows,
+  clearable,
   onSubmit,
 }: {
   open: boolean;
@@ -90,6 +94,7 @@ export function TextInputDialog({
   defaultValue?: string;
   submitLabel?: string;
   rows?: number;
+  clearable?: boolean;
   onSubmit: (value: string) => void;
 }) {
   return (
@@ -101,6 +106,7 @@ export function TextInputDialog({
         defaultValue={defaultValue}
         submitLabel={submitLabel}
         rows={rows}
+        clearable={clearable}
         onSubmit={onSubmit}
       />
     </RetroFormDialog>

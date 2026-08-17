@@ -9,9 +9,9 @@ import {
 import type { InputProps } from "tamagui";
 
 import { FormField } from "@/components/FormField";
-import { RetroInput } from "@/components/ui/RetroInput";
+import { RetroInput, type RetroInputProps } from "@/components/ui/RetroInput";
 
-type ControlledInputProps<T extends FieldValues> = InputProps & {
+type ControlledInputProps<T extends FieldValues> = RetroInputProps & {
   control: Control<T>;
   name: FieldPath<T>;
   rules?: RegisterOptions<T, FieldPath<T>>;

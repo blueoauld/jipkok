@@ -45,6 +45,7 @@ export default function LoginScreen() {
               textContentType="telephoneNumber"
               autoComplete="tel"
               maxLength={11}
+              clearable
             />
 
             <ControlledInput

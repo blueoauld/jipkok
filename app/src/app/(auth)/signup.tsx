@@ -137,6 +137,7 @@ export default function SignupScreen() {
               textContentType="telephoneNumber"
               autoComplete="tel"
               maxLength={11}
+              clearable
             />
           </YStack>
 
@@ -163,6 +164,7 @@ export default function SignupScreen() {
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
           maxLength={6}
+          clearable
         />
 
         <ControlledInput

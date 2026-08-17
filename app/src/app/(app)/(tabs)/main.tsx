@@ -186,6 +186,7 @@ export default function MainScreen() {
         placeholder="내용 입력"
         maxLength={COMMENT_MAX_LENGTH}
         defaultValue={profile?.comment ?? ""}
+        clearable
         onSubmit={(comment) => updateComment.mutate({ comment })}
       />
 
