@@ -55,6 +55,8 @@ export function PhotoPager({
 
   return (
     <YStack
+      width={width}
+      bg="$gray12"
       borderTopWidth={RETRO_BORDER_WIDTH}
       borderBottomWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"
@@ -68,7 +70,7 @@ export function PhotoPager({
           <XStack
             width={width}
             height={height}
-            bg="$color1"
+            bg="$gray12"
             pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
             onPress={() => setViewerOpen(true)}
           >

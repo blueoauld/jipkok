@@ -1,15 +1,20 @@
 import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AnimatePresence, Text, XStack, YStack } from "tamagui";
+import { AnimatePresence, getTokens, Text, XStack, YStack } from "tamagui";
 
-import { RetroCard } from "@/components/ui/RetroCard";
-import { bottomBarHeight, RETRO_SHADOW_OFFSET } from "@/lib/design";
+import { RetroShadow } from "@/components/ui/RetroShadow";
+import {
+  bottomBarHeight,
+  RETRO_BORDER_WIDTH,
+  RETRO_SHADOW_OFFSET,
+} from "@/lib/design";
 import { useToastStore } from "@/lib/toast/store";
 
 const VISIBLE_DURATION = 2500;
 const SIDE_GAP = 12;
 const SLIDE_OFFSET = 12;
 const ACCENT_BAR_WIDTH = 8;
+const TEXT_PADDING_Y = getTokens().space.$3.val + RETRO_BORDER_WIDTH;
 
 const ACCENT_BAR_COLORS = {
   info: "$blue9",
@@ -52,18 +57,41 @@ export function ToastHost() {
             enterStyle={{ opacity: 0, y: SLIDE_OFFSET }}
             exitStyle={{ opacity: 0, y: SLIDE_OFFSET }}
           >
-            <RetroCard shadow="$gray12" p={0} onPress={hide}>
-              <XStack>
+            <YStack theme="gray">
+              <RetroShadow color="$gray12" />
+
+              <XStack
+                bg="$color1"
+                onPress={hide}
+                pressStyle={{
+                  x: RETRO_SHADOW_OFFSET,
+                  y: RETRO_SHADOW_OFFSET,
+                  bg: "$color3",
+                }}
+              >
                 <YStack
-                  width={ACCENT_BAR_WIDTH}
+                  width={ACCENT_BAR_WIDTH + RETRO_BORDER_WIDTH}
                   bg={ACCENT_BAR_COLORS[toast.variant]}
                 />
 
-                <Text flex={1} p="$3" fontSize="$3" color="$color12">
+                <Text
+                  flex={1}
+                  px="$3"
+                  py={TEXT_PADDING_Y}
+                  fontSize="$3"
+                  color="$color12"
+                >
                   {toast.message}
                 </Text>
+
+                <YStack
+                  fullscreen
+                  borderWidth={RETRO_BORDER_WIDTH}
+                  borderColor="$gray12"
+                  pointerEvents="none"
+                />
               </XStack>
-            </RetroCard>
+            </YStack>
           </YStack>
         )}
       </AnimatePresence>

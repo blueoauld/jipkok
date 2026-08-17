@@ -15,7 +15,11 @@ import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
-import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import {
+  COVER_IMAGE_STYLE,
+  RETRO_BORDER_WIDTH,
+  RETRO_SHADOW_OFFSET_SM,
+} from "@/lib/design";
 
 const CAPTION_MAX_LENGTH = 30;
 
@@ -81,9 +85,14 @@ function ComposeForm({
           rounded={0}
           borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$gray12"
+          bg="$gray12"
           overflow="hidden"
         >
-          <Image source={photo.uri} contentFit="cover" style={{ flex: 1 }} />
+          <Image
+            source={photo.uri}
+            contentFit="cover"
+            style={COVER_IMAGE_STYLE}
+          />
 
           <YStack position="absolute" t="$3" r="$3">
             <RetroPressable

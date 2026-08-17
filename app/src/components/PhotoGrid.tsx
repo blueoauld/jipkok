@@ -12,6 +12,7 @@ import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
+  COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
   RETRO_SHADOW_OFFSET_SM,
@@ -179,7 +180,7 @@ function Grid({
                   aspectRatio={1}
                   rounded={0}
                   overflow="hidden"
-                  bg="$color1"
+                  bg="$gray12"
                   pressOpacity={PHOTO_PRESS_OPACITY}
                   onPress={
                     onPressPhoto ? () => onPressPhoto(cell.index) : undefined
@@ -197,7 +198,7 @@ function Grid({
                     }
                     contentFit="cover"
                     transition={IMAGE_TRANSITION}
-                    style={{ width: "100%", height: "100%" }}
+                    style={COVER_IMAGE_STYLE}
                   />
 
                   {secretFrom !== undefined && cell.index >= secretFrom && (

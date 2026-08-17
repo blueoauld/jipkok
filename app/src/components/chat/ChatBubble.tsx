@@ -91,6 +91,7 @@ function PhotoMessage({
           height: PHOTO_SIZE,
           borderWidth: RETRO_BORDER_WIDTH,
           borderColor: theme.gray12.val,
+          backgroundColor: theme.gray12.val,
         }}
       />
 

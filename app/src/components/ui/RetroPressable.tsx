@@ -33,7 +33,12 @@ export function RetroPressable({
         onPress={onPress}
         pressStyle={
           onPress
-            ? { x: offset, y: offset, bg: pressBg, opacity: pressOpacity }
+            ? {
+                x: offset,
+                y: offset,
+                opacity: pressOpacity,
+                ...(pressBg ? { bg: pressBg } : null),
+              }
             : undefined
         }
         {...props}

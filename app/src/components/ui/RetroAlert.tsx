@@ -45,11 +45,7 @@ export function RetroAlert({
         <YStack>
           <RetroShadow color="$gray12" />
 
-          <YStack
-            borderWidth={RETRO_BORDER_WIDTH}
-            borderColor="$gray12"
-            bg="$color1"
-          >
+          <YStack borderWidth={RETRO_BORDER_WIDTH} borderColor="$gray12">
             <XStack
               bg={VARIANTS[variant].barColor}
               px="$3"
@@ -71,39 +67,41 @@ export function RetroAlert({
               </NativeText>
             </XStack>
 
-            <YStack p="$4" gap="$2">
-              <Text fontSize="$6" fontWeight="700" color="$color12">
-                {title}
-              </Text>
-              <Text color="$color12" fontSize="$3">
-                {message}
-              </Text>
+            <YStack bg="$color1">
+              <YStack p="$4" gap="$2">
+                <Text fontSize="$6" fontWeight="700" color="$color12">
+                  {title}
+                </Text>
+                <Text color="$color12" fontSize="$3">
+                  {message}
+                </Text>
+              </YStack>
+
+              <YStack mx="$4" borderWidth={1} borderColor="$color8" />
+
+              {confirmLabel ? (
+                <XStack p="$4" gap="$3">
+                  <RetroButton flex={1} theme="gray" onPress={onClose}>
+                    닫기
+                  </RetroButton>
+
+                  <RetroButton
+                    flex={1}
+                    theme={destructive ? "red" : undefined}
+                    onPress={() => {
+                      onClose();
+                      onConfirm?.();
+                    }}
+                  >
+                    {confirmLabel}
+                  </RetroButton>
+                </XStack>
+              ) : (
+                <XStack justify="flex-end" p="$4">
+                  <RetroButton onPress={onClose}>확인</RetroButton>
+                </XStack>
+              )}
             </YStack>
-
-            <YStack mx="$4" borderWidth={1} borderColor="$color8" />
-
-            {confirmLabel ? (
-              <XStack p="$4" gap="$3">
-                <RetroButton flex={1} theme="gray" onPress={onClose}>
-                  닫기
-                </RetroButton>
-
-                <RetroButton
-                  flex={1}
-                  theme={destructive ? "red" : undefined}
-                  onPress={() => {
-                    onClose();
-                    onConfirm?.();
-                  }}
-                >
-                  {confirmLabel}
-                </RetroButton>
-              </XStack>
-            ) : (
-              <XStack justify="flex-end" p="$4">
-                <RetroButton onPress={onClose}>확인</RetroButton>
-              </XStack>
-            )}
           </YStack>
         </YStack>
       </YStack>

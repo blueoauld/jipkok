@@ -1,8 +1,10 @@
-import { Text, XStack, YStack } from "tamagui";
+import { getTokens, Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
+
+const PADDING_Y = getTokens().space["$1.5"].val + RETRO_BORDER_WIDTH;
 
 export function RetroSegmentedControl<T extends string>({
   values,
@@ -18,11 +20,7 @@ export function RetroSegmentedControl<T extends string>({
   return (
     <YStack theme="gray">
       <RetroShadow color="$gray8" />
-      <XStack
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        bg="$color1"
-      >
+      <XStack bg="$color1">
         {values.map((item, index) => {
           const selected = item === value;
 
@@ -31,7 +29,7 @@ export function RetroSegmentedControl<T extends string>({
               key={item}
               theme={selected ? accent : undefined}
               flex={1}
-              py="$1.5"
+              py={PADDING_Y}
               justify="center"
               bg={selected ? "$color10" : "transparent"}
               borderColor="$gray12"
@@ -48,6 +46,13 @@ export function RetroSegmentedControl<T extends string>({
             </XStack>
           );
         })}
+
+        <YStack
+          fullscreen
+          borderWidth={RETRO_BORDER_WIDTH}
+          borderColor="$gray12"
+          pointerEvents="none"
+        />
       </XStack>
     </YStack>
   );

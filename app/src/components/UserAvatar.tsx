@@ -38,8 +38,6 @@ export function UserAvatar({
       height={size}
       rounded={circular ? 9999 : 0}
       overflow="hidden"
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
       bg={gender ? GENDER_BG[gender] : "$gray6"}
       items="center"
       justify="center"
@@ -56,6 +54,14 @@ export function UserAvatar({
       ) : (
         <UserIcon size={size * ICON_RATIO} color={theme.color12.val} />
       )}
+
+      <YStack
+        fullscreen
+        rounded={circular ? 9999 : 0}
+        borderWidth={RETRO_BORDER_WIDTH}
+        borderColor="$gray12"
+        pointerEvents="none"
+      />
     </YStack>
   );
 }

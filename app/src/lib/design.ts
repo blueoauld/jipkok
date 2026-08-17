@@ -19,6 +19,14 @@ export const FORM_FOOTER_HEIGHT = 80;
 
 export const IMAGE_TRANSITION = 200;
 
+export const COVER_IMAGE_STYLE = {
+  position: "absolute",
+  top: -1,
+  bottom: -1,
+  left: -1,
+  right: -1,
+} as const;
+
 export function bottomBarHeight(bottomInset: number) {
   return BOTTOM_BAR_HEIGHT + bottomInset;
 }

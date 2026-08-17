@@ -9,7 +9,11 @@ import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
-import { IMAGE_TRANSITION, RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import {
+  COVER_IMAGE_STYLE,
+  IMAGE_TRANSITION,
+  RETRO_SHADOW_OFFSET_SM,
+} from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -80,7 +84,8 @@ function Card({
       width="100%"
       aspectRatio={CARD_RATIO}
       overflow="hidden"
-      bg="$color1"
+      bg="$gray12"
+      pressBg="$gray12"
       onPress={() => onPressPhoto(post.imageUrl)}
     >
       <Image
@@ -88,7 +93,7 @@ function Card({
         recyclingKey={String(post.postId)}
         contentFit="cover"
         transition={IMAGE_TRANSITION}
-        style={{ flex: 1 }}
+        style={COVER_IMAGE_STYLE}
       />
 
       <XStack position="absolute" t="$3" l="$3" r={REPORT_BUTTON_SPACE}>
