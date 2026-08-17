@@ -93,6 +93,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/chats/{roomId}/messages/{messageId}/reaction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 메시지에 반응
+         * @description 이미 반응했으면 바꾼다.
+         */
+        put: operations["reactChatMessage"];
+        post?: never;
+        /** 메시지 반응 취소 */
+        delete: operations["unreactChatMessage"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reports": {
         parameters: {
             query?: never;
@@ -1018,6 +1039,21 @@ export interface components {
         UpdateChatNotificationRequest: {
             enabled: boolean;
         };
+        ReactMessageRequest: {
+            /** @enum {string} */
+            type: "LIKE" | "HEART" | "LAUGH" | "WOW" | "SAD";
+        };
+        ChatReactionResponse: {
+            /** Format: int64 */
+            memberId: number;
+            /** @enum {string} */
+            type: "LIKE" | "HEART" | "LAUGH" | "WOW" | "SAD";
+        };
+        ChatReactionsResponse: {
+            /** Format: int64 */
+            messageId: number;
+            reactions: components["schemas"]["ChatReactionResponse"][];
+        };
         CreateReportRequest: {
             /** Format: int64 */
             reportedMemberId: number;
@@ -1125,6 +1161,7 @@ export interface components {
             createdAt: string;
             replyMessage: components["schemas"]["ReplyMessageResponse"] | null;
             clientMessageId?: string | null;
+            reactions: components["schemas"]["ChatReactionResponse"][];
         };
         ReplyMessageResponse: {
             /** Format: int64 */
@@ -1776,6 +1813,164 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    reactChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: number;
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReactMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatReactionsResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    unreactChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: number;
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatReactionsResponse"];
+                };
             };
             /** @description 요청이 올바르지 않다 */
             400: {

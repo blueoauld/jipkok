@@ -7,6 +7,8 @@ import type {
   AttendanceResponse,
   ChatMessagePage,
   ChatMessageResponse,
+  ChatReactionsResponse,
+  ChatReactionType,
   ChatRoomPage,
   ChatRoomResponse,
   CreateFeedPostRequest,
@@ -326,6 +328,18 @@ export const chats = {
       method: "POST",
       body,
     }),
+
+  react: (roomId: number, messageId: number, type: ChatReactionType) =>
+    request<ChatReactionsResponse>(
+      `/api/chats/${roomId}/messages/${messageId}/reaction`,
+      { method: "PUT", body: { type } },
+    ),
+
+  unreact: (roomId: number, messageId: number) =>
+    request<ChatReactionsResponse>(
+      `/api/chats/${roomId}/messages/${messageId}/reaction`,
+      { method: "DELETE" },
+    ),
 
   createPhotoUploadUrl: (contentType: string) =>
     request<PhotoUploadUrlResponse>("/api/chats/photos/upload-url", {

@@ -6,6 +6,7 @@ import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
+import { setMessageReactions } from "@/hooks/useReactMessage";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
@@ -35,6 +36,11 @@ export function useChatSocket() {
       );
 
     const handle = (event: ChatEvent) => {
+      if (event.type === "REACTION") {
+        setMessageReactions(queryClient, event.roomId, event.reaction);
+        return;
+      }
+
       if (event.type === "MESSAGE") {
         prepend(event.roomId, event.message);
       } else {

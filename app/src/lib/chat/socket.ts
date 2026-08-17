@@ -2,7 +2,11 @@ import "@bacons/text-decoder/install";
 
 import { Client } from "@stomp/stompjs";
 
-import { type ChatMessageResponse, getAccessToken } from "@/lib/api";
+import {
+  type ChatMessageResponse,
+  type ChatReactionsResponse,
+  getAccessToken,
+} from "@/lib/api";
 import { API_BASE_URL } from "@/lib/api/config";
 
 const ENDPOINT = "/ws";
@@ -13,6 +17,7 @@ const HEARTBEAT_INTERVAL = 10_000;
 
 export type ChatEvent =
   | { type: "MESSAGE"; roomId: number; message: ChatMessageResponse }
+  | { type: "REACTION"; roomId: number; reaction: ChatReactionsResponse }
   | { type: "ROOM_DELETED"; roomId: number };
 
 function toSocketUrl() {

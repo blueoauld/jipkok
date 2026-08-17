@@ -37,6 +37,7 @@ function createTemp(
     senderId,
     createdAt: new Date().toISOString(),
     clientMessageId: createClientMessageId(),
+    reactions: [],
     ...message,
   };
 }
