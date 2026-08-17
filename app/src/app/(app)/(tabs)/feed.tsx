@@ -23,7 +23,7 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
+import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -49,8 +49,6 @@ import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
-
-const FEEDS_KEY = ["feeds"];
 
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];

@@ -1,4 +1,8 @@
-import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  type QueryClient,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect } from "react";
 import { AppState } from "react-native";
 
@@ -13,6 +17,14 @@ import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 
 const CHAT_KEY = ["chats"];
+
+export function forgetRoom(queryClient: QueryClient, roomId: number) {
+  useDeletedRoomStore.getState().markDeleted(roomId);
+  queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
+  queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+  queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+  queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+}
 
 export function useChatSocket() {
   const status = useAuthStore((state) => state.status);
@@ -41,19 +53,19 @@ export function useChatSocket() {
         return;
       }
 
-      if (event.type === "MESSAGE") {
-        prepend(event.roomId, event.message);
-      } else {
-        useDeletedRoomStore.getState().markDeleted(event.roomId);
-        queryClient.removeQueries({ queryKey: chatRoomKey(event.roomId) });
-        queryClient.removeQueries({ queryKey: chatMessagesKey(event.roomId) });
+      if (event.type === "ROOM_DELETED") {
+        forgetRoom(queryClient, event.roomId);
+        return;
       }
 
+      prepend(event.roomId, event.message);
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
     };
 
-    const client = createChatSocket(handle);
+    const client = createChatSocket(handle, () =>
+      queryClient.invalidateQueries({ queryKey: CHAT_KEY }),
+    );
 
     client.activate();
 

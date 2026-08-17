@@ -4,12 +4,14 @@ import { useMemo } from "react";
 import { api, type FeedPostPage, type FeedSort, type Gender } from "@/lib/api";
 import { toDateParam } from "@/lib/date";
 
+export const FEEDS_KEY = ["feeds"];
+
 export function feedPostsKey(
   date: Date,
   gender: Gender | null,
   sort: FeedSort,
 ) {
-  return ["feeds", toDateParam(date), gender ?? "ALL", sort];
+  return [...FEEDS_KEY, toDateParam(date), gender ?? "ALL", sort];
 }
 
 export function useFeedPosts(

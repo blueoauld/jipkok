@@ -20,6 +20,7 @@ import com.blueoauld.server.global.exception.BusinessException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -98,6 +99,22 @@ class MemberWithdrawServiceTest {
         verify { pointHistoryRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { deviceTokenRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberRepository.delete(member) }
+    }
+
+    @Test
+    fun `좋아요를 지우기 전에 받은 쪽의 개수를 줄인다`() {
+        // when
+        memberWithdrawService.withdraw(MEMBER_ID)
+
+        // then
+        verifyOrder {
+            memberRepository.decreaseReceivedLikeCountLikedBy(MEMBER_ID)
+            memberLikeRepository.deleteAllByMember(MEMBER_ID)
+        }
+        verifyOrder {
+            feedPostRepository.decreaseLikeCountLikedBy(MEMBER_ID)
+            feedPostLikeRepository.deleteAllByMemberId(MEMBER_ID)
+        }
     }
 
     @Test

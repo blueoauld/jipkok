@@ -30,6 +30,7 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
 import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
+import { forgetRoom } from "@/hooks/useChatSocket";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
@@ -44,6 +45,7 @@ import {
 import {
   type ChatRow,
   isPending,
+  isRoomNotFound,
   LEAVE_DESCRIPTION,
   toChatRows,
   toReply,
@@ -101,6 +103,17 @@ export default function ChatRoomScreen() {
   const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
   const partnerLeft = deletedRoomId === roomId;
 
+  const handleRoomError = useCallback(
+    (error: unknown) => {
+      if (isRoomNotFound(error)) {
+        forgetRoom(queryClient, roomId);
+      } else {
+        showApiError(error);
+      }
+    },
+    [queryClient, roomId, showApiError],
+  );
+
   const { data: profile } = useMyProfile();
   const myMemberId = profile?.memberId ?? 0;
   const {
@@ -111,15 +124,25 @@ export default function ChatRoomScreen() {
   const { sendText, sendPhotos, sending, uploading } = useSendMessage(
     roomId,
     myMemberId,
-    showApiError,
+    handleRoomError,
   );
-  const { mutate: react } = useReactMessage(roomId, myMemberId, showApiError);
+  const { mutate: react } = useReactMessage(
+    roomId,
+    myMemberId,
+    handleRoomError,
+  );
   const chatMessages = useChatMessages(roomId, !partnerLeft);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 
   const partnerId = room?.memberId ?? 0;
   const failure = roomError ?? error;
+
+  useEffect(() => {
+    if (isRoomNotFound(failure)) {
+      forgetRoom(queryClient, roomId);
+    }
+  }, [failure, queryClient, roomId]);
   const rows = useMemo(
     () => (messages ? toChatRows(messages) : []),
     [messages],

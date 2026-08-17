@@ -11,7 +11,14 @@ interface MemberRepository : JpaRepository<Member, Long> {
 
     fun existsByPhoneNumber(phoneNumber: String): Boolean
 
-    fun existsByNicknameIgnoreCase(nickname: String): Boolean
+    @Query(
+        """
+        select count(m) > 0
+        from Member m
+        where lower(m.nickname) = lower(:nickname)
+        """,
+    )
+    fun existsByNicknameIgnoreCase(@Param("nickname") nickname: String): Boolean
 
     fun findByPhoneNumber(phoneNumber: String): Member?
 
@@ -54,6 +61,17 @@ interface MemberRepository : JpaRepository<Member, Long> {
         """,
     )
     fun decreaseReceivedLikeCount(@Param("memberId") memberId: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        update Member m
+        set m.receivedLikeCount = m.receivedLikeCount - 1
+        where m.receivedLikeCount > 0
+          and m.id in (select l.likedMemberId from MemberLike l where l.likerId = :likerId)
+        """,
+    )
+    fun decreaseReceivedLikeCountLikedBy(@Param("likerId") likerId: Long)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(

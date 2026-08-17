@@ -116,6 +116,17 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
     )
     fun decreaseLikeCount(@Param("postId") postId: Long)
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        update FeedPost p
+        set p.likeCount = p.likeCount - 1
+        where p.likeCount > 0
+          and p.id in (select l.postId from FeedPostLike l where l.memberId = :memberId)
+        """,
+    )
+    fun decreaseLikeCountLikedBy(@Param("memberId") memberId: Long)
+
     @Query(value = "select id from feed_post where deleted_at < :threshold", nativeQuery = true)
     fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
 

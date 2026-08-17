@@ -16,7 +16,7 @@ import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
-import { useMemberFeed } from "@/hooks/useMemberFeed";
+import { MEMBER_FEED_KEY, useMemberFeed } from "@/hooks/useMemberFeed";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -48,8 +48,6 @@ const SORT_LABELS: Record<MemberSort, Filter> = {
 const COMMENT_MAX_LENGTH = 100;
 
 const COMMENT_SAVED_MESSAGE = "코멘트를 저장했습니다.";
-
-const MEMBERS_KEY = ["members"];
 
 export default function MainScreen() {
   const [genderOpen, setGenderOpen] = useState(false);
@@ -94,7 +92,7 @@ export default function MainScreen() {
       scrollToTop();
 
       if (next === "거리" && (await updateLocation())) {
-        queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
+        queryClient.invalidateQueries({ queryKey: MEMBER_FEED_KEY });
       }
     },
     [queryClient, scrollToTop, setSort, updateLocation],

@@ -8,9 +8,15 @@ import {
   type MemberSort,
 } from "@/lib/api";
 
+export const MEMBER_FEED_KEY = ["members", "list"];
+
+export function memberFeedKey(sort: MemberSort, gender: Gender | null) {
+  return [...MEMBER_FEED_KEY, sort, gender ?? "ALL"];
+}
+
 export function useMemberFeed(sort: MemberSort, gender: Gender | null) {
   const query = useInfiniteQuery({
-    queryKey: ["members", sort, gender ?? "ALL"],
+    queryKey: memberFeedKey(sort, gender),
     queryFn: ({ pageParam }) =>
       api.members.list({
         sort,

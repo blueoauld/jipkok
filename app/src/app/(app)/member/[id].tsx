@@ -30,6 +30,8 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
+import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
+import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -79,9 +81,16 @@ const LIKES_KEY = ["likes"];
 const FAVORITES_KEY = ["favorites"];
 const SECRET_PHOTOS_KEY = ["secretPhotos"];
 const BLOCKS_KEY = ["blocks"];
+// 차단하면 서버가 채팅방을 지우고 피드에서도 서로를 감춘다. 이벤트는 차단당한 쪽에만 간다.
+const BLOCK_AFFECTED_KEYS = [
+  BLOCKS_KEY,
+  CHAT_ROOMS_KEY,
+  CHAT_UNREAD_COUNT_KEY,
+  FEEDS_KEY,
+];
 
 type Relation = {
-  listKey: string[];
+  listKeys: string[][];
   call: () => Promise<void>;
   event?: AppEventName;
 };
@@ -229,14 +238,20 @@ export default function MemberProfileScreen() {
     onError: showApiError,
   });
 
+  const invalidateAll = useCallback(
+    (keys: string[][]) =>
+      keys.forEach((key) => queryClient.invalidateQueries({ queryKey: key })),
+    [queryClient],
+  );
+
   const relate = useMutation({
     mutationFn: ({ call }: Relation) => call(),
-    onSuccess: (_data, { listKey, event }) => {
+    onSuccess: (_data, { listKeys, event }) => {
       if (event) {
         logAppEvent(event);
       }
 
-      queryClient.invalidateQueries({ queryKey: listKey });
+      invalidateAll(listKeys);
     },
     onError: (mutationError) => {
       queryClient.invalidateQueries({ queryKey });
@@ -246,9 +261,9 @@ export default function MemberProfileScreen() {
 
   const relateAwaited = useMutation({
     mutationFn: ({ call }: AwaitedRelation) => call(),
-    onSuccess: (_data, { listKey, successMessage }) => {
+    onSuccess: (_data, { listKeys, successMessage }) => {
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: listKey });
+      invalidateAll(listKeys);
       show("info", successMessage);
     },
     onError: showApiError,
@@ -267,7 +282,7 @@ export default function MemberProfileScreen() {
         queryKey,
         (current) => current && { ...current, ...changes },
       );
-      relate.mutate({ listKey, call, event });
+      relate.mutate({ listKeys: [listKey], call, event });
     },
     [queryClient, queryKey, relate],
   );
@@ -336,7 +351,7 @@ export default function MemberProfileScreen() {
             confirmLabel: "해제",
             onConfirm: () =>
               relateAwaited.mutate({
-                listKey: BLOCKS_KEY,
+                listKeys: BLOCK_AFFECTED_KEYS,
                 call: () => api.blocks.remove(memberId),
                 successMessage: UNBLOCKED_MESSAGE,
               }),
@@ -348,7 +363,7 @@ export default function MemberProfileScreen() {
             destructive: true,
             onConfirm: () =>
               relateAwaited.mutate({
-                listKey: BLOCKS_KEY,
+                listKeys: BLOCK_AFFECTED_KEYS,
                 call: () => api.blocks.add(memberId),
                 successMessage: BLOCKED_MESSAGE,
               }),
@@ -382,7 +397,7 @@ export default function MemberProfileScreen() {
       onPress: () => {
         if (member) {
           relateAwaited.mutate({
-            listKey: SECRET_PHOTOS_KEY,
+            listKeys: [SECRET_PHOTOS_KEY],
             call: () =>
               member.secretPhotoGrantedByMe
                 ? api.secretPhotos.remove(memberId)

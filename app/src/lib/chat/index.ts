@@ -1,7 +1,8 @@
-import type {
-  ChatMessageResponse,
-  ChatReactionType,
-  ReplyMessageResponse,
+import {
+  type ChatMessageResponse,
+  type ChatReactionType,
+  isApiError,
+  type ReplyMessageResponse,
 } from "@/lib/api";
 
 export const LEAVE_DESCRIPTION =
@@ -11,6 +12,13 @@ export const LEAVE_SELECTED_DESCRIPTION =
   "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 export const PHOTO_SUMMARY = "사진";
+
+const CHAT_ROOM_NOT_FOUND_CODE = "CHAT_004";
+
+// 상대가 나갔거나 차단으로 지워진 방이다. 소켓 이벤트를 놓쳤을 때 이 코드로 알게 된다.
+export function isRoomNotFound(error: unknown) {
+  return isApiError(error) && error.code === CHAT_ROOM_NOT_FOUND_CODE;
+}
 
 export const REACTION_TYPES = [
   "LIKE",

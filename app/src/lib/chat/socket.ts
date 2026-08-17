@@ -24,7 +24,14 @@ function toSocketUrl() {
   return `${API_BASE_URL.replace(/^http/, "ws")}${ENDPOINT}`;
 }
 
-export function createChatSocket(onEvent: (event: ChatEvent) => void) {
+// 끊긴 동안 온 이벤트는 다시 받을 수 없어서, 활성 상태에서 끊겼다 붙으면 알려 준다.
+// deactivate()로 끊은 경우는 앱 복귀 때 따로 새로고침하므로 제외한다.
+export function createChatSocket(
+  onEvent: (event: ChatEvent) => void,
+  onReconnect: () => void,
+) {
+  let dropped = false;
+
   const client = new Client({
     brokerURL: toSocketUrl(),
     forceBinaryWSFrames: true,
@@ -39,6 +46,16 @@ export function createChatSocket(onEvent: (event: ChatEvent) => void) {
       client.subscribe(DESTINATION, (message) =>
         onEvent(JSON.parse(message.body)),
       );
+
+      if (dropped) {
+        dropped = false;
+        onReconnect();
+      }
+    },
+    onWebSocketClose: () => {
+      if (client.active) {
+        dropped = true;
+      }
     },
     onStompError: (frame) =>
       console.error(`[chat] ${frame.headers.message} ${frame.body}`),
