@@ -25,6 +25,7 @@ export function RetroInput({
         rounded={0}
         focusStyle={{ borderColor: "$gray12" }}
         color="$color12"
+        placeholderTextColor="$color11"
         px="$3"
         multiline={multiline}
         {...(multiline ? undefined : SINGLE_LINE_FIX)}
