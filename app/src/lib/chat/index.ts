@@ -41,6 +41,13 @@ export function toReply(message: ChatMessageResponse): ReplyMessageResponse {
   };
 }
 
+const SINGLE_EMOJI =
+  /^(?:\p{Regional_Indicator}{2}|[0-9#*]\uFE0F?\u20E3|\p{Extended_Pictographic}(?:\p{Emoji_Modifier}|\uFE0F)?(?:\u200D\p{Extended_Pictographic}(?:\p{Emoji_Modifier}|\uFE0F)?)*)$/u;
+
+export function isSingleEmoji(content: string) {
+  return SINGLE_EMOJI.test(content);
+}
+
 export function isPending(message: ChatMessageResponse) {
   return message.messageId < 0;
 }

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
-import { isPending, replySummary } from "@/lib/chat";
+import { isPending, isSingleEmoji, replySummary } from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
 import {
   IMAGE_TRANSITION,
@@ -23,6 +23,7 @@ const MIN_HEIGHT = 36;
 
 const H_PADDING = 10;
 const FONT_SIZE = 16;
+const EMOJI_FONT_SIZE = 40;
 
 const SECTION_GAP = 6;
 
@@ -52,9 +53,20 @@ function BubbleFrame({
   );
 }
 
-function BodyText({ mine, content }: { mine: boolean; content: string }) {
+function BodyText({
+  mine,
+  content,
+  large = false,
+}: {
+  mine: boolean;
+  content: string;
+  large?: boolean;
+}) {
   return (
-    <Text fontSize={FONT_SIZE} color={mine ? "white" : "$color12"}>
+    <Text
+      fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE}
+      color={mine ? "white" : "$color12"}
+    >
       {content}
     </Text>
   );
@@ -116,7 +128,11 @@ function TextMessage({
   return (
     <BubbleFrame mine={mine} onLongPress={onLongPress}>
       <YStack px={H_PADDING} py={H_PADDING}>
-        <BodyText mine={mine} content={content} />
+        <BodyText
+          mine={mine}
+          content={content}
+          large={isSingleEmoji(content)}
+        />
       </YStack>
     </BubbleFrame>
   );
