@@ -98,4 +98,8 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "delete from chat_room where id in (:roomIds)", nativeQuery = true)
     fun deleteAllByIdIn(@Param("roomIds") roomIds: List<Long>)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from ChatRoom r where r.id in :roomIds")
+    fun softDeleteAllByIdIn(@Param("roomIds") roomIds: List<Long>)
 }

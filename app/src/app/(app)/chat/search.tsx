@@ -6,6 +6,7 @@ import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { SearchList } from "@/components/SearchList";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 
 const HINT_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
 
@@ -13,8 +14,12 @@ const SCREEN_OPTIONS = { title: "채팅 검색" };
 
 export default function ChatSearchScreen() {
   const [submitted, setSubmitted] = useState("");
-  const { alertElement, toggleNotification, confirmLeave } =
-    useChatRoomActions();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { toggleNotification, confirmLeave } = useChatRoomActions({
+    show,
+    showApiError,
+    confirm,
+  });
   const search = useChatRoomSearch(submitted);
 
   return (

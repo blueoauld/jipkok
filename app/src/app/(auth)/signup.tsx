@@ -9,6 +9,7 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { RetroButton } from "@/components/ui/RetroButton";
+import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
@@ -25,6 +26,8 @@ const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
 
 const CODE_SENT_MESSAGE = "인증번호를 보냈습니다.";
+// 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
+const RESEND_COOLDOWN_SECONDS = 30;
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 
@@ -57,11 +60,14 @@ export default function SignupScreen() {
       show("error", BROWSER_FAILED_MESSAGE),
     );
 
+  const cooldown = useCountdown();
+
   const sendCode = useMutation({
     mutationFn: (phoneNumber: string) =>
       api.auth.sendVerificationCode(phoneNumber, "SIGNUP"),
     onSuccess: () => {
       logAppEvent(APP_EVENT.verificationCodeSent);
+      cooldown.start(RESEND_COOLDOWN_SECONDS);
       show("info", CODE_SENT_MESSAGE);
     },
     onError: (error) => {
@@ -87,7 +93,9 @@ export default function SignupScreen() {
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
 
   const canSendCode =
-    PHONE_NUMBER_PATTERN.test(phoneNumber) && !sendCode.isPending;
+    PHONE_NUMBER_PATTERN.test(phoneNumber) &&
+    !sendCode.isPending &&
+    cooldown.remaining === 0;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -145,7 +153,13 @@ export default function SignupScreen() {
             disabled={!canSendCode}
             onPress={() => sendCode.mutate(phoneNumber)}
           >
-            {sendCode.isPending ? <Spinner color="white" /> : "전송"}
+            {sendCode.isPending ? (
+              <Spinner color="white" />
+            ) : cooldown.remaining > 0 ? (
+              `${cooldown.remaining}초`
+            ) : (
+              "전송"
+            )}
           </RetroButton>
         </XStack>
 

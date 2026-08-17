@@ -63,6 +63,7 @@ export function useSendMessage(
   roomId: number,
   senderId: number,
   onError: (error: unknown) => void,
+  onTextFailed: (content: string, replyTo: ReplyMessageResponse | null) => void,
 ) {
   const queryClient = useQueryClient();
 
@@ -106,8 +107,9 @@ export function useSendMessage(
       }),
     onMutate: ({ temp }) => prepend([temp]),
     onSuccess: (message, { temp }) => replace(temp, message),
-    onError: (error, { temp }) => {
+    onError: (error, { content, temp }) => {
       discard([temp.messageId]);
+      onTextFailed(content, temp.replyMessage);
       onError(error);
     },
     onSettled: refreshRooms,

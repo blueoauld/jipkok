@@ -39,7 +39,7 @@ import { api } from "@/lib/api";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { APP_VERSION } from "@/lib/device";
 import { useLoadingOverlay } from "@/lib/overlay/store";
-import { setBadgeCount, unregisterPushToken } from "@/lib/push/notifications";
+import { releaseDevice } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import {
   BROWSER_FAILED_MESSAGE,
@@ -250,8 +250,7 @@ export default function SettingScreen() {
 
   const logout = useMutation({
     mutationFn: async () => {
-      await unregisterPushToken().catch(() => undefined);
-      setBadgeCount(0);
+      await releaseDevice();
       await api.auth.logout();
     },
   });
@@ -367,7 +366,7 @@ export default function SettingScreen() {
     [gate, handleAction, show],
   );
 
-  const { confirmWithdraw, withdrawElement } = useWithdraw();
+  const { confirmWithdraw } = useWithdraw({ show, showApiError, confirm });
 
   const accountMenu: MenuSheetItem[] = [
     {
@@ -435,7 +434,6 @@ export default function SettingScreen() {
         />
 
         {alertElement}
-        {withdrawElement}
       </ScrollView>
     </YStack>
   );

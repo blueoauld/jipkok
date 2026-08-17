@@ -1,7 +1,5 @@
 package com.blueoauld.server.domain.point.service
 
-import com.blueoauld.server.domain.member.entity.Member
-import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.point.entity.PointHistory
 import com.blueoauld.server.domain.point.entity.type.PointType
@@ -12,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.*
 
 class PointServiceTest {
 
@@ -35,7 +33,7 @@ class PointServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member(100))
+        every { memberRepository.existsById(MEMBER_ID) } returns true
         every { memberRepository.addPointBalance(any(), any()) } returns 1
         every { pointHistoryRepository.save(any()) } answers { firstArg() }
     }
@@ -43,6 +41,7 @@ class PointServiceTest {
     @Test
     fun `보상을 받으면 잔액이 늘고 내역이 남는다`() {
         // given
+        every { memberRepository.findPointBalance(MEMBER_ID) } returns 130
         val history = slot<PointHistory>()
 
         // when
@@ -60,8 +59,25 @@ class PointServiceTest {
     }
 
     @Test
+    fun `내역의 잔액은 갱신 뒤 다시 읽은 값이다`() {
+        // given
+        every { memberRepository.findPointBalance(MEMBER_ID) } returns 999
+
+        // when
+        val response = pointService.earn(MEMBER_ID, PointType.ACCESS_REWARD)
+
+        // then
+        verifyOrder {
+            memberRepository.addPointBalance(MEMBER_ID, 30)
+            memberRepository.findPointBalance(MEMBER_ID)
+        }
+        assertThat(response.balance).isEqualTo(999)
+    }
+
+    @Test
     fun `포인트를 쓰면 잔액이 줄고 내역이 남는다`() {
         // given
+        every { memberRepository.findPointBalance(MEMBER_ID) } returns 85
         val history = slot<PointHistory>()
 
         // when
@@ -92,7 +108,7 @@ class PointServiceTest {
     @Test
     fun `없는 회원이면 보상을 받을 수 없다`() {
         // given
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
+        every { memberRepository.addPointBalance(MEMBER_ID, any()) } returns 0
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -102,15 +118,6 @@ class PointServiceTest {
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
     }
-
-    private fun member(pointBalance: Int) = Member(
-        phoneNumber = "01012345678",
-        password = "encoded",
-        gender = Gender.MALE,
-        nickname = "닉네임",
-        birthYear = 1998,
-        pointBalance = pointBalance,
-    )
 
     companion object {
 

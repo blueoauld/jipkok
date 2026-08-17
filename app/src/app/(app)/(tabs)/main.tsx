@@ -57,14 +57,14 @@ export default function MainScreen() {
   const scrollTop = useScrollToTopVisible();
 
   const queryClient = useQueryClient();
-  const location = useLocationUpdate();
   const sort = useMemberFilterStore((state) => state.sort);
   const gender = useMemberFilterStore((state) => state.gender);
   const setSort = useMemberFilterStore((state) => state.setSort);
   const setGender = useMemberFilterStore((state) => state.setGender);
   const feed = useMemberFeed(sort, gender);
   const { data: profile } = useMyProfile();
-  const { alertElement, showApiError } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const location = useLocationUpdate({ show, showApiError, confirm });
 
   const updateComment = useMutation({
     mutationFn: api.members.updateComment,
@@ -202,7 +202,6 @@ export default function MainScreen() {
       />
 
       {alertElement}
-      {location.locationAlertElement}
     </YStack>
   );
 }

@@ -7,6 +7,7 @@ import { Spinner, XStack, YStack } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { RetroButton } from "@/components/ui/RetroButton";
+import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
@@ -18,6 +19,8 @@ import {
 } from "@/lib/validation";
 
 const CODE_SENT_MESSAGE = "인증번호를 보냈습니다.";
+// 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
+const RESEND_COOLDOWN_SECONDS = 30;
 const RESET_MESSAGE = "비밀번호를 바꿨습니다. 다시 로그인해주시길 바랍니다.";
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
@@ -36,10 +39,15 @@ export default function PasswordScreen() {
 
   const { alertElement, showApiError } = useRetroAlert();
 
+  const cooldown = useCountdown();
+
   const sendCode = useMutation({
     mutationFn: (phoneNumber: string) =>
       api.auth.sendVerificationCode(phoneNumber, PURPOSE),
-    onSuccess: () => showToast("info", CODE_SENT_MESSAGE),
+    onSuccess: () => {
+      cooldown.start(RESEND_COOLDOWN_SECONDS);
+      showToast("info", CODE_SENT_MESSAGE);
+    },
     onError: showApiError,
   });
 
@@ -55,7 +63,9 @@ export default function PasswordScreen() {
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
 
   const canSendCode =
-    PHONE_NUMBER_PATTERN.test(phoneNumber) && !sendCode.isPending;
+    PHONE_NUMBER_PATTERN.test(phoneNumber) &&
+    !sendCode.isPending &&
+    cooldown.remaining === 0;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -89,7 +99,13 @@ export default function PasswordScreen() {
             disabled={!canSendCode}
             onPress={() => sendCode.mutate(phoneNumber)}
           >
-            {sendCode.isPending ? <Spinner color="white" /> : "전송"}
+            {sendCode.isPending ? (
+              <Spinner color="white" />
+            ) : cooldown.remaining > 0 ? (
+              `${cooldown.remaining}초`
+            ) : (
+              "전송"
+            )}
           </RetroButton>
         </XStack>
 

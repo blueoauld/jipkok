@@ -59,7 +59,6 @@ class MemberWithdrawService(
     }
 
     private fun leaveRooms(memberId: Long) {
-        chatRoomRepository.findAllByMember(memberId)
-            .forEach { chatRoomService.delete(it, it.partnerIdOf(memberId)) }
+        chatRoomService.deleteAll(memberId, chatRoomRepository.findAllByMember(memberId))
     }
 }

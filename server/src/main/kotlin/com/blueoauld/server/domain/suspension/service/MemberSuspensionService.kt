@@ -122,7 +122,7 @@ class MemberSuspensionService(
         }
     }
 
-    private fun isSuspended(memberId: Long, type: SuspensionType): Boolean {
+    fun isSuspended(memberId: Long, type: SuspensionType): Boolean {
         suspendedMemberCache.find(memberId, type)?.let { return it }
 
         return memberSuspensionRepository.existsActive(memberId, type, clock.instant())

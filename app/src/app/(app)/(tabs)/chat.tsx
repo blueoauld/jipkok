@@ -11,6 +11,7 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { usePagedList } from "@/hooks/usePagedList";
+import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
@@ -32,14 +33,14 @@ export default function ChatScreen() {
   const scrollTop = useScrollToTopVisible();
 
   const unreadOnly = filter === "안읽음";
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const {
-    alertElement,
     toggleNotification,
     confirmLeave,
     markRoomsRead,
     confirmLeaveRooms,
     bulkPending,
-  } = useChatRoomActions();
+  } = useChatRoomActions({ show, showApiError, confirm });
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error } = chatRooms;
   const paged = usePagedList(chatRooms);

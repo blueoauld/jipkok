@@ -92,3 +92,9 @@ export async function unregisterPushToken() {
   await api.push.remove(registeredToken);
   registeredToken = null;
 }
+
+// 로그아웃, 탈퇴처럼 이 기기와 계정의 연결을 끊을 때. 실패해도 계정 쪽 절차는 이어간다.
+export async function releaseDevice() {
+  await unregisterPushToken().catch(() => undefined);
+  setBadgeCount(0);
+}

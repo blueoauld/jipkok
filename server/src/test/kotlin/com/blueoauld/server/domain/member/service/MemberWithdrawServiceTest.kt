@@ -136,7 +136,7 @@ class MemberWithdrawServiceTest {
         memberWithdrawService.withdraw(MEMBER_ID)
 
         // then
-        verify { chatRoomService.delete(room, PARTNER_ID) }
+        verify { chatRoomService.deleteAll(MEMBER_ID, listOf(room)) }
     }
 
     @Test

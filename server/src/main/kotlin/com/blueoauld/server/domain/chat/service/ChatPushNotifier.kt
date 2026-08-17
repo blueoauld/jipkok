@@ -5,6 +5,8 @@ import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushService
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -19,6 +21,7 @@ class ChatPushNotifier(
     private val pushService: PushService,
     private val memberRepository: MemberRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
+    private val memberSuspensionService: MemberSuspensionService,
 ) {
 
     @Async
@@ -36,6 +39,10 @@ class ChatPushNotifier(
         val receiver = chatRoomMemberRepository.findByRoomIdAndMemberId(event.message.roomId, event.receiverId)
 
         if (receiver?.notificationEnabled != true) {
+            return
+        }
+
+        if (memberSuspensionService.isSuspended(event.receiverId, SuspensionType.SERVICE)) {
             return
         }
 

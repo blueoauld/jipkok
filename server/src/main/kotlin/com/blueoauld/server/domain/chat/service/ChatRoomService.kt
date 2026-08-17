@@ -90,9 +90,7 @@ class ChatRoomService(
 
     @Transactional
     fun leaveAll(memberId: Long, roomIds: List<Long>) {
-        chatRoomRepository.findAllById(roomIds)
-            .filter { it.contains(memberId) }
-            .forEach { delete(it, it.partnerIdOf(memberId)) }
+        deleteAll(memberId, chatRoomRepository.findAllById(roomIds).filter { it.contains(memberId) })
     }
 
     @Transactional
@@ -113,5 +111,14 @@ class ChatRoomService(
     fun delete(room: ChatRoom, partnerId: Long) {
         chatRoomRepository.delete(room)
         eventPublisher.publishEvent(ChatRoomDeletedEvent(partnerId, room.id))
+    }
+
+    fun deleteAll(memberId: Long, rooms: List<ChatRoom>) {
+        if (rooms.isEmpty()) {
+            return
+        }
+
+        chatRoomRepository.softDeleteAllByIdIn(rooms.map { it.id })
+        rooms.forEach { eventPublisher.publishEvent(ChatRoomDeletedEvent(it.partnerIdOf(memberId), it.id)) }
     }
 }

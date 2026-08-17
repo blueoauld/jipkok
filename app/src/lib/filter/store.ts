@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import type { FeedSort, Gender, MemberSort } from "@/lib/api";
-import { toDateParam } from "@/lib/date";
+import { isToday, toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 
 const MEMBER_STORAGE_KEY = "jipkok.memberFilter";
@@ -36,7 +36,8 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 type FeedFilterState = {
   sort: FeedSort;
   gender: Gender | null;
-  date: string;
+  // null이면 오늘. 날짜를 박아 두면 자정이 지나도 어제에 머문다.
+  date: string | null;
   setSort: (sort: FeedSort) => void;
   setGender: (gender: Gender | null) => void;
   setDate: (date: Date) => void;
@@ -47,10 +48,11 @@ export const useFeedFilterStore = create<FeedFilterState>()(
     (set) => ({
       sort: DEFAULT_FEED_SORT,
       gender: null,
-      date: toDateParam(new Date()),
+      date: null,
       setSort: (sort) => set({ sort }),
       setGender: (gender) => set({ gender }),
-      setDate: (date) => set({ date: toDateParam(date) }),
+      setDate: (date) =>
+        set({ date: isToday(date) ? null : toDateParam(date) }),
     }),
     {
       name: FEED_STORAGE_KEY,

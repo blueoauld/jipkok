@@ -18,6 +18,12 @@ const TITLES: Record<RetroAlertVariant, string> = {
   warning: "경고",
 };
 
+// 훅이 알림을 띄워야 할 때는 화면의 알림을 넘겨받는다. 화면마다 알림은 하나만 둔다.
+export type RetroAlertApi = Pick<
+  ReturnType<typeof useRetroAlert>,
+  "show" | "showApiError" | "confirm"
+>;
+
 export function useRetroAlert(initial?: AlertState) {
   const [alert, setAlert] = useState<AlertState | null>(initial ?? null);
 

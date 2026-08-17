@@ -241,8 +241,7 @@ class ChatRoomServiceTest {
         chatRoomService.leaveAll(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
 
         // then
-        verify { chatRoomRepository.delete(room) }
-        verify { chatRoomRepository.delete(another) }
+        verify { chatRoomRepository.softDeleteAllByIdIn(listOf(room.id, another.id)) }
     }
 
     @Test
@@ -270,7 +269,7 @@ class ChatRoomServiceTest {
         chatRoomService.leaveAll(STRANGER_ID, listOf(ROOM_ID))
 
         // then
-        verify(exactly = 0) { chatRoomRepository.delete(any()) }
+        verify(exactly = 0) { chatRoomRepository.softDeleteAllByIdIn(any()) }
         verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
@@ -283,7 +282,7 @@ class ChatRoomServiceTest {
         chatRoomService.leaveAll(ME_ID, listOf(ROOM_ID, GONE_ROOM_ID))
 
         // then
-        verify(exactly = 1) { chatRoomRepository.delete(room) }
+        verify(exactly = 1) { chatRoomRepository.softDeleteAllByIdIn(listOf(room.id)) }
     }
 
     @Test

@@ -24,29 +24,35 @@ class PointService(
 
     @Transactional
     fun earn(memberId: Long, type: PointType): PointRewardResponse {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        if (memberRepository.addPointBalance(memberId, type.amount) == 0) {
+            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
 
-        val balance = member.pointBalance + type.amount
-        memberRepository.addPointBalance(memberId, type.amount)
-        pointHistoryRepository.save(PointHistory(memberId, type, type.amount, balance, clock.instant()))
+        val balance = record(memberId, type)
 
         return PointRewardResponse(earned = true, amount = type.amount, balance = balance)
     }
 
     @Transactional
     fun spend(memberId: Long, type: PointType) {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        if (!memberRepository.existsById(memberId)) {
+            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
 
         if (memberRepository.addPointBalance(memberId, type.amount) == 0) {
             throw BusinessException(ErrorCode.NOT_ENOUGH_POINT)
         }
 
-        val balance = member.pointBalance + type.amount
+        record(memberId, type)
+    }
+
+    private fun record(memberId: Long, type: PointType): Int {
+        val balance = memberRepository.findPointBalance(memberId)
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+
         pointHistoryRepository.save(PointHistory(memberId, type, type.amount, balance, clock.instant()))
+
+        return balance
     }
 
     @Transactional(readOnly = true)

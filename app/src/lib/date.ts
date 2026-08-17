@@ -45,8 +45,12 @@ function isSameDay(left: Date, right: Date) {
   return toDateParam(left) === toDateParam(right);
 }
 
+export function isToday(date: Date) {
+  return isSameDay(date, new Date());
+}
+
 export function formatDateLabel(date: Date) {
-  if (isSameDay(date, new Date())) {
+  if (isToday(date)) {
     return "오늘";
   }
 

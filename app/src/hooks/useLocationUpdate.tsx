@@ -4,7 +4,7 @@ import { useCallback, useRef } from "react";
 import { Platform } from "react-native";
 
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
 const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
@@ -38,9 +38,8 @@ async function resolveCachedCoords() {
   return last?.coords ?? (await resolveCoords());
 }
 
-export function useLocationUpdate() {
+export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
   const queryClient = useQueryClient();
-  const { alertElement, show, showApiError } = useRetroAlert();
   const updating = useRef(false);
   const { mutateAsync: heartbeat } = useMutation({
     mutationFn: api.members.heartbeat,
@@ -131,5 +130,5 @@ export function useLocationUpdate() {
     }
   }, [heartbeat, showApiError]);
 
-  return { update, refresh, locationAlertElement: alertElement };
+  return { update, refresh };
 }

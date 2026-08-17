@@ -10,7 +10,7 @@ import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import {
   LEAVE_DESCRIPTION,
@@ -27,9 +27,8 @@ async function runInChunks(
   }
 }
 
-export function useChatRoomActions() {
+export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
   const queryClient = useQueryClient();
-  const { alertElement, confirm, showApiError } = useRetroAlert();
 
   const apply = (roomId: number, enabled: boolean) =>
     queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
@@ -132,12 +131,12 @@ export function useChatRoomActions() {
   );
 
   const confirmLeave = useCallback(
-    (room: ChatRoomResponse) =>
+    (room: ChatRoomResponse, onLeft?: () => void) =>
       confirm({
         message: LEAVE_DESCRIPTION,
         confirmLabel: "나가기",
         destructive: true,
-        onConfirm: () => leave(room.roomId),
+        onConfirm: () => leave(room.roomId, { onSuccess: onLeft }),
       }),
     [confirm, leave],
   );
@@ -160,7 +159,6 @@ export function useChatRoomActions() {
   );
 
   return {
-    alertElement,
     toggleNotification,
     confirmLeave,
     markRoomsRead,

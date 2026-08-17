@@ -118,19 +118,21 @@ function Card({
         </CardButton>
       </XStack>
 
-      <YStack position="absolute" t="$3" r="$3">
-        <CardButton
-          width={CARD_ICON_BUTTON_SIZE}
-          height={CARD_ICON_BUTTON_SIZE}
-          onPress={() => onReport(post.postId)}
-        >
-          <SirenIcon
-            size={CARD_ICON_SIZE}
-            weight="bold"
-            color={theme.color12.val}
-          />
-        </CardButton>
-      </YStack>
+      {!mine && (
+        <YStack position="absolute" t="$3" r="$3">
+          <CardButton
+            width={CARD_ICON_BUTTON_SIZE}
+            height={CARD_ICON_BUTTON_SIZE}
+            onPress={() => onReport(post.postId)}
+          >
+            <SirenIcon
+              size={CARD_ICON_SIZE}
+              weight="bold"
+              color={theme.color12.val}
+            />
+          </CardButton>
+        </YStack>
+      )}
 
       <YStack position="absolute" b="$3" r="$3">
         <CardButton

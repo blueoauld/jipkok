@@ -6,6 +6,7 @@ import {
   type ChatMessageResponse,
   type ChatReactionsResponse,
   getAccessToken,
+  restoreSession,
 } from "@/lib/api";
 import { API_BASE_URL } from "@/lib/api/config";
 
@@ -57,8 +58,12 @@ export function createChatSocket(
         dropped = true;
       }
     },
-    onStompError: (frame) =>
-      console.error(`[chat] ${frame.headers.message} ${frame.body}`),
+    // CONNECT가 만료된 토큰으로 거절되면 같은 토큰으로 계속 재시도하게 된다.
+    // 재발급해 두면 다음 beforeConnect가 새 토큰을 쓰고, 재발급도 안 되면 로그아웃된다.
+    onStompError: (frame) => {
+      console.error(`[chat] ${frame.headers.message} ${frame.body}`);
+      restoreSession().catch(() => undefined);
+    },
   });
 
   return client;

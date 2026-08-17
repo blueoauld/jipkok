@@ -11,6 +11,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
+import { releaseDevice } from "@/lib/push/notifications";
 import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
 import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
 
@@ -23,14 +24,17 @@ const MAIL_TITLE = "정지문의";
 
 export default function SuspendedScreen() {
   const theme = useTheme();
-  const { alertElement, show, showApiError } = useRetroAlert();
-  const { confirmWithdraw, withdrawElement } = useWithdraw();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { confirmWithdraw } = useWithdraw({ show, showApiError, confirm });
 
   const { data: profile } = useMyProfile();
   const suspension = findServiceSuspension(profile);
 
   const logout = useMutation({
-    mutationFn: api.auth.logout,
+    mutationFn: async () => {
+      await releaseDevice();
+      await api.auth.logout();
+    },
     onError: showApiError,
   });
 
@@ -91,7 +95,6 @@ export default function SuspendedScreen() {
       </YStack>
 
       {alertElement}
-      {withdrawElement}
     </SafeAreaView>
   );
 }

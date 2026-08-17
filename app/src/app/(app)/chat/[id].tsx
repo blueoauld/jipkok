@@ -14,7 +14,10 @@ import { getTokens, Spinner, YStack } from "tamagui";
 
 import type { MessageFrame } from "@/components/chat/ChatBubble";
 import { ChatDay } from "@/components/chat/ChatDay";
-import { ChatInputBar } from "@/components/chat/ChatInputBar";
+import {
+  ChatInputBar,
+  type ChatInputBarHandle,
+} from "@/components/chat/ChatInputBar";
 import { ChatMessageRow } from "@/components/chat/ChatMessageRow";
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import {
@@ -27,8 +30,9 @@ import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { chatMessagesKey, useChatMessages } from "@/hooks/useChatMessages";
-import { chatRoomKey, useChatRoom } from "@/hooks/useChatRoom";
+import { useChatMessages } from "@/hooks/useChatMessages";
+import { useChatRoom } from "@/hooks/useChatRoom";
+import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { forgetRoom } from "@/hooks/useChatSocket";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
@@ -41,18 +45,17 @@ import {
   api,
   type ChatMessageResponse,
   type ChatReactionType,
+  type ReplyMessageResponse,
 } from "@/lib/api";
 import {
   type ChatRow,
   isPending,
   isRoomNotFound,
-  LEAVE_DESCRIPTION,
   toChatRows,
   toReply,
 } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
-import { useLoadingOverlay } from "@/lib/overlay/store";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
@@ -87,6 +90,7 @@ export default function ChatRoomScreen() {
     null,
   );
   const listRef = useRef<FlatList<ChatRow>>(null);
+  const inputBarRef = useRef<ChatInputBarHandle>(null);
 
   const insetTop = useRef(0);
 
@@ -121,10 +125,24 @@ export default function ChatRoomScreen() {
     error: roomError,
     refetch,
   } = useChatRoom(roomId, !partnerLeft);
+  const restoreDraft = useCallback(
+    (content: string, replyTo: ReplyMessageResponse | null) => {
+      inputBarRef.current?.restore(content);
+
+      if (replyTo) {
+        const original = messagesRef.current?.find(
+          (message) => message.messageId === replyTo.messageId,
+        );
+        setReplyTarget(original ?? null);
+      }
+    },
+    [],
+  );
   const { sendText, sendPhotos, sending, uploading } = useSendMessage(
     roomId,
     myMemberId,
     handleRoomError,
+    restoreDraft,
   );
   const { mutate: react } = useReactMessage(
     roomId,
@@ -149,10 +167,12 @@ export default function ChatRoomScreen() {
   );
 
   const rowsRef = useRef(rows);
+  const messagesRef = useRef(messages);
 
   useEffect(() => {
     rowsRef.current = rows;
-  }, [rows]);
+    messagesRef.current = messages;
+  }, [messages, rows]);
 
   useEffect(() => {
     if (partnerLeft) {
@@ -228,18 +248,7 @@ export default function ChatRoomScreen() {
     });
   }, []);
 
-  const leave = useMutation({
-    mutationFn: () => api.chats.leave(roomId),
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
-      queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      router.back();
-    },
-    onError: showApiError,
-  });
-
-  useLoadingOverlay(leave.isPending);
+  const { confirmLeave } = useChatRoomActions({ show, showApiError, confirm });
 
   const menuItems: MenuSheetItem[] = [
     {
@@ -252,13 +261,11 @@ export default function ChatRoomScreen() {
     },
     {
       label: "나가기",
-      onPress: () =>
-        confirm({
-          message: LEAVE_DESCRIPTION,
-          confirmLabel: "나가기",
-          destructive: true,
-          onConfirm: () => leave.mutate(),
-        }),
+      onPress: () => {
+        if (room) {
+          confirmLeave(room, () => router.back());
+        }
+      },
     },
     {
       label: "신고하기",
@@ -470,6 +477,7 @@ export default function ChatRoomScreen() {
 
       <KeyboardStickyView offset={{ opened: keyboardOffset }}>
         <ChatInputBar
+          ref={inputBarRef}
           sending={sending}
           uploading={uploading}
           reply={replyTarget}

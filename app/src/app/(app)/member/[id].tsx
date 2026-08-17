@@ -160,7 +160,7 @@ function ActionBar({
   const disabled: Record<ActionKey, boolean> = {
     like: false,
     favorite: false,
-    note: !member.noteReceiveEnabled,
+    note: !member.noteReceiveEnabled || member.blockedByMe,
     secretPhoto: false,
     block: false,
   };

@@ -24,6 +24,7 @@ class WebMvcConfig(
         private val ALLOWED_PATHS = arrayOf(
             "/api/auth/**",
             "/api/members/me",
+            "/api/members/me/device-tokens/**",
         )
     }
 }

@@ -25,6 +25,7 @@ import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useNow } from "@/hooks/useNow";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
@@ -37,8 +38,9 @@ import {
   type FeedPostPage,
   type FeedPostResponse,
   type FeedSort,
+  isApiError,
 } from "@/lib/api";
-import { fromDateParam } from "@/lib/date";
+import { fromDateParam, toDateParam } from "@/lib/date";
 import { useFeedFilterStore } from "@/lib/filter/store";
 import {
   GENDER_FILTER_VALUES,
@@ -60,6 +62,8 @@ const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
 
+const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
+
 export default function FeedScreen() {
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
@@ -80,7 +84,11 @@ export default function FeedScreen() {
   const setGender = useFeedFilterStore((state) => state.setGender);
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
-  const date = useMemo(() => fromDateParam(storedDate), [storedDate]);
+  const today = toDateParam(new Date(useNow()));
+  const date = useMemo(
+    () => fromDateParam(storedDate ?? today),
+    [storedDate, today],
+  );
   const feed = useFeedPosts(date, gender, sort);
   const { posts, error, refetch: refetchFeed } = feed;
   const paged = usePagedList(feed);
@@ -104,6 +112,21 @@ export default function FeedScreen() {
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
     [],
+  );
+
+  // 지워졌거나 이미 신고한 글이면 화면의 글이 낡은 것이므로 목록을 다시 받는다.
+  const handlePostError = useCallback(
+    (mutationError: unknown) => {
+      if (
+        isApiError(mutationError) &&
+        STALE_POST_CODES.has(mutationError.code)
+      ) {
+        invalidate();
+      }
+
+      showApiError(mutationError);
+    },
+    [invalidate, showApiError],
   );
 
   const toggleLike = useMutation({
@@ -136,7 +159,7 @@ export default function FeedScreen() {
     },
     onError: (mutationError, _post, context) => {
       queryClient.setQueryData(queryKey, context?.previous);
-      showApiError(mutationError);
+      handlePostError(mutationError);
     },
   });
 
@@ -146,7 +169,7 @@ export default function FeedScreen() {
       await invalidate();
       show("info", REPORTED_MESSAGE);
     },
-    onError: showApiError,
+    onError: handlePostError,
   });
 
   const { mutate: toggleLikeMutate } = toggleLike;

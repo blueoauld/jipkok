@@ -1,7 +1,13 @@
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { useEffect, useRef, useState } from "react";
+import {
+  type Ref,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -28,7 +34,12 @@ const LINE_HEIGHT = 22;
 const MAX_LINES = 7;
 const VERTICAL_PADDING = 7;
 
+export type ChatInputBarHandle = {
+  restore: (text: string) => void;
+};
+
 export function ChatInputBar({
+  ref,
   sending,
   uploading,
   reply,
@@ -37,6 +48,7 @@ export function ChatInputBar({
   onPickPhotos,
   onCancelReply,
 }: {
+  ref?: Ref<ChatInputBarHandle>;
   sending: boolean;
   uploading: boolean;
   reply: ChatMessageResponse | null;
@@ -60,6 +72,13 @@ export function ChatInputBar({
       inputRef.current?.focus();
     }
   }, [reply]);
+
+  useImperativeHandle(ref, () => ({
+    restore: (value) => {
+      setText(value);
+      inputRef.current?.focus();
+    },
+  }));
 
   const send = () => {
     onSend(trimmed);
