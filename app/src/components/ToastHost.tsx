@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatePresence, getTokens, Text, XStack, YStack } from "tamagui";
 
@@ -47,54 +48,58 @@ export function ToastHost() {
       pb={RETRO_SHADOW_OFFSET}
       pointerEvents="box-none"
     >
-      <AnimatePresence>
-        {toast && (
-          <YStack
-            key={toast.id}
-            opacity={1}
-            y={0}
-            transition="quick"
-            enterStyle={{ opacity: 0, y: SLIDE_OFFSET }}
-            exitStyle={{ opacity: 0, y: SLIDE_OFFSET }}
-          >
-            <YStack theme="gray">
-              <RetroShadow color="$gray12" />
+      <KeyboardStickyView
+        offset={{ closed: 0, opened: bottomBarHeight(insets.bottom) }}
+      >
+        <AnimatePresence>
+          {toast && (
+            <YStack
+              key={toast.id}
+              opacity={1}
+              y={0}
+              transition="quick"
+              enterStyle={{ opacity: 0, y: SLIDE_OFFSET }}
+              exitStyle={{ opacity: 0, y: SLIDE_OFFSET }}
+            >
+              <YStack theme="gray">
+                <RetroShadow color="$gray12" />
 
-              <XStack
-                bg="$color1"
-                onPress={hide}
-                pressStyle={{
-                  x: RETRO_SHADOW_OFFSET,
-                  y: RETRO_SHADOW_OFFSET,
-                  bg: "$color3",
-                }}
-              >
-                <YStack
-                  width={ACCENT_BAR_WIDTH + RETRO_BORDER_WIDTH}
-                  bg={ACCENT_BAR_COLORS[toast.variant]}
-                />
-
-                <Text
-                  flex={1}
-                  px="$3"
-                  py={TEXT_PADDING_Y}
-                  fontSize="$3"
-                  color="$color12"
+                <XStack
+                  bg="$color1"
+                  onPress={hide}
+                  pressStyle={{
+                    x: RETRO_SHADOW_OFFSET,
+                    y: RETRO_SHADOW_OFFSET,
+                    bg: "$color3",
+                  }}
                 >
-                  {toast.message}
-                </Text>
+                  <YStack
+                    width={ACCENT_BAR_WIDTH + RETRO_BORDER_WIDTH}
+                    bg={ACCENT_BAR_COLORS[toast.variant]}
+                  />
 
-                <YStack
-                  fullscreen
-                  borderWidth={RETRO_BORDER_WIDTH}
-                  borderColor="$gray12"
-                  pointerEvents="none"
-                />
-              </XStack>
+                  <Text
+                    flex={1}
+                    px="$3"
+                    py={TEXT_PADDING_Y}
+                    fontSize="$3"
+                    color="$color12"
+                  >
+                    {toast.message}
+                  </Text>
+
+                  <YStack
+                    fullscreen
+                    borderWidth={RETRO_BORDER_WIDTH}
+                    borderColor="$gray12"
+                    pointerEvents="none"
+                  />
+                </XStack>
+              </YStack>
             </YStack>
-          </YStack>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </KeyboardStickyView>
     </YStack>
   );
 }
