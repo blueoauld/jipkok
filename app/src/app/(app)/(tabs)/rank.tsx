@@ -3,7 +3,7 @@ import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
@@ -55,9 +55,7 @@ export default function RankScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           ListEmptyComponent={
-            <YStack items="center" py="$8">
-              <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
-            </YStack>
+            <ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>
           }
         />
       ) : (

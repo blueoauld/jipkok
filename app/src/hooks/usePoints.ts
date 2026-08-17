@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { api, type PointHistoryPage } from "@/lib/api";
+import { useFlatItems } from "@/lib/paging";
 
 export const POINT_BALANCE_KEY = ["points", "balance"];
 export const POINT_HISTORIES_KEY = ["points", "histories"];
@@ -21,10 +21,7 @@ export function usePointHistories() {
     getNextPageParam: (page: PointHistoryPage) => page.nextCursor,
   });
 
-  const histories = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const histories = useFlatItems(query.data);
 
   return { ...query, histories };
 }

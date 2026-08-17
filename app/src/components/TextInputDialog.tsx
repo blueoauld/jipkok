@@ -1,11 +1,9 @@
-import { useRef, useState } from "react";
-import { Dialog, Text, XStack } from "tamagui";
+import { useRef } from "react";
+import { Dialog, XStack } from "tamagui";
 
+import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
-import { RetroInput } from "@/components/ui/RetroInput";
-
-import { FormField } from "./FormField";
 
 function DialogForm({
   title,
@@ -27,35 +25,23 @@ function DialogForm({
   onSubmit: (value: string) => void;
 }) {
   const valueRef = useRef(defaultValue);
-  const [length, setLength] = useState(defaultValue.length);
 
   return (
     <>
       <Dialog.Title fontSize="$6">{title}</Dialog.Title>
 
-      <FormField
-        right={
-          <Text theme="gray" color="$color11">
-            {`${length} / ${maxLength}`}
-          </Text>
-        }
-      >
-        <RetroInput
-          defaultValue={defaultValue}
-          onChangeText={(text) => {
-            valueRef.current = text;
-            setLength(text.length);
-          }}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          clearable={clearable}
-          multiline={rows !== undefined}
-          rows={rows}
-          textAlignVertical={rows === undefined ? undefined : "top"}
-          submitBehavior={rows === undefined ? "submit" : undefined}
-          autoFocusNative
-        />
-      </FormField>
+      <CountedInput
+        valueRef={valueRef}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        clearable={clearable}
+        multiline={rows !== undefined}
+        rows={rows}
+        textAlignVertical={rows === undefined ? undefined : "top"}
+        submitBehavior={rows === undefined ? "submit" : undefined}
+        autoFocusNative
+      />
 
       <XStack gap="$3">
         <Dialog.Close asChild>

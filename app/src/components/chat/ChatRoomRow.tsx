@@ -9,6 +9,7 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
+import { RetroBadge } from "@/components/ui/RetroBadge";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
@@ -20,9 +21,6 @@ import { useAccentToken } from "@/lib/theme/accent";
 
 const MUTE_ICON_SIZE = 14;
 
-const BADGE_SIZE = 20;
-const BADGE_FONT_SIZE = 11;
-
 const ACTION_SIZE = 40;
 const ACTION_ICON_SIZE = 20;
 const ACTION_FRICTION = 2;
@@ -31,23 +29,7 @@ const SELECT_BOX_SIZE = 22;
 const SELECT_ICON_SIZE = 14;
 
 function UnreadBadge({ count }: { count: number }) {
-  return (
-    <XStack
-      shrink={0}
-      minW={BADGE_SIZE}
-      height={BADGE_SIZE}
-      px="$1.5"
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg="$red10"
-      items="center"
-      justify="center"
-    >
-      <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
-        {formatUnreadCount(count)}
-      </Text>
-    </XStack>
-  );
+  return <RetroBadge>{formatUnreadCount(count)}</RetroBadge>;
 }
 
 function NotificationAction({

@@ -1,22 +1,14 @@
-import { type ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import { FlatList } from "react-native";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { getTokens } from "tamagui";
 
-import { ActivityRow } from "@/components/activity/ActivityRow";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
+import { ListEmpty } from "@/components/ui/ListEmpty";
+import { ScreenState } from "@/components/ui/ScreenState";
+import { UserRow } from "@/components/UserRow";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
 import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
-
-function Centered({ children }: { children: ReactNode }) {
-  return (
-    <YStack items="center" gap="$4" py="$8">
-      {children}
-    </YStack>
-  );
-}
 
 export function ActivityList({
   query,
@@ -32,21 +24,16 @@ export function ActivityList({
 
     return { padding: space.$4.val, gap: space.$4.val };
   }, []);
-  const { members, isError } = query;
+  const { members, error } = query;
   const paged = usePagedList(query);
 
   if (!members) {
     return (
-      <Centered>
-        {isError ? (
-          <ErrorState
-            message={LIST_ERROR_MESSAGE}
-            onRetry={() => query.refetch()}
-          />
-        ) : (
-          <Spinner size="small" />
-        )}
-      </Centered>
+      <ScreenState
+        error={error}
+        message={LIST_ERROR_MESSAGE}
+        onRetry={() => query.refetch()}
+      />
     );
   }
 
@@ -56,15 +43,11 @@ export function ActivityList({
       data={members}
       keyExtractor={(member) => String(member.memberId)}
       renderItem={({ item }) => (
-        <ActivityRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
+        <UserRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
       )}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={contentStyle}
-      ListEmptyComponent={
-        <Centered>
-          <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
-        </Centered>
-      }
+      ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
     />
   );
 }

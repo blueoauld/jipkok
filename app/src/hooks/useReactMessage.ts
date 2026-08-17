@@ -13,6 +13,7 @@ import {
   type ChatReactionsResponse,
   type ChatReactionType,
 } from "@/lib/api";
+import { flattenPages, mapPages } from "@/lib/paging";
 
 type Feed = InfiniteData<ChatMessagePage>;
 
@@ -21,22 +22,14 @@ export function setMessageReactions(
   roomId: number,
   { messageId, reactions }: ChatReactionsResponse,
 ) {
-  queryClient.setQueryData<Feed>(
-    chatMessagesKey(roomId),
-    (current) =>
-      current && {
-        ...current,
-        pages: current.pages.map((page) =>
-          page.items.some((item) => item.messageId === messageId)
-            ? {
-                ...page,
-                items: page.items.map((item) =>
-                  item.messageId === messageId ? { ...item, reactions } : item,
-                ),
-              }
-            : page,
-        ),
-      },
+  queryClient.setQueryData<Feed>(chatMessagesKey(roomId), (current) =>
+    mapPages(current, (items) =>
+      items.some((item) => item.messageId === messageId)
+        ? items.map((item) =>
+            item.messageId === messageId ? { ...item, reactions } : item,
+          )
+        : items,
+    ),
   );
 }
 
@@ -45,10 +38,9 @@ function findReactions(
   roomId: number,
   messageId: number,
 ) {
-  return queryClient
-    .getQueryData<Feed>(chatMessagesKey(roomId))
-    ?.pages.flatMap((page) => page.items)
-    .find((item) => item.messageId === messageId)?.reactions;
+  return flattenPages(
+    queryClient.getQueryData<Feed>(chatMessagesKey(roomId)),
+  )?.find((item) => item.messageId === messageId)?.reactions;
 }
 
 function replaceMine(

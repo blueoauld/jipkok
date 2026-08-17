@@ -2,10 +2,10 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
-import { useMemberList } from "@/hooks/useMemberList";
+import { relationListKey, useMemberList } from "@/hooks/useMemberList";
 import { api } from "@/lib/api";
 
-const RECEIVED_FAVORITES_KEY = ["favorites", "received"];
+const RECEIVED_FAVORITES_KEY = relationListKey("favorites", "received");
 
 const SCREEN_OPTIONS = { title: "받은 즐겨찾기 목록" };
 

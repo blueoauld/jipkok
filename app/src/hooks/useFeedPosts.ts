@@ -1,8 +1,8 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { api, type FeedPostPage, type FeedSort, type Gender } from "@/lib/api";
 import { toDateParam } from "@/lib/date";
+import { useFlatItems } from "@/lib/paging";
 
 export const FEEDS_KEY = ["feeds"];
 
@@ -33,10 +33,7 @@ export function useFeedPosts(
     placeholderData: keepPreviousData,
   });
 
-  const posts = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const posts = useFlatItems(query.data);
 
   return { ...query, posts };
 }

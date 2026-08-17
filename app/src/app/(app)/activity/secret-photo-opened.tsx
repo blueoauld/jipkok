@@ -2,10 +2,10 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
-import { useMemberList } from "@/hooks/useMemberList";
+import { relationListKey, useMemberList } from "@/hooks/useMemberList";
 import { api } from "@/lib/api";
 
-const RECEIVED_SECRET_PHOTOS_KEY = ["secretPhotos", "received"];
+const RECEIVED_SECRET_PHOTOS_KEY = relationListKey("secretPhotos", "received");
 
 const SCREEN_OPTIONS = { title: "공개된 비밀 사진 목록" };
 

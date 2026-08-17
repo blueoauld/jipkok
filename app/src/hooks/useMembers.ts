@@ -1,5 +1,4 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import {
   api,
@@ -7,16 +6,17 @@ import {
   type MemberListPage,
   type MemberSort,
 } from "@/lib/api";
+import { useFlatItems } from "@/lib/paging";
 
-export const MEMBER_FEED_KEY = ["members", "list"];
+export const MEMBERS_KEY = ["members", "list"];
 
-export function memberFeedKey(sort: MemberSort, gender: Gender | null) {
-  return [...MEMBER_FEED_KEY, sort, gender ?? "ALL"];
+export function membersKey(sort: MemberSort, gender: Gender | null) {
+  return [...MEMBERS_KEY, sort, gender ?? "ALL"];
 }
 
-export function useMemberFeed(sort: MemberSort, gender: Gender | null) {
+export function useMembers(sort: MemberSort, gender: Gender | null) {
   const query = useInfiniteQuery({
-    queryKey: memberFeedKey(sort, gender),
+    queryKey: membersKey(sort, gender),
     queryFn: ({ pageParam }) =>
       api.members.list({
         sort,
@@ -28,10 +28,7 @@ export function useMemberFeed(sort: MemberSort, gender: Gender | null) {
     placeholderData: keepPreviousData,
   });
 
-  const members = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const members = useFlatItems(query.data);
 
   return { ...query, members };
 }

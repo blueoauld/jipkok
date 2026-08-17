@@ -5,7 +5,7 @@ import { YStack } from "tamagui";
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
@@ -104,11 +104,7 @@ export default function ChatScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           ListEmptyComponent={
-            <YStack items="center" py="$8">
-              <EmptyMessage>
-                {unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}
-              </EmptyMessage>
-            </YStack>
+            <ListEmpty>{unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}</ListEmpty>
           }
         />
       ) : (

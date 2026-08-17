@@ -12,7 +12,7 @@ import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { releaseDevice } from "@/lib/push/notifications";
-import { MAIL_FAILED_MESSAGE, openSupportMail } from "@/lib/support";
+import { openSupportMail } from "@/lib/support";
 import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
 
 const ICON_SIZE = 56;
@@ -72,9 +72,7 @@ export default function SuspendedScreen() {
         <YStack width="100%" gap="$4">
           <RetroButton
             onPress={() =>
-              openSupportMail(MAIL_TITLE, profile?.memberId).catch(() =>
-                show("error", MAIL_FAILED_MESSAGE),
-              )
+              openSupportMail(MAIL_TITLE, profile?.memberId, show)
             }
           >
             문의하기

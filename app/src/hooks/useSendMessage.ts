@@ -14,6 +14,7 @@ import {
   type ChatMessageResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
+import { mapPages } from "@/lib/paging";
 import { uploadChatPhoto } from "@/lib/photo";
 
 type Feed = InfiniteData<ChatMessagePage>;
@@ -47,15 +48,8 @@ function updateFeed(
   roomId: number,
   update: (items: ChatMessageResponse[]) => ChatMessageResponse[],
 ) {
-  queryClient.setQueryData<Feed>(
-    chatMessagesKey(roomId),
-    (current) =>
-      current && {
-        ...current,
-        pages: current.pages.map((page, index) =>
-          index === 0 ? { ...page, items: update(page.items) } : page,
-        ),
-      },
+  queryClient.setQueryData<Feed>(chatMessagesKey(roomId), (current) =>
+    mapPages(current, (items, index) => (index === 0 ? update(items) : items)),
   );
 }
 

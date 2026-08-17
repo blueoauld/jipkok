@@ -8,8 +8,7 @@ import { useCallback } from "react";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
-import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
-import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
+import { CHAT_ROOMS_KEY, invalidateChatLists } from "@/hooks/useChatRooms";
 import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import {
@@ -17,6 +16,7 @@ import {
   LEAVE_SELECTED_DESCRIPTION,
   toBulkChunks,
 } from "@/lib/chat";
+import { mapPages } from "@/lib/paging";
 
 async function runInChunks(
   roomIds: number[],
@@ -34,17 +34,13 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
       { queryKey: CHAT_ROOMS_KEY },
       (current) =>
-        current && {
-          ...current,
-          pages: current.pages.map((page) => ({
-            ...page,
-            items: page.items.map((item) =>
-              item.roomId === roomId
-                ? { ...item, notificationEnabled: enabled }
-                : item,
-            ),
-          })),
-        },
+        mapPages(current, (items) =>
+          items.map((item) =>
+            item.roomId === roomId
+              ? { ...item, notificationEnabled: enabled }
+              : item,
+          ),
+        ),
     );
 
   const { mutate: toggle } = useMutation({
@@ -71,13 +67,9 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
         { queryKey: CHAT_ROOMS_KEY },
         (current) =>
-          current && {
-            ...current,
-            pages: current.pages.map((page) => ({
-              ...page,
-              items: page.items.filter((item) => item.roomId !== roomId),
-            })),
-          },
+          mapPages(current, (items) =>
+            items.filter((item) => item.roomId !== roomId),
+          ),
       );
 
       return { previous };
@@ -85,8 +77,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     onSuccess: (_data, roomId) => {
       queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
       queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+      invalidateChatLists(queryClient);
     },
     onError: (error, _roomId, context) => {
       context?.previous.forEach(([queryKey, data]) =>
@@ -103,8 +94,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
         queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
         queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
       });
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+      invalidateChatLists(queryClient);
     },
     onError: showApiError,
   });
@@ -116,8 +106,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       roomIds.forEach((roomId) =>
         queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) }),
       );
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+      invalidateChatLists(queryClient);
     },
     onError: showApiError,
   });

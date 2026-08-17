@@ -141,7 +141,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 사진 업로드 URL 발급 */
-        post: operations["createPhotoUploadUrl"];
+        post: operations["createReportPhotoUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -713,7 +713,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내 프로필 조회 */
-        get: operations["getMyProfile"];
+        get: operations["findMyProfile"];
         put?: never;
         post?: never;
         /**
@@ -1027,17 +1027,11 @@ export interface components {
             publicPhotoKeys: string[];
             secretPhotoKeys: string[];
         };
-        UpdateNoteReceiveRequest: {
-            enabled: boolean;
-        };
-        UpdateFeedNotificationRequest: {
+        EnabledRequest: {
             enabled: boolean;
         };
         UpdateCommentRequest: {
             comment?: string | null;
-        };
-        UpdateChatNotificationRequest: {
-            enabled: boolean;
         };
         ReactMessageRequest: {
             /** @enum {string} */
@@ -1064,10 +1058,10 @@ export interface components {
             detail?: string | null;
             photoKeys: string[];
         };
-        CreateReportPhotoUploadUrlRequest: {
+        CreatePhotoUploadUrlRequest: {
             contentType: string;
         };
-        ReportPhotoUploadUrlResponse: {
+        PhotoUploadUrlResponse: {
             uploadUrl: string;
             objectKey: string;
         };
@@ -1079,17 +1073,17 @@ export interface components {
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
         };
+        TokenResponse: {
+            accessToken: string;
+            refreshToken: string;
+        };
         SendNoteRequest: {
             content: string;
         };
-        CreatePhotoUploadUrlRequest: {
+        CreateProfilePhotoUploadUrlRequest: {
             contentType: string;
             /** @enum {string} */
             visibility: "PUBLIC" | "SECRET";
-        };
-        PhotoUploadUrlResponse: {
-            uploadUrl: string;
-            objectKey: string;
         };
         HeartbeatRequest: {
             /** @enum {string|null} */
@@ -1115,13 +1109,6 @@ export interface components {
         CreateFeedPostRequest: {
             objectKey: string;
             caption?: string | null;
-        };
-        CreateFeedPhotoUploadUrlRequest: {
-            contentType: string;
-        };
-        FeedPhotoUploadUrlResponse: {
-            uploadUrl: string;
-            objectKey: string;
         };
         MarkReadRequest: {
             /** Format: int64 */
@@ -1163,23 +1150,12 @@ export interface components {
         MarkRoomsReadRequest: {
             roomIds: number[];
         };
-        CreateChatPhotoUploadUrlRequest: {
-            contentType: string;
-        };
-        ChatPhotoUploadUrlResponse: {
-            uploadUrl: string;
-            objectKey: string;
-        };
         SendVerificationCodeRequest: {
             phoneNumber: string;
             /** @enum {string} */
             purpose: "SIGNUP" | "PASSWORD_RESET";
         };
         ReissueRequest: {
-            refreshToken: string;
-        };
-        TokenResponse: {
-            accessToken: string;
             refreshToken: string;
         };
         ResetPasswordRequest: {
@@ -1191,13 +1167,6 @@ export interface components {
         LoginRequest: {
             phoneNumber: string;
             password: string;
-        };
-        AttendanceResponse: {
-            earned: boolean;
-            /** Format: int32 */
-            amount: number;
-            /** Format: int32 */
-            balance: number;
         };
         SetupProfileRequest: {
             nickname: string;
@@ -1555,7 +1524,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateNoteReceiveRequest"];
+                "application/json": components["schemas"]["EnabledRequest"];
             };
         };
         responses: {
@@ -1631,7 +1600,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateFeedNotificationRequest"];
+                "application/json": components["schemas"]["EnabledRequest"];
             };
         };
         responses: {
@@ -1785,7 +1754,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateChatNotificationRequest"];
+                "application/json": components["schemas"]["EnabledRequest"];
             };
         };
         responses: {
@@ -2086,7 +2055,7 @@ export interface operations {
             };
         };
     };
-    createPhotoUploadUrl: {
+    createReportPhotoUploadUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -2095,7 +2064,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateReportPhotoUploadUrlRequest"];
+                "application/json": components["schemas"]["CreatePhotoUploadUrlRequest"];
             };
         };
         responses: {
@@ -2105,7 +2074,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ReportPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -3072,7 +3041,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreatePhotoUploadUrlRequest"];
+                "application/json": components["schemas"]["CreateProfilePhotoUploadUrlRequest"];
             };
         };
         responses: {
@@ -3388,7 +3357,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description No Content */
+            /** @description Created */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -3462,7 +3431,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No Content */
+            /** @description Created */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -3682,7 +3651,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateFeedPhotoUploadUrlRequest"];
+                "application/json": components["schemas"]["CreatePhotoUploadUrlRequest"];
             };
         };
         responses: {
@@ -3692,7 +3661,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FeedPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4073,7 +4042,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateChatPhotoUploadUrlRequest"];
+                "application/json": components["schemas"]["CreatePhotoUploadUrlRequest"];
             };
         };
         responses: {
@@ -4083,7 +4052,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ChatPhotoUploadUrlResponse"];
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -4535,13 +4504,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description Created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AttendanceResponse"];
+                    "application/json": components["schemas"]["PointRewardResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -5059,7 +5028,7 @@ export interface operations {
             };
         };
     };
-    getMyProfile: {
+    findMyProfile: {
         parameters: {
             query?: never;
             header?: never;

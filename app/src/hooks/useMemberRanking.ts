@@ -1,7 +1,7 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { api, type Gender, type MemberSearchPage } from "@/lib/api";
+import { useFlatItems } from "@/lib/paging";
 
 export function useMemberRanking(gender: Gender | null) {
   const query = useInfiniteQuery({
@@ -13,10 +13,7 @@ export function useMemberRanking(gender: Gender | null) {
     placeholderData: keepPreviousData,
   });
 
-  const members = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const members = useFlatItems(query.data);
 
   return { ...query, members };
 }

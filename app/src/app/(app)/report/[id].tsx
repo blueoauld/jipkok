@@ -1,15 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
-import { useMemo, useRef, useState } from "react";
+import { type RefObject, useMemo, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -55,29 +54,16 @@ function ReasonRow({
   );
 }
 
-function DetailField({ valueRef }: { valueRef: { current: string } }) {
-  const [length, setLength] = useState(0);
-
+function DetailField({ valueRef }: { valueRef: RefObject<string> }) {
   return (
-    <FormField
-      right={
-        <Text theme="gray" color="$color11">
-          {`${length} / ${DETAIL_MAX_LENGTH}`}
-        </Text>
-      }
-    >
-      <RetroInput
-        multiline
-        rows={7}
-        textAlignVertical="top"
-        placeholder="상세 내용"
-        maxLength={DETAIL_MAX_LENGTH}
-        onChangeText={(text) => {
-          valueRef.current = text;
-          setLength(text.length);
-        }}
-      />
-    </FormField>
+    <CountedInput
+      valueRef={valueRef}
+      multiline
+      rows={7}
+      textAlignVertical="top"
+      placeholder="상세 내용"
+      maxLength={DETAIL_MAX_LENGTH}
+    />
   );
 }
 

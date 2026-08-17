@@ -13,7 +13,7 @@ const SCREEN_OPTIONS = { title: "내 프로필 조회 목록" };
 export default function ProfileViewListScreen() {
   const query = useProfileViews();
 
-  useMarkProfileViewsSeen(!query.isPending);
+  useMarkProfileViewsSeen(query.isSuccess);
 
   const viewedAt = useMemo(
     () =>

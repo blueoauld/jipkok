@@ -1,24 +1,62 @@
-import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import * as Haptics from "expo-haptics";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
+import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { memo } from "react";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
+import { MemberMeta } from "@/components/MemberMeta";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { RetroPressable } from "@/components/ui/RetroPressable";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { formatDistance, genderLabel } from "@/lib/member";
+import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
 const EMPTY_COMMENT = "-";
 const FAVORITE_ICON_SIZE = 14;
-const LIKE_ICON_SIZE = 13;
+
+const DELETE_BUTTON_SIZE = 44;
+const DELETE_ICON_SIZE = 22;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
-function Row({ member }: { member: RowMember }) {
-  const theme = useTheme();
+function DeleteButton({ onPress }: { onPress: () => void }) {
+  const press = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  };
+
+  return (
+    <YStack shrink={0}>
+      <RetroPressable
+        offset={RETRO_SHADOW_OFFSET_SM}
+        width={DELETE_BUTTON_SIZE}
+        height={DELETE_BUTTON_SIZE}
+        bg="$red10"
+        pressBg="$red11"
+        items="center"
+        justify="center"
+        onPress={press}
+      >
+        <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
+      </RetroPressable>
+    </YStack>
+  );
+}
+
+// at을 주면 접속 시각 대신 그 시각(좋아요한 때 등)을 보여준다.
+function Row({
+  member,
+  at,
+  onDelete,
+}: {
+  member: RowMember;
+  at?: string;
+  onDelete?: (memberId: number) => void;
+}) {
   const {
     memberId,
     nickname,
@@ -57,22 +95,14 @@ function Row({ member }: { member: RowMember }) {
               )}
             </XStack>
 
-            {locatedAt && <RelativeTime at={locatedAt} />}
+            {(at ?? locatedAt) && <RelativeTime at={at ?? locatedAt!} />}
           </XStack>
 
-          <XStack items="center">
-            <Text fontSize="$3">{`${genderLabel(gender)} · ${age}살 · `}</Text>
-
-            <XStack items="center" gap="$1">
-              <HeartIcon
-                size={LIKE_ICON_SIZE}
-                weight="fill"
-                color={theme.color12.val}
-              />
-
-              <Text fontSize="$3">{receivedLikeCount}</Text>
-            </XStack>
-          </XStack>
+          <MemberMeta
+            gender={gender}
+            age={age}
+            receivedLikeCount={receivedLikeCount}
+          />
 
           <XStack items="center" justify="space-between" gap="$2">
             <Text flex={1} numberOfLines={1} fontSize="$3">
@@ -86,6 +116,8 @@ function Row({ member }: { member: RowMember }) {
             )}
           </XStack>
         </YStack>
+
+        {onDelete && <DeleteButton onPress={() => onDelete(memberId)} />}
       </XStack>
     </RetroCard>
   );

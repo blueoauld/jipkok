@@ -1,12 +1,12 @@
 import { Image } from "expo-image";
 import { ImageIcon } from "phosphor-react-native/src/icons/Image";
-import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
+import { LockBadge } from "@/components/ui/LockBadge";
 import {
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
@@ -17,10 +17,6 @@ import { photoCacheKey } from "@/lib/photo";
 const PHOTO_RATIO = 0.8;
 
 const PLACEHOLDER_ICON_SIZE = 48;
-
-const BADGE_SIZE = 24;
-
-const BADGE_ICON_SIZE = 14;
 
 export function PhotoPager({
   photos,
@@ -85,22 +81,7 @@ export function PhotoPager({
             />
 
             {hasSecret && photoIndex >= secretFrom && (
-              <XStack
-                position="absolute"
-                t="$3"
-                l="$3"
-                width={BADGE_SIZE}
-                height={BADGE_SIZE}
-                bg="$gray12"
-                items="center"
-                justify="center"
-              >
-                <LockSimpleIcon
-                  size={BADGE_ICON_SIZE}
-                  weight="fill"
-                  color={theme.color1.val}
-                />
-              </XStack>
+              <LockBadge t="$3" l="$3" />
             )}
           </XStack>
         )}

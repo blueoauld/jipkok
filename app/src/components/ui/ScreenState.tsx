@@ -1,7 +1,7 @@
 import { Spinner, YStack } from "tamagui";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { isApiError } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/alert";
 
 export function ScreenState({
   error,
@@ -16,7 +16,7 @@ export function ScreenState({
     <YStack flex={1} justify="center" items="center" gap="$4" p="$4">
       {error ? (
         <ErrorState
-          message={isApiError(error) ? error.message : message}
+          message={apiErrorMessage(error, message)}
           onRetry={onRetry}
         />
       ) : (

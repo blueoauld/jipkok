@@ -1,7 +1,7 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { api, type ChatRoomPage } from "@/lib/api";
+import { useFlatItems } from "@/lib/paging";
 
 export function useChatRoomSearch(keyword: string) {
   const enabled = keyword.length > 0;
@@ -16,10 +16,7 @@ export function useChatRoomSearch(keyword: string) {
     placeholderData: keepPreviousData,
   });
 
-  const rooms = useMemo(
-    () => (enabled ? query.data?.pages.flatMap((page) => page.items) : []),
-    [enabled, query.data],
-  );
+  const rooms = useFlatItems(enabled ? query.data : undefined) ?? [];
 
   return { ...query, enabled, rooms };
 }

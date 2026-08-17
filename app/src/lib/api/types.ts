@@ -6,7 +6,6 @@ type Paths = paths;
 export type SignupRequest = Schemas["SignupRequest"];
 export type LoginRequest = Schemas["LoginRequest"];
 export type TokenResponse = Schemas["TokenResponse"];
-export type ReissueRequest = Schemas["ReissueRequest"];
 export type ResetPasswordRequest = Schemas["ResetPasswordRequest"];
 export type VerificationPurpose =
   Schemas["SendVerificationCodeRequest"]["purpose"];
@@ -22,14 +21,11 @@ export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
 export type UpdateCommentRequest = Schemas["UpdateCommentRequest"];
-export type UpdateNoteReceiveRequest = Schemas["UpdateNoteReceiveRequest"];
-export type UpdateFeedNotificationRequest =
-  Schemas["UpdateFeedNotificationRequest"];
 export type HeartbeatRequest = Schemas["HeartbeatRequest"];
 export type PhotoUploadUrlResponse = Schemas["PhotoUploadUrlResponse"];
-export type CreatePhotoUploadUrlRequest =
-  Schemas["CreatePhotoUploadUrlRequest"];
-export type PhotoVisibility = CreatePhotoUploadUrlRequest["visibility"];
+export type CreateProfilePhotoUploadUrlRequest =
+  Schemas["CreateProfilePhotoUploadUrlRequest"];
+export type PhotoVisibility = CreateProfilePhotoUploadUrlRequest["visibility"];
 export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 export type SuspensionResponse = Schemas["SuspensionResponse"];
 export type RegisterDeviceTokenRequest = Schemas["RegisterDeviceTokenRequest"];
@@ -47,7 +43,6 @@ export type ChatReactionResponse = Schemas["ChatReactionResponse"];
 export type ChatReactionsResponse = Schemas["ChatReactionsResponse"];
 export type ChatReactionType = ChatReactionResponse["type"];
 
-export type SendNoteRequest = Schemas["SendNoteRequest"];
 
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type ReportReason = CreateReportRequest["reason"];
@@ -55,16 +50,13 @@ export type ReportReason = CreateReportRequest["reason"];
 export type FeedSort = "LATEST" | "OLDEST";
 export type FeedPostResponse = Schemas["FeedPostResponse"];
 export type CreateFeedPostRequest = Schemas["CreateFeedPostRequest"];
-export type FeedPhotoUploadUrlResponse = Schemas["FeedPhotoUploadUrlResponse"];
 export type FeedPostPage = Schemas["CursorResponseFeedPostResponse"];
 export type PointRewardResponse = Schemas["PointRewardResponse"];
-export type AttendanceResponse = Schemas["AttendanceResponse"];
 export type PointHistoryResponse = Schemas["PointHistoryResponse"];
 export type PointType = PointHistoryResponse["type"];
 
 export type MemberSummaryPage = Schemas["CursorResponseMemberSummaryResponse"];
 export type MemberListPage = Schemas["ScrollResponseMemberListItemResponse"];
 export type MemberSearchPage = Schemas["ScrollResponseMemberSummaryResponse"];
-export type ProfileViewResponse = Schemas["ProfileViewResponse"];
 export type ProfileViewPage = Schemas["ScrollResponseProfileViewResponse"];
 export type PointHistoryPage = Schemas["CursorResponsePointHistoryResponse"];

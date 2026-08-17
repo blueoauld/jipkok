@@ -7,7 +7,7 @@ import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { usePagedList } from "@/hooks/usePagedList";
-import { isApiError } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/alert";
 import { NICKNAME_MAX_LENGTH } from "@/lib/validation";
 
 const EMPTY_MESSAGE = "검색 결과가 없습니다.";
@@ -90,11 +90,7 @@ export function SearchList<T>({
                 <EmptyMessage>{hint}</EmptyMessage>
               ) : query.error ? (
                 <ErrorState
-                  message={
-                    isApiError(query.error)
-                      ? query.error.message
-                      : ERROR_MESSAGE
-                  }
+                  message={apiErrorMessage(query.error, ERROR_MESSAGE)}
                   onRetry={query.refetch}
                 />
               ) : query.isFetching ? (

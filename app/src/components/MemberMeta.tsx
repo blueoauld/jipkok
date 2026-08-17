@@ -1,0 +1,38 @@
+import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
+import { Text, useTheme, XStack } from "tamagui";
+
+import type { Gender } from "@/lib/api";
+import { genderLabel } from "@/lib/member";
+
+const SIZES = {
+  sm: { fontSize: "$3", icon: 13 },
+  md: { fontSize: "$4", icon: 14 },
+} as const;
+
+// "남자 · 27살 · ♥ 3" 한 줄. 목록 행은 sm, 프로필 화면은 md.
+export function MemberMeta({
+  gender,
+  age,
+  receivedLikeCount,
+  size = "sm",
+}: {
+  gender: Gender;
+  age: number;
+  receivedLikeCount: number;
+  size?: keyof typeof SIZES;
+}) {
+  const theme = useTheme();
+  const { fontSize, icon } = SIZES[size];
+
+  return (
+    <XStack items="center">
+      <Text fontSize={fontSize}>{`${genderLabel(gender)} · ${age}살 · `}</Text>
+
+      <XStack items="center" gap="$1">
+        <HeartIcon size={icon} weight="fill" color={theme.color12.val} />
+
+        <Text fontSize={fontSize}>{receivedLikeCount}</Text>
+      </XStack>
+    </XStack>
+  );
+}

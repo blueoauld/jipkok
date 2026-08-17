@@ -1,16 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { type RefObject, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
-import { FormField } from "@/components/FormField";
+import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
@@ -21,9 +23,9 @@ import { uploadProfilePhoto } from "@/lib/photo";
 import {
   BIO_MAX_LENGTH,
   BIRTH_YEAR_LENGTH,
+  BIRTH_YEAR_RULES,
   NICKNAME_MAX_LENGTH,
-  validateBirthYear,
-  validateNickname,
+  NICKNAME_RULES,
 } from "@/lib/validation";
 
 const uploadPublicPhoto = (asset: ImagePickerAsset) =>
@@ -33,36 +35,25 @@ const uploadSecretPhoto = (asset: ImagePickerAsset) =>
 
 const EDITED_MESSAGE = "프로필을 저장했습니다.";
 
+type EditValues = { nickname: string; birthYear: string };
+
 function BioField({
   valueRef,
   initialValue,
 }: {
-  valueRef: { current: string };
+  valueRef: RefObject<string>;
   initialValue: string;
 }) {
-  const [length, setLength] = useState(initialValue.length);
-
   return (
-    <FormField
-      right={
-        <Text theme="gray" color="$color11">
-          {`${length} / ${BIO_MAX_LENGTH}`}
-        </Text>
-      }
-    >
-      <RetroInput
-        multiline
-        rows={7}
-        textAlignVertical="top"
-        defaultValue={initialValue}
-        onChangeText={(text) => {
-          valueRef.current = text;
-          setLength(text.length);
-        }}
-        placeholder="자기소개"
-        maxLength={BIO_MAX_LENGTH}
-      />
-    </FormField>
+    <CountedInput
+      valueRef={valueRef}
+      multiline
+      rows={7}
+      textAlignVertical="top"
+      defaultValue={initialValue}
+      placeholder="자기소개"
+      maxLength={BIO_MAX_LENGTH}
+    />
   );
 }
 
@@ -80,8 +71,12 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     profile.secretPhotos,
   );
 
-  const nicknameRef = useRef(profile.nickname);
-  const birthYearRef = useRef(String(profile.birthYear));
+  const { control, handleSubmit } = useForm<EditValues>({
+    defaultValues: {
+      nickname: profile.nickname,
+      birthYear: String(profile.birthYear),
+    },
+  });
   const bioRef = useRef(profile.bio ?? "");
 
   const save = useMutation({
@@ -95,6 +90,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
+      queryClient.invalidateQueries({ queryKey: FEEDS_KEY });
       show("info", EDITED_MESSAGE, () => router.back());
     },
     onError: showApiError,
@@ -105,26 +101,12 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   useLoadingOverlay(uploading);
   const busy = save.isPending || uploading;
 
-  const submit = () => {
-    const nickname = validateNickname(nicknameRef.current);
-
-    if (nickname !== true) {
-      show("error", nickname);
-      return;
-    }
-
-    const birthYear = validateBirthYear(birthYearRef.current);
-
-    if (birthYear !== true) {
-      show("error", birthYear);
-      return;
-    }
-
+  const submit = handleSubmit((values) =>
     save.mutate({
-      nickname: nicknameRef.current.trim(),
-      birthYear: Number(birthYearRef.current),
-    });
-  };
+      nickname: values.nickname.trim(),
+      birthYear: Number(values.birthYear),
+    }),
+  );
 
   return (
     <>
@@ -160,31 +142,25 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           />
         </YStack>
 
-        <FormField>
-          <RetroInput
-            defaultValue={profile.nickname}
-            onChangeText={(text) => {
-              nicknameRef.current = text;
-            }}
-            placeholder="닉네임"
-            maxLength={NICKNAME_MAX_LENGTH}
-            textContentType="nickname"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </FormField>
+        <ControlledInput
+          control={control}
+          name="nickname"
+          rules={NICKNAME_RULES}
+          placeholder="닉네임"
+          maxLength={NICKNAME_MAX_LENGTH}
+          textContentType="nickname"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-        <FormField>
-          <RetroInput
-            defaultValue={String(profile.birthYear)}
-            onChangeText={(text) => {
-              birthYearRef.current = text;
-            }}
-            placeholder="출생연도"
-            keyboardType="number-pad"
-            maxLength={BIRTH_YEAR_LENGTH}
-          />
-        </FormField>
+        <ControlledInput
+          control={control}
+          name="birthYear"
+          rules={BIRTH_YEAR_RULES}
+          placeholder="출생연도"
+          keyboardType="number-pad"
+          maxLength={BIRTH_YEAR_LENGTH}
+        />
 
         <BioField valueRef={bioRef} initialValue={profile.bio ?? ""} />
       </FormScreen>

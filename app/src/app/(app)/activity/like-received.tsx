@@ -2,10 +2,10 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
-import { useMemberList } from "@/hooks/useMemberList";
+import { relationListKey, useMemberList } from "@/hooks/useMemberList";
 import { api } from "@/lib/api";
 
-const RECEIVED_LIKES_KEY = ["likes", "received"];
+const RECEIVED_LIKES_KEY = relationListKey("likes", "received");
 
 const SCREEN_OPTIONS = { title: "받은 좋아요 목록" };
 

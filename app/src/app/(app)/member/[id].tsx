@@ -15,7 +15,8 @@ import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { MemberMeta } from "@/components/MemberMeta";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
@@ -33,6 +34,7 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
+import { relationKey } from "@/hooks/useMemberList";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
@@ -40,7 +42,7 @@ import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
-import { formatDistance, genderLabel } from "@/lib/member";
+import { formatDistance } from "@/lib/member";
 import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -50,7 +52,6 @@ import { useAccentColor } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
 
 const ACTION_ICON_SIZE = 30;
-const LIKE_ICON_SIZE = 14;
 
 const NOTE_MAX_LENGTH = 100;
 
@@ -77,10 +78,10 @@ const BLOCK_DESCRIPTION =
 
 const GRID_ICON_SIZE = 20;
 
-const LIKES_KEY = ["likes"];
-const FAVORITES_KEY = ["favorites"];
-const SECRET_PHOTOS_KEY = ["secretPhotos"];
-const BLOCKS_KEY = ["blocks"];
+const LIKES_KEY = relationKey("likes");
+const FAVORITES_KEY = relationKey("favorites");
+const SECRET_PHOTOS_KEY = relationKey("secretPhotos");
+const BLOCKS_KEY = relationKey("blocks");
 // 차단하면 서버가 채팅방을 지우고 피드에서도 서로를 감춘다. 이벤트는 차단당한 쪽에만 간다.
 const BLOCK_AFFECTED_KEYS = [
   BLOCKS_KEY,
@@ -207,7 +208,6 @@ function ActionBar({
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
 
@@ -379,7 +379,7 @@ export default function MemberProfileScreen() {
     () => ({
       title: "프로필",
       headerRight: () => (
-        <HeaderCircleIconButton
+        <HeaderSoloIconButton
           icon={DotsThreeIcon}
           weight="bold"
           onPress={openMenu}
@@ -460,20 +460,13 @@ export default function MemberProfileScreen() {
                 </XStack>
 
                 <XStack items="center" justify="space-between" gap="$2">
-                  <XStack flex={1} items="center">
-                    <Text fontSize="$4">
-                      {`${genderLabel(member.gender)} · ${member.age}살 · `}
-                    </Text>
-
-                    <XStack items="center" gap="$1">
-                      <HeartIcon
-                        size={LIKE_ICON_SIZE}
-                        weight="fill"
-                        color={theme.color12.val}
-                      />
-
-                      <Text fontSize="$4">{member.receivedLikeCount}</Text>
-                    </XStack>
+                  <XStack flex={1}>
+                    <MemberMeta
+                      gender={member.gender}
+                      age={member.age}
+                      receivedLikeCount={member.receivedLikeCount}
+                      size="md"
+                    />
                   </XStack>
 
                   {member.distance !== undefined &&

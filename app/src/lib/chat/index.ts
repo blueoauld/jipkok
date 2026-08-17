@@ -4,6 +4,7 @@ import {
   isApiError,
   type ReplyMessageResponse,
 } from "@/lib/api";
+import { isSameDay } from "@/lib/date";
 
 export const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -100,10 +101,7 @@ function sameGroup(a: ChatMessageResponse, b: ChatMessageResponse) {
 }
 
 function sameDay(a: ChatMessageResponse, b: ChatMessageResponse) {
-  return (
-    new Date(a.createdAt).toDateString() ===
-    new Date(b.createdAt).toDateString()
-  );
+  return isSameDay(new Date(a.createdAt), new Date(b.createdAt));
 }
 
 export function toChatRows(messages: ChatMessageResponse[]) {

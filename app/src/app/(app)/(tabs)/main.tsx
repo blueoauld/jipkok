@@ -11,12 +11,12 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
-import { MEMBER_FEED_KEY, useMemberFeed } from "@/hooks/useMemberFeed";
+import { MEMBERS_KEY, useMembers } from "@/hooks/useMembers";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -61,7 +61,7 @@ export default function MainScreen() {
   const gender = useMemberFilterStore((state) => state.gender);
   const setSort = useMemberFilterStore((state) => state.setSort);
   const setGender = useMemberFilterStore((state) => state.setGender);
-  const feed = useMemberFeed(sort, gender);
+  const feed = useMembers(sort, gender);
   const { data: profile } = useMyProfile();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const location = useLocationUpdate({ show, showApiError, confirm });
@@ -92,7 +92,7 @@ export default function MainScreen() {
       scrollToTop();
 
       if (next === "거리" && (await updateLocation())) {
-        queryClient.invalidateQueries({ queryKey: MEMBER_FEED_KEY });
+        queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
       }
     },
     [queryClient, scrollToTop, setSort, updateLocation],
@@ -159,9 +159,7 @@ export default function MainScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
           ListEmptyComponent={
-            <YStack items="center" py="$8">
-              <EmptyMessage>{MEMBER_EMPTY_MESSAGE}</EmptyMessage>
-            </YStack>
+            <ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>
           }
         />
       ) : (

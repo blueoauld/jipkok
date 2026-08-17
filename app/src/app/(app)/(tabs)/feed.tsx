@@ -20,7 +20,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
@@ -49,6 +49,7 @@ import {
 } from "@/lib/member";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
+import { mapPages } from "@/lib/paging";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
 
@@ -142,17 +143,13 @@ export default function FeedScreen() {
       queryClient.setQueryData<InfiniteData<FeedPostPage>>(
         queryKey,
         (current) =>
-          current && {
-            ...current,
-            pages: current.pages.map((page) => ({
-              ...page,
-              items: page.items.map((item) =>
-                item.postId === post.postId
-                  ? { ...item, likedByMe: !item.likedByMe }
-                  : item,
-              ),
-            })),
-          },
+          mapPages(current, (items) =>
+            items.map((item) =>
+              item.postId === post.postId
+                ? { ...item, likedByMe: !item.likedByMe }
+                : item,
+            ),
+          ),
       );
 
       return { previous };
@@ -267,9 +264,7 @@ export default function FeedScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
           ListEmptyComponent={
-            <YStack items="center" py="$8">
-              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
-            </YStack>
+            <ListEmpty>{EMPTY_MESSAGE}</ListEmpty>
           }
         />
       ) : (

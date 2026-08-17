@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
@@ -13,23 +12,22 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
-import { BROWSER_FAILED_MESSAGE, PRIVACY_URL, TERMS_URL } from "@/lib/support";
+import { CODE_SENT_MESSAGE } from "@/lib/message";
+import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
 import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
+  PASSWORD_CONFIRM_RULES,
+  PASSWORD_RULES,
   PHONE_NUMBER_PATTERN,
   PHONE_NUMBER_RULES,
+  VERIFICATION_CODE_RULES,
 } from "@/lib/validation";
 
 const MINOR_NOTICE =
   "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
 
-const CODE_SENT_MESSAGE = "인증번호를 보냈습니다.";
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
 const RESEND_COOLDOWN_SECONDS = 30;
-
-const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 
 const SIGN_UP_METHOD = "phone";
 
@@ -55,10 +53,7 @@ export default function SignupScreen() {
 
   const accent = useAccent();
 
-  const openLegal = (url: string) =>
-    WebBrowser.openBrowserAsync(url).catch(() =>
-      show("error", BROWSER_FAILED_MESSAGE),
-    );
+  const openLegal = (url: string) => openWebPage(url, show);
 
   const cooldown = useCountdown();
 
@@ -166,13 +161,7 @@ export default function SignupScreen() {
         <ControlledInput
           control={control}
           name="verificationCode"
-          rules={{
-            required: "인증번호를 입력해주시길 바랍니다.",
-            pattern: {
-              value: VERIFICATION_CODE_PATTERN,
-              message: "인증번호가 올바르지 않습니다.",
-            },
-          }}
+          rules={VERIFICATION_CODE_RULES}
           placeholder="인증번호"
           keyboardType="number-pad"
           textContentType="oneTimeCode"
@@ -184,18 +173,7 @@ export default function SignupScreen() {
         <ControlledInput
           control={control}
           name="password"
-          rules={{
-            required: "비밀번호를 입력해주시길 바랍니다.",
-            minLength: {
-              value: PASSWORD_MIN_LENGTH,
-              message: `비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상 ${PASSWORD_MAX_LENGTH}자 이하여야 합니다.`,
-            },
-            maxLength: {
-              value: PASSWORD_MAX_LENGTH,
-              message: `비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상 ${PASSWORD_MAX_LENGTH}자 이하여야 합니다.`,
-            },
-            deps: "passwordConfirm",
-          }}
+          rules={PASSWORD_RULES}
           placeholder="비밀번호"
           secureTextEntry
           textContentType="newPassword"
@@ -206,11 +184,7 @@ export default function SignupScreen() {
         <ControlledInput
           control={control}
           name="passwordConfirm"
-          rules={{
-            required: "비밀번호를 한 번 더 입력해주시길 바랍니다.",
-            validate: (value, values) =>
-              value === values.password || "비밀번호가 일치하지 않습니다.",
-          }}
+          rules={PASSWORD_CONFIRM_RULES}
           placeholder="비밀번호 확인"
           secureTextEntry
           textContentType="newPassword"

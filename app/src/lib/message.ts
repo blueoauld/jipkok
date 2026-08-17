@@ -7,3 +7,5 @@ export const MEMBER_EMPTY_MESSAGE = "회원이 없습니다.";
 export const REPORTED_MESSAGE = "신고가 접수되었습니다.";
 
 export const PHOTO_PERMISSION_MESSAGE = "사진 접근 권한이 필요합니다.";
+
+export const CODE_SENT_MESSAGE = "인증번호를 보냈습니다.";

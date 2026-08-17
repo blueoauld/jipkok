@@ -22,7 +22,33 @@ export const PHONE_NUMBER_RULES = {
   },
 };
 
-export function validateNickname(value: string) {
+const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
+
+export const VERIFICATION_CODE_RULES = {
+  required: "인증번호를 입력해주시길 바랍니다.",
+  pattern: {
+    value: VERIFICATION_CODE_PATTERN,
+    message: "인증번호가 올바르지 않습니다.",
+  },
+};
+
+const PASSWORD_LENGTH_MESSAGE = `비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상 ${PASSWORD_MAX_LENGTH}자 이하여야 합니다.`;
+
+// 비밀번호를 고치면 확인 칸도 다시 검사한다.
+export const PASSWORD_RULES = {
+  required: "비밀번호를 입력해주시길 바랍니다.",
+  minLength: { value: PASSWORD_MIN_LENGTH, message: PASSWORD_LENGTH_MESSAGE },
+  maxLength: { value: PASSWORD_MAX_LENGTH, message: PASSWORD_LENGTH_MESSAGE },
+  deps: "passwordConfirm" as const,
+};
+
+export const PASSWORD_CONFIRM_RULES = {
+  required: "비밀번호를 한 번 더 입력해주시길 바랍니다.",
+  validate: (value: string, values: { password: string }) =>
+    value === values.password || "비밀번호가 일치하지 않습니다.",
+};
+
+function validateNickname(value: string) {
   const trimmed = value.trim();
 
   if (!trimmed) {
@@ -36,7 +62,7 @@ export function validateNickname(value: string) {
   return true;
 }
 
-export function validateBirthYear(value: string) {
+function validateBirthYear(value: string) {
   if (!value) {
     return "출생연도를 입력해주시길 바랍니다.";
   }

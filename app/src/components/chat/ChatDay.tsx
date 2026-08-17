@@ -1,10 +1,7 @@
 import { Text, XStack } from "tamagui";
 
+import { formatFullDate } from "@/lib/date";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
-
-function formatDayLabel(date: Date) {
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-}
 
 export function ChatDay({ date }: { date: Date }) {
   return (
@@ -17,7 +14,7 @@ export function ChatDay({ date }: { date: Date }) {
         py="$1"
       >
         <Text fontSize="$2" fontWeight="600" color="$color12">
-          {formatDayLabel(date)}
+          {formatFullDate(date)}
         </Text>
       </XStack>
     </XStack>

@@ -2,11 +2,15 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
-import { useMemberList, useRemoveFromMemberList } from "@/hooks/useMemberList";
+import {
+  relationListKey,
+  useMemberList,
+  useRemoveFromMemberList,
+} from "@/hooks/useMemberList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
-const GRANTED_SECRET_PHOTOS_KEY = ["secretPhotos", "granted"];
+const GRANTED_SECRET_PHOTOS_KEY = relationListKey("secretPhotos", "granted");
 
 const SCREEN_OPTIONS = { title: "비밀 사진 목록" };
 

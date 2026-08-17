@@ -1,8 +1,9 @@
-import Constants from "expo-constants";
 import * as Device from "expo-device";
+import * as WebBrowser from "expo-web-browser";
 import { Linking } from "react-native";
 
 import { getLastFailedRequestId } from "@/lib/api/request-id";
+import { APP_VERSION, DEVICE_NAME } from "@/lib/device";
 
 const EMAIL = "hello@jipkok.app";
 
@@ -20,19 +21,32 @@ const UNKNOWN = "-";
 
 function deviceInfo(memberId?: number) {
   return [
-    `앱 버전: ${Constants.expoConfig?.version ?? UNKNOWN}`,
-    `기기: ${Device.modelName ?? UNKNOWN}`,
+    `앱 버전: ${APP_VERSION}`,
+    `기기: ${DEVICE_NAME ?? UNKNOWN}`,
     `OS: ${Device.osName ?? UNKNOWN} ${Device.osVersion ?? UNKNOWN}`,
     `회원 ID: ${memberId ?? UNKNOWN}`,
     `요청 ID: ${getLastFailedRequestId() ?? UNKNOWN}`,
   ].join("\n");
 }
 
-export function openSupportMail(title: string, memberId?: number) {
+type ShowError = (variant: "error", message: string) => void;
+
+// 메일 앱이 없거나 못 열면 주소를 알려 준다.
+export function openSupportMail(
+  title: string,
+  memberId: number | undefined,
+  show: ShowError,
+) {
   const subject = `[${APP_NAME}] ${title}`;
   const body = `${PLACEHOLDER}\n\n\n${DIVIDER}\n${deviceInfo(memberId)}`;
 
   return Linking.openURL(
     `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+  ).catch(() => show("error", MAIL_FAILED_MESSAGE));
+}
+
+export function openWebPage(url: string, show: ShowError) {
+  return WebBrowser.openBrowserAsync(url).catch(() =>
+    show("error", BROWSER_FAILED_MESSAGE),
   );
 }

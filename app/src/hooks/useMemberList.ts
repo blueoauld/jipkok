@@ -4,18 +4,32 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { memberDetailKey } from "@/hooks/useMemberDetail";
 import type { MemberSummaryPage, MemberSummaryResponse } from "@/lib/api";
+import { mapPages, useFlatItems } from "@/lib/paging";
 
 type Page = InfiniteData<MemberSummaryPage>;
+
+export type RelationKind = "likes" | "favorites" | "blocks" | "secretPhotos";
+
+// 상세 화면의 좋아요/즐겨찾기/차단/비밀사진 액션은 종류 단위로 무효화한다.
+export function relationKey(kind: RelationKind) {
+  return [kind];
+}
+
+export function relationListKey(
+  kind: RelationKind,
+  scope: "mine" | "received" | "granted",
+) {
+  return [...relationKey(kind), scope];
+}
 
 type Fetcher = (params: { cursor?: number }) => Promise<MemberSummaryPage>;
 
 export type MemberListQuery = {
   members?: MemberSummaryResponse[];
-  isError: boolean;
+  error: unknown;
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => unknown;
@@ -30,10 +44,7 @@ export function useMemberList(queryKey: string[], fetcher: Fetcher) {
     getNextPageParam: (page: MemberSummaryPage) => page.nextCursor,
   });
 
-  const members = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const members = useFlatItems(query.data);
 
   return { ...query, members };
 }
@@ -51,16 +62,10 @@ export function useRemoveFromMemberList(
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<Page>(queryKey);
 
-      queryClient.setQueryData<Page>(
-        queryKey,
-        (current) =>
-          current && {
-            ...current,
-            pages: current.pages.map((page) => ({
-              ...page,
-              items: page.items.filter((item) => item.memberId !== memberId),
-            })),
-          },
+      queryClient.setQueryData<Page>(queryKey, (current) =>
+        mapPages(current, (items) =>
+          items.filter((item) => item.memberId !== memberId),
+        ),
       );
 
       return { previous };

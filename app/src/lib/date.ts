@@ -41,7 +41,7 @@ export function fromDateParam(value: string) {
   return new Date(year, month - 1, day);
 }
 
-function isSameDay(left: Date, right: Date) {
+export function isSameDay(left: Date, right: Date) {
   return toDateParam(left) === toDateParam(right);
 }
 
@@ -89,4 +89,8 @@ export function formatSlotTime(isoString: string) {
   const date = new Date(isoString);
 
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function formatFullDate(date: Date) {
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }

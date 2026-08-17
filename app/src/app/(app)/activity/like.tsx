@@ -2,11 +2,15 @@ import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
-import { useMemberList, useRemoveFromMemberList } from "@/hooks/useMemberList";
+import {
+  relationListKey,
+  useMemberList,
+  useRemoveFromMemberList,
+} from "@/hooks/useMemberList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 
-const LIKES_KEY = ["likes", "mine"];
+const LIKES_KEY = relationListKey("likes", "mine");
 
 const SCREEN_OPTIONS = { title: "좋아요 목록" };
 

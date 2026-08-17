@@ -5,14 +5,13 @@ import { CameraIcon } from "phosphor-react-native/src/icons/Camera";
 import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useRef, useState } from "react";
-import { Dialog, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { Dialog, Spinner, useTheme, XStack, YStack } from "tamagui";
 
 import { CARD_RATIO } from "@/components/feed/FeedCard";
-import { FormField } from "@/components/FormField";
+import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import {
@@ -61,7 +60,6 @@ function ComposeForm({
 }) {
   const [photo, setPhoto] = useState<ImagePickerAsset | null>(null);
   const captionRef = useRef("");
-  const [length, setLength] = useState(0);
 
   const choose = async (pick: () => Promise<ImagePickerAsset | null>) => {
     try {
@@ -119,24 +117,13 @@ function ComposeForm({
         </XStack>
       )}
 
-      <FormField
-        right={
-          <Text theme="gray" color="$color11">
-            {`${length} / ${CAPTION_MAX_LENGTH}`}
-          </Text>
-        }
-      >
-        <RetroInput
-          onChangeText={(text) => {
-            captionRef.current = text;
-            setLength(text.length);
-          }}
-          placeholder="내용 입력"
-          maxLength={CAPTION_MAX_LENGTH}
-          submitBehavior="submit"
-          autoFocusNative
-        />
-      </FormField>
+      <CountedInput
+        valueRef={captionRef}
+        placeholder="내용 입력"
+        maxLength={CAPTION_MAX_LENGTH}
+        submitBehavior="submit"
+        autoFocusNative
+      />
 
       <XStack gap="$3">
         <Dialog.Close asChild>

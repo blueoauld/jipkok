@@ -25,17 +25,16 @@ import {
   MessageActionOverlay,
   type MessageActionTarget,
 } from "@/components/chat/MessageActionOverlay";
-import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
+import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
-import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
+import { invalidateChatLists } from "@/hooks/useChatRooms";
 import { forgetRoom } from "@/hooks/useChatSocket";
-import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import { useReactMessage } from "@/hooks/useReactMessage";
@@ -185,8 +184,7 @@ export default function ChatRoomScreen() {
     mutationFn: (lastReadMessageId: number) =>
       api.chats.markRead(roomId, lastReadMessageId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+      invalidateChatLists(queryClient);
     },
   });
 
@@ -387,7 +385,7 @@ export default function ChatRoomScreen() {
     () => ({
       title: room?.nickname ?? "",
       headerRight: () => (
-        <HeaderCircleIconButton
+        <HeaderSoloIconButton
           icon={DotsThreeIcon}
           weight="bold"
           onPress={openMenu}
@@ -459,9 +457,7 @@ export default function ChatRoomScreen() {
             ) : null
           }
           ListEmptyComponent={
-            <YStack items="center" py="$8">
-              <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
-            </YStack>
+            <ListEmpty>{EMPTY_MESSAGE}</ListEmpty>
           }
         />
       ) : (

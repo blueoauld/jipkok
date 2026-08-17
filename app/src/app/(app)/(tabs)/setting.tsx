@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Href, Tabs } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import type { Icon } from "phosphor-react-native";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
@@ -22,10 +21,11 @@ import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
 import { Linking, ScrollView } from "react-native";
-import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, Text, useTheme, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { RetroBadge } from "@/components/ui/RetroBadge";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
@@ -36,15 +36,14 @@ import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
-import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { APP_VERSION } from "@/lib/device";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { releaseDevice } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 import {
   BROWSER_FAILED_MESSAGE,
-  MAIL_FAILED_MESSAGE,
   openSupportMail,
+  openWebPage,
   PRIVACY_URL,
   TERMS_URL,
 } from "@/lib/support";
@@ -85,9 +84,6 @@ type SettingItem = {
 };
 
 const PROFILE_VIEW_HREF = "/activity/profile-view";
-
-const BADGE_SIZE = 20;
-const BADGE_FONT_SIZE = 11;
 
 const SECTIONS: SettingItem[][] = [
   [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
@@ -182,23 +178,7 @@ function SettingRow({
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {label}
       </Text>
-      {hasNew && (
-        <XStack
-          minW={BADGE_SIZE}
-          height={BADGE_SIZE}
-          px="$1.5"
-          rounded={0}
-          borderWidth={RETRO_BORDER_WIDTH}
-          borderColor="$gray12"
-          bg="$red10"
-          items="center"
-          justify="center"
-        >
-          <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
-            N
-          </Text>
-        </XStack>
-      )}
+      {hasNew && <RetroBadge>N</RetroBadge>}
       {pending && <Spinner size="small" />}
     </RetroListRow>
   );
@@ -314,7 +294,8 @@ export default function SettingScreen() {
         openSupportMail(
           action === "contact" ? "문의하기" : "건의하기",
           profile?.memberId,
-        ).catch(() => show("error", MAIL_FAILED_MESSAGE));
+          show,
+        );
         return;
       }
 
@@ -346,9 +327,7 @@ export default function SettingScreen() {
       }
 
       if (item.url) {
-        WebBrowser.openBrowserAsync(item.url).catch(() =>
-          show("error", BROWSER_FAILED_MESSAGE),
-        );
+        openWebPage(item.url, show);
         return;
       }
 

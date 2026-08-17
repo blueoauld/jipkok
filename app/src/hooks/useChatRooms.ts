@@ -1,9 +1,16 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { type QueryClient, useInfiniteQuery } from "@tanstack/react-query";
 
+import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { api, type ChatRoomPage } from "@/lib/api";
+import { useFlatItems } from "@/lib/paging";
 
 export const CHAT_ROOMS_KEY = ["chats", "rooms"];
+
+// 방 목록과 안 읽음 수는 늘 같이 바뀐다.
+export function invalidateChatLists(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+  queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
+}
 
 export function useChatRooms(unreadOnly: boolean) {
   const query = useInfiniteQuery({
@@ -14,10 +21,7 @@ export function useChatRooms(unreadOnly: boolean) {
     getNextPageParam: (page: ChatRoomPage) => page.nextCursor,
   });
 
-  const rooms = useMemo(
-    () => query.data?.pages.flatMap((page) => page.items),
-    [query.data],
-  );
+  const rooms = useFlatItems(query.data);
 
   return { ...query, rooms };
 }

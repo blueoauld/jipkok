@@ -1,0 +1,28 @@
+import type { ReactNode } from "react";
+import { Text, XStack } from "tamagui";
+
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
+
+const SIZE = 20;
+const FONT_SIZE = 11;
+
+// 안 읽음 수, N 표시처럼 짧은 글자를 담는 빨간 상자.
+export function RetroBadge({ children }: { children: ReactNode }) {
+  return (
+    <XStack
+      shrink={0}
+      minW={SIZE}
+      height={SIZE}
+      px="$1.5"
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg="$red10"
+      items="center"
+      justify="center"
+    >
+      <Text color="white" fontSize={FONT_SIZE} fontWeight="700">
+        {children}
+      </Text>
+    </XStack>
+  );
+}

@@ -4,7 +4,6 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AppVersionResponse,
-  AttendanceResponse,
   ChatMessagePage,
   ChatMessageResponse,
   ChatReactionsResponse,
@@ -12,11 +11,10 @@ import type {
   ChatRoomPage,
   ChatRoomResponse,
   CreateFeedPostRequest,
-  CreatePhotoUploadUrlRequest,
+  CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
   DevicePlatform,
   EditProfileRequest,
-  FeedPhotoUploadUrlResponse,
   FeedPostPage,
   FeedSort,
   Gender,
@@ -188,7 +186,7 @@ export const members = {
     await clearTokens();
   },
 
-  createPhotoUploadUrl: (body: CreatePhotoUploadUrlRequest) =>
+  createPhotoUploadUrl: (body: CreateProfilePhotoUploadUrlRequest) =>
     request<PhotoUploadUrlResponse>("/api/members/me/photos/upload-url", {
       method: "POST",
       body,
@@ -281,7 +279,7 @@ export const points = {
 
 export const attendances = {
   checkIn: () =>
-    request<AttendanceResponse>("/api/attendances", { method: "POST" }),
+    request<PointRewardResponse>("/api/attendances", { method: "POST" }),
 };
 
 export const feeds = {
@@ -301,7 +299,7 @@ export const feeds = {
     request<void>(`/api/feeds/${postId}/reports`, { method: "POST" }),
 
   createPhotoUploadUrl: (contentType: string) =>
-    request<FeedPhotoUploadUrlResponse>("/api/feeds/photos/upload-url", {
+    request<PhotoUploadUrlResponse>("/api/feeds/photos/upload-url", {
       method: "POST",
       body: { contentType },
     }),

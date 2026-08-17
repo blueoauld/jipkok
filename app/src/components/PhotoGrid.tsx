@@ -3,12 +3,12 @@ import { CaretLeftIcon } from "phosphor-react-native/src/icons/CaretLeft";
 import { CaretRightIcon } from "phosphor-react-native/src/icons/CaretRight";
 import { CrownSimpleIcon } from "phosphor-react-native/src/icons/CrownSimple";
 import { ImageIcon } from "phosphor-react-native/src/icons/Image";
-import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
+import { LockBadge } from "@/components/ui/LockBadge";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
@@ -202,23 +202,7 @@ function Grid({
                   />
 
                   {secretFrom !== undefined && cell.index >= secretFrom && (
-                    <XStack
-                      position="absolute"
-                      t="$2"
-                      l="$2"
-                      width={BADGE_SIZE}
-                      height={BADGE_SIZE}
-                      rounded={0}
-                      bg="$gray12"
-                      items="center"
-                      justify="center"
-                    >
-                      <LockSimpleIcon
-                        size={BADGE_ICON_SIZE}
-                        weight="fill"
-                        color="white"
-                      />
-                    </XStack>
+                    <LockBadge t="$2" l="$2" />
                   )}
 
                   {showPrimaryBadge && cell.index === 0 && (

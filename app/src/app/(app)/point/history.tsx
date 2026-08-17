@@ -1,12 +1,11 @@
 import { Stack } from "expo-router";
-import type { ReactNode } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Spinner, Text, XStack, YStack } from "tamagui";
+import { getTokens, Text, XStack, YStack } from "tamagui";
 
-import { EmptyMessage } from "@/components/ui/EmptyMessage";
-import { ErrorState } from "@/components/ui/ErrorState";
+import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { ScreenState } from "@/components/ui/ScreenState";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
@@ -16,14 +15,6 @@ import { useAccentToken } from "@/lib/theme/accent";
 
 const ERROR_MESSAGE = "내역을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "내역이 없습니다.";
-
-function Centered({ children }: { children: ReactNode }) {
-  return (
-    <YStack items="center" gap="$4" py="$8">
-      {children}
-    </YStack>
-  );
-}
 
 function Balance() {
   const { data } = usePointBalance();
@@ -82,7 +73,7 @@ export default function PointHistoryScreen() {
   const space = getTokens().space;
 
   const query = usePointHistories();
-  const { histories, isError } = query;
+  const { histories, error } = query;
   const paged = usePagedList(query);
 
   return (
@@ -104,23 +95,14 @@ export default function PointHistoryScreen() {
               paddingBottom: space.$4.val,
               gap: space.$4.val,
             }}
-            ListEmptyComponent={
-              <Centered>
-                <EmptyMessage>{EMPTY_MESSAGE}</EmptyMessage>
-              </Centered>
-            }
+            ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
           />
         ) : (
-          <Centered>
-            {isError ? (
-              <ErrorState
-                message={ERROR_MESSAGE}
-                onRetry={() => query.refetch()}
-              />
-            ) : (
-              <Spinner size="small" />
-            )}
-          </Centered>
+          <ScreenState
+            error={error}
+            message={ERROR_MESSAGE}
+            onRetry={() => query.refetch()}
+          />
         )}
       </YStack>
     </SafeAreaView>
