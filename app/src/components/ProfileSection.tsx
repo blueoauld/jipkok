@@ -19,7 +19,9 @@ export function ProfileSection({
         {title}
       </Text>
       <RetroCard>
-        <Text fontSize="$4">{empty ? placeholder : body}</Text>
+        <Text fontSize="$4" color={empty ? "$color11" : undefined}>
+          {empty ? placeholder : body}
+        </Text>
       </RetroCard>
     </YStack>
   );
