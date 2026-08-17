@@ -8,12 +8,15 @@ export function RetroListPanel({ children }: { children: ReactNode }) {
   return (
     <YStack>
       <RetroShadow color="$gray8" />
-      <YStack
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        bg="$color1"
-      >
+      <YStack bg="$color1" py={RETRO_BORDER_WIDTH}>
         {children}
+
+        <YStack
+          fullscreen
+          borderWidth={RETRO_BORDER_WIDTH}
+          borderColor="$gray12"
+          pointerEvents="none"
+        />
       </YStack>
     </YStack>
   );
