@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.entity.PhoneVerification
+import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -22,7 +23,7 @@ class VerificationCodeService(
     private val random = SecureRandom()
 
     @Transactional
-    fun send(phoneNumber: String, ipAddress: String) {
+    fun send(phoneNumber: String, purpose: VerificationPurpose, ipAddress: String) {
         val now = clock.instant()
         val since = now.minus(SEND_LIMIT_WINDOW)
 
@@ -44,15 +45,16 @@ class VerificationCodeService(
         }
 
         val code = generateCode()
-        phoneVerificationRepository.save(PhoneVerification(phoneNumber, code, ipAddress, now))
+        phoneVerificationRepository.save(PhoneVerification(phoneNumber, code, ipAddress, now, purpose))
         verificationCodeSender.send(phoneNumber, code)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = [BusinessException::class])
-    fun verify(phoneNumber: String, code: String) {
+    fun verify(phoneNumber: String, code: String, purpose: VerificationPurpose) {
         val now = clock.instant()
 
-        val latest = phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber)
+        val latest = phoneVerificationRepository
+            .findFirstByPhoneNumberAndPurposeOrderByIssuedAtDesc(phoneNumber, purpose)
             ?: throw BusinessException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
 
         if (latest.usedAt != null) {

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.entity.PhoneVerification
+import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -34,6 +35,9 @@ class VerificationCodeServiceTest {
         every { phoneVerificationRepository.save(any()) } answers { firstArg() }
         every { phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER) } returns null
         every {
+            phoneVerificationRepository.findFirstByPhoneNumberAndPurposeOrderByIssuedAtDesc(PHONE_NUMBER, PURPOSE)
+        } returns null
+        every {
             phoneVerificationRepository.countByPhoneNumberAndIssuedAtGreaterThanEqual(PHONE_NUMBER, any())
         } returns 0
         every {
@@ -48,7 +52,7 @@ class VerificationCodeServiceTest {
         val sentCode = slot<String>()
 
         // when
-        verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+        verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
 
         // then
         verify { phoneVerificationRepository.save(capture(saved)) }
@@ -67,7 +71,7 @@ class VerificationCodeServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+            verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
         }
 
         // then
@@ -81,7 +85,7 @@ class VerificationCodeServiceTest {
         stubLatestIssuedAt(NOW.minus(VerificationCodeService.RESEND_COOLDOWN))
 
         // when
-        verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+        verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
 
         // then
         verify(exactly = 1) { verificationCodeSender.send(PHONE_NUMBER, any()) }
@@ -94,7 +98,7 @@ class VerificationCodeServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+            verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
         }
 
         // then
@@ -108,7 +112,7 @@ class VerificationCodeServiceTest {
         stubPhoneNumberIssuedCount(VerificationCodeService.HOURLY_SEND_LIMIT - 1L)
 
         // when
-        verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+        verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
 
         // then
         verify(exactly = 1) { verificationCodeSender.send(PHONE_NUMBER, any()) }
@@ -121,7 +125,7 @@ class VerificationCodeServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+            verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
         }
 
         // then
@@ -135,7 +139,7 @@ class VerificationCodeServiceTest {
         stubIpAddressIssuedCount(VerificationCodeService.HOURLY_IP_SEND_LIMIT - 1L)
 
         // when
-        verificationCodeService.send(PHONE_NUMBER, IP_ADDRESS)
+        verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
 
         // then
         verify(exactly = 1) { verificationCodeSender.send(PHONE_NUMBER, any()) }
@@ -144,11 +148,11 @@ class VerificationCodeServiceTest {
     @Test
     fun `인증번호가 일치하면 확인에 성공한다`() {
         // given
-        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)
         stubLatest(latest)
 
         // when
-        assertDoesNotThrow { verificationCodeService.verify(PHONE_NUMBER, CODE) }
+        assertDoesNotThrow { verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE) }
 
         // then
         assertThat(latest.attemptCount).isEqualTo(1)
@@ -158,13 +162,13 @@ class VerificationCodeServiceTest {
     @Test
     fun `한 번 쓴 인증번호는 다시 쓸 수 없다`() {
         // given
-        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)
         stubLatest(latest)
-        verificationCodeService.verify(PHONE_NUMBER, CODE)
+        verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, CODE)
+            verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE)
         }
 
         // then
@@ -175,12 +179,12 @@ class VerificationCodeServiceTest {
     @Test
     fun `확인에 실패하면 인증번호를 쓴 것으로 보지 않는다`() {
         // given
-        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)
         stubLatest(latest)
 
         // when
         assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, "999999")
+            verificationCodeService.verify(PHONE_NUMBER, "999999", PURPOSE)
         }
 
         // then
@@ -190,12 +194,12 @@ class VerificationCodeServiceTest {
     @Test
     fun `인증번호가 다르면 실패하고 입력 횟수가 올라간다`() {
         // given
-        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)
         stubLatest(latest)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, "999999")
+            verificationCodeService.verify(PHONE_NUMBER, "999999", PURPOSE)
         }
 
         // then
@@ -210,7 +214,7 @@ class VerificationCodeServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, CODE)
+            verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE)
         }
 
         // then
@@ -221,12 +225,18 @@ class VerificationCodeServiceTest {
     fun `유효 시간이 지났으면 확인에 실패한다`() {
         // given
         stubLatest(
-            PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW.minus(VerificationCodeService.CODE_TIME_TO_LIVE)),
+            PhoneVerification(
+                PHONE_NUMBER,
+                CODE,
+                IP_ADDRESS,
+                NOW.minus(VerificationCodeService.CODE_TIME_TO_LIVE),
+                PURPOSE,
+            ),
         )
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, CODE)
+            verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE)
         }
 
         // then
@@ -236,13 +246,13 @@ class VerificationCodeServiceTest {
     @Test
     fun `입력 횟수를 초과했으면 인증번호가 맞아도 확인에 실패한다`() {
         // given
-        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW)
+        val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)
         repeat(VerificationCodeService.MAX_VERIFY_ATTEMPTS) { latest.increaseAttemptCount() }
         stubLatest(latest)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            verificationCodeService.verify(PHONE_NUMBER, CODE)
+            verificationCodeService.verify(PHONE_NUMBER, CODE, PURPOSE)
         }
 
         // then
@@ -250,13 +260,17 @@ class VerificationCodeServiceTest {
     }
 
     private fun stubLatest(phoneVerification: PhoneVerification?) {
-        every { phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER) } returns
+        every {
+            phoneVerificationRepository.findFirstByPhoneNumberAndPurposeOrderByIssuedAtDesc(PHONE_NUMBER, PURPOSE)
+        } returns
                 phoneVerification
     }
 
     private fun stubLatestIssuedAt(issuedAt: Instant) {
-        every { phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER) } returns
-                PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, issuedAt)
+        every {
+            phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER)
+        } returns
+                PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, issuedAt, PURPOSE)
     }
 
     private fun stubPhoneNumberIssuedCount(count: Long) {
@@ -277,5 +291,6 @@ class VerificationCodeServiceTest {
         private const val CODE = "123456"
         private const val IP_ADDRESS = "127.0.0.1"
         private val NOW: Instant = Instant.parse("2026-07-31T00:00:00Z")
+        private val PURPOSE = VerificationPurpose.SIGNUP
     }
 }

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
@@ -33,7 +34,11 @@ class MemberSignupService(
             throw BusinessException(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
         }
 
-        verificationCodeService.verify(request.phoneNumber, request.verificationCode)
+        verificationCodeService.verify(
+            request.phoneNumber,
+            request.verificationCode,
+            VerificationPurpose.SIGNUP,
+        )
 
         if (memberRepository.existsByPhoneNumber(request.phoneNumber)) {
             throw BusinessException(ErrorCode.DUPLICATE_PHONE_NUMBER)

@@ -1,7 +1,10 @@
 package com.blueoauld.server.domain.auth.entity
 
+import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -30,6 +33,10 @@ class PhoneVerification(
 
     @Column(name = "issued_at", nullable = false)
     val issuedAt: Instant,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "purpose", nullable = false, length = PURPOSE_LENGTH)
+    val purpose: VerificationPurpose,
 ) {
 
     @Id
@@ -58,5 +65,6 @@ class PhoneVerification(
         const val PHONE_NUMBER_LENGTH = 11
         const val CODE_LENGTH = 6
         const val IP_ADDRESS_LENGTH = 45
+        const val PURPOSE_LENGTH = 20
     }
 }

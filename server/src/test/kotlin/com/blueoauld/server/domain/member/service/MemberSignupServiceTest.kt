@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
+import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
@@ -64,7 +65,7 @@ class MemberSignupServiceTest {
         val response = memberSignupService.signup(signupRequest())
 
         // then
-        verify { verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE) }
+        verify { verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE, VerificationPurpose.SIGNUP) }
         verify { memberRepository.save(capture(saved)) }
         assertThat(saved.captured.phoneNumber).isEqualTo(PHONE_NUMBER)
         assertThat(saved.captured.gender).isEqualTo(Gender.MALE)
@@ -127,7 +128,7 @@ class MemberSignupServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
-        verify(exactly = 0) { verificationCodeService.verify(any(), any()) }
+        verify(exactly = 0) { verificationCodeService.verify(any(), any(), any()) }
         verify(exactly = 0) { memberRepository.save(any()) }
     }
 
@@ -150,7 +151,7 @@ class MemberSignupServiceTest {
     fun `인증번호 확인에 실패하면 회원을 만들지 않는다`() {
         // given
         every {
-            verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE)
+            verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE, VerificationPurpose.SIGNUP)
         } throws BusinessException(ErrorCode.VERIFICATION_CODE_MISMATCH)
 
         // when

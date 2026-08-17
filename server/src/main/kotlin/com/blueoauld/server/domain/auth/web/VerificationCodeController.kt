@@ -20,10 +20,14 @@ class VerificationCodeController(
     private val verificationCodeService: VerificationCodeService,
 ) {
 
-    @Operation(operationId = "sendVerificationCode", summary = "인증번호 발송")
+    @Operation(
+        operationId = "sendVerificationCode",
+        summary = "인증번호 발송",
+        description = "가입과 비밀번호 재설정은 서로의 인증번호를 쓸 수 없다.",
+    )
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun send(@Valid @RequestBody request: SendVerificationCodeRequest, servletRequest: HttpServletRequest) {
-        verificationCodeService.send(request.phoneNumber, servletRequest.clientIp())
+        verificationCodeService.send(request.phoneNumber, request.purpose, servletRequest.clientIp())
     }
 }
