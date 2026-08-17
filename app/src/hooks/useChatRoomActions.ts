@@ -62,13 +62,39 @@ export function useChatRoomActions() {
 
   const { mutate: leave } = useMutation({
     mutationFn: (roomId: number) => api.chats.leave(roomId),
+    onMutate: async (roomId: number) => {
+      await queryClient.cancelQueries({ queryKey: CHAT_ROOMS_KEY });
+
+      const previous = queryClient.getQueriesData<InfiniteData<ChatRoomPage>>({
+        queryKey: CHAT_ROOMS_KEY,
+      });
+
+      queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
+        { queryKey: CHAT_ROOMS_KEY },
+        (current) =>
+          current && {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.roomId !== roomId),
+            })),
+          },
+      );
+
+      return { previous };
+    },
     onSuccess: (_data, roomId) => {
       queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
       queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
     },
-    onError: showApiError,
+    onError: (error, _roomId, context) => {
+      context?.previous.forEach(([queryKey, data]) =>
+        queryClient.setQueryData(queryKey, data),
+      );
+      showApiError(error);
+    },
   });
 
   const { mutate: leaveAll, isPending: leavingRooms } = useMutation({

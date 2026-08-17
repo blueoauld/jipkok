@@ -39,6 +39,7 @@ import {
 } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -177,6 +178,8 @@ export default function ChatRoomScreen() {
     },
     onError: showApiError,
   });
+
+  useLoadingOverlay(leave.isPending);
 
   const menuItems: MenuSheetItem[] = [
     {
