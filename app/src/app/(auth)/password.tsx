@@ -66,7 +66,7 @@ export default function PasswordScreen() {
             disabled={reset.isPending}
             onPress={handleSubmit((values) => reset.mutate(values))}
           >
-            {reset.isPending ? <Spinner color="white" /> : "비밀번호 바꾸기"}
+            {reset.isPending ? <Spinner color="white" /> : "비밀번호 변경"}
           </RetroButton>
         }
       >
