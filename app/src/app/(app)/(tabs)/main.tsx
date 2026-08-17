@@ -32,6 +32,7 @@ import {
   genderLabel,
 } from "@/lib/member";
 import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
@@ -77,6 +78,8 @@ export default function MainScreen() {
   });
   const { members, error, refetch: refetchFeed } = feed;
   const paged = usePagedList(feed);
+
+  useLoadingOverlay(updateComment.isPending);
   const { update: updateLocation, refresh: refreshLocation } = location;
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.

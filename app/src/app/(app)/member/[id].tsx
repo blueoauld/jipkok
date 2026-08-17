@@ -254,7 +254,7 @@ export default function MemberProfileScreen() {
     onError: showApiError,
   });
 
-  useLoadingOverlay(relateAwaited.isPending);
+  useLoadingOverlay(relateAwaited.isPending || sendNote.isPending);
 
   const run = useCallback(
     (

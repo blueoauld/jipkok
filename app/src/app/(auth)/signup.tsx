@@ -143,7 +143,7 @@ export default function SignupScreen() {
             disabled={!canSendCode}
             onPress={() => sendCode.mutate(phoneNumber)}
           >
-            전송
+            {sendCode.isPending ? <Spinner color="white" /> : "전송"}
           </RetroButton>
         </XStack>
 

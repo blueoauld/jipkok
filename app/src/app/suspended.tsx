@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, useTheme, YStack } from "tamagui";
+import { Spinner, Text, useTheme, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -76,8 +76,12 @@ export default function SuspendedScreen() {
             문의하기
           </RetroButton>
 
-          <RetroButton theme="gray" onPress={() => logout.mutate()}>
-            로그아웃
+          <RetroButton
+            theme="gray"
+            disabled={logout.isPending}
+            onPress={() => logout.mutate()}
+          >
+            {logout.isPending ? <Spinner color="white" /> : "로그아웃"}
           </RetroButton>
 
           <RetroButton theme="red" onPress={confirmWithdraw}>

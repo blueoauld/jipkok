@@ -46,6 +46,7 @@ import {
   genderLabel,
 } from "@/lib/member";
 import { REPORTED_MESSAGE } from "@/lib/message";
+import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
 
@@ -192,6 +193,8 @@ export default function FeedScreen() {
     },
     onError: showApiError,
   });
+
+  useLoadingOverlay(report.isPending);
 
   const screenOptions = useMemo(
     () => ({
