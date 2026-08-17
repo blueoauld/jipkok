@@ -1,4 +1,10 @@
-import type { ComponentProps, ReactNode } from "react";
+import {
+  type ComponentProps,
+  type ReactNode,
+  useCallback,
+  useState,
+} from "react";
+import type { LayoutChangeEvent } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -24,17 +30,24 @@ export function FormScreen({
 }) {
   const insets = useSafeAreaInsets();
   const background = useThemeBackground();
+  const [footerHeight, setFooterHeight] = useState(FORM_FOOTER_HEIGHT);
+
+  const measureFooter = useCallback(
+    (event: LayoutChangeEvent) =>
+      setFooterHeight(event.nativeEvent.layout.height),
+    [],
+  );
 
   return (
     <>
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         mode={scrollMode}
-        bottomOffset={FORM_FOOTER_HEIGHT}
+        bottomOffset={footerHeight}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$4" p="$4" pb={FORM_FOOTER_HEIGHT}>
+        <YStack gap="$4" p="$4" pb={footerHeight}>
           {children}
         </YStack>
       </KeyboardAwareScrollView>
@@ -46,6 +59,7 @@ export function FormScreen({
           pb={getTokens().space.$4.val + KEYBOARD_OVERLAP}
           mb={-KEYBOARD_OVERLAP}
           bg={background}
+          onLayout={measureFooter}
         >
           {footer}
         </YStack>
