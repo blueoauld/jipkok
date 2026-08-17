@@ -1,4 +1,8 @@
-import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
+import type {
+  ChatMessageResponse,
+  ChatReactionType,
+  ReplyMessageResponse,
+} from "@/lib/api";
 
 export const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -7,6 +11,22 @@ export const LEAVE_SELECTED_DESCRIPTION =
   "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 export const PHOTO_SUMMARY = "사진";
+
+export const REACTION_TYPES = [
+  "LIKE",
+  "HEART",
+  "LAUGH",
+  "WOW",
+  "SAD",
+] as const satisfies readonly ChatReactionType[];
+
+export const REACTION_EMOJI: Record<ChatReactionType, string> = {
+  LIKE: "👍",
+  HEART: "❤️",
+  LAUGH: "😂",
+  WOW: "😮",
+  SAD: "😢",
+};
 
 const BULK_CHUNK_SIZE = 500;
 

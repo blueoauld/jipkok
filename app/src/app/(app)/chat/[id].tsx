@@ -12,10 +12,16 @@ import {
 } from "react-native-safe-area-context";
 import { getTokens, Spinner, YStack } from "tamagui";
 
+import type { MessageFrame } from "@/components/chat/ChatBubble";
 import { ChatDay } from "@/components/chat/ChatDay";
 import { ChatInputBar } from "@/components/chat/ChatInputBar";
 import { ChatMessageRow } from "@/components/chat/ChatMessageRow";
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
+import {
+  type MessageAction,
+  MessageActionOverlay,
+  type MessageActionTarget,
+} from "@/components/chat/MessageActionOverlay";
 import { HeaderCircleIconButton } from "@/components/HeaderCircleIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
@@ -27,9 +33,14 @@ import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
+import { useReactMessage } from "@/hooks/useReactMessage";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import { api, type ChatMessageResponse } from "@/lib/api";
+import {
+  api,
+  type ChatMessageResponse,
+  type ChatReactionType,
+} from "@/lib/api";
 import {
   type ChatRow,
   isPending,
@@ -66,6 +77,9 @@ export default function ChatRoomScreen() {
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [actionTarget, setActionTarget] = useState<MessageActionTarget | null>(
+    null,
+  );
   const [replyTarget, setReplyTarget] = useState<ChatMessageResponse | null>(
     null,
   );
@@ -87,6 +101,7 @@ export default function ChatRoomScreen() {
   const partnerLeft = deletedRoomId === roomId;
 
   const { data: profile } = useMyProfile();
+  const myMemberId = profile?.memberId ?? 0;
   const {
     data: room,
     error: roomError,
@@ -94,9 +109,10 @@ export default function ChatRoomScreen() {
   } = useChatRoom(roomId, !partnerLeft);
   const { sendText, sendPhotos, sending, uploading } = useSendMessage(
     roomId,
-    profile?.memberId ?? 0,
+    myMemberId,
     showApiError,
   );
+  const { mutate: react } = useReactMessage(roomId, myMemberId, showApiError);
   const chatMessages = useChatMessages(roomId, !partnerLeft);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
@@ -236,6 +252,63 @@ export default function ChatRoomScreen() {
     }
   }, []);
 
+  const handleOpenActions = useCallback(
+    (message: ChatMessageResponse, frame: MessageFrame) => {
+      if (!isPending(message)) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setActionTarget({
+          message,
+          mine: message.senderId === myMemberId,
+          frame,
+        });
+      }
+    },
+    [myMemberId],
+  );
+
+  const closeActions = () => setActionTarget(null);
+
+  const targetMessage = actionTarget?.message;
+  const myReaction =
+    targetMessage?.reactions.find((item) => item.memberId === myMemberId)
+      ?.type ?? null;
+
+  const selectReaction = (type: ChatReactionType) => {
+    if (targetMessage) {
+      closeActions();
+      react({
+        messageId: targetMessage.messageId,
+        type: type === myReaction ? null : type,
+      });
+    }
+  };
+
+  const targetImageUrl = targetMessage?.imageUrl;
+  const messageActions: MessageAction[] = !targetMessage
+    ? []
+    : [
+        targetImageUrl
+          ? {
+              label: "저장",
+              onPress: () => {
+                closeActions();
+                handleSavePhoto(targetImageUrl);
+              },
+            }
+          : {
+              label: "복사",
+              onPress: () => {
+                closeActions();
+                handleCopy(targetMessage.content ?? "");
+              },
+            },
+      ];
+
+  const replyNameOf = (message: ChatMessageResponse) =>
+    message.replyMessage?.senderId === myMemberId
+      ? "나"
+      : (room?.nickname ?? "");
+
   const handlePressAvatar = useCallback(
     () => pushOnce(`/member/${partnerId}`),
     [partnerId],
@@ -303,19 +376,15 @@ export default function ChatRoomScreen() {
                 mine={item.message.senderId === profile.memberId}
                 grouped={item.grouped}
                 showTime={item.showTime}
-                replyName={
-                  item.message.replyMessage?.senderId === profile.memberId
-                    ? "나"
-                    : room.nickname
-                }
+                replyName={replyNameOf(item.message)}
                 partnerId={room.memberId}
                 partnerImageUrl={room.profileImageUrl ?? null}
                 onPressAvatar={handlePressAvatar}
                 onPressPhoto={setViewerUrl}
                 onPressReply={handlePressReply}
-                onCopy={handleCopy}
-                onSavePhoto={handleSavePhoto}
+                onOpenActions={handleOpenActions}
                 onReply={handleReply}
+                myMemberId={myMemberId}
               />
             )
           }
@@ -378,6 +447,15 @@ export default function ChatRoomScreen() {
       </KeyboardStickyView>
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
+
+      <MessageActionOverlay
+        target={actionTarget}
+        replyName={targetMessage ? replyNameOf(targetMessage) : ""}
+        myReaction={myReaction}
+        actions={messageActions}
+        onSelectReaction={selectReaction}
+        onClose={closeActions}
+      />
 
       {alertElement}
 

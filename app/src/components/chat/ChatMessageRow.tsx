@@ -6,7 +6,7 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { useTheme, XStack, YStack } from "tamagui";
 
-import { ChatBubble } from "@/components/chat/ChatBubble";
+import { ChatBubble, type MessageFrame } from "@/components/chat/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
@@ -55,9 +55,9 @@ function Row({
   onPressAvatar,
   onPressPhoto,
   onPressReply,
-  onCopy,
-  onSavePhoto,
+  onOpenActions,
   onReply,
+  myMemberId,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
@@ -69,9 +69,9 @@ function Row({
   onPressAvatar: () => void;
   onPressPhoto: (url: string) => void;
   onPressReply: (messageId: number) => void;
-  onCopy: (content: string) => void;
-  onSavePhoto: (url: string) => void;
+  onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
   onReply: (message: ChatMessageResponse) => void;
+  myMemberId: number;
 }) {
   const swipeable = useRef<SwipeableMethods>(null);
 
@@ -112,10 +112,10 @@ function Row({
               mine={mine}
               showTime={showTime}
               replyName={replyName}
+              myMemberId={myMemberId}
               onPressPhoto={onPressPhoto}
               onPressReply={onPressReply}
-              onCopy={onCopy}
-              onSavePhoto={onSavePhoto}
+              onOpenActions={onOpenActions}
             />
           </XStack>
         </XStack>

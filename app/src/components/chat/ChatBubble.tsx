@@ -1,9 +1,19 @@
 import { Image } from "expo-image";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
+import { View } from "react-native";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
-import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
-import { isPending, isSingleEmoji, replySummary } from "@/lib/chat";
+import type {
+  ChatMessageResponse,
+  ChatReactionResponse,
+  ReplyMessageResponse,
+} from "@/lib/api";
+import {
+  isPending,
+  isSingleEmoji,
+  REACTION_EMOJI,
+  replySummary,
+} from "@/lib/chat";
 import { formatClockTime } from "@/lib/date";
 import {
   IMAGE_TRANSITION,
@@ -26,6 +36,17 @@ const FONT_SIZE = 16;
 const EMOJI_FONT_SIZE = 40;
 
 const SECTION_GAP = 6;
+
+const CHIP_GAP = 2;
+const CHIP_FONT_SIZE = 12;
+const CHIP_SIZE = 24;
+
+export type MessageFrame = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
 function BubbleFrame({
   mine,
@@ -83,7 +104,7 @@ function PhotoMessage({
   cacheKey: string;
   sending: boolean;
   onPress: (url: string) => void;
-  onLongPress: (url: string) => void;
+  onLongPress: () => void;
 }) {
   const theme = useTheme();
 
@@ -91,7 +112,7 @@ function PhotoMessage({
     <YStack
       pressStyle={sending ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
       onPress={sending ? undefined : () => onPress(url)}
-      onLongPress={sending ? undefined : () => onLongPress(url)}
+      onLongPress={sending ? undefined : onLongPress}
     >
       <Image
         source={{ uri: url, cacheKey }}
@@ -187,26 +208,159 @@ function ReplyMessage({
   );
 }
 
+export function ChatBubbleContent({
+  message,
+  mine,
+  replyName,
+  onPressPhoto,
+  onPressReply,
+  onLongPress,
+}: {
+  message: ChatMessageResponse;
+  mine: boolean;
+  replyName: string;
+  onPressPhoto: (url: string) => void;
+  onPressReply: (messageId: number) => void;
+  onLongPress: () => void;
+}) {
+  if (message.imageUrl) {
+    return (
+      <PhotoMessage
+        url={message.imageUrl}
+        cacheKey={message.clientMessageId ?? String(message.messageId)}
+        sending={isPending(message)}
+        onPress={onPressPhoto}
+        onLongPress={onLongPress}
+      />
+    );
+  }
+
+  if (message.replyMessage) {
+    return (
+      <ReplyMessage
+        mine={mine}
+        replyName={replyName}
+        reply={message.replyMessage}
+        content={message.content ?? ""}
+        onPressReply={onPressReply}
+        onLongPress={onLongPress}
+      />
+    );
+  }
+
+  return (
+    <TextMessage
+      mine={mine}
+      content={message.content ?? ""}
+      onLongPress={onLongPress}
+    />
+  );
+}
+
+function ReactionChip({
+  emoji,
+  count,
+  reacted,
+  onPress,
+}: {
+  emoji: string;
+  count: number;
+  reacted: boolean;
+  onPress: () => void;
+}) {
+  const accent = useAccentToken();
+
+  return (
+    <XStack
+      height={CHIP_SIZE}
+      width={count === 1 ? CHIP_SIZE : undefined}
+      px={count === 1 ? 0 : "$1.5"}
+      items="center"
+      justify="center"
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg={reacted ? accent : "$color1"}
+      pressStyle={{ opacity: PRESS_OPACITY }}
+      onPress={onPress}
+    >
+      <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "white" : "$color12"}>
+        {count === 1 ? emoji : `${emoji} ${count}`}
+      </Text>
+    </XStack>
+  );
+}
+
+// 같은 이모지는 하나로 합치고, 내 반응이 앞에 온다.
+function ReactionChips({
+  reactions,
+  mine,
+  myMemberId,
+  onPress,
+}: {
+  reactions: ChatReactionResponse[];
+  mine: boolean;
+  myMemberId: number;
+  onPress: () => void;
+}) {
+  const groups = new Map<string, { count: number; reacted: boolean }>();
+  const ordered = [
+    ...reactions.filter((reaction) => reaction.memberId === myMemberId),
+    ...reactions.filter((reaction) => reaction.memberId !== myMemberId),
+  ];
+
+  for (const reaction of ordered) {
+    const emoji = REACTION_EMOJI[reaction.type];
+    const group = groups.get(emoji) ?? { count: 0, reacted: false };
+
+    groups.set(emoji, {
+      count: group.count + 1,
+      reacted: group.reacted || reaction.memberId === myMemberId,
+    });
+  }
+
+  return (
+    <XStack
+      self={mine ? "flex-end" : "flex-start"}
+      mt={CHIP_GAP}
+      gap={CHIP_GAP}
+    >
+      {[...groups].map(([emoji, { count, reacted }]) => (
+        <ReactionChip
+          key={emoji}
+          emoji={emoji}
+          count={count}
+          reacted={reacted}
+          onPress={onPress}
+        />
+      ))}
+    </XStack>
+  );
+}
+
 export function ChatBubble({
   message,
   mine,
   showTime,
   replyName,
+  myMemberId,
   onPressPhoto,
   onPressReply,
-  onCopy,
-  onSavePhoto,
+  onOpenActions,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
   showTime: boolean;
   replyName: string;
+  myMemberId: number;
   onPressPhoto: (url: string) => void;
   onPressReply: (messageId: number) => void;
-  onCopy: (content: string) => void;
-  onSavePhoto: (url: string) => void;
+  onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
 }) {
-  const copy = () => onCopy(message.content ?? "");
+  const bubbleRef = useRef<View>(null);
+  const openActions = () =>
+    bubbleRef.current?.measureInWindow((x, y, width, height) =>
+      onOpenActions(message, { x, y, width, height }),
+    );
   const time = showTime && (
     <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
       {formatClockTime(new Date(message.createdAt))}
@@ -214,35 +368,32 @@ export function ChatBubble({
   );
 
   return (
-    <XStack shrink={1} items="flex-end" gap="$1.5">
-      {mine && time}
+    <YStack shrink={1}>
+      <XStack shrink={1} items="flex-end" gap="$1.5">
+        {mine && time}
 
-      {message.imageUrl ? (
-        <PhotoMessage
-          url={message.imageUrl}
-          cacheKey={message.clientMessageId ?? String(message.messageId)}
-          sending={isPending(message)}
-          onPress={onPressPhoto}
-          onLongPress={onSavePhoto}
-        />
-      ) : message.replyMessage ? (
-        <ReplyMessage
+        <View ref={bubbleRef} collapsable={false} style={{ flexShrink: 1 }}>
+          <ChatBubbleContent
+            message={message}
+            mine={mine}
+            replyName={replyName}
+            onPressPhoto={onPressPhoto}
+            onPressReply={onPressReply}
+            onLongPress={openActions}
+          />
+        </View>
+
+        {!mine && time}
+      </XStack>
+
+      {message.reactions.length > 0 && (
+        <ReactionChips
+          reactions={message.reactions}
           mine={mine}
-          replyName={replyName}
-          reply={message.replyMessage}
-          content={message.content ?? ""}
-          onPressReply={onPressReply}
-          onLongPress={copy}
-        />
-      ) : (
-        <TextMessage
-          mine={mine}
-          content={message.content ?? ""}
-          onLongPress={copy}
+          myMemberId={myMemberId}
+          onPress={openActions}
         />
       )}
-
-      {!mine && time}
-    </XStack>
+    </YStack>
   );
 }
