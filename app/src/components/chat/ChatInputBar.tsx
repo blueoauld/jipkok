@@ -20,9 +20,6 @@ import { useAccent } from "@/lib/theme/accent";
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
 
-const BAR_PADDING = getTokens().space.$3.val;
-const BAR_H_PADDING = getTokens().space.$4.val;
-
 const PLACEHOLDER = "메시지 입력";
 const MAX_LENGTH = 1000;
 
@@ -50,6 +47,9 @@ export function ChatInputBar({
 }) {
   const theme = useTheme();
   const accent = useAccent();
+  const space = getTokens().space;
+  const barPadding = space.$3.val;
+  const barHPadding = space.$4.val;
   const inputRef = useRef<TextInput>(null);
   const [text, setText] = useState("");
   const trimmed = text.trim();
@@ -72,9 +72,9 @@ export function ChatInputBar({
       {reply && (
         <YStack
           theme="gray"
-          ml={BAR_H_PADDING}
-          mr={BAR_H_PADDING - RETRO_SHADOW_OFFSET}
-          mt={BAR_PADDING}
+          ml={barHPadding}
+          mr={barHPadding - RETRO_SHADOW_OFFSET}
+          mt={barPadding}
         >
           <RetroShadow color="$gray12" />
           <XStack
@@ -108,7 +108,14 @@ export function ChatInputBar({
         </YStack>
       )}
 
-      <XStack items="flex-end" gap={BAR_PADDING} style={styles.bar}>
+      <XStack
+        items="flex-end"
+        gap={barPadding}
+        pl={barHPadding}
+        pt={barPadding}
+        pr={barHPadding - RETRO_SHADOW_OFFSET}
+        pb={barHPadding - RETRO_SHADOW_OFFSET}
+      >
         <RetroPressable
           theme="gray"
           width={FLOATING_BUTTON_SIZE}
@@ -165,12 +172,6 @@ export function ChatInputBar({
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    paddingLeft: BAR_H_PADDING,
-    paddingTop: BAR_PADDING,
-    paddingRight: BAR_H_PADDING - RETRO_SHADOW_OFFSET,
-    paddingBottom: BAR_H_PADDING - RETRO_SHADOW_OFFSET,
-  },
   input: {
     flex: 1,
     fontSize: FONT_SIZE,

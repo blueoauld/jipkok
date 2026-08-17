@@ -4,8 +4,6 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
-const PADDING_Y = getTokens().space["$1.5"].val + RETRO_BORDER_WIDTH;
-
 export function RetroSegmentedControl<T extends string>({
   values,
   value,
@@ -16,6 +14,7 @@ export function RetroSegmentedControl<T extends string>({
   onChange: (value: T) => void;
 }) {
   const accent = useAccent();
+  const paddingY = getTokens().space["$1.5"].val + RETRO_BORDER_WIDTH;
 
   return (
     <YStack theme="gray">
@@ -29,7 +28,7 @@ export function RetroSegmentedControl<T extends string>({
               key={item}
               theme={selected ? accent : undefined}
               flex={1}
-              py={PADDING_Y}
+              py={paddingY}
               justify="center"
               bg={selected ? "$color10" : "transparent"}
               borderColor="$gray12"

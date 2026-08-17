@@ -15,7 +15,6 @@ const VISIBLE_DURATION = 2500;
 const SIDE_GAP = 12;
 const SLIDE_OFFSET = 12;
 const ACCENT_BAR_WIDTH = 8;
-const TEXT_PADDING_Y = getTokens().space.$3.val + RETRO_BORDER_WIDTH;
 
 const ACCENT_BAR_COLORS = {
   info: "$blue9",
@@ -27,6 +26,7 @@ export function ToastHost() {
   const toast = useToastStore((state) => state.toast);
   const hide = useToastStore((state) => state.hide);
   const insets = useSafeAreaInsets();
+  const textPaddingY = getTokens().space.$3.val + RETRO_BORDER_WIDTH;
 
   useEffect(() => {
     if (!toast) {
@@ -81,7 +81,7 @@ export function ToastHost() {
                   <Text
                     flex={1}
                     px="$3"
-                    py={TEXT_PADDING_Y}
+                    py={textPaddingY}
                     fontSize="$3"
                     color="$color12"
                   >
