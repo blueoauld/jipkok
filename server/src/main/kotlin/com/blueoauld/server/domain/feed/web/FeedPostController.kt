@@ -48,7 +48,7 @@ class FeedPostController(
 
     @Operation(operationId = "createFeedPost", summary = "피드 작성", description = "한 시간대에 하나만 올릴 수 있다.")
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     fun create(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: CreateFeedPostRequest,
@@ -72,7 +72,7 @@ class FeedPostController(
 
     @Operation(operationId = "reportFeedPost", summary = "피드 신고")
     @PostMapping("/{postId}/reports")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     fun report(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {
         feedPostReportService.report(memberId, postId)
     }

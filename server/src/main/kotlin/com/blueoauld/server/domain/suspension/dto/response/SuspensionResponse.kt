@@ -9,7 +9,6 @@ data class SuspensionResponse(
 
     val type: SuspensionType,
     val reason: SuspensionReason,
-    val startedAt: Instant,
     val expiresAt: Instant?,
 ) {
 
@@ -18,7 +17,6 @@ data class SuspensionResponse(
         fun from(suspension: MemberSuspension) = SuspensionResponse(
             type = suspension.type,
             reason = suspension.reason,
-            startedAt = suspension.startedAt,
             expiresAt = suspension.expiresAt,
         )
     }

@@ -22,19 +22,15 @@ data class ChatMessageResponse(
 
         val messageId: Long,
         val senderId: Long,
-        val type: ChatMessageType,
         val content: String?,
-        val imageUrl: String?,
     ) {
 
         companion object {
 
-            fun of(message: ChatMessage, imageUrl: String?) = ReplyMessageResponse(
+            fun from(message: ChatMessage) = ReplyMessageResponse(
                 messageId = message.id,
                 senderId = message.senderId,
-                type = message.type,
                 content = message.content,
-                imageUrl = imageUrl,
             )
         }
     }

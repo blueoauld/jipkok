@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.web
 
+import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.member.dto.request.CreatePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
@@ -13,7 +14,6 @@ import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.PhotoUploadUrlResponse
-import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.service.MemberDetailService
@@ -61,7 +61,7 @@ class MemberController(
     @Operation(summary = "회원가입")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse = memberSignupService.signup(request)
+    fun signup(@Valid @RequestBody request: SignupRequest): TokenResponse = memberSignupService.signup(request)
 
     @Operation(summary = "회원 목록 조회", description = "거리순은 내 위치가 없으면 최근순으로 준다.")
     @GetMapping

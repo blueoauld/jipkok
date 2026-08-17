@@ -1,10 +1,10 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
-import com.blueoauld.server.domain.member.dto.response.SignupResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -29,7 +29,7 @@ class MemberSignupService(
 ) {
 
     @Transactional
-    fun signup(request: SignupRequest): SignupResponse {
+    fun signup(request: SignupRequest): TokenResponse {
         if (request.password != request.passwordConfirm) {
             throw BusinessException(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
         }
@@ -55,11 +55,9 @@ class MemberSignupService(
                 birthYear = DEFAULT_BIRTH_YEAR,
             ),
         )
-        val tokens = authService.issueTokens(member)
-
         nicknameHistoryRepository.save(NicknameHistory(member.id, member.nickname))
 
-        return SignupResponse(member.id, tokens.accessToken, tokens.refreshToken)
+        return authService.issueTokens(member)
     }
 
     private fun encodePassword(rawPassword: String) = checkNotNull(passwordEncoder.encode(rawPassword)) {

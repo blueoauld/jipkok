@@ -77,7 +77,6 @@ class FeedPostService(
                         likedByMe = row.getLikedByMe(),
                         memberId = it.memberId,
                         nickname = it.nickname,
-                        profileImageUrl = it.profileImageUrl,
                     )
                 }
             },

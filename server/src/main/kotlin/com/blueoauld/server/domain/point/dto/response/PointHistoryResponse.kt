@@ -9,7 +9,6 @@ data class PointHistoryResponse(
     val historyId: Long,
     val type: PointType,
     val amount: Int,
-    val balanceAfter: Int,
     val recordedAt: Instant,
 ) {
 
@@ -19,7 +18,6 @@ data class PointHistoryResponse(
             historyId = pointHistory.id,
             type = pointHistory.type,
             amount = pointHistory.amount,
-            balanceAfter = pointHistory.balanceAfter,
             recordedAt = pointHistory.recordedAt,
         )
     }

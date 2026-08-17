@@ -4,7 +4,6 @@ type Schemas = components["schemas"];
 type Paths = paths;
 
 export type SignupRequest = Schemas["SignupRequest"];
-export type SignupResponse = Schemas["SignupResponse"];
 export type LoginRequest = Schemas["LoginRequest"];
 export type TokenResponse = Schemas["TokenResponse"];
 export type ReissueRequest = Schemas["ReissueRequest"];
@@ -49,7 +48,6 @@ export type ChatReactionsResponse = Schemas["ChatReactionsResponse"];
 export type ChatReactionType = ChatReactionResponse["type"];
 
 export type SendNoteRequest = Schemas["SendNoteRequest"];
-export type SendNoteResponse = Schemas["SendNoteResponse"];
 
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type ReportReason = CreateReportRequest["reason"];

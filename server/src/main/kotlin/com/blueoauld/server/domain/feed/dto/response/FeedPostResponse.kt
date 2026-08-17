@@ -11,5 +11,4 @@ data class FeedPostResponse(
     val likedByMe: Boolean,
     val memberId: Long,
     val nickname: String,
-    val profileImageUrl: String?,
 )

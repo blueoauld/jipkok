@@ -1079,18 +1079,8 @@ export interface components {
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
         };
-        SignupResponse: {
-            /** Format: int64 */
-            memberId: number;
-            accessToken: string;
-            refreshToken: string;
-        };
         SendNoteRequest: {
             content: string;
-        };
-        SendNoteResponse: {
-            /** Format: int64 */
-            roomId: number;
         };
         CreatePhotoUploadUrlRequest: {
             contentType: string;
@@ -1168,10 +1158,7 @@ export interface components {
             messageId: number;
             /** Format: int64 */
             senderId: number;
-            /** @enum {string} */
-            type: "TEXT" | "PHOTO";
             content?: string | null;
-            imageUrl?: string | null;
         };
         MarkRoomsReadRequest: {
             roomIds: number[];
@@ -1230,8 +1217,6 @@ export interface components {
             type: "ACCESS_REWARD" | "ATTENDANCE_REWARD" | "AD_REWARD" | "NOTE_SEND";
             /** Format: int32 */
             amount: number;
-            /** Format: int32 */
-            balanceAfter: number;
             /** Format: date-time */
             recordedAt: string;
         };
@@ -1330,8 +1315,6 @@ export interface components {
             /** @enum {string} */
             reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
             /** Format: date-time */
-            startedAt: string;
-            /** Format: date-time */
             expiresAt?: string | null;
         };
         CursorResponseMemberSummaryResponse: {
@@ -1364,7 +1347,6 @@ export interface components {
             /** Format: int64 */
             memberId: number;
             nickname: string;
-            profileImageUrl?: string | null;
         };
         ChatRoomResponse: {
             /** Format: int64 */
@@ -2280,7 +2262,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SignupResponse"];
+                    "application/json": components["schemas"]["TokenResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -2507,9 +2489,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["SendNoteResponse"];
-                };
+                content?: never;
             };
             /** @description 요청이 올바르지 않다 */
             400: {
@@ -3409,7 +3389,7 @@ export interface operations {
         };
         responses: {
             /** @description No Content */
-            204: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3483,7 +3463,7 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description No Content */
-            204: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4556,7 +4536,7 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description OK */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

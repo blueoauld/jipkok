@@ -53,6 +53,7 @@ import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { saveChatPhoto } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
+import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
@@ -168,6 +169,24 @@ export default function ChatRoomScreen() {
   useEffect(() => {
     dismissRoomNotifications(roomId).catch(() => undefined);
   }, [newestPartnerMessageId, roomId]);
+
+  // 방에 있는 동안 상대 답장이 새로 오면 평점을 요청한다. 처음 불러온 대화는 제외.
+  const seenPartnerMessageId = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!messages) {
+      return;
+    }
+
+    if (
+      seenPartnerMessageId.current !== null &&
+      newestPartnerMessageId > seenPartnerMessageId.current
+    ) {
+      maybeRequestReview().catch(() => undefined);
+    }
+
+    seenPartnerMessageId.current = newestPartnerMessageId;
+  }, [messages, newestPartnerMessageId]);
 
   const handlePressReply = useCallback((messageId: number) => {
     const index = rowsRef.current.findIndex(

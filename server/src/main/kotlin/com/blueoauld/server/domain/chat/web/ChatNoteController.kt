@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.chat.web
 
 import com.blueoauld.server.domain.chat.dto.request.SendNoteRequest
-import com.blueoauld.server.domain.chat.dto.response.SendNoteResponse
 import com.blueoauld.server.domain.chat.service.ChatNoteService
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
@@ -28,5 +27,7 @@ class ChatNoteController(
         @AuthenticationPrincipal senderId: Long,
         @PathVariable memberId: Long,
         @Valid @RequestBody request: SendNoteRequest,
-    ): SendNoteResponse = chatNoteService.send(senderId, memberId, request.content)
+    ) {
+        chatNoteService.send(senderId, memberId, request.content)
+    }
 }

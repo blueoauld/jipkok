@@ -34,10 +34,8 @@ import type {
   ProfileViewPage,
   ResetPasswordRequest,
   SendMessageRequest,
-  SendNoteResponse,
   SetupProfileRequest,
   SignupRequest,
-  SignupResponse,
   TokenResponse,
   UpdateCommentRequest,
   VerificationPurpose,
@@ -124,7 +122,7 @@ export const auth = {
 
 export const members = {
   signup: async (body: SignupRequest) => {
-    const response = await request<SignupResponse>("/api/members", {
+    const response = await request<TokenResponse>("/api/members", {
       method: "POST",
       body,
       auth: false,
@@ -161,7 +159,7 @@ export const members = {
     }),
 
   sendNote: (memberId: number, content: string) =>
-    request<SendNoteResponse>(`/api/members/${memberId}/notes`, {
+    request<void>(`/api/members/${memberId}/notes`, {
       method: "POST",
       body: { content },
     }),

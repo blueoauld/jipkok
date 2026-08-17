@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
-import com.blueoauld.server.domain.chat.dto.response.SendNoteResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
@@ -29,7 +28,7 @@ class ChatNoteService(
 ) {
 
     @Transactional
-    fun send(senderId: Long, receiverId: Long, content: String): SendNoteResponse {
+    fun send(senderId: Long, receiverId: Long, content: String) {
         if (senderId == receiverId) {
             throw BusinessException(ErrorCode.SELF_NOTE)
         }
@@ -53,8 +52,6 @@ class ChatNoteService(
                 content = content,
             ),
         )
-
-        return SendNoteResponse(room.id)
     }
 
     private fun openRoom(senderId: Long, receiverId: Long, receiver: Member): ChatRoom {

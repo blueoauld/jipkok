@@ -55,9 +55,7 @@ export function toReply(message: ChatMessageResponse): ReplyMessageResponse {
   return {
     messageId: message.messageId,
     senderId: message.senderId,
-    type: message.type,
     content: message.content ?? null,
-    imageUrl: message.imageUrl ?? null,
   };
 }
 
