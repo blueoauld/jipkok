@@ -142,7 +142,7 @@ const SECTIONS: SettingItem[][] = [
 ];
 
 function versionText(latest: string, current: string) {
-  return `최신 버전: ${latest}\n현재 버전: ${current}`;
+  return `최신 버전: ${latest}\n설치 버전: ${current}`;
 }
 
 function isOutdated(current: string, latest: string) {
