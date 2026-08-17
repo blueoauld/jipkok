@@ -4,10 +4,12 @@ import {
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { YStack } from "tamagui";
+import { getTokens, YStack } from "tamagui";
 
 import { FORM_FOOTER_HEIGHT } from "@/lib/design";
 import { useThemeBackground } from "@/lib/theme/accent";
+
+const KEYBOARD_OVERLAP = 2;
 
 type ScrollMode = ComponentProps<typeof KeyboardAwareScrollView>["mode"];
 
@@ -38,7 +40,13 @@ export function FormScreen({
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-        <YStack px="$4" py="$4" bg={background}>
+        <YStack
+          px="$4"
+          pt="$4"
+          pb={getTokens().space.$4.val + KEYBOARD_OVERLAP}
+          mb={-KEYBOARD_OVERLAP}
+          bg={background}
+        >
           {footer}
         </YStack>
       </KeyboardStickyView>
