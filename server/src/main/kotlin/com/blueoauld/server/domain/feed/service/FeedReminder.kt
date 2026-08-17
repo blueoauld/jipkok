@@ -55,7 +55,7 @@ class FeedReminder(
 
         fun bodyOf(now: Instant) = BODIES[now.atZone(ZoneId.of(KOREA)).hour % BODIES.size]
 
-        private const val REMIND_CRON = "0 0 */3 * * *"
+        private const val REMIND_CRON = "0 0 9-21/3 * * *"
         private const val KOREA = "Asia/Seoul"
     }
 }
