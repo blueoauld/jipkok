@@ -1,4 +1,6 @@
 {
+  "start": "-PT3H",
+  "periodOverride": "inherit",
   "widgets": [
     {
       "type": "text",
@@ -40,6 +42,11 @@
         },
         "annotations": {
           "horizontal": [
+            {
+              "label": "기준 성능",
+              "value": 20,
+              "color": "#ff7f0e"
+            },
             {
               "label": "높음",
               "value": 80,
@@ -130,9 +137,85 @@
       }
     },
     {
-      "type": "text",
+      "type": "metric",
       "x": 0,
       "y": 7,
+      "width": 16,
+      "height": 6,
+      "properties": {
+        "title": "CPU 크레딧 잔량",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "stat": "Average",
+        "period": 300,
+        "metrics": [
+          [
+            "AWS/EC2",
+            "CPUCreditBalance",
+            "InstanceId",
+            "i-0c5778b433e645b16",
+            {
+              "label": "잔량"
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "label": "크레딧",
+            "showUnits": false
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "여유 부족",
+              "value": 100,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "상태 체크 실패",
+        "region": "ap-northeast-2",
+        "view": "singleValue",
+        "stat": "Maximum",
+        "period": 300,
+        "sparkline": true,
+        "metrics": [
+          [
+            "AWS/EC2",
+            "StatusCheckFailed_Instance",
+            "InstanceId",
+            "i-0c5778b433e645b16",
+            {
+              "label": "인스턴스"
+            }
+          ],
+          [
+            "AWS/EC2",
+            "StatusCheckFailed_System",
+            "InstanceId",
+            "i-0c5778b433e645b16",
+            {
+              "label": "시스템"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 13,
       "width": 24,
       "height": 1,
       "properties": {
@@ -142,7 +225,7 @@
     {
       "type": "metric",
       "x": 0,
-      "y": 8,
+      "y": 14,
       "width": 8,
       "height": 6,
       "properties": {
@@ -150,7 +233,7 @@
         "region": "ap-northeast-2",
         "view": "timeSeries",
         "stat": "Average",
-        "period": 300,
+        "period": 60,
         "metrics": [
           [
             "AWS/RDS",
@@ -172,7 +255,7 @@
     {
       "type": "metric",
       "x": 8,
-      "y": 8,
+      "y": 14,
       "width": 8,
       "height": 6,
       "properties": {
@@ -180,7 +263,7 @@
         "region": "ap-northeast-2",
         "view": "timeSeries",
         "stat": "Maximum",
-        "period": 300,
+        "period": 60,
         "metrics": [
           [
             "AWS/RDS",
@@ -192,7 +275,7 @@
         "annotations": {
           "horizontal": [
             {
-              "label": "커넥션 풀 상한",
+              "label": "앱 풀 상한 (참고)",
               "value": 10,
               "color": "#ff7f0e"
             }
@@ -203,7 +286,7 @@
     {
       "type": "metric",
       "x": 16,
-      "y": 8,
+      "y": 14,
       "width": 8,
       "height": 6,
       "properties": {
@@ -211,7 +294,7 @@
         "region": "ap-northeast-2",
         "view": "timeSeries",
         "stat": "Minimum",
-        "period": 300,
+        "period": 60,
         "metrics": [
           [
             "AWS/RDS",
@@ -219,13 +302,22 @@
             "DBInstanceIdentifier",
             "jipkok-database"
           ]
-        ]
+        ],
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "여유 부족",
+              "value": 2147483648,
+              "color": "#d62728"
+            }
+          ]
+        }
       }
     },
     {
       "type": "text",
       "x": 0,
-      "y": 14,
+      "y": 20,
       "width": 24,
       "height": 1,
       "properties": {
@@ -235,20 +327,20 @@
     {
       "type": "log",
       "x": 0,
-      "y": 15,
+      "y": 21,
       "width": 12,
       "height": 6,
       "properties": {
-        "title": "분당 요청 수",
+        "title": "요청 수 (5분)",
         "region": "ap-northeast-2",
         "view": "timeSeries",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(status)\n| stats count() as requests by bin(1m)"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(status)\n| stats count() as requests by bin(5m)"
       }
     },
     {
       "type": "log",
       "x": 12,
-      "y": 15,
+      "y": 21,
       "width": 12,
       "height": 6,
       "properties": {
@@ -261,33 +353,95 @@
     {
       "type": "log",
       "x": 0,
-      "y": 21,
+      "y": 27,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "5xx 추이 (5분)",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter status >= 500\n| stats count() as serverErrors by bin(5m)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 27,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "429 추이 (5분)",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter status = 429\n| stats count() as blocked by bin(5m)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 33,
       "width": 12,
       "height": 6,
       "properties": {
         "title": "느린 요청 (1초 이상)",
         "region": "ap-northeast-2",
         "view": "table",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp, message, requestId, memberId\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms) and ms > 1000\n| sort ms desc\n| limit 50"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message, requestId, memberId, appVersion, platform\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms) and ms > 1000\n| sort ms desc\n| limit 50"
       }
     },
     {
       "type": "log",
       "x": 12,
-      "y": 21,
+      "y": 33,
       "width": 12,
       "height": 6,
       "properties": {
-        "title": "느린 경로 평균",
+        "title": "느린 경로 (p95 기준)",
         "region": "ap-northeast-2",
         "view": "table",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms)\n| stats avg(ms) as avgMs, max(ms) as maxMs, count() as cnt by method, path\n| sort avgMs desc\n| limit 20"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(ms)\n| parse path /^(?<resource>\\/api\\/[a-z-]+(?:\\/me)?)(?:\\/\\d+)?(?<sub>\\/[a-z-]+)?/\n| stats count() as cnt, avg(ms) as avgMs, pct(ms, 95) as p95, pct(ms, 99) as p99, max(ms) as maxMs by method, resource, sub\n| sort p95 desc\n| limit 20"
       }
     },
     {
       "type": "text",
       "x": 0,
-      "y": 27,
+      "y": 39,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 클라이언트"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 40,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "버전별 요청",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message, appVersion, platform\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter ispresent(status) and ispresent(appVersion)\n| stats count() as requests by platform, appVersion\n| sort requests desc\n| limit 30"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 40,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "버전별 오류",
+        "region": "ap-northeast-2",
+        "view": "table",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, appVersion, platform, error.type\n| filter log.level = \"ERROR\"\n| stats count() as errors by platform, appVersion, error.type\n| sort errors desc\n| limit 30"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 46,
       "width": 24,
       "height": 1,
       "properties": {
@@ -297,20 +451,20 @@
     {
       "type": "log",
       "x": 0,
-      "y": 28,
+      "y": 47,
       "width": 12,
       "height": 6,
       "properties": {
-        "title": "분당 오류 수",
+        "title": "오류 수 (5분)",
         "region": "ap-northeast-2",
         "view": "timeSeries",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp\n| filter log.level = \"ERROR\"\n| stats count() as errors by bin(1m)"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp\n| filter log.level = \"ERROR\"\n| stats count() as errors by bin(5m)"
       }
     },
     {
       "type": "log",
       "x": 12,
-      "y": 28,
+      "y": 47,
       "width": 12,
       "height": 6,
       "properties": {
@@ -323,20 +477,33 @@
     {
       "type": "log",
       "x": 0,
-      "y": 34,
+      "y": 53,
+      "width": 24,
+      "height": 4,
+      "properties": {
+        "title": "기동 횟수 (배포 외에 오르면 재시작)",
+        "region": "ap-northeast-2",
+        "view": "timeSeries",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| filter message like /^Started .+ in .+ seconds/\n| stats count() as starts by bin(1h)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 57,
       "width": 24,
       "height": 8,
       "properties": {
         "title": "최근 오류",
         "region": "ap-northeast-2",
         "view": "table",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp, log.logger as logger, message, requestId, memberId\n| filter log.level = \"ERROR\"\n| sort @timestamp desc\n| limit 50"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, log.logger as logger, message, requestId, memberId, appVersion, platform\n| filter log.level = \"ERROR\"\n| sort @timestamp desc\n| limit 50"
       }
     },
     {
       "type": "text",
       "x": 0,
-      "y": 42,
+      "y": 65,
       "width": 24,
       "height": 1,
       "properties": {
@@ -346,7 +513,7 @@
     {
       "type": "log",
       "x": 0,
-      "y": 43,
+      "y": 66,
       "width": 12,
       "height": 6,
       "properties": {
@@ -359,7 +526,7 @@
     {
       "type": "log",
       "x": 12,
-      "y": 43,
+      "y": 66,
       "width": 12,
       "height": 6,
       "properties": {
