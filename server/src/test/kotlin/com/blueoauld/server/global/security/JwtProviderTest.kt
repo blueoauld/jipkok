@@ -65,15 +65,51 @@ class JwtProviderTest {
         assertThat(jwtProvider.parseRefreshTokenMemberId(token)).isEqualTo(MEMBER_ID)
     }
 
-    private fun accessToken(subject: String, role: String?): String {
+    @Test
+    fun `만료된 토큰은 읽지 않는다`() {
+        // given
+        val token = accessToken(subject = MEMBER_ID.toString(), role = ROLE, expiration = NOW.minusSeconds(1))
+
+        // when
+        val payload = jwtProvider.parseAccessToken(token)
+
+        // then
+        assertThat(payload).isNull()
+    }
+
+    @Test
+    fun `다른 키로 서명한 토큰은 읽지 않는다`() {
+        // given
+        val token = accessToken(subject = MEMBER_ID.toString(), role = ROLE, secret = OTHER_SECRET)
+
+        // when
+        val payload = jwtProvider.parseAccessToken(token)
+
+        // then
+        assertThat(payload).isNull()
+    }
+
+    @Test
+    fun `토큰 형식이 아니면 읽지 않는다`() {
+        // when, then
+        assertThat(jwtProvider.parseAccessToken("not-a-jwt")).isNull()
+        assertThat(jwtProvider.parseRefreshTokenMemberId("")).isNull()
+    }
+
+    private fun accessToken(
+        subject: String,
+        role: String?,
+        expiration: Instant = NOW.plus(Duration.ofHours(1)),
+        secret: String = SECRET,
+    ): String {
         val builder = Jwts.builder()
             .subject(subject)
             .claim(JwtProvider.TYPE_CLAIM, ACCESS_TYPE)
-            .expiration(Date.from(NOW.plus(Duration.ofHours(1))))
+            .expiration(Date.from(expiration))
 
         role?.let { builder.claim(JwtProvider.ROLE_CLAIM, it) }
 
-        return builder.signWith(Keys.hmacShaKeyFor(SECRET.toByteArray())).compact()
+        return builder.signWith(Keys.hmacShaKeyFor(secret.toByteArray())).compact()
     }
 
     companion object {
@@ -81,6 +117,7 @@ class JwtProviderTest {
         private val NOW: Instant = Instant.parse("2026-08-16T12:00:00Z")
 
         private const val SECRET = "test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms"
+        private const val OTHER_SECRET = "another-secret-key-that-is-long-enough-for-hmac-sha-algorithms"
         private const val MEMBER_ID = 7L
         private const val ROLE = "MEMBER"
         private const val ACCESS_TYPE = "access"
