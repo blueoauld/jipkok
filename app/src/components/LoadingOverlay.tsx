@@ -18,7 +18,7 @@ export function LoadingOverlay() {
       items="center"
       justify="center"
     >
-      <Spinner size="small" />
+      <Spinner size="small" color="white" />
     </YStack>
   );
 }

@@ -247,7 +247,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
               justify="center"
               pointerEvents="none"
             >
-              <Spinner size="large" color="white" />
+              <Spinner size="small" color="white" />
             </YStack>
           )}
 
