@@ -104,7 +104,9 @@ export default function ChatScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           ListEmptyComponent={
-            <ListEmpty>{unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}</ListEmpty>
+            <ListEmpty>
+              {unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}
+            </ListEmpty>
           }
         />
       ) : (

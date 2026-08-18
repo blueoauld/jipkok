@@ -132,7 +132,6 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     setVisible(true);
   });
 
-  // 재생 중일 때만 컨트롤을 숨긴다. 멈춰 있으면 계속 보여 준다.
   useEffect(() => {
     if (isPlaying) {
       scheduleHide();
@@ -261,7 +260,6 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
   );
 }
 
-// url이 있을 때만 플레이어를 만든다. 닫으면 플레이어도 함께 버려진다.
 export function VideoPlayerModal({
   url,
   onClose,

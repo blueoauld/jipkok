@@ -9,7 +9,6 @@ const SIZES = {
   md: { fontSize: "$4", icon: 14 },
 } as const;
 
-// "남자 · 27살 · ♥ 3" 한 줄. 목록 행은 sm, 프로필 화면은 md.
 export function MemberMeta({
   gender,
   age,

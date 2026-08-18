@@ -433,13 +433,11 @@ export default function ChatRoomScreen() {
       const sendable = videos.filter((asset) => !isVideoTooLong(asset));
 
       // 상한에 걸리는 시도가 얼마나 되는지 봐서 멀티파트 업로드로 늘릴지 판단한다.
-      videos
-        .filter(isVideoTooLong)
-        .forEach((asset) =>
-          logAppEvent(APP_EVENT.chatVideoTooLong, {
-            durationSeconds: String(videoDurationSeconds(asset)),
-          }),
-        );
+      videos.filter(isVideoTooLong).forEach((asset) =>
+        logAppEvent(APP_EVENT.chatVideoTooLong, {
+          durationSeconds: String(videoDurationSeconds(asset)),
+        }),
+      );
 
       if (sendable.length < videos.length) {
         showToast("warning", VIDEO_TOO_LONG_MESSAGE);

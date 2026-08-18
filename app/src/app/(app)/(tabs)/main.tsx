@@ -158,9 +158,7 @@ export default function MainScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-          ListEmptyComponent={
-            <ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>
-          }
+          ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
         />
       ) : (
         <ScreenState

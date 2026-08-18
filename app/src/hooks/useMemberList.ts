@@ -13,7 +13,6 @@ type Page = InfiniteData<MemberSummaryPage>;
 
 export type RelationKind = "likes" | "favorites" | "blocks" | "secretPhotos";
 
-// 상세 화면의 좋아요/즐겨찾기/차단/비밀사진 액션은 종류 단위로 무효화한다.
 export function relationKey(kind: RelationKind) {
   return [kind];
 }

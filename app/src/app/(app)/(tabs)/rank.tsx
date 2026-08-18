@@ -54,9 +54,7 @@ export default function RankScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          ListEmptyComponent={
-            <ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>
-          }
+          ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
         />
       ) : (
         <ScreenState

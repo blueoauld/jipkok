@@ -98,8 +98,6 @@ function BodyText({
   );
 }
 
-// 영상은 썸네일 위에 재생 표시와 길이를 얹는다. 보내는 중이면 진행률과 취소,
-// 실패하면 재전송을 같은 자리에 보여준다.
 function VideoMessage({
   message,
   onPress,
@@ -424,7 +422,6 @@ function ReactionChip({
   );
 }
 
-// 같은 이모지는 하나로 합치고, 내 반응이 앞에 온다.
 function ReactionChips({
   reactions,
   mine,

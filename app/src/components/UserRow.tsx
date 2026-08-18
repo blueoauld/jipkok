@@ -47,7 +47,6 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
   );
 }
 
-// at을 주면 접속 시각 대신 그 시각(좋아요한 때 등)을 보여준다.
 function Row({
   member,
   at,

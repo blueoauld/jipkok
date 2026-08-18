@@ -6,7 +6,6 @@ import { RETRO_BORDER_WIDTH } from "@/lib/design";
 const SIZE = 20;
 const FONT_SIZE = 11;
 
-// 안 읽음 수, N 표시처럼 짧은 글자를 담는 빨간 상자.
 export function RetroBadge({ children }: { children: ReactNode }) {
   return (
     <XStack

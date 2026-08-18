@@ -11,7 +11,6 @@ export function useFlatItems<T>(data: InfiniteData<Page<T>> | undefined) {
   return useMemo(() => flattenPages(data), [data]);
 }
 
-// 페이지 구조(nextCursor 등)는 그대로 두고 각 페이지의 items만 바꾼다.
 export function mapPages<P extends Page<unknown>>(
   data: InfiniteData<P> | undefined,
   update: (items: P["items"], index: number) => P["items"],

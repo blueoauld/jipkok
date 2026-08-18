@@ -263,9 +263,7 @@ export default function FeedScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-          ListEmptyComponent={
-            <ListEmpty>{EMPTY_MESSAGE}</ListEmpty>
-          }
+          ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
         />
       ) : (
         <ScreenState

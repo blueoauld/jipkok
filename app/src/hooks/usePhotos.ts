@@ -32,7 +32,6 @@ async function requireCamera() {
   }
 }
 
-// 채팅은 사진과 영상을 한 번에 고른다. 영상 길이는 서버 상한과 같다.
 // iOS의 HEVC/HDR 원본은 압축기가 못 다루는 경우가 있어 호환 표현(H.264)으로 받는다.
 export async function pickChatMedia(remaining: number) {
   await requireLibrary();

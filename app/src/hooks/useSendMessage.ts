@@ -106,7 +106,6 @@ export function useSendMessage(
   const [videoBatches, setVideoBatches] = useState(0);
   const uploads = useUploadStore.getState;
 
-  // 영상 하나를 압축 → 업로드 → 전송한다. 실패하면 말풍선을 남겨 두고 재전송을 기다린다.
   // 압축본은 기억해 두어 재전송 때 다시 압축하지 않는다.
   const sendVideo = async (
     video: PendingVideo,

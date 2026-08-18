@@ -26,7 +26,6 @@ const VIDEO_FAILED_MESSAGE = "영상을 보내지 못했습니다.";
 
 export type VideoKeys = { objectKey: string; thumbnailKey: string };
 
-// 서버 오류가 아닌 예외(압축·썸네일·업로드 라이브러리)는 로그에 남기고 한 문구로 알린다.
 export function describeVideoError(error: unknown) {
   if (error instanceof ApiError) {
     return error;
@@ -70,7 +69,6 @@ function ensureWithinLimit(uri: string) {
   return uri;
 }
 
-// 720p로 줄인다. 취소하면 압축을 끊고 CANCELLED로 거절한다.
 // 압축기가 못 다루는 영상(일부 HDR, 시뮬레이터)은 원본이 상한 안이면 그대로 보낸다.
 export async function compressVideo(
   uri: string,
@@ -158,7 +156,6 @@ async function uploadFile(
   }
 }
 
-// 썸네일은 작아서 진행률에 안 넣고, 영상 진행률만 올린다.
 export async function uploadChatVideo(
   videoUri: string,
   thumbnailUri: string,

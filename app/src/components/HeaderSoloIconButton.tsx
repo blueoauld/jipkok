@@ -7,7 +7,6 @@ const ICON_SIZE = 28;
 const BUTTON_WIDTH = 36;
 const BUTTON_HEIGHT = 40;
 
-// 헤더에 아이콘 하나만 놓을 때 쓴다. 폭이 고정이라 자리가 흔들리지 않는다.
 export function HeaderSoloIconButton({
   icon: Icon,
   weight,

@@ -71,9 +71,7 @@ export default function SuspendedScreen() {
 
         <YStack width="100%" gap="$4">
           <RetroButton
-            onPress={() =>
-              openSupportMail(MAIL_TITLE, profile?.memberId, show)
-            }
+            onPress={() => openSupportMail(MAIL_TITLE, profile?.memberId, show)}
           >
             문의하기
           </RetroButton>

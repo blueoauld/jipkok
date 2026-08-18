@@ -31,7 +31,6 @@ function deviceInfo(memberId?: number) {
 
 type ShowError = (variant: "error", message: string) => void;
 
-// 메일 앱이 없거나 못 열면 주소를 알려 준다.
 export function openSupportMail(
   title: string,
   memberId: number | undefined,

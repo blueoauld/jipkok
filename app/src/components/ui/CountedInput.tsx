@@ -4,7 +4,6 @@ import { Text } from "tamagui";
 import { FormField } from "@/components/FormField";
 import { RetroInput, type RetroInputProps } from "@/components/ui/RetroInput";
 
-// 글자 수를 오른쪽 아래에 보여주는 입력. 값은 ref에만 쓰고 리렌더는 글자 수만 일으킨다.
 export function CountedInput({
   valueRef,
   maxLength,

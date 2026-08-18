@@ -45,7 +45,6 @@ export type ChatReactionResponse = Schemas["ChatReactionResponse"];
 export type ChatReactionsResponse = Schemas["ChatReactionsResponse"];
 export type ChatReactionType = ChatReactionResponse["type"];
 
-
 export type CreateReportRequest = Schemas["CreateReportRequest"];
 export type ReportReason = CreateReportRequest["reason"];
 

@@ -6,7 +6,6 @@ import { useFlatItems } from "@/lib/paging";
 
 export const CHAT_ROOMS_KEY = ["chats", "rooms"];
 
-// 방 목록과 안 읽음 수는 늘 같이 바뀐다.
 export function invalidateChatLists(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
   queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_COUNT_KEY });
