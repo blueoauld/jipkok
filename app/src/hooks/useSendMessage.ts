@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { useState } from "react";
+import { Platform } from "react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -18,6 +19,7 @@ import {
 import { type UploadPhase, useUploadStore } from "@/lib/chat/upload-store";
 import { mapPages } from "@/lib/paging";
 import { toChatPhoto, uploadChatPhotoFile } from "@/lib/photo";
+import { showToast } from "@/lib/toast/store";
 import { describeUploadError, isUploadCancelled } from "@/lib/upload";
 import {
   compressVideo,
@@ -27,6 +29,8 @@ import {
 } from "@/lib/video";
 
 type Feed = InfiniteData<ChatMessagePage>;
+
+const KEEP_FOREGROUND_MESSAGE = "전송이 끝날 때까지 앱을 켜 두세요.";
 
 let lastTempId = 0;
 
@@ -191,8 +195,16 @@ export function useSendMessage(
     });
   };
 
+  // 안드로이드는 앱을 내리면 업로드가 끊긴다. iOS는 백그라운드 세션이라 이어진다.
+  const warnBackground = () => {
+    if (Platform.OS === "android") {
+      showToast("info", KEEP_FOREGROUND_MESSAGE);
+    }
+  };
+
   const sendPhotos = async (assets: ImagePickerAsset[]) => {
     setMediaBatches((count) => count + 1);
+    warnBackground();
 
     try {
       for (const asset of assets) {
@@ -213,6 +225,7 @@ export function useSendMessage(
 
   const sendVideos = async (assets: ImagePickerAsset[]) => {
     setMediaBatches((count) => count + 1);
+    warnBackground();
 
     try {
       for (const asset of assets) {
