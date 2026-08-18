@@ -4,8 +4,9 @@ import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MY_PROFILE_KEY } from "@/hooks/useMyProfile";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { apiErrorMessage } from "@/lib/alert";
 import type { MyProfileResponse } from "@/lib/api";
+import { showToast } from "@/lib/toast/store";
 
 type ToggleField = "noteReceiveEnabled" | "feedNotificationEnabled";
 
@@ -23,7 +24,6 @@ export function BellToggleButton({
   offMessage: string;
 }) {
   const queryClient = useQueryClient();
-  const { alertElement, show, showApiError } = useRetroAlert();
 
   const apply = (next: boolean) =>
     queryClient.setQueryData<MyProfileResponse>(
@@ -35,24 +35,20 @@ export function BellToggleButton({
     mutationFn: () => update(!enabled),
     onMutate: () => {
       apply(!enabled);
-      show("info", enabled ? offMessage : onMessage);
+      showToast("info", enabled ? offMessage : onMessage);
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY }),
     onError: (error) => {
       apply(enabled);
-      showApiError(error);
+      showToast("error", apiErrorMessage(error));
     },
   });
 
   return (
-    <>
-      <HeaderIconButton
-        icon={enabled ? BellIcon : BellSlashIcon}
-        onPress={toggle.isPending ? undefined : () => toggle.mutate()}
-      />
-
-      {alertElement}
-    </>
+    <HeaderIconButton
+      icon={enabled ? BellIcon : BellSlashIcon}
+      onPress={toggle.isPending ? undefined : () => toggle.mutate()}
+    />
   );
 }
