@@ -19,7 +19,7 @@ export function RetroSegmentedControl<T extends string>({
   return (
     <YStack theme="gray">
       <RetroShadow color="$gray8" />
-      <XStack bg="$color1">
+      <XStack bg="$color1" overflow="hidden">
         {values.map((item, index) => {
           const selected = item === value;
 
@@ -28,6 +28,7 @@ export function RetroSegmentedControl<T extends string>({
               key={item}
               theme={selected ? accent : undefined}
               flex={1}
+              mr={index === values.length - 1 ? -RETRO_BORDER_WIDTH : 0}
               py={paddingY}
               justify="center"
               bg={selected ? "$color10" : "transparent"}
