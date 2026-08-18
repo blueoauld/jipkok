@@ -56,7 +56,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "프로필과 피드에 사진을 올리고 대화에서 사진을 보내기 위해 사진 접근 권한이 필요합니다.",
+          "photosPermission": "프로필, 피드, 신고에 사진을 올리고 대화에서 사진과 동영상을 보내기 위해 사진 접근 권한이 필요합니다.",
           "cameraPermission": "피드에 올릴 사진을 찍기 위해 카메라 접근 권한이 필요합니다.",
           "microphonePermission": false
         }
@@ -89,8 +89,8 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "프로필과 피드에 사진을 올리고 대화에서 사진을 보내기 위해 사진 접근 권한이 필요합니다.",
-          "savePhotosPermission": "대화에서 받은 사진을 저장하기 위해 사진 접근 권한이 필요합니다.",
+          "photosPermission": "프로필, 피드, 신고에 사진을 올리고 대화에서 사진과 동영상을 보내기 위해 사진 접근 권한이 필요합니다.",
+          "savePhotosPermission": "대화에서 받은 사진과 동영상을 저장하기 위해 사진 접근 권한이 필요합니다.",
           "granularPermissions": ["photo"]
         }
       ],
