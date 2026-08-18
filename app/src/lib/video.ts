@@ -36,6 +36,21 @@ export function describeVideoError(error: unknown) {
   return new ApiError(0, VIDEO_FAILED_CODE, VIDEO_FAILED_MESSAGE);
 }
 
+// RN은 네이티브 NSError를 domain/code/userInfo로 실어 준다. 압축기가 감싼 문구 뒤의 진짜 원인.
+function nativeErrorDetail(error: unknown) {
+  const native = error as {
+    domain?: string;
+    code?: string;
+    userInfo?: unknown;
+  };
+
+  return {
+    domain: native.domain,
+    code: native.code,
+    userInfo: native.userInfo,
+  };
+}
+
 export function isVideoCancelled(error: unknown) {
   return error instanceof ApiError && error.code === CANCELLED_CODE;
 }
@@ -111,7 +126,11 @@ export async function compressVideo(
       throw error;
     }
 
-    console.warn("[video] 압축에 실패해 원본을 보낸다.", error);
+    console.warn(
+      "[video] 압축에 실패해 원본을 보낸다.",
+      error,
+      nativeErrorDetail(error),
+    );
 
     return ensureWithinLimit(uri);
   } finally {
