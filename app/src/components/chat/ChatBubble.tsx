@@ -161,7 +161,6 @@ function VideoMessage({
   );
 }
 
-// 동영상은 압축과 업로드 두 단계라 단계 이름을 붙이고, 사진은 퍼센트만 보여준다.
 function UploadOverlay({
   upload,
   showPhase = false,

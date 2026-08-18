@@ -21,6 +21,7 @@ export const APP_EVENT = {
   chatStarted: "chat_started",
   feedPostCreated: "feed_post_created",
   chatVideoTooLong: "chat_video_too_long",
+  chatVideoCompressionFailed: "chat_video_compression_failed",
 } as const;
 
 export type AppEventName = (typeof APP_EVENT)[keyof typeof APP_EVENT];

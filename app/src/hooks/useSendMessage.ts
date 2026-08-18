@@ -98,8 +98,7 @@ export function useSendMessage(
   const [mediaBatches, setMediaBatches] = useState(0);
   const uploads = useUploadStore.getState;
 
-  // 사진·동영상 하나를 임시 말풍선에 진행률을 보이며 보낸다. 실패하면 말풍선을 남겨 두고
-  // 재전송을 기다리고, 취소하면 지운다. work가 중간 결과를 기억하면 재전송 때 그만큼 건너뛴다.
+  // work가 중간 결과(변환본, 압축본)를 기억해 두면 재전송 때 그만큼 건너뛴다.
   const sendMedia = async (
     temp: ChatMessageResponse,
     initialPhase: UploadPhase,

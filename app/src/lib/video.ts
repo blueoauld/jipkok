@@ -3,6 +3,7 @@ import type { ImagePickerAsset } from "expo-image-picker";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { Video as VideoCompressor } from "react-native-compressor";
 
+import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, ApiError } from "@/lib/api";
 import { uploadCancelled, uploadFile, type UploadProgress } from "@/lib/upload";
 
@@ -109,6 +110,9 @@ export async function compressVideo(
       error,
       nativeErrorDetail(error),
     );
+    logAppEvent(APP_EVENT.chatVideoCompressionFailed, {
+      domain: String(nativeErrorDetail(error).domain ?? "unknown"),
+    });
 
     return ensureWithinLimit(uri);
   } finally {

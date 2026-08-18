@@ -1,4 +1,5 @@
 import { useEvent, useEventListener } from "expo";
+import { useKeepAwake } from "expo-keep-awake";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { PauseIcon } from "phosphor-react-native/src/icons/Pause";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
@@ -21,7 +22,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Text, XStack, YStack } from "tamagui";
+import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { OVERLAY_BG, PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDuration } from "@/lib/video";
@@ -117,6 +118,8 @@ function SeekBar({
 }
 
 function Player({ url, onClose }: { url: string; onClose: () => void }) {
+  useKeepAwake();
+
   const player = useVideoPlayer(url, (instance) => {
     instance.timeUpdateEventInterval = TIME_UPDATE_INTERVAL;
     instance.play();
@@ -125,6 +128,9 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     isPlaying: player.playing,
   });
   const currentTime = useEvent(player, "timeUpdate")?.currentTime ?? 0;
+  const { status } = useEvent(player, "statusChange", {
+    status: player.status,
+  });
   const [seekTarget, setSeekTarget] = useState<number | null>(null);
   const [ended, setEnded] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -176,7 +182,6 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     }
   };
 
-  // 드래그하는 동안 손 아래에서 컨트롤이 사라지면 안 되니 숨김을 멈춘다. 놓으면 seek가 다시 건다.
   const holdControls = () => {
     clearHide();
     setVisible(true);
@@ -196,8 +201,12 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     showControls();
   };
 
+  const loading = status === "loading";
+  const controlsShown = visible && !loading;
   const controlsStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(visible ? 1 : 0, { duration: CONTROLS_FADE_MILLIS }),
+    opacity: withTiming(controlsShown ? 1 : 0, {
+      duration: CONTROLS_FADE_MILLIS,
+    }),
   }));
 
   const seek = (seconds: number) => {
@@ -223,19 +232,28 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
           />
 
           <Pressable
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
+            style={StyleSheet.absoluteFill}
             onPress={() => (visible ? setVisible(false) : showControls())}
           />
 
+          {loading && (
+            <YStack
+              position="absolute"
+              t={0}
+              r={0}
+              b={0}
+              l={0}
+              items="center"
+              justify="center"
+              pointerEvents="none"
+            >
+              <Spinner size="large" color="white" />
+            </YStack>
+          )}
+
           <Animated.View
             style={[StyleSheet.absoluteFill, controlsStyle]}
-            pointerEvents={visible ? "box-none" : "none"}
+            pointerEvents={controlsShown ? "box-none" : "none"}
           >
             <SafeAreaView
               edges={["top"]}

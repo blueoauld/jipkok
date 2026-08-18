@@ -21,7 +21,6 @@ export function isUploadCancelled(error: unknown) {
   return error instanceof ApiError && error.code === CANCELLED_CODE;
 }
 
-// 서버 오류가 아닌 예외(압축·썸네일·업로드 라이브러리)는 로그에 남기고 한 문구로 알린다.
 export function describeUploadError(error: unknown) {
   if (error instanceof ApiError) {
     return error;
@@ -32,8 +31,6 @@ export function describeUploadError(error: unknown) {
   return new ApiError(0, FAILED_CODE, MEDIA_FAILED_MESSAGE);
 }
 
-// 서명 PUT URL을 받아 파일을 올린다. 진행률과 취소를 지원하고, iOS는 백그라운드 세션이라
-// 앱을 잠깐 내려도 이어진다.
 export async function uploadFile(
   uri: string,
   contentType: string,
