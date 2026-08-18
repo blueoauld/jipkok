@@ -41,6 +41,7 @@ import { MAX_PHOTOS, pickChatMedia } from "@/hooks/usePhotos";
 import { useReactMessage } from "@/hooks/useReactMessage";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
+import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import {
   api,
   type ChatMessageResponse,
@@ -61,7 +62,11 @@ import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
-import { isVideoTooLong, VIDEO_TOO_LONG_MESSAGE } from "@/lib/video";
+import {
+  isVideoTooLong,
+  VIDEO_TOO_LONG_MESSAGE,
+  videoDurationSeconds,
+} from "@/lib/video";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
@@ -426,6 +431,15 @@ export default function ChatRoomScreen() {
       const photos = assets.filter((asset) => asset.type !== "video");
       const videos = assets.filter((asset) => asset.type === "video");
       const sendable = videos.filter((asset) => !isVideoTooLong(asset));
+
+      // 상한에 걸리는 시도가 얼마나 되는지 봐서 멀티파트 업로드로 늘릴지 판단한다.
+      videos
+        .filter(isVideoTooLong)
+        .forEach((asset) =>
+          logAppEvent(APP_EVENT.chatVideoTooLong, {
+            durationSeconds: String(videoDurationSeconds(asset)),
+          }),
+        );
 
       if (sendable.length < videos.length) {
         showToast("warning", VIDEO_TOO_LONG_MESSAGE);
