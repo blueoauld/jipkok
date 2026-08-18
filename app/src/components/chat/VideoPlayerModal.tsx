@@ -9,8 +9,17 @@ import {
   Modal,
   Pressable,
   StatusBar,
+  StyleSheet,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 
@@ -27,6 +36,8 @@ const THUMB_SIZE = 16;
 const TRACK_HIT_SLOP = 12;
 
 const TIME_UPDATE_INTERVAL = 0.25;
+const CONTROLS_FADE_MILLIS = 150;
+const SETTLE_TOLERANCE = 1;
 const AUTO_HIDE_MILLIS = 3000;
 
 function clamp(value: number) {
@@ -37,10 +48,12 @@ function SeekBar({
   position,
   duration,
   onSeek,
+  onScrubStart,
 }: {
   position: number;
   duration: number;
   onSeek: (seconds: number) => void;
+  onScrubStart: () => void;
 }) {
   const [width, setWidth] = useState(0);
   const [dragging, setDragging] = useState<number | null>(null);
@@ -52,19 +65,20 @@ function SeekBar({
 
   const pan = Gesture.Pan()
     .minDistance(0)
-    .onBegin((event) => setDragging(ratioOf(event.x)))
+    .onBegin((event) => {
+      onScrubStart();
+      setDragging(ratioOf(event.x));
+    })
     .onUpdate((event) => setDragging(ratioOf(event.x)))
-    .onFinalize((event, success) => {
-      if (success) {
-        onSeek(ratioOf(event.x) * duration);
-      }
-
+    // 움직임 없는 탭은 Pan이 실패로 끝나므로 성공 여부와 상관없이 놓은 자리로 간다.
+    .onFinalize((event) => {
+      onSeek(ratioOf(event.x) * duration);
       setDragging(null);
     })
     .runOnJS(true);
 
-  const ratio = dragging ?? (duration > 0 ? clamp(position / duration) : 0);
-  const shown = dragging === null ? position : dragging * duration;
+  const shown = dragging !== null ? dragging * duration : position;
+  const ratio = duration > 0 ? clamp(shown / duration) : 0;
 
   return (
     <XStack items="center" gap="$3">
@@ -111,6 +125,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     isPlaying: player.playing,
   });
   const currentTime = useEvent(player, "timeUpdate")?.currentTime ?? 0;
+  const [seekTarget, setSeekTarget] = useState<number | null>(null);
   const [ended, setEnded] = useState(false);
   const [visible, setVisible] = useState(true);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,6 +147,17 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     setVisible(true);
   });
 
+  // 시크 직후 플레이어가 새 위치를 알려 줄 때까지는 목표 위치를 그린다.
+  // 안 그러면 이전 위치로 튀었다가 돌아와 깜빡인다.
+  useEventListener(player, "timeUpdate", (event) => {
+    if (
+      seekTarget !== null &&
+      Math.abs(event.currentTime - seekTarget) < SETTLE_TOLERANCE
+    ) {
+      setSeekTarget(null);
+    }
+  });
+
   useEffect(() => {
     if (isPlaying) {
       scheduleHide();
@@ -150,6 +176,12 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     }
   };
 
+  // 드래그하는 동안 손 아래에서 컨트롤이 사라지면 안 되니 숨김을 멈춘다. 놓으면 seek가 다시 건다.
+  const holdControls = () => {
+    clearHide();
+    setVisible(true);
+  };
+
   const togglePlay = () => {
     if (ended) {
       player.currentTime = 0;
@@ -164,32 +196,47 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     showControls();
   };
 
+  const controlsStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(visible ? 1 : 0, { duration: CONTROLS_FADE_MILLIS }),
+  }));
+
   const seek = (seconds: number) => {
     player.currentTime = seconds;
+    setSeekTarget(seconds);
     setEnded(false);
     showControls();
   };
 
+  // 안드로이드 Modal은 별도 루트라 제스처가 먹으려면 여기서 다시 감싸야 한다.
   return (
     <SafeAreaProvider>
-      <YStack flex={1} bg="black">
-        <StatusBar barStyle="light-content" />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <YStack flex={1} bg="black">
+          <StatusBar barStyle="light-content" />
 
-        <VideoView
-          player={player}
-          style={{ flex: 1 }}
-          contentFit="contain"
-          nativeControls={false}
-          allowsPictureInPicture={false}
-        />
+          <VideoView
+            player={player}
+            style={{ flex: 1 }}
+            contentFit="contain"
+            nativeControls={false}
+            allowsPictureInPicture={false}
+          />
 
-        <Pressable
-          style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
-          onPress={() => (visible ? setVisible(false) : showControls())}
-        />
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+            onPress={() => (visible ? setVisible(false) : showControls())}
+          />
 
-        {visible && (
-          <>
+          <Animated.View
+            style={[StyleSheet.absoluteFill, controlsStyle]}
+            pointerEvents={visible ? "box-none" : "none"}
+          >
             <SafeAreaView
               edges={["top"]}
               style={{ position: "absolute", top: 0, left: 0, right: 0 }}
@@ -247,15 +294,16 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
             >
               <YStack px="$4" py="$3" bg={OVERLAY_BG}>
                 <SeekBar
-                  position={currentTime}
+                  position={seekTarget ?? currentTime}
                   duration={player.duration}
                   onSeek={seek}
+                  onScrubStart={holdControls}
                 />
               </YStack>
             </SafeAreaView>
-          </>
-        )}
-      </YStack>
+          </Animated.View>
+        </YStack>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
