@@ -17,7 +17,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneOffset
 import java.util.*
 
 class MemberListServiceTest {
@@ -28,7 +30,12 @@ class MemberListServiceTest {
 
     private val memberSummaryService = mockk<MemberSummaryService>()
 
-    private val service = MemberListService(memberListRepository, memberRepository, memberSummaryService)
+    private val service = MemberListService(
+        memberListRepository,
+        memberRepository,
+        memberSummaryService,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+    )
 
     private val me = Member(
         phoneNumber = "01012345678",
@@ -47,15 +54,18 @@ class MemberListServiceTest {
     @Test
     fun `위치가 없으면 거리순을 요청해도 최근순으로 준다`() {
         // given
-        every { memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any()) } returns
-            listOf(row(2L, 5.0))
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } returns listOf(row(2L, 5.0))
 
         // when
-        val response = service.findMembers(ME_ID, MemberSort.DISTANCE, null, null, 20)
+        val response = service.findMembers(ME_ID, MemberSort.DISTANCE, null, null, null, null, 20)
 
         // then
         assertThat(response.items.map { it.memberId }).containsExactly(2L)
-        verify(exactly = 0) { memberListRepository.findByDistance(any(), any(), any(), any(), any(), any(), any()) }
+        verify(exactly = 0) {
+            memberListRepository.findByDistance(any(), any(), any(), any(), any(), any(), any(), any(), any())
+        }
     }
 
     @Test
@@ -63,25 +73,28 @@ class MemberListServiceTest {
         // given
         me.latitude = 37.5
         me.longitude = 127.0
-        every { memberListRepository.findByDistance(any(), any(), 37.5, 127.0, any(), any(), any()) } returns
+        every {
+            memberListRepository.findByDistance(any(), any(), any(), any(), 37.5, 127.0, any(), any(), any())
+        } returns
             listOf(row(2L, 120.0))
 
         // when
-        val response = service.findMembers(ME_ID, MemberSort.DISTANCE, Gender.FEMALE, null, 20)
+        val response = service.findMembers(ME_ID, MemberSort.DISTANCE, Gender.FEMALE, null, null, null, 20)
 
         // then
         assertThat(response.items.single().distance).isEqualTo(120.0)
-        verify { memberListRepository.findByDistance(any(), "FEMALE", 37.5, 127.0, null, null, 20) }
+        verify { memberListRepository.findByDistance(any(), "FEMALE", null, null, 37.5, 127.0, null, null, 20) }
     }
 
     @Test
     fun `페이지가 꽉 차면 마지막 행으로 다음 커서를 만든다`() {
         // given
-        every { memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), 2) } returns
-            listOf(row(2L, 5.0), row(3L, 4.0))
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), 2)
+        } returns listOf(row(2L, 5.0), row(3L, 4.0))
 
         // when
-        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, 2)
+        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 2)
 
         // then
         assertThat(response.nextCursor).isEqualTo(ScrollResponse.encode(4.0, 3L))
@@ -90,11 +103,12 @@ class MemberListServiceTest {
     @Test
     fun `페이지가 덜 차면 다음 커서가 없다`() {
         // given
-        every { memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), 20) } returns
-            listOf(row(2L, 5.0))
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), 20)
+        } returns listOf(row(2L, 5.0))
 
         // when
-        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, 20)
+        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 20)
 
         // then
         assertThat(response.nextCursor).isNull()
@@ -103,27 +117,74 @@ class MemberListServiceTest {
     @Test
     fun `커서를 풀어서 조회에 넘긴다`() {
         // given
-        every { memberListRepository.findRecent(any(), any(), any(), any(), 4.0, 3L, any()) } returns emptyList()
+        every { memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), 4.0, 3L, any()) } returns
+            emptyList()
 
         // when
-        service.findMembers(ME_ID, MemberSort.RECENT, null, ScrollResponse.encode(4.0, 3L), 20)
+        service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, ScrollResponse.encode(4.0, 3L), 20)
 
         // then
-        verify { memberListRepository.findRecent(me.id, null, null, null, 4.0, 3L, 20) }
+        verify { memberListRepository.findRecent(me.id, null, null, null, null, null, 4.0, 3L, 20) }
     }
 
     @Test
     fun `요약을 못 만든 회원은 목록에서 뺀다`() {
         // given
-        every { memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any()) } returns
-            listOf(row(2L, 5.0), row(3L, 4.0))
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } returns listOf(row(2L, 5.0), row(3L, 4.0))
         every { memberSummaryService.findSummaries(listOf(2L, 3L)) } returns listOf(summary(3L))
 
         // when
-        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, 20)
+        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 20)
 
         // then
         assertThat(response.items.map { it.memberId }).containsExactly(3L)
+    }
+
+    @Test
+    fun `나이 범위를 출생연도 범위로 바꿔 조회에 넘긴다`() {
+        // given
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } returns emptyList()
+
+        // when
+        service.findMembers(ME_ID, MemberSort.RECENT, null, 25, 30, null, 20)
+
+        // then
+        verify { memberListRepository.findRecent(me.id, null, 1996, 2001, null, null, null, null, 20) }
+    }
+
+    @Test
+    fun `나이 한쪽만 주면 그쪽만 제한한다`() {
+        // given
+        every {
+            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } returns emptyList()
+
+        // when
+        service.findMembers(ME_ID, MemberSort.RECENT, null, 30, null, null, 20)
+
+        // then
+        verify { memberListRepository.findRecent(me.id, null, null, 1996, null, null, null, null, 20) }
+    }
+
+    @Test
+    fun `나이 범위가 뒤집히거나 허용 범위를 벗어나면 조회할 수 없다`() {
+        // given
+
+        // when
+        val reversed = assertThrows(BusinessException::class.java) {
+            service.findMembers(ME_ID, MemberSort.RECENT, null, 40, 30, null, 20)
+        }
+        val tooYoung = assertThrows(BusinessException::class.java) {
+            service.findMembers(ME_ID, MemberSort.RECENT, null, 18, 30, null, 20)
+        }
+
+        // then
+        assertThat(reversed.errorCode).isEqualTo(ErrorCode.INVALID_AGE_RANGE)
+        assertThat(tooYoung.errorCode).isEqualTo(ErrorCode.INVALID_AGE_RANGE)
     }
 
     @Test
@@ -133,7 +194,7 @@ class MemberListServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            service.findMembers(ME_ID, MemberSort.RECENT, null, null, 20)
+            service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 20)
         }
 
         // then
@@ -161,6 +222,7 @@ class MemberListServiceTest {
     companion object {
 
         private const val ME_ID = 1L
+        private val NOW: Instant = Instant.parse("2026-08-18T00:00:00Z")
         private val LOCATED_AT: Instant = Instant.parse("2026-08-01T00:00:00Z")
     }
 }

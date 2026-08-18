@@ -9,8 +9,8 @@ export const NICKNAME_MAX_LENGTH = 10;
 export const BIRTH_YEAR_LENGTH = 4;
 export const BIO_MAX_LENGTH = 1000;
 
-const MIN_AGE = 19;
-const MAX_AGE = 90;
+export const MIN_AGE = 19;
+export const MAX_AGE = 90;
 
 const BIRTH_YEAR_PATTERN = /^\d{4}$/;
 

@@ -11,8 +11,10 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
+import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
 
 @Service
 class MemberListService(
@@ -20,6 +22,7 @@ class MemberListService(
     private val memberListRepository: MemberListRepository,
     private val memberRepository: MemberRepository,
     private val memberSummaryService: MemberSummaryService,
+    private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
@@ -27,12 +30,15 @@ class MemberListService(
         memberId: Long,
         sort: MemberSort,
         gender: Gender?,
+        minAge: Int?,
+        maxAge: Int?,
         cursor: String?,
         size: Int,
     ): ScrollResponse<MemberListItemResponse> {
         val pageSize = CursorResponse.pageSize(size)
+        val birthYears = toBirthYearRange(minAge, maxAge)
         val member = findMember(memberId)
-        val rows = findRows(member, sort, gender, ScrollResponse.decode(cursor), pageSize)
+        val rows = findRows(member, sort, gender, birthYears, ScrollResponse.decode(cursor), pageSize)
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
@@ -41,10 +47,30 @@ class MemberListService(
         )
     }
 
+    private fun toBirthYearRange(minAge: Int?, maxAge: Int?): BirthYearRange {
+        val lower = minAge ?: MemberService.MIN_AGE
+        val upper = maxAge ?: MemberService.MAX_AGE
+
+        if (lower !in MemberService.MIN_AGE..MemberService.MAX_AGE ||
+            upper !in MemberService.MIN_AGE..MemberService.MAX_AGE ||
+            lower > upper
+        ) {
+            throw BusinessException(ErrorCode.INVALID_AGE_RANGE)
+        }
+
+        val currentYear = clock.currentYear()
+
+        return BirthYearRange(
+            min = maxAge?.let { currentYear - it },
+            max = minAge?.let { currentYear - it },
+        )
+    }
+
     private fun findRows(
         member: Member,
         sort: MemberSort,
         gender: Gender?,
+        birthYears: BirthYearRange,
         cursor: Pair<Double, Long>?,
         pageSize: Int,
     ): List<MemberListRow> {
@@ -55,6 +81,8 @@ class MemberListService(
             return memberListRepository.findByDistance(
                 memberId = member.id,
                 gender = gender?.name,
+                minBirthYear = birthYears.min,
+                maxBirthYear = birthYears.max,
                 latitude = latitude,
                 longitude = longitude,
                 cursorValue = cursor?.first,
@@ -66,6 +94,8 @@ class MemberListService(
         return memberListRepository.findRecent(
             memberId = member.id,
             gender = gender?.name,
+            minBirthYear = birthYears.min,
+            maxBirthYear = birthYears.max,
             latitude = latitude,
             longitude = longitude,
             cursorValue = cursor?.first,
@@ -93,4 +123,10 @@ class MemberListService(
     private fun findMember(memberId: Long): Member = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
+
+    private data class BirthYearRange(
+
+        val min: Int?,
+        val max: Int?,
+    )
 }

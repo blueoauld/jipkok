@@ -42,15 +42,19 @@ describe("필터 저장 옵션", () => {
     expect(migrate?.(undefined, 0)).toEqual({ sort: "LATEST", gender: null });
   });
 
-  it("회원 필터는 정렬과 성별만 저장한다", () => {
+  it("회원 필터는 정렬, 성별, 나이 범위를 저장한다", () => {
     const partialize = useMemberFilterStore.persist.getOptions().partialize;
 
     useMemberFilterStore.getState().setSort("DISTANCE");
-    useMemberFilterStore.getState().setGender("MALE");
+    useMemberFilterStore
+      .getState()
+      .setFilter({ gender: "MALE", minAge: 25, maxAge: 35 });
 
     expect(partialize?.(useMemberFilterStore.getState())).toEqual({
       sort: "DISTANCE",
       gender: "MALE",
+      minAge: 25,
+      maxAge: 35,
     });
   });
 });

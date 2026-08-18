@@ -1,4 +1,5 @@
 import type { Gender } from "@/lib/api";
+import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
 const GENDER_LABELS: Record<Gender, string> = {
   MALE: "남자",
@@ -22,4 +23,16 @@ const METERS_PER_KILOMETER = 1000;
 
 export function formatDistance(meters: number) {
   return `${(meters / METERS_PER_KILOMETER).toFixed(1)}km`;
+}
+
+export function formatAgeRange(min: number, max: number) {
+  if (min === MIN_AGE && max === MAX_AGE) {
+    return "전체";
+  }
+
+  if (min === max) {
+    return `${min}살`;
+  }
+
+  return `${min}살 ~ ${max}살`;
 }

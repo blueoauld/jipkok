@@ -73,6 +73,8 @@ type MemberSearchParams = {
 type MemberListParams = {
   sort?: MemberSort;
   gender?: Gender;
+  minAge?: number;
+  maxAge?: number;
   cursor?: string;
   size?: number;
 };

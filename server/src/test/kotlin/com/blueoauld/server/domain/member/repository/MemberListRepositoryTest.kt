@@ -61,7 +61,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findRecent(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
+        val rows = findRecent()
 
         // then
         assertThat(rows.map { it.getMemberId() }).containsSubsequence(nearId, farId)
@@ -73,7 +73,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findByDistance(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
+        val rows = findByDistance()
 
         // then
         assertThat(rows.map { it.getMemberId() }).containsSubsequence(nearId, farId)
@@ -84,15 +84,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findRecent(
-            meId,
-            Gender.FEMALE.name,
-            MY_LATITUDE,
-            MY_LONGITUDE,
-            null,
-            null,
-            PAGE_SIZE,
-        )
+        val rows = findRecent(gender = Gender.FEMALE.name)
 
         // then
         assertThat(rows.map { it.getMemberId() }).contains(nearId)
@@ -100,20 +92,25 @@ class MemberListRepositoryTest {
     }
 
     @Test
-    fun `커서를 주면 그 뒤부터 준다`() {
+    fun `출생연도 범위를 주면 그 안의 회원만 준다`() {
         // given
-        val first = memberListRepository.findByDistance(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, 1).first()
 
         // when
-        val next = memberListRepository.findByDistance(
-            meId,
-            null,
-            37.5,
-            127.0,
-            first.getOrderValue(),
-            first.getMemberId(),
-            PAGE_SIZE,
-        )
+        val inside = findRecent(minBirthYear = 1998, maxBirthYear = 1998)
+        val outside = findRecent(minBirthYear = 1999)
+
+        // then
+        assertThat(inside.map { it.getMemberId() }).contains(nearId, farId)
+        assertThat(outside).isEmpty()
+    }
+
+    @Test
+    fun `커서를 주면 그 뒤부터 준다`() {
+        // given
+        val first = findByDistance(size = 1).first()
+
+        // when
+        val next = findByDistance(cursorValue = first.getOrderValue(), cursorId = first.getMemberId())
 
         // then
         assertThat(next.map { it.getMemberId() }).doesNotContain(first.getMemberId())
@@ -125,7 +122,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findRecent(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
+        val rows = findRecent()
         val near = rows.first { it.getMemberId() == nearId }
 
         // then
@@ -138,7 +135,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findRecent(meId, null, null, null, null, null, PAGE_SIZE)
+        val rows = findRecent(latitude = null, longitude = null)
 
         // then
         assertThat(rows.map { it.getDistance() }).allMatch { it == null }
@@ -271,7 +268,7 @@ class MemberListRepositoryTest {
         memberBlockRepository.saveAndFlush(MemberBlock(meId, nearId))
 
         // when
-        val rows = memberListRepository.findRecent(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
+        val rows = findRecent()
 
         // then
         assertThat(rows.map { it.getMemberId() }).doesNotContain(nearId)
@@ -283,11 +280,45 @@ class MemberListRepositoryTest {
         memberBlockRepository.saveAndFlush(MemberBlock(nearId, meId))
 
         // when
-        val rows = memberListRepository.findRecent(meId, null, MY_LATITUDE, MY_LONGITUDE, null, null, PAGE_SIZE)
+        val rows = findRecent()
 
         // then
         assertThat(rows.map { it.getMemberId() }).doesNotContain(nearId)
     }
+
+    private fun findRecent(
+        gender: String? = null,
+        minBirthYear: Int? = null,
+        maxBirthYear: Int? = null,
+        latitude: Double? = MY_LATITUDE,
+        longitude: Double? = MY_LONGITUDE,
+    ) = memberListRepository.findRecent(
+        meId,
+        gender,
+        minBirthYear,
+        maxBirthYear,
+        latitude,
+        longitude,
+        null,
+        null,
+        PAGE_SIZE,
+    )
+
+    private fun findByDistance(
+        cursorValue: Double? = null,
+        cursorId: Long? = null,
+        size: Int = PAGE_SIZE,
+    ) = memberListRepository.findByDistance(
+        meId,
+        null,
+        null,
+        null,
+        MY_LATITUDE,
+        MY_LONGITUDE,
+        cursorValue,
+        cursorId,
+        size,
+    )
 
     private fun save(member: Member) = memberRepository.saveAndFlush(member)
 

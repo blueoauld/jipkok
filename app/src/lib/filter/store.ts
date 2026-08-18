@@ -4,31 +4,56 @@ import { persist } from "zustand/middleware";
 import type { FeedSort, Gender, MemberSort } from "@/lib/api";
 import { isToday, toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
+import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
 const MEMBER_STORAGE_KEY = "jipkok.memberFilter";
 const FEED_STORAGE_KEY = "jipkok.feedFilter";
 
 const DEFAULT_FEED_SORT: FeedSort = "LATEST";
 
-type MemberFilterState = {
-  sort: MemberSort;
+export type MemberFilter = {
   gender: Gender | null;
+  minAge: number;
+  maxAge: number;
+};
+
+export const DEFAULT_MEMBER_FILTER: MemberFilter = {
+  gender: null,
+  minAge: MIN_AGE,
+  maxAge: MAX_AGE,
+};
+
+export function isDefaultMemberFilter(filter: MemberFilter) {
+  return (
+    filter.gender === DEFAULT_MEMBER_FILTER.gender &&
+    filter.minAge === DEFAULT_MEMBER_FILTER.minAge &&
+    filter.maxAge === DEFAULT_MEMBER_FILTER.maxAge
+  );
+}
+
+type MemberFilterState = MemberFilter & {
+  sort: MemberSort;
   setSort: (sort: MemberSort) => void;
-  setGender: (gender: Gender | null) => void;
+  setFilter: (filter: MemberFilter) => void;
 };
 
 export const useMemberFilterStore = create<MemberFilterState>()(
   persist(
     (set) => ({
       sort: "RECENT",
-      gender: null,
+      ...DEFAULT_MEMBER_FILTER,
       setSort: (sort) => set({ sort }),
-      setGender: (gender) => set({ gender }),
+      setFilter: (filter) => set(filter),
     }),
     {
       name: MEMBER_STORAGE_KEY,
       storage,
-      partialize: (state) => ({ sort: state.sort, gender: state.gender }),
+      partialize: (state) => ({
+        sort: state.sort,
+        gender: state.gender,
+        minAge: state.minAge,
+        maxAge: state.maxAge,
+      }),
     },
   ),
 );

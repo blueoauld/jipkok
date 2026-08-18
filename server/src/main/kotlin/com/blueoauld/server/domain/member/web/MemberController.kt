@@ -68,9 +68,12 @@ class MemberController(
         @AuthenticationPrincipal memberId: Long,
         @RequestParam(defaultValue = "RECENT") sort: MemberSort,
         @RequestParam(required = false) gender: Gender?,
+        @RequestParam(required = false) minAge: Int?,
+        @RequestParam(required = false) maxAge: Int?,
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
-    ): ScrollResponse<MemberListItemResponse> = memberListService.findMembers(memberId, sort, gender, cursor, size)
+    ): ScrollResponse<MemberListItemResponse> =
+        memberListService.findMembers(memberId, sort, gender, minAge, maxAge, cursor, size)
 
     @Operation(summary = "좋아요 랭킹")
     @GetMapping("/ranking")

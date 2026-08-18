@@ -8,7 +8,7 @@ import { FlatList, RefreshControl } from "react-native";
 import { XStack, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
-import { MenuSheet } from "@/components/MenuSheet";
+import { MemberFilterSheet } from "@/components/MemberFilterSheet";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -25,12 +25,7 @@ import {
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
 import { api, type MemberSort } from "@/lib/api";
-import { useMemberFilterStore } from "@/lib/filter/store";
-import {
-  GENDER_FILTER_VALUES,
-  GENDER_FILTERS,
-  genderLabel,
-} from "@/lib/member";
+import { type MemberFilter, useMemberFilterStore } from "@/lib/filter/store";
 import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { pushOnce } from "@/lib/router";
@@ -50,7 +45,7 @@ const COMMENT_MAX_LENGTH = 100;
 const COMMENT_SAVED_MESSAGE = "코멘트를 저장했습니다.";
 
 export default function MainScreen() {
-  const [genderOpen, setGenderOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const listRef = useRef<FlatList>(null);
@@ -59,9 +54,15 @@ export default function MainScreen() {
   const queryClient = useQueryClient();
   const sort = useMemberFilterStore((state) => state.sort);
   const gender = useMemberFilterStore((state) => state.gender);
+  const minAge = useMemberFilterStore((state) => state.minAge);
+  const maxAge = useMemberFilterStore((state) => state.maxAge);
   const setSort = useMemberFilterStore((state) => state.setSort);
-  const setGender = useMemberFilterStore((state) => state.setGender);
-  const feed = useMembers(sort, gender);
+  const setFilter = useMemberFilterStore((state) => state.setFilter);
+  const filter = useMemo<MemberFilter>(
+    () => ({ gender, minAge, maxAge }),
+    [gender, minAge, maxAge],
+  );
+  const feed = useMembers(sort, filter);
   const { data: profile } = useMyProfile();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const location = useLocationUpdate({ show, showApiError, confirm });
@@ -112,8 +113,15 @@ export default function MainScreen() {
     }
   }, [refetchFeed, refreshLocation]);
 
-  const openGender = useCallback(() => setGenderOpen(true), []);
+  const openFilter = useCallback(() => setFilterOpen(true), []);
   const openComment = useCallback(() => setCommentOpen(true), []);
+  const applyFilter = useCallback(
+    (next: MemberFilter) => {
+      setFilter(next);
+      scrollToTop();
+    },
+    [scrollToTop, setFilter],
+  );
 
   const screenOptions = useMemo(
     () => ({
@@ -125,12 +133,12 @@ export default function MainScreen() {
       ),
       headerRight: () => (
         <XStack>
-          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openGender} />
+          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openFilter} />
           <HeaderIconButton icon={NotePencilIcon} onPress={openComment} />
         </XStack>
       ),
     }),
-    [openGender, openComment],
+    [openFilter, openComment],
   );
 
   return (
@@ -184,17 +192,11 @@ export default function MainScreen() {
         onSubmit={(comment) => updateComment.mutate({ comment })}
       />
 
-      <MenuSheet
-        open={genderOpen}
-        onOpenChange={setGenderOpen}
-        items={GENDER_FILTERS.map((label) => ({
-          label,
-          selected: label === (gender ? genderLabel(gender) : "전체"),
-          onPress: () => {
-            setGender(GENDER_FILTER_VALUES[label]);
-            scrollToTop();
-          },
-        }))}
+      <MemberFilterSheet
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        filter={filter}
+        onApply={applyFilter}
       />
 
       {alertElement}

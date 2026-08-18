@@ -16,7 +16,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                $DISTANCE as distance,
                $FAVORITED as favoritedByMe
         from member m
-        where $VISIBLE $GENDER
+        where $VISIBLE $GENDER $AGE
           and m.located_at is not null
           and (
             cast(:cursorValue as double precision) is null
@@ -34,6 +34,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
     fun findRecent(
         @Param("memberId") memberId: Long,
         @Param("gender") gender: String?,
+        @Param("minBirthYear") minBirthYear: Int?,
+        @Param("maxBirthYear") maxBirthYear: Int?,
         @Param("latitude") latitude: Double?,
         @Param("longitude") longitude: Double?,
         @Param("cursorValue") cursorValue: Double?,
@@ -49,7 +51,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                $DISTANCE as distance,
                $FAVORITED as favoritedByMe
         from member m
-        where $VISIBLE $GENDER
+        where $VISIBLE $GENDER $AGE
           and m.latitude is not null
           and m.longitude is not null
           and (
@@ -65,6 +67,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
     fun findByDistance(
         @Param("memberId") memberId: Long,
         @Param("gender") gender: String?,
+        @Param("minBirthYear") minBirthYear: Int?,
+        @Param("maxBirthYear") maxBirthYear: Int?,
         @Param("latitude") latitude: Double,
         @Param("longitude") longitude: Double,
         @Param("cursorValue") cursorValue: Double?,
@@ -159,6 +163,11 @@ interface MemberListRepository : JpaRepository<Member, Long> {
 
         private const val GENDER = """
             and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
+        """
+
+        private const val AGE = """
+            and (cast(:minBirthYear as integer) is null or m.birth_year >= cast(:minBirthYear as integer))
+            and (cast(:maxBirthYear as integer) is null or m.birth_year <= cast(:maxBirthYear as integer))
         """
 
         private const val DISTANCE = """
