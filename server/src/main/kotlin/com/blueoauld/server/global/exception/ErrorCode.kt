@@ -101,9 +101,9 @@ enum class ErrorCode(
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_004", "채팅방을 찾을 수 없습니다."),
     REPLY_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_005", "답글 대상 메시지를 찾을 수 없습니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_006", "메시지를 찾을 수 없습니다."),
-    VIDEO_TOO_LONG(HttpStatus.BAD_REQUEST, "CHAT_007", "영상은 5분까지 보낼 수 있습니다."),
-    VIDEO_TOO_LARGE(HttpStatus.BAD_REQUEST, "CHAT_008", "영상이 너무 큽니다. 150MB까지 보낼 수 있습니다."),
-    NOT_VIDEO_MESSAGE(HttpStatus.BAD_REQUEST, "CHAT_009", "영상 메시지가 아닙니다."),
+    VIDEO_TOO_LONG(HttpStatus.BAD_REQUEST, "CHAT_007", "동영상은 5분까지 보낼 수 있습니다."),
+    VIDEO_TOO_LARGE(HttpStatus.BAD_REQUEST, "CHAT_008", "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다."),
+    NOT_VIDEO_MESSAGE(HttpStatus.BAD_REQUEST, "CHAT_009", "동영상 메시지가 아닙니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_002", "신고를 찾을 수 없습니다."),

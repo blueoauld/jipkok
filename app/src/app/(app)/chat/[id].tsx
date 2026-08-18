@@ -79,9 +79,9 @@ const REPLY_NOT_LOADED_MESSAGE = "원문을 아직 불러오지 못했습니다.
 
 const PHOTO_SAVED_MESSAGE = "사진을 저장했습니다.";
 const PHOTO_SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
-const VIDEO_SAVED_MESSAGE = "영상을 저장했습니다.";
-const VIDEO_SAVE_FAILED_MESSAGE = "영상을 저장하지 못했습니다.";
-const VIDEO_URL_FAILED_MESSAGE = "영상을 불러오지 못했습니다.";
+const VIDEO_SAVED_MESSAGE = "동영상을 저장했습니다.";
+const VIDEO_SAVE_FAILED_MESSAGE = "동영상을 저장하지 못했습니다.";
+const VIDEO_URL_FAILED_MESSAGE = "동영상을 불러오지 못했습니다.";
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

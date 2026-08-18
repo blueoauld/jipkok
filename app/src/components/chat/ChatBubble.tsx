@@ -4,6 +4,7 @@ import { type ReactNode, useRef } from "react";
 import { View } from "react-native";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import type {
   ChatMessageResponse,
   ChatReactionResponse,
@@ -297,28 +298,33 @@ function ReplyMessage({
   return (
     <BubbleFrame mine={mine} onLongPress={onLongPress}>
       <YStack px={H_PADDING} py={10} gap={SECTION_GAP}>
-        <YStack
-          gap={2}
+        <XStack
+          items="flex-start"
+          gap="$2.5"
           pressStyle={{ opacity: PRESS_OPACITY }}
           onPress={() => onPressReply(reply.messageId)}
         >
-          <Text
-            fontSize="$2"
-            fontWeight="600"
-            color={mine ? "white" : "$color12"}
-            numberOfLines={1}
-          >
-            {replyName}에게 답장
-          </Text>
+          <ReplyPreviewThumbnail reply={reply} />
 
-          <Text
-            fontSize={14}
-            color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
-            numberOfLines={2}
-          >
-            {replySummary(reply)}
-          </Text>
-        </YStack>
+          <YStack shrink={1} gap={2}>
+            <Text
+              fontSize="$2"
+              fontWeight="600"
+              color={mine ? "white" : "$color12"}
+              numberOfLines={1}
+            >
+              {replyName}에게 답장
+            </Text>
+
+            <Text
+              fontSize={14}
+              color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
+              numberOfLines={2}
+            >
+              {replySummary(reply)}
+            </Text>
+          </YStack>
+        </XStack>
 
         <YStack height={1} bg={mine ? QUOTE_LINE_ON_BLUE : "$color8"} />
 

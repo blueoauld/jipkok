@@ -1172,9 +1172,10 @@ export interface components {
             messageId: number;
             /** Format: int64 */
             senderId: number;
-            content?: string | null;
             /** @enum {string} */
             type: "TEXT" | "PHOTO" | "VIDEO";
+            content?: string | null;
+            previewUrl?: string | null;
         };
         MarkRoomsReadRequest: {
             roomIds: number[];

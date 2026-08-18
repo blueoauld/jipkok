@@ -14,7 +14,7 @@ export const LEAVE_SELECTED_DESCRIPTION =
   "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 export const PHOTO_SUMMARY = "사진";
-export const VIDEO_SUMMARY = "영상";
+export const VIDEO_SUMMARY = "동영상";
 
 export function mediaSummary(type: ChatMessageType) {
   return type === "VIDEO" ? VIDEO_SUMMARY : PHOTO_SUMMARY;
@@ -75,6 +75,7 @@ export function toReply(message: ChatMessageResponse): ReplyMessageResponse {
     senderId: message.senderId,
     type: message.type,
     content: message.content ?? null,
+    previewUrl: message.imageUrl ?? message.thumbnailUrl ?? null,
   };
 }
 

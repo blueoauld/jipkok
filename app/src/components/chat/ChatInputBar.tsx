@@ -11,6 +11,7 @@ import {
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
@@ -106,6 +107,8 @@ export function ChatInputBar({
             py="$2"
             gap="$2.5"
           >
+            <ReplyPreviewThumbnail reply={reply} />
+
             <YStack flex={1} gap={2}>
               <Text fontSize="$2" fontWeight="600" color="$color12">
                 {replyName}에게 답장

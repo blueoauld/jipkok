@@ -294,6 +294,21 @@ class ChatMessageServiceTest {
         assertThat(response.replyMessage?.messageId).isEqualTo(REPLY_ID)
         assertThat(response.replyMessage?.content).isEqualTo("원문입니다.")
         assertThat(response.replyMessage?.senderId).isEqualTo(PARTNER_ID)
+        assertThat(response.replyMessage?.previewUrl).isNull()
+    }
+
+    @Test
+    fun `영상에 답글을 달면 썸네일을 미리보기로 준다`() {
+        // given
+        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(videoMessage())
+
+        // when
+        val response = chatMessageService.send(ME_ID, ROOM_ID, reply("멋지다", REPLY_ID))
+
+        // then
+        assertThat(response.replyMessage?.type).isEqualTo(ChatMessageType.VIDEO)
+        assertThat(response.replyMessage?.previewUrl).isEqualTo(SIGNED_URL)
+        verify { photoStorage.createSignedViewUrl(THUMBNAIL_KEY) }
     }
 
     @Test

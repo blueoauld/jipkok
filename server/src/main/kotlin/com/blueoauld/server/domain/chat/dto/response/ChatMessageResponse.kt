@@ -40,15 +40,17 @@ data class ChatMessageResponse(
         val senderId: Long,
         val type: ChatMessageType,
         val content: String?,
+        val previewUrl: String?,
     ) {
 
         companion object {
 
-            fun from(message: ChatMessage) = ReplyMessageResponse(
+            fun of(message: ChatMessage, previewUrl: String?) = ReplyMessageResponse(
                 messageId = message.id,
                 senderId = message.senderId,
                 type = message.type,
                 content = message.content,
+                previewUrl = previewUrl,
             )
         }
     }

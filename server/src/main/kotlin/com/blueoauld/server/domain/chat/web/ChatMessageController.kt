@@ -89,7 +89,11 @@ class ChatMessageController(
         chatMessageService.markAllRead(memberId, request.roomIds)
     }
 
-    @Operation(operationId = "findChatVideoUrl", summary = "영상 재생 URL 발급", description = "서명 URL은 짧게 만료되므로 재생 직전에 받는다.")
+    @Operation(
+        operationId = "findChatVideoUrl",
+        summary = "동영상 재생 URL 발급",
+        description = "서명 URL은 짧게 만료되므로 재생 직전에 받는다.",
+    )
     @GetMapping("/{roomId}/messages/{messageId}/video-url")
     fun findVideoUrl(
         @AuthenticationPrincipal memberId: Long,

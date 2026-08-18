@@ -19,10 +19,10 @@ const TOO_LARGE_CODE = "VIDEO_TOO_LARGE";
 const UPLOAD_FAILED_CODE = "VIDEO_UPLOAD_FAILED";
 const VIDEO_FAILED_CODE = "VIDEO_FAILED";
 
-export const VIDEO_TOO_LONG_MESSAGE = `영상은 ${VIDEO_MAX_SECONDS / 60}분까지 보낼 수 있습니다.`;
-const TOO_LARGE_MESSAGE = "영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.";
-const UPLOAD_FAILED_MESSAGE = "영상을 업로드하지 못했습니다.";
-const VIDEO_FAILED_MESSAGE = "영상을 보내지 못했습니다.";
+export const VIDEO_TOO_LONG_MESSAGE = `동영상은 ${VIDEO_MAX_SECONDS / 60}분까지 보낼 수 있습니다.`;
+const TOO_LARGE_MESSAGE = "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.";
+const UPLOAD_FAILED_MESSAGE = "동영상을 업로드하지 못했습니다.";
+const VIDEO_FAILED_MESSAGE = "동영상을 보내지 못했습니다.";
 
 export type VideoKeys = { objectKey: string; thumbnailKey: string };
 
@@ -69,7 +69,7 @@ function ensureWithinLimit(uri: string) {
   return uri;
 }
 
-// 압축기가 못 다루는 영상(일부 HDR, 시뮬레이터)은 원본이 상한 안이면 그대로 보낸다.
+// 압축기가 못 다루는 동영상(일부 HDR, 시뮬레이터)은 원본이 상한 안이면 그대로 보낸다.
 export async function compressVideo(
   uri: string,
   onProgress: (progress: number) => void,

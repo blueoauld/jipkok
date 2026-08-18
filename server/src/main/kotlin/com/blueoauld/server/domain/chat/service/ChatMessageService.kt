@@ -227,7 +227,16 @@ class ChatMessageService(
             .orElseThrow { BusinessException(ErrorCode.REPLY_TARGET_NOT_FOUND) }
     }
 
-    private fun toReplyResponse(original: ChatMessage) = ChatMessageResponse.ReplyMessageResponse.from(original)
+    private fun toReplyResponse(original: ChatMessage) = ChatMessageResponse.ReplyMessageResponse.of(
+        original,
+        previewKeyOf(original)?.let(photoStorage::createSignedViewUrl),
+    )
+
+    private fun previewKeyOf(message: ChatMessage) = when (message.type) {
+        ChatMessageType.TEXT -> null
+        ChatMessageType.PHOTO -> message.objectKey
+        ChatMessageType.VIDEO -> message.thumbnailObjectKey
+    }
 
     private fun toMessage(
         memberId: Long,
