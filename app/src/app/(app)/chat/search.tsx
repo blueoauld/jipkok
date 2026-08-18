@@ -15,11 +15,13 @@ const SCREEN_OPTIONS = { title: "채팅 검색" };
 export default function ChatSearchScreen() {
   const [submitted, setSubmitted] = useState("");
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
-  const { toggleNotification, confirmLeave } = useChatRoomActions({
-    show,
-    showApiError,
-    confirm,
-  });
+  const { toggleNotification, markRoomRead, confirmLeave } = useChatRoomActions(
+    {
+      show,
+      showApiError,
+      confirm,
+    },
+  );
   const search = useChatRoomSearch(submitted);
 
   return (
@@ -37,6 +39,7 @@ export default function ChatSearchScreen() {
           <ChatRoomRow
             room={item}
             onToggleNotification={toggleNotification}
+            onMarkRead={markRoomRead}
             onLeave={confirmLeave}
           />
         )}

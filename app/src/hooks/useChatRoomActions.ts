@@ -99,6 +99,39 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     onError: showApiError,
   });
 
+  const { mutate: read } = useMutation({
+    mutationFn: (roomId: number) => api.chats.markAllRead([roomId]),
+    onMutate: async (roomId: number) => {
+      await queryClient.cancelQueries({ queryKey: CHAT_ROOMS_KEY });
+
+      const previous = queryClient.getQueriesData<InfiniteData<ChatRoomPage>>({
+        queryKey: CHAT_ROOMS_KEY,
+      });
+
+      queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
+        { queryKey: CHAT_ROOMS_KEY },
+        (current) =>
+          mapPages(current, (items) =>
+            items.map((item) =>
+              item.roomId === roomId ? { ...item, unreadCount: 0 } : item,
+            ),
+          ),
+      );
+
+      return { previous };
+    },
+    onSuccess: (_data, roomId) => {
+      queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) });
+      invalidateChatLists(queryClient);
+    },
+    onError: (error, _roomId, context) => {
+      context?.previous.forEach(([queryKey, data]) =>
+        queryClient.setQueryData(queryKey, data),
+      );
+      showApiError(error);
+    },
+  });
+
   const { mutate: markAllRead, isPending: markingRoomsRead } = useMutation({
     mutationFn: (roomIds: number[]) =>
       runInChunks(roomIds, api.chats.markAllRead),
@@ -130,6 +163,14 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     [confirm, leave],
   );
 
+  const markRoomRead = useCallback(
+    (room: ChatRoomResponse) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      read(room.roomId);
+    },
+    [read],
+  );
+
   const markRoomsRead = useCallback(
     (roomIds: number[], onDone: () => void) =>
       markAllRead(roomIds, { onSuccess: onDone }),
@@ -149,6 +190,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
 
   return {
     toggleNotification,
+    markRoomRead,
     confirmLeave,
     markRoomsRead,
     confirmLeaveRooms,

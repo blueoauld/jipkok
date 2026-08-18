@@ -1,3 +1,4 @@
+import type { Icon, IconWeight } from "phosphor-react-native";
 import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
@@ -7,7 +8,7 @@ import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { RetroBadge } from "@/components/ui/RetroBadge";
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -32,52 +33,31 @@ function UnreadBadge({ count }: { count: number }) {
   return <RetroBadge>{formatUnreadCount(count)}</RetroBadge>;
 }
 
-function NotificationAction({
-  enabled,
+function SwipeAction({
+  icon: Icon,
+  weight = "fill",
+  bg,
   onPress,
 }: {
-  enabled: boolean;
+  icon: Icon;
+  weight?: IconWeight;
+  bg: XStackProps["bg"];
   onPress: () => void;
 }) {
-  const Icon = enabled ? BellSlashIcon : BellIcon;
-  const accent = useAccentToken();
-
   return (
-    <YStack self="center" pr="$3">
-      <Pressable onPress={onPress}>
-        <XStack
-          width={ACTION_SIZE}
-          height={ACTION_SIZE}
-          borderWidth={RETRO_BORDER_WIDTH}
-          borderColor="$gray12"
-          bg={accent}
-          items="center"
-          justify="center"
-        >
-          <Icon size={ACTION_ICON_SIZE} weight="fill" color="white" />
-        </XStack>
-      </Pressable>
-    </YStack>
-  );
-}
-
-function LeaveAction({ onPress }: { onPress: () => void }) {
-  return (
-    <YStack self="center" pl="$3">
-      <Pressable onPress={onPress}>
-        <XStack
-          width={ACTION_SIZE}
-          height={ACTION_SIZE}
-          borderWidth={RETRO_BORDER_WIDTH}
-          borderColor="$gray12"
-          bg="$red10"
-          items="center"
-          justify="center"
-        >
-          <SignOutIcon size={ACTION_ICON_SIZE} weight="fill" color="white" />
-        </XStack>
-      </Pressable>
-    </YStack>
+    <Pressable onPress={onPress}>
+      <XStack
+        width={ACTION_SIZE}
+        height={ACTION_SIZE}
+        borderWidth={RETRO_BORDER_WIDTH}
+        borderColor="$gray12"
+        bg={bg}
+        items="center"
+        justify="center"
+      >
+        <Icon size={ACTION_ICON_SIZE} weight={weight} color="white" />
+      </XStack>
+    </Pressable>
   );
 }
 
@@ -108,6 +88,7 @@ function Row({
   selected = false,
   onSelect,
   onToggleNotification,
+  onMarkRead,
   onLeave,
 }: {
   room: ChatRoomResponse;
@@ -115,9 +96,11 @@ function Row({
   selected?: boolean;
   onSelect?: (room: ChatRoomResponse) => void;
   onToggleNotification: (room: ChatRoomResponse) => void;
+  onMarkRead: (room: ChatRoomResponse) => void;
   onLeave: (room: ChatRoomResponse) => void;
 }) {
   const theme = useTheme();
+  const accent = useAccentToken();
   const swipeable = useRef<SwipeableMethods>(null);
 
   return (
@@ -129,21 +112,37 @@ function Row({
         overshootLeft={false}
         overshootRight={false}
         renderLeftActions={() => (
-          <NotificationAction
-            enabled={room.notificationEnabled}
-            onPress={() => {
-              swipeable.current?.close();
-              onToggleNotification(room);
-            }}
-          />
+          <XStack self="center" pr="$3" gap="$2">
+            <SwipeAction
+              icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
+              bg={accent}
+              onPress={() => {
+                swipeable.current?.close();
+                onToggleNotification(room);
+              }}
+            />
+            <SwipeAction
+              icon={CheckIcon}
+              weight="bold"
+              bg="$green10"
+              onPress={() => {
+                swipeable.current?.close();
+                onMarkRead(room);
+              }}
+            />
+          </XStack>
         )}
         renderRightActions={() => (
-          <LeaveAction
-            onPress={() => {
-              swipeable.current?.close();
-              onLeave(room);
-            }}
-          />
+          <YStack self="center" pl="$3">
+            <SwipeAction
+              icon={SignOutIcon}
+              bg="$red10"
+              onPress={() => {
+                swipeable.current?.close();
+                onLeave(room);
+              }}
+            />
+          </YStack>
         )}
       >
         <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>

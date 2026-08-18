@@ -95,7 +95,7 @@ function HeaderTextButton({
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Text fontSize="$4" fontWeight="500">
+      <Text fontSize="$4" fontWeight="600">
         {label}
       </Text>
     </XStack>
