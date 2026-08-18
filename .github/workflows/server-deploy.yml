@@ -149,4 +149,5 @@ jobs:
             export SERVER_IMAGE="${{ needs.build.outputs.image }}"
             docker compose pull server
             docker compose up -d --remove-orphans
+            docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
             docker image prune -af

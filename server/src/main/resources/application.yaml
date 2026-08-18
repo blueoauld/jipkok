@@ -34,6 +34,9 @@ spring:
       repositories:
         enabled: false
 
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
   jackson:
     default-property-inclusion: non_null
 
@@ -58,6 +61,7 @@ logging:
 
 server:
   port: 8080
+  shutdown: graceful
 
 jwt:
   access-token-validity: 1h
