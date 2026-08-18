@@ -33,12 +33,9 @@ describe("isSingleEmoji", () => {
     },
   );
 
-  it.each(["😀😀", "a", "ㅋ", "👍 ", "", "😀a"])(
-    "%j 는 거짓이다",
-    (text) => {
-      expect(isSingleEmoji(text)).toBe(false);
-    },
-  );
+  it.each(["😀😀", "a", "ㅋ", "👍 ", "", "😀a"])("%j 는 거짓이다", (text) => {
+    expect(isSingleEmoji(text)).toBe(false);
+  });
 });
 
 describe("replySummary", () => {

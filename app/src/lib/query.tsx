@@ -46,7 +46,7 @@ function useAppStateFocus() {
 
 // 세션 중에 정지되면 어느 요청이든 이 코드를 받는다. 내 프로필을 다시 읽으면
 // AppLayout의 가드가 정지 화면으로 보낸다.
-function createQueryClient() {
+export function createQueryClient() {
   const onError = (error: unknown) => {
     if (isApiError(error) && error.code === SERVICE_SUSPENDED_CODE) {
       client.invalidateQueries({ queryKey: MY_PROFILE_KEY });

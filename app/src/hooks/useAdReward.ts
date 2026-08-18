@@ -18,6 +18,40 @@ const REWARD_PENDING_MESSAGE = `보상이 아직 반영되지 않았습니다. �
 const NOT_READY_MESSAGE =
   "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.";
 
+type RewardOutcome = "rewarded" | "pending" | "unknown";
+
+function delay(millis: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, millis);
+
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(new Error("aborted"));
+    });
+  });
+}
+
+// 잔액이 늘 때까지 몇 번 다시 읽는다. 이전 잔액을 모르면 늘었는지 알 수 없어 unknown이다.
+export async function waitForReward(
+  before: number | null,
+  fetchBalance: () => Promise<number>,
+  signal: AbortSignal,
+  interval = REWARD_POLL_INTERVAL,
+  attempts = REWARD_POLL_COUNT,
+): Promise<RewardOutcome> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    await delay(interval, signal);
+
+    const balance = await fetchBalance().catch(() => null);
+
+    if (balance !== null && before !== null && balance > before) {
+      return "rewarded";
+    }
+  }
+
+  return before === null ? "unknown" : "pending";
+}
+
 export function useAdReward() {
   const queryClient = useQueryClient();
   const { data } = useMyProfile();
@@ -50,40 +84,20 @@ export function useAdReward() {
       return;
     }
 
-    let cancelled = false;
-    const before = balanceBefore.current;
+    const controller = new AbortController();
 
-    const finish = (rewarded: boolean) => {
-      queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
-      queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      showToast(
-        rewarded ? "info" : "warning",
-        rewarded ? REWARD_MESSAGE : REWARD_PENDING_MESSAGE,
-      );
-    };
+    waitForReward(balanceBefore.current, api.points.balance, controller.signal)
+      .then((outcome) => {
+        queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
+        queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+        showToast(
+          outcome === "pending" ? "warning" : "info",
+          outcome === "pending" ? REWARD_PENDING_MESSAGE : REWARD_MESSAGE,
+        );
+      })
+      .catch(() => undefined);
 
-    const poll = async (attempt: number) => {
-      const balance = await api.points.balance().catch(() => null);
-
-      if (cancelled) {
-        return;
-      }
-
-      if (balance !== null && before !== null && balance > before) {
-        finish(true);
-      } else if (attempt >= REWARD_POLL_COUNT) {
-        finish(before === null);
-      } else {
-        setTimeout(() => poll(attempt + 1), REWARD_POLL_INTERVAL);
-      }
-    };
-
-    const timer = setTimeout(() => poll(1), REWARD_POLL_INTERVAL);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
+    return () => controller.abort();
   }, [isEarnedReward, queryClient]);
 
   return {
