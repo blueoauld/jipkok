@@ -93,5 +93,10 @@
       "<rootDir>/src/**/*.test.ts",
       "<rootDir>/src/**/*.test.tsx"
     ]
+  },
+  "overrides": {
+    "expo-modules-core": {
+      "react-native-worklets": "$react-native-worklets"
+    }
   }
 }
