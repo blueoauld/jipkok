@@ -932,7 +932,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 영상 재생 URL 발급
+         * 동영상 재생 URL 발급
          * @description 서명 URL은 짧게 만료되므로 재생 직전에 받는다.
          */
         get: operations["findChatVideoUrl"];
@@ -2171,6 +2171,8 @@ export interface operations {
             query?: {
                 sort?: "RECENT" | "DISTANCE";
                 gender?: "MALE" | "FEMALE";
+                minAge?: number;
+                maxAge?: number;
                 cursor?: string;
                 size?: number;
             };
