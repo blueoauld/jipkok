@@ -11,11 +11,12 @@ import type {
   ReplyMessageResponse,
 } from "@/lib/api";
 import {
+  groupReactions,
   isPending,
   isSingleEmoji,
-  REACTION_EMOJI,
   replySummary,
 } from "@/lib/chat";
+import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
 import { formatClockTime } from "@/lib/date";
 import {
@@ -46,13 +47,6 @@ const SECTION_GAP = 6;
 const CHIP_GAP = 2;
 const CHIP_FONT_SIZE = 12;
 const CHIP_SIZE = 24;
-
-export type MessageFrame = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
 
 function BubbleFrame({
   mine,
@@ -449,21 +443,7 @@ function ReactionChips({
   myMemberId: number;
   onPress: () => void;
 }) {
-  const groups = new Map<string, { count: number; reacted: boolean }>();
-  const ordered = [
-    ...reactions.filter((reaction) => reaction.memberId === myMemberId),
-    ...reactions.filter((reaction) => reaction.memberId !== myMemberId),
-  ];
-
-  for (const reaction of ordered) {
-    const emoji = REACTION_EMOJI[reaction.type];
-    const group = groups.get(emoji) ?? { count: 0, reacted: false };
-
-    groups.set(emoji, {
-      count: group.count + 1,
-      reacted: group.reacted || reaction.memberId === myMemberId,
-    });
-  }
+  const groups = groupReactions(reactions, myMemberId);
 
   return (
     <XStack
@@ -471,7 +451,7 @@ function ReactionChips({
       mt={CHIP_GAP}
       gap={CHIP_GAP}
     >
-      {[...groups].map(([emoji, { count, reacted }]) => (
+      {groups.map(({ emoji, count, reacted }) => (
         <ReactionChip
           key={emoji}
           emoji={emoji}

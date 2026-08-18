@@ -1,7 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useCallback, useState } from "react";
 
-import type { MessageFrame } from "@/components/chat/ChatBubble";
 import type {
   MessageAction,
   MessageActionTarget,
@@ -14,6 +13,7 @@ import {
 } from "@/lib/api";
 import { isPending } from "@/lib/chat";
 import { copyMessage, saveMedia } from "@/lib/chat/media";
+import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { showToast } from "@/lib/toast/store";
 
 const VIDEO_SAVE_FAILED_MESSAGE = "동영상을 저장하지 못했습니다.";

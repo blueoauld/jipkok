@@ -6,9 +6,10 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { useTheme, XStack, YStack } from "tamagui";
 
-import { ChatBubble, type MessageFrame } from "@/components/chat/ChatBubble";
+import { ChatBubble } from "@/components/chat/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
+import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 
 const AVATAR_SIZE = 36;

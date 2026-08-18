@@ -2,18 +2,15 @@ import { Modal, Pressable, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 
-import {
-  ChatBubbleContent,
-  type MessageFrame,
-} from "@/components/chat/ChatBubble";
+import { ChatBubbleContent } from "@/components/chat/ChatBubble";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse, ChatReactionType } from "@/lib/api";
 import { REACTION_EMOJI, REACTION_TYPES } from "@/lib/chat";
 import {
-  OVERLAY_BG,
-  RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET,
-} from "@/lib/design";
+  layoutActionOverlay,
+  type MessageFrame,
+} from "@/lib/chat/overlay-layout";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
 const EMOJI_ITEM_SIZE = 40;
@@ -23,9 +20,6 @@ const BAR_HEIGHT = EMOJI_ITEM_SIZE + BAR_PADDING * 2 + RETRO_BORDER_WIDTH * 2;
 
 const MENU_ITEM_HEIGHT = 44;
 const MENU_WIDTH = 160;
-
-const GAP = 6 + RETRO_SHADOW_OFFSET;
-const EDGE_MARGIN = 8;
 
 export type MessageAction = {
   label: string;
@@ -74,25 +68,14 @@ function Content({
   const insets = useSafeAreaInsets();
 
   const { message, mine, frame } = target;
-  const menuHeight = actions.length * MENU_ITEM_HEIGHT + RETRO_BORDER_WIDTH * 2;
-
-  const topLimit = insets.top + EDGE_MARGIN;
-  const bottomLimit = window.height - insets.bottom - EDGE_MARGIN;
-
-  const barAbove = frame.y - GAP - BAR_HEIGHT >= topLimit;
-  const barTop = barAbove
-    ? frame.y - GAP - BAR_HEIGHT
-    : frame.y + frame.height + GAP;
-
-  const belowBar = barAbove
-    ? frame.y + frame.height + GAP
-    : barTop + BAR_HEIGHT + GAP;
-  const menuFits = belowBar + menuHeight <= bottomLimit;
-  const menuTop = menuFits ? belowBar : barTop - GAP - menuHeight;
-
-  const side = mine
-    ? { right: window.width - frame.x - frame.width }
-    : { left: frame.x };
+  const { barTop, menuTop, side } = layoutActionOverlay({
+    frame,
+    mine,
+    barHeight: BAR_HEIGHT,
+    menuHeight: actions.length * MENU_ITEM_HEIGHT + RETRO_BORDER_WIDTH * 2,
+    window,
+    insets,
+  });
 
   return (
     <>
