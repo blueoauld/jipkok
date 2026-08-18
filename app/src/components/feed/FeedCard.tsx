@@ -134,7 +134,7 @@ function Card({
         </YStack>
       )}
 
-      <YStack position="absolute" b="$3" r="$3">
+      <YStack position="absolute" b="$3" l="$3">
         <CardButton
           width={CARD_ICON_BUTTON_SIZE}
           height={CARD_ICON_BUTTON_SIZE}
