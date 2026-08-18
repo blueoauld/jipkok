@@ -132,7 +132,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "server/docker-compose.yml,server/Caddyfile"
+          source: "server/docker-compose.yml,server/caddy/Caddyfile"
           target: "~/jipkok"
           strip_components: 1
 

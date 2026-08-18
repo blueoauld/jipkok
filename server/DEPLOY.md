@@ -13,7 +13,7 @@ sudo usermod -aG docker $USER
 
 `usermod` 뒤에는 다시 접속해야 적용된다.
 
-배포 디렉터리를 만들고 `docker-compose.yml`, `Caddyfile`, `.env`를 올린다.
+배포 디렉터리를 만들고 `docker-compose.yml`, `caddy/Caddyfile`, `.env`를 올린다. Caddyfile은 파일이 아니라 `caddy/` 디렉터리째 마운트한다. 파일만 마운트하면 scp가 새 inode로 갈아끼웠을 때 컨테이너가 옛 내용을 계속 보게 되어 `caddy reload`가 헛돈다.
 
 ```bash
 mkdir -p ~/jipkok/certs
