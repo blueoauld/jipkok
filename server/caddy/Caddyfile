@@ -1,5 +1,5 @@
 api.jipkok.app {
-    tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin-key.pem
+    tls /certs/origin.pem /certs/origin-key.pem
 
     reverse_proxy server:8080 {
         lb_try_duration 30s
