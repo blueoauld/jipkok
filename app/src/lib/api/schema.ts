@@ -924,6 +924,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/chats/{roomId}/messages/{messageId}/video-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 영상 재생 URL 발급
+         * @description 서명 URL은 짧게 만료되므로 재생 직전에 받는다.
+         */
+        get: operations["findChatVideoUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chats/unread-count": {
         parameters: {
             query?: never;
@@ -1116,9 +1136,12 @@ export interface components {
         };
         SendMessageRequest: {
             /** @enum {string} */
-            type: "TEXT" | "PHOTO";
+            type: "TEXT" | "PHOTO" | "VIDEO";
             content?: string | null;
             objectKey?: string | null;
+            thumbnailKey?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
             /** Format: int64 */
             replyToMessageId?: number | null;
             clientMessageId?: string | null;
@@ -1131,9 +1154,13 @@ export interface components {
             /** Format: int64 */
             senderId: number;
             /** @enum {string} */
-            type: "TEXT" | "PHOTO";
+            type: "TEXT" | "PHOTO" | "VIDEO";
             content?: string | null;
             imageUrl?: string | null;
+            videoUrl?: string | null;
+            thumbnailUrl?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
             /** Format: date-time */
             createdAt: string;
             replyMessage: components["schemas"]["ReplyMessageResponse"] | null;
@@ -1146,6 +1173,8 @@ export interface components {
             /** Format: int64 */
             senderId: number;
             content?: string | null;
+            /** @enum {string} */
+            type: "TEXT" | "PHOTO" | "VIDEO";
         };
         MarkRoomsReadRequest: {
             roomIds: number[];
@@ -1325,7 +1354,7 @@ export interface components {
             nickname: string;
             profileImageUrl?: string | null;
             /** @enum {string} */
-            lastMessageType: "TEXT" | "PHOTO";
+            lastMessageType: "TEXT" | "PHOTO" | "VIDEO";
             lastMessageContent?: string | null;
             /** Format: date-time */
             lastMessageAt: string;
@@ -1342,6 +1371,9 @@ export interface components {
             items: components["schemas"]["ChatMessageResponse"][];
             /** Format: int64 */
             nextCursor?: number | null;
+        };
+        ChatVideoUrlResponse: {
+            url: string;
         };
         AppVersionResponse: {
             latestVersion: string;
@@ -6111,6 +6143,83 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findChatVideoUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: number;
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatVideoUrlResponse"];
+                };
             };
             /** @description 요청이 올바르지 않다 */
             400: {

@@ -1,5 +1,6 @@
 import {
   type ChatMessageResponse,
+  type ChatMessageType,
   type ChatReactionType,
   isApiError,
   type ReplyMessageResponse,
@@ -13,6 +14,11 @@ export const LEAVE_SELECTED_DESCRIPTION =
   "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
 export const PHOTO_SUMMARY = "사진";
+export const VIDEO_SUMMARY = "영상";
+
+export function mediaSummary(type: ChatMessageType) {
+  return type === "VIDEO" ? VIDEO_SUMMARY : PHOTO_SUMMARY;
+}
 
 const CHAT_ROOM_NOT_FOUND_CODE = "CHAT_004";
 
@@ -56,14 +62,18 @@ export function formatUnreadCount(count: number) {
 }
 
 // 답장 대상은 원본 메시지일 수도, 서버가 줄인 응답일 수도 있다.
-export function replySummary(reply: { content?: string | null }) {
-  return reply.content || PHOTO_SUMMARY;
+export function replySummary(reply: {
+  type: ChatMessageType;
+  content?: string | null;
+}) {
+  return reply.content || mediaSummary(reply.type);
 }
 
 export function toReply(message: ChatMessageResponse): ReplyMessageResponse {
   return {
     messageId: message.messageId,
     senderId: message.senderId,
+    type: message.type,
     content: message.content ?? null,
   };
 }

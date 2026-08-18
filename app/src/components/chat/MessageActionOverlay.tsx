@@ -113,6 +113,7 @@ function Content({
           mine={mine}
           replyName={replyName}
           onPressPhoto={() => undefined}
+          onPressVideo={() => undefined}
           onPressReply={() => undefined}
           onLongPress={() => undefined}
         />

@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
+import { useState } from "react";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -14,10 +15,26 @@ import {
   type ChatMessageResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
+import { useUploadStore } from "@/lib/chat/upload-store";
 import { mapPages } from "@/lib/paging";
 import { uploadChatPhoto } from "@/lib/photo";
+import {
+  compressVideo,
+  createVideoThumbnail,
+  describeVideoError,
+  isVideoCancelled,
+  uploadChatVideo,
+  videoDurationSeconds,
+} from "@/lib/video";
 
 type Feed = InfiniteData<ChatMessagePage>;
+
+type PendingVideo = {
+  asset: ImagePickerAsset;
+  temp: ChatMessageResponse;
+  id: string;
+  thumbnailUri: string;
+};
 
 let lastTempId = 0;
 
@@ -30,7 +47,10 @@ function createTemp(
   message: Pick<
     ChatMessageResponse,
     "type" | "content" | "imageUrl" | "replyMessage"
-  >,
+  > &
+    Partial<
+      Pick<ChatMessageResponse, "videoUrl" | "thumbnailUrl" | "durationSeconds">
+    >,
 ): ChatMessageResponse {
   return {
     messageId: --lastTempId,
@@ -82,6 +102,108 @@ export function useSendMessage(
 
   const refreshRooms = () =>
     queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
+
+  const [videoBatches, setVideoBatches] = useState(0);
+  const uploads = useUploadStore.getState;
+
+  // 영상 하나를 압축 → 업로드 → 전송한다. 실패하면 말풍선을 남겨 두고 재전송을 기다린다.
+  // 압축본은 기억해 두어 재전송 때 다시 압축하지 않는다.
+  const sendVideo = async (
+    video: PendingVideo,
+    compressed: string | null,
+  ): Promise<void> => {
+    const { asset, temp, id, thumbnailUri } = video;
+    const controller = new AbortController();
+    const cancel = () => {
+      controller.abort();
+      uploads().remove(id);
+      discard([temp.messageId]);
+    };
+    const retry = (uri: string | null) => () => {
+      void sendVideo(video, uri);
+    };
+    const durationSeconds = videoDurationSeconds(asset);
+
+    uploads().set(id, {
+      phase: compressed ? "uploading" : "compressing",
+      progress: 0,
+      cancel,
+      retry: retry(compressed),
+    });
+
+    let videoUri = compressed;
+
+    try {
+      videoUri ??= await compressVideo(
+        asset.uri,
+        (progress) => uploads().progress(id, "compressing", progress),
+        controller.signal,
+      );
+
+      const keys = await uploadChatVideo(
+        videoUri,
+        thumbnailUri,
+        (progress) => uploads().progress(id, "uploading", progress),
+        controller.signal,
+      );
+      const sent = await api.chats.send(roomId, {
+        type: "VIDEO",
+        objectKey: keys.objectKey,
+        thumbnailKey: keys.thumbnailKey,
+        durationSeconds,
+        clientMessageId: id,
+      });
+
+      uploads().remove(id);
+      replace(temp, {
+        ...sent,
+        videoUrl: videoUri,
+        thumbnailUrl: thumbnailUri,
+      });
+      refreshRooms();
+    } catch (error) {
+      if (isVideoCancelled(error)) {
+        return;
+      }
+
+      uploads().set(id, {
+        phase: "failed",
+        progress: 0,
+        cancel,
+        retry: retry(videoUri),
+      });
+      onError(describeVideoError(error));
+    }
+  };
+
+  const sendVideos = async (assets: ImagePickerAsset[]) => {
+    setVideoBatches((count) => count + 1);
+
+    try {
+      for (const asset of assets) {
+        const thumbnailUri = await createVideoThumbnail(asset.uri);
+        const temp = createTemp(senderId, {
+          type: "VIDEO",
+          content: null,
+          imageUrl: null,
+          videoUrl: asset.uri,
+          thumbnailUrl: thumbnailUri,
+          durationSeconds: videoDurationSeconds(asset),
+          replyMessage: null,
+        });
+
+        await prepend([temp]);
+        await sendVideo(
+          { asset, temp, id: temp.clientMessageId ?? "", thumbnailUri },
+          null,
+        );
+      }
+    } catch (error) {
+      onError(describeVideoError(error));
+    } finally {
+      setVideoBatches((count) => count - 1);
+    }
+  };
 
   const sendText = useMutation({
     mutationFn: ({
@@ -162,7 +284,11 @@ export function useSendMessage(
         ),
       }),
 
+    sendVideos: (assets: ImagePickerAsset[]) => {
+      void sendVideos(assets);
+    },
+
     sending: sendText.isPending,
-    uploading: sendPhotos.isPending,
+    uploading: sendPhotos.isPending || videoBatches > 0,
   };
 }

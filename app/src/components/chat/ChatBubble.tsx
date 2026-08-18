@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { type ReactNode, useRef } from "react";
 import { View } from "react-native";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
@@ -14,6 +15,7 @@ import {
   REACTION_EMOJI,
   replySummary,
 } from "@/lib/chat";
+import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
 import { formatClockTime } from "@/lib/date";
 import {
   IMAGE_TRANSITION,
@@ -23,11 +25,14 @@ import {
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { useAccentToken } from "@/lib/theme/accent";
+import { formatDuration } from "@/lib/video";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 
 const PHOTO_SIZE = 200;
+const PLAY_ICON_SIZE = 40;
+const DURATION_INSET = 6;
 
 const MIN_HEIGHT = 36;
 
@@ -90,6 +95,123 @@ function BodyText({
     >
       {content}
     </Text>
+  );
+}
+
+// 영상은 썸네일 위에 재생 표시와 길이를 얹는다. 보내는 중이면 진행률과 취소,
+// 실패하면 재전송을 같은 자리에 보여준다.
+function VideoMessage({
+  message,
+  onPress,
+  onLongPress,
+}: {
+  message: ChatMessageResponse;
+  onPress: (message: ChatMessageResponse) => void;
+  onLongPress: () => void;
+}) {
+  const theme = useTheme();
+  const upload = useUploadState(message.clientMessageId);
+  const cacheKey = message.clientMessageId ?? String(message.messageId);
+  const busy = upload !== undefined;
+
+  return (
+    <YStack
+      pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
+      onPress={busy ? undefined : () => onPress(message)}
+      onLongPress={busy ? undefined : onLongPress}
+    >
+      <Image
+        source={{ uri: message.thumbnailUrl ?? undefined, cacheKey }}
+        recyclingKey={cacheKey}
+        contentFit="cover"
+        transition={IMAGE_TRANSITION}
+        style={{
+          width: PHOTO_SIZE,
+          height: PHOTO_SIZE,
+          borderWidth: RETRO_BORDER_WIDTH,
+          borderColor: theme.gray12.val,
+          backgroundColor: theme.gray12.val,
+        }}
+      />
+
+      {upload ? (
+        <VideoUploadOverlay upload={upload} />
+      ) : (
+        <>
+          <YStack fullscreen items="center" justify="center">
+            <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color="white" />
+          </YStack>
+
+          {message.durationSeconds != null && (
+            <XStack
+              position="absolute"
+              b={DURATION_INSET}
+              r={DURATION_INSET}
+              px="$1.5"
+              py={2}
+              bg={OVERLAY_BG}
+            >
+              <Text fontSize="$2" color="white" fontWeight="600">
+                {formatDuration(message.durationSeconds)}
+              </Text>
+            </XStack>
+          )}
+        </>
+      )}
+    </YStack>
+  );
+}
+
+function VideoUploadOverlay({ upload }: { upload: UploadState }) {
+  const percent = Math.round(upload.progress * 100);
+
+  return (
+    <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
+      {upload.phase === "failed" ? (
+        <>
+          <Text fontSize="$3" color="white" fontWeight="600">
+            전송 실패
+          </Text>
+
+          <XStack gap="$2">
+            <OverlayAction label="재전송" onPress={upload.retry} />
+            <OverlayAction label="삭제" onPress={upload.cancel} />
+          </XStack>
+        </>
+      ) : (
+        <>
+          <Text fontSize="$3" color="white" fontWeight="600">
+            {upload.phase === "compressing" ? "압축 중" : "업로드 중"} {percent}
+            %
+          </Text>
+
+          <OverlayAction label="취소" onPress={upload.cancel} />
+        </>
+      )}
+    </YStack>
+  );
+}
+
+function OverlayAction({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <XStack
+      px="$3"
+      py="$1.5"
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="white"
+      pressStyle={{ opacity: PRESS_OPACITY }}
+      onPress={onPress}
+    >
+      <Text fontSize="$2" color="white" fontWeight="600">
+        {label}
+      </Text>
+    </XStack>
   );
 }
 
@@ -213,6 +335,7 @@ export function ChatBubbleContent({
   mine,
   replyName,
   onPressPhoto,
+  onPressVideo,
   onPressReply,
   onLongPress,
 }: {
@@ -220,9 +343,20 @@ export function ChatBubbleContent({
   mine: boolean;
   replyName: string;
   onPressPhoto: (url: string) => void;
+  onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onLongPress: () => void;
 }) {
+  if (message.type === "VIDEO") {
+    return (
+      <VideoMessage
+        message={message}
+        onPress={onPressVideo}
+        onLongPress={onLongPress}
+      />
+    );
+  }
+
   if (message.imageUrl) {
     return (
       <PhotoMessage
@@ -344,6 +478,7 @@ export function ChatBubble({
   replyName,
   myMemberId,
   onPressPhoto,
+  onPressVideo,
   onPressReply,
   onOpenActions,
 }: {
@@ -353,6 +488,7 @@ export function ChatBubble({
   replyName: string;
   myMemberId: number;
   onPressPhoto: (url: string) => void;
+  onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
 }) {
@@ -378,6 +514,7 @@ export function ChatBubble({
             mine={mine}
             replyName={replyName}
             onPressPhoto={onPressPhoto}
+            onPressVideo={onPressVideo}
             onPressReply={onPressReply}
             onLongPress={openActions}
           />

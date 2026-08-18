@@ -2,6 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 
 import { ApiError } from "@/lib/api";
 import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
+import { VIDEO_MAX_SECONDS } from "@/lib/video";
 
 export const MAX_PHOTOS = 6;
 
@@ -29,6 +30,24 @@ async function requireCamera() {
   if (!granted) {
     throw denied(CAMERA_DENIED_MESSAGE);
   }
+}
+
+// 채팅은 사진과 영상을 한 번에 고른다. 영상 길이는 서버 상한과 같다.
+// iOS의 HEVC/HDR 원본은 압축기가 못 다루는 경우가 있어 호환 표현(H.264)으로 받는다.
+export async function pickChatMedia(remaining: number) {
+  await requireLibrary();
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images", "videos"],
+    allowsMultipleSelection: true,
+    selectionLimit: remaining,
+    quality: PICK_QUALITY,
+    videoMaxDuration: VIDEO_MAX_SECONDS,
+    preferredAssetRepresentationMode:
+      ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
+  });
+
+  return result.canceled ? [] : result.assets;
 }
 
 export async function pickPhotos(remaining: number) {

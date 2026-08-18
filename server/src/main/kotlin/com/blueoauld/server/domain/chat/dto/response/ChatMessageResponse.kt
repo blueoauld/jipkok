@@ -38,6 +38,7 @@ data class ChatMessageResponse(
 
         val messageId: Long,
         val senderId: Long,
+        val type: ChatMessageType,
         val content: String?,
     ) {
 
@@ -46,6 +47,7 @@ data class ChatMessageResponse(
             fun from(message: ChatMessage) = ReplyMessageResponse(
                 messageId = message.id,
                 senderId = message.senderId,
+                type = message.type,
                 content = message.content,
             )
         }

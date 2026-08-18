@@ -13,7 +13,7 @@ import { RetroBadge } from "@/components/ui/RetroBadge";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
-import { formatUnreadCount, PHOTO_SUMMARY } from "@/lib/chat";
+import { formatUnreadCount, mediaSummary } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
@@ -188,9 +188,9 @@ function Row({
 
                 <XStack items="center" justify="space-between" gap="$2">
                   <Text flex={1} numberOfLines={2} fontSize="$3">
-                    {room.lastMessageType === "PHOTO"
-                      ? PHOTO_SUMMARY
-                      : room.lastMessageContent}
+                    {room.lastMessageType === "TEXT"
+                      ? room.lastMessageContent
+                      : mediaSummary(room.lastMessageType)}
                   </Text>
 
                   {room.unreadCount > 0 && (

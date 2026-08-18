@@ -93,7 +93,7 @@ export function photoCacheKey(url: string) {
   return url.split("?")[0];
 }
 
-export async function saveChatPhoto(url: string) {
+export async function saveChatMedia(url: string) {
   const permission = await MediaLibrary.requestPermissionsAsync(true);
 
   if (!permission.granted) {

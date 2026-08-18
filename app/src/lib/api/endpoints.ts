@@ -10,6 +10,7 @@ import type {
   ChatReactionType,
   ChatRoomPage,
   ChatRoomResponse,
+  ChatVideoUrlResponse,
   CreateFeedPostRequest,
   CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -324,6 +325,11 @@ export const chats = {
       method: "POST",
       body,
     }),
+
+  videoUrl: (roomId: number, messageId: number) =>
+    request<ChatVideoUrlResponse>(
+      `/api/chats/${roomId}/messages/${messageId}/video-url`,
+    ),
 
   react: (roomId: number, messageId: number, type: ChatReactionType) =>
     request<ChatReactionsResponse>(

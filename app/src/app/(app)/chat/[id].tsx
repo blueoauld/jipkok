@@ -25,6 +25,7 @@ import {
   MessageActionOverlay,
   type MessageActionTarget,
 } from "@/components/chat/MessageActionOverlay";
+import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
@@ -36,7 +37,7 @@ import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { invalidateChatLists } from "@/hooks/useChatRooms";
 import { forgetRoom } from "@/hooks/useChatSocket";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
+import { MAX_PHOTOS, pickChatMedia } from "@/hooks/usePhotos";
 import { useReactMessage } from "@/hooks/useReactMessage";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
@@ -55,11 +56,12 @@ import {
 } from "@/lib/chat";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
-import { saveChatPhoto } from "@/lib/photo";
+import { saveChatMedia } from "@/lib/photo";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
+import { isVideoTooLong, VIDEO_TOO_LONG_MESSAGE } from "@/lib/video";
 
 const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "대화 내용이 없습니다.";
@@ -72,6 +74,9 @@ const REPLY_NOT_LOADED_MESSAGE = "원문을 아직 불러오지 못했습니다.
 
 const PHOTO_SAVED_MESSAGE = "사진을 저장했습니다.";
 const PHOTO_SAVE_FAILED_MESSAGE = "사진을 저장하지 못했습니다.";
+const VIDEO_SAVED_MESSAGE = "영상을 저장했습니다.";
+const VIDEO_SAVE_FAILED_MESSAGE = "영상을 저장하지 못했습니다.";
+const VIDEO_URL_FAILED_MESSAGE = "영상을 불러오지 못했습니다.";
 
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -81,6 +86,7 @@ export default function ChatRoomScreen() {
   const keyboardOffset = useSafeAreaInsets().bottom;
 
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [actionTarget, setActionTarget] = useState<MessageActionTarget | null>(
     null,
@@ -137,12 +143,8 @@ export default function ChatRoomScreen() {
     },
     [],
   );
-  const { sendText, sendPhotos, sending, uploading } = useSendMessage(
-    roomId,
-    myMemberId,
-    handleRoomError,
-    restoreDraft,
-  );
+  const { sendText, sendPhotos, sendVideos, sending, uploading } =
+    useSendMessage(roomId, myMemberId, handleRoomError, restoreDraft);
   const { mutate: react } = useReactMessage(
     roomId,
     myMemberId,
@@ -286,18 +288,48 @@ export default function ChatRoomScreen() {
     showToast("info", COPIED_MESSAGE);
   }, []);
 
-  const handleSavePhoto = useCallback(async (url: string) => {
-    try {
-      if (await saveChatPhoto(url)) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        showToast("info", PHOTO_SAVED_MESSAGE);
-      } else {
-        showToast("error", PHOTO_PERMISSION_MESSAGE);
+  const handleSaveMedia = useCallback(
+    async (url: string, kind: "photo" | "video") => {
+      const video = kind === "video";
+
+      try {
+        if (await saveChatMedia(url)) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          showToast("info", video ? VIDEO_SAVED_MESSAGE : PHOTO_SAVED_MESSAGE);
+        } else {
+          showToast("error", PHOTO_PERMISSION_MESSAGE);
+        }
+      } catch {
+        showToast(
+          "error",
+          video ? VIDEO_SAVE_FAILED_MESSAGE : PHOTO_SAVE_FAILED_MESSAGE,
+        );
       }
-    } catch {
-      showToast("error", PHOTO_SAVE_FAILED_MESSAGE);
-    }
-  }, []);
+    },
+    [],
+  );
+
+  // 서명 URL은 10분이면 만료되므로 재생 직전에 새로 받는다. 아직 안 보낸 건 로컬 파일이다.
+  const handlePressVideo = useCallback(
+    async (message: ChatMessageResponse) => {
+      if (isPending(message)) {
+        setPlayingUrl(message.videoUrl ?? null);
+        return;
+      }
+
+      try {
+        const { url } = await api.chats.videoUrl(roomId, message.messageId);
+        setPlayingUrl(url);
+      } catch (error) {
+        if (isRoomNotFound(error)) {
+          forgetRoom(queryClient, roomId);
+        } else {
+          showToast("error", VIDEO_URL_FAILED_MESSAGE);
+        }
+      }
+    },
+    [queryClient, roomId],
+  );
 
   const handleOpenActions = useCallback(
     (message: ChatMessageResponse, frame: MessageFrame) => {
@@ -330,26 +362,47 @@ export default function ChatRoomScreen() {
     }
   };
 
+  const saveTargetVideo = async (message: ChatMessageResponse) => {
+    try {
+      const { url } = await api.chats.videoUrl(roomId, message.messageId);
+      await handleSaveMedia(url, "video");
+    } catch {
+      showToast("error", VIDEO_SAVE_FAILED_MESSAGE);
+    }
+  };
+
   const targetImageUrl = targetMessage?.imageUrl;
   const messageActions: MessageAction[] = !targetMessage
     ? []
-    : [
-        targetImageUrl
-          ? {
+    : targetMessage.type === "VIDEO"
+      ? [
+          {
+            label: "저장",
+            onPress: () => {
+              closeActions();
+              saveTargetVideo(targetMessage);
+            },
+          },
+        ]
+      : targetImageUrl
+        ? [
+            {
               label: "저장",
               onPress: () => {
                 closeActions();
-                handleSavePhoto(targetImageUrl);
+                handleSaveMedia(targetImageUrl, "photo");
               },
-            }
-          : {
+            },
+          ]
+        : [
+            {
               label: "복사",
               onPress: () => {
                 closeActions();
                 handleCopy(targetMessage.content ?? "");
               },
             },
-      ];
+          ];
 
   const replyNameOf = (message: ChatMessageResponse) =>
     message.replyMessage?.senderId === myMemberId
@@ -369,10 +422,24 @@ export default function ChatRoomScreen() {
 
   const handlePickPhotos = async () => {
     try {
-      const assets = await pickPhotos(MAX_PHOTOS);
+      const assets = await pickChatMedia(MAX_PHOTOS);
+      const photos = assets.filter((asset) => asset.type !== "video");
+      const videos = assets.filter((asset) => asset.type === "video");
+      const sendable = videos.filter((asset) => !isVideoTooLong(asset));
 
-      if (assets.length > 0) {
-        sendPhotos(assets);
+      if (sendable.length < videos.length) {
+        showToast("warning", VIDEO_TOO_LONG_MESSAGE);
+      }
+
+      if (photos.length > 0) {
+        sendPhotos(photos);
+      }
+
+      if (sendable.length > 0) {
+        sendVideos(sendable);
+      }
+
+      if (photos.length > 0 || sendable.length > 0) {
         scrollToBottom();
       }
     } catch (error) {
@@ -428,6 +495,7 @@ export default function ChatRoomScreen() {
                 partnerImageUrl={room.profileImageUrl ?? null}
                 onPressAvatar={handlePressAvatar}
                 onPressPhoto={setViewerUrl}
+                onPressVideo={handlePressVideo}
                 onPressReply={handlePressReply}
                 onOpenActions={handleOpenActions}
                 onReply={handleReply}
@@ -456,9 +524,7 @@ export default function ChatRoomScreen() {
               </YStack>
             ) : null
           }
-          ListEmptyComponent={
-            <ListEmpty>{EMPTY_MESSAGE}</ListEmpty>
-          }
+          ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
         />
       ) : (
         <ScreenState
@@ -511,6 +577,8 @@ export default function ChatRoomScreen() {
         open={viewerUrl !== null}
         onClose={() => setViewerUrl(null)}
       />
+
+      <VideoPlayerModal url={playingUrl} onClose={() => setPlayingUrl(null)} />
     </SafeAreaView>
   );
 }

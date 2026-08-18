@@ -54,6 +54,7 @@ function Row({
   partnerImageUrl,
   onPressAvatar,
   onPressPhoto,
+  onPressVideo,
   onPressReply,
   onOpenActions,
   onReply,
@@ -68,6 +69,7 @@ function Row({
   partnerImageUrl: string | null;
   onPressAvatar: () => void;
   onPressPhoto: (url: string) => void;
+  onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
   onReply: (message: ChatMessageResponse) => void;
@@ -114,6 +116,7 @@ function Row({
               replyName={replyName}
               myMemberId={myMemberId}
               onPressPhoto={onPressPhoto}
+              onPressVideo={onPressVideo}
               onPressReply={onPressReply}
               onOpenActions={onOpenActions}
             />
