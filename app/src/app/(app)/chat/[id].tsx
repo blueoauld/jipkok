@@ -53,6 +53,8 @@ const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
 
 const REPLY_NOT_LOADED_MESSAGE = "원문을 아직 불러오지 못했습니다.";
 
+const HIGHLIGHT_MILLIS = 800;
+
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
@@ -64,6 +66,8 @@ export default function ChatRoomScreen() {
   const [replyTarget, setReplyTarget] = useState<ChatMessageResponse | null>(
     null,
   );
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
   const inputBarRef = useRef<ChatInputBarHandle>(null);
 
@@ -172,7 +176,26 @@ export default function ChatRoomScreen() {
       viewPosition: 0.5,
       animated: false,
     });
+
+    if (highlightTimer.current) {
+      clearTimeout(highlightTimer.current);
+    }
+
+    setHighlightedId(messageId);
+    highlightTimer.current = setTimeout(
+      () => setHighlightedId(null),
+      HIGHLIGHT_MILLIS,
+    );
   }, []);
+
+  useEffect(
+    () => () => {
+      if (highlightTimer.current) {
+        clearTimeout(highlightTimer.current);
+      }
+    },
+    [],
+  );
 
   const { confirmLeave } = useChatRoomActions({ show, showApiError, confirm });
 
@@ -273,6 +296,7 @@ export default function ChatRoomScreen() {
                 onOpenActions={actions.open}
                 onReply={handleReply}
                 myMemberId={myMemberId}
+                highlighted={item.message.messageId === highlightedId}
               />
             )
           }

@@ -1,9 +1,15 @@
 import * as Haptics from "expo-haptics";
 import { ArrowBendUpLeftIcon } from "phosphor-react-native/src/icons/ArrowBendUpLeft";
-import { memo, useRef } from "react";
+import { memo, type ReactNode, useEffect, useRef } from "react";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { ChatBubble } from "@/components/chat/ChatBubble";
@@ -24,6 +30,27 @@ const REPLY_ICON_SIZE = 18;
 const REPLY_FRICTION = 2;
 
 const DISABLE_RIGHTWARD_DRAG = Number.MAX_SAFE_INTEGER;
+
+const BLINK_OPACITY = 0.4;
+const BLINK_STEP_MILLIS = 250;
+
+// 답장 원문으로 이동했을 때 어느 말풍선인지 알 수 있게 한 번 깜빡인다.
+function Blink({ active, children }: { active: boolean; children: ReactNode }) {
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (active) {
+      opacity.value = withSequence(
+        withTiming(BLINK_OPACITY, { duration: BLINK_STEP_MILLIS }),
+        withTiming(1, { duration: BLINK_STEP_MILLIS }),
+      );
+    }
+  }, [active, opacity]);
+
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return <Animated.View style={style}>{children}</Animated.View>;
+}
 
 function ReplyAction() {
   const theme = useTheme();
@@ -60,6 +87,7 @@ function Row({
   onOpenActions,
   onReply,
   myMemberId,
+  highlighted,
 }: {
   message: ChatMessageResponse;
   mine: boolean;
@@ -75,6 +103,7 @@ function Row({
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
   onReply: (message: ChatMessageResponse) => void;
   myMemberId: number;
+  highlighted: boolean;
 }) {
   const swipeable = useRef<SwipeableMethods>(null);
 
@@ -110,17 +139,19 @@ function Row({
             ))}
 
           <XStack shrink={1} maxW={BUBBLE_MAX_WIDTH}>
-            <ChatBubble
-              message={message}
-              mine={mine}
-              showTime={showTime}
-              replyName={replyName}
-              myMemberId={myMemberId}
-              onPressPhoto={onPressPhoto}
-              onPressVideo={onPressVideo}
-              onPressReply={onPressReply}
-              onOpenActions={onOpenActions}
-            />
+            <Blink active={highlighted}>
+              <ChatBubble
+                message={message}
+                mine={mine}
+                showTime={showTime}
+                replyName={replyName}
+                myMemberId={myMemberId}
+                onPressPhoto={onPressPhoto}
+                onPressVideo={onPressVideo}
+                onPressReply={onPressReply}
+                onOpenActions={onOpenActions}
+              />
+            </Blink>
           </XStack>
         </XStack>
       </ReanimatedSwipeable>
