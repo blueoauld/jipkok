@@ -4,6 +4,7 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import { Video as VideoCompressor } from "react-native-compressor";
 
 import { api, ApiError } from "@/lib/api";
+import { uploadCancelled, uploadFile, type UploadProgress } from "@/lib/upload";
 
 // 서버 ChatMessage.VIDEO_MAX_SECONDS / VIDEO_MAX_BYTES와 같다.
 export const VIDEO_MAX_SECONDS = 300;
@@ -14,27 +15,12 @@ const THUMBNAIL_CONTENT_TYPE = "image/jpeg";
 const COMPRESS_MAX_SIZE = 1280;
 const THUMBNAIL_QUALITY = 0.8;
 
-const CANCELLED_CODE = "VIDEO_CANCELLED";
 const TOO_LARGE_CODE = "VIDEO_TOO_LARGE";
-const UPLOAD_FAILED_CODE = "VIDEO_UPLOAD_FAILED";
-const VIDEO_FAILED_CODE = "VIDEO_FAILED";
 
 export const VIDEO_TOO_LONG_MESSAGE = `동영상은 ${VIDEO_MAX_SECONDS / 60}분까지 보낼 수 있습니다.`;
 const TOO_LARGE_MESSAGE = "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.";
-const UPLOAD_FAILED_MESSAGE = "동영상을 업로드하지 못했습니다.";
-const VIDEO_FAILED_MESSAGE = "동영상을 보내지 못했습니다.";
 
 export type VideoKeys = { objectKey: string; thumbnailKey: string };
-
-export function describeVideoError(error: unknown) {
-  if (error instanceof ApiError) {
-    return error;
-  }
-
-  console.error("[video]", error);
-
-  return new ApiError(0, VIDEO_FAILED_CODE, VIDEO_FAILED_MESSAGE);
-}
 
 // RN은 네이티브 NSError를 domain/code/userInfo로 실어 준다. 압축기가 감싼 문구 뒤의 진짜 원인.
 function nativeErrorDetail(error: unknown) {
@@ -49,14 +35,6 @@ function nativeErrorDetail(error: unknown) {
     code: native.code,
     userInfo: native.userInfo,
   };
-}
-
-export function isVideoCancelled(error: unknown) {
-  return error instanceof ApiError && error.code === CANCELLED_CODE;
-}
-
-function cancelled() {
-  return new ApiError(0, CANCELLED_CODE, "전송을 취소했습니다.");
 }
 
 export function videoDurationSeconds(asset: ImagePickerAsset) {
@@ -113,13 +91,13 @@ export async function compressVideo(
     );
 
     if (signal.aborted) {
-      throw cancelled();
+      throw uploadCancelled();
     }
 
     return ensureWithinLimit(compressed);
   } catch (error) {
     if (signal.aborted) {
-      throw cancelled();
+      throw uploadCancelled();
     }
 
     if (error instanceof ApiError) {
@@ -138,58 +116,23 @@ export async function compressVideo(
   }
 }
 
-async function uploadFile(
-  uri: string,
-  contentType: string,
-  onProgress: (progress: number) => void,
-  signal: AbortSignal,
-) {
-  const { uploadUrl, objectKey } =
-    await api.chats.createPhotoUploadUrl(contentType);
-  const task = new File(uri).createUploadTask(uploadUrl, {
-    httpMethod: "PUT",
-    headers: { "Content-Type": contentType },
-    onProgress: ({ bytesSent, totalBytes }) =>
-      onProgress(totalBytes > 0 ? bytesSent / totalBytes : 0),
-  });
-  const abort = () => task.cancel();
-
-  signal.addEventListener("abort", abort);
-
-  try {
-    const result = await task.uploadAsync();
-
-    if (result.status < 200 || result.status >= 300) {
-      throw new ApiError(
-        result.status,
-        UPLOAD_FAILED_CODE,
-        UPLOAD_FAILED_MESSAGE,
-      );
-    }
-
-    return objectKey;
-  } catch (error) {
-    throw signal.aborted ? cancelled() : error;
-  } finally {
-    signal.removeEventListener("abort", abort);
-  }
-}
-
 export async function uploadChatVideo(
   videoUri: string,
   thumbnailUri: string,
-  onProgress: (progress: number) => void,
+  onProgress: UploadProgress,
   signal: AbortSignal,
 ): Promise<VideoKeys> {
   const thumbnailKey = await uploadFile(
     thumbnailUri,
     THUMBNAIL_CONTENT_TYPE,
+    api.chats.createPhotoUploadUrl,
     () => undefined,
     signal,
   );
   const objectKey = await uploadFile(
     videoUri,
     VIDEO_CONTENT_TYPE,
+    api.chats.createPhotoUploadUrl,
     onProgress,
     signal,
   );

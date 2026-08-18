@@ -134,7 +134,7 @@ function VideoMessage({
       />
 
       {upload ? (
-        <VideoUploadOverlay upload={upload} />
+        <UploadOverlay upload={upload} showPhase />
       ) : (
         <>
           <YStack fullscreen items="center" justify="center">
@@ -161,8 +161,16 @@ function VideoMessage({
   );
 }
 
-function VideoUploadOverlay({ upload }: { upload: UploadState }) {
-  const percent = Math.round(upload.progress * 100);
+// 동영상은 압축과 업로드 두 단계라 단계 이름을 붙이고, 사진은 퍼센트만 보여준다.
+function UploadOverlay({
+  upload,
+  showPhase = false,
+}: {
+  upload: UploadState;
+  showPhase?: boolean;
+}) {
+  const percent = `${Math.round(upload.progress * 100)}%`;
+  const phase = upload.phase === "compressing" ? "압축 중 " : "업로드 중 ";
 
   return (
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
@@ -180,8 +188,7 @@ function VideoUploadOverlay({ upload }: { upload: UploadState }) {
       ) : (
         <>
           <Text fontSize="$3" color="white" fontWeight="600">
-            {upload.phase === "compressing" ? "압축 중" : "업로드 중"} {percent}
-            %
+            {showPhase ? phase + percent : percent}
           </Text>
 
           <OverlayAction label="취소" onPress={upload.cancel} />
@@ -215,25 +222,26 @@ function OverlayAction({
 }
 
 function PhotoMessage({
+  message,
   url,
-  cacheKey,
-  sending,
   onPress,
   onLongPress,
 }: {
+  message: ChatMessageResponse;
   url: string;
-  cacheKey: string;
-  sending: boolean;
   onPress: (url: string) => void;
   onLongPress: () => void;
 }) {
   const theme = useTheme();
+  const upload = useUploadState(message.clientMessageId);
+  const cacheKey = message.clientMessageId ?? String(message.messageId);
+  const busy = upload !== undefined || isPending(message);
 
   return (
     <YStack
-      pressStyle={sending ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
-      onPress={sending ? undefined : () => onPress(url)}
-      onLongPress={sending ? undefined : onLongPress}
+      pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
+      onPress={busy ? undefined : () => onPress(url)}
+      onLongPress={busy ? undefined : onLongPress}
     >
       <Image
         source={{ uri: url, cacheKey }}
@@ -249,10 +257,14 @@ function PhotoMessage({
         }}
       />
 
-      {sending && (
-        <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
-          <Spinner size="small" color="white" />
-        </YStack>
+      {upload ? (
+        <UploadOverlay upload={upload} />
+      ) : (
+        isPending(message) && (
+          <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
+            <Spinner size="small" color="white" />
+          </YStack>
+        )
       )}
     </YStack>
   );
@@ -364,9 +376,8 @@ export function ChatBubbleContent({
   if (message.imageUrl) {
     return (
       <PhotoMessage
+        message={message}
         url={message.imageUrl}
-        cacheKey={message.clientMessageId ?? String(message.messageId)}
-        sending={isPending(message)}
         onPress={onPressPhoto}
         onLongPress={onLongPress}
       />

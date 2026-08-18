@@ -15,26 +15,18 @@ import {
   type ChatMessageResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
-import { useUploadStore } from "@/lib/chat/upload-store";
+import { type UploadPhase, useUploadStore } from "@/lib/chat/upload-store";
 import { mapPages } from "@/lib/paging";
-import { uploadChatPhoto } from "@/lib/photo";
+import { toChatPhoto, uploadChatPhotoFile } from "@/lib/photo";
+import { describeUploadError, isUploadCancelled } from "@/lib/upload";
 import {
   compressVideo,
   createVideoThumbnail,
-  describeVideoError,
-  isVideoCancelled,
   uploadChatVideo,
   videoDurationSeconds,
 } from "@/lib/video";
 
 type Feed = InfiniteData<ChatMessagePage>;
-
-type PendingVideo = {
-  asset: ImagePickerAsset;
-  temp: ChatMessageResponse;
-  id: string;
-  thumbnailUri: string;
-};
 
 let lastTempId = 0;
 
@@ -103,80 +95,125 @@ export function useSendMessage(
   const refreshRooms = () =>
     queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
 
-  const [videoBatches, setVideoBatches] = useState(0);
+  const [mediaBatches, setMediaBatches] = useState(0);
   const uploads = useUploadStore.getState;
 
-  // 압축본은 기억해 두어 재전송 때 다시 압축하지 않는다.
-  const sendVideo = async (
-    video: PendingVideo,
-    compressed: string | null,
+  // 사진·동영상 하나를 임시 말풍선에 진행률을 보이며 보낸다. 실패하면 말풍선을 남겨 두고
+  // 재전송을 기다리고, 취소하면 지운다. work가 중간 결과를 기억하면 재전송 때 그만큼 건너뛴다.
+  const sendMedia = async (
+    temp: ChatMessageResponse,
+    initialPhase: UploadPhase,
+    work: (
+      signal: AbortSignal,
+      report: (phase: UploadPhase, progress: number) => void,
+    ) => Promise<ChatMessageResponse>,
   ): Promise<void> => {
-    const { asset, temp, id, thumbnailUri } = video;
+    const id = temp.clientMessageId ?? "";
     const controller = new AbortController();
     const cancel = () => {
       controller.abort();
       uploads().remove(id);
       discard([temp.messageId]);
     };
-    const retry = (uri: string | null) => () => {
-      void sendVideo(video, uri);
+    const retry = () => {
+      void sendMedia(temp, initialPhase, work);
     };
-    const durationSeconds = videoDurationSeconds(asset);
 
-    uploads().set(id, {
-      phase: compressed ? "uploading" : "compressing",
-      progress: 0,
-      cancel,
-      retry: retry(compressed),
-    });
-
-    let videoUri = compressed;
+    uploads().set(id, { phase: initialPhase, progress: 0, cancel, retry });
 
     try {
-      videoUri ??= await compressVideo(
+      const sent = await work(controller.signal, (phase, progress) =>
+        uploads().progress(id, phase, progress),
+      );
+
+      uploads().remove(id);
+      replace(temp, sent);
+      refreshRooms();
+    } catch (error) {
+      if (isUploadCancelled(error)) {
+        return;
+      }
+
+      uploads().set(id, { phase: "failed", progress: 0, cancel, retry });
+      onError(describeUploadError(error));
+    }
+  };
+
+  const sendPhoto = (asset: ImagePickerAsset, temp: ChatMessageResponse) => {
+    let jpegUri: string | null = null;
+
+    return sendMedia(temp, "uploading", async (signal, report) => {
+      jpegUri ??= await toChatPhoto(asset);
+
+      const objectKey = await uploadChatPhotoFile(
+        jpegUri,
+        (progress) => report("uploading", progress),
+        signal,
+      );
+      const sent = await api.chats.send(roomId, {
+        type: "PHOTO",
+        objectKey,
+        clientMessageId: temp.clientMessageId,
+      });
+
+      return { ...sent, imageUrl: asset.uri };
+    });
+  };
+
+  const sendVideo = (
+    asset: ImagePickerAsset,
+    temp: ChatMessageResponse,
+    thumbnailUri: string,
+  ) => {
+    let compressedUri: string | null = null;
+
+    return sendMedia(temp, "compressing", async (signal, report) => {
+      compressedUri ??= await compressVideo(
         asset.uri,
-        (progress) => uploads().progress(id, "compressing", progress),
-        controller.signal,
+        (progress) => report("compressing", progress),
+        signal,
       );
 
       const keys = await uploadChatVideo(
-        videoUri,
+        compressedUri,
         thumbnailUri,
-        (progress) => uploads().progress(id, "uploading", progress),
-        controller.signal,
+        (progress) => report("uploading", progress),
+        signal,
       );
       const sent = await api.chats.send(roomId, {
         type: "VIDEO",
         objectKey: keys.objectKey,
         thumbnailKey: keys.thumbnailKey,
-        durationSeconds,
-        clientMessageId: id,
+        durationSeconds: videoDurationSeconds(asset),
+        clientMessageId: temp.clientMessageId,
       });
 
-      uploads().remove(id);
-      replace(temp, {
-        ...sent,
-        videoUrl: videoUri,
-        thumbnailUrl: thumbnailUri,
-      });
-      refreshRooms();
-    } catch (error) {
-      if (isVideoCancelled(error)) {
-        return;
+      return { ...sent, videoUrl: compressedUri, thumbnailUrl: thumbnailUri };
+    });
+  };
+
+  const sendPhotos = async (assets: ImagePickerAsset[]) => {
+    setMediaBatches((count) => count + 1);
+
+    try {
+      for (const asset of assets) {
+        const temp = createTemp(senderId, {
+          type: "PHOTO",
+          content: null,
+          imageUrl: asset.uri,
+          replyMessage: null,
+        });
+
+        await prepend([temp]);
+        await sendPhoto(asset, temp);
       }
-
-      uploads().set(id, {
-        phase: "failed",
-        progress: 0,
-        cancel,
-        retry: retry(videoUri),
-      });
-      onError(describeVideoError(error));
+    } finally {
+      setMediaBatches((count) => count - 1);
     }
   };
 
   const sendVideos = async (assets: ImagePickerAsset[]) => {
-    setVideoBatches((count) => count + 1);
+    setMediaBatches((count) => count + 1);
 
     try {
       for (const asset of assets) {
@@ -192,15 +229,12 @@ export function useSendMessage(
         });
 
         await prepend([temp]);
-        await sendVideo(
-          { asset, temp, id: temp.clientMessageId ?? "", thumbnailUri },
-          null,
-        );
+        await sendVideo(asset, temp, thumbnailUri);
       }
     } catch (error) {
-      onError(describeVideoError(error));
+      onError(describeUploadError(error));
     } finally {
-      setVideoBatches((count) => count - 1);
+      setMediaBatches((count) => count - 1);
     }
   };
 
@@ -230,33 +264,6 @@ export function useSendMessage(
     onSettled: refreshRooms,
   });
 
-  const sendPhotos = useMutation({
-    mutationFn: async ({
-      assets,
-      temps,
-    }: {
-      assets: ImagePickerAsset[];
-      temps: ChatMessageResponse[];
-    }) => {
-      for (const [index, asset] of assets.entries()) {
-        const objectKey = await uploadChatPhoto(asset);
-        const sent = await api.chats.send(roomId, {
-          type: "PHOTO",
-          objectKey,
-          clientMessageId: temps[index].clientMessageId,
-        });
-
-        replace(temps[index], { ...sent, imageUrl: asset.uri });
-      }
-    },
-    onMutate: ({ temps }) => prepend([...temps].reverse()),
-    onError: (error, { temps }) => {
-      discard(temps.map((temp) => temp.messageId));
-      onError(error);
-    },
-    onSettled: refreshRooms,
-  });
-
   return {
     sendText: (content: string, replyTo: ReplyMessageResponse | null = null) =>
       sendText.mutate({
@@ -270,24 +277,15 @@ export function useSendMessage(
         }),
       }),
 
-    sendPhotos: (assets: ImagePickerAsset[]) =>
-      sendPhotos.mutate({
-        assets,
-        temps: assets.map((asset) =>
-          createTemp(senderId, {
-            type: "PHOTO",
-            content: null,
-            imageUrl: asset.uri,
-            replyMessage: null,
-          }),
-        ),
-      }),
+    sendPhotos: (assets: ImagePickerAsset[]) => {
+      void sendPhotos(assets);
+    },
 
     sendVideos: (assets: ImagePickerAsset[]) => {
       void sendVideos(assets);
     },
 
     sending: sendText.isPending,
-    uploading: sendPhotos.isPending || videoBatches > 0,
+    uploading: mediaBatches > 0,
   };
 }

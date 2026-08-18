@@ -3,12 +3,12 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import type { ImagePickerAsset } from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 
+import { api, type PhotoVisibility, type ProfilePhoto } from "@/lib/api";
 import {
-  api,
-  ApiError,
-  type PhotoVisibility,
-  type ProfilePhoto,
-} from "@/lib/api";
+  type IssueUploadUrl,
+  uploadFile,
+  type UploadProgress,
+} from "@/lib/upload";
 
 const CONTENT_TYPE = "image/jpeg";
 
@@ -16,13 +16,6 @@ const LOCAL_URI_PREFIX = "file://";
 
 const MAX_LENGTH = 1440;
 const COMPRESS = 0.8;
-
-const UPLOAD_FAILED_CODE = "PHOTO_UPLOAD_FAILED";
-const UPLOAD_FAILED_MESSAGE = "사진을 업로드하지 못했습니다.";
-
-type IssueUploadUrl = (
-  contentType: string,
-) => Promise<{ uploadUrl: string; objectKey: string }>;
 
 async function toJpeg(asset: ImagePickerAsset) {
   const context = ImageManipulator.manipulate(asset.uri);
@@ -45,27 +38,42 @@ async function toJpeg(asset: ImagePickerAsset) {
   return result.uri;
 }
 
+const NO_PROGRESS = () => undefined;
+const NEVER_ABORT = new AbortController().signal;
+
 async function upload(
   asset: ImagePickerAsset,
   issue: IssueUploadUrl,
 ): Promise<ProfilePhoto> {
   const uri = await toJpeg(asset);
-  const { uploadUrl, objectKey } = await issue(CONTENT_TYPE);
-
-  const result = await new File(uri).upload(uploadUrl, {
-    httpMethod: "PUT",
-    headers: { "Content-Type": CONTENT_TYPE },
-  });
-
-  if (result.status < 200 || result.status >= 300) {
-    throw new ApiError(
-      result.status,
-      UPLOAD_FAILED_CODE,
-      UPLOAD_FAILED_MESSAGE,
-    );
-  }
+  const objectKey = await uploadFile(
+    uri,
+    CONTENT_TYPE,
+    issue,
+    NO_PROGRESS,
+    NEVER_ABORT,
+  );
 
   return { objectKey, url: uri };
+}
+
+// 채팅은 진행률과 취소가 필요하고, 재전송 때 다시 줄이지 않도록 JPEG 변환을 따로 뗀다.
+export function toChatPhoto(asset: ImagePickerAsset) {
+  return toJpeg(asset);
+}
+
+export function uploadChatPhotoFile(
+  uri: string,
+  onProgress: UploadProgress,
+  signal: AbortSignal,
+) {
+  return uploadFile(
+    uri,
+    CONTENT_TYPE,
+    api.chats.createPhotoUploadUrl,
+    onProgress,
+    signal,
+  );
 }
 
 export function uploadProfilePhoto(
@@ -79,12 +87,6 @@ export function uploadProfilePhoto(
 
 export function uploadFeedPhoto(asset: ImagePickerAsset) {
   return upload(asset, api.feeds.createPhotoUploadUrl).then(
-    (photo) => photo.objectKey,
-  );
-}
-
-export function uploadChatPhoto(asset: ImagePickerAsset) {
-  return upload(asset, api.chats.createPhotoUploadUrl).then(
     (photo) => photo.objectKey,
   );
 }
