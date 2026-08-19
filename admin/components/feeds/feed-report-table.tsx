@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import { MemberCell } from "@/components/member-cell";
+import { StatusText } from "@/components/status-text";
 import {
   Table,
   TableBody,
@@ -78,7 +79,13 @@ export function FeedReportTable({ reports }: Props) {
             <TableCell className="text-right tabular-nums">
               {formatCount(report.postReportCount)}
             </TableCell>
-            <TableCell>{report.postDeletedAt ? "삭제" : "게시"}</TableCell>
+            <TableCell>
+              {report.postDeletedAt ? (
+                <StatusText tone="negative">삭제</StatusText>
+              ) : (
+                <StatusText tone="positive">게시</StatusText>
+              )}
+            </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(report.createdAt)}
             </TableCell>

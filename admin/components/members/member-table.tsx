@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { StatusText } from "@/components/status-text";
 import {
   Table,
   TableBody,
@@ -75,7 +76,13 @@ export function MemberTable({ members }: Props) {
               {member.secretPhotoCount}
             </TableCell>
             <TableCell>
-              {member.withdrawnAt ? "탈퇴" : member.suspended ? "정지" : "정상"}
+              {member.withdrawnAt ? (
+                <StatusText tone="muted">탈퇴</StatusText>
+              ) : member.suspended ? (
+                <StatusText tone="negative">정지</StatusText>
+              ) : (
+                <StatusText tone="positive">정상</StatusText>
+              )}
             </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(member.joinedAt)}

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/empty-state";
 import { MemberCell } from "@/components/member-cell";
 import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
+import { StatusText } from "@/components/status-text";
 import { ChatTranscript } from "@/components/reports/chat-transcript";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,7 +61,11 @@ export function MemberReportDetail() {
                   { label: "사유", value: reportReasonLabels[report.reason] },
                   {
                     label: "상태",
-                    value: report.handledAt ? "처리" : "미처리",
+                    value: report.handledAt ? (
+                      <StatusText tone="positive">처리</StatusText>
+                    ) : (
+                      <StatusText tone="negative">미처리</StatusText>
+                    ),
                   },
                   {
                     label: "신고자",

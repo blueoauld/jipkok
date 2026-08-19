@@ -1,4 +1,5 @@
 import { MemberCell } from "@/components/member-cell";
+import { StatusText, type StatusTone } from "@/components/status-text";
 import {
   Table,
   TableBody,
@@ -13,8 +14,14 @@ import {
   suspensionStatusLabels,
   suspensionTypeLabels,
 } from "@/lib/labels";
-import type { Suspension } from "@/lib/types";
+import type { Suspension, SuspensionStatus } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
+
+const suspensionStatusTones: Record<SuspensionStatus, StatusTone> = {
+  ACTIVE: "negative",
+  EXPIRED: "positive",
+  RELEASED: "muted",
+};
 
 type Props = {
   emptyMessage?: string;
@@ -68,7 +75,11 @@ export function SuspensionTable({
             </TableCell>
             <TableCell>{suspensionTypeLabels[suspension.type]}</TableCell>
             <TableCell>{suspensionReasonLabels[suspension.reason]}</TableCell>
-            <TableCell>{suspensionStatusLabels[suspension.status]}</TableCell>
+            <TableCell>
+              <StatusText tone={suspensionStatusTones[suspension.status]}>
+                {suspensionStatusLabels[suspension.status]}
+              </StatusText>
+            </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(suspension.startedAt)}
             </TableCell>

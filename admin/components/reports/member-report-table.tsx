@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { MemberCell } from "@/components/member-cell";
+import { StatusText } from "@/components/status-text";
 import {
   Table,
   TableBody,
@@ -80,7 +81,13 @@ export function MemberReportTable({
               />
             </TableCell>
             <TableCell>{reportReasonLabels[report.reason]}</TableCell>
-            <TableCell>{report.handledAt ? "처리" : "미처리"}</TableCell>
+            <TableCell>
+              {report.handledAt ? (
+                <StatusText tone="positive">처리</StatusText>
+              ) : (
+                <StatusText tone="negative">미처리</StatusText>
+              )}
+            </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(report.createdAt)}
             </TableCell>
