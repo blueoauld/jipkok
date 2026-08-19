@@ -1,7 +1,7 @@
 "use client";
 
 import { FilterSelect } from "@/components/filter-select";
-import { IdSearchInput } from "@/components/id-search-input";
+import { SearchInput } from "@/components/search-input";
 
 export type FeedReportStatus = "ALL" | "ACTIVE" | "DELETED";
 
@@ -34,7 +34,8 @@ export function FeedReportFilters({ value, onChange }: Props) {
         value={value.status}
         onChange={(status) => onChange({ ...value, status })}
       />
-      <IdSearchInput
+      <SearchInput
+        numeric
         placeholder="작성자 ID"
         value={value.authorId}
         onChange={(authorId) => onChange({ ...value, authorId })}

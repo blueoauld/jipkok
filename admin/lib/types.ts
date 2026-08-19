@@ -78,3 +78,17 @@ export type FeedReport = {
   postDeletedAt: string | null;
   createdAt: string;
 };
+
+export type Gender = "MALE" | "FEMALE";
+
+export type MemberSummary = {
+  id: number;
+  nickname: string;
+  gender: Gender;
+  age: number;
+  phoneNumber: string;
+  publicPhotoCount: number;
+  secretPhotoCount: number;
+  suspended: boolean;
+  joinedAt: string;
+};

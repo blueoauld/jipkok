@@ -1,7 +1,7 @@
 "use client";
 
 import { FilterSelect } from "@/components/filter-select";
-import { IdSearchInput } from "@/components/id-search-input";
+import { SearchInput } from "@/components/search-input";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
 import type { MemberReportType, ReportReason } from "@/lib/types";
 
@@ -61,7 +61,8 @@ export function MemberReportFilters({ value, onChange }: Props) {
         value={value.reason}
         onChange={(reason) => onChange({ ...value, reason })}
       />
-      <IdSearchInput
+      <SearchInput
+        numeric
         placeholder="피신고자 ID"
         value={value.reportedMemberId}
         onChange={(reportedMemberId) =>

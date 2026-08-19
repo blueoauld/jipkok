@@ -1,4 +1,5 @@
 import type {
+  Gender,
   ReportReason,
   ReportType,
   SuspensionReason,
@@ -29,4 +30,9 @@ export const suspensionTypeLabels: Record<SuspensionType, string> = {
 export const suspensionReasonLabels: Record<SuspensionReason, string> = {
   SCREEN_CAPTURE: "비밀 사진 캡처",
   ...reportReasonLabels,
+};
+
+export const genderLabels: Record<Gender, string> = {
+  MALE: "남자",
+  FEMALE: "여자",
 };
