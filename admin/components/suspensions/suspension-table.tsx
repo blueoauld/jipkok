@@ -17,10 +17,14 @@ import type { Suspension } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
 
 type Props = {
+  emptyMessage?: string;
   suspensions: Suspension[];
 };
 
-export function SuspensionTable({ suspensions }: Props) {
+export function SuspensionTable({
+  suspensions,
+  emptyMessage = "조건에 맞는 정지가 없습니다.",
+}: Props) {
   return (
     <Table>
       <TableHeader>
@@ -42,7 +46,7 @@ export function SuspensionTable({ suspensions }: Props) {
               colSpan={8}
               className="h-24 text-center text-muted-foreground"
             >
-              조건에 맞는 정지가 없습니다.
+              {emptyMessage}
             </TableCell>
           </TableRow>
         )}

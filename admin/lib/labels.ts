@@ -1,5 +1,6 @@
 import type {
   Gender,
+  ProfileTarget,
   ReportReason,
   ReportType,
   SuspensionReason,
@@ -42,4 +43,12 @@ export const suspensionStatusLabels: Record<SuspensionStatus, string> = {
   ACTIVE: "정지",
   EXPIRED: "만료",
   RELEASED: "해제",
+};
+
+export const profileTargetLabels: Record<ProfileTarget, string> = {
+  NICKNAME: "닉네임",
+  COMMENT: "코멘트",
+  BIO: "자기소개",
+  PUBLIC_PHOTO: "공개 사진",
+  SECRET_PHOTO: "비밀 사진",
 };

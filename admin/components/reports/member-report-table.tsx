@@ -17,10 +17,14 @@ import { inactiveRowClassName } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  emptyMessage?: string;
   reports: MemberReport[];
 };
 
-export function MemberReportTable({ reports }: Props) {
+export function MemberReportTable({
+  reports,
+  emptyMessage = "조건에 맞는 신고가 없습니다.",
+}: Props) {
   const router = useRouter();
 
   return (
@@ -44,7 +48,7 @@ export function MemberReportTable({ reports }: Props) {
               colSpan={8}
               className="h-24 text-center text-muted-foreground"
             >
-              조건에 맞는 신고가 없습니다.
+              {emptyMessage}
             </TableCell>
           </TableRow>
         )}

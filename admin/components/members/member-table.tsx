@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -10,12 +13,15 @@ import { formatDateTime, formatPhoneNumber } from "@/lib/format";
 import { genderLabels } from "@/lib/labels";
 import type { MemberSummary } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
+import { cn } from "@/lib/utils";
 
 type Props = {
   members: MemberSummary[];
 };
 
 export function MemberTable({ members }: Props) {
+  const router = useRouter();
+
   return (
     <Table>
       <TableHeader>
@@ -45,7 +51,11 @@ export function MemberTable({ members }: Props) {
         {members.map((member) => (
           <TableRow
             key={member.id}
-            className={member.suspended ? inactiveRowClassName : undefined}
+            className={cn(
+              "cursor-pointer",
+              member.suspended && inactiveRowClassName,
+            )}
+            onClick={() => router.push(`/members/detail?id=${member.id}`)}
           >
             <TableCell className="tabular-nums text-muted-foreground">
               {member.id}

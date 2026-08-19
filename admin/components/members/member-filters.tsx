@@ -5,7 +5,7 @@ import { SearchInput } from "@/components/search-input";
 import { genderLabels } from "@/lib/labels";
 import type { Gender } from "@/lib/types";
 
-export type MemberSuspensionStatus = "ALL" | "SUSPENDED" | "NORMAL";
+export type MemberSuspensionStatus = "ALL" | "NORMAL" | "SUSPENDED";
 
 export type MemberFilter = {
   gender: Gender | "ALL";
@@ -26,8 +26,8 @@ const genderItems: Record<Gender | "ALL", string> = {
 
 const suspensionItems: Record<MemberSuspensionStatus, string> = {
   ALL: "전체",
-  SUSPENDED: "정지",
   NORMAL: "정상",
+  SUSPENDED: "정지",
 };
 
 type Props = {

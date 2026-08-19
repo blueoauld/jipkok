@@ -141,3 +141,27 @@ export type MemberReportDetail = {
   evidencePhotoUrls: (string | null)[];
   messages: ChatMessageSnapshot[];
 };
+
+export type ProfileTarget =
+  "NICKNAME" | "COMMENT" | "BIO" | "PUBLIC_PHOTO" | "SECRET_PHOTO";
+
+export type MemberDetail = {
+  id: number;
+  nickname: string;
+  phoneNumber: string;
+  gender: Gender;
+  age: number;
+  comment: string | null;
+  bio: string | null;
+  receivedLikeCount: number;
+  pointBalance: number;
+  noteReceiveEnabled: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  locatedAt: string | null;
+  joinedAt: string;
+  publicPhotoUrls: (string | null)[];
+  secretPhotoUrls: (string | null)[];
+  suspensions: Suspension[];
+  receivedReports: MemberReport[];
+};
