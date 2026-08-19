@@ -1,0 +1,73 @@
+import Link from "next/link";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatDateTime } from "@/lib/format";
+import { suspensionReasonLabels, suspensionTypeLabels } from "@/lib/labels";
+import type { RecentSuspension } from "@/lib/types";
+
+type Props = {
+  suspensions: RecentSuspension[];
+};
+
+export function RecentSuspensions({ suspensions }: Props) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>최근 정지</CardTitle>
+        <CardAction>
+          <Link
+            href="/suspensions"
+            className="text-sm text-muted-foreground hover:underline"
+          >
+            전체 보기
+          </Link>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-16">ID</TableHead>
+              <TableHead>회원</TableHead>
+              <TableHead className="w-24">유형</TableHead>
+              <TableHead>사유</TableHead>
+              <TableHead className="text-right">해제일</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {suspensions.map((suspension) => (
+              <TableRow key={suspension.id}>
+                <TableCell className="tabular-nums text-muted-foreground">
+                  {suspension.id}
+                </TableCell>
+                <TableCell>{suspension.nickname}</TableCell>
+                <TableCell>{suspensionTypeLabels[suspension.type]}</TableCell>
+                <TableCell>
+                  {suspensionReasonLabels[suspension.reason]}
+                </TableCell>
+                <TableCell className="text-right tabular-nums text-muted-foreground">
+                  {suspension.endsAt
+                    ? formatDateTime(suspension.endsAt)
+                    : "영구"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
