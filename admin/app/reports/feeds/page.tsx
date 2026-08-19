@@ -1,11 +1,15 @@
-import { EmptyState } from "@/components/empty-state";
+import { FeedReportList } from "@/components/feeds/feed-report-list";
 import { PageHeader } from "@/components/page-header";
+import { feedReports } from "@/lib/mock/feed-reports";
 
 export default function FeedReportsPage() {
   return (
     <>
-      <PageHeader title="피드 신고" description="피드 게시물에 대한 신고를 처리합니다." />
-      <EmptyState message="준비 중입니다." />
+      <PageHeader
+        title="피드 신고"
+        description="피드 게시물에 대한 신고를 확인합니다. 신고 5건이 쌓이면 자동 삭제됩니다."
+      />
+      <FeedReportList reports={feedReports} />
     </>
   );
 }

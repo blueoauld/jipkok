@@ -64,3 +64,17 @@ export type Page<T> = {
   size: number;
   totalCount: number;
 };
+
+export type FeedReport = {
+  id: number;
+  reporterId: number;
+  reporterNickname: string;
+  postId: number;
+  authorId: number;
+  authorNickname: string;
+  thumbnailUrl: string | null;
+  caption: string | null;
+  postReportCount: number;
+  postDeletedAt: string | null;
+  createdAt: string;
+};

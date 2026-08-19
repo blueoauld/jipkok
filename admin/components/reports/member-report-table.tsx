@@ -1,3 +1,4 @@
+import { MemberCell } from "@/components/member-cell";
 import {
   Table,
   TableBody,
@@ -75,14 +76,5 @@ export function MemberReportTable({ reports }: Props) {
         ))}
       </TableBody>
     </Table>
-  );
-}
-
-function MemberCell({ id, nickname }: { id: number; nickname: string }) {
-  return (
-    <span>
-      {nickname}
-      <span className="ml-1 tabular-nums text-muted-foreground">#{id}</span>
-    </span>
   );
 }

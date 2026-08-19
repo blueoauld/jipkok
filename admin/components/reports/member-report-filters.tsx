@@ -1,18 +1,11 @@
 "use client";
 
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FilterSelect } from "@/components/filter-select";
+import { IdSearchInput } from "@/components/id-search-input";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
 import type { MemberReportType, ReportReason } from "@/lib/types";
 
-export type MemberReportStatus = "PENDING" | "HANDLED" | "ALL";
+export type MemberReportStatus = "ALL" | "HANDLED" | "PENDING";
 
 export type MemberReportFilter = {
   status: MemberReportStatus;
@@ -68,52 +61,13 @@ export function MemberReportFilters({ value, onChange }: Props) {
         value={value.reason}
         onChange={(reason) => onChange({ ...value, reason })}
       />
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          className="w-40 pr-8 focus-visible:border-input focus-visible:ring-0"
-          inputMode="numeric"
-          placeholder="피신고자 ID"
-          value={value.reportedMemberId}
-          onChange={(event) =>
-            onChange({
-              ...value,
-              reportedMemberId: event.target.value.replace(/\D/g, ""),
-            })
-          }
-        />
-      </div>
+      <IdSearchInput
+        placeholder="피신고자 ID"
+        value={value.reportedMemberId}
+        onChange={(reportedMemberId) =>
+          onChange({ ...value, reportedMemberId })
+        }
+      />
     </div>
-  );
-}
-
-type FilterSelectProps<T extends string> = {
-  items: Record<T, string>;
-  value: T;
-  onChange: (value: T) => void;
-};
-
-function FilterSelect<T extends string>({
-  items,
-  value,
-  onChange,
-}: FilterSelectProps<T>) {
-  return (
-    <Select
-      items={items}
-      value={value}
-      onValueChange={(next) => onChange(next as T)}
-    >
-      <SelectTrigger className="w-36">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent align="start" alignItemWithTrigger={false}>
-        {(Object.keys(items) as T[]).map((key) => (
-          <SelectItem key={key} value={key}>
-            {items[key]}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
