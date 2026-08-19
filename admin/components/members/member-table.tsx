@@ -74,7 +74,9 @@ export function MemberTable({ members }: Props) {
             <TableCell className="text-right tabular-nums">
               {member.secretPhotoCount}
             </TableCell>
-            <TableCell>{member.suspended ? "정지" : "정상"}</TableCell>
+            <TableCell>
+              {member.withdrawnAt ? "탈퇴" : member.suspended ? "정지" : "정상"}
+            </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(member.joinedAt)}
             </TableCell>

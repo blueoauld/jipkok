@@ -5,6 +5,7 @@ import {
   defaultMemberFilter,
   MemberFilters,
   type MemberFilter,
+  type MemberStatus,
 } from "@/components/members/member-filters";
 import { MemberTable } from "@/components/members/member-table";
 import { TablePagination } from "@/components/table-pagination";
@@ -56,8 +57,8 @@ export function MemberList({ members }: Props) {
 
 function matches(member: MemberSummary, filter: MemberFilter) {
   if (filter.gender !== "ALL" && member.gender !== filter.gender) return false;
-  if (filter.suspension === "SUSPENDED" && !member.suspended) return false;
-  if (filter.suspension === "NORMAL" && member.suspended) return false;
+  if (filter.status !== "ALL" && statusOf(member) !== filter.status)
+    return false;
 
   const keyword = filter.keyword.trim();
   if (!keyword) return true;
@@ -68,4 +69,10 @@ function matches(member: MemberSummary, filter: MemberFilter) {
     (digits.length > 0 &&
       (String(member.id) === digits || member.phoneNumber.includes(digits)))
   );
+}
+
+function statusOf(member: MemberSummary): MemberStatus {
+  if (member.withdrawnAt) return "WITHDRAWN";
+  if (member.suspended) return "SUSPENDED";
+  return "NORMAL";
 }

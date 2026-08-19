@@ -44,6 +44,7 @@ export const members: MemberSummary[] = Array.from(
       publicPhotoCount: (index * 2) % 6,
       secretPhotoCount: index % 4 === 0 ? (index % 3) + 1 : 0,
       suspended: index % 9 === 4,
+      withdrawnAt: index % 11 === 7 ? joinedAt(index - 2) : null,
       joinedAt: joinedAt(index),
     };
   },

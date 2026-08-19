@@ -40,6 +40,7 @@ export function findMemberDetail(id: number): MemberDetail | null {
     longitude: seed % 4 === 0 ? null : 126.99 + (id % 70) / 1000,
     locatedAt: seed % 4 === 0 ? null : shift(base.joinedAt, 5 + seed),
     joinedAt: base.joinedAt,
+    withdrawnAt: member?.withdrawnAt ?? null,
     publicPhotoUrls: Array.from({ length: base.publicPhotoCount }, () => null),
     secretPhotoUrls: Array.from({ length: base.secretPhotoCount }, () => null),
     suspensions: memberSuspensions,

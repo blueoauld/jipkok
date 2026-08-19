@@ -90,6 +90,7 @@ export type MemberSummary = {
   publicPhotoCount: number;
   secretPhotoCount: number;
   suspended: boolean;
+  withdrawnAt: string | null;
   joinedAt: string;
 };
 
@@ -160,6 +161,7 @@ export type MemberDetail = {
   longitude: number | null;
   locatedAt: string | null;
   joinedAt: string;
+  withdrawnAt: string | null;
   publicPhotoUrls: (string | null)[];
   secretPhotoUrls: (string | null)[];
   suspensions: Suspension[];

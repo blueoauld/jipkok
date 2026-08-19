@@ -73,8 +73,10 @@ export function MemberDetail() {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button>정지</Button>
-          <Button variant="destructive">탈퇴</Button>
+          <Button disabled={member.withdrawnAt !== null}>정지</Button>
+          <Button variant="destructive" disabled={member.withdrawnAt !== null}>
+            탈퇴
+          </Button>
         </div>
       </PageHeader>
 
@@ -177,6 +179,12 @@ export function MemberDetail() {
                   label: "갱신일",
                   value: member.locatedAt
                     ? formatDateTime(member.locatedAt)
+                    : none,
+                },
+                {
+                  label: "탈퇴일",
+                  value: member.withdrawnAt
+                    ? formatDateTime(member.withdrawnAt)
                     : none,
                 },
               ]}

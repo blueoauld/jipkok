@@ -5,17 +5,17 @@ import { SearchInput } from "@/components/search-input";
 import { genderLabels } from "@/lib/labels";
 import type { Gender } from "@/lib/types";
 
-export type MemberSuspensionStatus = "ALL" | "NORMAL" | "SUSPENDED";
+export type MemberStatus = "ALL" | "NORMAL" | "SUSPENDED" | "WITHDRAWN";
 
 export type MemberFilter = {
   gender: Gender | "ALL";
-  suspension: MemberSuspensionStatus;
+  status: MemberStatus;
   keyword: string;
 };
 
 export const defaultMemberFilter: MemberFilter = {
   gender: "ALL",
-  suspension: "ALL",
+  status: "ALL",
   keyword: "",
 };
 
@@ -24,10 +24,11 @@ const genderItems: Record<Gender | "ALL", string> = {
   ...genderLabels,
 };
 
-const suspensionItems: Record<MemberSuspensionStatus, string> = {
+const statusItems: Record<MemberStatus, string> = {
   ALL: "전체",
   NORMAL: "정상",
   SUSPENDED: "정지",
+  WITHDRAWN: "탈퇴",
 };
 
 type Props = {
@@ -39,9 +40,9 @@ export function MemberFilters({ value, onChange }: Props) {
   return (
     <div className="flex items-center gap-2">
       <FilterSelect
-        items={suspensionItems}
-        value={value.suspension}
-        onChange={(suspension) => onChange({ ...value, suspension })}
+        items={statusItems}
+        value={value.status}
+        onChange={(status) => onChange({ ...value, status })}
       />
       <FilterSelect
         items={genderItems}
