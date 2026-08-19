@@ -106,3 +106,38 @@ export type Suspension = {
   releasedAt: string | null;
   status: SuspensionStatus;
 };
+
+export type ChatMessageType = "TEXT" | "PHOTO" | "VIDEO";
+
+export type ReportedMemberSnapshot = {
+  id: number;
+  nickname: string;
+  phoneNumber: string;
+  gender: Gender;
+  age: number;
+  comment: string | null;
+  bio: string | null;
+  profilePhotoUrls: (string | null)[];
+};
+
+export type ChatMessageSnapshot = {
+  id: number;
+  senderId: number;
+  type: ChatMessageType;
+  content: string | null;
+  photoUrl: string | null;
+  createdAt: string;
+};
+
+export type MemberReportDetail = {
+  id: number;
+  type: MemberReportType;
+  reason: ReportReason;
+  detail: string | null;
+  createdAt: string;
+  handledAt: string | null;
+  reporter: { id: number; nickname: string };
+  reported: ReportedMemberSnapshot;
+  evidencePhotoUrls: (string | null)[];
+  messages: ChatMessageSnapshot[];
+};

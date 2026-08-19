@@ -36,8 +36,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => {
                 const active = item.children
-                  ? item.children.some((c) => c.href === pathname)
-                  : item.href === pathname;
+                  ? item.children.some((c) => pathname.startsWith(c.href))
+                  : item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href);
 
                 return (
                   <SidebarMenuItem key={item.href}>
@@ -53,7 +55,7 @@ export function AppSidebar() {
                         {item.children.map((child) => (
                           <SidebarMenuSubItem key={child.href}>
                             <SidebarMenuSubButton
-                              isActive={child.href === pathname}
+                              isActive={pathname.startsWith(child.href)}
                               render={<Link href={child.href} />}
                             >
                               {child.title}

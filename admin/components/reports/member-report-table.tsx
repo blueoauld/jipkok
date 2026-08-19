@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { MemberCell } from "@/components/member-cell";
 import {
   Table,
@@ -11,12 +14,15 @@ import { formatDateTime } from "@/lib/format";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
 import type { MemberReport } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
+import { cn } from "@/lib/utils";
 
 type Props = {
   reports: MemberReport[];
 };
 
 export function MemberReportTable({ reports }: Props) {
+  const router = useRouter();
+
   return (
     <Table>
       <TableHeader>
@@ -45,7 +51,13 @@ export function MemberReportTable({ reports }: Props) {
         {reports.map((report) => (
           <TableRow
             key={report.id}
-            className={report.handledAt ? inactiveRowClassName : undefined}
+            className={cn(
+              "cursor-pointer",
+              report.handledAt && inactiveRowClassName,
+            )}
+            onClick={() =>
+              router.push(`/reports/members/detail?id=${report.id}`)
+            }
           >
             <TableCell className="tabular-nums text-muted-foreground">
               {report.id}

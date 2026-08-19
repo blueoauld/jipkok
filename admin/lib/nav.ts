@@ -30,9 +30,16 @@ export const navItems: NavItem[] = [
 
 export function breadcrumbsFor(pathname: string) {
   for (const item of navItems) {
-    const child = item.children?.find((c) => c.href === pathname);
-    if (child) return [item.title, child.title];
+    const child = item.children?.find((c) => pathname.startsWith(c.href));
+    if (child) {
+      return pathname === child.href
+        ? [item.title, child.title]
+        : [item.title, child.title, "상세"];
+    }
     if (item.href === pathname) return [item.title];
+    if (item.href !== "/" && pathname.startsWith(item.href)) {
+      return [item.title, "상세"];
+    }
   }
   return [];
 }
