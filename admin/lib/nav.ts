@@ -28,17 +28,21 @@ export const navItems: NavItem[] = [
   { title: "정지", href: "/suspensions", icon: ShieldBan },
 ];
 
-export function breadcrumbsFor(pathname: string) {
+export type Breadcrumb = { title: string; href?: string };
+
+export function breadcrumbsFor(pathname: string): Breadcrumb[] {
   for (const item of navItems) {
     const child = item.children?.find((c) => pathname.startsWith(c.href));
     if (child) {
-      return pathname === child.href
-        ? [item.title, child.title]
-        : [item.title, child.title, "상세"];
+      const crumbs: Breadcrumb[] = [
+        { title: item.title, href: item.href },
+        { title: child.title, href: child.href },
+      ];
+      return pathname === child.href ? crumbs : [...crumbs, { title: "상세" }];
     }
-    if (item.href === pathname) return [item.title];
+    if (item.href === pathname) return [{ title: item.title }];
     if (item.href !== "/" && pathname.startsWith(item.href)) {
-      return [item.title, "상세"];
+      return [{ title: item.title, href: item.href }, { title: "상세" }];
     }
   }
   return [];

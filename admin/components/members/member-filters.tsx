@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 import { genderLabels } from "@/lib/labels";
@@ -54,6 +55,11 @@ export function MemberFilters({ value, onChange }: Props) {
         placeholder="ID, 닉네임, 전화번호"
         value={value.keyword}
         onChange={(keyword) => onChange({ ...value, keyword })}
+      />
+      <FilterResetButton
+        value={value}
+        defaultValue={defaultMemberFilter}
+        onReset={onChange}
       />
     </div>
   );

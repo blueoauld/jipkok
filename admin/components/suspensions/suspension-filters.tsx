@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 import { suspensionStatusLabels, suspensionTypeLabels } from "@/lib/labels";
@@ -50,6 +51,11 @@ export function SuspensionFilters({ value, onChange }: Props) {
         placeholder="회원 ID"
         value={value.memberId}
         onChange={(memberId) => onChange({ ...value, memberId })}
+      />
+      <FilterResetButton
+        value={value}
+        defaultValue={defaultSuspensionFilter}
+        onReset={onChange}
       />
     </div>
   );

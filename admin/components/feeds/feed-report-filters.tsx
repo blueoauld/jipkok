@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 
@@ -39,6 +40,11 @@ export function FeedReportFilters({ value, onChange }: Props) {
         placeholder="작성자 ID"
         value={value.authorId}
         onChange={(authorId) => onChange({ ...value, authorId })}
+      />
+      <FilterResetButton
+        value={value}
+        defaultValue={defaultFeedReportFilter}
+        onReset={onChange}
       />
     </div>
   );

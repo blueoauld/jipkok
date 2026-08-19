@@ -18,47 +18,49 @@ export function TablePagination({
   const totalPages = Math.max(1, Math.ceil(totalCount / size));
 
   return (
-    <div className="relative flex w-full items-center justify-center">
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-          aria-label="이전 페이지"
-        >
-          <ChevronLeft />
-        </Button>
-        {pageNumbers(page, totalPages).map((item, index) =>
-          item === null ? (
-            <span
-              key={`gap-${index}`}
-              className="flex size-8 items-center justify-center text-muted-foreground"
-            >
-              …
-            </span>
-          ) : (
-            <Button
-              key={item}
-              variant={item === page ? "outline" : "ghost"}
-              size="icon"
-              onClick={() => onPageChange(item)}
-              aria-current={item === page ? "page" : undefined}
-            >
-              {item}
-            </Button>
-          ),
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-          aria-label="다음 페이지"
-        >
-          <ChevronRight />
-        </Button>
-      </div>
+    <div className="relative flex min-h-8 w-full items-center justify-center">
+      {totalPages > 1 && (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+            aria-label="이전 페이지"
+          >
+            <ChevronLeft />
+          </Button>
+          {pageNumbers(page, totalPages).map((item, index) =>
+            item === null ? (
+              <span
+                key={`gap-${index}`}
+                className="flex size-8 items-center justify-center text-muted-foreground"
+              >
+                …
+              </span>
+            ) : (
+              <Button
+                key={item}
+                variant={item === page ? "outline" : "ghost"}
+                size="icon"
+                onClick={() => onPageChange(item)}
+                aria-current={item === page ? "page" : undefined}
+              >
+                {item}
+              </Button>
+            ),
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={page >= totalPages}
+            onClick={() => onPageChange(page + 1)}
+            aria-label="다음 페이지"
+          >
+            <ChevronRight />
+          </Button>
+        </div>
+      )}
       <p className="absolute right-0 text-sm text-muted-foreground">
         총 {formatCount(totalCount)}건
       </p>

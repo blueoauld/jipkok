@@ -73,7 +73,9 @@ export function MemberDetail() {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button disabled={member.withdrawnAt !== null}>정지</Button>
+          <Button variant="outline" disabled={member.withdrawnAt !== null}>
+            정지
+          </Button>
           <Button variant="destructive" disabled={member.withdrawnAt !== null}>
             탈퇴
           </Button>

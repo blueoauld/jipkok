@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
@@ -68,6 +69,11 @@ export function MemberReportFilters({ value, onChange }: Props) {
         onChange={(reportedMemberId) =>
           onChange({ ...value, reportedMemberId })
         }
+      />
+      <FilterResetButton
+        value={value}
+        defaultValue={defaultMemberReportFilter}
+        onReset={onChange}
       />
     </div>
   );

@@ -2,9 +2,11 @@
 
 import { Fragment } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -19,10 +21,16 @@ export function AppHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           {crumbs.map((crumb, index) => (
-            <Fragment key={crumb}>
+            <Fragment key={crumb.title}>
               {index > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
-                <BreadcrumbPage>{crumb}</BreadcrumbPage>
+                {index < crumbs.length - 1 && crumb.href ? (
+                  <BreadcrumbLink render={<Link href={crumb.href} />}>
+                    {crumb.title}
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
+                )}
               </BreadcrumbItem>
             </Fragment>
           ))}
