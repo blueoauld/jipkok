@@ -1,4 +1,5 @@
 import type {
+  DevicePlatform,
   Gender,
   ProfileTarget,
   ReportReason,
@@ -51,4 +52,9 @@ export const profileTargetLabels: Record<ProfileTarget, string> = {
   BIO: "자기소개",
   PUBLIC_PHOTO: "공개 사진",
   SECRET_PHOTO: "비밀 사진",
+};
+
+export const devicePlatformLabels: Record<DevicePlatform, string> = {
+  IOS: "iOS",
+  ANDROID: "Android",
 };

@@ -5,7 +5,7 @@ import { formatCount } from "@/lib/format";
 type Props = {
   title: string;
   value: number;
-  href: string;
+  href?: string;
 };
 
 export function StatCard({ title, value, href }: Props) {
@@ -13,9 +13,13 @@ export function StatCard({ title, value, href }: Props) {
     <Card className="gap-2">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">
-          <Link href={href} className="hover:underline">
-            {title}
-          </Link>
+          {href ? (
+            <Link href={href} className="hover:underline">
+              {title}
+            </Link>
+          ) : (
+            title
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="text-3xl font-semibold tabular-nums">

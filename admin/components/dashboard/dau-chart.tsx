@@ -10,31 +10,27 @@ import {
 } from "@/components/ui/card";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import { formatDate } from "@/lib/format";
-import type { TrendPoint } from "@/lib/types";
+import type { DauPoint } from "@/lib/types";
 
 const config = {
-  signups: { label: "가입", color: "var(--chart-1)" },
-  withdrawals: { label: "탈퇴", color: "var(--chart-3)" },
-  reports: { label: "신고", color: "var(--chart-2)" },
+  dau: { label: "DAU", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
 type Props = {
-  data: TrendPoint[];
+  data: DauPoint[];
 };
 
-export function TrendChart({ data }: Props) {
+export function DauChart({ data }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>최근 14일 추이</CardTitle>
-        <CardDescription>하루 단위 가입, 탈퇴, 신고 수</CardDescription>
+        <CardTitle>최근 14일 DAU</CardTitle>
+        <CardDescription>하루에 한 번 이상 접속한 회원 수</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={config} className="h-64 w-full">
@@ -48,7 +44,7 @@ export function TrendChart({ data }: Props) {
               tickFormatter={formatDate}
             />
             <YAxis
-              width={32}
+              width={40}
               tickLine={false}
               axisLine={false}
               allowDecimals={false}
@@ -61,27 +57,10 @@ export function TrendChart({ data }: Props) {
                 />
               }
             />
-            <ChartLegend content={<ChartLegendContent />} />
             <Line
-              dataKey="signups"
+              dataKey="dau"
               type="monotone"
-              stroke="var(--color-signups)"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4 }}
-            />
-            <Line
-              dataKey="withdrawals"
-              type="monotone"
-              stroke="var(--color-withdrawals)"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4 }}
-            />
-            <Line
-              dataKey="reports"
-              type="monotone"
-              stroke="var(--color-reports)"
+              stroke="var(--color-dau)"
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}

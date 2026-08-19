@@ -14,14 +14,15 @@ export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
 export type DashboardSummary = {
   pendingMemberReports: number;
-  pendingFeedReports: number;
   suspendedMembers: number;
   todaySignups: number;
+  todayWithdrawals: number;
 };
 
 export type TrendPoint = {
   date: string;
   signups: number;
+  withdrawals: number;
   reports: number;
 };
 
@@ -166,4 +167,34 @@ export type MemberDetail = {
   secretPhotoUrls: (string | null)[];
   suspensions: Suspension[];
   receivedReports: MemberReport[];
+};
+
+export type ActiveUsers = {
+  dau: number;
+  wau: number;
+  mau: number;
+};
+
+export type DauPoint = {
+  date: string;
+  dau: number;
+};
+
+export type AgeGroupCount = {
+  label: string;
+  male: number;
+  female: number;
+};
+
+export type Demographics = {
+  male: number;
+  female: number;
+  ageGroups: AgeGroupCount[];
+};
+
+export type DevicePlatform = "IOS" | "ANDROID";
+
+export type AccessEnvironment = {
+  platforms: Record<DevicePlatform, number>;
+  versions: { version: string; platform: DevicePlatform; count: number }[];
 };
