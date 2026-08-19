@@ -3,6 +3,7 @@ import type {
   ReportReason,
   ReportType,
   SuspensionReason,
+  SuspensionStatus,
   SuspensionType,
 } from "@/lib/types";
 
@@ -35,4 +36,10 @@ export const suspensionReasonLabels: Record<SuspensionReason, string> = {
 export const genderLabels: Record<Gender, string> = {
   MALE: "남자",
   FEMALE: "여자",
+};
+
+export const suspensionStatusLabels: Record<SuspensionStatus, string> = {
+  ACTIVE: "정지",
+  EXPIRED: "만료",
+  RELEASED: "해제",
 };

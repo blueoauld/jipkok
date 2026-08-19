@@ -92,3 +92,17 @@ export type MemberSummary = {
   suspended: boolean;
   joinedAt: string;
 };
+
+export type SuspensionStatus = "ACTIVE" | "EXPIRED" | "RELEASED";
+
+export type Suspension = {
+  id: number;
+  memberId: number;
+  nickname: string;
+  type: SuspensionType;
+  reason: SuspensionReason;
+  startedAt: string;
+  expiresAt: string | null;
+  releasedAt: string | null;
+  status: SuspensionStatus;
+};
