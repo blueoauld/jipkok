@@ -43,3 +43,24 @@ export type RecentSuspension = {
   endsAt: string | null;
   createdAt: string;
 };
+
+export type MemberReportType = Exclude<ReportType, "FEED">;
+
+export type MemberReport = {
+  id: number;
+  type: MemberReportType;
+  reason: ReportReason;
+  reporterId: number;
+  reporterNickname: string;
+  reportedMemberId: number;
+  reportedNickname: string;
+  createdAt: string;
+  handledAt: string | null;
+};
+
+export type Page<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  totalCount: number;
+};
