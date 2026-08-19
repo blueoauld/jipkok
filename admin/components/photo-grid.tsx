@@ -27,7 +27,7 @@ export function PhotoGrid({ urls, emptyMessage }: Props) {
         ) : (
           <div
             key={index}
-            className="flex aspect-square items-center justify-center bg-neutral-200 text-muted-foreground"
+            className="flex aspect-square items-center justify-center bg-neutral-200 text-muted-foreground dark:bg-neutral-800"
           >
             <ImageOff className="size-5" />
           </div>

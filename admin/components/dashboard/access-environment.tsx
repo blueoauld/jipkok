@@ -37,7 +37,7 @@ export function AccessEnvironmentCard({ data }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <div className="flex h-2 overflow-hidden bg-neutral-200">
+          <div className="flex h-2 overflow-hidden bg-neutral-200 dark:bg-neutral-800">
             {platforms.map((platform, index) => (
               <div
                 key={platform}

@@ -4,8 +4,8 @@ export type StatusTone = "default" | "positive" | "negative" | "muted";
 
 const toneClassNames: Record<StatusTone, string> = {
   default: "",
-  positive: "text-emerald-600",
-  negative: "text-red-600",
+  positive: "text-emerald-600 dark:text-emerald-400",
+  negative: "text-red-600 dark:text-red-400",
   muted: "text-muted-foreground",
 };
 

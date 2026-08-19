@@ -65,7 +65,9 @@ function Bubble({
 }) {
   const base = cn(
     "max-w-md px-3 py-2 text-sm break-words whitespace-pre-wrap",
-    mine ? "bg-neutral-100" : "bg-neutral-900 text-white",
+    mine
+      ? "bg-neutral-100 dark:bg-neutral-800"
+      : "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900",
   );
 
   if (message.type === "TEXT") {

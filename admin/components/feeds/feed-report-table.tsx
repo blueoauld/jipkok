@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import { MemberCell } from "@/components/member-cell";
 import { StatusText } from "@/components/status-text";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -32,13 +33,14 @@ export function FeedReportTable({ reports }: Props) {
           <TableHead className="w-20 text-right">신고 수</TableHead>
           <TableHead className="w-24">상태</TableHead>
           <TableHead className="text-right">접수일</TableHead>
+          <TableHead className="w-20" />
         </TableRow>
       </TableHeader>
       <TableBody>
         {reports.length === 0 && (
           <TableRow>
             <TableCell
-              colSpan={9}
+              colSpan={10}
               className="h-24 text-center text-muted-foreground"
             >
               조건에 맞는 신고가 없습니다.
@@ -89,6 +91,15 @@ export function FeedReportTable({ reports }: Props) {
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {formatDateTime(report.createdAt)}
             </TableCell>
+            <TableCell className="text-right">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={report.postDeletedAt !== null}
+              >
+                삭제
+              </Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -99,7 +110,7 @@ export function FeedReportTable({ reports }: Props) {
 function Thumbnail({ url }: { url: string | null }) {
   if (!url) {
     return (
-      <div className="flex size-10 items-center justify-center bg-neutral-200 text-muted-foreground">
+      <div className="flex size-10 items-center justify-center bg-neutral-200 text-muted-foreground dark:bg-neutral-800">
         <ImageOff className="size-4" />
       </div>
     );
