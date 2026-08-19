@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { formatCount, formatDateTime } from "@/lib/format";
 import type { FeedReport } from "@/lib/types";
+import { inactiveRowClassName } from "@/lib/styles";
 
 type Props = {
   reports: FeedReport[];
@@ -46,11 +47,7 @@ export function FeedReportTable({ reports }: Props) {
         {reports.map((report) => (
           <TableRow
             key={report.id}
-            className={
-              report.postDeletedAt
-                ? "bg-neutral-100 hover:bg-neutral-200/70"
-                : ""
-            }
+            className={report.postDeletedAt ? inactiveRowClassName : undefined}
           >
             <TableCell className="tabular-nums text-muted-foreground">
               {report.id}

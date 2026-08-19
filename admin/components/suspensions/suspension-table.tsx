@@ -14,6 +14,7 @@ import {
   suspensionTypeLabels,
 } from "@/lib/labels";
 import type { Suspension } from "@/lib/types";
+import { inactiveRowClassName } from "@/lib/styles";
 
 type Props = {
   suspensions: Suspension[];
@@ -49,9 +50,7 @@ export function SuspensionTable({ suspensions }: Props) {
           <TableRow
             key={suspension.id}
             className={
-              suspension.status === "ACTIVE"
-                ? ""
-                : "bg-neutral-100 hover:bg-neutral-200/70"
+              suspension.status === "ACTIVE" ? undefined : inactiveRowClassName
             }
           >
             <TableCell className="tabular-nums text-muted-foreground">

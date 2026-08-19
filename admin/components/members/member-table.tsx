@@ -9,6 +9,7 @@ import {
 import { formatDateTime, formatPhoneNumber } from "@/lib/format";
 import { genderLabels } from "@/lib/labels";
 import type { MemberSummary } from "@/lib/types";
+import { inactiveRowClassName } from "@/lib/styles";
 
 type Props = {
   members: MemberSummary[];
@@ -44,9 +45,7 @@ export function MemberTable({ members }: Props) {
         {members.map((member) => (
           <TableRow
             key={member.id}
-            className={
-              member.suspended ? "bg-neutral-100 hover:bg-neutral-200/70" : ""
-            }
+            className={member.suspended ? inactiveRowClassName : undefined}
           >
             <TableCell className="tabular-nums text-muted-foreground">
               {member.id}

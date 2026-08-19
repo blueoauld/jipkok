@@ -10,6 +10,7 @@ import {
 import { formatDateTime } from "@/lib/format";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
 import type { MemberReport } from "@/lib/types";
+import { inactiveRowClassName } from "@/lib/styles";
 
 type Props = {
   reports: MemberReport[];
@@ -44,9 +45,7 @@ export function MemberReportTable({ reports }: Props) {
         {reports.map((report) => (
           <TableRow
             key={report.id}
-            className={
-              report.handledAt ? "bg-neutral-100 hover:bg-neutral-200/70" : ""
-            }
+            className={report.handledAt ? inactiveRowClassName : undefined}
           >
             <TableCell className="tabular-nums text-muted-foreground">
               {report.id}
