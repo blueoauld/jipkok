@@ -41,8 +41,8 @@ export function RecentSuspensions({ suspensions }: Props) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-16">ID</TableHead>
-              <TableHead>회원</TableHead>
               <TableHead className="w-24">유형</TableHead>
+              <TableHead>회원</TableHead>
               <TableHead>사유</TableHead>
               <TableHead className="text-right">해제일</TableHead>
             </TableRow>
@@ -53,8 +53,8 @@ export function RecentSuspensions({ suspensions }: Props) {
                 <TableCell className="tabular-nums text-muted-foreground">
                   {suspension.id}
                 </TableCell>
-                <TableCell>{suspension.nickname}</TableCell>
                 <TableCell>{suspensionTypeLabels[suspension.type]}</TableCell>
+                <TableCell>{suspension.nickname}</TableCell>
                 <TableCell>
                   {suspensionReasonLabels[suspension.reason]}
                 </TableCell>

@@ -10,15 +10,15 @@ type Props = {
 
 export function StatCard({ title, value, href }: Props) {
   return (
-    <Card className="gap-2 py-4">
-      <CardHeader className="px-4">
+    <Card className="gap-2">
+      <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           <Link href={href} className="hover:underline">
             {title}
           </Link>
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-4 text-3xl font-semibold tabular-nums">
+      <CardContent className="text-3xl font-semibold tabular-nums">
         {formatCount(value)}
       </CardContent>
     </Card>

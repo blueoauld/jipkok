@@ -14,7 +14,7 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader title="대시보드" description="운영 현황을 한눈에 봅니다." />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-6">
         <StatCard
           title="미처리 회원 신고"
           value={dashboardSummary.pendingMemberReports}
@@ -37,7 +37,7 @@ export default function DashboardPage() {
         />
       </div>
       <TrendChart data={trend} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-6">
         <RecentReports reports={recentReports} />
         <RecentSuspensions suspensions={recentSuspensions} />
       </div>
