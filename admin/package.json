@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "api:types": "npx --yes openapi-typescript@7 openapi.json -o lib/api/schema.ts"
+    "api:types": "npx --yes openapi-typescript@7 openapi.json -o lib/api/schema.ts",
+    "deploy": "next build && wrangler deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

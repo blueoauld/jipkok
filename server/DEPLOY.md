@@ -46,7 +46,10 @@ DISCORD_SUSPENSION_CHANNEL_ID=<채널 아이디>
 DISCORD_RESET_CHANNEL_ID=<채널 아이디>
 DISCORD_REPORT_CHANNEL_ID=<채널 아이디>
 DISCORD_MODERATION_CHANNEL_ID=<채널 아이디>
+CORS_ALLOWED_ORIGINS=<어드민 웹 오리진, 예: https://admin.jipkok.app>
 ```
+
+`CORS_ALLOWED_ORIGINS`를 빼면 어드민 웹이 CORS로 전부 막힌다. 로컬 개발은 기본값 `http://localhost:3000`을 쓴다.
 
 ```bash
 chmod 600 ~/jipkok/.env
