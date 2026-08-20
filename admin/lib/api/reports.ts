@@ -1,0 +1,27 @@
+import { api } from "@/lib/api/client";
+import type {
+  MemberReportDetail,
+  MemberReportPage,
+  ReportReason,
+} from "@/lib/types";
+import type { MemberReportFilter } from "@/components/reports/member-report-filters";
+
+export type MemberReportListParams = MemberReportFilter & { page: number };
+
+export const fetchMemberReports = (params: MemberReportListParams) =>
+  api<MemberReportPage>("/api/admin/reports", {
+    query: {
+      status: params.status,
+      type: params.type === "ALL" ? undefined : params.type,
+      reason:
+        params.reason === "ALL" ? undefined : (params.reason as ReportReason),
+      reportedMemberId: params.reportedMemberId || undefined,
+      page: params.page,
+    },
+  });
+
+export const fetchMemberReportDetail = (id: number) =>
+  api<MemberReportDetail>(`/api/admin/reports/${id}`);
+
+export const handleMemberReport = (id: number) =>
+  api<void>(`/api/admin/reports/${id}/handle`, { method: "POST" });

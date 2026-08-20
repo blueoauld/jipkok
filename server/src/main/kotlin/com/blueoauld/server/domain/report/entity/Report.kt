@@ -30,6 +30,9 @@ class Report(
     @Column(name = "reported_member_id", nullable = false, updatable = false)
     val reportedMemberId: Long,
 
+    @Column(name = "reported_phone_number", length = PHONE_NUMBER_LENGTH, updatable = false)
+    val reportedPhoneNumber: String? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, updatable = false)
     val type: ReportType,
@@ -56,6 +59,7 @@ class Report(
     companion object {
 
         const val DETAIL_MAX_LENGTH = 1000
+        const val PHONE_NUMBER_LENGTH = 11
         const val PHOTO_MAX_COUNT = 6
     }
 }

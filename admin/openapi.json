@@ -3837,6 +3837,91 @@
                 }
             }
         },
+        "/api/admin/reports/{reportId}/handle": {
+            "post": {
+                "tags": [
+                    "admin-report-controller"
+                ],
+                "summary": "\ud68c\uc6d0 \uc2e0\uace0 \ucc98\ub9ac",
+                "operationId": "handle",
+                "parameters": [
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/points/me": {
             "get": {
                 "tags": [
@@ -6353,6 +6438,260 @@
                 }
             }
         },
+        "/api/admin/reports": {
+            "get": {
+                "tags": [
+                    "admin-report-controller"
+                ],
+                "summary": "\ud68c\uc6d0 \uc2e0\uace0 \ubaa9\ub85d",
+                "operationId": "findReports",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "ALL",
+                            "enum": [
+                                "ALL",
+                                "PENDING",
+                                "HANDLED"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "PROFILE",
+                                "CHAT"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "reason",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "OBSCENITY",
+                                "MINOR",
+                                "MONEY_TRANSACTION",
+                                "ABUSE",
+                                "IMPERSONATION",
+                                "ETC"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "reportedMemberId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "reportedPhoneNumber",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminReportPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/reports/{reportId}": {
+            "get": {
+                "tags": [
+                    "admin-report-controller"
+                ],
+                "summary": "\ud68c\uc6d0 \uc2e0\uace0 \uc0c1\uc138",
+                "operationId": "findDetail_1",
+                "parameters": [
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminReportDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/dashboard/trend": {
             "get": {
                 "tags": [
@@ -8305,6 +8644,280 @@
                 "required": [
                     "latestVersion",
                     "storeUrl"
+                ]
+            },
+            "AdminReportPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminReportResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminReportResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "PROFILE",
+                            "CHAT"
+                        ]
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "OBSCENITY",
+                            "MINOR",
+                            "MONEY_TRANSACTION",
+                            "ABUSE",
+                            "IMPERSONATION",
+                            "ETC"
+                        ]
+                    },
+                    "reporterId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "reporterNickname": {
+                        "type": "string"
+                    },
+                    "reportedMemberId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "reportedNickname": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "handledAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "reason",
+                    "reportedMemberId",
+                    "reportedNickname",
+                    "reporterId",
+                    "reporterNickname",
+                    "type"
+                ]
+            },
+            "AdminChatMessageResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "senderId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "TEXT",
+                            "PHOTO",
+                            "VIDEO"
+                        ]
+                    },
+                    "content": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "photoUrl": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "senderId",
+                    "type"
+                ]
+            },
+            "AdminReportDetailResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "PROFILE",
+                            "CHAT"
+                        ]
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "OBSCENITY",
+                            "MINOR",
+                            "MONEY_TRANSACTION",
+                            "ABUSE",
+                            "IMPERSONATION",
+                            "ETC"
+                        ]
+                    },
+                    "detail": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "handledAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "reporter": {
+                        "$ref": "#/components/schemas/AdminReporterResponse"
+                    },
+                    "reported": {
+                        "$ref": "#/components/schemas/AdminReportedMemberResponse"
+                    },
+                    "evidencePhotoUrls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminChatMessageResponse"
+                        }
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "evidencePhotoUrls",
+                    "id",
+                    "messages",
+                    "reason",
+                    "reported",
+                    "reporter",
+                    "type"
+                ]
+            },
+            "AdminReportedMemberResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    },
+                    "age": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "profilePhotoUrls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "age",
+                    "gender",
+                    "id",
+                    "nickname",
+                    "phoneNumber",
+                    "profilePhotoUrls"
+                ]
+            },
+            "AdminReporterResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nickname"
                 ]
             },
             "TrendPointResponse": {

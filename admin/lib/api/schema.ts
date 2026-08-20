@@ -600,6 +600,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/reports/{reportId}/handle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 회원 신고 처리 */
+        post: operations["handle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/points/me": {
         parameters: {
             query?: never;
@@ -1010,6 +1027,40 @@ export interface paths {
         };
         /** 광고 보상 콜백 */
         get: operations["reward"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 회원 신고 목록 */
+        get: operations["findReports"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/{reportId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 회원 신고 상세 */
+        get: operations["findDetail_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1481,6 +1532,80 @@ export interface components {
         AppVersionResponse: {
             latestVersion: string;
             storeUrl: string;
+        };
+        AdminReportPageResponse: {
+            items: components["schemas"]["AdminReportResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminReportResponse: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "PROFILE" | "CHAT";
+            /** @enum {string} */
+            reason: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** Format: int64 */
+            reporterId: number;
+            reporterNickname: string;
+            /** Format: int64 */
+            reportedMemberId: number;
+            reportedNickname: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            handledAt?: string | null;
+        };
+        AdminChatMessageResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            senderId: number;
+            /** @enum {string} */
+            type: "TEXT" | "PHOTO" | "VIDEO";
+            content?: string | null;
+            photoUrl?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminReportDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "PROFILE" | "CHAT";
+            /** @enum {string} */
+            reason: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            detail?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            handledAt?: string | null;
+            reporter: components["schemas"]["AdminReporterResponse"];
+            reported: components["schemas"]["AdminReportedMemberResponse"];
+            evidencePhotoUrls: string[];
+            messages: components["schemas"]["AdminChatMessageResponse"][];
+        };
+        AdminReportedMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            phoneNumber: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            comment?: string | null;
+            bio?: string | null;
+            profilePhotoUrls: string[];
+        };
+        AdminReporterResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
         };
         TrendPointResponse: {
             /** Format: date */
@@ -4802,6 +4927,80 @@ export interface operations {
             };
         };
     };
+    handle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reportId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     findBalance: {
         parameters: {
             query?: never;
@@ -6726,6 +6925,164 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findReports: {
+        parameters: {
+            query?: {
+                status?: "ALL" | "PENDING" | "HANDLED";
+                type?: "PROFILE" | "CHAT";
+                reason?: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+                reportedMemberId?: number;
+                reportedPhoneNumber?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminReportPageResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findDetail_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reportId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminReportDetailResponse"];
+                };
             };
             /** @description 요청이 올바르지 않다 */
             400: {

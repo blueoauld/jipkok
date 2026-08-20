@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   defaultMemberReportFilter,
   MemberReportFilters,
   type MemberReportFilter,
 } from "@/components/reports/member-report-filters";
 import { MemberReportTable } from "@/components/reports/member-report-table";
+import { QuerySection } from "@/components/query-section";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -14,20 +16,17 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import type { MemberReport } from "@/lib/types";
+import { fetchMemberReports } from "@/lib/api/reports";
 
-const PAGE_SIZE = 20;
-
-type Props = {
-  reports: MemberReport[];
-};
-
-export function MemberReportList({ reports }: Props) {
+export function MemberReportList() {
   const [filter, setFilter] = useState(defaultMemberReportFilter);
   const [page, setPage] = useState(1);
 
-  const filtered = reports.filter((report) => matches(report, filter));
-  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const { data, isPending, error } = useQuery({
+    queryKey: ["reports", filter, page],
+    queryFn: () => fetchMemberReports({ ...filter, page }),
+    placeholderData: keepPreviousData,
+  });
 
   const changeFilter = (next: MemberReportFilter) => {
     setFilter(next);
@@ -35,35 +34,29 @@ export function MemberReportList({ reports }: Props) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <MemberReportFilters value={filter} onChange={changeFilter} />
-      </CardHeader>
-      <CardContent>
-        <MemberReportTable reports={pageItems} />
-      </CardContent>
-      <CardFooter className="bg-transparent">
-        <TablePagination
-          page={page}
-          size={PAGE_SIZE}
-          totalCount={filtered.length}
-          onPageChange={setPage}
-        />
-      </CardFooter>
-    </Card>
+    <QuerySection
+      isPending={isPending}
+      error={error}
+      skeletonClassName="h-96 w-full"
+    >
+      {data && (
+        <Card>
+          <CardHeader>
+            <MemberReportFilters value={filter} onChange={changeFilter} />
+          </CardHeader>
+          <CardContent>
+            <MemberReportTable reports={data.items} />
+          </CardContent>
+          <CardFooter className="bg-transparent">
+            <TablePagination
+              page={data.page}
+              size={data.size}
+              totalCount={data.totalCount}
+              onPageChange={setPage}
+            />
+          </CardFooter>
+        </Card>
+      )}
+    </QuerySection>
   );
-}
-
-function matches(report: MemberReport, filter: MemberReportFilter) {
-  if (filter.status === "PENDING" && report.handledAt) return false;
-  if (filter.status === "HANDLED" && !report.handledAt) return false;
-  if (filter.type !== "ALL" && report.type !== filter.type) return false;
-  if (filter.reason !== "ALL" && report.reason !== filter.reason) return false;
-  if (
-    filter.reportedMemberId &&
-    report.reportedMemberId !== Number(filter.reportedMemberId)
-  ) {
-    return false;
-  }
-  return true;
 }

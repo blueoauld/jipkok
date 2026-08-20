@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
 import { MemberCell } from "@/components/member-cell";
@@ -12,18 +13,38 @@ import { ChatTranscript } from "@/components/reports/chat-transcript";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime, formatPhoneNumber } from "@/lib/format";
+import type { MemberReportDetail as MemberReportDetailData } from "@/lib/types";
 import {
   genderLabels,
   reportReasonLabels,
   reportTypeLabels,
 } from "@/lib/labels";
-import { findMemberReportDetail } from "@/lib/mock/member-report-details";
+import { fetchMemberReportDetail, handleMemberReport } from "@/lib/api/reports";
+import { QuerySection } from "@/components/query-section";
 
 export function MemberReportDetail() {
   const id = Number(useSearchParams().get("id"));
-  const report = Number.isInteger(id) ? findMemberReportDetail(id) : null;
+  const queryClient = useQueryClient();
 
-  if (!report) {
+  const {
+    data: report,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["reports", "detail", id],
+    queryFn: () => fetchMemberReportDetail(id),
+    enabled: Number.isInteger(id) && id > 0,
+  });
+
+  const handleMutation = useMutation({
+    mutationFn: () => handleMemberReport(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+
+  if (!Number.isInteger(id) || id <= 0) {
     return (
       <>
         <PageHeader title="회원 신고" />
@@ -32,6 +53,30 @@ export function MemberReportDetail() {
     );
   }
 
+  return (
+    <QuerySection
+      isPending={isPending}
+      error={error}
+      skeletonClassName="h-96 w-full"
+    >
+      {report && (
+        <Loaded
+          report={report}
+          handling={handleMutation.isPending}
+          onHandle={() => handleMutation.mutate()}
+        />
+      )}
+    </QuerySection>
+  );
+}
+
+type LoadedProps = {
+  report: MemberReportDetailData;
+  handling: boolean;
+  onHandle: () => void;
+};
+
+function Loaded({ report, handling, onHandle }: LoadedProps) {
   const { reported } = report;
 
   return (
@@ -42,8 +87,11 @@ export function MemberReportDetail() {
       >
         <div className="flex items-center gap-2">
           <Button variant="outline">정지</Button>
-          <Button disabled={report.handledAt !== null}>
-            {report.handledAt ? "처리됨" : "처리 완료"}
+          <Button
+            disabled={report.handledAt != null || handling}
+            onClick={onHandle}
+          >
+            {report.handledAt ? "처리됨" : handling ? "처리 중" : "처리 완료"}
           </Button>
         </div>
       </PageHeader>

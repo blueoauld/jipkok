@@ -11,6 +11,10 @@ export type AccessEnvironment = Schemas["AccessEnvironmentResponse"];
 export type RecentActivity = Schemas["RecentActivityResponse"];
 export type RecentReport = Schemas["RecentReportResponse"];
 export type RecentSuspension = Schemas["RecentSuspensionResponse"];
+export type MemberReport = Schemas["AdminReportResponse"];
+export type MemberReportPage = Schemas["AdminReportPageResponse"];
+export type MemberReportDetail = Schemas["AdminReportDetailResponse"];
+export type ChatMessageSnapshot = Schemas["AdminChatMessageResponse"];
 
 export type ReportType = "PROFILE" | "CHAT" | "FEED";
 
@@ -27,18 +31,6 @@ export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
 export type MemberReportType = Exclude<ReportType, "FEED">;
-
-export type MemberReport = {
-  id: number;
-  type: MemberReportType;
-  reason: ReportReason;
-  reporterId: number;
-  reporterNickname: string;
-  reportedMemberId: number;
-  reportedNickname: string;
-  createdAt: string;
-  handledAt: string | null;
-};
 
 export type Page<T> = {
   items: T[];
@@ -88,41 +80,6 @@ export type Suspension = {
   expiresAt: string | null;
   releasedAt: string | null;
   status: SuspensionStatus;
-};
-
-export type ChatMessageType = "TEXT" | "PHOTO" | "VIDEO";
-
-export type ReportedMemberSnapshot = {
-  id: number;
-  nickname: string;
-  phoneNumber: string;
-  gender: Gender;
-  age: number;
-  comment: string | null;
-  bio: string | null;
-  profilePhotoUrls: (string | null)[];
-};
-
-export type ChatMessageSnapshot = {
-  id: number;
-  senderId: number;
-  type: ChatMessageType;
-  content: string | null;
-  photoUrl: string | null;
-  createdAt: string;
-};
-
-export type MemberReportDetail = {
-  id: number;
-  type: MemberReportType;
-  reason: ReportReason;
-  detail: string | null;
-  createdAt: string;
-  handledAt: string | null;
-  reporter: { id: number; nickname: string };
-  reported: ReportedMemberSnapshot;
-  evidencePhotoUrls: (string | null)[];
-  messages: ChatMessageSnapshot[];
 };
 
 export type ProfileTarget =

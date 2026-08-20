@@ -70,6 +70,7 @@ class ReportService(
             Report(
                 reporterId = reporterId,
                 reportedMemberId = request.reportedMemberId,
+                reportedPhoneNumber = reported.phoneNumber,
                 type = if (room == null) ReportType.PROFILE else ReportType.CHAT,
                 roomId = room?.id,
                 reason = request.reason,
