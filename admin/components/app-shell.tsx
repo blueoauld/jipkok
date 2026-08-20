@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -13,19 +13,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isLogin = pathname === LOGIN_PATH;
-  const [ready, setReady] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  const authed = mounted && getAccessToken() !== null;
 
   useEffect(() => {
-    if (!isLogin && !getAccessToken()) {
-      router.replace(LOGIN_PATH);
-      return;
-    }
-    setReady(true);
-  }, [isLogin, router]);
+    if (mounted && !isLogin && !authed) router.replace(LOGIN_PATH);
+  }, [mounted, isLogin, authed, router]);
 
   if (isLogin) return children;
 
-  if (!ready) return null;
+  if (!authed) return null;
 
   return (
     <SidebarProvider>

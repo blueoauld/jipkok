@@ -6,7 +6,10 @@ import type {
 } from "@/lib/types";
 import type { MemberReportFilter } from "@/components/reports/member-report-filters";
 
-export type MemberReportListParams = MemberReportFilter & { page: number };
+export type MemberReportListParams = MemberReportFilter & {
+  page: number;
+  reportedPhoneNumber?: string;
+};
 
 export const fetchMemberReports = (params: MemberReportListParams) =>
   api<MemberReportPage>("/api/admin/reports", {
@@ -16,6 +19,7 @@ export const fetchMemberReports = (params: MemberReportListParams) =>
       reason:
         params.reason === "ALL" ? undefined : (params.reason as ReportReason),
       reportedMemberId: params.reportedMemberId || undefined,
+      reportedPhoneNumber: params.reportedPhoneNumber,
       page: params.page,
     },
   });

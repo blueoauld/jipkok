@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   defaultMemberFilter,
   MemberFilters,
   type MemberFilter,
-  type MemberStatus,
 } from "@/components/members/member-filters";
 import { MemberTable } from "@/components/members/member-table";
+import { QuerySection } from "@/components/query-section";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -15,20 +16,17 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import type { MemberSummary } from "@/lib/types";
+import { fetchMembers } from "@/lib/api/members";
 
-const PAGE_SIZE = 20;
-
-type Props = {
-  members: MemberSummary[];
-};
-
-export function MemberList({ members }: Props) {
+export function MemberList() {
   const [filter, setFilter] = useState(defaultMemberFilter);
   const [page, setPage] = useState(1);
 
-  const filtered = members.filter((member) => matches(member, filter));
-  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const { data, isPending, error } = useQuery({
+    queryKey: ["members", filter, page],
+    queryFn: () => fetchMembers({ ...filter, page }),
+    placeholderData: keepPreviousData,
+  });
 
   const changeFilter = (next: MemberFilter) => {
     setFilter(next);
@@ -36,43 +34,29 @@ export function MemberList({ members }: Props) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <MemberFilters value={filter} onChange={changeFilter} />
-      </CardHeader>
-      <CardContent>
-        <MemberTable members={pageItems} />
-      </CardContent>
-      <CardFooter className="bg-transparent">
-        <TablePagination
-          page={page}
-          size={PAGE_SIZE}
-          totalCount={filtered.length}
-          onPageChange={setPage}
-        />
-      </CardFooter>
-    </Card>
+    <QuerySection
+      isPending={isPending}
+      error={error}
+      skeletonClassName="h-96 w-full"
+    >
+      {data && (
+        <Card>
+          <CardHeader>
+            <MemberFilters value={filter} onChange={changeFilter} />
+          </CardHeader>
+          <CardContent>
+            <MemberTable members={data.items} />
+          </CardContent>
+          <CardFooter className="bg-transparent">
+            <TablePagination
+              page={data.page}
+              size={data.size}
+              totalCount={data.totalCount}
+              onPageChange={setPage}
+            />
+          </CardFooter>
+        </Card>
+      )}
+    </QuerySection>
   );
-}
-
-function matches(member: MemberSummary, filter: MemberFilter) {
-  if (filter.gender !== "ALL" && member.gender !== filter.gender) return false;
-  if (filter.status !== "ALL" && statusOf(member) !== filter.status)
-    return false;
-
-  const keyword = filter.keyword.trim();
-  if (!keyword) return true;
-
-  const digits = keyword.replace(/\D/g, "");
-  return (
-    member.nickname.includes(keyword) ||
-    (digits.length > 0 &&
-      (String(member.id) === digits || member.phoneNumber.includes(digits)))
-  );
-}
-
-function statusOf(member: MemberSummary): MemberStatus {
-  if (member.withdrawnAt) return "WITHDRAWN";
-  if (member.suspended) return "SUSPENDED";
-  return "NORMAL";
 }

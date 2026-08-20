@@ -90,7 +90,7 @@ export async function api<T>(
       response = await send(path, options);
     } else {
       clearTokens();
-      window.location.assign(LOGIN_PAGE);
+      window.location.assign(new URL(LOGIN_PAGE, window.location.origin));
       throw new ApiError(401);
     }
   }

@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
@@ -9,7 +12,13 @@ import { PhotoGrid } from "@/components/photo-grid";
 import { MemberReportTable } from "@/components/reports/member-report-table";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -31,16 +40,30 @@ import {
   suspensionReasonLabels,
   suspensionTypeLabels,
 } from "@/lib/labels";
-import { findMemberDetail } from "@/lib/mock/member-details";
+import { fetchMemberDetail } from "@/lib/api/members";
+import { fetchMemberReports } from "@/lib/api/reports";
+import { defaultMemberReportFilter } from "@/components/reports/member-report-filters";
+import { QuerySection } from "@/components/query-section";
+import { TablePagination } from "@/components/table-pagination";
+import type { MemberDetail as MemberDetailData } from "@/lib/types";
 import type { ProfileTarget } from "@/lib/types";
 
 const none = <span className="text-muted-foreground">없음</span>;
 
 export function MemberDetail() {
   const id = Number(useSearchParams().get("id"));
-  const member = Number.isInteger(id) ? findMemberDetail(id) : null;
 
-  if (!member) {
+  const {
+    data: member,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["members", "detail", id],
+    queryFn: () => fetchMemberDetail(id),
+    enabled: Number.isInteger(id) && id > 0,
+  });
+
+  if (!Number.isInteger(id) || id <= 0) {
     return (
       <>
         <PageHeader title="회원" />
@@ -49,6 +72,18 @@ export function MemberDetail() {
     );
   }
 
+  return (
+    <QuerySection
+      isPending={isPending}
+      error={error}
+      skeletonClassName="h-96 w-full"
+    >
+      {member && <Loaded member={member} />}
+    </QuerySection>
+  );
+}
+
+function Loaded({ member }: { member: MemberDetailData }) {
   const activeSuspensions = member.suspensions.filter(
     (s) => s.status === "ACTIVE",
   );
@@ -162,7 +197,7 @@ export function MemberDetail() {
                 {
                   label: "좌표",
                   value:
-                    member.latitude !== null && member.longitude !== null ? (
+                    member.latitude != null && member.longitude != null ? (
                       <a
                         href={`https://map.kakao.com/link/map/${member.latitude},${member.longitude}`}
                         target="_blank"
@@ -231,17 +266,49 @@ export function MemberDetail() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>받은 신고 {member.receivedReports.length}건</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <MemberReportTable
-            reports={member.receivedReports}
-            emptyMessage="받은 신고가 없습니다."
-          />
-        </CardContent>
-      </Card>
+      <ReceivedReports phoneNumber={member.phoneNumber} />
     </>
+  );
+}
+
+function ReceivedReports({ phoneNumber }: { phoneNumber: string }) {
+  const [page, setPage] = useState(1);
+
+  const { data, isPending, error } = useQuery({
+    queryKey: ["reports", "by-phone", phoneNumber, page],
+    queryFn: () =>
+      fetchMemberReports({
+        ...defaultMemberReportFilter,
+        reportedPhoneNumber: phoneNumber,
+        page,
+      }),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>받은 신고 {data ? `${data.totalCount}건` : ""}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <QuerySection isPending={isPending} error={error}>
+          {data && (
+            <MemberReportTable
+              reports={data.items}
+              emptyMessage="받은 신고가 없습니다."
+            />
+          )}
+        </QuerySection>
+      </CardContent>
+      {data && data.totalCount > data.size && (
+        <CardFooter className="bg-transparent">
+          <TablePagination
+            page={data.page}
+            size={data.size}
+            totalCount={data.totalCount}
+            onPageChange={setPage}
+          />
+        </CardFooter>
+      )}
+    </Card>
   );
 }

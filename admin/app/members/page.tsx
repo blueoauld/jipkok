@@ -1,6 +1,5 @@
 import { MemberList } from "@/components/members/member-list";
 import { PageHeader } from "@/components/page-header";
-import { members } from "@/lib/mock/members";
 
 export default function MembersPage() {
   return (
@@ -9,7 +8,7 @@ export default function MembersPage() {
         title="회원"
         description="회원을 조회하고 프로필을 초기화합니다."
       />
-      <MemberList members={members} />
+      <MemberList />
     </>
   );
 }

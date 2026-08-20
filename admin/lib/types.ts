@@ -15,7 +15,11 @@ export type MemberReport = Schemas["AdminReportResponse"];
 export type MemberReportPage = Schemas["AdminReportPageResponse"];
 export type MemberReportDetail = Schemas["AdminReportDetailResponse"];
 export type ChatMessageSnapshot = Schemas["AdminChatMessageResponse"];
-
+export type MemberSummary = Schemas["AdminMemberResponse"];
+export type MemberPage = Schemas["AdminMemberPageResponse"];
+export type MemberDetail = Schemas["AdminMemberDetailResponse"];
+export type Suspension = Schemas["AdminSuspensionResponse"];
+export type SuspensionStatus = Suspension["status"];
 export type ReportType = "PROFILE" | "CHAT" | "FEED";
 
 export type ReportReason =
@@ -31,13 +35,6 @@ export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
 export type MemberReportType = Exclude<ReportType, "FEED">;
-
-export type Page<T> = {
-  items: T[];
-  page: number;
-  size: number;
-  totalCount: number;
-};
 
 export type FeedReport = {
   id: number;
@@ -55,56 +52,7 @@ export type FeedReport = {
 
 export type Gender = "MALE" | "FEMALE";
 
-export type MemberSummary = {
-  id: number;
-  nickname: string;
-  gender: Gender;
-  age: number;
-  phoneNumber: string;
-  publicPhotoCount: number;
-  secretPhotoCount: number;
-  suspended: boolean;
-  withdrawnAt: string | null;
-  joinedAt: string;
-};
-
-export type SuspensionStatus = "ACTIVE" | "EXPIRED" | "RELEASED";
-
-export type Suspension = {
-  id: number;
-  memberId: number;
-  nickname: string;
-  type: SuspensionType;
-  reason: SuspensionReason;
-  startedAt: string;
-  expiresAt: string | null;
-  releasedAt: string | null;
-  status: SuspensionStatus;
-};
-
 export type ProfileTarget =
   "NICKNAME" | "COMMENT" | "BIO" | "PUBLIC_PHOTO" | "SECRET_PHOTO";
-
-export type MemberDetail = {
-  id: number;
-  nickname: string;
-  phoneNumber: string;
-  gender: Gender;
-  age: number;
-  comment: string | null;
-  bio: string | null;
-  receivedLikeCount: number;
-  pointBalance: number;
-  noteReceiveEnabled: boolean;
-  latitude: number | null;
-  longitude: number | null;
-  locatedAt: string | null;
-  joinedAt: string;
-  withdrawnAt: string | null;
-  publicPhotoUrls: (string | null)[];
-  secretPhotoUrls: (string | null)[];
-  suspensions: Suspension[];
-  receivedReports: MemberReport[];
-};
 
 export type DevicePlatform = "IOS" | "ANDROID";
