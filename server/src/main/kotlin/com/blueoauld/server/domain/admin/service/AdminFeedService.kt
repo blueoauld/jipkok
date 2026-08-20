@@ -29,14 +29,14 @@ class AdminFeedService(
         page: Int,
         size: Int,
     ): AdminFeedReportPageResponse {
-        val safePage = page.coerceAtLeast(1)
-        val safeSize = size.coerceIn(1, MAX_PAGE_SIZE)
+        val safePage = AdminPaging.page(page)
+        val safeSize = AdminPaging.size(size)
 
         val posts = feedPostReportRepository.findPostsForAdmin(
             status = status?.name,
             authorId = authorId,
             size = safeSize,
-            offset = (safePage - 1) * safeSize,
+            offset = AdminPaging.offset(safePage, safeSize),
         )
         val totalCount = feedPostReportRepository.countPostsForAdmin(status?.name, authorId)
         val reporters = posts.map { it.postId }
@@ -87,8 +87,6 @@ class AdminFeedService(
     }
 
     companion object {
-
-        const val MAX_PAGE_SIZE = 100
 
         private const val UNKNOWN_NICKNAME = "알 수 없음"
     }

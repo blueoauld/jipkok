@@ -37,8 +37,8 @@ class AdminReportService(
         page: Int,
         size: Int,
     ): AdminReportPageResponse {
-        val safePage = page.coerceAtLeast(1)
-        val safeSize = size.coerceIn(1, MAX_PAGE_SIZE)
+        val safePage = AdminPaging.page(page)
+        val safeSize = AdminPaging.size(size)
 
         val reports = reportRepository.findAllForAdmin(
             handled = status.handled,
@@ -47,7 +47,7 @@ class AdminReportService(
             reportedMemberId = reportedMemberId,
             reportedPhoneNumber = reportedPhoneNumber,
             size = safeSize,
-            offset = (safePage - 1) * safeSize,
+            offset = AdminPaging.offset(safePage, safeSize),
         )
         val totalCount = reportRepository.countForAdmin(
             handled = status.handled,
@@ -133,8 +133,6 @@ class AdminReportService(
     }
 
     companion object {
-
-        const val MAX_PAGE_SIZE = 100
 
         private const val UNKNOWN_NICKNAME = "알 수 없음"
     }

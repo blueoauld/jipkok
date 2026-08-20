@@ -77,18 +77,45 @@ class AdminMemberServiceTest {
     }
 
     @Test
-    fun `문자 검색어는 닉네임 조건으로 넘긴다`() {
+    fun `문자 검색어는 와일드카드를 이스케이프해 닉네임 조건으로 넘긴다`() {
         // given
         every {
-            memberAdminRepository.findAllForAdmin("NORMAL", null, null, null, "%구름%", NOW, 20, 0)
+            memberAdminRepository.findAllForAdmin("NORMAL", null, null, null, """%구름\%\_%""", NOW, 20, 0)
         } returns emptyList()
-        every { memberAdminRepository.countForAdmin("NORMAL", null, null, null, "%구름%", NOW) } returns 0
+        every {
+            memberAdminRepository.countForAdmin("NORMAL", null, null, null, """%구름\%\_%""", NOW)
+        } returns 0
 
         // when
-        val response = adminMemberService.findMembers(AdminMemberStatus.NORMAL, null, "구름", 1, 20)
+        val response = adminMemberService.findMembers(AdminMemberStatus.NORMAL, null, "구름%_", 1, 20)
 
         // then
         assertThat(response.page).isEqualTo(1)
+    }
+
+    @Test
+    fun `페이지가 아무리 커도 오프셋이 넘치지 않는다`() {
+        // given
+        every {
+            memberAdminRepository.findAllForAdmin(
+                null,
+                null,
+                null,
+                null,
+                null,
+                NOW,
+                100,
+                (AdminPaging.MAX_PAGE - 1) * 100,
+            )
+        } returns emptyList()
+        every { memberAdminRepository.countForAdmin(null, null, null, null, null, NOW) } returns 0
+
+        // when
+        val response = adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, Int.MAX_VALUE, 500)
+
+        // then
+        assertThat(response.page).isEqualTo(AdminPaging.MAX_PAGE)
+        assertThat(response.size).isEqualTo(100)
     }
 
     @Test

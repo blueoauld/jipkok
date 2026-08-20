@@ -28,8 +28,8 @@ class AdminSuspensionService(
         page: Int,
         size: Int,
     ): AdminSuspensionPageResponse {
-        val safePage = page.coerceAtLeast(1)
-        val safeSize = size.coerceIn(1, MAX_PAGE_SIZE)
+        val safePage = AdminPaging.page(page)
+        val safeSize = AdminPaging.size(size)
         val now = clock.instant()
 
         val suspensions = memberSuspensionRepository.findAllForAdmin(
@@ -38,7 +38,7 @@ class AdminSuspensionService(
             memberId = memberId,
             now = now,
             size = safeSize,
-            offset = (safePage - 1) * safeSize,
+            offset = AdminPaging.offset(safePage, safeSize),
         )
         val totalCount = memberSuspensionRepository.countForAdmin(
             status = status?.name,
@@ -81,10 +81,5 @@ class AdminSuspensionService(
     @Transactional
     fun release(request: ReleaseSuspensionRequest) {
         memberSuspensionService.release(request.memberId!!, request.type!!)
-    }
-
-    companion object {
-
-        const val MAX_PAGE_SIZE = 100
     }
 }

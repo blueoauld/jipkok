@@ -14,6 +14,7 @@ import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,8 +43,8 @@ class AdminMemberService(
         page: Int,
         size: Int,
     ): AdminMemberPageResponse {
-        val safePage = page.coerceAtLeast(1)
-        val safeSize = size.coerceIn(1, MAX_PAGE_SIZE)
+        val safePage = AdminPaging.page(page)
+        val safeSize = AdminPaging.size(size)
         val now = clock.instant()
         val currentYear = clock.currentYear()
 
@@ -51,7 +52,7 @@ class AdminMemberService(
         val digits = trimmed?.takeIf { it.all(Char::isDigit) }
         val keywordId = digits?.let { it.toLongOrNull() ?: 0 }
         val phoneLike = digits?.let { "%$it%" }
-        val nicknameLike = trimmed?.takeIf { digits == null }?.let { "%$it%" }
+        val nicknameLike = trimmed?.takeIf { digits == null }?.let { "%${it.escapeLike()}%" }
 
         val statusName = status.takeIf { it != AdminMemberStatus.ALL }?.name
 
@@ -63,7 +64,7 @@ class AdminMemberService(
             nicknameLike = nicknameLike,
             now = now,
             size = safeSize,
-            offset = (safePage - 1) * safeSize,
+            offset = AdminPaging.offset(safePage, safeSize),
         )
         val totalCount = countMembers(statusName, gender?.name, keywordId, phoneLike, nicknameLike, now)
 
@@ -154,8 +155,6 @@ class AdminMemberService(
     private class CachedCount(val cachedAt: Instant, val count: Long)
 
     companion object {
-
-        const val MAX_PAGE_SIZE = 100
 
         private val TOTAL_COUNT_TTL: Duration = Duration.ofMinutes(1)
     }
