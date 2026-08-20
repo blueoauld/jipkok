@@ -18,9 +18,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneOffset
 import java.util.*
 
 class MemberAdminServiceTest {
@@ -41,7 +38,6 @@ class MemberAdminServiceTest {
         nicknameHistoryRepository,
         photoStorage,
         eventPublisher,
-        Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
@@ -64,16 +60,16 @@ class MemberAdminServiceTest {
     }
 
     @Test
-    fun `닉네임을 초기화하면 새 닉네임을 준다`() {
+    fun `닉네임을 초기화하면 무작위 닉네임으로 바꾼다`() {
         // given
         val member = member()
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
 
         // when
-        val nickname = memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME)
+        memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME)
 
         // then
-        assertThat(nickname).isEqualTo(member.nickname).isNotEqualTo(NICKNAME)
+        assertThat(member.nickname).isNotEqualTo(NICKNAME)
     }
 
     @Test
@@ -95,9 +91,6 @@ class MemberAdminServiceTest {
         assertThat(event.captured.objectKeys).containsExactly("public.jpg")
     }
 
-    private fun photoKey(name: String, visibility: PhotoVisibility = PhotoVisibility.PUBLIC) =
-        "members/$MEMBER_ID/${visibility.name.lowercase()}/$name.jpg"
-
     private fun member() = Member(
         phoneNumber = PHONE_NUMBER,
         password = ENCODED_PASSWORD,
@@ -106,17 +99,11 @@ class MemberAdminServiceTest {
         birthYear = MemberSignupService.DEFAULT_BIRTH_YEAR,
     )
 
-    private fun stubMember(member: Member) {
-        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-        every { memberRepository.existsByNicknameIgnoreCase(any()) } returns false
-    }
-
     companion object {
 
         private const val PHONE_NUMBER = "01012345678"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val NICKNAME = "닉네임"
         private const val MEMBER_ID = 0L
-        private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")
     }
 }

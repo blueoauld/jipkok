@@ -51,7 +51,7 @@ class MemberSuspensionService(
                 detail = detail,
             ),
         ).also { evict(it) }
-            .let { SuspensionDetail.of(it, withdrawn = false) }
+            .let { SuspensionDetail.of(it) }
     }
 
     @Transactional
@@ -69,15 +69,7 @@ class MemberSuspensionService(
             evict(it)
         }
 
-        return suspensions.map { SuspensionDetail.of(it, withdrawn = it.memberId != member.id) }
-    }
-
-    @Transactional(readOnly = true)
-    fun findActiveDetails(memberId: Long, type: SuspensionType): List<SuspensionDetail> {
-        val member = findMember(memberId)
-
-        return findActiveOf(memberId, type, clock.instant())
-            .map { SuspensionDetail.of(it, withdrawn = it.memberId != member.id) }
+        return suspensions.map { SuspensionDetail.of(it) }
     }
 
     private fun findActiveOf(memberId: Long, type: SuspensionType, now: Instant) =
@@ -86,16 +78,6 @@ class MemberSuspensionService(
     @Transactional(readOnly = true)
     fun findActive(memberId: Long): List<MemberSuspension> =
         memberSuspensionRepository.findActive(memberId, clock.instant())
-
-    @Transactional(readOnly = true)
-    fun findHistory(memberId: Long): List<SuspensionDetail> {
-        val member = findMember(memberId)
-
-        val suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(member.phoneNumber)
-        val aliveIds = memberRepository.findAllById(suspensions.map { it.memberId }).map { it.id }.toSet()
-
-        return suspensions.map { SuspensionDetail.of(it, withdrawn = it.memberId !in aliveIds) }
-    }
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)

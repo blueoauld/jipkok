@@ -39,6 +39,10 @@ class DiscordBot(
     private fun commandCleaner(guildId: String) = object : ListenerAdapter() {
 
         override fun onReady(event: ReadyEvent) {
+            if (guildId.isBlank()) {
+                return
+            }
+
             event.jda.getGuildById(guildId)
                 ?.updateCommands()
                 ?.queue()

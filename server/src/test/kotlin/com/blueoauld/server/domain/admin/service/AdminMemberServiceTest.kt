@@ -151,7 +151,7 @@ class AdminMemberServiceTest {
     @Test
     fun `프로필 초기화와 탈퇴는 기존 서비스에 위임한다`() {
         // given
-        every { memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME) } returns "새닉네임"
+        justRun { memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME) }
         justRun { memberWithdrawService.withdraw(MEMBER_ID) }
 
         // when

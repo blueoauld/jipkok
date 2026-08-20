@@ -30,7 +30,7 @@ class FeedReportNotifier(
     }
 
     private fun toEmbeds(event: FeedPostAutoDeletedEvent): List<MessageEmbed> {
-        val nickname = memberAdminService.findForAdmin(event.memberId).nickname
+        val nickname = memberAdminService.findNickname(event.memberId)
 
         val body = listOf(
             DiscordEmbeds.field("ID", "`${event.postId}`"),

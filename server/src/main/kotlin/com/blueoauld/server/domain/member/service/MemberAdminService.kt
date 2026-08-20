@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.response.AdminMemberDetail
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
@@ -12,11 +11,9 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.time.currentYear
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Clock
 
 @Service
 class MemberAdminService(
@@ -26,32 +23,10 @@ class MemberAdminService(
     private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val photoStorage: PhotoStorage,
     private val eventPublisher: ApplicationEventPublisher,
-    private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
-    fun findForAdmin(memberId: Long): AdminMemberDetail {
-        val member = findMember(memberId)
-        val photos = memberPhotoRepository.findAllByMemberId(memberId)
-
-        return AdminMemberDetail(
-            memberId = member.id,
-            nickname = member.nickname,
-            phoneNumber = member.phoneNumber,
-            gender = member.gender,
-            birthYear = member.birthYear,
-            age = clock.currentYear() - member.birthYear,
-            comment = member.comment,
-            bio = member.bio,
-            publicPhotoCount = photos.count { it.visibility == PhotoVisibility.PUBLIC },
-            secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
-            receivedLikeCount = member.receivedLikeCount,
-            pointBalance = member.pointBalance,
-            noteReceiveEnabled = member.noteReceiveEnabled,
-            locatedAt = member.locatedAt,
-            joinedAt = member.createdAt,
-        )
-    }
+    fun findNickname(memberId: Long): String = findMember(memberId).nickname
 
     @Transactional(readOnly = true)
     fun findPhotoUrls(memberId: Long, visibility: PhotoVisibility): List<String> {
@@ -68,7 +43,7 @@ class MemberAdminService(
     }
 
     @Transactional
-    fun resetProfile(memberId: Long, target: ProfileTarget): String {
+    fun resetProfile(memberId: Long, target: ProfileTarget) {
         val member = findMember(memberId)
 
         when (target) {
@@ -78,8 +53,6 @@ class MemberAdminService(
             ProfileTarget.PUBLIC_PHOTO -> deletePhotos(memberId, PhotoVisibility.PUBLIC)
             ProfileTarget.SECRET_PHOTO -> deletePhotos(memberId, PhotoVisibility.SECRET)
         }
-
-        return member.nickname
     }
 
     private fun resetNickname(member: Member) {

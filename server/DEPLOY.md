@@ -13,7 +13,8 @@ sudo usermod -aG docker $USER
 
 `usermod` 뒤에는 다시 접속해야 적용된다.
 
-배포 디렉터리를 만들고 `docker-compose.yml`, `caddy/Caddyfile`, `.env`를 올린다. Caddyfile은 파일이 아니라 `caddy/` 디렉터리째 마운트한다. 파일만 마운트하면 scp가 새 inode로 갈아끼웠을 때 컨테이너가 옛 내용을 계속 보게 되어 `caddy reload`가 헛돈다.
+배포 디렉터리를 만들고 `docker-compose.yml`, `caddy/Caddyfile`, `.env`를 올린다. Caddyfile은 파일이 아니라 `caddy/` 디렉터리째 마운트한다. 파일만 마운트하면
+scp가 새 inode로 갈아끼웠을 때 컨테이너가 옛 내용을 계속 보게 되어 `caddy reload`가 헛돈다.
 
 ```bash
 mkdir -p ~/jipkok/certs
@@ -41,9 +42,6 @@ SOLAPI_SENDER_NUMBER=<솔라피에 등록한 발신번호>
 OPENAI_API_KEY=<오픈에이아이 키>
 DISCORD_TOKEN=<봇 토큰>
 DISCORD_GUILD_ID=<서버 아이디>
-DISCORD_ROLE_ID=<역할 아이디>
-DISCORD_SUSPENSION_CHANNEL_ID=<채널 아이디>
-DISCORD_RESET_CHANNEL_ID=<채널 아이디>
 DISCORD_REPORT_CHANNEL_ID=<채널 아이디>
 DISCORD_MODERATION_CHANNEL_ID=<채널 아이디>
 CORS_ALLOWED_ORIGINS=<어드민 웹 오리진, 예: https://admin.jipkok.app>
@@ -102,18 +100,18 @@ IAM 콘솔에서 **역할 → 역할 만들기 → AWS 서비스 → EC2**로 �
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:ap-northeast-2:*:log-group:/jipkok/*"
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:ap-northeast-2:*:log-group:/jipkok/*"
+        }
+    ]
 }
 ```
 

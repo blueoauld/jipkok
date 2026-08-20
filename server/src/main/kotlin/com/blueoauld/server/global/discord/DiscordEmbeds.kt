@@ -12,11 +12,7 @@ object DiscordEmbeds {
 
     private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    private val SECOND_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
     fun format(instant: Instant): String = FORMATTER.format(instant.atZone(KOREA))
-
-    fun formatSecond(instant: Instant): String = SECOND_FORMATTER.format(instant.atZone(KOREA))
 
     fun of(title: String, body: String): List<MessageEmbed> =
         chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->

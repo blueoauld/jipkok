@@ -111,7 +111,7 @@ class AdminSuspensionServiceTest {
         expiresAt = expiresAt,
     )
 
-    private fun detail() = SuspensionDetail.of(suspension(NOW.plusSeconds(604_800)), withdrawn = false)
+    private fun detail() = SuspensionDetail.of(suspension(NOW.plusSeconds(604_800)))
 
     companion object {
 
