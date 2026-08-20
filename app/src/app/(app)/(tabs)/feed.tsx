@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Tabs } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
+import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
@@ -23,6 +24,7 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { WorryCard, type WorryPost } from "@/components/worry/WorryCard";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
@@ -41,16 +43,30 @@ import {
   isApiError,
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
-import { useFeedFilterStore } from "@/lib/filter/store";
+import {
+  type LoungeBoard,
+  useFeedFilterStore,
+  type WorrySort,
+} from "@/lib/filter/store";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { mapPages } from "@/lib/paging";
 import { uploadFeedPhoto } from "@/lib/photo";
+import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
 // 임시: 게시판 전환 UI 시안. 고민 게시판 구현 전까지 자리만 잡아둔다.
 const BOARDS = ["피드", "고민"] as const;
-type Board = (typeof BOARDS)[number];
+type BoardLabel = (typeof BOARDS)[number];
+
+const BOARD_VALUES: Record<BoardLabel, LoungeBoard> = {
+  피드: "FEED",
+  고민: "WORRY",
+};
+const BOARD_LABELS: Record<LoungeBoard, BoardLabel> = {
+  FEED: "피드",
+  WORRY: "고민",
+};
 
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];
@@ -59,24 +75,59 @@ const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST"
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
 const WORRY_SORTS = ["최신", "공감"] as const;
-type WorrySort = (typeof WORRY_SORTS)[number];
+type WorrySortLabel = (typeof WORRY_SORTS)[number];
+
+const WORRY_SORT_VALUES: Record<WorrySortLabel, WorrySort> = {
+  최신: "LATEST",
+  공감: "POPULAR",
+};
+const WORRY_SORT_LABELS: Record<WorrySort, WorrySortLabel> = {
+  LATEST: "최신",
+  POPULAR: "공감",
+};
+
+// 임시: 카드 디자인 확인용 더미 데이터.
+const MINUTE = 60 * 1000;
+const WORRY_SAMPLES: WorryPost[] = [
+  {
+    worryId: 1,
+    content:
+      "직장에서 3년째 같은 일을 하고 있는데 이직을 해야 할지 고민이에요. 지금 회사는 편하긴 한데 성장이 없는 것 같고, 옮기자니 새로 적응할 자신이 없어요. 다들 이럴 때 어떻게 결정하셨나요?",
+    createdAt: new Date(Date.now() - 5 * MINUTE).toISOString(),
+    likeCount: 12,
+    commentCount: 4,
+  },
+  {
+    worryId: 2,
+    content: "부모님이 결혼 언제 하냐고 자꾸 물어보시는데 스트레스예요.",
+    createdAt: new Date(Date.now() - 3 * 60 * MINUTE).toISOString(),
+    likeCount: 5,
+    commentCount: 2,
+  },
+  {
+    worryId: 3,
+    content:
+      "친한 친구한테 돈을 빌려줬는데 갚을 기미가 없어요. 말을 꺼내자니 사이가 어색해질까 봐 몇 달째 속만 끓이고 있습니다.",
+    createdAt: new Date(Date.now() - 26 * 60 * MINUTE).toISOString(),
+    likeCount: 31,
+    commentCount: 9,
+  },
+];
 
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
-const WORRY_COMPOSE_PENDING_MESSAGE = "고민 작성은 준비 중입니다.";
+const WORRY_SEARCH_PENDING_MESSAGE = "고민 검색은 준비 중입니다.";
 
 const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
 
 export default function FeedScreen() {
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
-  const [board, setBoard] = useState<Board>("피드");
   const [composeOpen, setComposeOpen] = useState(false);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const [filterOpen, setFilterOpen] = useState(false);
-  const [worrySort, setWorrySort] = useState<WorrySort>("최신");
   const [worryFilterOpen, setWorryFilterOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
@@ -85,13 +136,18 @@ export default function FeedScreen() {
   const openCompose = useCallback(() => setComposeOpen(true), []);
   const openFilter = useCallback(() => setFilterOpen(true), []);
   const openWorryFilter = useCallback(() => setWorryFilterOpen(true), []);
-  const openWorryCompose = useCallback(
-    () => showToast("info", WORRY_COMPOSE_PENDING_MESSAGE),
+  const openWorryCompose = useCallback(() => pushOnce("/worry/compose"), []);
+  const openWorrySearch = useCallback(
+    () => showToast("info", WORRY_SEARCH_PENDING_MESSAGE),
     [],
   );
 
+  const board = useFeedFilterStore((state) => state.board);
+  const setBoard = useFeedFilterStore((state) => state.setBoard);
   const sort = useFeedFilterStore((state) => state.sort);
   const setSort = useFeedFilterStore((state) => state.setSort);
+  const worrySort = useFeedFilterStore((state) => state.worrySort);
+  const setWorrySort = useFeedFilterStore((state) => state.setWorrySort);
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
   const today = toDateParam(new Date(useNow()));
@@ -225,21 +281,36 @@ export default function FeedScreen() {
 
   const screenOptions = useMemo(
     () => ({
-      headerLeft: () => <FeedNotificationButton />,
+      headerLeft:
+        board === "FEED"
+          ? () => <FeedNotificationButton />
+          : () => (
+              <HeaderIconButton
+                icon={MagnifyingGlassIcon}
+                onPress={openWorrySearch}
+              />
+            ),
       headerRight: () => (
         <XStack>
           <HeaderIconButton
             icon={FunnelSimpleIcon}
-            onPress={board === "피드" ? openFilter : openWorryFilter}
+            onPress={board === "FEED" ? openFilter : openWorryFilter}
           />
           <HeaderIconButton
             icon={NotePencilIcon}
-            onPress={board === "피드" ? openCompose : openWorryCompose}
+            onPress={board === "FEED" ? openCompose : openWorryCompose}
           />
         </XStack>
       ),
     }),
-    [board, openCompose, openFilter, openWorryCompose, openWorryFilter],
+    [
+      board,
+      openCompose,
+      openFilter,
+      openWorryCompose,
+      openWorryFilter,
+      openWorrySearch,
+    ],
   );
 
   return (
@@ -249,13 +320,18 @@ export default function FeedScreen() {
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           values={BOARDS}
-          value={board}
-          onChange={setBoard}
+          value={BOARD_LABELS[board]}
+          onChange={(label) => setBoard(BOARD_VALUES[label])}
         />
       </YStack>
 
-      {board === "고민" ? (
-        <ListEmpty>익명 고민 게시판이 여기에 들어갑니다.</ListEmpty>
+      {board === "WORRY" ? (
+        <FlatList
+          data={WORRY_SAMPLES}
+          keyExtractor={(worry) => String(worry.worryId)}
+          renderItem={({ item }) => <WorryCard worry={item} />}
+          contentContainerStyle={paged.contentContainerStyle}
+        />
       ) : posts ? (
         <FlatList
           {...paged}
@@ -288,11 +364,11 @@ export default function FeedScreen() {
       )}
 
       <ScrollToTopButton
-        visible={board === "피드" && scrollTop.visible}
+        visible={board === "FEED" && scrollTop.visible}
         onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
       />
 
-      {board === "피드" && (
+      {board === "FEED" && (
         <FeedDatePicker
           date={date}
           onChange={(selected) => {
@@ -335,8 +411,8 @@ export default function FeedScreen() {
         onOpenChange={setWorryFilterOpen}
         items={WORRY_SORTS.map((label) => ({
           label,
-          selected: label === worrySort,
-          onPress: () => setWorrySort(label),
+          selected: label === WORRY_SORT_LABELS[worrySort],
+          onPress: () => setWorrySort(WORRY_SORT_VALUES[label]),
         }))}
       />
 

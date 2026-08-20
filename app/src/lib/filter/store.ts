@@ -58,20 +58,31 @@ export const useMemberFilterStore = create<MemberFilterState>()(
   ),
 );
 
+export type LoungeBoard = "FEED" | "WORRY";
+export type WorrySort = "LATEST" | "POPULAR";
+
 type FeedFilterState = {
+  board: LoungeBoard;
   sort: FeedSort;
+  worrySort: WorrySort;
   // null이면 오늘. 날짜를 박아 두면 자정이 지나도 어제에 머문다.
   date: string | null;
+  setBoard: (board: LoungeBoard) => void;
   setSort: (sort: FeedSort) => void;
+  setWorrySort: (worrySort: WorrySort) => void;
   setDate: (date: Date) => void;
 };
 
 export const useFeedFilterStore = create<FeedFilterState>()(
   persist(
     (set) => ({
+      board: "FEED",
       sort: DEFAULT_FEED_SORT,
+      worrySort: "LATEST",
       date: null,
+      setBoard: (board) => set({ board }),
       setSort: (sort) => set({ sort }),
+      setWorrySort: (worrySort) => set({ worrySort }),
       setDate: (date) =>
         set({ date: isToday(date) ? null : toDateParam(date) }),
     }),
@@ -84,7 +95,11 @@ export const useFeedFilterStore = create<FeedFilterState>()(
 
         return { sort: previous?.sort ?? DEFAULT_FEED_SORT };
       },
-      partialize: (state) => ({ sort: state.sort }),
+      partialize: (state) => ({
+        board: state.board,
+        sort: state.sort,
+        worrySort: state.worrySort,
+      }),
     },
   ),
 );

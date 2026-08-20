@@ -29,7 +29,7 @@ describe("필터 저장 옵션", () => {
 
     expect(
       partialize?.({ ...useFeedFilterStore.getState(), date: "2026-08-01" }),
-    ).toEqual({ sort: "LATEST" });
+    ).toEqual({ board: "FEED", sort: "LATEST", worrySort: "LATEST" });
   });
 
   it("옛 피드 필터 저장값에서 정렬만 남기고 없는 항목은 기본값으로 채운다", () => {
