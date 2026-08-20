@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminFeedPostStatus
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminFeedReporterResponse
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -31,15 +32,19 @@ class AdminFeedService(
         val safePage = page.coerceAtLeast(1)
         val safeSize = size.coerceIn(1, MAX_PAGE_SIZE)
 
-        val rows = feedPostReportRepository.findAllForAdmin(
+        val posts = feedPostReportRepository.findPostsForAdmin(
             status = status?.name,
             authorId = authorId,
             size = safeSize,
             offset = (safePage - 1) * safeSize,
         )
-        val totalCount = feedPostReportRepository.countForAdmin(status?.name, authorId)
+        val totalCount = feedPostReportRepository.countPostsForAdmin(status?.name, authorId)
+        val reporters = posts.map { it.postId }
+            .takeIf { it.isNotEmpty() }
+            ?.let { feedPostReportRepository.findReportersByPostIdIn(it) }
+            .orEmpty()
 
-        val memberIds = rows.flatMap { listOf(it.reporterId, it.authorId) }.distinct()
+        val memberIds = (posts.map { it.authorId } + reporters.map { it.reporterId }).distinct()
         val nicknames = if (memberIds.isEmpty()) {
             emptyMap()
         } else {
@@ -47,19 +52,23 @@ class AdminFeedService(
         }
 
         return AdminFeedReportPageResponse(
-            items = rows.map {
+            items = posts.map { post ->
                 AdminFeedReportResponse(
-                    id = it.id,
-                    reporterId = it.reporterId,
-                    reporterNickname = nicknames[it.reporterId] ?: UNKNOWN_NICKNAME,
-                    postId = it.postId,
-                    authorId = it.authorId,
-                    authorNickname = nicknames[it.authorId] ?: UNKNOWN_NICKNAME,
-                    thumbnailUrl = photoStorage.toPublicUrl(it.objectKey),
-                    caption = it.caption,
-                    postReportCount = it.postReportCount,
-                    postDeletedAt = it.postDeletedAt,
-                    createdAt = it.createdAt,
+                    postId = post.postId,
+                    authorId = post.authorId,
+                    authorNickname = nicknames[post.authorId] ?: UNKNOWN_NICKNAME,
+                    thumbnailUrl = photoStorage.toPublicUrl(post.objectKey),
+                    caption = post.caption,
+                    reportCount = post.reportCount,
+                    postDeletedAt = post.postDeletedAt,
+                    lastReportedAt = post.lastReportedAt,
+                    reporters = reporters.filter { it.postId == post.postId }.map {
+                        AdminFeedReporterResponse(
+                            id = it.reporterId,
+                            nickname = nicknames[it.reporterId] ?: UNKNOWN_NICKNAME,
+                            reportedAt = it.createdAt,
+                        )
+                    },
                 )
             },
             page = safePage,

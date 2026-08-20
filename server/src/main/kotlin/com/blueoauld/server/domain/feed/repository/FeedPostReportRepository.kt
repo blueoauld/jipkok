@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.feed.repository
 
-import com.blueoauld.server.domain.admin.dto.AdminFeedReportRow
+import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
+import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
 import com.blueoauld.server.domain.feed.entity.FeedPostReport
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -16,43 +17,53 @@ interface FeedPostReportRepository : JpaRepository<FeedPostReport, Long> {
 
     @Query(
         value = """
-        select fpr.id as id,
-               fpr.reporter_id as reporterId,
-               fp.id as postId,
+        select fp.id as postId,
                fp.member_id as authorId,
                fp.object_key as objectKey,
                fp.caption as caption,
-               (select count(*) from feed_post_report r where r.post_id = fp.id) as postReportCount,
+               count(*) as reportCount,
                fp.deleted_at as postDeletedAt,
-               fpr.created_at as createdAt
+               max(fpr.created_at) as lastReportedAt
         from feed_post_report fpr
         join feed_post fp on fp.id = fpr.post_id
         where $STATUS $AUTHOR
-        order by fpr.id desc
+        group by fp.id, fp.member_id, fp.object_key, fp.caption, fp.deleted_at
+        order by max(fpr.id) desc
         limit :size offset :offset
         """,
         nativeQuery = true,
     )
-    fun findAllForAdmin(
+    fun findPostsForAdmin(
         @Param("status") status: String?,
         @Param("authorId") authorId: Long?,
         @Param("size") size: Int,
         @Param("offset") offset: Int,
-    ): List<AdminFeedReportRow>
+    ): List<AdminFeedPostRow>
 
     @Query(
         value = """
-        select count(*)
+        select count(distinct fpr.post_id)
         from feed_post_report fpr
         join feed_post fp on fp.id = fpr.post_id
         where $STATUS $AUTHOR
         """,
         nativeQuery = true,
     )
-    fun countForAdmin(
+    fun countPostsForAdmin(
         @Param("status") status: String?,
         @Param("authorId") authorId: Long?,
     ): Long
+
+    @Query(
+        value = """
+        select fpr.post_id as postId, fpr.reporter_id as reporterId, fpr.created_at as createdAt
+        from feed_post_report fpr
+        where fpr.post_id in (:postIds)
+        order by fpr.id desc
+        """,
+        nativeQuery = true,
+    )
+    fun findReportersByPostIdIn(@Param("postIds") postIds: Collection<Long>): List<AdminFeedReporterRow>
 
     companion object {
 

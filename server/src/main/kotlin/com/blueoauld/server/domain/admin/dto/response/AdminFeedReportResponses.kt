@@ -12,15 +12,20 @@ data class AdminFeedReportPageResponse(
 
 data class AdminFeedReportResponse(
 
-    val id: Long,
-    val reporterId: Long,
-    val reporterNickname: String,
     val postId: Long,
     val authorId: Long,
     val authorNickname: String,
     val thumbnailUrl: String,
     val caption: String?,
-    val postReportCount: Long,
+    val reportCount: Long,
     val postDeletedAt: Instant?,
-    val createdAt: Instant,
+    val lastReportedAt: Instant,
+    val reporters: List<AdminFeedReporterResponse>,
+)
+
+data class AdminFeedReporterResponse(
+
+    val id: Long,
+    val nickname: String,
+    val reportedAt: Instant,
 )

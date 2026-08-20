@@ -51,38 +51,35 @@ class AdminFeedReportQueriesTest {
     }
 
     @Test
-    fun `게시 상태와 작성자로 거르고 신고 수를 센다`() {
+    fun `피드 단위로 묶어 신고 수와 최근 신고 시각을 준다`() {
         // given
 
         // when
-        val all = feedPostReportRepository.findAllForAdmin(null, null, 20, 0)
-        val active = feedPostReportRepository.findAllForAdmin("ACTIVE", null, 20, 0)
-        val deleted = feedPostReportRepository.findAllForAdmin("DELETED", null, 20, 0)
-        val byAuthor = feedPostReportRepository.findAllForAdmin(null, 1, 20, 0)
+        val all = feedPostReportRepository.findPostsForAdmin(null, null, 20, 0)
+        val active = feedPostReportRepository.findPostsForAdmin("ACTIVE", null, 20, 0)
+        val deleted = feedPostReportRepository.findPostsForAdmin("DELETED", null, 20, 0)
+        val byAuthor = feedPostReportRepository.findPostsForAdmin(null, 1, 20, 0)
 
         // then
-        assertThat(all).hasSize(3)
-        assertThat(all.map { it.id }).isSortedAccordingTo { a, b -> b.compareTo(a) }
-        assertThat(active.map { it.postId }).containsOnly(activePostId)
-        assertThat(active.first().postReportCount).isEqualTo(2)
-        assertThat(deleted.map { it.postId }).containsOnly(deletedPostId)
+        assertThat(all.map { it.postId }).containsExactly(deletedPostId, activePostId)
+        assertThat(active.map { it.postId }).containsExactly(activePostId)
+        assertThat(active.first().reportCount).isEqualTo(2)
+        assertThat(active.first().lastReportedAt).isNotNull()
         assertThat(deleted.first().postDeletedAt).isNotNull()
-        assertThat(byAuthor).hasSize(2)
+        assertThat(byAuthor.map { it.postId }).containsExactly(activePostId)
     }
 
     @Test
-    fun `페이지 크기와 오프셋, 개수를 적용한다`() {
+    fun `피드 수 기준으로 세고 신고자 목록을 준다`() {
         // given
 
         // when
-        val firstPage = feedPostReportRepository.findAllForAdmin(null, null, 2, 0)
-        val secondPage = feedPostReportRepository.findAllForAdmin(null, null, 2, 2)
-        val count = feedPostReportRepository.countForAdmin("ACTIVE", null)
+        val count = feedPostReportRepository.countPostsForAdmin(null, null)
+        val reporters = feedPostReportRepository.findReportersByPostIdIn(listOf(activePostId))
 
         // then
-        assertThat(firstPage).hasSize(2)
-        assertThat(secondPage).hasSize(1)
         assertThat(count).isEqualTo(2)
+        assertThat(reporters.map { it.reporterId }).containsExactly(11, 10)
     }
 
     private fun savePost(authorId: Long) = feedPostRepository.saveAndFlush(

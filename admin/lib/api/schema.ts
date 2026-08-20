@@ -1864,11 +1864,6 @@ export interface components {
         };
         AdminFeedReportResponse: {
             /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            reporterId: number;
-            reporterNickname: string;
-            /** Format: int64 */
             postId: number;
             /** Format: int64 */
             authorId: number;
@@ -1876,11 +1871,19 @@ export interface components {
             thumbnailUrl: string;
             caption?: string | null;
             /** Format: int64 */
-            postReportCount: number;
+            reportCount: number;
             /** Format: date-time */
             postDeletedAt?: string | null;
             /** Format: date-time */
-            createdAt: string;
+            lastReportedAt: string;
+            reporters: components["schemas"]["AdminFeedReporterResponse"][];
+        };
+        AdminFeedReporterResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** Format: date-time */
+            reportedAt: string;
         };
         TrendPointResponse: {
             /** Format: date */

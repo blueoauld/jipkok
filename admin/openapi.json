@@ -10294,17 +10294,6 @@
             "AdminFeedReportResponse": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "reporterId": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "reporterNickname": {
-                        "type": "string"
-                    },
                     "postId": {
                         "type": "integer",
                         "format": "int64"
@@ -10325,7 +10314,7 @@
                             "null"
                         ]
                     },
-                    "postReportCount": {
+                    "reportCount": {
                         "type": "integer",
                         "format": "int64"
                     },
@@ -10336,21 +10325,46 @@
                         ],
                         "format": "date-time"
                     },
-                    "createdAt": {
+                    "lastReportedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "reporters": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminFeedReporterResponse"
+                        }
                     }
                 },
                 "required": [
                     "authorId",
                     "authorNickname",
-                    "createdAt",
-                    "id",
+                    "lastReportedAt",
                     "postId",
-                    "postReportCount",
-                    "reporterId",
-                    "reporterNickname",
+                    "reportCount",
+                    "reporters",
                     "thumbnailUrl"
+                ]
+            },
+            "AdminFeedReporterResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "reportedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nickname",
+                    "reportedAt"
                 ]
             },
             "TrendPointResponse": {

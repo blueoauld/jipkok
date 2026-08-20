@@ -2,15 +2,20 @@ package com.blueoauld.server.domain.admin.dto
 
 import java.time.Instant
 
-interface AdminFeedReportRow {
+interface AdminFeedPostRow {
 
-    val id: Long
-    val reporterId: Long
     val postId: Long
     val authorId: Long
     val objectKey: String
     val caption: String?
-    val postReportCount: Long
+    val reportCount: Long
     val postDeletedAt: Instant?
+    val lastReportedAt: Instant
+}
+
+interface AdminFeedReporterRow {
+
+    val postId: Long
+    val reporterId: Long
     val createdAt: Instant
 }

@@ -1,7 +1,10 @@
+"use client";
+
+import { Fragment, useState } from "react";
 import Image from "next/image";
+import { DeletePostDialog } from "@/components/feeds/delete-post-dialog";
 import { MemberCell } from "@/components/member-cell";
 import { StatusText } from "@/components/status-text";
-import { DeletePostDialog } from "@/components/feeds/delete-post-dialog";
 import {
   Table,
   TableBody,
@@ -11,27 +14,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCount, formatDateTime } from "@/lib/format";
-import type { FeedReport } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
+import { cn } from "@/lib/utils";
+import type { FeedReport } from "@/lib/types";
 
 type Props = {
   reports: FeedReport[];
 };
 
 export function FeedReportTable({ reports }: Props) {
+  const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
+
+  const toggle = (postId: number) =>
+    setExpandedPostId((current) => (current === postId ? null : postId));
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-16">ID</TableHead>
-          <TableHead>신고자</TableHead>
           <TableHead className="w-24">피드 ID</TableHead>
           <TableHead className="w-16">사진</TableHead>
           <TableHead>작성자</TableHead>
           <TableHead>문구</TableHead>
           <TableHead className="w-20 text-right">신고 수</TableHead>
-          <TableHead className="w-24">상태</TableHead>
-          <TableHead className="text-right">접수일</TableHead>
+          <TableHead className="w-20">상태</TableHead>
+          <TableHead className="text-right">최근 신고일</TableHead>
           <TableHead className="w-20" />
         </TableRow>
       </TableHeader>
@@ -39,7 +46,7 @@ export function FeedReportTable({ reports }: Props) {
         {reports.length === 0 && (
           <TableRow>
             <TableCell
-              colSpan={10}
+              colSpan={8}
               className="h-24 text-center text-muted-foreground"
             >
               조건에 맞는 신고가 없습니다.
@@ -47,57 +54,77 @@ export function FeedReportTable({ reports }: Props) {
           </TableRow>
         )}
         {reports.map((report) => (
-          <TableRow
-            key={report.id}
-            className={report.postDeletedAt ? inactiveRowClassName : undefined}
-          >
-            <TableCell className="tabular-nums text-muted-foreground">
-              {report.id}
-            </TableCell>
-            <TableCell>
-              <MemberCell
-                id={report.reporterId}
-                nickname={report.reporterNickname}
-              />
-            </TableCell>
-            <TableCell className="tabular-nums text-muted-foreground">
-              {report.postId}
-            </TableCell>
-            <TableCell>
-              <Thumbnail url={report.thumbnailUrl} />
-            </TableCell>
-            <TableCell>
-              <MemberCell
-                id={report.authorId}
-                nickname={report.authorNickname}
-              />
-            </TableCell>
-            <TableCell
-              className={report.caption ? "" : "text-muted-foreground"}
-            >
-              {report.caption ?? "-"}
-            </TableCell>
-            <TableCell className="text-right tabular-nums">
-              {formatCount(report.postReportCount)}
-            </TableCell>
-            <TableCell>
-              {report.postDeletedAt ? (
-                <StatusText tone="negative">삭제</StatusText>
-              ) : (
-                <StatusText tone="positive">게시</StatusText>
+          <Fragment key={report.postId}>
+            <TableRow
+              className={cn(
+                "cursor-pointer",
+                report.postDeletedAt != null && inactiveRowClassName,
               )}
-            </TableCell>
-            <TableCell className="text-right tabular-nums text-muted-foreground">
-              {formatDateTime(report.createdAt)}
-            </TableCell>
-            <TableCell className="text-right">
-              <DeletePostDialog
-                postId={report.postId}
-                authorNickname={report.authorNickname}
-                disabled={report.postDeletedAt != null}
-              />
-            </TableCell>
-          </TableRow>
+              onClick={() => toggle(report.postId)}
+            >
+              <TableCell className="tabular-nums text-muted-foreground">
+                {report.postId}
+              </TableCell>
+              <TableCell>
+                <Thumbnail url={report.thumbnailUrl} />
+              </TableCell>
+              <TableCell>
+                <MemberCell
+                  id={report.authorId}
+                  nickname={report.authorNickname}
+                />
+              </TableCell>
+              <TableCell
+                className={report.caption ? "" : "text-muted-foreground"}
+              >
+                {report.caption ?? "-"}
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {formatCount(report.reportCount)}
+              </TableCell>
+              <TableCell>
+                {report.postDeletedAt ? (
+                  <StatusText tone="negative">삭제</StatusText>
+                ) : (
+                  <StatusText tone="positive">게시</StatusText>
+                )}
+              </TableCell>
+              <TableCell className="text-right tabular-nums text-muted-foreground">
+                {formatDateTime(report.lastReportedAt)}
+              </TableCell>
+              <TableCell
+                className="text-right"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <DeletePostDialog
+                  postId={report.postId}
+                  authorNickname={report.authorNickname}
+                  disabled={report.postDeletedAt != null}
+                />
+              </TableCell>
+            </TableRow>
+            {expandedPostId === report.postId && (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={8} className="bg-muted/50 px-6 py-3">
+                  <div className="grid w-fit grid-cols-[12rem_auto] gap-x-8 gap-y-1.5 text-sm">
+                    <span className="text-muted-foreground">신고자</span>
+                    <span className="text-muted-foreground">신고일</span>
+                    {report.reporters.map((reporter) => (
+                      <Fragment key={reporter.id}>
+                        <MemberCell
+                          id={reporter.id}
+                          nickname={reporter.nickname}
+                        />
+                        <span className="tabular-nums">
+                          {formatDateTime(reporter.reportedAt)}
+                        </span>
+                      </Fragment>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </Fragment>
         ))}
       </TableBody>
     </Table>
