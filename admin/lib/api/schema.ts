@@ -600,6 +600,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/suspensions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 정지 목록 */
+        get: operations["findSuspensions"];
+        put?: never;
+        /**
+         * 회원 정지
+         * @description 일수가 없으면 영구 정지다.
+         */
+        post: operations["suspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/suspensions/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 정지 해제
+         * @description 해당 유형의 유효한 정지를 모두 해제한다.
+         */
+        post: operations["release"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/reports/{reportId}/handle": {
         parameters: {
             query?: never;
@@ -1391,6 +1432,42 @@ export interface components {
             phoneNumber: string;
             password: string;
         };
+        CreateSuspensionRequest: {
+            /** Format: int64 */
+            memberId: number | null;
+            /** @enum {string|null} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+            /** @enum {string|null} */
+            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC" | null;
+            /** Format: int64 */
+            days?: number | null;
+            detail?: string | null;
+        };
+        AdminSuspensionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            memberId: number;
+            nickname: string;
+            /** @enum {string} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
+            /** @enum {string} */
+            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** @enum {string} */
+            status: "ACTIVE" | "EXPIRED" | "RELEASED";
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            releasedAt?: string | null;
+        };
+        ReleaseSuspensionRequest: {
+            /** Format: int64 */
+            memberId: number | null;
+            /** @enum {string|null} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
@@ -1573,6 +1650,15 @@ export interface components {
             latestVersion: string;
             storeUrl: string;
         };
+        AdminSuspensionPageResponse: {
+            items: components["schemas"]["AdminSuspensionResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
         AdminReportPageResponse: {
             items: components["schemas"]["AdminReportResponse"][];
             /** Format: int32 */
@@ -1704,25 +1790,6 @@ export interface components {
             publicPhotoUrls: string[];
             secretPhotoUrls: string[];
             suspensions: components["schemas"]["AdminSuspensionResponse"][];
-        };
-        AdminSuspensionResponse: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            memberId: number;
-            nickname: string;
-            /** @enum {string} */
-            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
-            /** @enum {string} */
-            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
-            /** @enum {string} */
-            status: "ACTIVE" | "EXPIRED" | "RELEASED";
-            /** Format: date-time */
-            startedAt: string;
-            /** Format: date-time */
-            expiresAt?: string | null;
-            /** Format: date-time */
-            releasedAt?: string | null;
         };
         TrendPointResponse: {
             /** Format: date */
@@ -4987,6 +5054,240 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PointRewardResponse"];
                 };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findSuspensions: {
+        parameters: {
+            query?: {
+                status?: "ACTIVE" | "EXPIRED" | "RELEASED";
+                type?: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
+                memberId?: number;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSuspensionPageResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    suspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSuspensionRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSuspensionResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    release: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReleaseSuspensionRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description 요청이 올바르지 않다 */
             400: {

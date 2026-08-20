@@ -3837,6 +3837,319 @@
                 }
             }
         },
+        "/api/admin/suspensions": {
+            "get": {
+                "tags": [
+                    "admin-suspension-controller"
+                ],
+                "summary": "\uc815\uc9c0 \ubaa9\ub85d",
+                "operationId": "findSuspensions",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ACTIVE",
+                                "EXPIRED",
+                                "RELEASED"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "SECRET_PHOTO",
+                                "PROFILE_EDIT",
+                                "SERVICE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "memberId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminSuspensionPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "admin-suspension-controller"
+                ],
+                "summary": "\ud68c\uc6d0 \uc815\uc9c0",
+                "description": "\uc77c\uc218\uac00 \uc5c6\uc73c\uba74 \uc601\uad6c \uc815\uc9c0\ub2e4.",
+                "operationId": "suspend",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSuspensionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminSuspensionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/suspensions/release": {
+            "post": {
+                "tags": [
+                    "admin-suspension-controller"
+                ],
+                "summary": "\uc815\uc9c0 \ud574\uc81c",
+                "description": "\ud574\ub2f9 \uc720\ud615\uc758 \uc720\ud6a8\ud55c \uc815\uc9c0\ub97c \ubaa8\ub450 \ud574\uc81c\ud55c\ub2e4.",
+                "operationId": "release",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReleaseSuspensionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/reports/{reportId}/handle": {
             "post": {
                 "tags": [
@@ -8179,6 +8492,163 @@
                     "phoneNumber"
                 ]
             },
+            "CreateSuspensionRequest": {
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "SECRET_PHOTO",
+                            "PROFILE_EDIT",
+                            "SERVICE"
+                        ]
+                    },
+                    "reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "SCREEN_CAPTURE",
+                            "OBSCENITY",
+                            "MINOR",
+                            "MONEY_TRANSACTION",
+                            "ABUSE",
+                            "IMPERSONATION",
+                            "ETC"
+                        ]
+                    },
+                    "days": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "minimum": 1
+                    },
+                    "detail": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 500,
+                        "minLength": 0
+                    }
+                },
+                "required": [
+                    "memberId",
+                    "reason",
+                    "type"
+                ]
+            },
+            "AdminSuspensionResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "memberId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SECRET_PHOTO",
+                            "PROFILE_EDIT",
+                            "SERVICE"
+                        ]
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "SCREEN_CAPTURE",
+                            "OBSCENITY",
+                            "MINOR",
+                            "MONEY_TRANSACTION",
+                            "ABUSE",
+                            "IMPERSONATION",
+                            "ETC"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "EXPIRED",
+                            "RELEASED"
+                        ]
+                    },
+                    "startedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "expiresAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "releasedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "memberId",
+                    "nickname",
+                    "reason",
+                    "startedAt",
+                    "status",
+                    "type"
+                ]
+            },
+            "ReleaseSuspensionRequest": {
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "SECRET_PHOTO",
+                            "PROFILE_EDIT",
+                            "SERVICE"
+                        ]
+                    }
+                },
+                "required": [
+                    "memberId",
+                    "type"
+                ]
+            },
             "SetupProfileRequest": {
                 "type": "object",
                 "properties": {
@@ -8878,6 +9348,35 @@
                     "storeUrl"
                 ]
             },
+            "AdminSuspensionPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminSuspensionResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
             "AdminReportPageResponse": {
                 "type": "object",
                 "properties": {
@@ -9351,77 +9850,6 @@
                     "receivedLikeCount",
                     "secretPhotoUrls",
                     "suspensions"
-                ]
-            },
-            "AdminSuspensionResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "memberId": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "nickname": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "SECRET_PHOTO",
-                            "PROFILE_EDIT",
-                            "SERVICE"
-                        ]
-                    },
-                    "reason": {
-                        "type": "string",
-                        "enum": [
-                            "SCREEN_CAPTURE",
-                            "OBSCENITY",
-                            "MINOR",
-                            "MONEY_TRANSACTION",
-                            "ABUSE",
-                            "IMPERSONATION",
-                            "ETC"
-                        ]
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "ACTIVE",
-                            "EXPIRED",
-                            "RELEASED"
-                        ]
-                    },
-                    "startedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "expiresAt": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "releasedAt": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "id",
-                    "memberId",
-                    "nickname",
-                    "reason",
-                    "startedAt",
-                    "status",
-                    "type"
                 ]
             },
             "TrendPointResponse": {

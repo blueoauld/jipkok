@@ -9,6 +9,8 @@ import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ReleaseButton } from "@/components/release-button";
+import { SuspendDialog } from "@/components/suspend-dialog";
 import { MemberReportTable } from "@/components/reports/member-report-table";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
 import { Button } from "@/components/ui/button";
@@ -108,9 +110,11 @@ function Loaded({ member }: { member: MemberDetailData }) {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" disabled={member.withdrawnAt !== null}>
-            정지
-          </Button>
+          <SuspendDialog
+            memberId={member.id}
+            nickname={member.nickname}
+            disabled={member.withdrawnAt != null}
+          />
           <Button variant="destructive" disabled={member.withdrawnAt !== null}>
             탈퇴
           </Button>
@@ -155,9 +159,10 @@ function Loaded({ member }: { member: MemberDetailData }) {
                         : "영구"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm">
-                        해제
-                      </Button>
+                      <ReleaseButton
+                        memberId={suspension.memberId}
+                        type={suspension.type}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

@@ -21,6 +21,7 @@ import {
 } from "@/lib/labels";
 import { fetchMemberReportDetail, handleMemberReport } from "@/lib/api/reports";
 import { QuerySection } from "@/components/query-section";
+import { SuspendDialog } from "@/components/suspend-dialog";
 
 export function MemberReportDetail() {
   const id = Number(useSearchParams().get("id"));
@@ -86,7 +87,7 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
         description={`${reportTypeLabels[report.type]} 신고, ${reportReasonLabels[report.reason]}`}
       >
         <div className="flex items-center gap-2">
-          <Button variant="outline">정지</Button>
+          <SuspendDialog memberId={reported.id} nickname={reported.nickname} />
           <Button
             disabled={report.handledAt != null || handling}
             onClick={onHandle}

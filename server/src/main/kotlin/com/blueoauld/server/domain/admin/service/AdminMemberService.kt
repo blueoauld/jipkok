@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
-import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
@@ -10,7 +9,6 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -18,7 +16,6 @@ import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.Instant
 
 @Service
 class AdminMemberService(
@@ -115,26 +112,8 @@ class AdminMemberService(
             publicPhotoUrls = memberAdminService.findPhotoUrls(memberId, PhotoVisibility.PUBLIC),
             secretPhotoUrls = memberAdminService.findPhotoUrls(memberId, PhotoVisibility.SECRET),
             suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
-                .map { toSuspensionResponse(it, now) },
+                .map { AdminSuspensionResponse.of(it, now) },
         )
-    }
-
-    private fun toSuspensionResponse(suspension: MemberSuspension, now: Instant) = AdminSuspensionResponse(
-        id = suspension.id,
-        memberId = suspension.memberId,
-        nickname = suspension.nickname,
-        type = suspension.type,
-        reason = suspension.reason,
-        status = statusOf(suspension, now),
-        startedAt = suspension.startedAt,
-        expiresAt = suspension.expiresAt,
-        releasedAt = suspension.releasedAt,
-    )
-
-    private fun statusOf(suspension: MemberSuspension, now: Instant) = when {
-        suspension.releasedAt != null -> AdminSuspensionStatus.RELEASED
-        suspension.expiresAt?.isAfter(now) == false -> AdminSuspensionStatus.EXPIRED
-        else -> AdminSuspensionStatus.ACTIVE
     }
 
     companion object {

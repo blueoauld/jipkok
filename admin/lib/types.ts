@@ -20,6 +20,7 @@ export type MemberPage = Schemas["AdminMemberPageResponse"];
 export type MemberDetail = Schemas["AdminMemberDetailResponse"];
 export type Suspension = Schemas["AdminSuspensionResponse"];
 export type SuspensionStatus = Suspension["status"];
+export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];
 export type ReportType = "PROFILE" | "CHAT" | "FEED";
 
 export type ReportReason =
