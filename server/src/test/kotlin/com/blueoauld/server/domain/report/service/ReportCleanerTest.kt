@@ -47,7 +47,7 @@ class ReportCleanerTest {
 
     @BeforeEach
     fun setUp() {
-        every { reportRepository.findIdsCreatedBefore(any()) } returns REPORT_IDS
+        every { reportRepository.findHandledIdsCreatedBefore(any()) } returns REPORT_IDS
         every { reportPhotoRepository.findAllByReportIdIn(REPORT_IDS) } returns
             listOf(ReportPhoto(REPORT_ID, 0, EVIDENCE_KEY))
         every { reportSnapshotRepository.findAllByReportIdIn(REPORT_IDS) } returns
@@ -63,7 +63,7 @@ class ReportCleanerTest {
         cleaner.cleanUpOldReports()
 
         // then
-        verify { reportRepository.findIdsCreatedBefore(NOW.minus(ReportCleaner.RETENTION)) }
+        verify { reportRepository.findHandledIdsCreatedBefore(NOW.minus(ReportCleaner.RETENTION)) }
         verify { reportPhotoRepository.deleteAllByReportIdIn(REPORT_IDS) }
         verify { reportSnapshotRepository.deleteAllByReportIdIn(REPORT_IDS) }
         verify { reportRepository.deleteAllByIdIn(REPORT_IDS) }
@@ -88,7 +88,7 @@ class ReportCleanerTest {
     @Test
     fun `지울 신고가 없으면 아무것도 하지 않는다`() {
         // given
-        every { reportRepository.findIdsCreatedBefore(any()) } returns emptyList()
+        every { reportRepository.findHandledIdsCreatedBefore(any()) } returns emptyList()
 
         // when
         cleaner.cleanUpOldReports()

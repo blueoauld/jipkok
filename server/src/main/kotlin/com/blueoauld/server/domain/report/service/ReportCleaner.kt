@@ -30,7 +30,7 @@ class ReportCleaner(
     @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
     @Transactional
     fun cleanUpOldReports() {
-        val reportIds = reportRepository.findIdsCreatedBefore(clock.instant().minus(RETENTION))
+        val reportIds = reportRepository.findHandledIdsCreatedBefore(clock.instant().minus(RETENTION))
 
         if (reportIds.isEmpty()) {
             return
@@ -38,7 +38,7 @@ class ReportCleaner(
 
         val snapshots = reportSnapshotRepository.findAllByReportIdIn(reportIds)
         val objectKeys = reportPhotoRepository.findAllByReportIdIn(reportIds).map { it.objectKey } +
-                snapshots.flatMap(::objectKeysOf)
+            snapshots.flatMap(::objectKeysOf)
 
         reportPhotoRepository.deleteAllByReportIdIn(reportIds)
         reportSnapshotRepository.deleteAllByReportIdIn(reportIds)

@@ -9,8 +9,8 @@ import java.time.Instant
 
 interface ReportRepository : JpaRepository<Report, Long> {
 
-    @Query("select r.id from Report r where r.createdAt < :threshold")
-    fun findIdsCreatedBefore(@Param("threshold") threshold: Instant): List<Long>
+    @Query("select r.id from Report r where r.handledAt is not null and r.createdAt < :threshold")
+    fun findHandledIdsCreatedBefore(@Param("threshold") threshold: Instant): List<Long>
 
     fun deleteAllByIdIn(ids: List<Long>)
 
