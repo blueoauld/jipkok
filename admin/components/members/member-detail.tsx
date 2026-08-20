@@ -9,6 +9,7 @@ import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ReleaseButton } from "@/components/release-button";
 import { SuspendDialog } from "@/components/suspend-dialog";
 import { MemberReportTable } from "@/components/reports/member-report-table";
@@ -42,7 +43,11 @@ import {
   suspensionReasonLabels,
   suspensionTypeLabels,
 } from "@/lib/labels";
-import { fetchMemberDetail } from "@/lib/api/members";
+import {
+  fetchMemberDetail,
+  resetMemberProfile,
+  withdrawMember,
+} from "@/lib/api/members";
 import { fetchMemberReports } from "@/lib/api/reports";
 import { defaultMemberReportFilter } from "@/components/reports/member-report-filters";
 import { QuerySection } from "@/components/query-section";
@@ -86,6 +91,8 @@ export function MemberDetail() {
 }
 
 function Loaded({ member }: { member: MemberDetailData }) {
+  const [resetTarget, setResetTarget] = useState<ProfileTarget | null>(null);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const activeSuspensions = member.suspensions.filter(
     (s) => s.status === "ACTIVE",
   );
@@ -103,7 +110,10 @@ function Loaded({ member }: { member: MemberDetailData }) {
             <DropdownMenuContent align="end">
               {(Object.keys(profileTargetLabels) as ProfileTarget[]).map(
                 (target) => (
-                  <DropdownMenuItem key={target}>
+                  <DropdownMenuItem
+                    key={target}
+                    onClick={() => setResetTarget(target)}
+                  >
                     {profileTargetLabels[target]}
                   </DropdownMenuItem>
                 ),
@@ -115,11 +125,45 @@ function Loaded({ member }: { member: MemberDetailData }) {
             nickname={member.nickname}
             disabled={member.withdrawnAt != null}
           />
-          <Button variant="destructive" disabled={member.withdrawnAt !== null}>
+          <Button
+            variant="destructive"
+            disabled={member.withdrawnAt !== null}
+            onClick={() => setWithdrawOpen(true)}
+          >
             탈퇴
           </Button>
         </div>
       </PageHeader>
+
+      <ConfirmDialog
+        open={resetTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setResetTarget(null);
+        }}
+        title="프로필 초기화"
+        description={
+          resetTarget
+            ? `${member.nickname} #${member.id}의 ${profileTargetLabels[resetTarget]}을 초기화합니다. 되돌릴 수 없습니다.`
+            : ""
+        }
+        confirmLabel="초기화"
+        pendingLabel="초기화 중"
+        errorFallback="초기화하지 못했습니다."
+        invalidateKeys={[["members"]]}
+        action={() => resetMemberProfile(member.id, resetTarget!)}
+      />
+
+      <ConfirmDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        title="회원 탈퇴"
+        description={`${member.nickname} #${member.id}을 탈퇴 처리합니다. 되돌릴 수 없습니다.`}
+        confirmLabel="탈퇴"
+        pendingLabel="탈퇴 중"
+        errorFallback="탈퇴 처리하지 못했습니다."
+        invalidateKeys={[["members"], ["dashboard"]]}
+        action={() => withdrawMember(member.id)}
+      />
 
       {suspended && (
         <Card>

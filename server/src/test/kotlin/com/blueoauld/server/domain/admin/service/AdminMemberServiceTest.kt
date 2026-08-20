@@ -3,9 +3,12 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminMemberRow
 import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
+import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
+import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -13,7 +16,9 @@ import com.blueoauld.server.domain.suspension.repository.MemberSuspensionReposit
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -29,10 +34,13 @@ class AdminMemberServiceTest {
 
     private val memberAdminService = mockk<MemberAdminService>()
 
+    private val memberWithdrawService = mockk<MemberWithdrawService>()
+
     private val adminMemberService = AdminMemberService(
         memberAdminRepository,
         memberSuspensionRepository,
         memberAdminService,
+        memberWithdrawService,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -90,6 +98,21 @@ class AdminMemberServiceTest {
             AdminSuspensionStatus.EXPIRED,
             AdminSuspensionStatus.RELEASED,
         )
+    }
+
+    @Test
+    fun `프로필 초기화와 탈퇴는 기존 서비스에 위임한다`() {
+        // given
+        every { memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME) } returns "새닉네임"
+        justRun { memberWithdrawService.withdraw(MEMBER_ID) }
+
+        // when
+        adminMemberService.resetProfile(MEMBER_ID, ResetProfileRequest(target = ProfileTarget.NICKNAME))
+        adminMemberService.withdraw(MEMBER_ID)
+
+        // then
+        verify { memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME) }
+        verify { memberWithdrawService.withdraw(MEMBER_ID) }
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
+import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
@@ -9,6 +10,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
+import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -23,6 +25,7 @@ class AdminMemberService(
     private val memberAdminRepository: MemberAdminRepository,
     private val memberSuspensionRepository: MemberSuspensionRepository,
     private val memberAdminService: MemberAdminService,
+    private val memberWithdrawService: MemberWithdrawService,
     private val clock: Clock,
 ) {
 
@@ -114,6 +117,16 @@ class AdminMemberService(
             suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
                 .map { AdminSuspensionResponse.of(it, now) },
         )
+    }
+
+    @Transactional
+    fun resetProfile(memberId: Long, request: ResetProfileRequest) {
+        memberAdminService.resetProfile(memberId, request.target!!)
+    }
+
+    @Transactional
+    fun withdraw(memberId: Long) {
+        memberWithdrawService.withdraw(memberId)
     }
 
     companion object {
