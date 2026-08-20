@@ -110,6 +110,32 @@ class AdminMemberQueriesTest {
     }
 
     @Test
+    fun `재가입 회원은 이전 계정의 정지가 살아 있으면 정지로 판정한다`() {
+        // given
+        val rejoined = saveMember("01033334445", "구름빵둘", Gender.FEMALE)
+        memberSuspensionRepository.saveAndFlush(
+            MemberSuspension(
+                phoneNumber = "01033334445",
+                memberId = rejoined.id - 1,
+                nickname = "구름빵",
+                type = SuspensionType.SERVICE,
+                reason = SuspensionReason.ABUSE,
+                startedAt = NOW.minusSeconds(3600),
+                expiresAt = null,
+            ),
+        )
+        entityManager.flush()
+        entityManager.clear()
+
+        // when
+        val suspended = memberAdminRepository.findAllForAdmin("SUSPENDED", null, null, null, null, NOW, 20, 0)
+
+        // then
+        assertThat(suspended.map { it.id }).contains(rejoined.id)
+        assertThat(suspended.first { it.id == rejoined.id }.suspended).isTrue()
+    }
+
+    @Test
     fun `상세 행은 탈퇴 회원도 준다`() {
         // given
 

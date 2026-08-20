@@ -133,11 +133,12 @@ class AdminDashboardQueriesTest {
     }
 
     @Test
-    fun `정지 중 회원 수는 해제와 만료를 빼고 회원 단위로 센다`() {
+    fun `정지 중 회원 수는 해제와 만료를 빼고 전화번호 단위로 센다`() {
         // given
         val now = Instant.parse("2026-08-20T00:00:00Z")
         saveSuspension(memberId = 1, expiresAt = now.plusSeconds(3600))
         saveSuspension(memberId = 1, expiresAt = null)
+        saveSuspension(memberId = 11, phoneNumber = "01088881", expiresAt = null)
         saveSuspension(memberId = 2, expiresAt = now.minusSeconds(3600))
         val released = saveSuspension(memberId = 3, expiresAt = null)
         released.releasedAt = now.minusSeconds(60)
@@ -185,10 +186,13 @@ class AdminDashboardQueriesTest {
             ),
         )
 
-    private fun saveSuspension(memberId: Long, expiresAt: Instant?) =
-        memberSuspensionRepository.saveAndFlush(
+    private fun saveSuspension(
+        memberId: Long,
+        expiresAt: Instant?,
+        phoneNumber: String = "0108888$memberId",
+    ) = memberSuspensionRepository.saveAndFlush(
             MemberSuspension(
-                phoneNumber = "0108888$memberId",
+                phoneNumber = phoneNumber,
                 memberId = memberId,
                 nickname = "회원$memberId",
                 type = SuspensionType.SERVICE,

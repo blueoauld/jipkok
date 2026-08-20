@@ -70,7 +70,7 @@ interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
 
     @Query(
         """
-        select count(distinct s.memberId)
+        select count(distinct s.phoneNumber)
         from MemberSuspension s
         where s.releasedAt is null and (s.expiresAt is null or s.expiresAt > :now)
         """,
@@ -122,7 +122,8 @@ interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
 
         private const val TYPE = """and (cast(:type as varchar) is null or s.type = cast(:type as varchar))"""
 
-        private const val MEMBER =
-            """and (cast(:memberId as bigint) is null or s.member_id = cast(:memberId as bigint))"""
+        private const val MEMBER = """and (cast(:memberId as bigint) is null
+            or s.member_id = cast(:memberId as bigint)
+            or s.phone_number = (select m.phone_number from member m where m.id = cast(:memberId as bigint)))"""
     }
 }

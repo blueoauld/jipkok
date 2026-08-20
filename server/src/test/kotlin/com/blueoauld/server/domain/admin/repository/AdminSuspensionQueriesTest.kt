@@ -1,6 +1,9 @@
 package com.blueoauld.server.domain.admin.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -21,6 +24,9 @@ class AdminSuspensionQueriesTest {
 
     @Autowired
     private lateinit var memberSuspensionRepository: MemberSuspensionRepository
+
+    @Autowired
+    private lateinit var memberRepository: MemberRepository
 
     private var activeId = 0L
 
@@ -65,6 +71,26 @@ class AdminSuspensionQueriesTest {
         assertThat(services.map { it.id }).containsExactly(releasedId, activeId)
         assertThat(member1.map { it.id }).containsExactly(expiredId, activeId)
         assertThat(count).isEqualTo(1)
+    }
+
+    @Test
+    fun `회원 ID 필터는 같은 전화번호의 이전 계정 정지도 준다`() {
+        // given
+        val current = memberRepository.saveAndFlush(
+            Member(
+                phoneNumber = "01011112221",
+                password = "encoded-password",
+                gender = Gender.MALE,
+                nickname = "재가입회원",
+                birthYear = 1998,
+            ),
+        )
+
+        // when
+        val suspensions = memberSuspensionRepository.findAllForAdmin(null, null, current.id, NOW, 20, 0)
+
+        // then
+        assertThat(suspensions.map { it.id }).containsExactly(expiredId, activeId)
     }
 
     @Test
