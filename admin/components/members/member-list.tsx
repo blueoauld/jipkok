@@ -9,6 +9,8 @@ import {
 } from "@/components/members/member-filters";
 import { MemberTable } from "@/components/members/member-table";
 import { QuerySection } from "@/components/query-section";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -21,12 +23,16 @@ import { fetchMembers } from "@/lib/api/members";
 export function MemberList() {
   const [filter, setFilter] = useState(defaultMemberFilter);
   const [page, setPage] = useState(1);
+  const keyword = useDebouncedValue(filter.keyword.trim());
+  const queryFilter = { ...filter, keyword };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["members", filter, page],
-    queryFn: () => fetchMembers({ ...filter, page }),
+    queryKey: ["members", queryFilter, page],
+    queryFn: () => fetchMembers({ ...queryFilter, page }),
     placeholderData: keepPreviousData,
   });
+
+  usePageGuard(page, setPage, data);
 
   const changeFilter = (next: MemberFilter) => {
     setFilter(next);

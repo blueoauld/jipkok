@@ -9,6 +9,7 @@ import {
 } from "@/components/suspensions/suspension-filters";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
 import { QuerySection } from "@/components/query-section";
+import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -27,6 +28,8 @@ export function SuspensionList() {
     queryFn: () => fetchSuspensions({ ...filter, page }),
     placeholderData: keepPreviousData,
   });
+
+  usePageGuard(page, setPage, data);
 
   const changeFilter = (next: SuspensionFilter) => {
     setFilter(next);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
 import { MemberCell } from "@/components/member-cell";
@@ -21,6 +22,7 @@ import {
   reportTypeLabels,
 } from "@/lib/labels";
 import { fetchMemberReportDetail, handleMemberReport } from "@/lib/api/reports";
+import { ApiError } from "@/lib/api/client";
 import { QuerySection } from "@/components/query-section";
 import { SuspendDialog } from "@/components/suspend-dialog";
 
@@ -43,6 +45,11 @@ export function MemberReportDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (caught) => {
+      toast.error(
+        caught instanceof ApiError ? caught.message : "처리하지 못했습니다.",
+      );
     },
   });
 

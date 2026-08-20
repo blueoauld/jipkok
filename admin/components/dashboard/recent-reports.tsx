@@ -48,6 +48,16 @@ export function RecentReports({ reports }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {reports.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  최근 신고가 없습니다.
+                </TableCell>
+              </TableRow>
+            )}
             {reports.map((report) => (
               <TableRow key={report.id}>
                 <TableCell className="tabular-nums text-muted-foreground">

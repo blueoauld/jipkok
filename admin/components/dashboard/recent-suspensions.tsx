@@ -48,6 +48,16 @@ export function RecentSuspensions({ suspensions }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {suspensions.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  최근 정지가 없습니다.
+                </TableCell>
+              </TableRow>
+            )}
             {suspensions.map((suspension) => (
               <TableRow key={suspension.id}>
                 <TableCell className="tabular-nums text-muted-foreground">

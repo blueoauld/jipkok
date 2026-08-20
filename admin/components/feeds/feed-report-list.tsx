@@ -9,6 +9,7 @@ import {
 } from "@/components/feeds/feed-report-filters";
 import { FeedReportTable } from "@/components/feeds/feed-report-table";
 import { QuerySection } from "@/components/query-section";
+import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -27,6 +28,8 @@ export function FeedReportList() {
     queryFn: () => fetchFeedReports({ ...filter, page }),
     placeholderData: keepPreviousData,
   });
+
+  usePageGuard(page, setPage, data);
 
   const changeFilter = (next: FeedReportFilter) => {
     setFilter(next);

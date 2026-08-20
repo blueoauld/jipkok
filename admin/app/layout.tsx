@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { AppShell } from "@/components/app-shell";
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const pretendard = localFont({
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <QueryProvider>
             <AppShell>{children}</AppShell>
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

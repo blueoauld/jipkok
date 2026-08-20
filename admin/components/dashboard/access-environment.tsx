@@ -97,7 +97,7 @@ function VersionTable({
               {formatCount(row.count)}
             </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
-              {Math.round((row.count / total) * 100)}%
+              {total === 0 ? 0 : Math.round((row.count / total) * 100)}%
             </TableCell>
           </TableRow>
         ))}

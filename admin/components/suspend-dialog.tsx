@@ -41,7 +41,7 @@ export function SuspendDialog({ memberId, nickname, disabled }: Props) {
         memberId,
         type,
         reason,
-        days: days ? Number(days) : undefined,
+        days: Number(days) > 0 ? Number(days) : undefined,
         detail: detail.trim() || undefined,
       }),
     onSuccess: () => {
@@ -60,6 +60,8 @@ export function SuspendDialog({ memberId, nickname, disabled }: Props) {
   const change = (next: boolean) => {
     setOpen(next);
     if (next) {
+      setType("SERVICE");
+      setReason("ABUSE");
       setDays("");
       setDetail("");
       setError(null);

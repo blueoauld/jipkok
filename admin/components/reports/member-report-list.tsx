@@ -9,6 +9,7 @@ import {
 } from "@/components/reports/member-report-filters";
 import { MemberReportTable } from "@/components/reports/member-report-table";
 import { QuerySection } from "@/components/query-section";
+import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
   Card,
@@ -27,6 +28,8 @@ export function MemberReportList() {
     queryFn: () => fetchMemberReports({ ...filter, page }),
     placeholderData: keepPreviousData,
   });
+
+  usePageGuard(page, setPage, data);
 
   const changeFilter = (next: MemberReportFilter) => {
     setFilter(next);

@@ -30,7 +30,7 @@ type Props = {
 
 export function DemographicsChart({ data }: Props) {
   const total = data.male + data.female;
-  const malePercent = Math.round((data.male / total) * 100);
+  const malePercent = total === 0 ? 0 : Math.round((data.male / total) * 100);
 
   return (
     <Card>

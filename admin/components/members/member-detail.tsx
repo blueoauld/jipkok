@@ -52,6 +52,7 @@ import { fetchMemberReports } from "@/lib/api/reports";
 import { defaultMemberReportFilter } from "@/components/reports/member-report-filters";
 import { QuerySection } from "@/components/query-section";
 import { TablePagination } from "@/components/table-pagination";
+import { usePageGuard } from "@/hooks/use-page-guard";
 import type { MemberDetail as MemberDetailData } from "@/lib/types";
 import type { ProfileTarget } from "@/lib/types";
 
@@ -330,6 +331,8 @@ function ReceivedReports({ phoneNumber }: { phoneNumber: string }) {
         page,
       }),
   });
+
+  usePageGuard(page, setPage, data);
 
   return (
     <Card>

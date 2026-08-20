@@ -46,7 +46,7 @@ export function ConfirmDialog({
       invalidateKeys.forEach((queryKey) =>
         queryClient.invalidateQueries({ queryKey }),
       );
-      onOpenChange(false);
+      close();
       onSuccess?.();
     },
     onError: (caught) => {
@@ -54,12 +54,15 @@ export function ConfirmDialog({
     },
   });
 
+  const close = () => {
+    onOpenChange(false);
+    setError(null);
+    mutation.reset();
+  };
+
   const change = (next: boolean) => {
-    onOpenChange(next);
-    if (next) {
-      setError(null);
-      mutation.reset();
-    }
+    if (!next) close();
+    else onOpenChange(true);
   };
 
   return (
@@ -73,7 +76,7 @@ export function ConfirmDialog({
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
         <DialogFooter>
-          <Button variant="outline" onClick={() => change(false)}>
+          <Button variant="outline" onClick={close}>
             취소
           </Button>
           <PendingButton

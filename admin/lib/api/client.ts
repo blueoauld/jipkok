@@ -50,19 +50,36 @@ async function send(path: string, options: RequestOptions) {
 }
 
 async function reissue(): Promise<boolean> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return false;
+  const staleAccessToken = getAccessToken();
 
-  const response = await fetch(`${baseUrl}${REISSUE_PATH}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
-  });
+  const run = async () => {
+    if (getAccessToken() !== staleAccessToken) return true;
 
-  if (!response.ok) return false;
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return false;
 
-  saveTokens((await response.json()) as Tokens);
-  return true;
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl}${REISSUE_PATH}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+    } catch {
+      throw new ApiError(0, "서버에 연결하지 못했습니다.");
+    }
+
+    if (!response.ok) return false;
+
+    saveTokens((await response.json()) as Tokens);
+    return true;
+  };
+
+  if (typeof navigator !== "undefined" && navigator.locks) {
+    return navigator.locks.request("token-reissue", run);
+  }
+
+  return run();
 }
 
 function reissueOnce() {
