@@ -58,9 +58,6 @@ solapi:
 discord:
   token: ${DISCORD_TOKEN:}
   guild-id: ${DISCORD_GUILD_ID:}
-  role-id: ${DISCORD_ROLE_ID:}
-  suspension-channel-id: ${DISCORD_SUSPENSION_CHANNEL_ID:}
-  reset-channel-id: ${DISCORD_RESET_CHANNEL_ID:}
   report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
   moderation-channel-id: ${DISCORD_MODERATION_CHANNEL_ID:}
   error-channel-id: ${DISCORD_ERROR_CHANNEL_ID:}

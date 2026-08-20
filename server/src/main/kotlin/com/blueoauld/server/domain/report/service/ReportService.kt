@@ -12,7 +12,6 @@ import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
 import com.blueoauld.server.domain.report.dto.ReporterSnapshot
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
-import com.blueoauld.server.domain.report.dto.response.PendingReport
 import com.blueoauld.server.domain.report.dto.response.ReportDetail
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
@@ -100,11 +99,6 @@ class ReportService(
             ),
         )
     }
-
-    @Transactional(readOnly = true)
-    fun findPending(): List<PendingReport> =
-        reportRepository.findTop20ByHandledAtIsNullOrderByIdAsc()
-            .map { PendingReport(it.id, it.type, it.reason, it.reportedMemberId, it.createdAt) }
 
     @Transactional
     fun handle(reportId: Long) {

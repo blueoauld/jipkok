@@ -28,7 +28,7 @@ object DiscordEmbeds {
 
     fun field(label: String, value: String) = "**$label**\n$value"
 
-    fun chunk(text: String, maxLength: Int) =
+    private fun chunk(text: String, maxLength: Int) =
         text.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
             val last = chunks.lastOrNull()
 

@@ -361,26 +361,6 @@ class ReportServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.REPORT_NOT_FOUND)
     }
 
-    @Test
-    fun `미처리 신고만 목록에 담는다`() {
-        // given
-        every { reportRepository.findTop20ByHandledAtIsNullOrderByIdAsc() } returns listOf(
-            Report(
-                reporterId = REPORTER_ID,
-                reportedMemberId = REPORTED_MEMBER_ID,
-                type = ReportType.PROFILE,
-                reason = ReportReason.ABUSE,
-            ),
-        )
-
-        // when
-        val pending = reportService.findPending()
-
-        // then
-        assertThat(pending).singleElement()
-            .satisfies({ assertThat(it.reportedMemberId).isEqualTo(REPORTED_MEMBER_ID) })
-    }
-
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-08-06T12:00:00Z")

@@ -7,9 +7,6 @@ data class DiscordProperties(
 
     val token: String,
     val guildId: String,
-    val roleId: String,
-    val suspensionChannelId: String,
-    val resetChannelId: String,
     val reportChannelId: String,
     val moderationChannelId: String,
     val errorChannelId: String,

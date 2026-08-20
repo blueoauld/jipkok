@@ -87,9 +87,6 @@ class ErrorLogNotifierTest {
     private fun properties() = DiscordProperties(
         token = "token",
         guildId = "1",
-        roleId = "1",
-        suspensionChannelId = "1",
-        resetChannelId = "1",
         reportChannelId = "1",
         moderationChannelId = "1",
         errorChannelId = CHANNEL_ID,
