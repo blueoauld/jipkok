@@ -23,7 +23,7 @@ export type SuspensionStatus = Suspension["status"];
 export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];
 export type FeedReport = Schemas["AdminFeedReportResponse"];
 export type FeedReportPage = Schemas["AdminFeedReportPageResponse"];
-export type ReportType = "PROFILE" | "CHAT" | "FEED";
+export type ReportType = "PROFILE" | "CHAT";
 
 export type ReportReason =
   | "OBSCENITY"
@@ -37,7 +37,7 @@ export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
-export type MemberReportType = Exclude<ReportType, "FEED">;
+export type MemberReportType = ReportType;
 
 export type Gender = "MALE" | "FEMALE";
 

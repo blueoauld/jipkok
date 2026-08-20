@@ -6,7 +6,7 @@ export default function MembersPage() {
     <>
       <PageHeader
         title="회원"
-        description="회원을 조회하고 프로필을 초기화합니다."
+        description="회원을 조회하고 정지, 초기화, 탈퇴를 처리합니다."
       />
       <MemberList />
     </>

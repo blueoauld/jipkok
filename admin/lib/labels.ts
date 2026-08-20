@@ -12,7 +12,6 @@ import type {
 export const reportTypeLabels: Record<ReportType, string> = {
   PROFILE: "프로필",
   CHAT: "채팅",
-  FEED: "피드",
 };
 
 export const reportReasonLabels: Record<ReportReason, string> = {

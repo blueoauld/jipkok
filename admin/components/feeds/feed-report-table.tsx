@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ImageOff } from "lucide-react";
 import { MemberCell } from "@/components/member-cell";
 import { StatusText } from "@/components/status-text";
 import { DeletePostDialog } from "@/components/feeds/delete-post-dialog";
@@ -105,14 +104,7 @@ export function FeedReportTable({ reports }: Props) {
   );
 }
 
-function Thumbnail({ url }: { url: string | null }) {
-  if (!url) {
-    return (
-      <div className="flex size-10 items-center justify-center bg-neutral-200 text-muted-foreground dark:bg-neutral-800">
-        <ImageOff className="size-4" />
-      </div>
-    );
-  }
+function Thumbnail({ url }: { url: string }) {
   return (
     <Image
       src={url}
