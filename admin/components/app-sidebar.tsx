@@ -16,6 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { LogoutButton } from "@/components/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { navItems } from "@/lib/nav";
 
@@ -75,6 +76,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <ThemeToggle />
+        <LogoutButton />
       </SidebarFooter>
     </Sidebar>
   );

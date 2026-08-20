@@ -22,7 +22,7 @@ export function SearchInput({
       <Search className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         className={cn(
-          "w-40 pr-8 focus-visible:border-input focus-visible:ring-0",
+          "w-40 pr-8",
           className,
         )}
         inputMode={numeric ? "numeric" : undefined}
