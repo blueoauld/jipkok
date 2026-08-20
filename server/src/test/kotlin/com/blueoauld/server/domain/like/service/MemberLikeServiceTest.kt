@@ -154,7 +154,7 @@ class MemberLikeServiceTest {
     fun `마지막 쪽이면 다음 커서를 주지 않는다`() {
         // given
         every { memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(LIKER_ID, any(), any()) } returns
-                listOf(memberLike(30L, LIKED_MEMBER_ID))
+            listOf(memberLike(30L, LIKED_MEMBER_ID))
 
         // when
         val response = memberLikeService.findLiked(LIKER_ID, null, 2)
@@ -173,7 +173,7 @@ class MemberLikeServiceTest {
                 any(),
             )
         } returns
-                listOf(memberLike(30L, LIKED_MEMBER_ID))
+            listOf(memberLike(30L, LIKED_MEMBER_ID))
 
         // when
         memberLikeService.findReceived(LIKED_MEMBER_ID, 40L, 20)

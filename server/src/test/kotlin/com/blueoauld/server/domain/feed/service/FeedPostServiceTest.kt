@@ -108,7 +108,7 @@ class FeedPostServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                PhotoUploadUrlResponse("https://upload.test/key", "feeds/$MEMBER_ID/key.jpg")
+            PhotoUploadUrlResponse("https://upload.test/key", "feeds/$MEMBER_ID/key.jpg")
 
         // when
         val response = feedPostService.createPhotoUploadUrl(

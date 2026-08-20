@@ -430,7 +430,7 @@ class MemberServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                PhotoUploadUrlResponse("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
+            PhotoUploadUrlResponse("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
 
         // when
         val response = memberService.createPhotoUploadUrl(

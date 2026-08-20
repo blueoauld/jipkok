@@ -47,7 +47,7 @@ class ChatPushNotifierTest {
     fun `받는 쪽이 서비스 정지 중이면 푸시를 보내지 않는다`() {
         // given
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
-                roomMember(notificationEnabled = true)
+            roomMember(notificationEnabled = true)
         every { memberSuspensionService.isSuspended(RECEIVER_ID, SuspensionType.SERVICE) } returns true
 
         // when
@@ -61,7 +61,7 @@ class ChatPushNotifierTest {
     fun `알림이 켜진 방이면 푸시를 보낸다`() {
         // given
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
-                roomMember(notificationEnabled = true)
+            roomMember(notificationEnabled = true)
 
         // when
         notifier.notifySent(event())
@@ -74,7 +74,7 @@ class ChatPushNotifierTest {
     fun `알림을 끈 방이면 푸시를 보내지 않는다`() {
         // given
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
-                roomMember(notificationEnabled = false)
+            roomMember(notificationEnabled = false)
 
         // when
         notifier.notifySent(event())

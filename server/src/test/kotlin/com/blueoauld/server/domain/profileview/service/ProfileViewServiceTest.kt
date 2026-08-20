@@ -93,7 +93,7 @@ class ProfileViewServiceTest {
             profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any())
         } returns listOf(profileView(30L, VIEWER_ID, NOW), profileView(20L, 3L, older))
         every { memberSummaryService.findSummaries(listOf(VIEWER_ID, 3L)) } returns
-                listOf(summary(VIEWER_ID), summary(3L))
+            listOf(summary(VIEWER_ID), summary(3L))
 
         // when
         val response = profileViewService.findViewers(VIEWED_MEMBER_ID, null, 2)
@@ -169,7 +169,7 @@ class ProfileViewServiceTest {
         // given
         val seenAt = NOW.minusSeconds(600)
         every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
-                Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns seenAt })
+            Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns seenAt })
         every { profileViewRepository.countByViewedMemberIdAndViewedAtAfter(VIEWED_MEMBER_ID, seenAt) } returns 3
 
         // when
@@ -184,7 +184,7 @@ class ProfileViewServiceTest {
     fun `한 번도 확인하지 않았으면 전부 새 것으로 센다`() {
         // given
         every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
-                Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns null })
+            Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns null })
         every { profileViewRepository.countByViewedMemberId(VIEWED_MEMBER_ID) } returns 7
 
         // when

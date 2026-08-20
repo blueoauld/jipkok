@@ -114,7 +114,7 @@ class MemberFavoriteServiceTest {
             memberFavoriteRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, Long.MAX_VALUE, any())
         } returns favorites
         every { memberSummaryService.findSummaries(listOf(FAVORITE_MEMBER_ID, 3L)) } returns
-                listOf(summary(FAVORITE_MEMBER_ID), summary(3L))
+            listOf(summary(FAVORITE_MEMBER_ID), summary(3L))
 
         // when
         val response = memberFavoriteService.findFavorites(MEMBER_ID, null, 2)

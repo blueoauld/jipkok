@@ -141,7 +141,7 @@ class MemberBlockServiceTest {
             memberBlockRepository.findByBlockerIdAndIdLessThanOrderByIdDesc(BLOCKER_ID, Long.MAX_VALUE, any())
         } returns blocks
         every { memberSummaryService.findSummaries(listOf(BLOCKED_MEMBER_ID, 3L)) } returns
-                listOf(summary(BLOCKED_MEMBER_ID), summary(3L))
+            listOf(summary(BLOCKED_MEMBER_ID), summary(3L))
 
         // when
         val response = memberBlockService.findBlocked(BLOCKER_ID, null, 2)

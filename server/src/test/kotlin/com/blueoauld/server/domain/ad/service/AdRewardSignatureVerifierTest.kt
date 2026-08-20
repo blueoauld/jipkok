@@ -170,6 +170,6 @@ class AdRewardSignatureVerifierTest {
         private const val UNKNOWN_KEY_ID = "unknown-key-id"
         private const val ATTEMPT_COUNT = 5
         private const val CONTENT = "ad_network=5450213213286189855&reward_amount=30" +
-                "&transaction_id=transaction-id&user_id=1"
+            "&transaction_id=transaction-id&user_id=1"
     }
 }

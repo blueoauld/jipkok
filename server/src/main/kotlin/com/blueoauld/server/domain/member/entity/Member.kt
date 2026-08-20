@@ -14,7 +14,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity

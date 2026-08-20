@@ -71,7 +71,7 @@ class SecretPhotoAccessService(
 
     private fun isBlocked(viewerId: Long, ownerId: Long) =
         memberBlockRepository.existsByBlockerIdAndBlockedMemberId(viewerId, ownerId) ||
-                memberBlockRepository.existsByBlockerIdAndBlockedMemberId(ownerId, viewerId)
+            memberBlockRepository.existsByBlockerIdAndBlockedMemberId(ownerId, viewerId)
 
     @Transactional
     fun revoke(ownerId: Long, viewerId: Long) {

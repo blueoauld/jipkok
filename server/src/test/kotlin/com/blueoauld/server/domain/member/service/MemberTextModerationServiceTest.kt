@@ -75,7 +75,7 @@ class MemberTextModerationServiceTest {
     fun `이미 가려진 글은 다시 검수하지 않는다`() {
         // given
         every { memberRepository.findById(MEMBER_ID) } returns
-                Optional.of(member().apply { comment = Member.BLOCKED_TEXT })
+            Optional.of(member().apply { comment = Member.BLOCKED_TEXT })
         every { textModerator.moderate(BIO) } returns ModerationResult.PASSED
 
         // when

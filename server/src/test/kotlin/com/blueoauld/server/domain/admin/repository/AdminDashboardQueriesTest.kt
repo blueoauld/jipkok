@@ -191,16 +191,16 @@ class AdminDashboardQueriesTest {
         expiresAt: Instant?,
         phoneNumber: String = "0108888$memberId",
     ) = memberSuspensionRepository.saveAndFlush(
-            MemberSuspension(
-                phoneNumber = phoneNumber,
-                memberId = memberId,
-                nickname = "회원$memberId",
-                type = SuspensionType.SERVICE,
-                reason = SuspensionReason.ABUSE,
-                startedAt = Instant.parse("2026-08-01T00:00:00Z"),
-                expiresAt = expiresAt,
-            ),
-        )
+        MemberSuspension(
+            phoneNumber = phoneNumber,
+            memberId = memberId,
+            nickname = "회원$memberId",
+            type = SuspensionType.SERVICE,
+            reason = SuspensionReason.ABUSE,
+            startedAt = Instant.parse("2026-08-01T00:00:00Z"),
+            expiresAt = expiresAt,
+        ),
+    )
 
     private fun saveAccessLog(memberId: Long, accessedOn: LocalDate, platform: DevicePlatform) {
         accessLogRepository.saveAndFlush(

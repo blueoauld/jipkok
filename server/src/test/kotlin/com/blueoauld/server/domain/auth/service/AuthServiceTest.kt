@@ -271,7 +271,7 @@ class AuthServiceTest {
 
     private fun stubAttemptCount(phoneNumber: Long, ipAddress: Long) {
         every { loginAttemptCache.find(PHONE_NUMBER, IP_ADDRESS) } returns
-                LoginAttemptCount(phoneNumber, ipAddress)
+            LoginAttemptCount(phoneNumber, ipAddress)
     }
 
     companion object {

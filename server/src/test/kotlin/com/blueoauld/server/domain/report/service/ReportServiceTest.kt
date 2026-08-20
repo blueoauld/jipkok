@@ -295,7 +295,7 @@ class ReportServiceTest {
         // given
         val prefix = slot<String>()
         every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-                PhotoUploadUrlResponse("https://upload.test/key", "reports/evidence/$REPORTER_ID/key.jpg")
+            PhotoUploadUrlResponse("https://upload.test/key", "reports/evidence/$REPORTER_ID/key.jpg")
 
         // when
         val response = reportService.createPhotoUploadUrl(

@@ -177,7 +177,7 @@ class AdRewardServiceTest {
         private const val SIGNATURE = "signature"
         private const val QUERY_STRING =
             "ad_network=5450213213286189855&reward_amount=30&transaction_id=transaction-id" +
-                    "&user_id=1&signature=signature&key_id=3335741209"
+                "&user_id=1&signature=signature&key_id=3335741209"
 
         private val NOW: Instant = Instant.parse("2026-08-01T16:00:00Z")
     }

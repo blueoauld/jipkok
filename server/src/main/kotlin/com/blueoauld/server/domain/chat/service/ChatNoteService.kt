@@ -71,5 +71,5 @@ class ChatNoteService(
 
     private fun isBlocked(senderId: Long, receiverId: Long) =
         memberBlockRepository.existsByBlockerIdAndBlockedMemberId(senderId, receiverId) ||
-                memberBlockRepository.existsByBlockerIdAndBlockedMemberId(receiverId, senderId)
+            memberBlockRepository.existsByBlockerIdAndBlockedMemberId(receiverId, senderId)
 }

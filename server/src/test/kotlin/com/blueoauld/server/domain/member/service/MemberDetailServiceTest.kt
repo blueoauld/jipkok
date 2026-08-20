@@ -151,7 +151,7 @@ class MemberDetailServiceTest {
     fun `상대의 쪽지 수신 여부를 담는다`() {
         // given
         every { memberRepository.findById(TARGET_ID) } returns
-                Optional.of(member(37.51, 127.0, "상대").apply { noteReceiveEnabled = false })
+            Optional.of(member(37.51, 127.0, "상대").apply { noteReceiveEnabled = false })
 
         // when
         val response = memberDetailService.findDetail(ME_ID, TARGET_ID)

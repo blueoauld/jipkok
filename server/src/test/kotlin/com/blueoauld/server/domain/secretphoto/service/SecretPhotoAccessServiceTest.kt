@@ -217,7 +217,7 @@ class SecretPhotoAccessServiceTest {
             secretPhotoAccessRepository.findByOwnerIdAndIdLessThanOrderByIdDesc(OWNER_ID, Long.MAX_VALUE, any())
         } returns accesses
         every { memberSummaryService.findSummaries(listOf(VIEWER_ID, 3L)) } returns
-                listOf(summary(VIEWER_ID), summary(3L))
+            listOf(summary(VIEWER_ID), summary(3L))
 
         // when
         val response = secretPhotoAccessService.findGranted(OWNER_ID, null, 2)

@@ -263,14 +263,14 @@ class VerificationCodeServiceTest {
         every {
             phoneVerificationRepository.findFirstByPhoneNumberAndPurposeOrderByIssuedAtDesc(PHONE_NUMBER, PURPOSE)
         } returns
-                phoneVerification
+            phoneVerification
     }
 
     private fun stubLatestIssuedAt(issuedAt: Instant) {
         every {
             phoneVerificationRepository.findFirstByPhoneNumberOrderByIssuedAtDesc(PHONE_NUMBER)
         } returns
-                PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, issuedAt, PURPOSE)
+            PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, issuedAt, PURPOSE)
     }
 
     private fun stubPhoneNumberIssuedCount(count: Long) {
