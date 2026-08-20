@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportPageRespons
 import com.blueoauld.server.domain.admin.service.AdminFeedService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -37,7 +38,10 @@ class AdminFeedController(
     @Operation(summary = "피드 게시물 삭제")
     @DeleteMapping("/feed-posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deletePost(@PathVariable postId: Long) {
-        adminFeedService.deletePost(postId)
+    fun deletePost(
+        @AuthenticationPrincipal actorId: Long,
+        @PathVariable postId: Long,
+    ) {
+        adminFeedService.deletePost(actorId, postId)
     }
 }

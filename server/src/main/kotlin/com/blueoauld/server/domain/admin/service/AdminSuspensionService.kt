@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -17,6 +18,7 @@ class AdminSuspensionService(
 
     private val memberSuspensionRepository: MemberSuspensionRepository,
     private val memberSuspensionService: MemberSuspensionService,
+    private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
 ) {
 
@@ -56,13 +58,19 @@ class AdminSuspensionService(
     }
 
     @Transactional
-    fun suspend(request: CreateSuspensionRequest): AdminSuspensionResponse {
+    fun suspend(actorId: Long, request: CreateSuspensionRequest): AdminSuspensionResponse {
         val detail = memberSuspensionService.suspend(
             memberId = request.memberId!!,
             type = request.type!!,
             reason = request.reason!!,
             days = request.days,
             detail = request.detail,
+        )
+        adminActionRecorder.record(
+            actorId = actorId,
+            action = AdminActionType.SUSPEND,
+            targetId = request.memberId,
+            detail = "${request.type} ${request.reason} ${request.days?.let { "${it}일" } ?: "영구"}",
         )
 
         return AdminSuspensionResponse(
@@ -79,7 +87,13 @@ class AdminSuspensionService(
     }
 
     @Transactional
-    fun release(request: ReleaseSuspensionRequest) {
+    fun release(actorId: Long, request: ReleaseSuspensionRequest) {
         memberSuspensionService.release(request.memberId!!, request.type!!)
+        adminActionRecorder.record(
+            actorId = actorId,
+            action = AdminActionType.RELEASE_SUSPENSION,
+            targetId = request.memberId,
+            detail = request.type.name,
+        )
     }
 }

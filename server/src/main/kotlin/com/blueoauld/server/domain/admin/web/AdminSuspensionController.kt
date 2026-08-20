@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -44,13 +45,18 @@ class AdminSuspensionController(
     @Operation(summary = "회원 정지", description = "일수가 없으면 영구 정지다.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun suspend(@Valid @RequestBody request: CreateSuspensionRequest): AdminSuspensionResponse =
-        adminSuspensionService.suspend(request)
+    fun suspend(
+        @AuthenticationPrincipal actorId: Long,
+        @Valid @RequestBody request: CreateSuspensionRequest,
+    ): AdminSuspensionResponse = adminSuspensionService.suspend(actorId, request)
 
     @Operation(summary = "정지 해제", description = "해당 유형의 유효한 정지를 모두 해제한다.")
     @PostMapping("/release")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun release(@Valid @RequestBody request: ReleaseSuspensionRequest) {
-        adminSuspensionService.release(request)
+    fun release(
+        @AuthenticationPrincipal actorId: Long,
+        @Valid @RequestBody request: ReleaseSuspensionRequest,
+    ) {
+        adminSuspensionService.release(actorId, request)
     }
 }

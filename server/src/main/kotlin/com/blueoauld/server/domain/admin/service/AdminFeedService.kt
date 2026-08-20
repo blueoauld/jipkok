@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.admin.dto.AdminFeedPostStatus
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReporterResponse
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -20,6 +21,7 @@ class AdminFeedService(
     private val feedPostRepository: FeedPostRepository,
     private val memberRepository: MemberRepository,
     private val photoStorage: PhotoStorage,
+    private val adminActionRecorder: AdminActionRecorder,
 ) {
 
     @Transactional(readOnly = true)
@@ -78,12 +80,13 @@ class AdminFeedService(
     }
 
     @Transactional
-    fun deletePost(postId: Long) {
+    fun deletePost(actorId: Long, postId: Long) {
         val post = feedPostRepository.findById(postId).orElseThrow {
             BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
         }
 
         feedPostRepository.delete(post)
+        adminActionRecorder.record(actorId, AdminActionType.DELETE_FEED_POST, postId)
     }
 
     companion object {

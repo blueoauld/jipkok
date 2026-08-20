@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -51,16 +52,20 @@ class AdminMemberController(
     @PostMapping("/{memberId}/profile-reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resetProfile(
+        @AuthenticationPrincipal actorId: Long,
         @PathVariable memberId: Long,
         @Valid @RequestBody request: ResetProfileRequest,
     ) {
-        adminMemberService.resetProfile(memberId, request)
+        adminMemberService.resetProfile(actorId, memberId, request)
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴와 같은 절차로 처리한다.")
     @DeleteMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun withdraw(@PathVariable memberId: Long) {
-        adminMemberService.withdraw(memberId)
+    fun withdraw(
+        @AuthenticationPrincipal actorId: Long,
+        @PathVariable memberId: Long,
+    ) {
+        adminMemberService.withdraw(actorId, memberId)
     }
 }

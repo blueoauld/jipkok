@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminReportPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReportedMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReporterResponse
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.type.ReportReason
@@ -24,6 +25,7 @@ class AdminReportService(
     private val reportRepository: ReportRepository,
     private val memberRepository: MemberRepository,
     private val reportService: ReportService,
+    private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
 ) {
 
@@ -120,8 +122,9 @@ class AdminReportService(
     }
 
     @Transactional
-    fun handle(reportId: Long) {
+    fun handle(actorId: Long, reportId: Long) {
         reportService.handle(reportId)
+        adminActionRecorder.record(actorId, AdminActionType.HANDLE_REPORT, reportId)
     }
 
     private fun findNicknames(reports: List<Report>): Map<Long, String> {

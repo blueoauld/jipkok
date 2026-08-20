@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -51,7 +52,10 @@ class AdminReportController(
     @Operation(summary = "회원 신고 처리")
     @PostMapping("/{reportId}/handle")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun handle(@PathVariable reportId: Long) {
-        adminReportService.handle(reportId)
+    fun handle(
+        @AuthenticationPrincipal actorId: Long,
+        @PathVariable reportId: Long,
+    ) {
+        adminReportService.handle(actorId, reportId)
     }
 }

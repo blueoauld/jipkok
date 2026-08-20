@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberAdminRepository
@@ -30,6 +31,7 @@ class AdminMemberService(
     private val memberSuspensionRepository: MemberSuspensionRepository,
     private val memberAdminService: MemberAdminService,
     private val memberWithdrawService: MemberWithdrawService,
+    private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
 ) {
 
@@ -143,13 +145,24 @@ class AdminMemberService(
     }
 
     @Transactional
-    fun resetProfile(memberId: Long, request: ResetProfileRequest) {
+    fun resetProfile(actorId: Long, memberId: Long, request: ResetProfileRequest) {
         memberAdminService.resetProfile(memberId, request.target!!)
+        adminActionRecorder.record(
+            actorId = actorId,
+            action = AdminActionType.RESET_PROFILE,
+            targetId = memberId,
+            detail = request.target.name,
+        )
     }
 
     @Transactional
-    fun withdraw(memberId: Long) {
+    fun withdraw(actorId: Long, memberId: Long) {
         memberWithdrawService.withdraw(memberId)
+        adminActionRecorder.record(
+            actorId = actorId,
+            action = AdminActionType.WITHDRAW_MEMBER,
+            targetId = memberId,
+        )
     }
 
     private class CachedCount(val cachedAt: Instant, val count: Long)

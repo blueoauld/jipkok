@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
@@ -24,9 +25,12 @@ class AdminSuspensionServiceTest {
 
     private val memberSuspensionService = mockk<MemberSuspensionService>()
 
+    private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
+
     private val adminSuspensionService = AdminSuspensionService(
         memberSuspensionRepository,
         memberSuspensionService,
+        adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -61,6 +65,7 @@ class AdminSuspensionServiceTest {
 
         // when
         val response = adminSuspensionService.suspend(
+            ACTOR_ID,
             CreateSuspensionRequest(
                 memberId = MEMBER_ID,
                 type = SuspensionType.SERVICE,
@@ -73,6 +78,9 @@ class AdminSuspensionServiceTest {
         // then
         assertThat(response.status).isEqualTo(AdminSuspensionStatus.ACTIVE)
         assertThat(response.memberId).isEqualTo(MEMBER_ID)
+        verify {
+            adminActionRecorder.record(ACTOR_ID, AdminActionType.SUSPEND, MEMBER_ID, "SERVICE ABUSE 7일")
+        }
     }
 
     @Test
@@ -82,11 +90,15 @@ class AdminSuspensionServiceTest {
 
         // when
         adminSuspensionService.release(
+            ACTOR_ID,
             ReleaseSuspensionRequest(memberId = MEMBER_ID, type = SuspensionType.SERVICE),
         )
 
         // then
         verify { memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE) }
+        verify {
+            adminActionRecorder.record(ACTOR_ID, AdminActionType.RELEASE_SUSPENSION, MEMBER_ID, "SERVICE")
+        }
     }
 
     private fun suspension(expiresAt: Instant?) = MemberSuspension(
@@ -104,6 +116,7 @@ class AdminSuspensionServiceTest {
     companion object {
 
         private const val MEMBER_ID = 1000L
+        private const val ACTOR_ID = 7L
 
         private val NOW: Instant = Instant.parse("2026-08-20T06:00:00Z")
     }

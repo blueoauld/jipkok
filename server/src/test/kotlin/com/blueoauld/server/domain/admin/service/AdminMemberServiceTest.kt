@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.admin.dto.AdminMemberRow
 import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberAdminRepository
@@ -36,11 +37,14 @@ class AdminMemberServiceTest {
 
     private val memberWithdrawService = mockk<MemberWithdrawService>()
 
+    private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
+
     private val adminMemberService = AdminMemberService(
         memberAdminRepository,
         memberSuspensionRepository,
         memberAdminService,
         memberWithdrawService,
+        adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -151,12 +155,16 @@ class AdminMemberServiceTest {
         justRun { memberWithdrawService.withdraw(MEMBER_ID) }
 
         // when
-        adminMemberService.resetProfile(MEMBER_ID, ResetProfileRequest(target = ProfileTarget.NICKNAME))
-        adminMemberService.withdraw(MEMBER_ID)
+        adminMemberService.resetProfile(ACTOR_ID, MEMBER_ID, ResetProfileRequest(target = ProfileTarget.NICKNAME))
+        adminMemberService.withdraw(ACTOR_ID, MEMBER_ID)
 
         // then
         verify { memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME) }
         verify { memberWithdrawService.withdraw(MEMBER_ID) }
+        verify {
+            adminActionRecorder.record(ACTOR_ID, AdminActionType.RESET_PROFILE, MEMBER_ID, "NICKNAME")
+        }
+        verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.WITHDRAW_MEMBER, MEMBER_ID) }
     }
 
     @Test
@@ -207,6 +215,7 @@ class AdminMemberServiceTest {
     companion object {
 
         private const val MEMBER_ID = 1000L
+        private const val ACTOR_ID = 7L
 
         private val NOW: Instant = Instant.parse("2026-08-20T06:00:00Z")
     }

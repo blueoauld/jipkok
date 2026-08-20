@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
 import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
 import com.blueoauld.server.domain.admin.dto.MemberNickname
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
@@ -18,7 +19,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.util.Optional
+import java.util.*
 
 class AdminFeedServiceTest {
 
@@ -30,11 +31,14 @@ class AdminFeedServiceTest {
 
     private val photoStorage = mockk<PhotoStorage>()
 
+    private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
+
     private val adminFeedService = AdminFeedService(
         feedPostReportRepository,
         feedPostRepository,
         memberRepository,
         photoStorage,
+        adminActionRecorder,
     )
 
     @Test
@@ -71,10 +75,11 @@ class AdminFeedServiceTest {
         justRun { feedPostRepository.delete(post) }
 
         // when
-        adminFeedService.deletePost(POST_ID)
+        adminFeedService.deletePost(ACTOR_ID, POST_ID)
 
         // then
         verify { feedPostRepository.delete(post) }
+        verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.DELETE_FEED_POST, POST_ID) }
     }
 
     @Test
@@ -84,7 +89,7 @@ class AdminFeedServiceTest {
 
         // when
         // then
-        assertThatThrownBy { adminFeedService.deletePost(POST_ID) }
+        assertThatThrownBy { adminFeedService.deletePost(ACTOR_ID, POST_ID) }
             .isInstanceOf(BusinessException::class.java)
             .extracting { (it as BusinessException).errorCode }
             .isEqualTo(ErrorCode.FEED_POST_NOT_FOUND)
@@ -114,6 +119,7 @@ class AdminFeedServiceTest {
     companion object {
 
         private const val POST_ID = 8800L
+        private const val ACTOR_ID = 7L
 
         private val NOW: Instant = Instant.parse("2026-08-20T06:00:00Z")
     }

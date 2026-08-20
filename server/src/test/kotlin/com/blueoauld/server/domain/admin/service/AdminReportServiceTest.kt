@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminReportStatus
 import com.blueoauld.server.domain.admin.dto.MemberNickname
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.Optional
+import java.util.*
 
 class AdminReportServiceTest {
 
@@ -34,10 +35,13 @@ class AdminReportServiceTest {
 
     private val reportService = mockk<ReportService>()
 
+    private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
+
     private val adminReportService = AdminReportService(
         reportRepository,
         memberRepository,
         reportService,
+        adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -115,10 +119,11 @@ class AdminReportServiceTest {
         justRun { reportService.handle(REPORT_ID) }
 
         // when
-        adminReportService.handle(REPORT_ID)
+        adminReportService.handle(ACTOR_ID, REPORT_ID)
 
         // then
         verify { reportService.handle(REPORT_ID) }
+        verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.HANDLE_REPORT, REPORT_ID) }
     }
 
     private fun report() = Report(
@@ -179,6 +184,7 @@ class AdminReportServiceTest {
     companion object {
 
         private const val REPORT_ID = 1042L
+        private const val ACTOR_ID = 7L
         private const val REPORTER_ID = 3310L
         private const val REPORTED_MEMBER_ID = 2877L
 
