@@ -54,7 +54,7 @@ export default function DashboardPage() {
         skeletonClassName="h-24 w-full"
       >
         {summary.data && (
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
             <StatCard
               title="미처리 회원 신고"
               value={summary.data.pendingMemberReports}
@@ -80,14 +80,14 @@ export default function DashboardPage() {
         skeletonClassName="h-24 w-full"
       >
         {activeUsers.data && (
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-4 md:gap-6">
             <StatCard title="DAU" value={activeUsers.data.dau} />
             <StatCard title="WAU" value={activeUsers.data.wau} />
             <StatCard title="MAU" value={activeUsers.data.mau} />
           </div>
         )}
       </QuerySection>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
         <QuerySection
           isPending={trend.isPending}
           error={trend.error}
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           {activeUsers.data && <DauChart data={activeUsers.data.trend} />}
         </QuerySection>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
         <QuerySection
           isPending={demographics.isPending}
           error={demographics.error}
@@ -121,7 +121,7 @@ export default function DashboardPage() {
           )}
         </QuerySection>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
         <QuerySection
           isPending={recent.isPending}
           error={recent.error}

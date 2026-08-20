@@ -35,7 +35,7 @@ type Props = {
 
 export function SuspensionFilters({ value, onChange }: Props) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <FilterSelect
         items={statusItems}
         value={value.status}

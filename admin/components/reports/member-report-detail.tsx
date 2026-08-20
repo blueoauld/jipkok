@@ -106,8 +106,8 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
         </div>
       </PageHeader>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 flex flex-col gap-6">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
+        <div className="flex flex-col gap-4 md:gap-6 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>신고 정보</CardTitle>
@@ -183,7 +183,7 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
           )}
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 md:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>피신고자</CardTitle>

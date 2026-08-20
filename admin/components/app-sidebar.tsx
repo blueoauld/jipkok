@@ -24,10 +24,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar
-      collapsible="none"
-      className="sticky top-0 h-svh shrink-0 border-r"
-    >
+    <Sidebar collapsible="offcanvas">
       <SidebarHeader className="px-4 py-3">
         <Link href="/" className="text-base font-semibold tracking-tight">
           집콕 어드민
