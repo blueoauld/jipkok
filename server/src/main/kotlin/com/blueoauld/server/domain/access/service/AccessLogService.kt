@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.access.service
 
 import com.blueoauld.server.domain.access.dto.AccessInfo
+import com.blueoauld.server.domain.access.entity.AccessLog
 import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.global.time.today
@@ -24,6 +25,7 @@ class AccessLogService(
             deviceName = access.deviceName,
             ipAddress = access.ipAddress,
             accessedOn = clock.today(),
+            appVersion = access.appVersion?.take(AccessLog.APP_VERSION_MAX_LENGTH),
             now = clock.instant(),
         )
     }

@@ -22,7 +22,12 @@ class MemberHeartbeatService(
 ) {
 
     @Transactional
-    fun heartbeat(memberId: Long, request: HeartbeatRequest, ipAddress: String): PointRewardResponse {
+    fun heartbeat(
+        memberId: Long,
+        request: HeartbeatRequest,
+        ipAddress: String,
+        appVersion: String?,
+    ): PointRewardResponse {
         val member = memberRepository.findById(memberId).orElseThrow {
             BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         }
@@ -37,7 +42,7 @@ class MemberHeartbeatService(
 
         val platform = request.platform ?: throw BusinessException(ErrorCode.INVALID_REQUEST)
 
-        val access = AccessInfo(platform, request.deviceName, ipAddress)
+        val access = AccessInfo(platform, request.deviceName, ipAddress, appVersion)
 
         accessLogService.record(member, access)
 

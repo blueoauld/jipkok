@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.report.repository
 
+import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.report.entity.Report
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -14,4 +15,19 @@ interface ReportRepository : JpaRepository<Report, Long> {
     fun findIdsCreatedBefore(@Param("threshold") threshold: Instant): List<Long>
 
     fun deleteAllByIdIn(ids: List<Long>)
+
+    fun countByHandledAtIsNull(): Long
+
+    fun findTop5ByOrderByIdDesc(): List<Report>
+
+    @Query(
+        value = """
+        select cast(created_at at time zone 'Asia/Seoul' as date) as day, count(*) as count
+        from report
+        where created_at >= :start
+        group by day
+        """,
+        nativeQuery = true,
+    )
+    fun countDailyCreatedSince(@Param("start") start: Instant): List<DailyCount>
 }

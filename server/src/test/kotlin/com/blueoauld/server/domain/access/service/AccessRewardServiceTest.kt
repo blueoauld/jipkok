@@ -96,6 +96,6 @@ class AccessRewardServiceTest {
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:00Z")
         private val TODAY: LocalDate = LocalDate.of(2026, 8, 3)
 
-        private val ACCESS = AccessInfo(DevicePlatform.IOS, DEVICE_NAME, IP_ADDRESS)
+        private val ACCESS = AccessInfo(DevicePlatform.IOS, DEVICE_NAME, IP_ADDRESS, null)
     }
 }

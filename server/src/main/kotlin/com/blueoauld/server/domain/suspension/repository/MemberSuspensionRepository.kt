@@ -67,4 +67,15 @@ interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
     fun findIdsExpiredBefore(@Param("threshold") threshold: Instant): List<Long>
 
     fun deleteAllByIdIn(ids: List<Long>)
+
+    @Query(
+        """
+        select count(distinct s.memberId)
+        from MemberSuspension s
+        where s.releasedAt is null and (s.expiresAt is null or s.expiresAt > :now)
+        """,
+    )
+    fun countSuspendedMembers(@Param("now") now: Instant): Long
+
+    fun findTop5ByOrderByIdDesc(): List<MemberSuspension>
 }

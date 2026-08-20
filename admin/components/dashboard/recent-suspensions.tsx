@@ -59,8 +59,8 @@ export function RecentSuspensions({ suspensions }: Props) {
                   {suspensionReasonLabels[suspension.reason]}
                 </TableCell>
                 <TableCell className="text-right tabular-nums text-muted-foreground">
-                  {suspension.endsAt
-                    ? formatDateTime(suspension.endsAt)
+                  {suspension.expiresAt
+                    ? formatDateTime(suspension.expiresAt)
                     : "영구"}
                 </TableCell>
               </TableRow>

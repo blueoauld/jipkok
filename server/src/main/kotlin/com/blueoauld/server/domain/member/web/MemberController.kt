@@ -25,6 +25,7 @@ import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.response.ScrollResponse
 import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
+import com.blueoauld.server.global.web.RequestLoggingFilter
 import com.blueoauld.server.global.web.clientIp
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -175,8 +177,10 @@ class MemberController(
     fun heartbeat(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: HeartbeatRequest,
+        @RequestHeader(RequestLoggingFilter.APP_VERSION_HEADER, required = false) appVersion: String?,
         servletRequest: HttpServletRequest,
-    ): PointRewardResponse = memberHeartbeatService.heartbeat(memberId, request, servletRequest.clientIp())
+    ): PointRewardResponse =
+        memberHeartbeatService.heartbeat(memberId, request, servletRequest.clientIp(), appVersion)
 
     companion object {
 

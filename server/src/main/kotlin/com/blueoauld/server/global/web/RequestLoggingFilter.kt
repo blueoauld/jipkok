@@ -64,7 +64,7 @@ class RequestLoggingFilter : OncePerRequestFilter() {
 
         const val REQUEST_ID_HEADER = "X-Request-Id"
 
-        private const val APP_VERSION_HEADER = "X-App-Version"
+        const val APP_VERSION_HEADER = "X-App-Version"
         private const val PLATFORM_HEADER = "X-Platform"
 
         private const val API_PATH_PREFIX = "/api/"

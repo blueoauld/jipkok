@@ -7,4 +7,5 @@ data class AccessInfo(
     val platform: DevicePlatform,
     val deviceName: String?,
     val ipAddress: String,
+    val appVersion: String?,
 )

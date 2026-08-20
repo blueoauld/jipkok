@@ -46,10 +46,18 @@ class AccessLog(
 
     @Column(name = "accessed_on", nullable = false, updatable = false)
     val accessedOn: LocalDate,
+
+    @Column(name = "app_version", length = APP_VERSION_MAX_LENGTH, updatable = false)
+    val appVersion: String? = null,
 ) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0
+
+    companion object {
+
+        const val APP_VERSION_MAX_LENGTH = 20
+    }
 }

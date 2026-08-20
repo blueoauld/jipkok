@@ -1,3 +1,17 @@
+import type { components } from "@/lib/api/schema";
+
+type Schemas = components["schemas"];
+
+export type DashboardSummary = Schemas["DashboardSummaryResponse"];
+export type TrendPoint = Schemas["TrendPointResponse"];
+export type ActiveUsers = Schemas["ActiveUsersResponse"];
+export type DauPoint = Schemas["DauPointResponse"];
+export type Demographics = Schemas["DemographicsResponse"];
+export type AccessEnvironment = Schemas["AccessEnvironmentResponse"];
+export type RecentActivity = Schemas["RecentActivityResponse"];
+export type RecentReport = Schemas["RecentReportResponse"];
+export type RecentSuspension = Schemas["RecentSuspensionResponse"];
+
 export type ReportType = "PROFILE" | "CHAT" | "FEED";
 
 export type ReportReason =
@@ -11,39 +25,6 @@ export type ReportReason =
 export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
-
-export type DashboardSummary = {
-  pendingMemberReports: number;
-  suspendedMembers: number;
-  todaySignups: number;
-  todayWithdrawals: number;
-};
-
-export type TrendPoint = {
-  date: string;
-  signups: number;
-  withdrawals: number;
-  reports: number;
-};
-
-export type RecentReport = {
-  id: number;
-  type: ReportType;
-  reason: ReportReason;
-  reportedMemberId: number;
-  reportedNickname: string;
-  createdAt: string;
-};
-
-export type RecentSuspension = {
-  id: number;
-  memberId: number;
-  nickname: string;
-  type: SuspensionType;
-  reason: SuspensionReason;
-  endsAt: string | null;
-  createdAt: string;
-};
 
 export type MemberReportType = Exclude<ReportType, "FEED">;
 
@@ -169,32 +150,4 @@ export type MemberDetail = {
   receivedReports: MemberReport[];
 };
 
-export type ActiveUsers = {
-  dau: number;
-  wau: number;
-  mau: number;
-};
-
-export type DauPoint = {
-  date: string;
-  dau: number;
-};
-
-export type AgeGroupCount = {
-  label: string;
-  male: number;
-  female: number;
-};
-
-export type Demographics = {
-  male: number;
-  female: number;
-  ageGroups: AgeGroupCount[];
-};
-
 export type DevicePlatform = "IOS" | "ANDROID";
-
-export type AccessEnvironment = {
-  platforms: Record<DevicePlatform, number>;
-  versions: { version: string; platform: DevicePlatform; count: number }[];
-};

@@ -1,5 +1,8 @@
 package com.blueoauld.server.domain.member.repository
 
+import com.blueoauld.server.domain.admin.dto.DailyCount
+import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
+import com.blueoauld.server.domain.admin.dto.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -92,4 +95,46 @@ interface MemberRepository : JpaRepository<Member, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "delete from member where id in (:memberIds)", nativeQuery = true)
     fun deleteAllByIdIn(@Param("memberIds") memberIds: List<Long>)
+
+    @Query(value = "select count(*) from member where created_at >= :start", nativeQuery = true)
+    fun countCreatedSince(@Param("start") start: Instant): Long
+
+    @Query(value = "select count(*) from member where deleted_at >= :start", nativeQuery = true)
+    fun countDeletedSince(@Param("start") start: Instant): Long
+
+    @Query(
+        value = """
+        select cast(created_at at time zone 'Asia/Seoul' as date) as day, count(*) as count
+        from member
+        where created_at >= :start
+        group by day
+        """,
+        nativeQuery = true,
+    )
+    fun countDailyCreatedSince(@Param("start") start: Instant): List<DailyCount>
+
+    @Query(
+        value = """
+        select cast(deleted_at at time zone 'Asia/Seoul' as date) as day, count(*) as count
+        from member
+        where deleted_at >= :start
+        group by day
+        """,
+        nativeQuery = true,
+    )
+    fun countDailyDeletedSince(@Param("start") start: Instant): List<DailyCount>
+
+    @Query(
+        value = """
+        select gender as gender, birth_year as birthYear, count(*) as count
+        from member
+        where deleted_at is null
+        group by gender, birth_year
+        """,
+        nativeQuery = true,
+    )
+    fun countByGenderAndBirthYear(): List<GenderBirthYearCount>
+
+    @Query(value = "select id as id, nickname as nickname from member where id in (:ids)", nativeQuery = true)
+    fun findNicknamesByIdIn(@Param("ids") ids: Collection<Long>): List<MemberNickname>
 }

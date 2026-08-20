@@ -31,7 +31,7 @@ class AccessLogServiceTest {
         )
 
         // when
-        service.record(member, AccessInfo(DevicePlatform.IOS, "iPhone", "1.2.3.4"))
+        service.record(member, AccessInfo(DevicePlatform.IOS, "iPhone", "1.2.3.4", "1.8.2"))
 
         // then
         verify {
@@ -42,6 +42,7 @@ class AccessLogServiceTest {
                 deviceName = "iPhone",
                 ipAddress = "1.2.3.4",
                 accessedOn = LocalDate.of(2026, 8, 2),
+                appVersion = "1.8.2",
                 now = NOW,
             )
         }

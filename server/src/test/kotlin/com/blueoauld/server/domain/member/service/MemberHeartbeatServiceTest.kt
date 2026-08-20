@@ -42,7 +42,7 @@ class MemberHeartbeatServiceTest {
         stubMember(member)
 
         // when
-        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
+        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS, APP_VERSION)
 
         // then
         assertThat(member.latitude).isEqualTo(37.5665)
@@ -59,7 +59,7 @@ class MemberHeartbeatServiceTest {
         stubMember(member)
 
         // when
-        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(), IP_ADDRESS)
+        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(), IP_ADDRESS, APP_VERSION)
 
         // then
         assertThat(member.latitude).isNull()
@@ -75,7 +75,7 @@ class MemberHeartbeatServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(latitude = 37.5665), IP_ADDRESS)
+            memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(latitude = 37.5665), IP_ADDRESS, APP_VERSION)
         }
 
         // then
@@ -90,7 +90,7 @@ class MemberHeartbeatServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
+            memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS, APP_VERSION)
         }
 
         // then
@@ -104,7 +104,7 @@ class MemberHeartbeatServiceTest {
         stubMember(member)
 
         // when
-        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS)
+        memberHeartbeatService.heartbeat(MEMBER_ID, heartbeat(37.5665, 126.9780), IP_ADDRESS, APP_VERSION)
 
         // then
         verify { accessLogService.record(member, any()) }
@@ -129,6 +129,7 @@ class MemberHeartbeatServiceTest {
     companion object {
 
         private const val IP_ADDRESS = "203.0.113.7"
+        private const val APP_VERSION = "1.8.2"
         private const val PHONE_NUMBER = "01012345678"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val MEMBER_ID = 0L
