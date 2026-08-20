@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { PendingButton } from "@/components/pending-button";
 import { releaseSuspension } from "@/lib/api/suspensions";
 import type { SuspensionType } from "@/lib/types";
 
@@ -23,13 +23,13 @@ export function ReleaseButton({ memberId, type }: Props) {
   });
 
   return (
-    <Button
+    <PendingButton
       variant="outline"
       size="sm"
-      disabled={mutation.isPending}
+      pending={mutation.isPending}
       onClick={() => mutation.mutate()}
     >
-      {mutation.isPending ? "해제 중" : "해제"}
-    </Button>
+      해제
+    </PendingButton>
   );
 }

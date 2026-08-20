@@ -30,7 +30,6 @@ export function DeletePostDialog({ postId, authorNickname, disabled }: Props) {
         title="피드 삭제"
         description={`${authorNickname}의 피드 #${postId}을 삭제합니다. 되돌릴 수 없습니다.`}
         confirmLabel="삭제"
-        pendingLabel="삭제 중"
         errorFallback="삭제하지 못했습니다."
         invalidateKeys={[["feed-reports"]]}
         action={() => deleteFeedPost(postId)}

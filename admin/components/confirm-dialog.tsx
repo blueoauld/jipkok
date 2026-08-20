@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { PendingButton } from "@/components/pending-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +20,6 @@ type Props = {
   title: string;
   description: string;
   confirmLabel: string;
-  pendingLabel: string;
   errorFallback: string;
   invalidateKeys: string[][];
   action: () => Promise<unknown>;
@@ -32,7 +32,6 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  pendingLabel,
   errorFallback,
   invalidateKeys,
   action,
@@ -77,13 +76,13 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={() => change(false)}>
             취소
           </Button>
-          <Button
+          <PendingButton
             variant="destructive"
-            disabled={mutation.isPending}
+            pending={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? pendingLabel : confirmLabel}
-          </Button>
+            {confirmLabel}
+          </PendingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

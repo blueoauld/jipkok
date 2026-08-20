@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
 import { StatusText } from "@/components/status-text";
 import { ChatTranscript } from "@/components/reports/chat-transcript";
+import { PendingButton } from "@/components/pending-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime, formatPhoneNumber } from "@/lib/format";
@@ -88,12 +89,13 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
       >
         <div className="flex items-center gap-2">
           <SuspendDialog memberId={reported.id} nickname={reported.nickname} />
-          <Button
-            disabled={report.handledAt != null || handling}
+          <PendingButton
+            pending={handling}
+            disabled={report.handledAt != null}
             onClick={onHandle}
           >
-            {report.handledAt ? "처리됨" : handling ? "처리 중" : "처리 완료"}
-          </Button>
+            {report.handledAt ? "처리됨" : "처리 완료"}
+          </PendingButton>
         </div>
       </PageHeader>
 

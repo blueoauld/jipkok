@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FilterSelect } from "@/components/filter-select";
+import { PendingButton } from "@/components/pending-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -115,13 +116,13 @@ export function SuspendDialog({ memberId, nickname, disabled }: Props) {
           <Button variant="outline" onClick={() => change(false)}>
             취소
           </Button>
-          <Button
+          <PendingButton
             variant="destructive"
-            disabled={mutation.isPending}
+            pending={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? "정지 중" : "정지"}
-          </Button>
+            정지
+          </PendingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

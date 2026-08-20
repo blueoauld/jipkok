@@ -147,7 +147,6 @@ function Loaded({ member }: { member: MemberDetailData }) {
             : ""
         }
         confirmLabel="초기화"
-        pendingLabel="초기화 중"
         errorFallback="초기화하지 못했습니다."
         invalidateKeys={[["members"]]}
         action={() => resetMemberProfile(member.id, resetTarget!)}
@@ -159,7 +158,6 @@ function Loaded({ member }: { member: MemberDetailData }) {
         title="회원 탈퇴"
         description={`${member.nickname} #${member.id}을 탈퇴 처리합니다. 되돌릴 수 없습니다.`}
         confirmLabel="탈퇴"
-        pendingLabel="탈퇴 중"
         errorFallback="탈퇴 처리하지 못했습니다."
         invalidateKeys={[["members"], ["dashboard"]]}
         action={() => withdrawMember(member.id)}

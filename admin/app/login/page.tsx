@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { PendingButton } from "@/components/pending-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { login } from "@/lib/api/auth";
@@ -67,12 +67,13 @@ export default function LoginPage() {
             {error && (
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             )}
-            <Button
+            <PendingButton
               type="submit"
-              disabled={submitting || !phoneNumber || !password}
+              pending={submitting}
+              disabled={!phoneNumber || !password}
             >
-              {submitting ? "로그인 중" : "로그인"}
-            </Button>
+              로그인
+            </PendingButton>
           </form>
         </CardContent>
       </Card>
