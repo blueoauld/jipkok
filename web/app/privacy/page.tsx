@@ -22,6 +22,7 @@ export default function Privacy() {
           head={["항목", "이용 목적", "수집 시점"]}
           rows={[
             ["휴대폰 번호", "가입, 로그인, 본인 확인, 중복 보상 방지", "가입"],
+            ["비밀번호", "로그인 (되돌릴 수 없는 방식으로 암호화해 보관)", "가입"],
             ["닉네임, 성별, 출생연도", "프로필 표시, 연령 확인", "가입"],
             ["위치(위도, 경도)", "가까운 회원 목록 제공", "앱 사용 중"],
             ["프로필 사진, 비밀 사진", "프로필 표시", "프로필 등록"],
@@ -161,7 +162,16 @@ export default function Privacy() {
           head={["구분", "내용"]}
           rows={[
             ["책임자", "김수환"],
-            ["문의", "hello@jipkok.app"],
+            [
+              "문의",
+              <a
+                key="email"
+                href="mailto:hello@jipkok.app"
+                className="underline underline-offset-4"
+              >
+                hello@jipkok.app
+              </a>,
+            ],
           ]}
         />
       </Section>
@@ -171,21 +181,21 @@ export default function Privacy() {
           개인정보와 관련해 도움이 필요하시면 아래 기관에 문의하실 수 있습니다.
         </p>
         <ul>
-          <li>개인정보 침해신고센터 (privacy.kisa.or.kr, 국번 없이 118)</li>
-          <li>개인정보 분쟁조정위원회 (kopico.go.kr, 1833-6972)</li>
-          <li>대검찰청 사이버수사과 (spo.go.kr, 국번 없이 1301)</li>
-          <li>경찰청 사이버수사국 (ecrm.police.go.kr, 국번 없이 182)</li>
+          <li>개인정보 침해신고센터 (<a href="https://privacy.kisa.or.kr" className="underline underline-offset-4">privacy.kisa.or.kr</a>, 국번 없이 118)</li>
+          <li>개인정보 분쟁조정위원회 (<a href="https://kopico.go.kr" className="underline underline-offset-4">kopico.go.kr</a>, 1833-6972)</li>
+          <li>대검찰청 사이버수사과 (<a href="https://spo.go.kr" className="underline underline-offset-4">spo.go.kr</a>, 국번 없이 1301)</li>
+          <li>경찰청 사이버수사국 (<a href="https://ecrm.police.go.kr" className="underline underline-offset-4">ecrm.police.go.kr</a>, 국번 없이 182)</li>
         </ul>
         <p>
           아동과 청소년 관련 피해나 디지털 성범죄는 아래 기관에서 상담과 삭제
           지원을 받으실 수 있습니다.
         </p>
         <ul>
-          <li>디지털성범죄피해자지원센터 (d4u.stop.or.kr, 02-735-8994)</li>
-          <li>여성긴급전화 (women1366.kr, 국번 없이 1366)</li>
-          <li>청소년상담전화 (1388.go.kr, 국번 없이 1388)</li>
+          <li>디지털성범죄피해자지원센터 (<a href="https://d4u.stop.or.kr" className="underline underline-offset-4">d4u.stop.or.kr</a>, 02-735-8994)</li>
+          <li>여성긴급전화 (<a href="https://women1366.kr" className="underline underline-offset-4">women1366.kr</a>, 국번 없이 1366)</li>
+          <li>청소년상담전화 (<a href="https://1388.go.kr" className="underline underline-offset-4">1388.go.kr</a>, 국번 없이 1388)</li>
           <li>
-            불법, 유해정보 신고 (방송통신심의위원회 kocsc.or.kr, 국번 없이 1377)
+            불법, 유해정보 신고 (방송통신심의위원회 <a href="https://kocsc.or.kr" className="underline underline-offset-4">kocsc.or.kr</a>, 국번 없이 1377)
           </li>
         </ul>
       </Section>

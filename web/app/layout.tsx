@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jipkok.app"),
   title: "집콕",
   description:
     "집콕은 가까운 동네 친구를 만드는 채팅 커뮤니티입니다. 시간대별 사진 피드로 일상을 나누고, 쪽지로 가볍게 대화를 시작해 보세요.",

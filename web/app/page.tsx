@@ -15,7 +15,6 @@ export default function Home() {
             alt=""
             width={56}
             height={56}
-            priority
             className="size-14"
           />
           <h1 className="text-3xl font-bold tracking-tight text-accent">
@@ -31,8 +30,8 @@ export default function Home() {
         <Image
           src="/mock.png"
           alt="집콕 앱 화면"
-          width={806}
-          height={1600}
+          width={659}
+          height={1300}
           priority
           className="h-[46vh] min-h-64 w-auto"
         />
@@ -41,7 +40,7 @@ export default function Home() {
           {STORES.map((store) => (
             <span
               key={store}
-              className="retro-panel flex w-44 items-center justify-center bg-disabled px-4 py-3 text-sm font-bold text-muted"
+              className="retro-panel flex w-44 items-center justify-center bg-disabled px-4 py-3 text-sm font-bold text-ink/70"
             >
               {store}
             </span>
@@ -55,11 +54,11 @@ export default function Home() {
         </a>
         <p className="flex flex-wrap items-center justify-center gap-x-2">
           <span>© 2026 JIPKOK</span>
-          <span>|</span>
+          <span aria-hidden="true">|</span>
           <Link href="/privacy" className="hover:underline">
             개인정보 처리방침
           </Link>
-          <span>|</span>
+          <span aria-hidden="true">|</span>
           <Link href="/terms" className="hover:underline">
             서비스 이용약관
           </Link>
