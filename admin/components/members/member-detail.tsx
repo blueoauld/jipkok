@@ -127,7 +127,7 @@ function Loaded({ member }: { member: MemberDetailData }) {
           />
           <Button
             variant="destructive"
-            disabled={member.withdrawnAt !== null}
+            disabled={member.withdrawnAt != null}
             onClick={() => setWithdrawOpen(true)}
           >
             탈퇴
