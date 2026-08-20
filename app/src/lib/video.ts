@@ -86,6 +86,10 @@ export async function compressVideo(
         maxSize: COMPRESS_MAX_SIZE,
         getCancellationId: (id) => {
           cancellationId = id;
+
+          if (signal.aborted) {
+            VideoCompressor.cancelCompression(id);
+          }
         },
       },
       onProgress,

@@ -58,6 +58,7 @@ const HIGHLIGHT_MILLIS = 800;
 export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
+  const validRoom = Number.isInteger(roomId) && roomId > 0;
   const space = getTokens().space;
 
   const keyboardOffset = useSafeAreaInsets().bottom;
@@ -103,7 +104,7 @@ export default function ChatRoomScreen() {
     data: room,
     error: roomError,
     refetch,
-  } = useChatRoom(roomId, !partnerLeft);
+  } = useChatRoom(roomId, validRoom && !partnerLeft);
   const restoreDraft = useCallback(
     (content: string, replyTo: ReplyMessageResponse | null) => {
       inputBarRef.current?.restore(content);
@@ -127,7 +128,7 @@ export default function ChatRoomScreen() {
     onError: showApiError,
   });
   const actions = useMessageActions(roomId, myMemberId, handleRoomError);
-  const chatMessages = useChatMessages(roomId, !partnerLeft);
+  const chatMessages = useChatMessages(roomId, validRoom && !partnerLeft);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 

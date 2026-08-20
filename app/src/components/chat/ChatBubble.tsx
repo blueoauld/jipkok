@@ -105,7 +105,7 @@ function VideoMessage({
   const theme = useTheme();
   const upload = useUploadState(message.clientMessageId);
   const cacheKey = message.clientMessageId ?? String(message.messageId);
-  const busy = upload !== undefined;
+  const busy = upload !== undefined || isPending(message);
 
   return (
     <YStack
@@ -129,6 +129,10 @@ function VideoMessage({
 
       {upload ? (
         <UploadOverlay upload={upload} showPhase />
+      ) : isPending(message) ? (
+        <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
+          <Spinner size="small" color="white" />
+        </YStack>
       ) : (
         <>
           <YStack fullscreen items="center" justify="center">

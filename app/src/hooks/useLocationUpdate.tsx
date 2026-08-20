@@ -16,12 +16,20 @@ const FAILED_MESSAGE =
 const LOCATION_TIMEOUT = 10_000;
 
 async function resolveCoords() {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
   const current = await Promise.race([
     Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
     new Promise<null>((resolve) => {
-      setTimeout(() => resolve(null), LOCATION_TIMEOUT);
+      timer = setTimeout(() => resolve(null), LOCATION_TIMEOUT);
     }),
-  ]).catch(() => null);
+  ])
+    .catch(() => null)
+    .finally(() => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    });
 
   if (current) {
     return current.coords;

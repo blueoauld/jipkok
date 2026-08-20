@@ -15,6 +15,8 @@ import {
 } from "@/lib/video";
 
 const VIDEO_URL_FAILED_MESSAGE = "동영상을 불러오지 못했습니다.";
+const UNKNOWN_DURATION_MESSAGE =
+  "재생 시간을 확인할 수 없는 동영상은 보낼 수 없습니다.";
 
 export function useChatMedia({
   roomId,
@@ -60,7 +62,10 @@ export function useChatMedia({
       const assets = await pickChatMedia(MAX_PHOTOS);
       const photos = assets.filter((asset) => asset.type !== "video");
       const videos = assets.filter((asset) => asset.type === "video");
-      const sendable = videos.filter((asset) => !isVideoTooLong(asset));
+      const sendable = videos.filter(
+        (asset) => asset.duration != null && !isVideoTooLong(asset),
+      );
+      const unknownDuration = videos.filter((asset) => asset.duration == null);
 
       // 상한에 걸리는 시도가 얼마나 되는지 봐서 멀티파트 업로드로 늘릴지 판단한다.
       videos.filter(isVideoTooLong).forEach((asset) =>
@@ -69,7 +74,9 @@ export function useChatMedia({
         }),
       );
 
-      if (sendable.length < videos.length) {
+      if (unknownDuration.length > 0) {
+        showToast("warning", UNKNOWN_DURATION_MESSAGE);
+      } else if (sendable.length < videos.length) {
         showToast("warning", VIDEO_TOO_LONG_MESSAGE);
       }
 

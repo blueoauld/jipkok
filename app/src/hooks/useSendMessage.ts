@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Platform } from "react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
@@ -47,13 +47,14 @@ function createTemp(
     Partial<
       Pick<ChatMessageResponse, "videoUrl" | "thumbnailUrl" | "durationSeconds">
     >,
+  clientMessageId: string = createClientMessageId(),
 ): ChatMessageResponse {
   return {
     messageId: --lastTempId,
     roomId: 0,
     senderId,
     createdAt: new Date().toISOString(),
-    clientMessageId: createClientMessageId(),
+    clientMessageId,
     reactions: [],
     ...message,
   };
@@ -100,6 +101,10 @@ export function useSendMessage(
     queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
 
   const [mediaBatches, setMediaBatches] = useState(0);
+  const failedText = useRef<{
+    clientMessageId: string;
+    content: string;
+  } | null>(null);
   const uploads = useUploadStore.getState;
 
   // work가 중간 결과(변환본, 압축본)를 기억해 두면 재전송 때 그만큼 건너뛴다.
@@ -177,6 +182,8 @@ export function useSendMessage(
         signal,
       );
 
+      report("uploading", 0);
+
       const keys = await uploadChatVideo(
         compressedUri,
         thumbnailUri,
@@ -229,7 +236,15 @@ export function useSendMessage(
 
     try {
       for (const asset of assets) {
-        const thumbnailUri = await createVideoThumbnail(asset.uri);
+        let thumbnailUri: string;
+
+        try {
+          thumbnailUri = await createVideoThumbnail(asset.uri);
+        } catch (error) {
+          onError(describeUploadError(error));
+          continue;
+        }
+
         const temp = createTemp(senderId, {
           type: "VIDEO",
           content: null,
@@ -243,8 +258,6 @@ export function useSendMessage(
         await prepend([temp]);
         await sendVideo(asset, temp, thumbnailUri);
       }
-    } catch (error) {
-      onError(describeUploadError(error));
     } finally {
       setMediaBatches((count) => count - 1);
     }
@@ -269,6 +282,9 @@ export function useSendMessage(
     onMutate: ({ temp }) => prepend([temp]),
     onSuccess: (message, { temp }) => replace(temp, message),
     onError: (error, { content, temp }) => {
+      if (temp.clientMessageId) {
+        failedText.current = { clientMessageId: temp.clientMessageId, content };
+      }
       discard([temp.messageId]);
       onTextFailed(content, temp.replyMessage);
       onError(error);
@@ -277,17 +293,28 @@ export function useSendMessage(
   });
 
   return {
-    sendText: (content: string, replyTo: ReplyMessageResponse | null = null) =>
+    sendText: (
+      content: string,
+      replyTo: ReplyMessageResponse | null = null,
+    ) => {
+      const failed = failedText.current;
+      failedText.current = null;
+
       sendText.mutate({
         content,
         replyToMessageId: replyTo?.messageId ?? null,
-        temp: createTemp(senderId, {
-          type: "TEXT",
-          content,
-          imageUrl: null,
-          replyMessage: replyTo,
-        }),
-      }),
+        temp: createTemp(
+          senderId,
+          {
+            type: "TEXT",
+            content,
+            imageUrl: null,
+            replyMessage: replyTo,
+          },
+          failed?.content === content ? failed.clientMessageId : undefined,
+        ),
+      });
+    },
 
     sendPhotos: (assets: ImagePickerAsset[]) => {
       void sendPhotos(assets);

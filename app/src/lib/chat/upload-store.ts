@@ -14,6 +14,7 @@ type UploadStore = {
   set: (id: string, state: UploadState) => void;
   progress: (id: string, phase: UploadPhase, progress: number) => void;
   remove: (id: string) => void;
+  clear: () => void;
 };
 
 export const useUploadStore = create<UploadStore>((set) => ({
@@ -39,6 +40,7 @@ export const useUploadStore = create<UploadStore>((set) => ({
 
       return { uploads };
     }),
+  clear: () => set({ uploads: {} }),
 }));
 
 export function useUploadState(clientMessageId: string | null | undefined) {

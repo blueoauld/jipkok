@@ -22,12 +22,16 @@ type RewardOutcome = "rewarded" | "pending" | "unknown";
 
 function delay(millis: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(resolve, millis);
-
-    signal.addEventListener("abort", () => {
+    const onAbort = () => {
       clearTimeout(timer);
       reject(new Error("aborted"));
-    });
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, millis);
+
+    signal.addEventListener("abort", onAbort, { once: true });
   });
 }
 
