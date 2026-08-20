@@ -60,11 +60,9 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 
 type FeedFilterState = {
   sort: FeedSort;
-  gender: Gender | null;
   // null이면 오늘. 날짜를 박아 두면 자정이 지나도 어제에 머문다.
   date: string | null;
   setSort: (sort: FeedSort) => void;
-  setGender: (gender: Gender | null) => void;
   setDate: (date: Date) => void;
 };
 
@@ -72,27 +70,21 @@ export const useFeedFilterStore = create<FeedFilterState>()(
   persist(
     (set) => ({
       sort: DEFAULT_FEED_SORT,
-      gender: null,
       date: null,
       setSort: (sort) => set({ sort }),
-      setGender: (gender) => set({ gender }),
       setDate: (date) =>
         set({ date: isToday(date) ? null : toDateParam(date) }),
     }),
     {
       name: FEED_STORAGE_KEY,
       storage,
-      version: 1,
+      version: 2,
       migrate: (persisted) => {
-        const previous = persisted as
-          { sort?: FeedSort; gender?: Gender | null } | undefined;
+        const previous = persisted as { sort?: FeedSort } | undefined;
 
-        return {
-          sort: previous?.sort ?? DEFAULT_FEED_SORT,
-          gender: previous?.gender ?? null,
-        };
+        return { sort: previous?.sort ?? DEFAULT_FEED_SORT };
       },
-      partialize: (state) => ({ sort: state.sort, gender: state.gender }),
+      partialize: (state) => ({ sort: state.sort }),
     },
   ),
 );

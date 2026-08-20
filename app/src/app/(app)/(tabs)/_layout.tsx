@@ -57,7 +57,7 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <ChatHeaderRight />,
   },
-  { name: "feed", title: "피드", icon: FireIcon },
+  { name: "feed", title: "라운지", icon: FireIcon },
   { name: "rank", title: "랭킹", icon: TrophyIcon },
   { name: "setting", title: "설정", icon: GearIcon },
 ];

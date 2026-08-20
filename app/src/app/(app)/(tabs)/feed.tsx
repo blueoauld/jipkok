@@ -42,16 +42,15 @@ import {
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
 import { useFeedFilterStore } from "@/lib/filter/store";
-import {
-  GENDER_FILTER_VALUES,
-  GENDER_FILTERS,
-  genderLabel,
-} from "@/lib/member";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { mapPages } from "@/lib/paging";
 import { uploadFeedPhoto } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
+
+// 임시: 게시판 전환 UI 시안. 고민 게시판 구현 전까지 자리만 잡아둔다.
+const BOARDS = ["피드", "고민"] as const;
+type Board = (typeof BOARDS)[number];
 
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];
@@ -59,30 +58,40 @@ type Sort = (typeof SORTS)[number];
 const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
+const WORRY_SORTS = ["최신", "공감"] as const;
+type WorrySort = (typeof WORRY_SORTS)[number];
+
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
+const WORRY_COMPOSE_PENDING_MESSAGE = "고민 작성은 준비 중입니다.";
 
 const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
 
 export default function FeedScreen() {
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
+  const [board, setBoard] = useState<Board>("피드");
   const [composeOpen, setComposeOpen] = useState(false);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
-  const [genderOpen, setGenderOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [worrySort, setWorrySort] = useState<WorrySort>("최신");
+  const [worryFilterOpen, setWorryFilterOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const listRef = useRef<FlatList<FeedPostResponse>>(null);
   const scrollTop = useScrollToTopVisible();
   const openCompose = useCallback(() => setComposeOpen(true), []);
-  const openGender = useCallback(() => setGenderOpen(true), []);
+  const openFilter = useCallback(() => setFilterOpen(true), []);
+  const openWorryFilter = useCallback(() => setWorryFilterOpen(true), []);
+  const openWorryCompose = useCallback(
+    () => showToast("info", WORRY_COMPOSE_PENDING_MESSAGE),
+    [],
+  );
 
   const sort = useFeedFilterStore((state) => state.sort);
   const setSort = useFeedFilterStore((state) => state.setSort);
-  const gender = useFeedFilterStore((state) => state.gender);
-  const setGender = useFeedFilterStore((state) => state.setGender);
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
   const today = toDateParam(new Date(useNow()));
@@ -90,11 +99,11 @@ export default function FeedScreen() {
     () => fromDateParam(storedDate ?? today),
     [storedDate, today],
   );
-  const feed = useFeedPosts(date, gender, sort);
+  const feed = useFeedPosts(date, sort);
   const { posts, error, refetch: refetchFeed } = feed;
   const paged = usePagedList(feed);
 
-  const queryKey = feedPostsKey(date, gender, sort);
+  const queryKey = feedPostsKey(date, sort);
   const invalidate = useCallback(
     () => queryClient.invalidateQueries({ queryKey: FEEDS_KEY }),
     [queryClient],
@@ -219,12 +228,18 @@ export default function FeedScreen() {
       headerLeft: () => <FeedNotificationButton />,
       headerRight: () => (
         <XStack>
-          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openGender} />
-          <HeaderIconButton icon={NotePencilIcon} onPress={openCompose} />
+          <HeaderIconButton
+            icon={FunnelSimpleIcon}
+            onPress={board === "피드" ? openFilter : openWorryFilter}
+          />
+          <HeaderIconButton
+            icon={NotePencilIcon}
+            onPress={board === "피드" ? openCompose : openWorryCompose}
+          />
         </XStack>
       ),
     }),
-    [openCompose, openGender],
+    [board, openCompose, openFilter, openWorryCompose, openWorryFilter],
   );
 
   return (
@@ -233,16 +248,15 @@ export default function FeedScreen() {
 
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={SORTS}
-          value={SORT_LABELS[sort]}
-          onChange={(label) => {
-            setSort(SORT_VALUES[label]);
-            scrollToTop();
-          }}
+          values={BOARDS}
+          value={board}
+          onChange={setBoard}
         />
       </YStack>
 
-      {posts ? (
+      {board === "고민" ? (
+        <ListEmpty>익명 고민 게시판이 여기에 들어갑니다.</ListEmpty>
+      ) : posts ? (
         <FlatList
           {...paged}
           ref={listRef}
@@ -274,17 +288,19 @@ export default function FeedScreen() {
       )}
 
       <ScrollToTopButton
-        visible={scrollTop.visible}
+        visible={board === "피드" && scrollTop.visible}
         onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
       />
 
-      <FeedDatePicker
-        date={date}
-        onChange={(selected) => {
-          setDate(selected);
-          scrollToTop();
-        }}
-      />
+      {board === "피드" && (
+        <FeedDatePicker
+          date={date}
+          onChange={(selected) => {
+            setDate(selected);
+            scrollToTop();
+          }}
+        />
+      )}
 
       <FeedComposeDialog
         open={composeOpen}
@@ -302,15 +318,25 @@ export default function FeedScreen() {
       />
 
       <MenuSheet
-        open={genderOpen}
-        onOpenChange={setGenderOpen}
-        items={GENDER_FILTERS.map((label) => ({
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        items={SORTS.map((label) => ({
           label,
-          selected: label === (gender ? genderLabel(gender) : "전체"),
+          selected: label === SORT_LABELS[sort],
           onPress: () => {
-            setGender(GENDER_FILTER_VALUES[label]);
+            setSort(SORT_VALUES[label]);
             scrollToTop();
           },
+        }))}
+      />
+
+      <MenuSheet
+        open={worryFilterOpen}
+        onOpenChange={setWorryFilterOpen}
+        items={WORRY_SORTS.map((label) => ({
+          label,
+          selected: label === worrySort,
+          onPress: () => setWorrySort(label),
         }))}
       />
 

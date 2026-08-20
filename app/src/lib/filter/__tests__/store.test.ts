@@ -29,17 +29,16 @@ describe("필터 저장 옵션", () => {
 
     expect(
       partialize?.({ ...useFeedFilterStore.getState(), date: "2026-08-01" }),
-    ).toEqual({ sort: "LATEST", gender: null });
+    ).toEqual({ sort: "LATEST" });
   });
 
-  it("옛 피드 필터 저장값에 없는 항목은 기본값으로 채운다", () => {
+  it("옛 피드 필터 저장값에서 정렬만 남기고 없는 항목은 기본값으로 채운다", () => {
     const migrate = useFeedFilterStore.persist.getOptions().migrate;
 
-    expect(migrate?.({ gender: "FEMALE" }, 0)).toEqual({
-      sort: "LATEST",
-      gender: "FEMALE",
+    expect(migrate?.({ sort: "OLDEST", gender: "FEMALE" }, 1)).toEqual({
+      sort: "OLDEST",
     });
-    expect(migrate?.(undefined, 0)).toEqual({ sort: "LATEST", gender: null });
+    expect(migrate?.(undefined, 0)).toEqual({ sort: "LATEST" });
   });
 
   it("회원 필터는 정렬, 성별, 나이 범위를 저장한다", () => {
