@@ -18,6 +18,9 @@ import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Duration
+import java.time.Instant
+import java.util.concurrent.atomic.AtomicReference
 
 @Service
 class AdminMemberService(
@@ -28,6 +31,8 @@ class AdminMemberService(
     private val memberWithdrawService: MemberWithdrawService,
     private val clock: Clock,
 ) {
+
+    private val totalCountCache = AtomicReference<CachedCount?>(null)
 
     @Transactional(readOnly = true)
     fun findMembers(
@@ -60,14 +65,7 @@ class AdminMemberService(
             size = safeSize,
             offset = (safePage - 1) * safeSize,
         )
-        val totalCount = memberAdminRepository.countForAdmin(
-            status = statusName,
-            gender = gender?.name,
-            keywordId = keywordId,
-            phoneLike = phoneLike,
-            nicknameLike = nicknameLike,
-            now = now,
-        )
+        val totalCount = countMembers(statusName, gender?.name, keywordId, phoneLike, nicknameLike, now)
 
         return AdminMemberPageResponse(
             items = rows.map {
@@ -88,6 +86,30 @@ class AdminMemberService(
             size = safeSize,
             totalCount = totalCount,
         )
+    }
+
+    private fun countMembers(
+        status: String?,
+        gender: String?,
+        keywordId: Long?,
+        phoneLike: String?,
+        nicknameLike: String?,
+        now: Instant,
+    ): Long {
+        val filtered = status != null || gender != null || keywordId != null || nicknameLike != null
+
+        if (filtered) {
+            return memberAdminRepository.countForAdmin(status, gender, keywordId, phoneLike, nicknameLike, now)
+        }
+
+        totalCountCache.get()
+            ?.takeIf { it.cachedAt.plus(TOTAL_COUNT_TTL).isAfter(now) }
+            ?.let { return it.count }
+
+        val count = memberAdminRepository.countForAdmin(null, null, null, null, null, now)
+        totalCountCache.set(CachedCount(now, count))
+
+        return count
     }
 
     @Transactional(readOnly = true)
@@ -129,8 +151,12 @@ class AdminMemberService(
         memberWithdrawService.withdraw(memberId)
     }
 
+    private class CachedCount(val cachedAt: Instant, val count: Long)
+
     companion object {
 
         const val MAX_PAGE_SIZE = 100
+
+        private val TOTAL_COUNT_TTL: Duration = Duration.ofMinutes(1)
     }
 }

@@ -60,6 +60,23 @@ class AdminMemberServiceTest {
     }
 
     @Test
+    fun `필터가 없는 총 건수는 캐시한다`() {
+        // given
+        every {
+            memberAdminRepository.findAllForAdmin(null, null, null, null, null, NOW, 20, 0)
+        } returns emptyList()
+        every { memberAdminRepository.countForAdmin(null, null, null, null, null, NOW) } returns 63
+
+        // when
+        adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, 1, 20)
+        val response = adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, 1, 20)
+
+        // then
+        assertThat(response.totalCount).isEqualTo(63)
+        verify(exactly = 1) { memberAdminRepository.countForAdmin(null, null, null, null, null, NOW) }
+    }
+
+    @Test
     fun `문자 검색어는 닉네임 조건으로 넘긴다`() {
         // given
         every {

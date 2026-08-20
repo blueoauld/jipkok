@@ -25,9 +25,14 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
                m.deleted_at as withdrawnAt,
                m.created_at as joinedAt
         from member m
-        where $STATUS $GENDER $KEYWORD
+        join (
+            select m.id
+            from member m
+            where $STATUS $GENDER $KEYWORD
+            order by m.id desc
+            limit :size offset :offset
+        ) page on page.id = m.id
         order by m.id desc
-        limit :size offset :offset
         """,
         nativeQuery = true,
     )
