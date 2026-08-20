@@ -18,11 +18,13 @@ interface AccessLogRepository : JpaRepository<AccessLog, Long> {
         value = """
         insert into access_log (member_id, phone_number, platform, device_name, ip_address, accessed_on, app_version, created_at, updated_at)
         values (:memberId, :phoneNumber, :platform, :deviceName, :ipAddress, :accessedOn, :appVersion, :now, :now)
-        on conflict (member_id, accessed_on) do nothing
+        on conflict (member_id, accessed_on) do update
+        set app_version = coalesce(excluded.app_version, access_log.app_version),
+            updated_at = excluded.updated_at
         """,
         nativeQuery = true,
     )
-    fun insertIfAbsent(
+    fun upsert(
         @Param("memberId") memberId: Long,
         @Param("phoneNumber") phoneNumber: String,
         @Param("platform") platform: String,

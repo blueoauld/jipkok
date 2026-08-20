@@ -35,7 +35,7 @@ class AccessLogServiceTest {
 
         // then
         verify {
-            accessLogRepository.insertIfAbsent(
+            accessLogRepository.upsert(
                 memberId = member.id,
                 phoneNumber = "01012345678",
                 platform = "IOS",

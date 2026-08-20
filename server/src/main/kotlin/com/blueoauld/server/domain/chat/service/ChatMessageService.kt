@@ -96,9 +96,10 @@ class ChatMessageService(
         val room = findRoom(memberId, roomId)
         val message = findMessage(roomId, messageId)
 
-        val reaction = chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)
-            ?.also { it.type = request.type }
-            ?: chatMessageReactionRepository.save(
+        val existing = chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)
+
+        if (existing == null) {
+            chatMessageReactionRepository.save(
                 ChatMessageReaction(
                     roomId = roomId,
                     messageId = message.id,
@@ -106,6 +107,9 @@ class ChatMessageService(
                     type = request.type,
                 ),
             )
+        } else {
+            existing.type = request.type
+        }
         chatMessageReactionRepository.flush()
 
         return publishReactions(room, memberId, message)
@@ -178,6 +182,7 @@ class ChatMessageService(
         ChatMessageType.PHOTO -> ChatMessageResponse.MediaUrls(
             imageUrl = message.objectKey?.let(photoStorage::createSignedViewUrl),
         )
+
         ChatMessageType.VIDEO -> ChatMessageResponse.MediaUrls(
             videoUrl = message.objectKey?.let(photoStorage::createSignedViewUrl),
             thumbnailUrl = message.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
@@ -278,7 +283,7 @@ class ChatMessageService(
         val key = validatePhotoKey(memberId, objectKey)
         val stored = photoStorage.head(key) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
 
-        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == false) {
+        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) != true) {
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
 

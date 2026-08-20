@@ -140,6 +140,20 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `종류를 알 수 없는 파일이 올라와 있으면 보낼 수 없다`() {
+        // given
+        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, null)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 10))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+    }
+
+    @Test
     fun `영상이 아닌 파일이 올라와 있으면 보낼 수 없다`() {
         // given
         every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, "image/jpeg")

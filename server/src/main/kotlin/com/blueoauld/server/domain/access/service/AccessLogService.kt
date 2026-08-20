@@ -18,7 +18,7 @@ class AccessLogService(
 
     @Transactional
     fun record(member: Member, access: AccessInfo) {
-        accessLogRepository.insertIfAbsent(
+        accessLogRepository.upsert(
             memberId = member.id,
             phoneNumber = member.phoneNumber,
             platform = access.platform.name,
