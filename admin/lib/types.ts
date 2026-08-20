@@ -21,6 +21,8 @@ export type MemberDetail = Schemas["AdminMemberDetailResponse"];
 export type Suspension = Schemas["AdminSuspensionResponse"];
 export type SuspensionStatus = Suspension["status"];
 export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];
+export type FeedReport = Schemas["AdminFeedReportResponse"];
+export type FeedReportPage = Schemas["AdminFeedReportPageResponse"];
 export type ReportType = "PROFILE" | "CHAT" | "FEED";
 
 export type ReportReason =
@@ -36,20 +38,6 @@ export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
 export type MemberReportType = Exclude<ReportType, "FEED">;
-
-export type FeedReport = {
-  id: number;
-  reporterId: number;
-  reporterNickname: string;
-  postId: number;
-  authorId: number;
-  authorNickname: string;
-  thumbnailUrl: string | null;
-  caption: string | null;
-  postReportCount: number;
-  postDeletedAt: string | null;
-  createdAt: string;
-};
 
 export type Gender = "MALE" | "FEMALE";
 

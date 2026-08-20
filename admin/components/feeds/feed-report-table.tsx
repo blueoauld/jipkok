@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ImageOff } from "lucide-react";
 import { MemberCell } from "@/components/member-cell";
 import { StatusText } from "@/components/status-text";
-import { Button } from "@/components/ui/button";
+import { DeletePostDialog } from "@/components/feeds/delete-post-dialog";
 import {
   Table,
   TableBody,
@@ -26,7 +26,7 @@ export function FeedReportTable({ reports }: Props) {
         <TableRow>
           <TableHead className="w-16">ID</TableHead>
           <TableHead>신고자</TableHead>
-          <TableHead className="w-24">게시물 ID</TableHead>
+          <TableHead className="w-24">피드 ID</TableHead>
           <TableHead className="w-16">사진</TableHead>
           <TableHead>작성자</TableHead>
           <TableHead>문구</TableHead>
@@ -92,13 +92,11 @@ export function FeedReportTable({ reports }: Props) {
               {formatDateTime(report.createdAt)}
             </TableCell>
             <TableCell className="text-right">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={report.postDeletedAt !== null}
-              >
-                삭제
-              </Button>
+              <DeletePostDialog
+                postId={report.postId}
+                authorNickname={report.authorNickname}
+                disabled={report.postDeletedAt != null}
+              />
             </TableCell>
           </TableRow>
         ))}
