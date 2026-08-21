@@ -19,7 +19,6 @@ import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat";
 import { useChatSelectionStore } from "@/lib/chat/store";
 import {
-  BOTTOM_BAR_HEIGHT,
   bottomBarHeight,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
@@ -28,12 +27,9 @@ import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
 const ICON_SIZE = 30;
-const TAB_ITEM_PADDING = 5;
 const HEADER_EDGE_PADDING = 4;
 
 const BADGE_FONT_SIZE = 11;
-const BADGE_TOP =
-  (BOTTOM_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
 type Tab = {
   name: string;
@@ -175,9 +171,10 @@ export default function TabsLayout() {
             ]}
           />
         ),
+        // 래퍼를 늘리면 배지가 래퍼 끝에 붙어 아이패드처럼 넓은 칸에서 멀어진다.
         tabBarIconStyle: {
           width: ICON_SIZE,
-          flex: 1,
+          height: ICON_SIZE,
         },
       }}
     >
@@ -199,7 +196,6 @@ export default function TabsLayout() {
                   ? formatUnreadCount(unreadCount)
                   : undefined,
               tabBarBadgeStyle: {
-                top: BADGE_TOP,
                 backgroundColor: theme.red10.val,
                 color: "white",
                 fontSize: BADGE_FONT_SIZE,
