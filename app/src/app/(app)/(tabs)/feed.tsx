@@ -24,7 +24,7 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { WorryCard, type WorryPost } from "@/components/worry/WorryCard";
+import { WorryCard } from "@/components/worry/WorryCard";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
@@ -34,6 +34,7 @@ import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
+import { useWorryPosts } from "@/hooks/useWorryPosts";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import {
   api,
@@ -41,13 +42,10 @@ import {
   type FeedPostResponse,
   type FeedSort,
   isApiError,
+  type WorrySort,
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
-import {
-  type LoungeBoard,
-  useFeedFilterStore,
-  type WorrySort,
-} from "@/lib/filter/store";
+import { type LoungeBoard, useFeedFilterStore } from "@/lib/filter/store";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { mapPages } from "@/lib/paging";
@@ -55,7 +53,6 @@ import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
-// 임시: 게시판 전환 UI 시안. 고민 게시판 구현 전까지 자리만 잡아둔다.
 const BOARDS = ["피드", "고민"] as const;
 type BoardLabel = (typeof BOARDS)[number];
 
@@ -88,37 +85,11 @@ const WORRY_SORT_LABELS: Record<WorrySort, WorrySortLabel> = {
   COMMENT: "댓글",
 };
 
-// 임시: 카드 디자인 확인용 더미 데이터.
-const MINUTE = 60 * 1000;
-const WORRY_SAMPLES: WorryPost[] = [
-  {
-    worryId: 1,
-    content:
-      "직장에서 3년째 같은 일을 하고 있는데 이직을 해야 할지 고민이에요. 지금 회사는 편하긴 한데 성장이 없는 것 같고, 옮기자니 새로 적응할 자신이 없어요. 다들 이럴 때 어떻게 결정하셨나요?",
-    createdAt: new Date(Date.now() - 5 * MINUTE).toISOString(),
-    likeCount: 12,
-    commentCount: 4,
-  },
-  {
-    worryId: 2,
-    content: "부모님이 결혼 언제 하냐고 자꾸 물어보시는데 스트레스예요.",
-    createdAt: new Date(Date.now() - 3 * 60 * MINUTE).toISOString(),
-    likeCount: 5,
-    commentCount: 2,
-  },
-  {
-    worryId: 3,
-    content:
-      "친한 친구한테 돈을 빌려줬는데 갚을 기미가 없어요. 말을 꺼내자니 사이가 어색해질까 봐 몇 달째 속만 끓이고 있습니다.",
-    createdAt: new Date(Date.now() - 26 * 60 * MINUTE).toISOString(),
-    likeCount: 31,
-    commentCount: 9,
-  },
-];
-
 const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
+const WORRY_ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
+const WORRY_EMPTY_MESSAGE = "고민이 없습니다.";
 const WORRY_SEARCH_PENDING_MESSAGE = "고민 검색은 준비 중입니다.";
 
 const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
@@ -143,6 +114,10 @@ export default function FeedScreen() {
     () => showToast("info", WORRY_SEARCH_PENDING_MESSAGE),
     [],
   );
+  const openWorryDetail = useCallback(
+    (worryId: number) => pushOnce(`/worry/${worryId}`),
+    [],
+  );
 
   const board = useFeedFilterStore((state) => state.board);
   const setBoard = useFeedFilterStore((state) => state.setBoard);
@@ -160,6 +135,25 @@ export default function FeedScreen() {
   const feed = useFeedPosts(date, sort);
   const { posts, error, refetch: refetchFeed } = feed;
   const paged = usePagedList(feed);
+
+  const worryFeed = useWorryPosts(worrySort);
+  const {
+    posts: worryPosts,
+    error: worryError,
+    refetch: refetchWorries,
+  } = worryFeed;
+  const pagedWorries = usePagedList(worryFeed);
+  const [worryRefreshing, setWorryRefreshing] = useState(false);
+
+  const refreshWorries = useCallback(async () => {
+    setWorryRefreshing(true);
+
+    try {
+      await refetchWorries();
+    } finally {
+      setWorryRefreshing(false);
+    }
+  }, [refetchWorries]);
 
   const queryKey = feedPostsKey(date, sort);
   const invalidate = useCallback(
@@ -328,12 +322,30 @@ export default function FeedScreen() {
       </YStack>
 
       {board === "WORRY" ? (
-        <FlatList
-          data={WORRY_SAMPLES}
-          keyExtractor={(worry) => String(worry.worryId)}
-          renderItem={({ item }) => <WorryCard worry={item} />}
-          contentContainerStyle={paged.contentContainerStyle}
-        />
+        worryPosts ? (
+          <FlatList
+            {...pagedWorries}
+            data={worryPosts}
+            keyExtractor={(worry) => String(worry.worryId)}
+            renderItem={({ item }) => (
+              <WorryCard worry={item} onPress={openWorryDetail} />
+            )}
+            showsVerticalScrollIndicator={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={worryRefreshing}
+                onRefresh={refreshWorries}
+              />
+            }
+            ListEmptyComponent={<ListEmpty>{WORRY_EMPTY_MESSAGE}</ListEmpty>}
+          />
+        ) : (
+          <ScreenState
+            error={worryError}
+            message={WORRY_ERROR_MESSAGE}
+            onRetry={refetchWorries}
+          />
+        )
       ) : posts ? (
         <FlatList
           {...paged}

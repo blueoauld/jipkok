@@ -161,22 +161,15 @@ class WorryPostRepositoryTest {
     }
 
     @Test
-    fun `댓글 목록은 오래된 순으로 주고 신고한 댓글은 뺀다`() {
+    fun `댓글 목록은 오래된 순으로 주고 지운 댓글은 뺀다`() {
         // given
         val first = saveComment(quietPostId, meId, anonymousNo = 1)
         val second = saveComment(quietPostId, authorId, anonymousNo = 2)
-        val reported = saveComment(quietPostId, authorId, anonymousNo = 2)
-        entityManager
-            .createNativeQuery(
-                "insert into worry_comment_report (reporter_id, comment_id, created_at, updated_at) " +
-                    "values (:reporterId, :commentId, now(), now())",
-            )
-            .setParameter("reporterId", meId)
-            .setParameter("commentId", reported.id)
-            .executeUpdate()
+        val deleted = saveComment(quietPostId, authorId, anonymousNo = 2)
+        worryCommentRepository.delete(deleted)
 
         // when
-        val rows = worryCommentRepository.findByPostIdOldestFirst(meId, quietPostId, cursor = null, size = PAGE_SIZE)
+        val rows = worryCommentRepository.findByPostIdOldestFirst(quietPostId, cursor = null, size = PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getCommentId() }).containsExactly(first.id, second.id)

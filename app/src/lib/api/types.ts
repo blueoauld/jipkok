@@ -52,6 +52,14 @@ export type FeedSort = "LATEST" | "OLDEST";
 export type FeedPostResponse = Schemas["FeedPostResponse"];
 export type CreateFeedPostRequest = Schemas["CreateFeedPostRequest"];
 export type FeedPostPage = Schemas["CursorResponseFeedPostResponse"];
+
+export type WorrySort = "LATEST" | "POPULAR" | "COMMENT";
+export type WorryPostResponse = Schemas["WorryPostResponse"];
+export type WorryPostPage = Schemas["CursorResponseWorryPostResponse"];
+export type WorryCommentResponse = Schemas["WorryCommentResponse"];
+export type WorryCommentPage = Schemas["CursorResponseWorryCommentResponse"];
+export type CreateWorryPostRequest = Schemas["CreateWorryPostRequest"];
+export type CreateWorryCommentRequest = Schemas["CreateWorryCommentRequest"];
 export type PointRewardResponse = Schemas["PointRewardResponse"];
 export type PointHistoryResponse = Schemas["PointHistoryResponse"];
 export type PointType = PointHistoryResponse["type"];

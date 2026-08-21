@@ -38,6 +38,10 @@ import type {
   TokenResponse,
   UpdateCommentRequest,
   VerificationPurpose,
+  WorryCommentPage,
+  WorryPostPage,
+  WorryPostResponse,
+  WorrySort,
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
@@ -57,6 +61,8 @@ type FeedListParams = {
   cursor?: number;
   size?: number;
 };
+
+type WorryListParams = CursorParams & { sort?: WorrySort };
 
 type MemberRankingParams = {
   gender?: Gender;
@@ -399,5 +405,46 @@ export const reports = {
     request<PhotoUploadUrlResponse>("/api/reports/photos/upload-url", {
       method: "POST",
       body: { contentType },
+    }),
+};
+
+export const worries = {
+  list: (params: WorryListParams = {}) =>
+    request<WorryPostPage>("/api/worries", { query: params }),
+
+  create: (content: string) =>
+    request<void>("/api/worries", { method: "POST", body: { content } }),
+
+  get: (postId: number) => request<WorryPostResponse>(`/api/worries/${postId}`),
+
+  remove: (postId: number) =>
+    request<void>(`/api/worries/${postId}`, { method: "DELETE" }),
+
+  like: (postId: number) =>
+    request<void>(`/api/worries/${postId}/likes`, { method: "POST" }),
+
+  cancelLike: (postId: number) =>
+    request<void>(`/api/worries/${postId}/likes`, { method: "DELETE" }),
+
+  report: (postId: number) =>
+    request<void>(`/api/worries/${postId}/reports`, { method: "POST" }),
+
+  comments: (postId: number, params: CursorParams = {}) =>
+    request<WorryCommentPage>(`/api/worries/${postId}/comments`, {
+      query: params,
+    }),
+
+  createComment: (postId: number, content: string) =>
+    request<void>(`/api/worries/${postId}/comments`, {
+      method: "POST",
+      body: { content },
+    }),
+
+  removeComment: (commentId: number) =>
+    request<void>(`/api/worries/comments/${commentId}`, { method: "DELETE" }),
+
+  reportComment: (commentId: number) =>
+    request<void>(`/api/worries/comments/${commentId}/reports`, {
+      method: "POST",
     }),
 };

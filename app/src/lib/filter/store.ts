@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { FeedSort, Gender, MemberSort } from "@/lib/api";
+import type { FeedSort, Gender, MemberSort, WorrySort } from "@/lib/api";
 import { isToday, toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
@@ -59,7 +59,6 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 );
 
 export type LoungeBoard = "FEED" | "WORRY";
-export type WorrySort = "LATEST" | "POPULAR" | "COMMENT";
 
 type FeedFilterState = {
   board: LoungeBoard;

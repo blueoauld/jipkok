@@ -25,7 +25,7 @@ class WorryCommentService(
         }
 
         val pageSize = CursorResponse.pageSize(size)
-        val rows = worryCommentRepository.findByPostIdOldestFirst(memberId, postId, cursor, pageSize)
+        val rows = worryCommentRepository.findByPostIdOldestFirst(postId, cursor, pageSize)
 
         return CursorResponse(
             items = rows.map { row ->

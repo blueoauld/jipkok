@@ -5,15 +5,8 @@ import { memo } from "react";
 import { Text, useTheme, XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
+import type { WorryPostResponse } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/date";
-
-export type WorryPost = {
-  worryId: number;
-  content: string;
-  createdAt: string;
-  likeCount: number;
-  commentCount: number;
-};
 
 const CONTENT_MAX_LINES = 3;
 const COUNT_ICON_SIZE = 16;
@@ -35,12 +28,18 @@ function CardCount({ icon: CountIcon, value }: { icon: Icon; value: number }) {
   );
 }
 
-function Card({ worry }: { worry: WorryPost }) {
+function Card({
+  worry,
+  onPress,
+}: {
+  worry: WorryPostResponse;
+  onPress: (worryId: number) => void;
+}) {
   return (
-    <RetroCard gap="$2.5">
+    <RetroCard gap="$2.5" onPress={() => onPress(worry.worryId)}>
       <XStack items="center" justify="space-between">
         <Text fontSize="$3" fontWeight="700">
-          익명
+          {worry.mine ? "내 고민" : "익명"}
         </Text>
         <Text theme="gray" color="$color11" fontSize="$2">
           {formatRelativeTime(worry.createdAt)}

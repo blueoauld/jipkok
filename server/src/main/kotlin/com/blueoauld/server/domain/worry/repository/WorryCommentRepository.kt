@@ -25,10 +25,6 @@ interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
         from worry_comment c
         where c.deleted_at is null
           and c.post_id = :postId
-          and not exists (
-            select 1 from worry_comment_report r
-            where r.reporter_id = :memberId and r.comment_id = c.id
-          )
           and (cast(:cursor as bigint) is null or c.id > cast(:cursor as bigint))
         order by c.id
         limit :size
@@ -36,7 +32,6 @@ interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
         nativeQuery = true,
     )
     fun findByPostIdOldestFirst(
-        @Param("memberId") memberId: Long,
         @Param("postId") postId: Long,
         @Param("cursor") cursor: Long?,
         @Param("size") size: Int,
