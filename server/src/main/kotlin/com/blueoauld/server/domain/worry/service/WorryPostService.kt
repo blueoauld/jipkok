@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.worry.dto.projection.WorryPostRow
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryPostRequest
 import com.blueoauld.server.domain.worry.dto.response.WorryPostResponse
 import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.entity.type.WorrySort
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
@@ -27,17 +28,24 @@ class WorryPostService(
 ) {
 
     @Transactional(readOnly = true)
-    fun find(memberId: Long, sort: WorrySort, cursor: Long?, size: Int): CursorResponse<WorryPostResponse> {
+    fun find(
+        memberId: Long,
+        sort: WorrySort,
+        category: WorryCategory?,
+        cursor: Long?,
+        size: Int,
+    ): CursorResponse<WorryPostResponse> {
         val pageSize = CursorResponse.pageSize(size)
+        val name = category?.name
         val rows = when (sort) {
-            WorrySort.LATEST -> worryPostRepository.findLatestFirst(memberId, cursor, pageSize)
+            WorrySort.LATEST -> worryPostRepository.findLatestFirst(memberId, name, cursor, pageSize)
 
             WorrySort.POPULAR -> {
                 val cursorLikeCount = cursor?.let {
                     worryPostRepository.findLikeCountById(it) ?: return emptyPage()
                 }
 
-                worryPostRepository.findMostLikedFirst(memberId, cursorLikeCount, cursor, pageSize)
+                worryPostRepository.findMostLikedFirst(memberId, name, cursorLikeCount, cursor, pageSize)
             }
 
             WorrySort.COMMENT -> {
@@ -45,7 +53,7 @@ class WorryPostService(
                     worryPostRepository.findCommentCountById(it) ?: return emptyPage()
                 }
 
-                worryPostRepository.findMostCommentedFirst(memberId, cursorCommentCount, cursor, pageSize)
+                worryPostRepository.findMostCommentedFirst(memberId, name, cursorCommentCount, cursor, pageSize)
             }
         }
 
@@ -91,6 +99,7 @@ class WorryPostService(
 
         return WorryPostResponse(
             worryId = post.id,
+            category = post.category,
             content = post.content,
             createdAt = post.createdAt,
             likeCount = post.likeCount,
@@ -109,7 +118,9 @@ class WorryPostService(
             throw BusinessException(ErrorCode.WORRY_DAILY_LIMIT)
         }
 
-        worryPostRepository.saveAndFlush(WorryPost(memberId = memberId, content = request.content))
+        worryPostRepository.saveAndFlush(
+            WorryPost(memberId = memberId, category = request.category, content = request.content),
+        )
     }
 
     @Transactional
@@ -129,6 +140,7 @@ class WorryPostService(
 
     private fun toResponse(row: WorryPostRow, memberId: Long) = WorryPostResponse(
         worryId = row.getPostId(),
+        category = WorryCategory.valueOf(row.getCategory()),
         content = row.getContent(),
         createdAt = row.getCreatedAt(),
         likeCount = row.getLikeCount(),

@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.worry.entity
 
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -21,6 +24,10 @@ class WorryPost(
 
     @Column(name = "member_id", nullable = false, updatable = false)
     val memberId: Long,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false, updatable = false)
+    val category: WorryCategory,
 
     @Column(name = "content", nullable = false, updatable = false, length = CONTENT_MAX_LENGTH)
     val content: String,

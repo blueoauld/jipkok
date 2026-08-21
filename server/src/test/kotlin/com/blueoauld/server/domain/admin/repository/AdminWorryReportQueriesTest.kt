@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryCommentReport
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.WorryPostReport
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
@@ -141,7 +142,7 @@ class AdminWorryReportQueriesTest {
     }
 
     private fun savePost(authorId: Long) = worryPostRepository.saveAndFlush(
-        WorryPost(memberId = authorId, content = "고민 내용"),
+        WorryPost(memberId = authorId, category = WorryCategory.ETC, content = "고민 내용"),
     )
 
     private fun savePostReport(reporterId: Long, postId: Long) {

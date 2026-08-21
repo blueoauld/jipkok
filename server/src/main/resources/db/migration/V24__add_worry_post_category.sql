@@ -1,0 +1,2 @@
+ALTER TABLE worry_post
+    ADD COLUMN category VARCHAR(255) DEFAULT 'ETC' NOT NULL;

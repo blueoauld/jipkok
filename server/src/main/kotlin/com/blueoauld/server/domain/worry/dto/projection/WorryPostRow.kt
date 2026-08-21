@@ -8,6 +8,8 @@ interface WorryPostRow {
 
     fun getMemberId(): Long
 
+    fun getCategory(): String
+
     fun getContent(): String
 
     fun getCreatedAt(): Instant

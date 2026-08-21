@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.worry.dto.projection.WorryCommentRow
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryCommentRequest
 import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.entity.type.WorryCommentStatus
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
@@ -240,7 +241,8 @@ class WorryCommentServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.WORRY_POST_NOT_FOUND)
     }
 
-    private fun post(memberId: Long) = WorryPost(memberId = memberId, content = "고민 내용")
+    private fun post(memberId: Long) =
+        WorryPost(memberId = memberId, category = WorryCategory.ETC, content = "고민 내용")
 
     private fun comment(
         memberId: Long,

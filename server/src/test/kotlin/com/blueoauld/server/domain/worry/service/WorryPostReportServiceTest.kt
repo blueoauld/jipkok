@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.worry.service
 
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.WorryPostReport
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.event.WorryPostReportedEvent
 import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
@@ -154,7 +155,7 @@ class WorryPostReportServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.WORRY_POST_NOT_FOUND)
     }
 
-    private fun post(memberId: Long) = WorryPost(memberId = memberId, content = "고민 내용")
+    private fun post(memberId: Long) = WorryPost(memberId = memberId, category = WorryCategory.ETC, content = "고민 내용")
 
     companion object {
 

@@ -40,6 +40,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         value = """
         select p.id as postId,
                p.member_id as memberId,
+               p.category as category,
                p.content as content,
                p.created_at as createdAt,
                p.like_count as likeCount,
@@ -54,6 +55,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
             select 1 from worry_post_report r
             where r.reporter_id = :memberId and r.post_id = p.id
           )
+          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
         order by p.id desc
         limit :size
@@ -62,6 +64,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
     )
     fun findLatestFirst(
         @Param("memberId") memberId: Long,
+        @Param("category") category: String?,
         @Param("cursor") cursor: Long?,
         @Param("size") size: Int,
     ): List<WorryPostRow>
@@ -70,6 +73,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         value = """
         select p.id as postId,
                p.member_id as memberId,
+               p.category as category,
                p.content as content,
                p.created_at as createdAt,
                p.like_count as likeCount,
@@ -84,6 +88,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
             select 1 from worry_post_report r
             where r.reporter_id = :memberId and r.post_id = p.id
           )
+          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
           and (
             cast(:cursorId as bigint) is null
             or (p.like_count, p.id) < (cast(:cursorLikeCount as integer), cast(:cursorId as bigint))
@@ -95,6 +100,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
     )
     fun findMostLikedFirst(
         @Param("memberId") memberId: Long,
+        @Param("category") category: String?,
         @Param("cursorLikeCount") cursorLikeCount: Int?,
         @Param("cursorId") cursorId: Long?,
         @Param("size") size: Int,
@@ -104,6 +110,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         value = """
         select p.id as postId,
                p.member_id as memberId,
+               p.category as category,
                p.content as content,
                p.created_at as createdAt,
                p.like_count as likeCount,
@@ -118,6 +125,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
             select 1 from worry_post_report r
             where r.reporter_id = :memberId and r.post_id = p.id
           )
+          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
           and (
             cast(:cursorId as bigint) is null
             or (p.comment_count, p.id) < (cast(:cursorCommentCount as integer), cast(:cursorId as bigint))
@@ -129,6 +137,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
     )
     fun findMostCommentedFirst(
         @Param("memberId") memberId: Long,
+        @Param("category") category: String?,
         @Param("cursorCommentCount") cursorCommentCount: Int?,
         @Param("cursorId") cursorId: Long?,
         @Param("size") size: Int,
@@ -138,6 +147,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         value = """
         select p.id as postId,
                p.member_id as memberId,
+               p.category as category,
                p.content as content,
                p.created_at as createdAt,
                p.like_count as likeCount,
@@ -165,6 +175,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         value = """
         select p.id as postId,
                p.member_id as memberId,
+               p.category as category,
                p.content as content,
                p.created_at as createdAt,
                p.like_count as likeCount,

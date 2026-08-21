@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.worry.dto.request.CreateWorryCommentRequest
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryPostRequest
 import com.blueoauld.server.domain.worry.dto.response.WorryCommentResponse
 import com.blueoauld.server.domain.worry.dto.response.WorryPostResponse
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.entity.type.WorrySort
 import com.blueoauld.server.domain.worry.service.WorryCommentReportService
 import com.blueoauld.server.domain.worry.service.WorryCommentService
@@ -36,14 +37,15 @@ class WorryController(
     private val worryCommentReportService: WorryCommentReportService,
 ) {
 
-    @Operation(summary = "고민 목록 조회", description = "작성자 정보는 담기지 않는다.")
+    @Operation(summary = "고민 목록 조회", description = "작성자 정보는 담기지 않고 category를 비우면 전체를 준다.")
     @GetMapping
     fun find(
         @AuthenticationPrincipal memberId: Long,
         @RequestParam(defaultValue = "LATEST") sort: WorrySort,
+        @RequestParam(required = false) category: WorryCategory?,
         @RequestParam(required = false) cursor: Long?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
-    ): CursorResponse<WorryPostResponse> = worryPostService.find(memberId, sort, cursor, size)
+    ): CursorResponse<WorryPostResponse> = worryPostService.find(memberId, sort, category, cursor, size)
 
     @Operation(operationId = "createWorryPost", summary = "고민 작성", description = "하루에 다섯 개까지 올릴 수 있다.")
     @PostMapping

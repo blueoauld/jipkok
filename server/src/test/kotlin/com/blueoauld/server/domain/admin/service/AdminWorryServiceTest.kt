@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
@@ -103,7 +104,7 @@ class AdminWorryServiceTest {
     @Test
     fun `고민 삭제는 소프트 삭제로 위임한다`() {
         // given
-        val post = WorryPost(memberId = AUTHOR_ID, content = "이직 고민")
+        val post = WorryPost(memberId = AUTHOR_ID, category = WorryCategory.WORK, content = "이직 고민")
         every { worryPostRepository.findById(POST_ID) } returns Optional.of(post)
         justRun { worryPostRepository.delete(post) }
 

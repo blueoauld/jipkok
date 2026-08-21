@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.WorryPostLike
 import com.blueoauld.server.domain.worry.entity.WorryPostReport
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.assertj.core.api.Assertions.assertThat
@@ -67,7 +68,7 @@ class WorryPostRepositoryTest {
         // given
 
         // when
-        val rows = worryPostRepository.findLatestFirst(meId, cursor = null, size = PAGE_SIZE)
+        val rows = worryPostRepository.findLatestFirst(meId, category = null, cursor = null, size = PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getPostId() })
@@ -79,7 +80,7 @@ class WorryPostRepositoryTest {
         // given
 
         // when
-        val rows = worryPostRepository.findLatestFirst(meId, cursor = likedPostId, size = PAGE_SIZE)
+        val rows = worryPostRepository.findLatestFirst(meId, category = null, cursor = likedPostId, size = PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getPostId() }).containsExactly(quietPostId)
@@ -92,6 +93,7 @@ class WorryPostRepositoryTest {
         // when
         val rows = worryPostRepository.findMostLikedFirst(
             meId,
+            category = null,
             cursorLikeCount = null,
             cursorId = null,
             size = PAGE_SIZE,
@@ -110,6 +112,7 @@ class WorryPostRepositoryTest {
         // when
         val rows = worryPostRepository.findMostLikedFirst(
             meId,
+            category = null,
             cursorLikeCount = 2,
             cursorId = tiedPostId,
             size = PAGE_SIZE,
@@ -126,6 +129,7 @@ class WorryPostRepositoryTest {
         // when
         val rows = worryPostRepository.findMostCommentedFirst(
             meId,
+            category = null,
             cursorCommentCount = null,
             cursorId = null,
             size = PAGE_SIZE,
@@ -134,6 +138,44 @@ class WorryPostRepositoryTest {
         // then
         assertThat(rows.map { it.getPostId() })
             .containsExactly(talkedPostId, likedPostId, quietPostId)
+    }
+
+    @Test
+    fun `분류를 주면 그 분류의 글만 준다`() {
+        // given
+        val lovePostId = savePost(authorId, category = WorryCategory.LOVE).id
+        savePost(authorId, category = WorryCategory.FAMILY)
+
+        // when
+        val rows = worryPostRepository.findLatestFirst(
+            meId,
+            category = WorryCategory.LOVE.name,
+            cursor = null,
+            size = PAGE_SIZE,
+        )
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(lovePostId)
+        assertThat(rows.single().getCategory()).isEqualTo(WorryCategory.LOVE.name)
+    }
+
+    @Test
+    fun `공감순도 분류를 따른다`() {
+        // given
+        savePost(authorId, likeCount = 9, category = WorryCategory.FAMILY)
+        val lovePostId = savePost(authorId, likeCount = 1, category = WorryCategory.LOVE).id
+
+        // when
+        val rows = worryPostRepository.findMostLikedFirst(
+            meId,
+            category = WorryCategory.LOVE.name,
+            cursorLikeCount = null,
+            cursorId = null,
+            size = PAGE_SIZE,
+        )
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(lovePostId)
     }
 
     @Test
@@ -211,7 +253,7 @@ class WorryPostRepositoryTest {
         worryPostLikeRepository.saveAndFlush(WorryPostLike(likedPostId, meId))
 
         // when
-        val rows = worryPostRepository.findLatestFirst(meId, cursor = null, size = PAGE_SIZE)
+        val rows = worryPostRepository.findLatestFirst(meId, category = null, cursor = null, size = PAGE_SIZE)
 
         // then
         assertThat(rows.first { it.getPostId() == likedPostId }.getLikedByMe()).isTrue()
@@ -224,7 +266,7 @@ class WorryPostRepositoryTest {
         worryPostReportRepository.saveAndFlush(WorryPostReport(meId, likedPostId))
 
         // when
-        val rows = worryPostRepository.findLatestFirst(meId, cursor = null, size = PAGE_SIZE)
+        val rows = worryPostRepository.findLatestFirst(meId, category = null, cursor = null, size = PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getPostId() }).doesNotContain(likedPostId)
@@ -363,9 +405,11 @@ class WorryPostRepositoryTest {
         likeCount: Int = 0,
         commentCount: Int = 0,
         content: String = "고민 내용",
+        category: WorryCategory = WorryCategory.ETC,
     ) = worryPostRepository.saveAndFlush(
         WorryPost(
             memberId = memberId,
+            category = category,
             content = content,
             likeCount = likeCount,
             commentCount = commentCount,

@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.worry.service
 
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryPostRequest
 import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.entity.type.WorrySort
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
@@ -44,11 +45,12 @@ class WorryPostServiceTest {
         val saved = slot<WorryPost>()
 
         // when
-        worryPostService.create(MEMBER_ID, CreateWorryPostRequest("이직 고민"))
+        worryPostService.create(MEMBER_ID, CreateWorryPostRequest(WorryCategory.WORK, "이직 고민"))
 
         // then
         verify { worryPostRepository.saveAndFlush(capture(saved)) }
         assertThat(saved.captured.memberId).isEqualTo(MEMBER_ID)
+        assertThat(saved.captured.category).isEqualTo(WorryCategory.WORK)
         assertThat(saved.captured.content).isEqualTo("이직 고민")
     }
 
@@ -60,7 +62,7 @@ class WorryPostServiceTest {
         every { worryPostRepository.countByMemberIdBetween(MEMBER_ID, capture(from), capture(to)) } returns 0
 
         // when
-        worryPostService.create(MEMBER_ID, CreateWorryPostRequest("이직 고민"))
+        worryPostService.create(MEMBER_ID, CreateWorryPostRequest(WorryCategory.WORK, "이직 고민"))
 
         // then
         assertThat(from.captured).isEqualTo(Instant.parse("2026-08-01T15:00:00Z"))
@@ -76,7 +78,7 @@ class WorryPostServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            worryPostService.create(MEMBER_ID, CreateWorryPostRequest("이직 고민"))
+            worryPostService.create(MEMBER_ID, CreateWorryPostRequest(WorryCategory.WORK, "이직 고민"))
         }
 
         // then
@@ -166,6 +168,28 @@ class WorryPostServiceTest {
     }
 
     @Test
+    fun `분류를 고르면 이름으로 바꿔 넘긴다`() {
+        // given
+
+        // when
+        worryPostService.find(MEMBER_ID, WorrySort.LATEST, WorryCategory.LOVE, null, 20)
+
+        // then
+        verify { worryPostRepository.findLatestFirst(MEMBER_ID, "LOVE", null, 20) }
+    }
+
+    @Test
+    fun `분류를 비우면 전체를 준다`() {
+        // given
+
+        // when
+        worryPostService.find(MEMBER_ID, WorrySort.LATEST, null, null, 20)
+
+        // then
+        verify { worryPostRepository.findLatestFirst(MEMBER_ID, null, null, 20) }
+    }
+
+    @Test
     fun `상세는 내 글 여부와 공감 여부를 담는다`() {
         // given
         every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(MEMBER_ID))
@@ -200,10 +224,10 @@ class WorryPostServiceTest {
         every { worryPostRepository.findLikeCountById(POST_ID) } returns 7
 
         // when
-        worryPostService.find(MEMBER_ID, WorrySort.POPULAR, POST_ID, 20)
+        worryPostService.find(MEMBER_ID, WorrySort.POPULAR, null, POST_ID, 20)
 
         // then
-        verify { worryPostRepository.findMostLikedFirst(MEMBER_ID, 7, POST_ID, 20) }
+        verify { worryPostRepository.findMostLikedFirst(MEMBER_ID, null, 7, POST_ID, 20) }
     }
 
     @Test
@@ -212,12 +236,12 @@ class WorryPostServiceTest {
         every { worryPostRepository.findLikeCountById(POST_ID) } returns null
 
         // when
-        val response = worryPostService.find(MEMBER_ID, WorrySort.POPULAR, POST_ID, 20)
+        val response = worryPostService.find(MEMBER_ID, WorrySort.POPULAR, null, POST_ID, 20)
 
         // then
         assertThat(response.items).isEmpty()
         assertThat(response.nextCursor).isNull()
-        verify(exactly = 0) { worryPostRepository.findMostLikedFirst(any(), any(), any(), any()) }
+        verify(exactly = 0) { worryPostRepository.findMostLikedFirst(any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -226,13 +250,14 @@ class WorryPostServiceTest {
         every { worryPostRepository.findCommentCountById(POST_ID) } returns 3
 
         // when
-        worryPostService.find(MEMBER_ID, WorrySort.COMMENT, POST_ID, 20)
+        worryPostService.find(MEMBER_ID, WorrySort.COMMENT, null, POST_ID, 20)
 
         // then
-        verify { worryPostRepository.findMostCommentedFirst(MEMBER_ID, 3, POST_ID, 20) }
+        verify { worryPostRepository.findMostCommentedFirst(MEMBER_ID, null, 3, POST_ID, 20) }
     }
 
-    private fun post(memberId: Long) = WorryPost(memberId = memberId, content = "고민 내용")
+    private fun post(memberId: Long) =
+        WorryPost(memberId = memberId, category = WorryCategory.WORK, content = "고민 내용")
 
     companion object {
 
