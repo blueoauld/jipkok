@@ -38,6 +38,7 @@ import type {
   TokenResponse,
   UpdateCommentRequest,
   VerificationPurpose,
+  WorryCategory,
   WorryCommentPage,
   WorryPostPage,
   WorryPostResponse,
@@ -62,7 +63,10 @@ type FeedListParams = {
   size?: number;
 };
 
-type WorryListParams = CursorParams & { sort?: WorrySort };
+type WorryListParams = CursorParams & {
+  sort?: WorrySort;
+  category?: WorryCategory;
+};
 
 type WorrySearchParams = CursorParams & { keyword: string };
 
@@ -420,8 +424,11 @@ export const worries = {
   mine: (params: CursorParams = {}) =>
     request<WorryPostPage>("/api/worries/me", { query: params }),
 
-  create: (content: string) =>
-    request<void>("/api/worries", { method: "POST", body: { content } }),
+  create: (category: WorryCategory, content: string) =>
+    request<void>("/api/worries", {
+      method: "POST",
+      body: { category, content },
+    }),
 
   get: (postId: number) => request<WorryPostResponse>(`/api/worries/${postId}`),
 

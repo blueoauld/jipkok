@@ -748,7 +748,7 @@
                     "worry-controller"
                 ],
                 "summary": "\uace0\ubbfc \ubaa9\ub85d \uc870\ud68c",
-                "description": "\uc791\uc131\uc790 \uc815\ubcf4\ub294 \ub2f4\uae30\uc9c0 \uc54a\ub294\ub2e4.",
+                "description": "\uc791\uc131\uc790 \uc815\ubcf4\ub294 \ub2f4\uae30\uc9c0 \uc54a\uace0 category\ub97c \ube44\uc6b0\uba74 \uc804\uccb4\ub97c \uc900\ub2e4.",
                 "operationId": "find",
                 "parameters": [
                     {
@@ -762,6 +762,23 @@
                                 "LATEST",
                                 "POPULAR",
                                 "COMMENT"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "LOVE",
+                                "RELATIONSHIP",
+                                "WORK",
+                                "FAMILY",
+                                "MIND",
+                                "LIFE",
+                                "ETC"
                             ]
                         }
                     },
@@ -9973,6 +9990,18 @@
             "CreateWorryPostRequest": {
                 "type": "object",
                 "properties": {
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "LOVE",
+                            "RELATIONSHIP",
+                            "WORK",
+                            "FAMILY",
+                            "MIND",
+                            "LIFE",
+                            "ETC"
+                        ]
+                    },
                     "content": {
                         "type": "string",
                         "maxLength": 500,
@@ -9980,6 +10009,7 @@
                     }
                 },
                 "required": [
+                    "category",
                     "content"
                 ]
             },
@@ -10786,6 +10816,18 @@
                         "type": "integer",
                         "format": "int64"
                     },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "LOVE",
+                            "RELATIONSHIP",
+                            "WORK",
+                            "FAMILY",
+                            "MIND",
+                            "LIFE",
+                            "ETC"
+                        ]
+                    },
                     "content": {
                         "type": "string"
                     },
@@ -10809,6 +10851,7 @@
                     }
                 },
                 "required": [
+                    "category",
                     "commentCount",
                     "content",
                     "createdAt",

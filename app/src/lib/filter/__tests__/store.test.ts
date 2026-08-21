@@ -34,7 +34,12 @@ describe("필터 저장 옵션", () => {
 
     expect(
       partialize?.({ ...useFeedFilterStore.getState(), date: "2026-08-01" }),
-    ).toEqual({ board: "FEED", sort: "LATEST", worrySort: "LATEST" });
+    ).toEqual({
+      board: "FEED",
+      sort: "LATEST",
+      worrySort: "LATEST",
+      worryCategory: null,
+    });
   });
 
   it("옛 피드 필터 저장값에서 정렬만 남기고 없는 항목은 기본값으로 채운다", () => {
@@ -60,6 +65,18 @@ describe("필터 저장 옵션", () => {
       minAge: 25,
       maxAge: 35,
     });
+  });
+});
+
+describe("고민 분류", () => {
+  it("기본값은 전체다", () => {
+    expect(useFeedFilterStore.getState().worryCategory).toBeNull();
+  });
+
+  it("고른 분류를 담아 둔다", () => {
+    useFeedFilterStore.getState().setWorryCategory("LOVE");
+
+    expect(useFeedFilterStore.getState().worryCategory).toBe("LOVE");
   });
 });
 

@@ -25,6 +25,7 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { WorryCard } from "@/components/worry/WorryCard";
+import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
@@ -42,6 +43,7 @@ import {
   type FeedPostResponse,
   type FeedSort,
   isApiError,
+  type WorryCategory,
   type WorryPostResponse,
   type WorrySort,
 } from "@/lib/api";
@@ -124,6 +126,10 @@ export default function FeedScreen() {
   const setSort = useFeedFilterStore((state) => state.setSort);
   const worrySort = useFeedFilterStore((state) => state.worrySort);
   const setWorrySort = useFeedFilterStore((state) => state.setWorrySort);
+  const worryCategory = useFeedFilterStore((state) => state.worryCategory);
+  const setWorryCategory = useFeedFilterStore(
+    (state) => state.setWorryCategory,
+  );
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
   const today = toDateParam(new Date(useNow()));
@@ -135,7 +141,7 @@ export default function FeedScreen() {
   const { posts, error, refetch: refetchFeed } = feed;
   const paged = usePagedList(feed);
 
-  const worryFeed = useWorryPosts(worrySort);
+  const worryFeed = useWorryPosts(worrySort, worryCategory);
   const {
     posts: worryPosts,
     error: worryError,
@@ -190,6 +196,14 @@ export default function FeedScreen() {
       worryScrollTop.reset();
     },
     [scrollToTop, scrollTop, scrollWorriesToTop, setBoard, worryScrollTop],
+  );
+
+  const changeWorryCategory = useCallback(
+    (category: WorryCategory | null) => {
+      setWorryCategory(category);
+      scrollWorriesToTop();
+    },
+    [scrollWorriesToTop, setWorryCategory],
   );
 
   // 지워졌거나 이미 신고한 글이면 화면의 글이 낡은 것이므로 목록을 다시 받는다.
@@ -336,6 +350,15 @@ export default function FeedScreen() {
           onChange={changeBoard}
         />
       </YStack>
+
+      {board === "WORRY" && (
+        <YStack pb="$3">
+          <WorryCategoryFilter
+            value={worryCategory}
+            onChange={changeWorryCategory}
+          />
+        </YStack>
+      )}
 
       {board === "WORRY" ? (
         worryPosts ? (

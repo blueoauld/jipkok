@@ -123,7 +123,7 @@ export interface paths {
         };
         /**
          * 고민 목록 조회
-         * @description 작성자 정보는 담기지 않는다.
+         * @description 작성자 정보는 담기지 않고 category를 비우면 전체를 준다.
          */
         get: operations["find"];
         put?: never;
@@ -1247,6 +1247,8 @@ export interface components {
             reactions: components["schemas"]["ChatReactionResponse"][];
         };
         CreateWorryPostRequest: {
+            /** @enum {string} */
+            category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
             content: string;
         };
         CreateWorryCommentRequest: {
@@ -1384,6 +1386,46 @@ export interface components {
             phoneNumber: string;
             password: string;
         };
+        CreateSuspensionRequest: {
+            /** Format: int64 */
+            memberId: number | null;
+            /** @enum {string|null} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+            /** @enum {string|null} */
+            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC" | null;
+            /** Format: int64 */
+            days?: number | null;
+            detail?: string | null;
+        };
+        AdminSuspensionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            memberId: number;
+            nickname: string;
+            /** @enum {string} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
+            /** @enum {string} */
+            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** @enum {string} */
+            status: "ACTIVE" | "EXPIRED" | "RELEASED";
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            releasedAt?: string | null;
+        };
+        ReleaseSuspensionRequest: {
+            /** Format: int64 */
+            memberId: number | null;
+            /** @enum {string|null} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+        };
+        ResetProfileRequest: {
+            /** @enum {string|null} */
+            target: "NICKNAME" | "COMMENT" | "BIO" | "PUBLIC_PHOTO" | "SECRET_PHOTO" | null;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
@@ -1398,6 +1440,8 @@ export interface components {
         WorryPostResponse: {
             /** Format: int64 */
             worryId: number;
+            /** @enum {string} */
+            category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
             content: string;
             /** Format: date-time */
             createdAt: string;
@@ -1603,6 +1647,331 @@ export interface components {
         AppVersionResponse: {
             latestVersion: string;
             storeUrl: string;
+        };
+        AdminWorryPostReportPageResponse: {
+            items: components["schemas"]["AdminWorryPostReportResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminWorryPostReportResponse: {
+            /** Format: int64 */
+            postId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            content: string;
+            /** Format: int64 */
+            reportCount: number;
+            /** Format: date-time */
+            postDeletedAt?: string | null;
+            /** Format: date-time */
+            lastReportedAt: string;
+            reporters: components["schemas"]["AdminWorryReporterResponse"][];
+        };
+        AdminWorryReporterResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** Format: date-time */
+            reportedAt: string;
+        };
+        AdminWorryCommentReportPageResponse: {
+            items: components["schemas"]["AdminWorryCommentReportResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminWorryCommentReportResponse: {
+            /** Format: int64 */
+            commentId: number;
+            /** Format: int64 */
+            postId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            content: string;
+            /** Format: int64 */
+            reportCount: number;
+            /** Format: date-time */
+            commentDeletedAt?: string | null;
+            deletedByReport: boolean;
+            /** Format: date-time */
+            lastReportedAt: string;
+            reporters: components["schemas"]["AdminWorryReporterResponse"][];
+        };
+        AdminSuspensionPageResponse: {
+            items: components["schemas"]["AdminSuspensionResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminReportPageResponse: {
+            items: components["schemas"]["AdminReportResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminReportResponse: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "PROFILE" | "CHAT";
+            /** @enum {string} */
+            reason: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** Format: int64 */
+            reporterId: number;
+            reporterNickname: string;
+            /** Format: int64 */
+            reportedMemberId: number;
+            reportedNickname: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            handledAt?: string | null;
+        };
+        AdminChatMessageResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            senderId: number;
+            /** @enum {string} */
+            type: "TEXT" | "PHOTO" | "VIDEO";
+            content?: string | null;
+            photoUrl?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminReportDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "PROFILE" | "CHAT";
+            /** @enum {string} */
+            reason: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            detail?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            handledAt?: string | null;
+            reporter: components["schemas"]["AdminReporterResponse"];
+            reported: components["schemas"]["AdminReportedMemberResponse"];
+            evidencePhotoUrls: string[];
+            messages: components["schemas"]["AdminChatMessageResponse"][];
+        };
+        AdminReportedMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            phoneNumber: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            comment?: string | null;
+            bio?: string | null;
+            profilePhotoUrls: string[];
+        };
+        AdminReporterResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        AdminMemberPageResponse: {
+            items: components["schemas"]["AdminMemberResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            phoneNumber: string;
+            /** Format: int32 */
+            publicPhotoCount: number;
+            /** Format: int32 */
+            secretPhotoCount: number;
+            suspended: boolean;
+            /** Format: date-time */
+            withdrawnAt?: string | null;
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        AdminMemberDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            phoneNumber: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: int32 */
+            receivedLikeCount: number;
+            /** Format: int32 */
+            pointBalance: number;
+            noteReceiveEnabled: boolean;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            /** Format: date-time */
+            locatedAt?: string | null;
+            /** Format: date-time */
+            joinedAt: string;
+            /** Format: date-time */
+            withdrawnAt?: string | null;
+            publicPhotoUrls: string[];
+            secretPhotoUrls: string[];
+            suspensions: components["schemas"]["AdminSuspensionResponse"][];
+        };
+        AdminFeedReportPageResponse: {
+            items: components["schemas"]["AdminFeedReportResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminFeedReportResponse: {
+            /** Format: int64 */
+            postId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            thumbnailUrl: string;
+            caption?: string | null;
+            /** Format: int64 */
+            reportCount: number;
+            /** Format: date-time */
+            postDeletedAt?: string | null;
+            /** Format: date-time */
+            lastReportedAt: string;
+            reporters: components["schemas"]["AdminFeedReporterResponse"][];
+        };
+        AdminFeedReporterResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** Format: date-time */
+            reportedAt: string;
+        };
+        TrendPointResponse: {
+            /** Format: date */
+            date: string;
+            /** Format: int64 */
+            signups: number;
+            /** Format: int64 */
+            withdrawals: number;
+            /** Format: int64 */
+            reports: number;
+        };
+        DashboardSummaryResponse: {
+            /** Format: int64 */
+            pendingMemberReports: number;
+            /** Format: int64 */
+            suspendedMembers: number;
+            /** Format: int64 */
+            todaySignups: number;
+            /** Format: int64 */
+            todayWithdrawals: number;
+        };
+        RecentActivityResponse: {
+            reports: components["schemas"]["RecentReportResponse"][];
+            suspensions: components["schemas"]["RecentSuspensionResponse"][];
+        };
+        RecentReportResponse: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "PROFILE" | "CHAT";
+            /** @enum {string} */
+            reason: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** Format: int64 */
+            reportedMemberId: number;
+            reportedNickname: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        RecentSuspensionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            memberId: number;
+            nickname: string;
+            /** @enum {string} */
+            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
+            /** @enum {string} */
+            reason: "SCREEN_CAPTURE" | "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AgeGroupResponse: {
+            label: string;
+            /** Format: int64 */
+            male: number;
+            /** Format: int64 */
+            female: number;
+        };
+        DemographicsResponse: {
+            /** Format: int64 */
+            male: number;
+            /** Format: int64 */
+            female: number;
+            ageGroups: components["schemas"]["AgeGroupResponse"][];
+        };
+        ActiveUsersResponse: {
+            /** Format: int64 */
+            dau: number;
+            /** Format: int64 */
+            wau: number;
+            /** Format: int64 */
+            mau: number;
+            trend: components["schemas"]["DauPointResponse"][];
+        };
+        DauPointResponse: {
+            /** Format: date */
+            date: string;
+            /** Format: int64 */
+            dau: number;
+        };
+        AccessEnvironmentResponse: {
+            platforms: {
+                [key: string]: number;
+            };
+            versions: components["schemas"]["VersionCountResponse"][];
+        };
+        VersionCountResponse: {
+            version: string;
+            /** @enum {string} */
+            platform: "IOS" | "ANDROID";
+            /** Format: int64 */
+            count: number;
         };
         LeaveRoomsRequest: {
             roomIds: number[];
@@ -2240,6 +2609,7 @@ export interface operations {
         parameters: {
             query?: {
                 sort?: "LATEST" | "POPULAR" | "COMMENT";
+                category?: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
                 cursor?: number;
                 size?: number;
             };

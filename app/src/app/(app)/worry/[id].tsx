@@ -26,6 +26,7 @@ import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { CommentScrollView } from "@/components/worry/CommentScrollView";
+import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWorryComments, worryCommentsKey } from "@/hooks/useWorryComments";
@@ -110,9 +111,12 @@ function PostSection({
   return (
     <RetroCard gap="$2.5">
       <XStack items="center" justify="space-between">
-        <Text fontSize="$3" fontWeight="700">
-          {post.mine ? "내 고민" : "익명"}
-        </Text>
+        <XStack items="center" gap="$2">
+          <WorryCategoryTag category={post.category} />
+          <Text fontSize="$3" fontWeight="700">
+            {post.mine ? "내 고민" : "익명"}
+          </Text>
+        </XStack>
         <Text theme="gray" color="$color11" fontSize="$2">
           {formatRelativeTime(post.createdAt)}
         </Text>

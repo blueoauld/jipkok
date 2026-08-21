@@ -55,6 +55,7 @@ export type FeedPostPage = Schemas["CursorResponseFeedPostResponse"];
 
 export type WorrySort = "LATEST" | "POPULAR" | "COMMENT";
 export type WorryPostResponse = Schemas["WorryPostResponse"];
+export type WorryCategory = WorryPostResponse["category"];
 export type WorryPostPage = Schemas["CursorResponseWorryPostResponse"];
 export type WorryCommentResponse = Schemas["WorryCommentResponse"];
 export type WorryCommentStatus = WorryCommentResponse["status"];

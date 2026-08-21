@@ -123,7 +123,7 @@ export interface paths {
         };
         /**
          * 고민 목록 조회
-         * @description 작성자 정보는 담기지 않는다.
+         * @description 작성자 정보는 담기지 않고 category를 비우면 전체를 준다.
          */
         get: operations["find"];
         put?: never;
@@ -1613,6 +1613,8 @@ export interface components {
             reactions: components["schemas"]["ChatReactionResponse"][];
         };
         CreateWorryPostRequest: {
+            /** @enum {string} */
+            category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
             content: string;
         };
         CreateWorryCommentRequest: {
@@ -1804,6 +1806,8 @@ export interface components {
         WorryPostResponse: {
             /** Format: int64 */
             worryId: number;
+            /** @enum {string} */
+            category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
             content: string;
             /** Format: date-time */
             createdAt: string;
@@ -2971,6 +2975,7 @@ export interface operations {
         parameters: {
             query?: {
                 sort?: "LATEST" | "POPULAR" | "COMMENT";
+                category?: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
                 cursor?: number;
                 size?: number;
             };

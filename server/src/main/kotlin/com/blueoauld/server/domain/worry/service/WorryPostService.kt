@@ -36,16 +36,16 @@ class WorryPostService(
         size: Int,
     ): CursorResponse<WorryPostResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val name = category?.name
+        val categoryName = category?.name
         val rows = when (sort) {
-            WorrySort.LATEST -> worryPostRepository.findLatestFirst(memberId, name, cursor, pageSize)
+            WorrySort.LATEST -> worryPostRepository.findLatestFirst(memberId, categoryName, cursor, pageSize)
 
             WorrySort.POPULAR -> {
                 val cursorLikeCount = cursor?.let {
                     worryPostRepository.findLikeCountById(it) ?: return emptyPage()
                 }
 
-                worryPostRepository.findMostLikedFirst(memberId, name, cursorLikeCount, cursor, pageSize)
+                worryPostRepository.findMostLikedFirst(memberId, categoryName, cursorLikeCount, cursor, pageSize)
             }
 
             WorrySort.COMMENT -> {
@@ -53,7 +53,13 @@ class WorryPostService(
                     worryPostRepository.findCommentCountById(it) ?: return emptyPage()
                 }
 
-                worryPostRepository.findMostCommentedFirst(memberId, name, cursorCommentCount, cursor, pageSize)
+                worryPostRepository.findMostCommentedFirst(
+                    memberId,
+                    categoryName,
+                    cursorCommentCount,
+                    cursor,
+                    pageSize,
+                )
             }
         }
 

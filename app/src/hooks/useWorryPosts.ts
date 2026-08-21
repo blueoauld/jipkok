@@ -1,6 +1,11 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
-import { api, type WorryPostPage, type WorrySort } from "@/lib/api";
+import {
+  api,
+  type WorryCategory,
+  type WorryPostPage,
+  type WorrySort,
+} from "@/lib/api";
 import { useFlatItems } from "@/lib/paging";
 
 export const WORRIES_KEY = ["worries"];
@@ -8,8 +13,8 @@ export const WORRIES_KEY = ["worries"];
 // 목록과 검색이 함께 무효화되도록 둘 다 이 키 아래에 둔다.
 export const WORRY_LIST_KEY = [...WORRIES_KEY, "list"];
 
-function worryPostsKey(sort: WorrySort) {
-  return [...WORRY_LIST_KEY, sort];
+function worryPostsKey(sort: WorrySort, category: WorryCategory | null) {
+  return [...WORRY_LIST_KEY, sort, category];
 }
 
 export function worryDetailKey(postId: number) {
@@ -31,10 +36,15 @@ export function useMyWorryPosts() {
   return { ...query, posts };
 }
 
-export function useWorryPosts(sort: WorrySort) {
+export function useWorryPosts(sort: WorrySort, category: WorryCategory | null) {
   const query = useInfiniteQuery({
-    queryKey: worryPostsKey(sort),
-    queryFn: ({ pageParam }) => api.worries.list({ sort, cursor: pageParam }),
+    queryKey: worryPostsKey(sort, category),
+    queryFn: ({ pageParam }) =>
+      api.worries.list({
+        sort,
+        category: category ?? undefined,
+        cursor: pageParam,
+      }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: WorryPostPage) => page.nextCursor,
     placeholderData: keepPreviousData,

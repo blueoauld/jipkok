@@ -1,7 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { FeedSort, Gender, MemberSort, WorrySort } from "@/lib/api";
+import type {
+  FeedSort,
+  Gender,
+  MemberSort,
+  WorryCategory,
+  WorrySort,
+} from "@/lib/api";
 import { isToday, toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
@@ -64,11 +70,14 @@ type FeedFilterState = {
   board: LoungeBoard;
   sort: FeedSort;
   worrySort: WorrySort;
+  // null이면 전체 분류다.
+  worryCategory: WorryCategory | null;
   // null이면 오늘. 날짜를 박아 두면 자정이 지나도 어제에 머문다.
   date: string | null;
   setBoard: (board: LoungeBoard) => void;
   setSort: (sort: FeedSort) => void;
   setWorrySort: (worrySort: WorrySort) => void;
+  setWorryCategory: (worryCategory: WorryCategory | null) => void;
   setDate: (date: Date) => void;
 };
 
@@ -78,10 +87,12 @@ export const useFeedFilterStore = create<FeedFilterState>()(
       board: "FEED",
       sort: DEFAULT_FEED_SORT,
       worrySort: "LATEST",
+      worryCategory: null,
       date: null,
       setBoard: (board) => set({ board }),
       setSort: (sort) => set({ sort }),
       setWorrySort: (worrySort) => set({ worrySort }),
+      setWorryCategory: (worryCategory) => set({ worryCategory }),
       setDate: (date) =>
         set({ date: isToday(date) ? null : toDateParam(date) }),
     }),
@@ -98,6 +109,7 @@ export const useFeedFilterStore = create<FeedFilterState>()(
         board: state.board,
         sort: state.sort,
         worrySort: state.worrySort,
+        worryCategory: state.worryCategory,
       }),
     },
   ),

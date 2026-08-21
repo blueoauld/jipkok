@@ -5,6 +5,7 @@ import { memo } from "react";
 import { Text, useTheme, XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
+import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
 import type { WorryPostResponse } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/date";
 
@@ -38,9 +39,12 @@ function Card({
   return (
     <RetroCard gap="$2.5" onPress={() => onPress(worry.worryId)}>
       <XStack items="center" justify="space-between">
-        <Text fontSize="$3" fontWeight="700">
-          {worry.mine ? "내 고민" : "익명"}
-        </Text>
+        <XStack items="center" gap="$2">
+          <WorryCategoryTag category={worry.category} />
+          <Text fontSize="$3" fontWeight="700">
+            {worry.mine ? "내 고민" : "익명"}
+          </Text>
+        </XStack>
         <Text theme="gray" color="$color11" fontSize="$2">
           {formatRelativeTime(worry.createdAt)}
         </Text>
