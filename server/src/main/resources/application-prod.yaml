@@ -1,63 +1,63 @@
 server:
-  shutdown: graceful
+    shutdown: graceful
 
 spring:
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
+    ai:
+        openai:
+            api-key: ${OPENAI_API_KEY:}
 
-  lifecycle:
-    timeout-per-shutdown-phase: 20s
+    lifecycle:
+        timeout-per-shutdown-phase: 20s
 
-  datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    datasource:
+        url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
 
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT:6379}
+    data:
+        redis:
+            host: ${REDIS_HOST}
+            port: ${REDIS_PORT:6379}
 
-  web:
-    error:
-      include-message: never
-      include-binding-errors: never
+    web:
+        error:
+            include-message: never
+            include-binding-errors: never
 
 logging:
-  structured:
-    format:
-      console: ecs
-  level:
-    com.blueoauld.server: info
-    org.hibernate.SQL: off
-    org.hibernate.orm.jdbc.bind: off
+    structured:
+        format:
+            console: ecs
+    level:
+        com.blueoauld.server: info
+        org.hibernate.SQL: off
+        org.hibernate.orm.jdbc.bind: off
 
 springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
+    api-docs:
+        enabled: false
+    swagger-ui:
+        enabled: false
 
 jwt:
-  secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET}
 
 r2:
-  enabled: ${R2_ENABLED:true}
-  endpoint: ${R2_ENDPOINT}
-  access-key-id: ${R2_ACCESS_KEY_ID}
-  secret-access-key: ${R2_SECRET_ACCESS_KEY}
-  bucket: ${R2_BUCKET}
-  public-base-url: ${R2_PUBLIC_BASE_URL}
+    enabled: ${R2_ENABLED:true}
+    endpoint: ${R2_ENDPOINT}
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    bucket: ${R2_BUCKET}
+    public-base-url: ${R2_PUBLIC_BASE_URL}
 
 solapi:
-  api-key: ${SOLAPI_API_KEY:}
-  api-secret: ${SOLAPI_API_SECRET:}
-  sender-number: ${SOLAPI_SENDER_NUMBER:}
+    api-key: ${SOLAPI_API_KEY:}
+    api-secret: ${SOLAPI_API_SECRET:}
+    sender-number: ${SOLAPI_SENDER_NUMBER:}
 
 discord:
-  token: ${DISCORD_TOKEN:}
-  guild-id: ${DISCORD_GUILD_ID:}
-  report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
-  moderation-channel-id: ${DISCORD_MODERATION_CHANNEL_ID:}
-  error-channel-id: ${DISCORD_ERROR_CHANNEL_ID:}
+    token: ${DISCORD_TOKEN:}
+    guild-id: ${DISCORD_GUILD_ID:}
+    report-channel-id: ${DISCORD_REPORT_CHANNEL_ID:}
+    moderation-channel-id: ${DISCORD_MODERATION_CHANNEL_ID:}
+    error-channel-id: ${DISCORD_ERROR_CHANNEL_ID:}

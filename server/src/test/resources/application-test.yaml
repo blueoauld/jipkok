@@ -1,31 +1,31 @@
 spring:
-  ai:
-    openai:
-      api-key: ""
+    ai:
+        openai:
+            api-key: ""
 
 logging:
-  level:
-    com.blueoauld.server: info
+    level:
+        com.blueoauld.server: info
 
 jwt:
-  secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
+    secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
 
 r2:
-  enabled: false
-  endpoint: ""
-  access-key-id: ""
-  secret-access-key: ""
-  bucket: ""
-  public-base-url: ""
+    enabled: false
+    endpoint: ""
+    access-key-id: ""
+    secret-access-key: ""
+    bucket: ""
+    public-base-url: ""
 
 solapi:
-  api-key: ""
-  api-secret: ""
-  sender-number: ""
+    api-key: ""
+    api-secret: ""
+    sender-number: ""
 
 discord:
-  token: ""
-  guild-id: ""
-  report-channel-id: ""
-  moderation-channel-id: ""
-  error-channel-id: ""
+    token: ""
+    guild-id: ""
+    report-channel-id: ""
+    moderation-channel-id: ""
+    error-channel-id: ""
