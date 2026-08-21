@@ -40,7 +40,7 @@ class WorryCleanerTest {
     fun setUp() {
         every { worryPostRepository.findIdsDeletedBefore(any()) } returns POST_IDS
         every { worryCommentRepository.findIdsByPostIdIn(POST_IDS) } returns COMMENT_IDS
-        every { worryCommentRepository.findIdsDeletedBefore(any()) } returns emptyList()
+        every { worryCommentRepository.findIdsDeletedBeforeWithoutReplies(any()) } returns emptyList()
     }
 
     @Test
@@ -73,16 +73,16 @@ class WorryCleanerTest {
     }
 
     @Test
-    fun `보관 기간이 지난 댓글은 남은 글에서도 신고와 함께 지운다`() {
+    fun `보관 기간이 지난 댓글은 답글이 없을 때 신고와 함께 지운다`() {
         // given
         every { worryPostRepository.findIdsDeletedBefore(any()) } returns emptyList()
-        every { worryCommentRepository.findIdsDeletedBefore(any()) } returns COMMENT_IDS
+        every { worryCommentRepository.findIdsDeletedBeforeWithoutReplies(any()) } returns COMMENT_IDS
 
         // when
         cleaner.cleanUp()
 
         // then
-        verify { worryCommentRepository.findIdsDeletedBefore(NOW.minus(WorryCleaner.RETENTION)) }
+        verify { worryCommentRepository.findIdsDeletedBeforeWithoutReplies(NOW.minus(WorryCleaner.RETENTION)) }
         verifyOrder {
             worryCommentReportRepository.deleteAllByCommentIdIn(COMMENT_IDS)
             worryCommentRepository.deleteAllByIdIn(COMMENT_IDS)

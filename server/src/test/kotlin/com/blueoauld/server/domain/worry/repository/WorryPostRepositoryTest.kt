@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
@@ -252,6 +253,37 @@ class WorryPostRepositoryTest {
     }
 
     @Test
+    fun `답글이 남은 댓글은 보관 기간이 지나도 정리 대상이 아니다`() {
+        // given
+        val parent = saveComment(quietPostId, authorId, anonymousNo = 1)
+        val lonely = saveComment(quietPostId, meId, anonymousNo = 2)
+        saveComment(quietPostId, meId, anonymousNo = 2, parentId = parent.id)
+        worryCommentRepository.delete(parent)
+        worryCommentRepository.delete(lonely)
+
+        // when
+        val ids = worryCommentRepository.findIdsDeletedBeforeWithoutReplies(FAR_FUTURE)
+
+        // then
+        assertThat(ids).containsExactly(lonely.id)
+    }
+
+    @Test
+    fun `답글이 사라지면 부모 댓글도 정리 대상이 된다`() {
+        // given
+        val parent = saveComment(quietPostId, authorId, anonymousNo = 1)
+        val reply = saveComment(quietPostId, meId, anonymousNo = 2, parentId = parent.id)
+        worryCommentRepository.delete(parent)
+        worryCommentRepository.deleteAllByIdIn(listOf(reply.id))
+
+        // when
+        val ids = worryCommentRepository.findIdsDeletedBeforeWithoutReplies(FAR_FUTURE)
+
+        // then
+        assertThat(ids).containsExactly(parent.id)
+    }
+
+    @Test
     fun `익명 번호는 지운 댓글까지 세어 겹치지 않게 한다`() {
         // given
         saveComment(quietPostId, meId, anonymousNo = 1)
@@ -343,5 +375,7 @@ class WorryPostRepositoryTest {
     companion object {
 
         private const val PAGE_SIZE = 20
+
+        private val FAR_FUTURE: Instant = Instant.parse("2100-01-01T00:00:00Z")
     }
 }

@@ -57,7 +57,7 @@ class WorryCleaner(
     }
 
     private fun cleanUpDeletedComments(threshold: Instant) {
-        val commentIds = worryCommentRepository.findIdsDeletedBefore(threshold)
+        val commentIds = worryCommentRepository.findIdsDeletedBeforeWithoutReplies(threshold)
 
         if (commentIds.isEmpty()) {
             return

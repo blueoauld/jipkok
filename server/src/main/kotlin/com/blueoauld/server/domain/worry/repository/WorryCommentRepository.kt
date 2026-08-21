@@ -65,8 +65,15 @@ interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
     @Query(value = "select id from worry_comment where post_id in (:postIds)", nativeQuery = true)
     fun findIdsByPostIdIn(@Param("postIds") postIds: List<Long>): List<Long>
 
-    @Query(value = "select id from worry_comment where deleted_at < :threshold", nativeQuery = true)
-    fun findIdsDeletedBefore(@Param("threshold") threshold: Instant): List<Long>
+    @Query(
+        value = """
+        select c.id from worry_comment c
+        where c.deleted_at < :threshold
+          and not exists (select 1 from worry_comment r where r.parent_id = c.id)
+        """,
+        nativeQuery = true,
+    )
+    fun findIdsDeletedBeforeWithoutReplies(@Param("threshold") threshold: Instant): List<Long>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "delete from worry_comment where id in (:commentIds)", nativeQuery = true)
