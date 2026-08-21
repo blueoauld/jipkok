@@ -15,7 +15,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -54,6 +54,7 @@ const REPLY_ROW_ICON_SIZE = 18;
 const REPLY_ICON_TOP = 2;
 const REPLY_INDENT = "$5";
 const REPLY_PREVIEW_GAP = 2;
+const SUBMIT_BUTTON_WIDTH = 80;
 
 const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
 const COMMENT_EMPTY_MESSAGE = "첫 댓글을 남겨보세요.";
@@ -555,10 +556,15 @@ export default function WorryDetailScreen() {
                 />
               </YStack>
               <RetroButton
+                width={SUBMIT_BUTTON_WIDTH}
                 disabled={!trimmed || createComment.isPending}
                 onPress={() => createComment.mutate(trimmed)}
               >
-                등록
+                {createComment.isPending ? (
+                  <Spinner size="small" color="white" />
+                ) : (
+                  "등록"
+                )}
               </RetroButton>
             </XStack>
           </KeyboardStickyView>

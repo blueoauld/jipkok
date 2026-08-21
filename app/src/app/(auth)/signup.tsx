@@ -12,6 +12,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
+import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { CODE_SENT_MESSAGE } from "@/lib/message";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
@@ -145,6 +146,7 @@ export default function SignupScreen() {
           </YStack>
 
           <RetroButton
+            width={SEND_CODE_BUTTON_WIDTH}
             disabled={!canSendCode}
             onPress={() => sendCode.mutate(phoneNumber)}
           >

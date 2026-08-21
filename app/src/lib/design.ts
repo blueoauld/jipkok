@@ -4,6 +4,9 @@ export const PHOTO_PRESS_OPACITY = 0.8;
 
 export const FLOATING_BUTTON_SIZE = 40;
 
+// 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다.
+export const SEND_CODE_BUTTON_WIDTH = 80;
+
 export const RETRO_BORDER_WIDTH = 2;
 
 export const RETRO_SHADOW_OFFSET = 4;

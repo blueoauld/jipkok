@@ -10,6 +10,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
+import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { CODE_SENT_MESSAGE } from "@/lib/message";
 import { showToast } from "@/lib/toast/store";
 import {
@@ -95,6 +96,7 @@ export default function PasswordScreen() {
           </YStack>
 
           <RetroButton
+            width={SEND_CODE_BUTTON_WIDTH}
             disabled={!canSendCode}
             onPress={() => sendCode.mutate(phoneNumber)}
           >
