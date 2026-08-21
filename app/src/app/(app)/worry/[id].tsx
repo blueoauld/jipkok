@@ -8,12 +8,15 @@ import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { KeyboardStickyView } from "react-native-keyboard-controller";
+import {
+  KeyboardStickyView,
+  useKeyboardState,
+} from "react-native-keyboard-controller";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
@@ -33,7 +36,7 @@ import {
   type WorryPostResponse,
 } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/date";
-import { PRESS_OPACITY } from "@/lib/design";
+import { KEYBOARD_OVERLAP, PRESS_OPACITY } from "@/lib/design";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { useAccentToken, useThemeBackground } from "@/lib/theme/accent";
@@ -175,6 +178,7 @@ export default function WorryDetailScreen() {
   const queryClient = useQueryClient();
   const insets = useSafeAreaInsets();
   const background = useThemeBackground();
+  const keyboardHeight = useKeyboardState((state) => state.height);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const [content, setContent] = useState("");
@@ -344,6 +348,21 @@ export default function WorryDetailScreen() {
     [confirmRemovePost, confirmReportPost, post],
   );
 
+  // 키보드가 열리면 입력줄이 목록 위로 겹쳐 올라오므로 그만큼 아래를 비운다.
+  // 목록의 레이아웃은 그대로여서 스크롤바 자리도 같이 끌어올려야 한다.
+  const keyboardInset = Math.max(keyboardHeight - insets.bottom, 0);
+  const listContentStyle = useMemo(
+    () => ({
+      ...paged.contentContainerStyle,
+      paddingBottom: paged.contentContainerStyle.paddingBottom + keyboardInset,
+    }),
+    [keyboardInset, paged.contentContainerStyle],
+  );
+  const scrollIndicatorInsets = useMemo(
+    () => ({ bottom: keyboardInset }),
+    [keyboardInset],
+  );
+
   const trimmed = content.trim();
 
   return (
@@ -369,6 +388,8 @@ export default function WorryDetailScreen() {
                   ))}
                 </RetroListPanel>
               )}
+              contentContainerStyle={listContentStyle}
+              scrollIndicatorInsets={scrollIndicatorInsets}
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
               ListHeaderComponent={
@@ -390,7 +411,15 @@ export default function WorryDetailScreen() {
           </YStack>
 
           <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
-            <XStack px="$4" py="$3" gap="$3" items="center" bg={background}>
+            <XStack
+              px="$4"
+              pt="$3"
+              pb={getTokens().space.$3.val + KEYBOARD_OVERLAP}
+              mb={-KEYBOARD_OVERLAP}
+              gap="$3"
+              items="center"
+              bg={background}
+            >
               <YStack flex={1}>
                 <RetroInput
                   value={content}

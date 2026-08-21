@@ -12,10 +12,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, YStack } from "tamagui";
 
-import { FORM_FOOTER_HEIGHT } from "@/lib/design";
+import { FORM_FOOTER_HEIGHT, KEYBOARD_OVERLAP } from "@/lib/design";
 import { useThemeBackground } from "@/lib/theme/accent";
-
-const KEYBOARD_OVERLAP = 2;
 
 type ScrollMode = ComponentProps<typeof KeyboardAwareScrollView>["mode"];
 
