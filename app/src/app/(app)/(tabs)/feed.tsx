@@ -180,13 +180,16 @@ export default function FeedScreen() {
     [],
   );
 
+  // 두 보드가 목록 한 자리를 나눠 쓰므로 전환해도 스크롤이 그대로 남는다.
   const changeBoard = useCallback(
     (label: BoardLabel) => {
       setBoard(BOARD_VALUES[label]);
+      scrollToTop();
+      scrollWorriesToTop();
       scrollTop.reset();
       worryScrollTop.reset();
     },
-    [scrollTop, setBoard, worryScrollTop],
+    [scrollToTop, scrollTop, scrollWorriesToTop, setBoard, worryScrollTop],
   );
 
   // 지워졌거나 이미 신고한 글이면 화면의 글이 낡은 것이므로 목록을 다시 받는다.
