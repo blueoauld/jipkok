@@ -59,7 +59,7 @@ export const useMemberFilterStore = create<MemberFilterState>()(
 );
 
 export type LoungeBoard = "FEED" | "WORRY";
-export type WorrySort = "LATEST" | "POPULAR";
+export type WorrySort = "LATEST" | "POPULAR" | "COMMENT";
 
 type FeedFilterState = {
   board: LoungeBoard;

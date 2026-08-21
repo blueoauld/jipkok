@@ -74,16 +74,18 @@ type Sort = (typeof SORTS)[number];
 const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
 const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
 
-const WORRY_SORTS = ["최신", "공감"] as const;
+const WORRY_SORTS = ["최신", "공감", "댓글"] as const;
 type WorrySortLabel = (typeof WORRY_SORTS)[number];
 
 const WORRY_SORT_VALUES: Record<WorrySortLabel, WorrySort> = {
   최신: "LATEST",
   공감: "POPULAR",
+  댓글: "COMMENT",
 };
 const WORRY_SORT_LABELS: Record<WorrySort, WorrySortLabel> = {
   LATEST: "최신",
   POPULAR: "공감",
+  COMMENT: "댓글",
 };
 
 // 임시: 카드 디자인 확인용 더미 데이터.
