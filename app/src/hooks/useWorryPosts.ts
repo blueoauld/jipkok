@@ -8,7 +8,7 @@ export const WORRIES_KEY = ["worries"];
 // 목록과 검색이 함께 무효화되도록 둘 다 이 키 아래에 둔다.
 export const WORRY_LIST_KEY = [...WORRIES_KEY, "list"];
 
-export function worryPostsKey(sort: WorrySort) {
+function worryPostsKey(sort: WorrySort) {
   return [...WORRY_LIST_KEY, sort];
 }
 

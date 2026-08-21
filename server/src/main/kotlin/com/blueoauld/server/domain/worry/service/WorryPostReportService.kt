@@ -20,9 +20,8 @@ class WorryPostReportService(
 
     @Transactional
     fun report(reporterId: Long, postId: Long) {
-        val post = worryPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
-        }
+        val post = worryPostRepository.findLockedById(postId)
+            ?: throw BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
 
         if (post.memberId == reporterId) {
             throw BusinessException(ErrorCode.SELF_REPORT)

@@ -15,5 +15,8 @@ export function useScrollToTopVisible() {
     [],
   );
 
-  return { visible, onScroll };
+  // 목록을 갈아 끼우면 새 목록은 맨 위에서 시작하므로 버튼도 숨긴다.
+  const reset = useCallback(() => setVisible(false), []);
+
+  return { visible, onScroll, reset };
 }

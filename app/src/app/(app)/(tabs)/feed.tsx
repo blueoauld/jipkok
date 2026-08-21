@@ -42,6 +42,7 @@ import {
   type FeedPostResponse,
   type FeedSort,
   isApiError,
+  type WorryPostResponse,
   type WorrySort,
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
@@ -104,7 +105,9 @@ export default function FeedScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const listRef = useRef<FlatList<FeedPostResponse>>(null);
+  const worryListRef = useRef<FlatList<WorryPostResponse>>(null);
   const scrollTop = useScrollToTopVisible();
+  const worryScrollTop = useScrollToTopVisible();
   const openCompose = useCallback(() => setComposeOpen(true), []);
   const openFilter = useCallback(() => setFilterOpen(true), []);
   const openWorryFilter = useCallback(() => setWorryFilterOpen(true), []);
@@ -170,6 +173,20 @@ export default function FeedScreen() {
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
     [],
+  );
+
+  const scrollWorriesToTop = useCallback(
+    () => worryListRef.current?.scrollToOffset({ offset: 0, animated: false }),
+    [],
+  );
+
+  const changeBoard = useCallback(
+    (label: BoardLabel) => {
+      setBoard(BOARD_VALUES[label]);
+      scrollTop.reset();
+      worryScrollTop.reset();
+    },
+    [scrollTop, setBoard, worryScrollTop],
   );
 
   // 지워졌거나 이미 신고한 글이면 화면의 글이 낡은 것이므로 목록을 다시 받는다.
@@ -313,7 +330,7 @@ export default function FeedScreen() {
         <RetroSegmentedControl
           values={BOARDS}
           value={BOARD_LABELS[board]}
-          onChange={(label) => setBoard(BOARD_VALUES[label])}
+          onChange={changeBoard}
         />
       </YStack>
 
@@ -321,12 +338,15 @@ export default function FeedScreen() {
         worryPosts ? (
           <FlatList
             {...pagedWorries}
+            ref={worryListRef}
             data={worryPosts}
             keyExtractor={(worry) => String(worry.worryId)}
             renderItem={({ item }) => (
               <WorryCard worry={item} onPress={openWorryDetail} />
             )}
             showsVerticalScrollIndicator={true}
+            onScroll={worryScrollTop.onScroll}
+            scrollEventThrottle={SCROLL_EVENT_THROTTLE}
             refreshControl={
               <RefreshControl
                 refreshing={worryRefreshing}
@@ -374,8 +394,12 @@ export default function FeedScreen() {
       )}
 
       <ScrollToTopButton
-        visible={board === "FEED" && scrollTop.visible}
-        onPress={() => listRef.current?.scrollToOffset({ offset: 0 })}
+        visible={board === "FEED" ? scrollTop.visible : worryScrollTop.visible}
+        onPress={() =>
+          board === "FEED"
+            ? listRef.current?.scrollToOffset({ offset: 0 })
+            : worryListRef.current?.scrollToOffset({ offset: 0 })
+        }
       />
 
       {board === "FEED" && (
@@ -422,7 +446,10 @@ export default function FeedScreen() {
         items={WORRY_SORTS.map((label) => ({
           label,
           selected: label === WORRY_SORT_LABELS[worrySort],
-          onPress: () => setWorrySort(WORRY_SORT_VALUES[label]),
+          onPress: () => {
+            setWorrySort(WORRY_SORT_VALUES[label]);
+            scrollWorriesToTop();
+          },
         }))}
       />
 

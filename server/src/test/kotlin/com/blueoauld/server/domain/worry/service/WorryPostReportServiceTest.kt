@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.util.*
 
 class WorryPostReportServiceTest {
 
@@ -34,7 +33,7 @@ class WorryPostReportServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
+        every { worryPostRepository.findLockedById(POST_ID) } returns post(AUTHOR_ID)
         every { worryPostReportRepository.existsByReporterIdAndPostId(any(), any()) } returns false
         every { worryPostReportRepository.saveAndFlush(any()) } answers { firstArg() }
         every { worryPostReportRepository.countByPostId(POST_ID) } returns 1
@@ -87,6 +86,17 @@ class WorryPostReportServiceTest {
     }
 
     @Test
+    fun `신고 수를 세기 전에 글을 잠근다`() {
+        // given
+
+        // when
+        worryPostReportService.report(REPORTER_ID, POST_ID)
+
+        // then
+        verify { worryPostRepository.findLockedById(POST_ID) }
+    }
+
+    @Test
     fun `기준을 이미 넘긴 뒤에는 다시 알리지 않는다`() {
         // given
         every {
@@ -103,7 +113,7 @@ class WorryPostReportServiceTest {
     @Test
     fun `내 글은 신고할 수 없다`() {
         // given
-        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(REPORTER_ID))
+        every { worryPostRepository.findLockedById(POST_ID) } returns post(REPORTER_ID)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -133,7 +143,7 @@ class WorryPostReportServiceTest {
     @Test
     fun `없는 글이면 실패한다`() {
         // given
-        every { worryPostRepository.findById(POST_ID) } returns Optional.empty()
+        every { worryPostRepository.findLockedById(POST_ID) } returns null
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
