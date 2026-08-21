@@ -16,6 +16,21 @@ export function worryDetailKey(postId: number) {
   return [...WORRIES_KEY, "detail", postId];
 }
 
+export const MY_WORRIES_KEY = [...WORRY_LIST_KEY, "mine"];
+
+export function useMyWorryPosts() {
+  const query = useInfiniteQuery({
+    queryKey: MY_WORRIES_KEY,
+    queryFn: ({ pageParam }) => api.worries.mine({ cursor: pageParam }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (page: WorryPostPage) => page.nextCursor,
+  });
+
+  const posts = useFlatItems(query.data);
+
+  return { ...query, posts };
+}
+
 export function useWorryPosts(sort: WorrySort) {
   const query = useInfiniteQuery({
     queryKey: worryPostsKey(sort),

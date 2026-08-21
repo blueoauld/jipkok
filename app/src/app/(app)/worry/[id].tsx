@@ -409,7 +409,7 @@ export default function WorryDetailScreen() {
   const confirmRemovePost = useCallback(
     () =>
       confirm({
-        message: "지운 고민은 되돌릴 수 없습니다.",
+        message: "삭제한 고민은 되돌릴 수 없습니다.",
         confirmLabel: "삭제",
         destructive: true,
         onConfirm: () => removePost.mutate(),

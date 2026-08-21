@@ -55,6 +55,14 @@ class WorryController(
         worryPostService.create(memberId, request)
     }
 
+    @Operation(summary = "내가 쓴 고민 목록")
+    @GetMapping("/me")
+    fun findMine(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestParam(required = false) cursor: Long?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): CursorResponse<WorryPostResponse> = worryPostService.findMine(memberId, cursor, size)
+
     @Operation(summary = "고민 검색", description = "내용으로 찾고 두 글자 이상부터 검색한다.")
     @GetMapping("/search")
     fun search(

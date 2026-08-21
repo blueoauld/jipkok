@@ -137,6 +137,34 @@ class WorryPostRepositoryTest {
     }
 
     @Test
+    fun `내 고민 목록은 내가 쓴 글만 최신순으로 준다`() {
+        // given
+        val older = savePost(meId).id
+        val newer = savePost(meId).id
+        val deleted = savePost(meId)
+        worryPostRepository.delete(deleted)
+
+        // when
+        val rows = worryPostRepository.findMineLatestFirst(meId, cursor = null, size = PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(newer, older)
+    }
+
+    @Test
+    fun `내 고민 목록도 커서를 따른다`() {
+        // given
+        val older = savePost(meId).id
+        val newer = savePost(meId).id
+
+        // when
+        val rows = worryPostRepository.findMineLatestFirst(meId, cursor = newer, size = PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(older)
+    }
+
+    @Test
     fun `검색은 내용 일부로 찾고 대소문자를 가리지 않는다`() {
         // given
         val postId = savePost(authorId, content = "Ohio 이직 고민").id

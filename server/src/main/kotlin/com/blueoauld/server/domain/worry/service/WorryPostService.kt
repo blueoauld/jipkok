@@ -56,6 +56,17 @@ class WorryPostService(
     }
 
     @Transactional(readOnly = true)
+    fun findMine(memberId: Long, cursor: Long?, size: Int): CursorResponse<WorryPostResponse> {
+        val pageSize = CursorResponse.pageSize(size)
+        val rows = worryPostRepository.findMineLatestFirst(memberId, cursor, pageSize)
+
+        return CursorResponse(
+            items = rows.map { toResponse(it, memberId) },
+            nextCursor = rows.lastOrNull()?.getPostId().takeIf { rows.size == pageSize },
+        )
+    }
+
+    @Transactional(readOnly = true)
     fun search(memberId: Long, keyword: String, cursor: Long?, size: Int): CursorResponse<WorryPostResponse> {
         val trimmed = keyword.trim()
 

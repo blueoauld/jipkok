@@ -417,6 +417,9 @@ export const worries = {
   search: (params: WorrySearchParams) =>
     request<WorryPostPage>("/api/worries/search", { query: params }),
 
+  mine: (params: CursorParams = {}) =>
+    request<WorryPostPage>("/api/worries/me", { query: params }),
+
   create: (content: string) =>
     request<void>("/api/worries", { method: "POST", body: { content } }),
 

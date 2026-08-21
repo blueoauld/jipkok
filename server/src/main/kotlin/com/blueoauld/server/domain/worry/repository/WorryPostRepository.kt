@@ -148,6 +148,33 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
                ) as likedByMe
         from worry_post p
         where p.deleted_at is null
+          and p.member_id = :memberId
+          and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
+        order by p.id desc
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findMineLatestFirst(
+        @Param("memberId") memberId: Long,
+        @Param("cursor") cursor: Long?,
+        @Param("size") size: Int,
+    ): List<WorryPostRow>
+
+    @Query(
+        value = """
+        select p.id as postId,
+               p.member_id as memberId,
+               p.content as content,
+               p.created_at as createdAt,
+               p.like_count as likeCount,
+               p.comment_count as commentCount,
+               exists (
+                 select 1 from worry_post_like l
+                 where l.post_id = p.id and l.member_id = :memberId
+               ) as likedByMe
+        from worry_post p
+        where p.deleted_at is null
           and p.content ilike :keyword escape '\'
           and not exists (
             select 1 from worry_post_report r

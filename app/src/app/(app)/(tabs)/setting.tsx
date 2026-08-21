@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Href, Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
+import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
 import { EyeIcon } from "phosphor-react-native/src/icons/Eye";
 import { FileTextIcon } from "phosphor-react-native/src/icons/FileText";
@@ -96,6 +97,7 @@ const SECTIONS: SettingItem[][] = [
       href: "/activity/secret-photo",
     },
     { label: "차단 목록", icon: ProhibitIcon, href: "/activity/block" },
+    { label: "고민 목록", icon: ChatCircleTextIcon, href: "/activity/worry" },
   ],
   [
     {
