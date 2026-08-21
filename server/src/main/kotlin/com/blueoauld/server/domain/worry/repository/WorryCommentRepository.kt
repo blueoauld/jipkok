@@ -25,25 +25,36 @@ interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
     fun findMaxAnonymousNo(@Param("postId") postId: Long): Int?
 
     @Query(
+        value = "select coalesce(parent_id, id) from worry_comment where id = :commentId",
+        nativeQuery = true,
+    )
+    fun findThreadId(@Param("commentId") commentId: Long): Long?
+
+    @Query(
         value = """
         select c.id as commentId,
                c.member_id as memberId,
                c.content as content,
                c.created_at as createdAt,
                c.anonymous_no as anonymousNo,
+               c.parent_id as parentId,
                (c.deleted_at is not null) as deleted,
                c.deleted_by_report as deletedByReport
         from worry_comment c
         where c.post_id = :postId
-          and (cast(:cursor as bigint) is null or c.id > cast(:cursor as bigint))
-        order by c.id
+          and (
+            cast(:cursorId as bigint) is null
+            or (coalesce(c.parent_id, c.id), c.id) > (cast(:cursorThreadId as bigint), cast(:cursorId as bigint))
+          )
+        order by coalesce(c.parent_id, c.id), c.id
         limit :size
         """,
         nativeQuery = true,
     )
     fun findByPostIdOldestFirst(
         @Param("postId") postId: Long,
-        @Param("cursor") cursor: Long?,
+        @Param("cursorThreadId") cursorThreadId: Long?,
+        @Param("cursorId") cursorId: Long?,
         @Param("size") size: Int,
     ): List<WorryCommentRow>
 

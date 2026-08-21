@@ -90,7 +90,7 @@ class WorryController(
         worryPostReportService.report(memberId, postId)
     }
 
-    @Operation(summary = "고민 댓글 목록 조회", description = "오래된 순으로 준다.")
+    @Operation(summary = "고민 댓글 목록 조회", description = "오래된 순으로 주고 답글은 부모 댓글 뒤에 붙는다.")
     @GetMapping("/{postId}/comments")
     fun findComments(
         @AuthenticationPrincipal memberId: Long,
@@ -99,7 +99,11 @@ class WorryController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<WorryCommentResponse> = worryCommentService.find(memberId, postId, cursor, size)
 
-    @Operation(operationId = "createWorryComment", summary = "고민 댓글 작성")
+    @Operation(
+        operationId = "createWorryComment",
+        summary = "고민 댓글 작성",
+        description = "parentId를 주면 그 댓글의 답글이 된다. 답글에는 답글을 달 수 없다.",
+    )
     @PostMapping("/{postId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     fun createComment(

@@ -8,6 +8,7 @@ import {
   useTheme,
   XStack,
   YStack,
+  type YStackProps,
 } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
@@ -22,10 +23,14 @@ const SINGLE_LINE_FIX = {
 const CLEAR_BUTTON_SIZE = 36;
 const CLEAR_ICON_SIZE = 18;
 
-export type RetroInputProps = InputProps & { clearable?: boolean };
+export type RetroInputProps = InputProps & {
+  clearable?: boolean;
+  shadow?: YStackProps["bg"];
+};
 
 export function RetroInput({
   theme = "gray",
+  shadow = "$gray8",
   multiline,
   clearable,
   value,
@@ -47,7 +52,7 @@ export function RetroInput({
 
   return (
     <YStack theme={theme}>
-      <RetroShadow color="$gray8" />
+      <RetroShadow color={shadow} />
       <Input
         ref={inputRef as unknown as Ref<TamaguiElement>}
         size="$4"

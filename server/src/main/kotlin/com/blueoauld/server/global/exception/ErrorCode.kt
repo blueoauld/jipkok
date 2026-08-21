@@ -116,4 +116,5 @@ enum class ErrorCode(
     WORRY_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "WORRY_005", "댓글을 찾을 수 없습니다."),
     NOT_WORRY_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "WORRY_006", "본인이 쓴 댓글만 지울 수 있습니다."),
     DUPLICATE_WORRY_COMMENT_REPORT(HttpStatus.CONFLICT, "WORRY_007", "이미 신고한 댓글입니다."),
+    NESTED_WORRY_REPLY(HttpStatus.BAD_REQUEST, "WORRY_008", "답글에는 답글을 달 수 없습니다."),
 }

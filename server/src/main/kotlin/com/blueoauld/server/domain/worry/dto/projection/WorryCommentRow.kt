@@ -14,6 +14,8 @@ interface WorryCommentRow {
 
     fun getAnonymousNo(): Int
 
+    fun getParentId(): Long?
+
     fun getDeleted(): Boolean
 
     fun getDeletedByReport(): Boolean

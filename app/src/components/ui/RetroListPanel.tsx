@@ -25,6 +25,8 @@ export function RetroListPanel({ children }: { children: ReactNode }) {
 // 박스형 메뉴의 칸은 가라앉지 않고 배경만 변한다.
 export function RetroListRow({
   divider,
+  onPress,
+  onLongPress,
   children,
   ...props
 }: XStackProps & { divider: boolean }) {
@@ -35,7 +37,9 @@ export function RetroListRow({
       py="$3"
       borderBottomWidth={divider ? RETRO_BORDER_WIDTH : 0}
       borderColor="$gray12"
-      pressStyle={{ bg: "$color3" }}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      pressStyle={onPress || onLongPress ? { bg: "$color3" } : undefined}
       {...props}
     >
       {children}

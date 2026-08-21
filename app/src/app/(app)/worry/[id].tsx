@@ -2,10 +2,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
+import { ArrowBendDownRightIcon } from "phosphor-react-native/src/icons/ArrowBendDownRight";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
+import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import {
@@ -19,12 +21,12 @@ import {
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
-import { MenuSheet } from "@/components/MenuSheet";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
+import { RetroShadow } from "@/components/ui/RetroShadow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -36,7 +38,12 @@ import {
   type WorryPostResponse,
 } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/date";
-import { KEYBOARD_OVERLAP, PRESS_OPACITY } from "@/lib/design";
+import {
+  KEYBOARD_OVERLAP,
+  PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
+  RETRO_SHADOW_OFFSET,
+} from "@/lib/design";
 import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { useAccentToken, useThemeBackground } from "@/lib/theme/accent";
@@ -44,6 +51,11 @@ import { showToast } from "@/lib/toast/store";
 
 const COMMENT_MAX_LENGTH = 200;
 const COUNT_ICON_SIZE = 18;
+const CANCEL_ICON_SIZE = 18;
+const REPLY_ROW_ICON_SIZE = 18;
+const REPLY_ICON_TOP = 2;
+const REPLY_INDENT = "$5";
+const REPLY_PREVIEW_GAP = 2;
 
 const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
 const COMMENT_EMPTY_MESSAGE = "첫 댓글을 남겨보세요.";
@@ -128,24 +140,59 @@ function deletedPlaceholder(comment: WorryCommentResponse) {
     : DELETED_COMMENT_PLACEHOLDER;
 }
 
+function RowAction({
+  label,
+  destructive,
+  onPress,
+}: {
+  label: string;
+  destructive?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <XStack pressStyle={{ opacity: PRESS_OPACITY }} onPress={onPress}>
+      <Text
+        theme="gray"
+        color={destructive ? "$red10" : "$color11"}
+        fontSize="$3"
+        fontWeight="600"
+      >
+        {label}
+      </Text>
+    </XStack>
+  );
+}
+
 function CommentRow({
   comment,
   divider,
-  onLongPress,
+  onReply,
+  onRemove,
+  onReport,
 }: {
   comment: WorryCommentResponse;
   divider: boolean;
-  onLongPress: (comment: WorryCommentResponse) => void;
+  onReply: (comment: WorryCommentResponse) => void;
+  onRemove: (commentId: number) => void;
+  onReport: (commentId: number) => void;
 }) {
+  const theme = useTheme();
   const accentToken = useAccentToken();
   const active = comment.status === "ACTIVE";
+  const reply = comment.parentId != null;
 
   return (
-    <RetroListRow
-      divider={divider}
-      pressStyle={active ? { bg: "$color3" } : undefined}
-      onLongPress={active ? () => onLongPress(comment) : undefined}
-    >
+    <RetroListRow divider={divider} pl={reply ? REPLY_INDENT : "$4"} gap="$2.5">
+      {reply && (
+        <YStack self="flex-start" mt={REPLY_ICON_TOP}>
+          <ArrowBendDownRightIcon
+            size={REPLY_ROW_ICON_SIZE}
+            weight="bold"
+            color={theme.gray11.val}
+          />
+        </YStack>
+      )}
+
       <YStack flex={1} gap="$1.5">
         <XStack items="center" justify="space-between">
           <Text
@@ -167,6 +214,27 @@ function CommentRow({
             {deletedPlaceholder(comment)}
           </Text>
         )}
+
+        {active && (
+          <XStack self="flex-end" gap="$4">
+            {!reply && (
+              <RowAction label="답글" onPress={() => onReply(comment)} />
+            )}
+            {comment.mine ? (
+              <RowAction
+                label="삭제"
+                destructive
+                onPress={() => onRemove(comment.commentId)}
+              />
+            ) : (
+              <RowAction
+                label="신고"
+                destructive
+                onPress={() => onReport(comment.commentId)}
+              />
+            )}
+          </XStack>
+        )}
       </YStack>
     </RetroListRow>
   );
@@ -176,6 +244,7 @@ export default function WorryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const queryClient = useQueryClient();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const background = useThemeBackground();
   const keyboardHeight = useKeyboardState((state) => state.height);
@@ -183,8 +252,7 @@ export default function WorryDetailScreen() {
 
   const [content, setContent] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedComment, setSelectedComment] =
-    useState<WorryCommentResponse | null>(null);
+  const [replyTo, setReplyTo] = useState<WorryCommentResponse | null>(null);
 
   const detailKey = useMemo(() => worryDetailKey(postId), [postId]);
   const detail = useQuery({
@@ -270,9 +338,11 @@ export default function WorryDetailScreen() {
   );
 
   const createComment = useMutation({
-    mutationFn: (text: string) => api.worries.createComment(postId, text),
+    mutationFn: (text: string) =>
+      api.worries.createComment(postId, text, replyTo?.commentId),
     onSuccess: async () => {
       setContent("");
+      setReplyTo(null);
       await invalidateComments();
     },
     onError: showApiError,
@@ -280,7 +350,10 @@ export default function WorryDetailScreen() {
 
   const removeComment = useMutation({
     mutationFn: (commentId: number) => api.worries.removeComment(commentId),
-    onSuccess: async () => {
+    onSuccess: async (_result, commentId) => {
+      setReplyTo((current) =>
+        current?.commentId === commentId ? null : current,
+      );
       await invalidateComments();
       showToast("info", COMMENT_DELETED_MESSAGE);
     },
@@ -298,6 +371,31 @@ export default function WorryDetailScreen() {
 
   useLoadingOverlay(
     removePost.isPending || removeComment.isPending || reportComment.isPending,
+  );
+
+  const { mutate: removeCommentMutate } = removeComment;
+  const { mutate: reportCommentMutate } = reportComment;
+
+  const confirmRemoveComment = useCallback(
+    (commentId: number) =>
+      confirm({
+        message: "지운 댓글은 되돌릴 수 없습니다.",
+        confirmLabel: "삭제",
+        destructive: true,
+        onConfirm: () => removeCommentMutate(commentId),
+      }),
+    [confirm, removeCommentMutate],
+  );
+
+  const confirmReportComment = useCallback(
+    (commentId: number) =>
+      confirm({
+        message: "신고한 댓글은 검토 후 조치됩니다.",
+        confirmLabel: "신고",
+        destructive: true,
+        onConfirm: () => reportCommentMutate(commentId),
+      }),
+    [confirm, reportCommentMutate],
   );
 
   const { mutate: toggleLikeMutate } = toggleLike;
@@ -383,7 +481,9 @@ export default function WorryDetailScreen() {
                       key={comment.commentId}
                       comment={comment}
                       divider={index < item.length - 1}
-                      onLongPress={setSelectedComment}
+                      onReply={setReplyTo}
+                      onRemove={confirmRemoveComment}
+                      onReport={confirmReportComment}
                     />
                   ))}
                 </RetroListPanel>
@@ -411,6 +511,45 @@ export default function WorryDetailScreen() {
           </YStack>
 
           <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
+            {replyTo && (
+              <YStack px="$4" pt="$3" bg={background}>
+                {/* 그림자가 아래로 넘치므로 그만큼 띄워야 입력줄에 안 가린다. */}
+                <YStack theme="gray" mb={RETRO_SHADOW_OFFSET}>
+                  <RetroShadow color="$gray12" />
+                  <XStack
+                    borderWidth={RETRO_BORDER_WIDTH}
+                    borderColor="$gray12"
+                    bg="$color1"
+                    items="center"
+                    pl="$3"
+                    pr="$2"
+                    py="$2"
+                    gap="$2.5"
+                  >
+                    <YStack flex={1} gap={REPLY_PREVIEW_GAP}>
+                      <Text fontSize="$2" fontWeight="600" color="$color12">
+                        {`${commentLabel(replyTo)}에게 답글`}
+                      </Text>
+                      <Text fontSize="$3" color="$color11" numberOfLines={1}>
+                        {replyTo.content}
+                      </Text>
+                    </YStack>
+
+                    <XStack
+                      p="$2"
+                      pressStyle={{ opacity: PRESS_OPACITY }}
+                      onPress={() => setReplyTo(null)}
+                    >
+                      <XIcon
+                        size={CANCEL_ICON_SIZE}
+                        color={theme.color12.val}
+                      />
+                    </XStack>
+                  </XStack>
+                </YStack>
+              </YStack>
+            )}
+
             <XStack
               px="$4"
               pt="$3"
@@ -421,10 +560,14 @@ export default function WorryDetailScreen() {
               bg={background}
             >
               <YStack flex={1}>
+                {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
                 <RetroInput
+                  key={replyTo?.commentId ?? "comment"}
+                  shadow="$gray12"
                   value={content}
                   onChangeText={setContent}
-                  placeholder="댓글 입력"
+                  autoFocusNative={replyTo !== null}
+                  placeholder={replyTo ? "답글 입력" : "댓글 입력"}
                   maxLength={COMMENT_MAX_LENGTH}
                 />
               </YStack>
@@ -444,36 +587,6 @@ export default function WorryDetailScreen() {
           onRetry={detail.refetch}
         />
       )}
-
-      <MenuSheet
-        open={selectedComment !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedComment(null);
-          }
-        }}
-        items={
-          selectedComment
-            ? selectedComment.mine
-              ? [
-                  {
-                    label: "삭제",
-                    destructive: true,
-                    onPress: () =>
-                      removeComment.mutate(selectedComment.commentId),
-                  },
-                ]
-              : [
-                  {
-                    label: "신고",
-                    destructive: true,
-                    onPress: () =>
-                      reportComment.mutate(selectedComment.commentId),
-                  },
-                ]
-            : []
-        }
-      />
 
       {alertElement}
     </SafeAreaView>

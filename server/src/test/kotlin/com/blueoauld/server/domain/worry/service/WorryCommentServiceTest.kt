@@ -95,6 +95,70 @@ class WorryCommentServiceTest {
     }
 
     @Test
+    fun `답글은 부모 댓글을 달고 저장된다`() {
+        // given
+        every { worryCommentRepository.findById(PARENT_ID) } returns Optional.of(comment(OTHER_MEMBER_ID, 1))
+        val saved = slot<WorryComment>()
+
+        // when
+        worryCommentService.create(MEMBER_ID, POST_ID, CreateWorryCommentRequest("저도요", PARENT_ID))
+
+        // then
+        verify { worryCommentRepository.saveAndFlush(capture(saved)) }
+        verify { worryPostRepository.increaseCommentCount(POST_ID) }
+        assertThat(saved.captured.parentId).isEqualTo(PARENT_ID)
+    }
+
+    @Test
+    fun `답글에는 답글을 달 수 없다`() {
+        // given
+        every {
+            worryCommentRepository.findById(PARENT_ID)
+        } returns Optional.of(comment(OTHER_MEMBER_ID, 1, parentId = 1L))
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            worryCommentService.create(MEMBER_ID, POST_ID, CreateWorryCommentRequest("저도요", PARENT_ID))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.NESTED_WORRY_REPLY)
+        verify(exactly = 0) { worryCommentRepository.saveAndFlush(any()) }
+    }
+
+    @Test
+    fun `다른 글의 댓글에는 답글을 달 수 없다`() {
+        // given
+        every {
+            worryCommentRepository.findById(PARENT_ID)
+        } returns Optional.of(comment(OTHER_MEMBER_ID, 1, postId = OTHER_POST_ID))
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            worryCommentService.create(MEMBER_ID, POST_ID, CreateWorryCommentRequest("저도요", PARENT_ID))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.WORRY_COMMENT_NOT_FOUND)
+        verify(exactly = 0) { worryCommentRepository.saveAndFlush(any()) }
+    }
+
+    @Test
+    fun `커서 댓글이 사라졌으면 빈 페이지를 준다`() {
+        // given
+        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
+        every { worryCommentRepository.findThreadId(COMMENT_ID) } returns null
+
+        // when
+        val response = worryCommentService.find(MEMBER_ID, POST_ID, COMMENT_ID, 20)
+
+        // then
+        assertThat(response.items).isEmpty()
+        assertThat(response.nextCursor).isNull()
+        verify(exactly = 0) { worryCommentRepository.findByPostIdOldestFirst(any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `본인 댓글을 지우면 글의 댓글 수가 줄어든다`() {
         // given
         val comment = comment(MEMBER_ID, anonymousNo = 1)
@@ -143,7 +207,7 @@ class WorryCommentServiceTest {
         // given
         every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
         every {
-            worryCommentRepository.findByPostIdOldestFirst(POST_ID, null, 20)
+            worryCommentRepository.findByPostIdOldestFirst(POST_ID, null, null, 20)
         } returns listOf(
             row(commentId = 1),
             row(commentId = 2, deleted = true),
@@ -178,30 +242,42 @@ class WorryCommentServiceTest {
 
     private fun post(memberId: Long) = WorryPost(memberId = memberId, content = "고민 내용")
 
-    private fun comment(memberId: Long, anonymousNo: Int) = WorryComment(
-        postId = POST_ID,
+    private fun comment(
+        memberId: Long,
+        anonymousNo: Int,
+        postId: Long = POST_ID,
+        parentId: Long? = null,
+    ) = WorryComment(
+        postId = postId,
         memberId = memberId,
         content = "댓글 내용",
         anonymousNo = anonymousNo,
+        parentId = parentId,
     )
 
-    private fun row(commentId: Long, deleted: Boolean = false, deletedByReport: Boolean = false) =
-        object : WorryCommentRow {
+    private fun row(
+        commentId: Long,
+        parentId: Long? = null,
+        deleted: Boolean = false,
+        deletedByReport: Boolean = false,
+    ) = object : WorryCommentRow {
 
-            override fun getCommentId() = commentId
+        override fun getCommentId() = commentId
 
-            override fun getMemberId() = MEMBER_ID
+        override fun getMemberId() = MEMBER_ID
 
-            override fun getContent() = "댓글 내용"
+        override fun getContent() = "댓글 내용"
 
-            override fun getCreatedAt(): Instant = Instant.parse("2026-08-01T00:00:00Z")
+        override fun getCreatedAt(): Instant = Instant.parse("2026-08-01T00:00:00Z")
 
-            override fun getAnonymousNo() = 1
+        override fun getAnonymousNo() = 1
 
-            override fun getDeleted() = deleted
+        override fun getParentId() = parentId
 
-            override fun getDeletedByReport() = deletedByReport
-        }
+        override fun getDeleted() = deleted
+
+        override fun getDeletedByReport() = deletedByReport
+    }
 
     companion object {
 
@@ -209,6 +285,8 @@ class WorryCommentServiceTest {
         private const val OTHER_MEMBER_ID = 2L
         private const val AUTHOR_ID = 3L
         private const val POST_ID = 10L
+        private const val OTHER_POST_ID = 11L
         private const val COMMENT_ID = 100L
+        private const val PARENT_ID = 101L
     }
 }

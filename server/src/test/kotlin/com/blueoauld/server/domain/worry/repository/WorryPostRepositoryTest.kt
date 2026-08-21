@@ -172,13 +172,42 @@ class WorryPostRepositoryTest {
         worryCommentRepository.delete(reportDeleted)
 
         // when
-        val rows = worryCommentRepository.findByPostIdOldestFirst(quietPostId, cursor = null, size = PAGE_SIZE)
+        val rows = findComments(cursor = null)
 
         // then
         assertThat(rows.map { it.getCommentId() })
             .containsExactly(active.id, deleted.id, reportDeleted.id)
         assertThat(rows.map { it.getDeleted() }).containsExactly(false, true, true)
         assertThat(rows.map { it.getDeletedByReport() }).containsExactly(false, false, true)
+    }
+
+    @Test
+    fun `답글은 나중에 달려도 부모 댓글 바로 뒤에 온다`() {
+        // given
+        val first = saveComment(quietPostId, meId, anonymousNo = 1)
+        val second = saveComment(quietPostId, authorId, anonymousNo = 2)
+        val reply = saveComment(quietPostId, authorId, anonymousNo = 2, parentId = first.id)
+
+        // when
+        val rows = findComments(cursor = null)
+
+        // then
+        assertThat(rows.map { it.getCommentId() }).containsExactly(first.id, reply.id, second.id)
+        assertThat(rows.map { it.getParentId() }).containsExactly(null, first.id, null)
+    }
+
+    @Test
+    fun `댓글 커서는 답글까지 건너뛰고 다음 묶음을 준다`() {
+        // given
+        val first = saveComment(quietPostId, meId, anonymousNo = 1)
+        val second = saveComment(quietPostId, authorId, anonymousNo = 2)
+        val reply = saveComment(quietPostId, authorId, anonymousNo = 2, parentId = first.id)
+
+        // when
+        val rows = findComments(cursor = reply.id)
+
+        // then
+        assertThat(rows.map { it.getCommentId() }).containsExactly(second.id)
     }
 
     @Test
@@ -238,13 +267,21 @@ class WorryPostRepositoryTest {
             ),
         )
 
-    private fun saveComment(postId: Long, memberId: Long, anonymousNo: Int) =
+    private fun findComments(cursor: Long?) = worryCommentRepository.findByPostIdOldestFirst(
+        postId = quietPostId,
+        cursorThreadId = cursor?.let { worryCommentRepository.findThreadId(it) },
+        cursorId = cursor,
+        size = PAGE_SIZE,
+    )
+
+    private fun saveComment(postId: Long, memberId: Long, anonymousNo: Int, parentId: Long? = null) =
         worryCommentRepository.saveAndFlush(
             WorryComment(
                 postId = postId,
                 memberId = memberId,
                 content = "댓글 내용",
                 anonymousNo = anonymousNo,
+                parentId = parentId,
             ),
         )
 

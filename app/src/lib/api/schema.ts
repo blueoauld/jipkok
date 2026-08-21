@@ -182,11 +182,14 @@ export interface paths {
         };
         /**
          * 고민 댓글 목록 조회
-         * @description 오래된 순으로 준다.
+         * @description 오래된 순으로 주고 답글은 부모 댓글 뒤에 붙는다.
          */
         get: operations["findComments"];
         put?: never;
-        /** 고민 댓글 작성 */
+        /**
+         * 고민 댓글 작성
+         * @description parentId를 주면 그 댓글의 답글이 된다. 답글에는 답글을 달 수 없다.
+         */
         post: operations["createWorryComment"];
         delete?: never;
         options?: never;
@@ -1211,6 +1214,8 @@ export interface components {
         };
         CreateWorryCommentRequest: {
             content: string;
+            /** Format: int64 */
+            parentId?: number | null;
         };
         CreateReportRequest: {
             /** Format: int64 */
@@ -1379,6 +1384,8 @@ export interface components {
             createdAt: string;
             /** Format: int32 */
             anonymousNo: number;
+            /** Format: int64 */
+            parentId?: number | null;
             byAuthor: boolean;
             mine: boolean;
             /** @enum {string} */

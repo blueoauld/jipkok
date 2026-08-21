@@ -9,6 +9,7 @@ data class WorryCommentResponse(
     val content: String?,
     val createdAt: Instant,
     val anonymousNo: Int,
+    val parentId: Long?,
     val byAuthor: Boolean,
     val mine: Boolean,
     val status: WorryCommentStatus,

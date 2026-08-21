@@ -27,7 +27,10 @@ class WorryCommentService(
         }
 
         val pageSize = CursorResponse.pageSize(size)
-        val rows = worryCommentRepository.findByPostIdOldestFirst(postId, cursor, pageSize)
+        val cursorThreadId = cursor?.let {
+            worryCommentRepository.findThreadId(it) ?: return CursorResponse(emptyList(), null)
+        }
+        val rows = worryCommentRepository.findByPostIdOldestFirst(postId, cursorThreadId, cursor, pageSize)
 
         return CursorResponse(
             items = rows.map { row ->
@@ -36,6 +39,7 @@ class WorryCommentService(
                     content = row.getContent().takeUnless { row.getDeleted() },
                     createdAt = row.getCreatedAt(),
                     anonymousNo = row.getAnonymousNo(),
+                    parentId = row.getParentId(),
                     byAuthor = row.getMemberId() == post.memberId,
                     mine = row.getMemberId() == memberId,
                     status = statusOf(row),
@@ -50,6 +54,8 @@ class WorryCommentService(
         worryPostRepository.findLockedById(postId)
             ?: throw BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
 
+        request.parentId?.let { validateParent(postId, it) }
+
         val anonymousNo = worryCommentRepository.findAnonymousNo(postId, memberId)
             ?: ((worryCommentRepository.findMaxAnonymousNo(postId) ?: 0) + 1)
 
@@ -59,6 +65,7 @@ class WorryCommentService(
                 memberId = memberId,
                 content = request.content,
                 anonymousNo = anonymousNo,
+                parentId = request.parentId,
             ),
         )
         worryPostRepository.increaseCommentCount(postId)
@@ -76,6 +83,20 @@ class WorryCommentService(
 
         worryCommentRepository.delete(comment)
         worryPostRepository.decreaseCommentCount(comment.postId)
+    }
+
+    private fun validateParent(postId: Long, parentId: Long) {
+        val parent = worryCommentRepository.findById(parentId).orElseThrow {
+            BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
+        }
+
+        if (parent.postId != postId) {
+            throw BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
+        }
+
+        if (parent.parentId != null) {
+            throw BusinessException(ErrorCode.NESTED_WORRY_REPLY)
+        }
     }
 
     private fun statusOf(row: WorryCommentRow) = when {

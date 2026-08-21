@@ -1,0 +1,1 @@
+DROP INDEX idx_worry_comment_post_id_id;

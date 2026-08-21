@@ -434,10 +434,10 @@ export const worries = {
       query: params,
     }),
 
-  createComment: (postId: number, content: string) =>
+  createComment: (postId: number, content: string, parentId?: number) =>
     request<void>(`/api/worries/${postId}/comments`, {
       method: "POST",
-      body: { content },
+      body: { content, parentId },
     }),
 
   removeComment: (commentId: number) =>

@@ -15,10 +15,7 @@ import org.hibernate.annotations.SoftDeleteType
 @Entity
 @Table(
     name = "worry_comment",
-    indexes = [
-        Index(name = "idx_worry_comment_post_id_id", columnList = "post_id, id"),
-        Index(name = "idx_worry_comment_member_id", columnList = "member_id"),
-    ],
+    indexes = [Index(name = "idx_worry_comment_member_id", columnList = "member_id")],
 )
 class WorryComment(
 
@@ -33,6 +30,9 @@ class WorryComment(
 
     @Column(name = "anonymous_no", nullable = false, updatable = false)
     val anonymousNo: Int,
+
+    @Column(name = "parent_id", updatable = false)
+    val parentId: Long? = null,
 
     @Column(name = "deleted_by_report", nullable = false)
     var deletedByReport: Boolean = false,
