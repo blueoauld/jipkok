@@ -16,6 +16,9 @@ import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
+import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
+import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
+import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import io.mockk.every
 import io.mockk.mockk
@@ -37,6 +40,12 @@ class MemberWithdrawServiceTest {
     private val feedPostRepository = mockk<FeedPostRepository>(relaxed = true)
 
     private val feedPostLikeRepository = mockk<FeedPostLikeRepository>(relaxed = true)
+
+    private val worryPostRepository = mockk<WorryPostRepository>(relaxed = true)
+
+    private val worryPostLikeRepository = mockk<WorryPostLikeRepository>(relaxed = true)
+
+    private val worryCommentRepository = mockk<WorryCommentRepository>(relaxed = true)
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
@@ -60,6 +69,9 @@ class MemberWithdrawServiceTest {
         chatRoomService,
         feedPostRepository,
         feedPostLikeRepository,
+        worryPostRepository,
+        worryPostLikeRepository,
+        worryCommentRepository,
         memberBlockRepository,
         memberFavoriteRepository,
         memberLikeRepository,
@@ -92,6 +104,9 @@ class MemberWithdrawServiceTest {
         // then
         verify { feedPostRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { feedPostLikeRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { worryPostRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { worryPostLikeRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { worryCommentRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberBlockRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberFavoriteRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberLikeRepository.deleteAllByMember(MEMBER_ID) }
@@ -114,6 +129,22 @@ class MemberWithdrawServiceTest {
         verifyOrder {
             feedPostRepository.decreaseLikeCountLikedBy(MEMBER_ID)
             feedPostLikeRepository.deleteAllByMemberId(MEMBER_ID)
+        }
+        verifyOrder {
+            worryPostRepository.decreaseLikeCountLikedBy(MEMBER_ID)
+            worryPostLikeRepository.deleteAllByMemberId(MEMBER_ID)
+        }
+    }
+
+    @Test
+    fun `댓글을 지우기 전에 글의 댓글 수를 줄인다`() {
+        // when
+        memberWithdrawService.withdraw(MEMBER_ID)
+
+        // then
+        verifyOrder {
+            worryPostRepository.decreaseCommentCountCommentedBy(MEMBER_ID)
+            worryCommentRepository.deleteAllByMemberId(MEMBER_ID)
         }
     }
 

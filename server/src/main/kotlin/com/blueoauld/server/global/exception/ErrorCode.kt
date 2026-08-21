@@ -108,4 +108,12 @@ enum class ErrorCode(
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_002", "신고를 찾을 수 없습니다."),
+
+    WORRY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "WORRY_001", "글을 찾을 수 없습니다."),
+    WORRY_DAILY_LIMIT(HttpStatus.CONFLICT, "WORRY_002", "고민은 하루에 5개까지 올릴 수 있습니다."),
+    NOT_WORRY_POST_AUTHOR(HttpStatus.FORBIDDEN, "WORRY_003", "본인이 쓴 글만 지울 수 있습니다."),
+    DUPLICATE_WORRY_POST_REPORT(HttpStatus.CONFLICT, "WORRY_004", "이미 신고한 글입니다."),
+    WORRY_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "WORRY_005", "댓글을 찾을 수 없습니다."),
+    NOT_WORRY_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "WORRY_006", "본인이 쓴 댓글만 지울 수 있습니다."),
+    DUPLICATE_WORRY_COMMENT_REPORT(HttpStatus.CONFLICT, "WORRY_007", "이미 신고한 댓글입니다."),
 }

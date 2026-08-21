@@ -1,0 +1,115 @@
+package com.blueoauld.server.domain.worry.service
+
+import com.blueoauld.server.domain.worry.dto.projection.WorryPostRow
+import com.blueoauld.server.domain.worry.dto.request.CreateWorryPostRequest
+import com.blueoauld.server.domain.worry.dto.response.WorryPostResponse
+import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorrySort
+import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
+import com.blueoauld.server.domain.worry.repository.WorryPostRepository
+import com.blueoauld.server.global.exception.BusinessException
+import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.time.KOREA
+import com.blueoauld.server.global.time.today
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
+import java.time.temporal.ChronoUnit
+
+@Service
+class WorryPostService(
+
+    private val worryPostRepository: WorryPostRepository,
+    private val worryPostLikeRepository: WorryPostLikeRepository,
+    private val clock: Clock,
+) {
+
+    @Transactional(readOnly = true)
+    fun find(memberId: Long, sort: WorrySort, cursor: Long?, size: Int): CursorResponse<WorryPostResponse> {
+        val pageSize = CursorResponse.pageSize(size)
+        val rows = when (sort) {
+            WorrySort.LATEST -> worryPostRepository.findLatestFirst(memberId, cursor, pageSize)
+
+            WorrySort.POPULAR -> {
+                val cursorLikeCount = cursor?.let {
+                    worryPostRepository.findLikeCountById(it) ?: return emptyPage()
+                }
+
+                worryPostRepository.findMostLikedFirst(memberId, cursorLikeCount, cursor, pageSize)
+            }
+
+            WorrySort.COMMENT -> {
+                val cursorCommentCount = cursor?.let {
+                    worryPostRepository.findCommentCountById(it) ?: return emptyPage()
+                }
+
+                worryPostRepository.findMostCommentedFirst(memberId, cursorCommentCount, cursor, pageSize)
+            }
+        }
+
+        return CursorResponse(
+            items = rows.map { toResponse(it, memberId) },
+            nextCursor = rows.lastOrNull()?.getPostId().takeIf { rows.size == pageSize },
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun findDetail(memberId: Long, postId: Long): WorryPostResponse {
+        val post = worryPostRepository.findById(postId).orElseThrow {
+            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
+        }
+
+        return WorryPostResponse(
+            worryId = post.id,
+            content = post.content,
+            createdAt = post.createdAt,
+            likeCount = post.likeCount,
+            commentCount = post.commentCount,
+            likedByMe = worryPostLikeRepository.existsByPostIdAndMemberId(postId, memberId),
+            mine = post.memberId == memberId,
+        )
+    }
+
+    @Transactional
+    fun create(memberId: Long, request: CreateWorryPostRequest) {
+        val from = clock.today().atStartOfDay(KOREA).toInstant()
+        val to = from.plus(1, ChronoUnit.DAYS)
+
+        if (worryPostRepository.countByMemberIdBetween(memberId, from, to) >= DAILY_POST_LIMIT) {
+            throw BusinessException(ErrorCode.WORRY_DAILY_LIMIT)
+        }
+
+        worryPostRepository.saveAndFlush(WorryPost(memberId = memberId, content = request.content))
+    }
+
+    @Transactional
+    fun delete(memberId: Long, postId: Long) {
+        val post = worryPostRepository.findById(postId).orElseThrow {
+            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
+        }
+
+        if (post.memberId != memberId) {
+            throw BusinessException(ErrorCode.NOT_WORRY_POST_AUTHOR)
+        }
+
+        worryPostRepository.delete(post)
+    }
+
+    private fun emptyPage() = CursorResponse<WorryPostResponse>(emptyList(), null)
+
+    private fun toResponse(row: WorryPostRow, memberId: Long) = WorryPostResponse(
+        worryId = row.getPostId(),
+        content = row.getContent(),
+        createdAt = row.getCreatedAt(),
+        likeCount = row.getLikeCount(),
+        commentCount = row.getCommentCount(),
+        likedByMe = row.getLikedByMe(),
+        mine = row.getMemberId() == memberId,
+    )
+
+    companion object {
+
+        const val DAILY_POST_LIMIT = 5
+    }
+}

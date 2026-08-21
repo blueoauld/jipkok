@@ -13,6 +13,9 @@ import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
+import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
+import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
+import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.stereotype.Service
@@ -26,6 +29,9 @@ class MemberWithdrawService(
     private val chatRoomService: ChatRoomService,
     private val feedPostRepository: FeedPostRepository,
     private val feedPostLikeRepository: FeedPostLikeRepository,
+    private val worryPostRepository: WorryPostRepository,
+    private val worryPostLikeRepository: WorryPostLikeRepository,
+    private val worryCommentRepository: WorryCommentRepository,
     private val memberBlockRepository: MemberBlockRepository,
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val memberLikeRepository: MemberLikeRepository,
@@ -45,6 +51,11 @@ class MemberWithdrawService(
         feedPostRepository.deleteAllByMemberId(memberId)
         feedPostRepository.decreaseLikeCountLikedBy(memberId)
         feedPostLikeRepository.deleteAllByMemberId(memberId)
+        worryPostRepository.deleteAllByMemberId(memberId)
+        worryPostRepository.decreaseLikeCountLikedBy(memberId)
+        worryPostLikeRepository.deleteAllByMemberId(memberId)
+        worryPostRepository.decreaseCommentCountCommentedBy(memberId)
+        worryCommentRepository.deleteAllByMemberId(memberId)
         memberBlockRepository.deleteAllByMember(memberId)
         memberFavoriteRepository.deleteAllByMember(memberId)
         memberRepository.decreaseReceivedLikeCountLikedBy(memberId)
