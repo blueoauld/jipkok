@@ -7,5 +7,7 @@ enum class AdminActionType {
     RESET_PROFILE,
     WITHDRAW_MEMBER,
     DELETE_FEED_POST,
+    DELETE_WORRY_POST,
+    DELETE_WORRY_COMMENT,
     HANDLE_REPORT,
 }

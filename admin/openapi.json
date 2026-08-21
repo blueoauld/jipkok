@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "\uc9d1\ucf55 API",
-        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |",
+        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_001 | 404 | \uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_002 | 409 | \uace0\ubbfc\uc740 \ud558\ub8e8\uc5d0 5\uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_003 | 403 | \ubcf8\uc778\uc774 \uc4f4 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_004 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uae00\uc785\ub2c8\ub2e4. |\n| WORRY_005 | 404 | \ub313\uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_006 | 403 | \ubcf8\uc778\uc774 \uc4f4 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_007 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \ub313\uae00\uc785\ub2c8\ub2e4. |\n| WORRY_008 | 400 | \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |",
         "version": "v1"
     },
     "servers": [
@@ -678,6 +678,750 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries": {
+            "get": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ubaa9\ub85d \uc870\ud68c",
+                "description": "\uc791\uc131\uc790 \uc815\ubcf4\ub294 \ub2f4\uae30\uc9c0 \uc54a\ub294\ub2e4.",
+                "operationId": "find",
+                "parameters": [
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "LATEST",
+                            "enum": [
+                                "LATEST",
+                                "POPULAR",
+                                "COMMENT"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CursorResponseWorryPostResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc791\uc131",
+                "description": "\ud558\ub8e8\uc5d0 \ub2e4\uc12f \uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\ub2e4.",
+                "operationId": "createWorryPost",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateWorryPostRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries/{postId}/reports": {
+            "post": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc2e0\uace0",
+                "operationId": "reportWorryPost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries/{postId}/likes": {
+            "post": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uacf5\uac10",
+                "operationId": "likeWorryPost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uacf5\uac10 \ucde8\uc18c",
+                "operationId": "cancelLike",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries/{postId}/comments": {
+            "get": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \ubaa9\ub85d \uc870\ud68c",
+                "description": "\uc624\ub798\ub41c \uc21c\uc73c\ub85c \uc8fc\uace0 \ub2f5\uae00\uc740 \ubd80\ubaa8 \ub313\uae00 \ub4a4\uc5d0 \ubd99\ub294\ub2e4.",
+                "operationId": "findComments",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CursorResponseWorryCommentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \uc791\uc131",
+                "description": "parentId\ub97c \uc8fc\uba74 \uadf8 \ub313\uae00\uc758 \ub2f5\uae00\uc774 \ub41c\ub2e4. \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\ub2e4.",
+                "operationId": "createWorryComment",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateWorryCommentRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries/comments/{commentId}/reports": {
+            "post": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \uc2e0\uace0",
+                "operationId": "reportWorryComment",
+                "parameters": [
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
                     },
                     "400": {
                         "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
@@ -2665,7 +3409,7 @@
                     "feed-post-controller"
                 ],
                 "summary": "\ud53c\ub4dc \uc88b\uc544\uc694 \ucde8\uc18c",
-                "operationId": "cancelLike",
+                "operationId": "cancelLike_1",
                 "parameters": [
                     {
                         "name": "postId",
@@ -4331,6 +5075,293 @@
                 }
             }
         },
+        "/api/worries/{postId}": {
+            "get": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc0c1\uc138 \uc870\ud68c",
+                "operationId": "findDetail",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorryPostResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc0ad\uc81c",
+                "description": "\ubcf8\uc778 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\ub2e4.",
+                "operationId": "deleteWorryPost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/worries/search": {
+            "get": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uac80\uc0c9",
+                "description": "\ub0b4\uc6a9\uc73c\ub85c \ucc3e\uace0 \ub450 \uae00\uc790 \uc774\uc0c1\ubd80\ud130 \uac80\uc0c9\ud55c\ub2e4.",
+                "operationId": "search",
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CursorResponseWorryPostResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/points/me": {
             "get": {
                 "tags": [
@@ -4521,7 +5552,7 @@
                     "member-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc870\ud68c",
-                "operationId": "findDetail",
+                "operationId": "findDetail_1",
                 "parameters": [
                     {
                         "name": "targetId",
@@ -6847,6 +7878,256 @@
                 }
             }
         },
+        "/api/admin/worry-reports": {
+            "get": {
+                "tags": [
+                    "admin-worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc2e0\uace0 \ubaa9\ub85d",
+                "description": "\uace0\ubbfc \uc2e0\uace0\ub294 \uc790\ub3d9 \uc0ad\uc81c\uac00 \uc5c6\uc5b4 \uad00\ub9ac\uc790\uac00 \uc9c1\uc811 \ucc98\ub9ac\ud55c\ub2e4.",
+                "operationId": "findPostReports",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ACTIVE",
+                                "DELETED"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "authorId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminWorryPostReportPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/worry-comment-reports": {
+            "get": {
+                "tags": [
+                    "admin-worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \uc2e0\uace0 \ubaa9\ub85d",
+                "description": "\uc2e0\uace0\uac00 \uc313\uc5ec \uc790\ub3d9 \uc0ad\uc81c\ub41c \ub313\uae00\ub3c4 \ud568\uaed8 \uc900\ub2e4.",
+                "operationId": "findCommentReports",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ACTIVE",
+                                "DELETED"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "authorId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminWorryCommentReportPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/reports": {
             "get": {
                 "tags": [
@@ -7015,7 +8296,7 @@
                     "admin-report-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc2e0\uace0 \uc0c1\uc138",
-                "operationId": "findDetail_1",
+                "operationId": "findDetail_2",
                 "parameters": [
                     {
                         "name": "reportId",
@@ -7247,7 +8528,7 @@
                 ],
                 "summary": "\ud68c\uc6d0 \uc0c1\uc138",
                 "description": "\ud0c8\ud1f4\ud55c \ud68c\uc6d0\ub3c4 \uc870\ud68c\ud558\uace0, \uc815\uc9c0 \uc774\ub825\uc740 \uc804\ud654\ubc88\ud638 \uae30\uc900\uc73c\ub85c \uc900\ub2e4.",
-                "operationId": "findDetail_2",
+                "operationId": "findDetail_3",
                 "parameters": [
                     {
                         "name": "memberId",
@@ -8030,6 +9311,92 @@
                 }
             }
         },
+        "/api/worries/comments/{commentId}": {
+            "delete": {
+                "tags": [
+                    "worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \uc0ad\uc81c",
+                "description": "\ubcf8\uc778 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\ub2e4.",
+                "operationId": "deleteWorryComment",
+                "parameters": [
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/members/me/device-tokens/{token}": {
             "delete": {
                 "tags": [
@@ -8114,13 +9481,183 @@
                 }
             }
         },
+        "/api/admin/worry-posts/{postId}": {
+            "delete": {
+                "tags": [
+                    "admin-worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \uc0ad\uc81c",
+                "operationId": "deletePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/worry-comments/{commentId}": {
+            "delete": {
+                "tags": [
+                    "admin-worry-controller"
+                ],
+                "summary": "\uace0\ubbfc \ub313\uae00 \uc0ad\uc81c",
+                "operationId": "deleteComment",
+                "parameters": [
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/feed-posts/{postId}": {
             "delete": {
                 "tags": [
                     "admin-feed-controller"
                 ],
                 "summary": "\ud53c\ub4dc \uac8c\uc2dc\ubb3c \uc0ad\uc81c",
-                "operationId": "deletePost",
+                "operationId": "deletePost_1",
                 "parameters": [
                     {
                         "name": "postId",
@@ -8329,6 +9866,39 @@
                 "required": [
                     "messageId",
                     "reactions"
+                ]
+            },
+            "CreateWorryPostRequest": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "minLength": 0
+                    }
+                },
+                "required": [
+                    "content"
+                ]
+            },
+            "CreateWorryCommentRequest": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "minLength": 0
+                    },
+                    "parentId": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "content"
                 ]
             },
             "CreateReportRequest": {
@@ -9086,6 +10656,139 @@
                     "nickname"
                 ]
             },
+            "CursorResponseWorryPostResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WorryPostResponse"
+                        }
+                    },
+                    "nextCursor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items"
+                ]
+            },
+            "WorryPostResponse": {
+                "type": "object",
+                "properties": {
+                    "worryId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "likeCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "commentCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "likedByMe": {
+                        "type": "boolean"
+                    },
+                    "mine": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "commentCount",
+                    "content",
+                    "createdAt",
+                    "likeCount",
+                    "likedByMe",
+                    "mine",
+                    "worryId"
+                ]
+            },
+            "CursorResponseWorryCommentResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WorryCommentResponse"
+                        }
+                    },
+                    "nextCursor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items"
+                ]
+            },
+            "WorryCommentResponse": {
+                "type": "object",
+                "properties": {
+                    "commentId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "content": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "anonymousNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "parentId": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "byAuthor": {
+                        "type": "boolean"
+                    },
+                    "mine": {
+                        "type": "boolean"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "DELETED",
+                            "REPORT_DELETED"
+                        ]
+                    }
+                },
+                "required": [
+                    "anonymousNo",
+                    "byAuthor",
+                    "commentId",
+                    "createdAt",
+                    "mine",
+                    "status"
+                ]
+            },
             "CursorResponsePointHistoryResponse": {
                 "type": "object",
                 "properties": {
@@ -9756,6 +11459,192 @@
                 "required": [
                     "latestVersion",
                     "storeUrl"
+                ]
+            },
+            "AdminWorryPostReportPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminWorryPostReportResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminWorryPostReportResponse": {
+                "type": "object",
+                "properties": {
+                    "postId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "authorId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "authorNickname": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "reportCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "postDeletedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "lastReportedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "reporters": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminWorryReporterResponse"
+                        }
+                    }
+                },
+                "required": [
+                    "authorId",
+                    "authorNickname",
+                    "content",
+                    "lastReportedAt",
+                    "postId",
+                    "reportCount",
+                    "reporters"
+                ]
+            },
+            "AdminWorryReporterResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "reportedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nickname",
+                    "reportedAt"
+                ]
+            },
+            "AdminWorryCommentReportPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminWorryCommentReportResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminWorryCommentReportResponse": {
+                "type": "object",
+                "properties": {
+                    "commentId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "postId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "authorId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "authorNickname": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "reportCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "commentDeletedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "deletedByReport": {
+                        "type": "boolean"
+                    },
+                    "lastReportedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "reporters": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminWorryReporterResponse"
+                        }
+                    }
+                },
+                "required": [
+                    "authorId",
+                    "authorNickname",
+                    "commentId",
+                    "content",
+                    "deletedByReport",
+                    "lastReportedAt",
+                    "postId",
+                    "reportCount",
+                    "reporters"
                 ]
             },
             "AdminSuspensionPageResponse": {
