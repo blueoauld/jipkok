@@ -47,6 +47,8 @@ const COMMENT_EMPTY_MESSAGE = "첫 댓글을 남겨보세요.";
 const COMMENT_ERROR_MESSAGE = "댓글을 불러오지 못했습니다.";
 const POST_DELETED_MESSAGE = "고민을 지웠습니다.";
 const COMMENT_DELETED_MESSAGE = "댓글을 지웠습니다.";
+const DELETED_COMMENT_PLACEHOLDER = "삭제된 댓글입니다.";
+const REPORT_DELETED_COMMENT_PLACEHOLDER = "신고 누적으로 삭제된 댓글입니다.";
 
 function commentLabel(comment: WorryCommentResponse) {
   return comment.byAuthor ? "글쓴이" : `익명${comment.anonymousNo}`;
@@ -117,6 +119,12 @@ function PostSection({
   );
 }
 
+function deletedPlaceholder(comment: WorryCommentResponse) {
+  return comment.status === "REPORT_DELETED"
+    ? REPORT_DELETED_COMMENT_PLACEHOLDER
+    : DELETED_COMMENT_PLACEHOLDER;
+}
+
 function CommentRow({
   comment,
   divider,
@@ -127,15 +135,20 @@ function CommentRow({
   onLongPress: (comment: WorryCommentResponse) => void;
 }) {
   const accentToken = useAccentToken();
+  const active = comment.status === "ACTIVE";
 
   return (
-    <RetroListRow divider={divider} onLongPress={() => onLongPress(comment)}>
+    <RetroListRow
+      divider={divider}
+      pressStyle={active ? { bg: "$color3" } : undefined}
+      onLongPress={active ? () => onLongPress(comment) : undefined}
+    >
       <YStack flex={1} gap="$1.5">
         <XStack items="center" justify="space-between">
           <Text
             fontSize="$3"
             fontWeight="700"
-            color={comment.mine ? accentToken : "$color12"}
+            color={comment.byAuthor ? accentToken : "$color12"}
           >
             {commentLabel(comment)}
           </Text>
@@ -144,7 +157,13 @@ function CommentRow({
           </Text>
         </XStack>
 
-        <Text fontSize="$4">{comment.content}</Text>
+        {active ? (
+          <Text fontSize="$4">{comment.content}</Text>
+        ) : (
+          <Text theme="gray" color="$color11" fontSize="$4">
+            {deletedPlaceholder(comment)}
+          </Text>
+        )}
       </YStack>
     </RetroListRow>
   );

@@ -1,8 +1,10 @@
 package com.blueoauld.server.domain.worry.service
 
+import com.blueoauld.server.domain.worry.dto.projection.WorryCommentRow
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryCommentRequest
 import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
+import com.blueoauld.server.domain.worry.entity.type.WorryCommentStatus
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -15,6 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Instant
 import java.util.*
 
 class WorryCommentServiceTest {
@@ -28,7 +31,7 @@ class WorryCommentServiceTest {
     @BeforeEach
     fun setUp() {
         every { worryPostRepository.findLockedById(POST_ID) } returns post(AUTHOR_ID)
-        every { worryCommentRepository.findFirstByPostIdAndMemberId(any(), any()) } returns null
+        every { worryCommentRepository.findAnonymousNo(any(), any()) } returns null
         every { worryCommentRepository.findMaxAnonymousNo(POST_ID) } returns null
         every { worryCommentRepository.saveAndFlush(any()) } answers { firstArg() }
     }
@@ -65,9 +68,7 @@ class WorryCommentServiceTest {
     @Test
     fun `같은 사람이 다시 달면 쓰던 번호를 유지한다`() {
         // given
-        every {
-            worryCommentRepository.findFirstByPostIdAndMemberId(POST_ID, MEMBER_ID)
-        } returns comment(MEMBER_ID, anonymousNo = 2)
+        every { worryCommentRepository.findAnonymousNo(POST_ID, MEMBER_ID) } returns 2
         val saved = slot<WorryComment>()
 
         // when
@@ -138,6 +139,30 @@ class WorryCommentServiceTest {
     }
 
     @Test
+    fun `지운 댓글은 내용 없이 상태만 준다`() {
+        // given
+        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
+        every {
+            worryCommentRepository.findByPostIdOldestFirst(POST_ID, null, 20)
+        } returns listOf(
+            row(commentId = 1),
+            row(commentId = 2, deleted = true),
+            row(commentId = 3, deleted = true, deletedByReport = true),
+        )
+
+        // when
+        val response = worryCommentService.find(MEMBER_ID, POST_ID, null, 20)
+
+        // then
+        assertThat(response.items.map { it.status }).containsExactly(
+            WorryCommentStatus.ACTIVE,
+            WorryCommentStatus.DELETED,
+            WorryCommentStatus.REPORT_DELETED,
+        )
+        assertThat(response.items.map { it.content }).containsExactly("댓글 내용", null, null)
+    }
+
+    @Test
     fun `없는 글의 댓글 목록을 보면 실패한다`() {
         // given
         every { worryPostRepository.findById(POST_ID) } returns Optional.empty()
@@ -159,6 +184,24 @@ class WorryCommentServiceTest {
         content = "댓글 내용",
         anonymousNo = anonymousNo,
     )
+
+    private fun row(commentId: Long, deleted: Boolean = false, deletedByReport: Boolean = false) =
+        object : WorryCommentRow {
+
+            override fun getCommentId() = commentId
+
+            override fun getMemberId() = MEMBER_ID
+
+            override fun getContent() = "댓글 내용"
+
+            override fun getCreatedAt(): Instant = Instant.parse("2026-08-01T00:00:00Z")
+
+            override fun getAnonymousNo() = 1
+
+            override fun getDeleted() = deleted
+
+            override fun getDeletedByReport() = deletedByReport
+        }
 
     companion object {
 

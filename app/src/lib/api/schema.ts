@@ -1374,13 +1374,15 @@ export interface components {
         WorryCommentResponse: {
             /** Format: int64 */
             commentId: number;
-            content: string;
+            content?: string | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: int32 */
             anonymousNo: number;
             byAuthor: boolean;
             mine: boolean;
+            /** @enum {string} */
+            status: "ACTIVE" | "DELETED" | "REPORT_DELETED";
         };
         CursorResponsePointHistoryResponse: {
             items: components["schemas"]["PointHistoryResponse"][];

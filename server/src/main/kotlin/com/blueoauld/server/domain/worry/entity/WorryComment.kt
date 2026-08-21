@@ -33,6 +33,9 @@ class WorryComment(
 
     @Column(name = "anonymous_no", nullable = false, updatable = false)
     val anonymousNo: Int,
+
+    @Column(name = "deleted_by_report", nullable = false)
+    var deletedByReport: Boolean = false,
 ) : BaseEntity() {
 
     @Id

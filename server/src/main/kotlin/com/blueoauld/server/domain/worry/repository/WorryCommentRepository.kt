@@ -10,9 +10,18 @@ import java.time.Instant
 
 interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
 
-    fun findFirstByPostIdAndMemberId(postId: Long, memberId: Long): WorryComment?
+    @Query(
+        value = """
+        select anonymous_no from worry_comment
+        where post_id = :postId and member_id = :memberId
+        order by id
+        limit 1
+        """,
+        nativeQuery = true,
+    )
+    fun findAnonymousNo(@Param("postId") postId: Long, @Param("memberId") memberId: Long): Int?
 
-    @Query("select max(c.anonymousNo) from WorryComment c where c.postId = :postId")
+    @Query(value = "select max(anonymous_no) from worry_comment where post_id = :postId", nativeQuery = true)
     fun findMaxAnonymousNo(@Param("postId") postId: Long): Int?
 
     @Query(
@@ -21,10 +30,11 @@ interface WorryCommentRepository : JpaRepository<WorryComment, Long> {
                c.member_id as memberId,
                c.content as content,
                c.created_at as createdAt,
-               c.anonymous_no as anonymousNo
+               c.anonymous_no as anonymousNo,
+               (c.deleted_at is not null) as deleted,
+               c.deleted_by_report as deletedByReport
         from worry_comment c
-        where c.deleted_at is null
-          and c.post_id = :postId
+        where c.post_id = :postId
           and (cast(:cursor as bigint) is null or c.id > cast(:cursor as bigint))
         order by c.id
         limit :size

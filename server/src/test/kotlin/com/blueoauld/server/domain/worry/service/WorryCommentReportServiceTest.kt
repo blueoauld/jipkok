@@ -41,6 +41,7 @@ class WorryCommentReportServiceTest {
         every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment(AUTHOR_ID))
         every { worryCommentReportRepository.existsByReporterIdAndCommentId(any(), any()) } returns false
         every { worryCommentReportRepository.saveAndFlush(any()) } answers { firstArg() }
+        every { worryCommentRepository.saveAndFlush(any()) } answers { firstArg() }
         every { worryCommentReportRepository.countByCommentId(COMMENT_ID) } returns 1
     }
 
@@ -59,8 +60,10 @@ class WorryCommentReportServiceTest {
     }
 
     @Test
-    fun `신고가 쌓이면 댓글이 지워지고 글의 댓글 수가 줄어든다`() {
+    fun `신고가 쌓이면 신고 삭제로 표시한 뒤 지우고 글의 댓글 수를 줄인다`() {
         // given
+        val comment = comment(AUTHOR_ID)
+        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment)
         every {
             worryCommentReportRepository.countByCommentId(COMMENT_ID)
         } returns WorryCommentReportService.AUTO_DELETE_REPORT_COUNT.toLong()
@@ -69,7 +72,8 @@ class WorryCommentReportServiceTest {
         worryCommentReportService.report(REPORTER_ID, COMMENT_ID)
 
         // then
-        verify { worryCommentRepository.delete(any()) }
+        assertThat(comment.deletedByReport).isTrue()
+        verify { worryCommentRepository.delete(comment) }
         verify { worryPostRepository.decreaseCommentCount(POST_ID) }
     }
 

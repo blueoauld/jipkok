@@ -39,6 +39,8 @@ class WorryCommentReportService(
         val reportCount = worryCommentReportRepository.countByCommentId(commentId)
 
         if (reportCount >= AUTO_DELETE_REPORT_COUNT) {
+            comment.deletedByReport = true
+            worryCommentRepository.saveAndFlush(comment)
             worryCommentRepository.delete(comment)
             worryPostRepository.decreaseCommentCount(comment.postId)
             eventPublisher.publishEvent(

@@ -1,8 +1,10 @@
 package com.blueoauld.server.domain.worry.service
 
+import com.blueoauld.server.domain.worry.dto.projection.WorryCommentRow
 import com.blueoauld.server.domain.worry.dto.request.CreateWorryCommentRequest
 import com.blueoauld.server.domain.worry.dto.response.WorryCommentResponse
 import com.blueoauld.server.domain.worry.entity.WorryComment
+import com.blueoauld.server.domain.worry.entity.type.WorryCommentStatus
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -31,11 +33,12 @@ class WorryCommentService(
             items = rows.map { row ->
                 WorryCommentResponse(
                     commentId = row.getCommentId(),
-                    content = row.getContent(),
+                    content = row.getContent().takeUnless { row.getDeleted() },
                     createdAt = row.getCreatedAt(),
                     anonymousNo = row.getAnonymousNo(),
                     byAuthor = row.getMemberId() == post.memberId,
                     mine = row.getMemberId() == memberId,
+                    status = statusOf(row),
                 )
             },
             nextCursor = rows.lastOrNull()?.getCommentId().takeIf { rows.size == pageSize },
@@ -47,7 +50,7 @@ class WorryCommentService(
         worryPostRepository.findLockedById(postId)
             ?: throw BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
 
-        val anonymousNo = worryCommentRepository.findFirstByPostIdAndMemberId(postId, memberId)?.anonymousNo
+        val anonymousNo = worryCommentRepository.findAnonymousNo(postId, memberId)
             ?: ((worryCommentRepository.findMaxAnonymousNo(postId) ?: 0) + 1)
 
         worryCommentRepository.saveAndFlush(
@@ -73,5 +76,11 @@ class WorryCommentService(
 
         worryCommentRepository.delete(comment)
         worryPostRepository.decreaseCommentCount(comment.postId)
+    }
+
+    private fun statusOf(row: WorryCommentRow) = when {
+        row.getDeletedByReport() -> WorryCommentStatus.REPORT_DELETED
+        row.getDeleted() -> WorryCommentStatus.DELETED
+        else -> WorryCommentStatus.ACTIVE
     }
 }

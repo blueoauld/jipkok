@@ -161,18 +161,40 @@ class WorryPostRepositoryTest {
     }
 
     @Test
-    fun `댓글 목록은 오래된 순으로 주고 지운 댓글은 뺀다`() {
+    fun `댓글 목록은 오래된 순으로 주고 지운 댓글도 상태와 함께 준다`() {
         // given
-        val first = saveComment(quietPostId, meId, anonymousNo = 1)
-        val second = saveComment(quietPostId, authorId, anonymousNo = 2)
+        val active = saveComment(quietPostId, meId, anonymousNo = 1)
         val deleted = saveComment(quietPostId, authorId, anonymousNo = 2)
         worryCommentRepository.delete(deleted)
+        val reportDeleted = saveComment(quietPostId, authorId, anonymousNo = 2)
+        reportDeleted.deletedByReport = true
+        worryCommentRepository.saveAndFlush(reportDeleted)
+        worryCommentRepository.delete(reportDeleted)
 
         // when
         val rows = worryCommentRepository.findByPostIdOldestFirst(quietPostId, cursor = null, size = PAGE_SIZE)
 
         // then
-        assertThat(rows.map { it.getCommentId() }).containsExactly(first.id, second.id)
+        assertThat(rows.map { it.getCommentId() })
+            .containsExactly(active.id, deleted.id, reportDeleted.id)
+        assertThat(rows.map { it.getDeleted() }).containsExactly(false, true, true)
+        assertThat(rows.map { it.getDeletedByReport() }).containsExactly(false, false, true)
+    }
+
+    @Test
+    fun `익명 번호는 지운 댓글까지 세어 겹치지 않게 한다`() {
+        // given
+        saveComment(quietPostId, meId, anonymousNo = 1)
+        val deleted = saveComment(quietPostId, authorId, anonymousNo = 2)
+        worryCommentRepository.delete(deleted)
+
+        // when
+        val maxNo = worryCommentRepository.findMaxAnonymousNo(quietPostId)
+        val deletedWriterNo = worryCommentRepository.findAnonymousNo(quietPostId, authorId)
+
+        // then
+        assertThat(maxNo).isEqualTo(2)
+        assertThat(deletedWriterNo).isEqualTo(2)
     }
 
     @Test

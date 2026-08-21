@@ -13,4 +13,8 @@ interface WorryCommentRow {
     fun getCreatedAt(): Instant
 
     fun getAnonymousNo(): Int
+
+    fun getDeleted(): Boolean
+
+    fun getDeletedByReport(): Boolean
 }
