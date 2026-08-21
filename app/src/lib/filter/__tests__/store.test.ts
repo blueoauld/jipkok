@@ -1,4 +1,9 @@
-import { useFeedFilterStore, useMemberFilterStore } from "@/lib/filter/store";
+import {
+  DEFAULT_MEMBER_FILTER,
+  isDefaultMemberFilter,
+  useFeedFilterStore,
+  useMemberFilterStore,
+} from "@/lib/filter/store";
 
 jest.mock("@/lib/storage", () => ({
   storage: jest
@@ -55,5 +60,23 @@ describe("필터 저장 옵션", () => {
       minAge: 25,
       maxAge: 35,
     });
+  });
+});
+
+describe("isDefaultMemberFilter", () => {
+  it("기본값 그대로면 참이다", () => {
+    expect(isDefaultMemberFilter(DEFAULT_MEMBER_FILTER)).toBe(true);
+  });
+
+  it("성별이나 나이 하나만 달라도 거짓이다", () => {
+    expect(
+      isDefaultMemberFilter({ ...DEFAULT_MEMBER_FILTER, gender: "MALE" }),
+    ).toBe(false);
+    expect(
+      isDefaultMemberFilter({ ...DEFAULT_MEMBER_FILTER, minAge: 25 }),
+    ).toBe(false);
+    expect(
+      isDefaultMemberFilter({ ...DEFAULT_MEMBER_FILTER, maxAge: 40 }),
+    ).toBe(false);
   });
 });
