@@ -23,6 +23,11 @@ export type SuspensionStatus = Suspension["status"];
 export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];
 export type FeedReport = Schemas["AdminFeedReportResponse"];
 export type FeedReportPage = Schemas["AdminFeedReportPageResponse"];
+export type WorryReport = Schemas["AdminWorryPostReportResponse"];
+export type WorryReportPage = Schemas["AdminWorryPostReportPageResponse"];
+export type WorryCommentReport = Schemas["AdminWorryCommentReportResponse"];
+export type WorryCommentReportPage =
+  Schemas["AdminWorryCommentReportPageResponse"];
 export type ReportType = "PROFILE" | "CHAT";
 
 export type ReportReason =

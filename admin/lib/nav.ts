@@ -22,6 +22,8 @@ export const navItems: NavItem[] = [
     children: [
       { title: "회원 신고", href: "/reports/members" },
       { title: "피드 신고", href: "/reports/feeds" },
+      { title: "고민 신고", href: "/reports/worries" },
+      { title: "고민 댓글 신고", href: "/reports/worry-comments" },
     ],
   },
   { title: "회원", href: "/members", icon: Users },
