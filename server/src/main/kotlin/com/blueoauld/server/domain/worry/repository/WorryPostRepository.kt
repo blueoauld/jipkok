@@ -134,6 +134,38 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
         @Param("size") size: Int,
     ): List<WorryPostRow>
 
+    @Query(
+        value = """
+        select p.id as postId,
+               p.member_id as memberId,
+               p.content as content,
+               p.created_at as createdAt,
+               p.like_count as likeCount,
+               p.comment_count as commentCount,
+               exists (
+                 select 1 from worry_post_like l
+                 where l.post_id = p.id and l.member_id = :memberId
+               ) as likedByMe
+        from worry_post p
+        where p.deleted_at is null
+          and p.content ilike :keyword escape '\'
+          and not exists (
+            select 1 from worry_post_report r
+            where r.reporter_id = :memberId and r.post_id = p.id
+          )
+          and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
+        order by p.id desc
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun search(
+        @Param("memberId") memberId: Long,
+        @Param("keyword") keyword: String,
+        @Param("cursor") cursor: Long?,
+        @Param("size") size: Int,
+    ): List<WorryPostRow>
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """

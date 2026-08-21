@@ -90,7 +90,6 @@ const EMPTY_MESSAGE = "피드가 없습니다.";
 const POSTED_MESSAGE = "피드를 올렸습니다.";
 const WORRY_ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
 const WORRY_EMPTY_MESSAGE = "고민이 없습니다.";
-const WORRY_SEARCH_PENDING_MESSAGE = "고민 검색은 준비 중입니다.";
 
 const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
 
@@ -110,10 +109,7 @@ export default function FeedScreen() {
   const openFilter = useCallback(() => setFilterOpen(true), []);
   const openWorryFilter = useCallback(() => setWorryFilterOpen(true), []);
   const openWorryCompose = useCallback(() => pushOnce("/worry/compose"), []);
-  const openWorrySearch = useCallback(
-    () => showToast("info", WORRY_SEARCH_PENDING_MESSAGE),
-    [],
-  );
+  const openWorrySearch = useCallback(() => pushOnce("/worry/search"), []);
   const openWorryDetail = useCallback(
     (worryId: number) => pushOnce(`/worry/${worryId}`),
     [],

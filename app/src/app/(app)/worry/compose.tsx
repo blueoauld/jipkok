@@ -11,8 +11,7 @@ import { WORRIES_KEY } from "@/hooks/useWorryPosts";
 import { api } from "@/lib/api";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
-
-const CONTENT_MAX_LENGTH = 500;
+import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
 const ANONYMOUS_NOTICE =
   "작성된 고민은 익명으로 올라갑니다. 부적절한 내용 작성 시 서비스 이용이 제한됩니다.";
@@ -60,7 +59,7 @@ export default function WorryComposeScreen() {
           rows={10}
           textAlignVertical="top"
           placeholder="내용 입력"
-          maxLength={CONTENT_MAX_LENGTH}
+          maxLength={WORRY_CONTENT_MAX_LENGTH}
           onChangeText={(text) => setEmpty(text.trim().length === 0)}
         />
       </FormScreen>

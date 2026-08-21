@@ -64,6 +64,8 @@ type FeedListParams = {
 
 type WorryListParams = CursorParams & { sort?: WorrySort };
 
+type WorrySearchParams = CursorParams & { keyword: string };
+
 type MemberRankingParams = {
   gender?: Gender;
   cursor?: string;
@@ -411,6 +413,9 @@ export const reports = {
 export const worries = {
   list: (params: WorryListParams = {}) =>
     request<WorryPostPage>("/api/worries", { query: params }),
+
+  search: (params: WorrySearchParams) =>
+    request<WorryPostPage>("/api/worries/search", { query: params }),
 
   create: (content: string) =>
     request<void>("/api/worries", { method: "POST", body: { content } }),

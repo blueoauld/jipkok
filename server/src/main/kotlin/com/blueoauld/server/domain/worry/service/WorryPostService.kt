@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.time.KOREA
 import com.blueoauld.server.global.time.today
@@ -47,6 +48,23 @@ class WorryPostService(
                 worryPostRepository.findMostCommentedFirst(memberId, cursorCommentCount, cursor, pageSize)
             }
         }
+
+        return CursorResponse(
+            items = rows.map { toResponse(it, memberId) },
+            nextCursor = rows.lastOrNull()?.getPostId().takeIf { rows.size == pageSize },
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun search(memberId: Long, keyword: String, cursor: Long?, size: Int): CursorResponse<WorryPostResponse> {
+        val trimmed = keyword.trim()
+
+        if (trimmed.length < MIN_KEYWORD_LENGTH) {
+            return emptyPage()
+        }
+
+        val pageSize = CursorResponse.pageSize(size)
+        val rows = worryPostRepository.search(memberId, "%${trimmed.escapeLike()}%", cursor, pageSize)
 
         return CursorResponse(
             items = rows.map { toResponse(it, memberId) },
@@ -111,5 +129,6 @@ class WorryPostService(
     companion object {
 
         const val DAILY_POST_LIMIT = 5
+        const val MIN_KEYWORD_LENGTH = 2
     }
 }

@@ -25,6 +25,8 @@ type SearchQuery = {
 
 export function SearchList<T>({
   hint,
+  placeholder = "닉네임",
+  maxLength = NICKNAME_MAX_LENGTH,
   query,
   submitted,
   onSubmit,
@@ -33,6 +35,8 @@ export function SearchList<T>({
   renderItem,
 }: {
   hint: string;
+  placeholder?: string;
+  maxLength?: number;
   query: SearchQuery;
   submitted: string;
   onSubmit: (keyword: string) => void;
@@ -63,12 +67,12 @@ export function SearchList<T>({
           value={keyword}
           onChangeText={setKeyword}
           onSubmitEditing={submit}
-          placeholder="닉네임"
+          placeholder={placeholder}
           autoFocusNative
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
-          maxLength={NICKNAME_MAX_LENGTH}
+          maxLength={maxLength}
         />
       </YStack>
 

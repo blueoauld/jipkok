@@ -136,6 +136,47 @@ class WorryPostRepositoryTest {
     }
 
     @Test
+    fun `검색은 내용 일부로 찾고 대소문자를 가리지 않는다`() {
+        // given
+        val postId = savePost(authorId, content = "Ohio 이직 고민").id
+
+        // when
+        val rows = worryPostRepository.search(meId, "%ohio%", cursor = null, size = PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(postId)
+    }
+
+    @Test
+    fun `검색은 신고했거나 지운 글을 뺀다`() {
+        // given
+        val reported = savePost(authorId, content = "이직 고민").id
+        val deleted = savePost(authorId, content = "이직 고민")
+        val visible = savePost(authorId, content = "이직 고민").id
+        worryPostReportRepository.saveAndFlush(WorryPostReport(meId, reported))
+        worryPostRepository.delete(deleted)
+
+        // when
+        val rows = worryPostRepository.search(meId, "%이직%", cursor = null, size = PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(visible)
+    }
+
+    @Test
+    fun `검색 커서를 주면 그보다 오래된 글을 준다`() {
+        // given
+        val older = savePost(authorId, content = "이직 고민").id
+        val newer = savePost(authorId, content = "이직 고민").id
+
+        // when
+        val rows = worryPostRepository.search(meId, "%이직%", cursor = newer, size = PAGE_SIZE)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).containsExactly(older)
+    }
+
+    @Test
     fun `내가 공감한 글은 표시된다`() {
         // given
         worryPostLikeRepository.saveAndFlush(WorryPostLike(likedPostId, meId))
@@ -257,15 +298,19 @@ class WorryPostRepositoryTest {
         .setParameter("id", postId)
         .singleResult as Long
 
-    private fun savePost(memberId: Long, likeCount: Int = 0, commentCount: Int = 0) =
-        worryPostRepository.saveAndFlush(
-            WorryPost(
-                memberId = memberId,
-                content = "고민 내용",
-                likeCount = likeCount,
-                commentCount = commentCount,
-            ),
-        )
+    private fun savePost(
+        memberId: Long,
+        likeCount: Int = 0,
+        commentCount: Int = 0,
+        content: String = "고민 내용",
+    ) = worryPostRepository.saveAndFlush(
+        WorryPost(
+            memberId = memberId,
+            content = content,
+            likeCount = likeCount,
+            commentCount = commentCount,
+        ),
+    )
 
     private fun findComments(cursor: Long?) = worryCommentRepository.findByPostIdOldestFirst(
         postId = quietPostId,

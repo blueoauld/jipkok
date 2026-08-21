@@ -85,6 +85,45 @@ class WorryPostServiceTest {
     }
 
     @Test
+    fun `검색어는 앞뒤 공백을 떼고 부분 일치로 찾는다`() {
+        // given
+        val keyword = slot<String>()
+        every { worryPostRepository.search(MEMBER_ID, capture(keyword), null, 20) } returns emptyList()
+
+        // when
+        worryPostService.search(MEMBER_ID, "  이직  ", null, 20)
+
+        // then
+        assertThat(keyword.captured).isEqualTo("%이직%")
+    }
+
+    @Test
+    fun `검색어의 와일드카드는 이스케이프한다`() {
+        // given
+        val keyword = slot<String>()
+        every { worryPostRepository.search(MEMBER_ID, capture(keyword), null, 20) } returns emptyList()
+
+        // when
+        worryPostService.search(MEMBER_ID, "100%", null, 20)
+
+        // then
+        assertThat(keyword.captured).isEqualTo("%100\\%%")
+    }
+
+    @Test
+    fun `검색어가 한 글자면 찾지 않는다`() {
+        // given
+
+        // when
+        val response = worryPostService.search(MEMBER_ID, "이", null, 20)
+
+        // then
+        assertThat(response.items).isEmpty()
+        assertThat(response.nextCursor).isNull()
+        verify(exactly = 0) { worryPostRepository.search(any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `본인 글을 지우면 소프트 삭제된다`() {
         // given
         val post = post(MEMBER_ID)
