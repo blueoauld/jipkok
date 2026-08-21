@@ -8,9 +8,9 @@ import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
 const VARIANTS = {
-  error: { label: "ERROR.EXE", barColor: "$red9", labelColor: "white" },
-  info: { label: "INFO.EXE", barColor: "$blue9", labelColor: "white" },
-  warning: { label: "WARNING.EXE", barColor: "$yellow9", labelColor: "black" },
+  error: { label: "ERROR.EXE", barColor: "$red10", labelColor: "white" },
+  info: { label: "INFO.EXE", barColor: "$blue10", labelColor: "white" },
+  warning: { label: "WARNING.EXE", barColor: "$yellow10", labelColor: "black" },
 } as const;
 
 export type RetroAlertVariant = keyof typeof VARIANTS;
