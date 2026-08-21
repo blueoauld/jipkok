@@ -9,11 +9,8 @@ import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, RefreshControl } from "react-native";
-import {
-  KeyboardStickyView,
-  useKeyboardState,
-} from "react-native-keyboard-controller";
+import { FlatList, RefreshControl, type ScrollViewProps } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -28,6 +25,7 @@ import { RetroInput } from "@/components/ui/RetroInput";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { CommentScrollView } from "@/components/worry/CommentScrollView";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWorryComments, worryCommentsKey } from "@/hooks/useWorryComments";
@@ -247,7 +245,6 @@ export default function WorryDetailScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const background = useThemeBackground();
-  const keyboardHeight = useKeyboardState((state) => state.height);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
   const [content, setContent] = useState("");
@@ -446,21 +443,6 @@ export default function WorryDetailScreen() {
     [confirmRemovePost, confirmReportPost, post],
   );
 
-  // 키보드가 열리면 입력줄이 목록 위로 겹쳐 올라오므로 그만큼 아래를 비운다.
-  // 목록의 레이아웃은 그대로여서 스크롤바 자리도 같이 끌어올려야 한다.
-  const keyboardInset = Math.max(keyboardHeight - insets.bottom, 0);
-  const listContentStyle = useMemo(
-    () => ({
-      ...paged.contentContainerStyle,
-      paddingBottom: paged.contentContainerStyle.paddingBottom + keyboardInset,
-    }),
-    [keyboardInset, paged.contentContainerStyle],
-  );
-  const scrollIndicatorInsets = useMemo(
-    () => ({ bottom: keyboardInset }),
-    [keyboardInset],
-  );
-
   const trimmed = content.trim();
 
   return (
@@ -488,8 +470,9 @@ export default function WorryDetailScreen() {
                   ))}
                 </RetroListPanel>
               )}
-              contentContainerStyle={listContentStyle}
-              scrollIndicatorInsets={scrollIndicatorInsets}
+              renderScrollComponent={(scrollProps: ScrollViewProps) => (
+                <CommentScrollView {...scrollProps} offset={insets.bottom} />
+              )}
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
               ListHeaderComponent={
