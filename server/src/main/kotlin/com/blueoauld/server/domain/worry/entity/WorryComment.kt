@@ -45,6 +45,6 @@ class WorryComment(
 
     companion object {
 
-        const val CONTENT_MAX_LENGTH = 200
+        const val CONTENT_MAX_LENGTH = 300
     }
 }

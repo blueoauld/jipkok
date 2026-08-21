@@ -47,8 +47,8 @@ import { REPORTED_MESSAGE } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { useAccentToken, useThemeBackground } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
+import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
 
-const COMMENT_MAX_LENGTH = 200;
 const COUNT_ICON_SIZE = 18;
 const CANCEL_ICON_SIZE = 18;
 const REPLY_ROW_ICON_SIZE = 18;
@@ -556,7 +556,7 @@ export default function WorryDetailScreen() {
                   onChangeText={setContent}
                   autoFocusNative={replyTo !== null}
                   placeholder={replyTo ? "답글 입력" : "댓글 입력"}
-                  maxLength={COMMENT_MAX_LENGTH}
+                  maxLength={WORRY_COMMENT_MAX_LENGTH}
                 />
               </YStack>
               <RetroButton

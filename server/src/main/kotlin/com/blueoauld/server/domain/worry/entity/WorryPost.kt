@@ -46,6 +46,6 @@ class WorryPost(
 
     companion object {
 
-        const val CONTENT_MAX_LENGTH = 500
+        const val CONTENT_MAX_LENGTH = 1000
     }
 }

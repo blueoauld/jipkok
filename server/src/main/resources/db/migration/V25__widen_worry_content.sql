@@ -1,0 +1,5 @@
+ALTER TABLE worry_post
+    ALTER COLUMN content TYPE VARCHAR(1000);
+
+ALTER TABLE worry_comment
+    ALTER COLUMN content TYPE VARCHAR(300);
