@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.feed.service
 
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.entity.FeedPost
+import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 
 class FeedPostServiceTest {
@@ -44,6 +46,38 @@ class FeedPostServiceTest {
     fun setUp() {
         every { feedPostRepository.existsByMemberIdAndSlotAt(any(), any()) } returns false
         every { feedPostRepository.saveAndFlush(any()) } answers { firstArg() }
+    }
+
+    @Test
+    fun `날짜를 생략하면 한국 시간 오늘 하루를 조회한다`() {
+        // given
+        val from = slot<Instant>()
+        val to = slot<Instant>()
+        every {
+            feedPostRepository.findByDateLatestFirst(any(), any(), capture(from), capture(to), any(), any())
+        } returns emptyList()
+
+        // when
+        feedPostService.findByDate(MEMBER_ID, null, FeedSort.LATEST, null, null, 20)
+
+        // then
+        assertThat(from.captured).isEqualTo(Instant.parse("2026-08-01T15:00:00Z"))
+        assertThat(to.captured).isEqualTo(Instant.parse("2026-08-02T15:00:00Z"))
+    }
+
+    @Test
+    fun `과거 정렬은 다른 쿼리로 찾는다`() {
+        // given
+        every {
+            feedPostRepository.findByDateOldestFirst(any(), any(), any(), any(), any(), any())
+        } returns emptyList()
+
+        // when
+        feedPostService.findByDate(MEMBER_ID, null, FeedSort.OLDEST, LocalDate.of(2026, 8, 1), null, 20)
+
+        // then
+        verify { feedPostRepository.findByDateOldestFirst(any(), any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { feedPostRepository.findByDateLatestFirst(any(), any(), any(), any(), any(), any()) }
     }
 
     @Test
