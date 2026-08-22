@@ -10267,6 +10267,16 @@
                             "IOS",
                             "ANDROID"
                         ]
+                    },
+                    "locale": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "KO",
+                            "JA"
+                        ]
                     }
                 },
                 "required": [

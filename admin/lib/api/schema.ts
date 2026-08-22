@@ -1679,6 +1679,8 @@ export interface components {
             token: string;
             /** @enum {string} */
             platform: "IOS" | "ANDROID";
+            /** @enum {string|null} */
+            locale?: "KO" | "JA" | null;
         };
         CreateFeedPostRequest: {
             objectKey: string;
