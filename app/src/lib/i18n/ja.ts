@@ -217,7 +217,7 @@ export const ja: typeof ko = {
     language: "言語",
     languageKo: "韓国語",
     languageJa: "日本語",
-    languageChangeNotice: "言語を変更するとアプリを再起動します。",
+    languageChangeNotice: "言語を変更するとアプリが再起動します。",
     languageChange: "変更",
     logoutNotice: "ログアウトすると、もう一度ログインが必要になります。",
     alreadyEarned: "本日の出席報酬はすでに受け取っています。",

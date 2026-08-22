@@ -215,7 +215,7 @@ export const ko = {
     language: "언어",
     languageKo: "한국어",
     languageJa: "일본어",
-    languageChangeNotice: "언어를 바꾸면 앱을 다시 시작합니다.",
+    languageChangeNotice: "언어를 바꾸면 앱이 다시 시작됩니다.",
     languageChange: "바꾸기",
     logoutNotice: "로그아웃하면 다시 로그인해야 이용할 수 있습니다.",
     alreadyEarned: "오늘 출석 보상은 이미 받았습니다.",
