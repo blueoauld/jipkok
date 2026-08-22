@@ -21,6 +21,7 @@ import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Linking, ScrollView } from "react-native";
 import { getTokens, Spinner, Text, useTheme, YStack } from "tamagui";
 
@@ -39,6 +40,7 @@ import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { APP_VERSION } from "@/lib/device";
 import i18n from "@/lib/i18n";
+import { ko } from "@/lib/i18n/ko";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { releaseDevice } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -54,10 +56,6 @@ import { showToast } from "@/lib/toast/store";
 
 const ICON_SIZE = 22;
 
-const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 수 있습니다.";
-
-const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
-
 const THEME_MODES: ThemeMode[] = ["blue", "pink", "dark"];
 
 const THEME_ITEMS = THEME_MODES.map((value) => ({
@@ -68,8 +66,10 @@ const THEME_ITEMS = THEME_MODES.map((value) => ({
 type SettingAction =
   "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
 
+type SettingLabelKey = `setting.menu.${keyof (typeof ko)["setting"]["menu"]}`;
+
 type SettingItem = {
-  label: string;
+  labelKey: SettingLabelKey;
   icon: Icon;
   href?: Href;
   url?: string;
@@ -80,60 +80,92 @@ type SettingItem = {
 const PROFILE_VIEW_HREF = "/activity/profile-view";
 
 const SECTIONS: SettingItem[][] = [
-  [{ label: "내 프로필", icon: UserIcon, href: "/member/me" }],
+  [{ labelKey: "setting.menu.myProfile", icon: UserIcon, href: "/member/me" }],
   [
-    { label: "좋아요 목록", icon: HeartIcon, href: "/activity/like" },
-    { label: "즐겨찾기 목록", icon: StarIcon, href: "/activity/favorite" },
+    { labelKey: "setting.menu.likes", icon: HeartIcon, href: "/activity/like" },
     {
-      label: "비밀 사진 목록",
+      labelKey: "setting.menu.favorites",
+      icon: StarIcon,
+      href: "/activity/favorite",
+    },
+    {
+      labelKey: "setting.menu.secretPhotos",
       icon: ImagesIcon,
       href: "/activity/secret-photo",
     },
-    { label: "차단 목록", icon: ProhibitIcon, href: "/activity/block" },
-    { label: "고민 목록", icon: ChatCircleTextIcon, href: "/activity/worry" },
+    {
+      labelKey: "setting.menu.blocks",
+      icon: ProhibitIcon,
+      href: "/activity/block",
+    },
+    {
+      labelKey: "setting.menu.worries",
+      icon: ChatCircleTextIcon,
+      href: "/activity/worry",
+    },
   ],
   [
     {
-      label: "받은 좋아요 목록",
+      labelKey: "setting.menu.likesReceived",
       icon: HandHeartIcon,
       href: "/activity/like-received",
       gated: true,
     },
     {
-      label: "받은 즐겨찾기 목록",
+      labelKey: "setting.menu.favoritesReceived",
       icon: TrayArrowDownIcon,
       href: "/activity/favorite-received",
       gated: true,
     },
     {
-      label: "공개된 비밀 사진 목록",
+      labelKey: "setting.menu.secretPhotosOpened",
       icon: EyeIcon,
       href: "/activity/secret-photo-opened",
       gated: true,
     },
     {
-      label: "내 프로필 조회 목록",
+      labelKey: "setting.menu.profileViews",
       icon: FootprintsIcon,
       href: PROFILE_VIEW_HREF,
       gated: true,
     },
   ],
   [
-    { label: "포인트 내역", icon: CoinsIcon, href: "/point/history" },
-    { label: "출석 보상", icon: CalendarCheckIcon, action: "attendanceReward" },
-    { label: "광고 보상", icon: MonitorPlayIcon, action: "adReward" },
+    {
+      labelKey: "setting.menu.pointHistory",
+      icon: CoinsIcon,
+      href: "/point/history",
+    },
+    {
+      labelKey: "setting.menu.attendanceReward",
+      icon: CalendarCheckIcon,
+      action: "attendanceReward",
+    },
+    {
+      labelKey: "setting.menu.adReward",
+      icon: MonitorPlayIcon,
+      action: "adReward",
+    },
   ],
   [
-    { label: "문의하기", icon: HeadsetIcon, action: "contact" },
-    { label: "건의하기", icon: LightbulbIcon, action: "suggest" },
-    { label: "서비스 이용약관", icon: FileTextIcon, url: TERMS_URL },
-    { label: "개인정보 처리방침", icon: ShieldCheckIcon, url: PRIVACY_URL },
-    { label: "버전 확인", icon: InfoIcon, action: "version" },
+    { labelKey: "setting.menu.contact", icon: HeadsetIcon, action: "contact" },
+    {
+      labelKey: "setting.menu.suggest",
+      icon: LightbulbIcon,
+      action: "suggest",
+    },
+    { labelKey: "setting.menu.terms", icon: FileTextIcon, url: TERMS_URL },
+    {
+      labelKey: "setting.menu.privacy",
+      icon: ShieldCheckIcon,
+      url: PRIVACY_URL,
+    },
+    { labelKey: "setting.menu.version", icon: InfoIcon, action: "version" },
   ],
 ];
 
 function versionText(latest: string, current: string) {
-  return `최신 버전: ${latest}\n설치 버전: ${current}`;
+  return i18n.t("setting.versionText", { latest, current });
 }
 
 function isOutdated(current: string, latest: string) {
@@ -164,14 +196,15 @@ function SettingRow({
   hasNew: boolean;
   onPress?: () => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
-  const { label, icon: Icon } = item;
+  const { labelKey, icon: Icon } = item;
 
   return (
     <RetroListRow divider={divider} gap="$3" onPress={onPress}>
       <Icon size={ICON_SIZE} color={theme.color12.val} />
       <Text flex={1} numberOfLines={1} fontSize="$4">
-        {label}
+        {t(labelKey)}
       </Text>
       {hasNew && <RetroBadge>N</RetroBadge>}
       {pending && <Spinner size="small" />}
@@ -195,7 +228,7 @@ function SettingSection({
       <RetroListPanel>
         {items.map((item, index) => (
           <SettingRow
-            key={item.label}
+            key={item.labelKey}
             item={item}
             pending={item.action === pendingAction}
             divider={index < items.length - 1}
@@ -213,6 +246,7 @@ function SettingSection({
 }
 
 export default function SettingScreen() {
+  const { t } = useTranslation();
   const space = getTokens().space;
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -238,7 +272,7 @@ export default function SettingScreen() {
     mutationFn: api.attendances.checkIn,
     onSuccess: async (reward) => {
       if (!reward.earned) {
-        showToast("warning", ALREADY_EARNED_MESSAGE);
+        showToast("warning", t("setting.alreadyEarned"));
         return;
       }
 
@@ -246,7 +280,7 @@ export default function SettingScreen() {
       await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       showToast(
         "info",
-        `${reward.amount.toLocaleString()} 포인트를 받았습니다.`,
+        t("setting.rewarded", { amount: reward.amount.toLocaleString() }),
       );
     },
     onError: showApiError,
@@ -265,7 +299,7 @@ export default function SettingScreen() {
       confirm({
         variant: "info",
         message: detail,
-        confirmLabel: "업데이트",
+        confirmLabel: t("setting.update"),
         onConfirm: () =>
           Linking.openURL(storeUrl).catch(() =>
             show("error", BROWSER_FAILED_MESSAGE),
@@ -287,7 +321,9 @@ export default function SettingScreen() {
     (action: SettingAction) => {
       if (action === "contact" || action === "suggest") {
         openSupportMail(
-          action === "contact" ? "문의하기" : "건의하기",
+          action === "contact"
+            ? t("setting.menu.contact")
+            : t("setting.menu.suggest"),
           profile?.memberId,
           show,
         );
@@ -311,7 +347,7 @@ export default function SettingScreen() {
         earnAttendanceReward.mutate();
       }
     },
-    [adReward, checkVersion, earnAttendanceReward, profile?.memberId, show],
+    [adReward, checkVersion, earnAttendanceReward, profile?.memberId, show, t],
   );
 
   const handlePress = useCallback(
@@ -344,16 +380,16 @@ export default function SettingScreen() {
 
   const accountMenu: MenuSheetItem[] = [
     {
-      label: "로그아웃",
+      label: t("setting.menu.logout"),
       onPress: () =>
         confirm({
-          message: LOGOUT_DESCRIPTION,
-          confirmLabel: "확인",
+          message: t("setting.logoutNotice"),
+          confirmLabel: t("setting.confirm"),
           onConfirm: () => logout.mutate(),
         }),
     },
     {
-      label: "회원탈퇴",
+      label: t("setting.menu.withdraw"),
       destructive: true,
       onPress: confirmWithdraw,
     },
@@ -390,7 +426,7 @@ export default function SettingScreen() {
         <YStack gap="$5">
           {SECTIONS.map((items) => (
             <SettingSection
-              key={items[0].label}
+              key={items[0].labelKey}
               items={items}
               pendingAction={pendingAction}
               profileViewCount={profileViewCount}
