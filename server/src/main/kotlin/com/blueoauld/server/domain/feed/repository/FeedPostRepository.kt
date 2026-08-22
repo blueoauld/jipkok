@@ -42,7 +42,7 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
             where r.reporter_id = :memberId and r.post_id = p.id
           )
           and (cast(:cursor as bigint) is null or p.id > cast(:cursor as bigint))
-        order by p.id
+        order by p.slot_at, p.id
         limit :size
         """,
         nativeQuery = true,
@@ -82,7 +82,7 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
             where r.reporter_id = :memberId and r.post_id = p.id
           )
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
-        order by p.id desc
+        order by p.slot_at desc, p.id desc
         limit :size
         """,
         nativeQuery = true,

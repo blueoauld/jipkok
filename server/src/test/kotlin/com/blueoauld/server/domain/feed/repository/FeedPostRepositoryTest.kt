@@ -94,6 +94,20 @@ class FeedPostRepositoryTest {
     }
 
     @Test
+    fun `정렬은 저장 순서가 아니라 슬롯 시간을 따른다`() {
+        // given
+        val late = savePost(femaleId, slot(22)).id
+        val early = savePost(meId, slot(7)).id
+
+        // when
+        val rows = findByDateLatest(gender = null, cursor = null)
+
+        // then
+        assertThat(rows.map { it.getPostId() }).startsWith(late)
+        assertThat(rows.map { it.getPostId() }).endsWith(early)
+    }
+
+    @Test
     fun `성별을 지정하면 해당 성별 게시물만 준다`() {
         // given
         // when
