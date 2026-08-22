@@ -2,7 +2,7 @@ import { currentLocale } from "@/lib/i18n";
 import { useLocaleStore } from "@/lib/i18n/store";
 
 jest.mock("expo-localization", () => ({
-  getLocales: () => [{ languageCode: "en" }],
+  getLocales: () => [{ languageCode: "fr" }],
 }));
 
 describe("currentLocale", () => {

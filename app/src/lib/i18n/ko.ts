@@ -284,6 +284,7 @@ export const ko = {
     language: "언어",
     languageKo: "한국어",
     languageJa: "일본어",
+    languageEn: "영어",
     languageChangeNotice: "언어를 바꾸면 앱이 다시 시작됩니다.",
     languageChange: "바꾸기",
     logoutNotice: "로그아웃하면 다시 로그인해야 이용할 수 있습니다.",
@@ -362,7 +363,7 @@ export const ko = {
   support: {
     mailFailed: "{{email}}으로 메일을 보내주시길 바랍니다.",
     browserFailed: "페이지를 열지 못했습니다.",
-    appName: "집콕",
+    appName: "Jipkok",
     placeholder: "(여기에 내용을 적어주세요)",
     appVersion: "앱 버전: {{version}}",
     device: "기기: {{device}}",

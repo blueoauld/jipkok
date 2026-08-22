@@ -1,6 +1,6 @@
 import { getLocales } from "expo-localization";
 
-export const SUPPORTED_LOCALES = ["ko", "ja"] as const;
+export const SUPPORTED_LOCALES = ["ko", "ja", "en"] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 

@@ -1,6 +1,7 @@
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import { en } from "@/lib/i18n/en";
 import { ja } from "@/lib/i18n/ja";
 import { ko } from "@/lib/i18n/ko";
 import { deviceLocale, type SupportedLocale } from "@/lib/i18n/locale";
@@ -17,7 +18,11 @@ export function currentLocale(): SupportedLocale {
 const i18n = createInstance();
 
 i18n.use(initReactI18next).init({
-  resources: { ko: { translation: ko }, ja: { translation: ja } },
+  resources: {
+    ko: { translation: ko },
+    ja: { translation: ja },
+    en: { translation: en },
+  },
   lng: currentLocale(),
   fallbackLng: "ko",
   interpolation: { escapeValue: false },

@@ -20,10 +20,12 @@ class PushMessagesTest {
         // given, when
         val ko = pushMessages.get(MemberLocale.KO, "push.chat.photo")
         val ja = pushMessages.get(MemberLocale.JA, "push.chat.photo")
+        val en = pushMessages.get(MemberLocale.EN, "push.chat.photo")
 
         // then
         assertThat(ko).isEqualTo("사진을 보냈습니다.")
         assertThat(ja).isEqualTo("写真を送りました。")
+        assertThat(en).isEqualTo("Sent a photo.")
     }
 
     @Test

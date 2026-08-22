@@ -71,6 +71,12 @@ const THEME_ITEMS = THEME_MODES.map((value) => ({
   label: i18n.t(`setting.theme.${value}`),
 }));
 
+const LANGUAGE_LABEL_KEYS = {
+  ko: "setting.languageKo",
+  ja: "setting.languageJa",
+  en: "setting.languageEn",
+} as const satisfies Record<SupportedLocale, string>;
+
 type SettingAction =
   "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
 
@@ -427,7 +433,7 @@ export default function SettingScreen() {
   const openLanguage = useCallback(() => setLanguageOpen(true), []);
 
   const languageItems: MenuSheetItem[] = SUPPORTED_LOCALES.map((value) => ({
-    label: t(value === "ko" ? "setting.languageKo" : "setting.languageJa"),
+    label: t(LANGUAGE_LABEL_KEYS[value]),
     selected: value === locale,
     onPress: () => changeLanguage(value),
   }));

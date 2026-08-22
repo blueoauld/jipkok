@@ -105,6 +105,7 @@ export async function releaseDevice() {
 const SERVER_LOCALES: Record<SupportedLocale, MemberLocale> = {
   ko: "KO",
   ja: "JA",
+  en: "EN",
 };
 
 function serverLocale(): MemberLocale {

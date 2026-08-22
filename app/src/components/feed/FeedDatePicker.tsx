@@ -67,6 +67,31 @@ const JA_DAYS = [
   "土曜日",
 ];
 
+const EN_MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const EN_DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
 // 달력은 i18next가 아니라 라이브러리의 로케일 표를 쓴다.
 LocaleConfig.locales.ko = {
   monthNames: KO_MONTHS,
@@ -82,6 +107,14 @@ LocaleConfig.locales.ja = {
   dayNames: JA_DAYS,
   dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
   today: "今日",
+};
+
+LocaleConfig.locales.en = {
+  monthNames: EN_MONTHS,
+  monthNamesShort: EN_MONTHS,
+  dayNames: EN_DAYS,
+  dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  today: "Today",
 };
 
 LocaleConfig.defaultLocale = currentLocale();

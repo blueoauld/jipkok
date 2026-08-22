@@ -1314,7 +1314,7 @@ export interface components {
             /** @enum {string} */
             platform: "IOS" | "ANDROID";
             /** @enum {string|null} */
-            locale?: "KO" | "JA" | null;
+            locale?: "KO" | "JA" | "EN" | null;
         };
         CreateFeedPostRequest: {
             objectKey: string;
