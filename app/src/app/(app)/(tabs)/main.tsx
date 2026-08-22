@@ -4,6 +4,7 @@ import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { XStack, YStack } from "tamagui";
 
@@ -41,9 +42,8 @@ const SORT_ITEMS = SORTS.map((value) => ({
 
 const COMMENT_MAX_LENGTH = 100;
 
-const COMMENT_SAVED_MESSAGE = "코멘트를 저장했습니다.";
-
 export default function MainScreen() {
+  const { t } = useTranslation();
   const [filterOpen, setFilterOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,7 +70,7 @@ export default function MainScreen() {
     mutationFn: api.members.updateComment,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      showToast("info", COMMENT_SAVED_MESSAGE);
+      showToast("info", t("feed.commentSaved"));
     },
     onError: showApiError,
   });
@@ -183,8 +183,8 @@ export default function MainScreen() {
       <TextInputDialog
         open={commentOpen}
         onOpenChange={setCommentOpen}
-        title="코멘트"
-        placeholder="내용 입력"
+        title={t("feed.commentTitle")}
+        placeholder={t("feed.commentPlaceholder")}
         maxLength={COMMENT_MAX_LENGTH}
         defaultValue={profile?.comment ?? ""}
         clearable

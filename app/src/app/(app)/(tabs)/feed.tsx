@@ -10,6 +10,7 @@ import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { XStack, YStack } from "tamagui";
 
@@ -64,35 +65,24 @@ const BOARD_ITEMS = BOARDS.map((value) => ({
   label: i18n.t(`lounge.board.${value}`),
 }));
 
-const SORTS = ["최신", "과거"] as const;
-type Sort = (typeof SORTS)[number];
+const SORTS: FeedSort[] = ["LATEST", "OLDEST"];
 
-const SORT_VALUES: Record<Sort, FeedSort> = { 최신: "LATEST", 과거: "OLDEST" };
-const SORT_LABELS: Record<FeedSort, Sort> = { LATEST: "최신", OLDEST: "과거" };
+const SORT_ITEMS = SORTS.map((value) => ({
+  value,
+  label: i18n.t(`feed.sort.${value}`),
+}));
 
-const WORRY_SORTS = ["최신", "공감", "댓글"] as const;
-type WorrySortLabel = (typeof WORRY_SORTS)[number];
+const WORRY_SORTS: WorrySort[] = ["LATEST", "POPULAR", "COMMENT"];
 
-const WORRY_SORT_VALUES: Record<WorrySortLabel, WorrySort> = {
-  최신: "LATEST",
-  공감: "POPULAR",
-  댓글: "COMMENT",
-};
-const WORRY_SORT_LABELS: Record<WorrySort, WorrySortLabel> = {
-  LATEST: "최신",
-  POPULAR: "공감",
-  COMMENT: "댓글",
-};
-
-const ERROR_MESSAGE = "피드를 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "피드가 없습니다.";
-const POSTED_MESSAGE = "피드를 올렸습니다.";
-const WORRY_ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
-const WORRY_EMPTY_MESSAGE = "고민이 없습니다.";
+const WORRY_SORT_ITEMS = WORRY_SORTS.map((value) => ({
+  value,
+  label: i18n.t(`feed.worrySort.${value}`),
+}));
 
 const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
 
 export default function FeedScreen() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
@@ -270,12 +260,12 @@ export default function FeedScreen() {
   const handleReport = useCallback(
     (postId: number) =>
       confirm({
-        message: "신고한 피드는 검토 후 조치됩니다.",
-        confirmLabel: "신고",
+        message: t("feed.reportConfirm"),
+        confirmLabel: t("action.report"),
         destructive: true,
         onConfirm: () => reportMutate(postId),
       }),
-    [confirm, reportMutate],
+    [confirm, reportMutate, t],
   );
 
   const compose = useMutation({
@@ -294,7 +284,7 @@ export default function FeedScreen() {
       logAppEvent(APP_EVENT.feedPostCreated);
       setComposeOpen(false);
       await invalidate();
-      showToast("info", POSTED_MESSAGE);
+      showToast("info", t("feed.posted"));
     },
     onError: showApiError,
   });
@@ -375,12 +365,14 @@ export default function FeedScreen() {
                 onRefresh={refreshWorries}
               />
             }
-            ListEmptyComponent={<ListEmpty>{WORRY_EMPTY_MESSAGE}</ListEmpty>}
+            ListEmptyComponent={
+              <ListEmpty>{t("feed.worryEmptyMessage")}</ListEmpty>
+            }
           />
         ) : (
           <ScreenState
             error={worryError}
-            message={WORRY_ERROR_MESSAGE}
+            message={t("feed.worryErrorMessage")}
             onRetry={refetchWorries}
           />
         )
@@ -405,12 +397,12 @@ export default function FeedScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-          ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
+          ListEmptyComponent={<ListEmpty>{t("feed.emptyMessage")}</ListEmpty>}
         />
       ) : (
         <ScreenState
           error={error}
-          message={ERROR_MESSAGE}
+          message={t("feed.errorMessage")}
           onRetry={refetchFeed}
         />
       )}
@@ -452,11 +444,11 @@ export default function FeedScreen() {
       <MenuSheet
         open={filterOpen}
         onOpenChange={setFilterOpen}
-        items={SORTS.map((label) => ({
+        items={SORT_ITEMS.map(({ value, label }) => ({
           label,
-          selected: label === SORT_LABELS[sort],
+          selected: value === sort,
           onPress: () => {
-            setSort(SORT_VALUES[label]);
+            setSort(value);
             scrollToTop();
           },
         }))}
@@ -465,11 +457,11 @@ export default function FeedScreen() {
       <MenuSheet
         open={worryFilterOpen}
         onOpenChange={setWorryFilterOpen}
-        items={WORRY_SORTS.map((label) => ({
+        items={WORRY_SORT_ITEMS.map(({ value, label }) => ({
           label,
-          selected: label === WORRY_SORT_LABELS[worrySort],
+          selected: value === worrySort,
           onPress: () => {
-            setWorrySort(WORRY_SORT_VALUES[label]);
+            setWorrySort(value);
             scrollWorriesToTop();
           },
         }))}

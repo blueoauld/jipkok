@@ -5,6 +5,7 @@ import { CameraIcon } from "phosphor-react-native/src/icons/Camera";
 import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, Spinner, useTheme, XStack, YStack } from "tamagui";
 
 import { CARD_RATIO } from "@/components/feed/FeedCard";
@@ -58,6 +59,7 @@ function ComposeForm({
   onError: (error: unknown) => void;
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
+  const { t } = useTranslation();
   const [photo, setPhoto] = useState<ImagePickerAsset | null>(null);
   const captionRef = useRef("");
 
@@ -75,7 +77,7 @@ function ComposeForm({
 
   return (
     <>
-      <Dialog.Title fontSize="$6">피드</Dialog.Title>
+      <Dialog.Title fontSize="$6">{t("feed.composeTitle")}</Dialog.Title>
 
       {photo ? (
         <YStack
@@ -119,7 +121,7 @@ function ComposeForm({
 
       <CountedInput
         valueRef={captionRef}
-        placeholder="내용 입력"
+        placeholder={t("feed.composePlaceholder")}
         maxLength={CAPTION_MAX_LENGTH}
         submitBehavior="submit"
         autoFocusNative
@@ -128,7 +130,7 @@ function ComposeForm({
       <XStack gap="$3">
         <Dialog.Close asChild>
           <RetroButton flex={1} theme="gray" disabled={pending}>
-            닫기
+            {t("feed.composeClose")}
           </RetroButton>
         </Dialog.Close>
 
@@ -137,7 +139,11 @@ function ComposeForm({
           disabled={!photo || pending}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
-          {pending ? <Spinner size="small" color="white" /> : "작성"}
+          {pending ? (
+            <Spinner size="small" color="white" />
+          ) : (
+            t("feed.composeSubmit")
+          )}
         </RetroButton>
       </XStack>
     </>
