@@ -9865,7 +9865,7 @@
                         "type": "string",
                         "maxLength": 10,
                         "minLength": 0,
-                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163a-zA-Z0-9 ]+$"
+                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163\u3041-\u3096\u30a1-\u30fa\u30fc\u3005\u4e00-\u9fafa-zA-Z0-9 ]+$"
                     },
                     "birthYear": {
                         "type": "integer",
@@ -10779,7 +10779,7 @@
                         "type": "string",
                         "maxLength": 10,
                         "minLength": 0,
-                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163a-zA-Z0-9 ]+$"
+                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163\u3041-\u3096\u30a1-\u30fa\u30fc\u3005\u4e00-\u9fafa-zA-Z0-9 ]+$"
                     },
                     "birthYear": {
                         "type": "integer",
