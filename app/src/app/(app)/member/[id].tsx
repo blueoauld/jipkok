@@ -44,9 +44,9 @@ import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import {
-  PROFILE_BIO_EMPTY_MESSAGE,
-  PROFILE_COMMENT_EMPTY_MESSAGE,
-  PROFILE_ERROR_MESSAGE,
+  profileBioEmptyMessage,
+  profileCommentEmptyMessage,
+  profileErrorMessage,
 } from "@/lib/message";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -482,13 +482,13 @@ export default function MemberProfileScreen() {
               <ProfileSection
                 title="코멘트"
                 body={member.comment}
-                placeholder={PROFILE_COMMENT_EMPTY_MESSAGE}
+                placeholder={profileCommentEmptyMessage()}
               />
 
               <ProfileSection
                 title="자기소개"
                 body={member.bio}
-                placeholder={PROFILE_BIO_EMPTY_MESSAGE}
+                placeholder={profileBioEmptyMessage()}
               />
             </YStack>
           </ScrollView>
@@ -516,7 +516,7 @@ export default function MemberProfileScreen() {
       ) : (
         <ScreenState
           error={error}
-          message={PROFILE_ERROR_MESSAGE}
+          message={profileErrorMessage()}
           onRetry={() => refetch()}
         />
       )}

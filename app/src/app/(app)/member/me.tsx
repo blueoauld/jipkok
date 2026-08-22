@@ -21,9 +21,9 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import {
-  PROFILE_BIO_EMPTY_MESSAGE,
-  PROFILE_COMMENT_EMPTY_MESSAGE,
-  PROFILE_ERROR_MESSAGE,
+  profileBioEmptyMessage,
+  profileCommentEmptyMessage,
+  profileErrorMessage,
 } from "@/lib/message";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
@@ -80,13 +80,13 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
           <ProfileSection
             title="코멘트"
             body={comment}
-            placeholder={PROFILE_COMMENT_EMPTY_MESSAGE}
+            placeholder={profileCommentEmptyMessage()}
           />
 
           <ProfileSection
             title="자기소개"
             body={bio}
-            placeholder={PROFILE_BIO_EMPTY_MESSAGE}
+            placeholder={profileBioEmptyMessage()}
           />
         </YStack>
       </ScrollView>
@@ -137,7 +137,7 @@ export default function MyProfileScreen() {
       ) : (
         <ScreenState
           error={isError}
-          message={PROFILE_ERROR_MESSAGE}
+          message={profileErrorMessage()}
           onRetry={refetch}
         />
       )}

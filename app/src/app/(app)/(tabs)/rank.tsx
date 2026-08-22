@@ -18,7 +18,7 @@ import {
   GENDER_FILTERS,
   type GenderFilter,
 } from "@/lib/member";
-import { MEMBER_EMPTY_MESSAGE } from "@/lib/message";
+import { memberEmptyMessage } from "@/lib/message";
 
 const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
 
@@ -54,7 +54,7 @@ export default function RankScreen() {
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-          ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
+          ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
         />
       ) : (
         <ScreenState

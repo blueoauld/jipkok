@@ -26,7 +26,7 @@ import {
 } from "@/hooks/useScrollToTopVisible";
 import { api, type MemberSort } from "@/lib/api";
 import { type MemberFilter, useMemberFilterStore } from "@/lib/filter/store";
-import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
+import { listErrorMessage, memberEmptyMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
@@ -166,12 +166,12 @@ export default function MainScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-          ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
+          ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
         />
       ) : (
         <ScreenState
           error={error}
-          message={LIST_ERROR_MESSAGE}
+          message={listErrorMessage()}
           onRetry={refetchFeed}
         />
       )}

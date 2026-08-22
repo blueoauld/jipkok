@@ -14,7 +14,7 @@ import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import { REPORTED_MESSAGE } from "@/lib/message";
+import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 
@@ -90,7 +90,7 @@ export default function ReportScreen() {
         detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,
       }),
-    onSuccess: () => show("info", REPORTED_MESSAGE, () => router.back()),
+    onSuccess: () => show("info", reportedMessage(), () => router.back()),
     onError: showApiError,
   });
 

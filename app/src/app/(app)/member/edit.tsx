@@ -17,7 +17,7 @@ import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
-import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
+import { profileErrorMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
 import {
@@ -184,7 +184,7 @@ export default function MemberEditScreen() {
       ) : (
         <ScreenState
           error={isError}
-          message={PROFILE_ERROR_MESSAGE}
+          message={profileErrorMessage()}
           onRetry={refetch}
         />
       )}

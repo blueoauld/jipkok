@@ -1,3 +1,5 @@
+import i18n from "@/lib/i18n";
+
 export const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
 
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$/;
@@ -16,49 +18,54 @@ export const MAX_AGE = 90;
 
 const BIRTH_YEAR_PATTERN = /^\d{4}$/;
 
+// 기기 언어는 실행 중에 바뀌지 않아서 규칙은 한 번만 만든다.
+// 앱 안에 언어 전환을 넣으면 이 상수들을 함수로 바꿔야 한다.
 export const PHONE_NUMBER_RULES = {
-  required: "휴대폰 번호를 입력해주시길 바랍니다.",
+  required: i18n.t("validation.phoneNumberRequired"),
   pattern: {
     value: PHONE_NUMBER_PATTERN,
-    message: "휴대폰 번호가 올바르지 않습니다.",
+    message: i18n.t("validation.phoneNumberInvalid"),
   },
 };
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 
 export const VERIFICATION_CODE_RULES = {
-  required: "인증번호를 입력해주시길 바랍니다.",
+  required: i18n.t("validation.codeRequired"),
   pattern: {
     value: VERIFICATION_CODE_PATTERN,
-    message: "인증번호가 올바르지 않습니다.",
+    message: i18n.t("validation.codeInvalid"),
   },
 };
 
-const PASSWORD_LENGTH_MESSAGE = `비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상 ${PASSWORD_MAX_LENGTH}자 이하여야 합니다.`;
+const PASSWORD_LENGTH_MESSAGE = i18n.t("validation.passwordLength", {
+  min: PASSWORD_MIN_LENGTH,
+  max: PASSWORD_MAX_LENGTH,
+});
 
 // 비밀번호를 고치면 확인 칸도 다시 검사한다.
 export const PASSWORD_RULES = {
-  required: "비밀번호를 입력해주시길 바랍니다.",
+  required: i18n.t("validation.passwordRequired"),
   minLength: { value: PASSWORD_MIN_LENGTH, message: PASSWORD_LENGTH_MESSAGE },
   maxLength: { value: PASSWORD_MAX_LENGTH, message: PASSWORD_LENGTH_MESSAGE },
   deps: "passwordConfirm" as const,
 };
 
 export const PASSWORD_CONFIRM_RULES = {
-  required: "비밀번호를 한 번 더 입력해주시길 바랍니다.",
+  required: i18n.t("validation.passwordConfirmRequired"),
   validate: (value: string, values: { password: string }) =>
-    value === values.password || "비밀번호가 일치하지 않습니다.",
+    value === values.password || i18n.t("validation.passwordMismatch"),
 };
 
 function validateNickname(value: string) {
   const trimmed = value.trim();
 
   if (!trimmed) {
-    return "닉네임을 입력해주시길 바랍니다.";
+    return i18n.t("validation.nicknameRequired");
   }
 
   if (!NICKNAME_PATTERN.test(trimmed)) {
-    return "닉네임이 올바르지 않습니다.";
+    return i18n.t("validation.nicknameInvalid");
   }
 
   return true;
@@ -66,17 +73,17 @@ function validateNickname(value: string) {
 
 function validateBirthYear(value: string) {
   if (!value) {
-    return "출생연도를 입력해주시길 바랍니다.";
+    return i18n.t("validation.birthYearRequired");
   }
 
   if (!BIRTH_YEAR_PATTERN.test(value)) {
-    return "출생연도가 올바르지 않습니다.";
+    return i18n.t("validation.birthYearInvalid");
   }
 
   const age = new Date().getFullYear() - Number(value);
 
   if (age < MIN_AGE || age > MAX_AGE) {
-    return `${MIN_AGE}세 이상 ${MAX_AGE}세 이하만 가입할 수 있습니다.`;
+    return i18n.t("validation.ageRange", { min: MIN_AGE, max: MAX_AGE });
   }
 
   return true;

@@ -8,7 +8,7 @@ import { UserRow } from "@/components/UserRow";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
-import { LIST_ERROR_MESSAGE, MEMBER_EMPTY_MESSAGE } from "@/lib/message";
+import { listErrorMessage, memberEmptyMessage } from "@/lib/message";
 
 export function ActivityList({
   query,
@@ -31,7 +31,7 @@ export function ActivityList({
     return (
       <ScreenState
         error={error}
-        message={LIST_ERROR_MESSAGE}
+        message={listErrorMessage()}
         onRetry={() => query.refetch()}
       />
     );
@@ -47,7 +47,7 @@ export function ActivityList({
       )}
       showsVerticalScrollIndicator={true}
       contentContainerStyle={contentStyle}
-      ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
+      ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
     />
   );
 }

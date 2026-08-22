@@ -49,7 +49,7 @@ import {
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
 import { type LoungeBoard, useFeedFilterStore } from "@/lib/filter/store";
-import { REPORTED_MESSAGE } from "@/lib/message";
+import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { mapPages } from "@/lib/paging";
 import { uploadFeedPhoto } from "@/lib/photo";
@@ -255,7 +255,7 @@ export default function FeedScreen() {
     mutationFn: api.feeds.report,
     onSuccess: async () => {
       await invalidate();
-      show("info", REPORTED_MESSAGE);
+      show("info", reportedMessage());
     },
     onError: handlePostError,
   });

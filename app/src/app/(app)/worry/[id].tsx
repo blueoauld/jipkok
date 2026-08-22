@@ -43,7 +43,7 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
-import { REPORTED_MESSAGE } from "@/lib/message";
+import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { useAccentToken, useThemeBackground } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
@@ -333,7 +333,7 @@ export default function WorryDetailScreen() {
     mutationFn: () => api.worries.report(postId),
     onSuccess: async () => {
       await invalidateList();
-      show("info", REPORTED_MESSAGE, () => router.back());
+      show("info", reportedMessage(), () => router.back());
     },
     onError: showApiError,
   });
@@ -375,7 +375,7 @@ export default function WorryDetailScreen() {
     mutationFn: (commentId: number) => api.worries.reportComment(commentId),
     onSuccess: async () => {
       await invalidateComments();
-      show("info", REPORTED_MESSAGE);
+      show("info", reportedMessage());
     },
     onError: showApiError,
   });

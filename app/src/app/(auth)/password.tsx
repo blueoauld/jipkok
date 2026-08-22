@@ -11,7 +11,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
-import { CODE_SENT_MESSAGE } from "@/lib/message";
+import { codeSentMessage } from "@/lib/message";
 import { showToast } from "@/lib/toast/store";
 import {
   PASSWORD_CONFIRM_RULES,
@@ -46,7 +46,7 @@ export default function PasswordScreen() {
       api.auth.sendVerificationCode(phoneNumber, PURPOSE),
     onSuccess: () => {
       cooldown.start(RESEND_COOLDOWN_SECONDS);
-      showToast("info", CODE_SENT_MESSAGE);
+      showToast("info", codeSentMessage());
     },
     onError: showApiError,
   });

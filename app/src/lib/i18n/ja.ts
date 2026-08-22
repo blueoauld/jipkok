@@ -1,6 +1,32 @@
 import type { ko } from "@/lib/i18n/ko";
 
 export const ja: typeof ko = {
+  common: {
+    profileLoadFailed: "プロフィールを読み込めませんでした。",
+    listLoadFailed: "リストを読み込めませんでした。",
+    memberEmpty: "会員がいません。",
+    profileCommentEmpty: "コメントがありません。",
+    profileBioEmpty: "自己紹介がありません。",
+    reported: "通報を受け付けました。",
+    photoPermission: "写真へのアクセス権限が必要です。",
+    codeSent: "認証番号を送信しました。",
+  },
+  validation: {
+    phoneNumberRequired: "携帯電話番号を入力してください。",
+    phoneNumberInvalid: "携帯電話番号が正しくありません。",
+    codeRequired: "認証番号を入力してください。",
+    codeInvalid: "認証番号が正しくありません。",
+    passwordRequired: "パスワードを入力してください。",
+    passwordLength:
+      "パスワードは{{min}}文字以上{{max}}文字以下で入力してください。",
+    passwordConfirmRequired: "パスワードをもう一度入力してください。",
+    passwordMismatch: "パスワードが一致しません。",
+    nicknameRequired: "ニックネームを入力してください。",
+    nicknameInvalid: "ニックネームが正しくありません。",
+    birthYearRequired: "生年を入力してください。",
+    birthYearInvalid: "生年が正しくありません。",
+    ageRange: "{{min}}歳以上{{max}}歳以下のみ登録できます。",
+  },
   date: {
     justNow: "たった今",
     minutesAgo: "{{count}}分前",
@@ -14,6 +40,21 @@ export const ja: typeof ko = {
     clock: "{{meridiem}}{{hour}}:{{minute}}",
     am: "午前",
     pm: "午後",
+  },
+  pointType: {
+    ACCESS_REWARD: "アクセス報酬",
+    ATTENDANCE_REWARD: "出席報酬",
+    AD_REWARD: "広告報酬",
+    NOTE_SEND: "メッセージ送信",
+  },
+  suspensionReason: {
+    SCREEN_CAPTURE: "画面キャプチャ",
+    OBSCENITY: "わいせつ物",
+    MINOR: "未成年者",
+    MONEY_TRANSACTION: "金銭取引",
+    ABUSE: "暴言および脅迫",
+    IMPERSONATION: "なりすましおよび不正利用",
+    ETC: "その他",
   },
   worryCategory: {
     LOVE: "恋愛",

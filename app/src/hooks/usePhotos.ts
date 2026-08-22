@@ -1,7 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 
 import { ApiError } from "@/lib/api";
-import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
+import { photoPermissionMessage } from "@/lib/message";
 import { VIDEO_MAX_SECONDS } from "@/lib/video";
 
 export const MAX_PHOTOS = 6;
@@ -20,7 +20,7 @@ async function requireLibrary() {
   const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (!granted) {
-    throw denied(PHOTO_PERMISSION_MESSAGE);
+    throw denied(photoPermissionMessage());
   }
 }
 

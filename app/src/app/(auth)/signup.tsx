@@ -13,7 +13,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
-import { CODE_SENT_MESSAGE } from "@/lib/message";
+import { codeSentMessage } from "@/lib/message";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
@@ -65,7 +65,7 @@ export default function SignupScreen() {
     onSuccess: () => {
       logAppEvent(APP_EVENT.verificationCodeSent);
       cooldown.start(RESEND_COOLDOWN_SECONDS);
-      showToast("info", CODE_SENT_MESSAGE);
+      showToast("info", codeSentMessage());
     },
     onError: (error) => {
       logAppEvent(APP_EVENT.verificationCodeFailed, {

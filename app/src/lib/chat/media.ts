@@ -1,7 +1,7 @@
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 
-import { PHOTO_PERMISSION_MESSAGE } from "@/lib/message";
+import { photoPermissionMessage } from "@/lib/message";
 import { saveChatMedia } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
 
@@ -34,7 +34,7 @@ export async function saveMedia(url: string, kind: MediaKind) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       showToast("info", SAVED_MESSAGE[kind]);
     } else {
-      showToast("error", PHOTO_PERMISSION_MESSAGE);
+      showToast("error", photoPermissionMessage());
     }
   } catch {
     showToast("error", SAVE_FAILED_MESSAGE[kind]);
