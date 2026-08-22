@@ -45,7 +45,12 @@ export function PhoneNumberField<T extends FieldValues>({
   return (
     <>
       <XStack gap="$2" items="flex-start">
-        <RetroButton width={COUNTRY_BUTTON_WIDTH} onPress={() => setOpen(true)}>
+        <RetroButton
+          theme="purple"
+          shadow="$gray8"
+          width={COUNTRY_BUTTON_WIDTH}
+          onPress={() => setOpen(true)}
+        >
           {country}
         </RetroButton>
 

@@ -1,4 +1,4 @@
-import { Button, type ButtonProps, YStack } from "tamagui";
+import { Button, type ButtonProps, YStack, type YStackProps } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
@@ -8,13 +8,14 @@ export function RetroButton({
   theme,
   flex,
   disabled,
+  shadow = "$gray12",
   ...buttonProps
-}: ButtonProps) {
+}: ButtonProps & { shadow?: YStackProps["bg"] }) {
   const accent = useAccent();
 
   return (
     <YStack theme={disabled ? "gray" : (theme ?? accent)} flex={flex}>
-      <RetroShadow color="$gray12" />
+      <RetroShadow color={shadow} />
       <Button
         size="$4"
         bg={disabled ? "$color8" : "$color10"}
