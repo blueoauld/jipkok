@@ -198,6 +198,20 @@ class FeedPostRepositoryTest {
         size = PAGE_SIZE,
     )
 
+    @Test
+    fun `사진 키는 지운 글까지 준다`() {
+        // given
+        val post = savePost(meId, slot(1))
+        val deleted = savePost(meId, slot(2))
+        feedPostRepository.delete(deleted)
+
+        // when
+        val keys = feedPostRepository.findObjectKeysByIdIn(listOf(post.id, deleted.id))
+
+        // then
+        assertThat(keys).containsExactlyInAnyOrder(post.objectKey, deleted.objectKey)
+    }
+
     private fun savePost(memberId: Long, slotAt: Instant) = feedPostRepository.saveAndFlush(
         FeedPost(memberId = memberId, slotAt = slotAt, objectKey = "feeds/$memberId/$slotAt.jpg"),
     )

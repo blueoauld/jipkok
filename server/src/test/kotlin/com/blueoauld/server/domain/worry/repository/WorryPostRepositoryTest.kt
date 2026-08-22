@@ -395,6 +395,83 @@ class WorryPostRepositoryTest {
         assertThat(worryPostRepository.findById(talkedPostId).orElseThrow().commentCount).isEqualTo(5)
     }
 
+    @Test
+    fun `하루 작성 수는 지운 글까지 센다`() {
+        // given
+        val deleted = savePost(meId)
+        worryPostRepository.delete(deleted)
+        savePost(meId)
+
+        // when
+        val count = worryPostRepository.countByMemberIdBetween(meId, DISTANT_PAST, FAR_FUTURE)
+
+        // then
+        assertThat(count).isEqualTo(2)
+    }
+
+    @Test
+    fun `하루 작성 수는 범위 밖의 글을 빼고 다른 사람 글도 뺀다`() {
+        // given
+        savePost(meId)
+        savePost(authorId)
+
+        // when
+        val outside = worryPostRepository.countByMemberIdBetween(meId, FAR_FUTURE, FAR_FUTURE)
+
+        // then
+        assertThat(outside).isZero()
+    }
+
+    @Test
+    fun `커서용 공감 수와 댓글 수를 읽는다`() {
+        // given
+
+        // when
+        val likeCount = worryPostRepository.findLikeCountById(talkedPostId)
+        val commentCount = worryPostRepository.findCommentCountById(talkedPostId)
+
+        // then
+        assertThat(likeCount).isEqualTo(2)
+        assertThat(commentCount).isEqualTo(7)
+    }
+
+    @Test
+    fun `커서용 수는 지운 글도 읽어 페이지가 이어진다`() {
+        // given
+        worryPostRepository.delete(worryPostRepository.findById(likedPostId).orElseThrow())
+
+        // when
+        val likeCount = worryPostRepository.findLikeCountById(likedPostId)
+
+        // then
+        assertThat(likeCount).isEqualTo(5)
+    }
+
+    @Test
+    fun `없는 글의 커서용 수는 없다`() {
+        // given
+
+        // when
+        val likeCount = worryPostRepository.findLikeCountById(MISSING_POST_ID)
+
+        // then
+        assertThat(likeCount).isNull()
+    }
+
+    @Test
+    fun `글에 달린 댓글 번호는 지운 댓글까지 준다`() {
+        // given
+        val comment = saveComment(quietPostId, meId, anonymousNo = 1)
+        val deleted = saveComment(quietPostId, authorId, anonymousNo = 2)
+        worryCommentRepository.delete(deleted)
+
+        // when
+        val ids = worryCommentRepository.findIdsByPostIdIn(listOf(quietPostId))
+
+        // then
+        assertThat(ids).containsExactlyInAnyOrder(comment.id, deleted.id)
+    }
+
     private fun countDeletedRows(postId: Long) = entityManager
         .createNativeQuery("select count(*) from worry_post where id = :id and deleted_at is not null")
         .setParameter("id", postId)
@@ -447,6 +524,10 @@ class WorryPostRepositoryTest {
     companion object {
 
         private const val PAGE_SIZE = 20
+
+        private const val MISSING_POST_ID = -1L
+
+        private val DISTANT_PAST: Instant = Instant.parse("2000-01-01T00:00:00Z")
 
         private val FAR_FUTURE: Instant = Instant.parse("2100-01-01T00:00:00Z")
     }

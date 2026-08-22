@@ -64,6 +64,21 @@ class AdminDashboardQueriesTest {
     }
 
     @Test
+    fun `신규 가입 수는 시작 시각부터 센다`() {
+        // given
+        val beforeId = saveMember("01088880011").id
+        val afterId = saveMember("01088880012").id
+        setCreatedAt("member", beforeId, Instant.parse("2026-08-18T23:59:59Z"))
+        setCreatedAt("member", afterId, Instant.parse("2026-08-19T00:00:00Z"))
+
+        // when
+        val count = memberRepository.countCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
+
+        // then
+        assertThat(count).isEqualTo(1)
+    }
+
+    @Test
     fun `탈퇴 집계는 탈퇴 시각을 기준으로 센다`() {
         // given
         val member = saveMember("01088880003")
