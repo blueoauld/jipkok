@@ -30,6 +30,7 @@ export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
 export type SuspensionResponse = Schemas["SuspensionResponse"];
 export type RegisterDeviceTokenRequest = Schemas["RegisterDeviceTokenRequest"];
 export type DevicePlatform = RegisterDeviceTokenRequest["platform"];
+export type MemberLocale = NonNullable<RegisterDeviceTokenRequest["locale"]>;
 export type SuspensionReason = SuspensionResponse["reason"];
 export type AppVersionResponse = Schemas["AppVersionResponse"];
 

@@ -2,8 +2,9 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
-import { api } from "@/lib/api";
+import { api, type MemberLocale } from "@/lib/api";
 import { DEVICE_PLATFORM } from "@/lib/device";
+import { deviceLocale } from "@/lib/i18n";
 
 const ANDROID_CHANNELS = [
   { id: "default", name: "알림", importance: "DEFAULT" },
@@ -61,7 +62,7 @@ export async function registerPushToken() {
     projectId,
   });
 
-  await api.push.register(token, DEVICE_PLATFORM);
+  await api.push.register(token, DEVICE_PLATFORM, serverLocale());
   registeredToken = token;
 }
 
@@ -97,4 +98,9 @@ export async function unregisterPushToken() {
 export async function releaseDevice() {
   await unregisterPushToken().catch(() => undefined);
   setBadgeCount(0);
+}
+
+// 서버 enum은 대문자다.
+function serverLocale(): MemberLocale {
+  return deviceLocale().toUpperCase() as MemberLocale;
 }

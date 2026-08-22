@@ -1,0 +1,25 @@
+export const ko = {
+  date: {
+    justNow: "방금 전",
+    minutesAgo: "{{count}}분 전",
+    hoursAgo: "{{count}}시간 전",
+    daysAgo: "{{count}}일 전",
+    today: "오늘",
+    yesterday: "어제",
+    monthDay: "{{month}}월 {{day}}일",
+    fullDate: "{{year}}. {{month}}. {{day}}.",
+    yearMonthDay: "{{year}}년 {{month}}월 {{day}}일",
+    clock: "{{meridiem}} {{hour}}:{{minute}}",
+    am: "오전",
+    pm: "오후",
+  },
+  worryCategory: {
+    LOVE: "연애",
+    RELATIONSHIP: "인간관계",
+    WORK: "직장",
+    FAMILY: "가족",
+    MIND: "심리",
+    LIFE: "일상",
+    ETC: "기타",
+  },
+};

@@ -23,6 +23,7 @@ import type {
   LoginRequest,
   MemberDetailResponse,
   MemberListPage,
+  MemberLocale,
   MemberSearchPage,
   MemberSort,
   MemberSummaryPage,
@@ -388,10 +389,10 @@ export const chats = {
 };
 
 export const push = {
-  register: (token: string, platform: DevicePlatform) =>
+  register: (token: string, platform: DevicePlatform, locale: MemberLocale) =>
     request<void>("/api/members/me/device-tokens", {
       method: "POST",
-      body: { token, platform },
+      body: { token, platform, locale },
     }),
 
   remove: (token: string) =>
