@@ -372,7 +372,7 @@ export default function FeedScreen() {
         ) : (
           <ScreenState
             error={worryError}
-            message={t("feed.worryErrorMessage")}
+            message={t("worry.loadFailed")}
             onRetry={refetchWorries}
           />
         )

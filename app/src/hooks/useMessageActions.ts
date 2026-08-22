@@ -17,7 +17,7 @@ import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import i18n from "@/lib/i18n";
 import { showToast } from "@/lib/toast/store";
 
-const VIDEO_SAVE_FAILED_MESSAGE = i18n.t("hook.videoSaveFailed");
+const VIDEO_SAVE_FAILED_MESSAGE = i18n.t("media.videoSaveFailed");
 
 export function useMessageActions(
   roomId: number,

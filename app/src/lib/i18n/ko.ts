@@ -8,6 +8,7 @@ export const ko = {
     reported: "신고가 접수되었습니다.",
     photoPermission: "사진 접근 권한이 필요합니다.",
     codeSent: "인증번호를 보냈습니다.",
+    contentPlaceholder: "내용 입력",
   },
   tabs: {
     main: "메인",
@@ -27,9 +28,6 @@ export const ko = {
     forever: "영구 정지",
     releaseAt: "해제일: {{at}}",
     mailTitle: "정지문의",
-    contact: "문의하기",
-    logout: "로그아웃",
-    withdraw: "회원탈퇴",
   },
   chatRoom: {
     errorMessage: "대화를 불러오지 못했습니다.",
@@ -38,7 +36,6 @@ export const ko = {
     replyNotLoaded: "원문을 아직 불러오지 못했습니다.",
     profile: "프로필",
     leave: "나가기",
-    report: "신고하기",
     me: "나",
   },
   profileEdit: {
@@ -69,18 +66,15 @@ export const ko = {
     errorMessage: "피드를 불러오지 못했습니다.",
     emptyMessage: "피드가 없습니다.",
     posted: "피드를 올렸습니다.",
-    worryErrorMessage: "고민을 불러오지 못했습니다.",
     worryEmptyMessage: "고민이 없습니다.",
     reportConfirm: "신고한 피드는 검토 후 조치됩니다.",
     notificationOn: "이제 피드 알림을 받을 수 있습니다.",
     notificationOff: "이제 피드 알림을 받지 않습니다.",
     composeTitle: "피드",
-    composePlaceholder: "내용 입력",
     composeClose: "닫기",
     composeSubmit: "작성",
     commentSaved: "코멘트를 저장했습니다.",
     commentTitle: "코멘트",
-    commentPlaceholder: "내용 입력",
   },
   gender: {
     MALE: "남자",
@@ -90,16 +84,6 @@ export const ko = {
     ALL: "전체",
     MALE: "남자",
     FEMALE: "여자",
-  },
-  activity: {
-    block: "차단 목록",
-    favoriteReceived: "받은 즐겨찾기 목록",
-    favorite: "즐겨찾기 목록",
-    likeReceived: "받은 좋아요 목록",
-    like: "좋아요 목록",
-    secretPhotoOpened: "공개된 비밀 사진 목록",
-    secretPhoto: "비밀 사진 목록",
-    profileView: "내 프로필 조회 목록",
   },
   component: {
     messagePlaceholder: "메시지 입력",
@@ -152,8 +136,6 @@ export const ko = {
         "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.",
       passwordConfirmPlaceholder: "비밀번호 확인",
       genderRequired: "성별을 선택해주시길 바랍니다.",
-      privacy: "개인정보 처리방침",
-      terms: "서비스 이용약관",
     },
     password: {
       title: "비밀번호 찾기",
@@ -190,7 +172,6 @@ export const ko = {
     videoUrlFailed: "동영상을 불러오지 못했습니다.",
     videoDurationUnknown:
       "재생 시간을 확인할 수 없는 동영상은 보낼 수 없습니다.",
-    videoSaveFailed: "동영상을 저장하지 못했습니다.",
     adRewarded: "광고 보상을 받았습니다.",
     adRewardPending:
       "보상이 아직 반영되지 않았습니다. 광고 보상은 하루 {{count}}번까지 받을 수 있습니다.",
@@ -211,6 +192,7 @@ export const ko = {
     withdraw: "탈퇴",
     delete: "삭제",
     report: "신고",
+    reportSubmit: "신고하기",
   },
   alert: {
     error: "에러",
@@ -222,23 +204,10 @@ export const ko = {
   },
   setting: {
     menu: {
-      myProfile: "내 프로필",
-      likes: "좋아요 목록",
-      favorites: "즐겨찾기 목록",
-      secretPhotos: "비밀 사진 목록",
-      blocks: "차단 목록",
-      worries: "고민 목록",
-      likesReceived: "받은 좋아요 목록",
-      favoritesReceived: "받은 즐겨찾기 목록",
-      secretPhotosOpened: "공개된 비밀 사진 목록",
-      profileViews: "내 프로필 조회 목록",
-      pointHistory: "포인트 내역",
       attendanceReward: "출석 보상",
       adReward: "광고 보상",
       contact: "문의하기",
       suggest: "건의하기",
-      terms: "서비스 이용약관",
-      privacy: "개인정보 처리방침",
       version: "버전 확인",
       logout: "로그아웃",
       withdraw: "회원탈퇴",
@@ -253,6 +222,23 @@ export const ko = {
   },
   rank: {
     errorMessage: "랭킹을 불러오지 못했습니다.",
+  },
+  list: {
+    myProfile: "내 프로필",
+    likes: "좋아요 목록",
+    favorites: "즐겨찾기 목록",
+    secretPhotos: "비밀 사진 목록",
+    blocks: "차단 목록",
+    worries: "고민 목록",
+    likesReceived: "받은 좋아요 목록",
+    favoritesReceived: "받은 즐겨찾기 목록",
+    secretPhotosOpened: "공개된 비밀 사진 목록",
+    profileViews: "내 프로필 조회 목록",
+    pointHistory: "포인트 내역",
+  },
+  legal: {
+    terms: "서비스 이용약관",
+    privacy: "개인정보 처리방침",
   },
   media: {
     uploadFailed: "업로드하지 못했습니다.",
@@ -286,13 +272,8 @@ export const ko = {
     block: "차단",
     closeSecretPhoto: "비밀 사진 닫기",
     openSecretPhoto: "비밀 사진 공개",
-    report: "신고하기",
     noteTitle: "쪽지",
-    notePlaceholder: "내용 입력",
     noteSubmit: "전송",
-  },
-  myProfile: {
-    title: "내 프로필",
   },
   profile: {
     comment: "코멘트",
@@ -301,7 +282,6 @@ export const ko = {
   report: {
     title: "신고",
     chatTitle: "채팅 신고",
-    submit: "신고하기",
     evidencePhotos: "증거 사진",
     detailPlaceholder: "상세 내용",
   },
@@ -321,7 +301,6 @@ export const ko = {
   },
   point: {
     history: {
-      title: "포인트 내역",
       balance: "보유 포인트",
       errorMessage: "내역을 불러오지 못했습니다.",
       emptyMessage: "내역이 없습니다.",
@@ -330,7 +309,6 @@ export const ko = {
   worry: {
     detail: {
       title: "고민",
-      errorMessage: "고민을 불러오지 못했습니다.",
       commentSection: "댓글",
       commentEmpty: "댓글이 없습니다.",
       commentError: "댓글을 불러오지 못했습니다.",
@@ -359,12 +337,10 @@ export const ko = {
       posted: "고민을 올렸습니다.",
       categoryLabel: "분류",
       submit: "등록",
-      placeholder: "내용 입력",
     },
+    loadFailed: "고민을 불러오지 못했습니다.",
     list: {
-      title: "고민 목록",
       emptyMessage: "올린 고민이 없습니다.",
-      errorMessage: "고민을 불러오지 못했습니다.",
     },
     search: {
       title: "고민 검색",

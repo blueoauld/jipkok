@@ -16,7 +16,7 @@ const FAVORITES_KEY = relationListKey("favorites", "mine");
 
 export default function FavoriteListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("activity.favorite") }), [t]);
+  const screenOptions = useMemo(() => ({ title: t("list.favorites") }), [t]);
 
   const query = useMemberList(FAVORITES_KEY, api.favorites.mine);
   const { alertElement, showApiError } = useRetroAlert();

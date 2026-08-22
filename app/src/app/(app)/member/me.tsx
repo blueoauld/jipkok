@@ -121,7 +121,7 @@ export default function MyProfileScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(
     () => ({
-      title: t("myProfile.title"),
+      title: t("list.myProfile"),
       headerRight: () => (
         <HeaderSoloIconButton
           icon={PencilSimpleIcon}

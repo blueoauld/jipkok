@@ -16,10 +16,7 @@ const GRANTED_SECRET_PHOTOS_KEY = relationListKey("secretPhotos", "granted");
 
 export default function SecretPhotoListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(
-    () => ({ title: t("activity.secretPhoto") }),
-    [t],
-  );
+  const screenOptions = useMemo(() => ({ title: t("list.secretPhotos") }), [t]);
 
   const query = useMemberList(
     GRANTED_SECRET_PHOTOS_KEY,

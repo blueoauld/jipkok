@@ -603,7 +603,7 @@ export default function WorryDetailScreen() {
       ) : (
         <ScreenState
           error={detail.error}
-          message={t("worry.detail.errorMessage")}
+          message={t("worry.loadFailed")}
           onRetry={detail.refetch}
         />
       )}

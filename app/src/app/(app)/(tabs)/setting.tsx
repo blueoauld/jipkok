@@ -66,7 +66,10 @@ const THEME_ITEMS = THEME_MODES.map((value) => ({
 type SettingAction =
   "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
 
-type SettingLabelKey = `setting.menu.${keyof (typeof ko)["setting"]["menu"]}`;
+type SettingLabelKey =
+  | `setting.menu.${keyof (typeof ko)["setting"]["menu"]}`
+  | `list.${keyof (typeof ko)["list"]}`
+  | `legal.${keyof (typeof ko)["legal"]}`;
 
 type SettingItem = {
   labelKey: SettingLabelKey;
@@ -80,51 +83,51 @@ type SettingItem = {
 const PROFILE_VIEW_HREF = "/activity/profile-view";
 
 const SECTIONS: SettingItem[][] = [
-  [{ labelKey: "setting.menu.myProfile", icon: UserIcon, href: "/member/me" }],
+  [{ labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" }],
   [
-    { labelKey: "setting.menu.likes", icon: HeartIcon, href: "/activity/like" },
+    { labelKey: "list.likes", icon: HeartIcon, href: "/activity/like" },
     {
-      labelKey: "setting.menu.favorites",
+      labelKey: "list.favorites",
       icon: StarIcon,
       href: "/activity/favorite",
     },
     {
-      labelKey: "setting.menu.secretPhotos",
+      labelKey: "list.secretPhotos",
       icon: ImagesIcon,
       href: "/activity/secret-photo",
     },
     {
-      labelKey: "setting.menu.blocks",
+      labelKey: "list.blocks",
       icon: ProhibitIcon,
       href: "/activity/block",
     },
     {
-      labelKey: "setting.menu.worries",
+      labelKey: "list.worries",
       icon: ChatCircleTextIcon,
       href: "/activity/worry",
     },
   ],
   [
     {
-      labelKey: "setting.menu.likesReceived",
+      labelKey: "list.likesReceived",
       icon: HandHeartIcon,
       href: "/activity/like-received",
       gated: true,
     },
     {
-      labelKey: "setting.menu.favoritesReceived",
+      labelKey: "list.favoritesReceived",
       icon: TrayArrowDownIcon,
       href: "/activity/favorite-received",
       gated: true,
     },
     {
-      labelKey: "setting.menu.secretPhotosOpened",
+      labelKey: "list.secretPhotosOpened",
       icon: EyeIcon,
       href: "/activity/secret-photo-opened",
       gated: true,
     },
     {
-      labelKey: "setting.menu.profileViews",
+      labelKey: "list.profileViews",
       icon: FootprintsIcon,
       href: PROFILE_VIEW_HREF,
       gated: true,
@@ -132,7 +135,7 @@ const SECTIONS: SettingItem[][] = [
   ],
   [
     {
-      labelKey: "setting.menu.pointHistory",
+      labelKey: "list.pointHistory",
       icon: CoinsIcon,
       href: "/point/history",
     },
@@ -154,9 +157,9 @@ const SECTIONS: SettingItem[][] = [
       icon: LightbulbIcon,
       action: "suggest",
     },
-    { labelKey: "setting.menu.terms", icon: FileTextIcon, url: TERMS_URL },
+    { labelKey: "legal.terms", icon: FileTextIcon, url: TERMS_URL },
     {
-      labelKey: "setting.menu.privacy",
+      labelKey: "legal.privacy",
       icon: ShieldCheckIcon,
       url: PRIVACY_URL,
     },

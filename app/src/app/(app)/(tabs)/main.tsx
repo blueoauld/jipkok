@@ -184,7 +184,7 @@ export default function MainScreen() {
         open={commentOpen}
         onOpenChange={setCommentOpen}
         title={t("feed.commentTitle")}
-        placeholder={t("feed.commentPlaceholder")}
+        placeholder={t("common.contentPlaceholder")}
         maxLength={COMMENT_MAX_LENGTH}
         defaultValue={profile?.comment ?? ""}
         clearable

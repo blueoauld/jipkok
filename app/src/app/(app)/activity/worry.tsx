@@ -13,7 +13,7 @@ import { pushOnce } from "@/lib/router";
 
 export default function MyWorryListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("worry.list.title") }), [t]);
+  const screenOptions = useMemo(() => ({ title: t("list.worries") }), [t]);
 
   const [refreshing, setRefreshing] = useState(false);
   const worries = useMyWorryPosts();
@@ -58,7 +58,7 @@ export default function MyWorryListScreen() {
       ) : (
         <ScreenState
           error={error}
-          message={t("worry.list.errorMessage")}
+          message={t("worry.loadFailed")}
           onRetry={refetch}
         />
       )}

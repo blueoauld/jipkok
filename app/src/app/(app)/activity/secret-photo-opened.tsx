@@ -12,7 +12,7 @@ const RECEIVED_SECRET_PHOTOS_KEY = relationListKey("secretPhotos", "received");
 export default function OpenedSecretPhotoListScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(
-    () => ({ title: t("activity.secretPhotoOpened") }),
+    () => ({ title: t("list.secretPhotosOpened") }),
     [t],
   );
 

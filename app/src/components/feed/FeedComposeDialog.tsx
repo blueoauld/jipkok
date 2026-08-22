@@ -121,7 +121,7 @@ function ComposeForm({
 
       <CountedInput
         valueRef={captionRef}
-        placeholder={t("feed.composePlaceholder")}
+        placeholder={t("common.contentPlaceholder")}
         maxLength={CAPTION_MAX_LENGTH}
         submitBehavior="submit"
         autoFocusNative

@@ -115,7 +115,7 @@ export default function SignupScreen() {
                 fontSize="$2"
                 onPress={() => openLegal(PRIVACY_URL)}
               >
-                {t("auth.signup.privacy")}
+                {t("legal.privacy")}
               </Text>
               <Text theme="gray" color="$color8" fontSize="$2">
                 |
@@ -126,7 +126,7 @@ export default function SignupScreen() {
                 fontSize="$2"
                 onPress={() => openLegal(TERMS_URL)}
               >
-                {t("auth.signup.terms")}
+                {t("legal.terms")}
               </Text>
             </XStack>
           </>

@@ -69,10 +69,7 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
 
 export default function PointHistoryScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(
-    () => ({ title: t("point.history.title") }),
-    [t],
-  );
+  const screenOptions = useMemo(() => ({ title: t("list.pointHistory") }), [t]);
 
   const space = getTokens().space;
 

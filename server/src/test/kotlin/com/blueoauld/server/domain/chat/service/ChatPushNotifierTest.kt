@@ -77,6 +77,34 @@ class ChatPushNotifierTest {
     }
 
     @Test
+    fun `글 메시지는 언어를 읽지 않는다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
+            roomMember(notificationEnabled = true)
+
+        // when
+        notifier.notifySent(event())
+
+        // then
+        verify(exactly = 0) { memberRepository.findLocaleById(any()) }
+    }
+
+    @Test
+    fun `사진 메시지는 받는 사람의 언어로 문구를 만든다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
+            roomMember(notificationEnabled = true)
+        every { memberRepository.findLocaleById(RECEIVER_ID) } returns MemberLocale.JA
+        every { pushMessages.get(MemberLocale.JA, "push.chat.photo") } returns "写真"
+
+        // when
+        notifier.notifySent(event(ChatMessageType.PHOTO))
+
+        // then
+        verify { pushService.send(RECEIVER_ID, any(), "写真", any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `알림을 끈 방이면 푸시를 보내지 않는다`() {
         // given
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
@@ -107,13 +135,13 @@ class ChatPushNotifierTest {
         notificationEnabled = notificationEnabled,
     )
 
-    private fun event() = ChatMessageSentEvent(
+    private fun event(type: ChatMessageType = ChatMessageType.TEXT) = ChatMessageSentEvent(
         receiverId = RECEIVER_ID,
         message = ChatMessageResponse(
             messageId = 1L,
             roomId = ROOM_ID,
             senderId = SENDER_ID,
-            type = ChatMessageType.TEXT,
+            type = type,
             content = "안녕하세요",
             imageUrl = null,
             createdAt = Instant.parse("2026-08-05T12:00:00Z"),

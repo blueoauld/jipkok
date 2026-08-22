@@ -10,6 +10,7 @@ export const ja: typeof ko = {
     reported: "通報を受け付けました。",
     photoPermission: "写真へのアクセス権限が必要です。",
     codeSent: "認証番号を送信しました。",
+    contentPlaceholder: "内容を入力",
   },
   tabs: {
     main: "メイン",
@@ -29,9 +30,6 @@ export const ja: typeof ko = {
     forever: "永久停止",
     releaseAt: "解除日: {{at}}",
     mailTitle: "停止に関する問い合わせ",
-    contact: "お問い合わせ",
-    logout: "ログアウト",
-    withdraw: "退会",
   },
   chatRoom: {
     errorMessage: "会話を読み込めませんでした。",
@@ -40,7 +38,6 @@ export const ja: typeof ko = {
     replyNotLoaded: "元のメッセージをまだ読み込めていません。",
     profile: "プロフィール",
     leave: "退出",
-    report: "通報する",
     me: "自分",
   },
   profileEdit: {
@@ -72,18 +69,15 @@ export const ja: typeof ko = {
     errorMessage: "フィードを読み込めませんでした。",
     emptyMessage: "フィードがありません。",
     posted: "フィードを投稿しました。",
-    worryErrorMessage: "悩みを読み込めませんでした。",
     worryEmptyMessage: "悩みがありません。",
     reportConfirm: "通報されたフィードは確認のうえ対応します。",
     notificationOn: "フィードの通知を受け取れるようになりました。",
     notificationOff: "フィードの通知を受け取りません。",
     composeTitle: "フィード",
-    composePlaceholder: "内容を入力",
     composeClose: "閉じる",
     composeSubmit: "投稿",
     commentSaved: "コメントを保存しました。",
     commentTitle: "コメント",
-    commentPlaceholder: "内容を入力",
   },
   gender: {
     MALE: "男性",
@@ -93,16 +87,6 @@ export const ja: typeof ko = {
     ALL: "すべて",
     MALE: "男性",
     FEMALE: "女性",
-  },
-  activity: {
-    block: "ブロックリスト",
-    favoriteReceived: "受け取ったお気に入りリスト",
-    favorite: "お気に入りリスト",
-    likeReceived: "受け取ったいいねリスト",
-    like: "いいねリスト",
-    secretPhotoOpened: "公開されたシークレット写真リスト",
-    secretPhoto: "シークレット写真リスト",
-    profileView: "プロフィール閲覧リスト",
   },
   component: {
     messagePlaceholder: "メッセージを入力",
@@ -155,8 +139,6 @@ export const ja: typeof ko = {
         "未成年者は登録できません。発覚した場合、サービスの利用が制限されます。",
       passwordConfirmPlaceholder: "パスワード確認",
       genderRequired: "性別を選択してください。",
-      privacy: "プライバシーポリシー",
-      terms: "利用規約",
     },
     password: {
       title: "パスワードを忘れた方",
@@ -192,7 +174,6 @@ export const ja: typeof ko = {
   hook: {
     videoUrlFailed: "動画を読み込めませんでした。",
     videoDurationUnknown: "再生時間を確認できない動画は送信できません。",
-    videoSaveFailed: "動画を保存できませんでした。",
     adRewarded: "広告報酬を受け取りました。",
     adRewardPending:
       "報酬がまだ反映されていません。広告報酬は1日{{count}}回まで受け取れます。",
@@ -213,6 +194,7 @@ export const ja: typeof ko = {
     withdraw: "退会",
     delete: "削除",
     report: "通報",
+    reportSubmit: "通報する",
   },
   alert: {
     error: "エラー",
@@ -224,23 +206,10 @@ export const ja: typeof ko = {
   },
   setting: {
     menu: {
-      myProfile: "マイプロフィール",
-      likes: "いいねリスト",
-      favorites: "お気に入りリスト",
-      secretPhotos: "シークレット写真リスト",
-      blocks: "ブロックリスト",
-      worries: "悩みリスト",
-      likesReceived: "受け取ったいいねリスト",
-      favoritesReceived: "受け取ったお気に入りリスト",
-      secretPhotosOpened: "公開されたシークレット写真リスト",
-      profileViews: "プロフィール閲覧リスト",
-      pointHistory: "ポイント履歴",
       attendanceReward: "出席報酬",
       adReward: "広告報酬",
       contact: "お問い合わせ",
       suggest: "ご意見",
-      terms: "利用規約",
-      privacy: "プライバシーポリシー",
       version: "バージョン確認",
       logout: "ログアウト",
       withdraw: "退会",
@@ -255,6 +224,23 @@ export const ja: typeof ko = {
   },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",
+  },
+  list: {
+    myProfile: "マイプロフィール",
+    likes: "いいねリスト",
+    favorites: "お気に入りリスト",
+    secretPhotos: "シークレット写真リスト",
+    blocks: "ブロックリスト",
+    worries: "悩みリスト",
+    likesReceived: "受け取ったいいねリスト",
+    favoritesReceived: "受け取ったお気に入りリスト",
+    secretPhotosOpened: "公開されたシークレット写真リスト",
+    profileViews: "プロフィール閲覧リスト",
+    pointHistory: "ポイント履歴",
+  },
+  legal: {
+    terms: "利用規約",
+    privacy: "プライバシーポリシー",
   },
   media: {
     uploadFailed: "アップロードできませんでした。",
@@ -288,13 +274,8 @@ export const ja: typeof ko = {
     block: "ブロック",
     closeSecretPhoto: "シークレット写真を閉じる",
     openSecretPhoto: "シークレット写真を公開",
-    report: "通報する",
     noteTitle: "メッセージ",
-    notePlaceholder: "内容を入力",
     noteSubmit: "送信",
-  },
-  myProfile: {
-    title: "マイプロフィール",
   },
   profile: {
     comment: "コメント",
@@ -303,7 +284,6 @@ export const ja: typeof ko = {
   report: {
     title: "通報",
     chatTitle: "チャットの通報",
-    submit: "通報する",
     evidencePhotos: "証拠写真",
     detailPlaceholder: "詳細",
   },
@@ -323,7 +303,6 @@ export const ja: typeof ko = {
   },
   point: {
     history: {
-      title: "ポイント履歴",
       balance: "保有ポイント",
       errorMessage: "履歴を読み込めませんでした。",
       emptyMessage: "履歴がありません。",
@@ -332,7 +311,6 @@ export const ja: typeof ko = {
   worry: {
     detail: {
       title: "悩み",
-      errorMessage: "悩みを読み込めませんでした。",
       commentSection: "コメント",
       commentEmpty: "コメントがありません。",
       commentError: "コメントを読み込めませんでした。",
@@ -361,12 +339,10 @@ export const ja: typeof ko = {
       posted: "悩みを投稿しました。",
       categoryLabel: "分類",
       submit: "投稿",
-      placeholder: "内容を入力",
     },
+    loadFailed: "悩みを読み込めませんでした。",
     list: {
-      title: "悩みリスト",
       emptyMessage: "投稿した悩みがありません。",
-      errorMessage: "悩みを読み込めませんでした。",
     },
     search: {
       title: "悩み検索",

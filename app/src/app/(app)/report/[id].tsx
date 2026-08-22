@@ -118,7 +118,7 @@ export default function ReportScreen() {
             disabled={!reason || busy}
             onPress={() => reason && report.mutate(reason)}
           >
-            {t("report.submit")}
+            {t("action.reportSubmit")}
           </RetroButton>
         }
       >

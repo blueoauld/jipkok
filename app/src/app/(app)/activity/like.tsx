@@ -16,7 +16,7 @@ const LIKES_KEY = relationListKey("likes", "mine");
 
 export default function LikeListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("activity.like") }), [t]);
+  const screenOptions = useMemo(() => ({ title: t("list.likes") }), [t]);
 
   const query = useMemberList(LIKES_KEY, api.likes.mine);
   const { alertElement, showApiError } = useRetroAlert();

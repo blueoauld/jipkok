@@ -11,10 +11,7 @@ import {
 
 export default function ProfileViewListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(
-    () => ({ title: t("activity.profileView") }),
-    [t],
-  );
+  const screenOptions = useMemo(() => ({ title: t("list.profileViews") }), [t]);
 
   const query = useProfileViews();
 

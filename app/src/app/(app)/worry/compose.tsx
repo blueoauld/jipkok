@@ -81,7 +81,7 @@ export default function WorryComposeScreen() {
           multiline
           rows={10}
           textAlignVertical="top"
-          placeholder={t("worry.compose.placeholder")}
+          placeholder={t("common.contentPlaceholder")}
           maxLength={WORRY_CONTENT_MAX_LENGTH}
           onChangeText={(text) => setEmpty(text.trim().length === 0)}
         />

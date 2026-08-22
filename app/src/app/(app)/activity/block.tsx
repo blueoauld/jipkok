@@ -16,7 +16,7 @@ const BLOCKS_KEY = relationListKey("blocks", "mine");
 
 export default function BlockListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("activity.block") }), [t]);
+  const screenOptions = useMemo(() => ({ title: t("list.blocks") }), [t]);
 
   const query = useMemberList(BLOCKS_KEY, api.blocks.mine);
   const { alertElement, showApiError } = useRetroAlert();

@@ -50,12 +50,11 @@ class ChatPushNotifier(
         }
 
         val sender = memberRepository.findById(event.message.senderId).orElse(null) ?: return
-        val locale = memberRepository.findLocaleById(event.receiverId) ?: MemberLocale.KO
 
         pushService.send(
             memberId = event.receiverId,
             title = sender.nickname,
-            body = toBody(event, locale),
+            body = toBody(event),
             data = mapOf(ROOM_ID_KEY to event.message.roomId.toString()),
             badge = chatRoomMemberRepository.sumUnreadCount(event.receiverId).toInt(),
             channelId = CHANNEL_ID,
@@ -63,11 +62,13 @@ class ChatPushNotifier(
         )
     }
 
-    private fun toBody(event: ChatMessageSentEvent, locale: MemberLocale) = when (event.message.type) {
+    private fun toBody(event: ChatMessageSentEvent) = when (event.message.type) {
         ChatMessageType.TEXT -> event.message.content.orEmpty()
-        ChatMessageType.PHOTO -> pushMessages.get(locale, PHOTO_CODE)
-        ChatMessageType.VIDEO -> pushMessages.get(locale, VIDEO_CODE)
+        ChatMessageType.PHOTO -> pushMessages.get(localeOf(event.receiverId), PHOTO_CODE)
+        ChatMessageType.VIDEO -> pushMessages.get(localeOf(event.receiverId), VIDEO_CODE)
     }
+
+    private fun localeOf(memberId: Long) = memberRepository.findLocaleById(memberId) ?: MemberLocale.KO
 
     companion object {
 

@@ -75,7 +75,7 @@ export default function SuspendedScreen() {
               openSupportMail(t("suspended.mailTitle"), profile?.memberId, show)
             }
           >
-            {t("suspended.contact")}
+            {t("setting.menu.contact")}
           </RetroButton>
 
           <RetroButton
@@ -86,12 +86,12 @@ export default function SuspendedScreen() {
             {logout.isPending ? (
               <Spinner color="white" />
             ) : (
-              t("suspended.logout")
+              t("setting.menu.logout")
             )}
           </RetroButton>
 
           <RetroButton theme="red" onPress={confirmWithdraw}>
-            {t("suspended.withdraw")}
+            {t("setting.menu.withdraw")}
           </RetroButton>
         </YStack>
       </YStack>

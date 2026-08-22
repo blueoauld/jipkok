@@ -12,7 +12,7 @@ const RECEIVED_LIKES_KEY = relationListKey("likes", "received");
 export default function ReceivedLikeListScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(
-    () => ({ title: t("activity.likeReceived") }),
+    () => ({ title: t("list.likesReceived") }),
     [t],
   );
 

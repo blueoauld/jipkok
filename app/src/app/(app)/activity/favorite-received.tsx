@@ -12,7 +12,7 @@ const RECEIVED_FAVORITES_KEY = relationListKey("favorites", "received");
 export default function ReceivedFavoriteListScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(
-    () => ({ title: t("activity.favoriteReceived") }),
+    () => ({ title: t("list.favoritesReceived") }),
     [t],
   );
 

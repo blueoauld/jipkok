@@ -399,7 +399,7 @@ export default function MemberProfileScreen() {
       },
     },
     {
-      label: t("memberDetail.report"),
+      label: t("action.reportSubmit"),
       destructive: true,
       onPress: () => pushOnce(`/report/${id}?type=member`),
     },
@@ -513,7 +513,7 @@ export default function MemberProfileScreen() {
         open={noteOpen}
         onOpenChange={setNoteOpen}
         title={t("memberDetail.noteTitle")}
-        placeholder={t("memberDetail.notePlaceholder")}
+        placeholder={t("common.contentPlaceholder")}
         maxLength={NOTE_MAX_LENGTH}
         defaultValue={noteContent}
         submitLabel={t("memberDetail.noteSubmit")}

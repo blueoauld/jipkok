@@ -217,7 +217,7 @@ export default function ChatRoomScreen() {
       },
     },
     {
-      label: t("chatRoom.report"),
+      label: t("action.reportSubmit"),
       destructive: true,
       onPress: () => {
         if (room) {
