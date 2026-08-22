@@ -58,6 +58,7 @@ const REPLY_PREVIEW_GAP = 2;
 const SUBMIT_BUTTON_WIDTH = 80;
 
 const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
+const COMMENT_SECTION_LABEL = "댓글";
 const COMMENT_EMPTY_MESSAGE = "댓글이 없습니다.";
 const COMMENT_ERROR_MESSAGE = "댓글을 불러오지 못했습니다.";
 const POST_DELETED_MESSAGE = "고민을 삭제했습니다.";
@@ -270,6 +271,14 @@ export default function WorryDetailScreen() {
     refetch: refetchComments,
   } = commentsQuery;
   const paged = usePagedList(commentsQuery);
+  // 프로필처럼 라벨과 내용은 붙이고, 글과 라벨 사이만 벌린다.
+  const listStyle = useMemo(
+    () => ({
+      ...paged.contentContainerStyle,
+      gap: getTokens().space.$2.val,
+    }),
+    [paged.contentContainerStyle],
+  );
 
   const invalidateList = useCallback(
     () => queryClient.invalidateQueries({ queryKey: WORRY_LIST_KEY }),
@@ -459,6 +468,7 @@ export default function WorryDetailScreen() {
           <YStack flex={1}>
             <FlatList
               {...paged}
+              contentContainerStyle={listStyle}
               data={comments && comments.length > 0 ? [comments] : []}
               keyExtractor={() => "comments"}
               renderItem={({ item }) => (
@@ -481,7 +491,17 @@ export default function WorryDetailScreen() {
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
               ListHeaderComponent={
-                <PostSection post={post} onToggleLike={handleToggleLike} />
+                <YStack gap="$4">
+                  <PostSection post={post} onToggleLike={handleToggleLike} />
+                  <Text
+                    theme="gray"
+                    color="$color11"
+                    fontSize="$3"
+                    fontWeight="600"
+                  >
+                    {COMMENT_SECTION_LABEL}
+                  </Text>
+                </YStack>
               }
               ListEmptyComponent={
                 commentsQuery.isPending ? null : (
