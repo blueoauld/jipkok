@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 
@@ -57,6 +58,7 @@ export function MemberFilterSheet({
   filter: MemberFilter;
   onApply: (filter: MemberFilter) => void;
 }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [gender, setGender] = useState(genderFilterOf(filter.gender));
   const [ages, setAges] = useState<[number, number]>([
@@ -110,7 +112,7 @@ export function MemberFilterSheet({
         gap="$4"
       >
         <YStack gap="$2">
-          <Label>성별</Label>
+          <Label>{t("component.genderLabel")}</Label>
           <RetroSegmentedControl
             items={GENDER_FILTER_ITEMS}
             value={gender}
@@ -120,7 +122,7 @@ export function MemberFilterSheet({
 
         <YStack gap="$3">
           <XStack items="center" justify="space-between">
-            <Label>나이</Label>
+            <Label>{t("component.ageLabel")}</Label>
             {/* ~ 글자가 대체 폰트로 그려져 줄높이를 키우므로 고정한다. */}
             <Text fontSize="$3" lineHeight="$3" fontWeight="600">
               {formatAgeRange(ages[0], ages[1])}
@@ -141,10 +143,10 @@ export function MemberFilterSheet({
             disabled={isDefaultMemberFilter(draft)}
             onPress={reset}
           >
-            초기화
+            {t("component.reset")}
           </RetroButton>
           <RetroButton flex={1} onPress={apply}>
-            적용
+            {t("component.apply")}
           </RetroButton>
         </XStack>
       </Sheet.Frame>

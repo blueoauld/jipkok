@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Modal, Platform, Text as NativeText } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 
@@ -34,6 +35,7 @@ export function RetroAlert({
   onConfirm?: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Modal
       transparent
@@ -82,7 +84,7 @@ export function RetroAlert({
               {confirmLabel ? (
                 <XStack p="$4" gap="$3">
                   <RetroButton flex={1} theme="gray" onPress={onClose}>
-                    닫기
+                    {t("component.close")}
                   </RetroButton>
 
                   <RetroButton
@@ -98,7 +100,9 @@ export function RetroAlert({
                 </XStack>
               ) : (
                 <XStack justify="flex-end" p="$4">
-                  <RetroButton onPress={onClose}>확인</RetroButton>
+                  <RetroButton onPress={onClose}>
+                    {t("component.confirm")}
+                  </RetroButton>
                 </XStack>
               )}
             </YStack>

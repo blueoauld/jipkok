@@ -9,7 +9,7 @@ import i18n, { deviceLocale } from "@/lib/i18n";
 const ANDROID_CHANNELS = [
   { id: "default", name: i18n.t("push.channelDefault"), importance: "DEFAULT" },
   { id: "chat", name: i18n.t("push.channelChat"), importance: "HIGH" },
-  { id: "feed", name: "피드", importance: "HIGH" },
+  { id: "feed", name: i18n.t("component.channelFeed"), importance: "HIGH" },
 ] as const;
 
 let registeredToken: string | null = null;

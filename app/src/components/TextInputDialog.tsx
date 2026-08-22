@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, XStack } from "tamagui";
 
 import { CountedInput } from "@/components/ui/CountedInput";
@@ -24,6 +25,7 @@ function DialogForm({
   clearable?: boolean;
   onSubmit: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   const valueRef = useRef(defaultValue);
 
   return (
@@ -46,13 +48,13 @@ function DialogForm({
       <XStack gap="$3">
         <Dialog.Close asChild>
           <RetroButton flex={1} theme="gray">
-            닫기
+            {t("component.close")}
           </RetroButton>
         </Dialog.Close>
 
         <Dialog.Close asChild>
           <RetroButton flex={1} onPress={() => onSubmit(valueRef.current)}>
-            {submitLabel}
+            {submitLabel ?? t("component.submit")}
           </RetroButton>
         </Dialog.Close>
       </XStack>
@@ -67,7 +69,7 @@ export function TextInputDialog({
   placeholder,
   maxLength,
   defaultValue = "",
-  submitLabel = "작성",
+  submitLabel,
   rows,
   clearable,
   onSubmit,
@@ -83,6 +85,7 @@ export function TextInputDialog({
   clearable?: boolean;
   onSubmit: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <RetroFormDialog open={open} onOpenChange={onOpenChange}>
       <DialogForm
@@ -90,7 +93,7 @@ export function TextInputDialog({
         placeholder={placeholder}
         maxLength={maxLength}
         defaultValue={defaultValue}
-        submitLabel={submitLabel}
+        submitLabel={submitLabel ?? t("component.submit")}
         rows={rows}
         clearable={clearable}
         onSubmit={onSubmit}

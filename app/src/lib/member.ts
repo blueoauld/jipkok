@@ -27,12 +27,12 @@ export function formatDistance(meters: number) {
 
 export function formatAgeRange(min: number, max: number) {
   if (min === MIN_AGE && max === MAX_AGE) {
-    return "전체";
+    return i18n.t("component.ageAll");
   }
 
   if (min === max) {
-    return `${min}살`;
+    return i18n.t("component.ageFrom", { min });
   }
 
-  return `${min}살 ~ ${max}살`;
+  return i18n.t("component.ageRange", { min, max });
 }

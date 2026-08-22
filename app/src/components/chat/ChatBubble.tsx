@@ -26,6 +26,7 @@ import {
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { useAccentToken } from "@/lib/theme/accent";
 import { formatDuration } from "@/lib/video";
 
@@ -167,19 +168,28 @@ function UploadOverlay({
   showPhase?: boolean;
 }) {
   const percent = `${Math.round(upload.progress * 100)}%`;
-  const phase = upload.phase === "compressing" ? "압축 중 " : "업로드 중 ";
+  const phase =
+    upload.phase === "compressing"
+      ? i18n.t("component.compressing")
+      : i18n.t("component.uploading");
 
   return (
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
       {upload.phase === "failed" ? (
         <>
           <Text fontSize="$3" color="white" fontWeight="600">
-            전송 실패
+            {i18n.t("component.sendFailed")}
           </Text>
 
           <XStack gap="$2">
-            <OverlayAction label="재전송" onPress={upload.retry} />
-            <OverlayAction label="삭제" onPress={upload.cancel} />
+            <OverlayAction
+              label={i18n.t("component.resend")}
+              onPress={upload.retry}
+            />
+            <OverlayAction
+              label={i18n.t("action.delete")}
+              onPress={upload.cancel}
+            />
           </XStack>
         </>
       ) : (
@@ -188,7 +198,10 @@ function UploadOverlay({
             {showPhase ? phase + percent : percent}
           </Text>
 
-          <OverlayAction label="취소" onPress={upload.cancel} />
+          <OverlayAction
+            label={i18n.t("component.cancel")}
+            onPress={upload.cancel}
+          />
         </>
       )}
     </YStack>
@@ -322,7 +335,7 @@ function ReplyMessage({
               color={mine ? "white" : "$color12"}
               numberOfLines={1}
             >
-              {replyName}에게 답장
+              {i18n.t("component.replyTo", { name: replyName })}
             </Text>
 
             <Text

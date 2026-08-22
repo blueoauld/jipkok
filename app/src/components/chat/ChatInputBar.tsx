@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -27,7 +28,6 @@ import { useAccent } from "@/lib/theme/accent";
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
 
-const PLACEHOLDER = "메시지 입력";
 const MAX_LENGTH = 1000;
 
 const FONT_SIZE = 16;
@@ -58,6 +58,7 @@ export function ChatInputBar({
   onPickPhotos: () => void;
   onCancelReply: () => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const accent = useAccent();
   const space = getTokens().space;
@@ -111,7 +112,7 @@ export function ChatInputBar({
 
             <YStack flex={1} gap={2}>
               <Text fontSize="$2" fontWeight="600" color="$color12">
-                {replyName}에게 답장
+                {t("component.replyTo", { name: replyName })}
               </Text>
 
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
@@ -167,7 +168,7 @@ export function ChatInputBar({
               ref={inputRef}
               value={text}
               onChangeText={setText}
-              placeholder={PLACEHOLDER}
+              placeholder={t("component.messagePlaceholder")}
               placeholderTextColor={theme.color11.val}
               maxLength={MAX_LENGTH}
               multiline

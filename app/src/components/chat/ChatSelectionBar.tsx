@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
@@ -14,6 +15,7 @@ export function ChatSelectionBar({
   onMarkRead: () => void;
   onLeave: () => void;
 }) {
+  const { t } = useTranslation();
   const background = useThemeBackground();
   const disabled = count === 0 || pending;
 
@@ -21,11 +23,11 @@ export function ChatSelectionBar({
     <YStack px="$4" py="$4" bg={background}>
       <XStack gap="$3">
         <RetroButton flex={1} disabled={disabled} onPress={onMarkRead}>
-          읽음
+          {t("component.markRead")}
         </RetroButton>
 
         <RetroButton flex={1} theme="red" disabled={disabled} onPress={onLeave}>
-          나가기
+          {t("action.leave")}
         </RetroButton>
       </XStack>
     </YStack>

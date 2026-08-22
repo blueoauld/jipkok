@@ -4,10 +4,11 @@ import { getTokens, Text, XStack } from "tamagui";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { WorryCategory } from "@/lib/api";
 import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { useAccent } from "@/lib/theme/accent";
 import { WORRY_CATEGORIES, worryCategoryLabel } from "@/lib/worry";
 
-const ALL_LABEL = "전체";
+const ALL_LABEL = i18n.t("component.all");
 
 function Chip({
   label,
