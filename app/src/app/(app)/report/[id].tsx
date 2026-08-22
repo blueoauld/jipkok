@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { type RefObject, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
@@ -17,15 +18,16 @@ import { api, type ReportReason } from "@/lib/api";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
+import { reasonLabel } from "@/lib/suspension";
 
 const DETAIL_MAX_LENGTH = 1000;
-const REASONS: { label: string; value: ReportReason }[] = [
-  { label: "음란물", value: "OBSCENITY" },
-  { label: "미성년자", value: "MINOR" },
-  { label: "금전거래", value: "MONEY_TRANSACTION" },
-  { label: "욕설 및 협박", value: "ABUSE" },
-  { label: "사칭 및 도용", value: "IMPERSONATION" },
-  { label: "기타", value: "ETC" },
+const REASONS: ReportReason[] = [
+  "OBSCENITY",
+  "MINOR",
+  "MONEY_TRANSACTION",
+  "ABUSE",
+  "IMPERSONATION",
+  "ETC",
 ];
 
 function ReasonRow({
@@ -55,19 +57,21 @@ function ReasonRow({
 }
 
 function DetailField({ valueRef }: { valueRef: RefObject<string> }) {
+  const { t } = useTranslation();
   return (
     <CountedInput
       valueRef={valueRef}
       multiline
       rows={7}
       textAlignVertical="top"
-      placeholder="상세 내용"
+      placeholder={t("report.detailPlaceholder")}
       maxLength={DETAIL_MAX_LENGTH}
     />
   );
 }
 
 export default function ReportScreen() {
+  const { t } = useTranslation();
   const { id, roomId } = useLocalSearchParams<{
     id: string;
     roomId?: string;
@@ -79,7 +83,7 @@ export default function ReportScreen() {
   const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
   const { data: member } = useMemberDetail(memberId);
-  const title = roomId ? "채팅 신고" : "신고";
+  const title = roomId ? t("report.chatTitle") : t("report.title");
 
   const report = useMutation({
     mutationFn: (value: ReportReason) =>
@@ -114,13 +118,13 @@ export default function ReportScreen() {
             disabled={!reason || busy}
             onPress={() => reason && report.mutate(reason)}
           >
-            신고하기
+            {t("report.submit")}
           </RetroButton>
         }
       >
         <YStack gap="$2">
           <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            증거 사진
+            {t("report.evidencePhotos")}
           </Text>
           <PhotoGrid
             photos={photos.urls}
@@ -131,10 +135,10 @@ export default function ReportScreen() {
         </YStack>
 
         <RetroListPanel>
-          {REASONS.map(({ label, value }, index) => (
+          {REASONS.map((value, index) => (
             <ReasonRow
               key={value}
-              label={label}
+              label={reasonLabel(value)}
               selected={value === reason}
               divider={index < REASONS.length - 1}
               onPress={() => setReason(value)}

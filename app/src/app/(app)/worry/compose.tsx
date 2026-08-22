@@ -15,7 +15,6 @@ import { api, type WorryCategory } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
-
 export default function WorryComposeScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(
@@ -62,7 +61,11 @@ export default function WorryComposeScreen() {
               compose.mutate({ category, content: contentRef.current.trim() })
             }
           >
-            {compose.isPending ? <Spinner color="white" /> : t("worry.compose.submit")}
+            {compose.isPending ? (
+              <Spinner color="white" />
+            ) : (
+              t("worry.compose.submit")
+            )}
           </RetroButton>
         }
       >

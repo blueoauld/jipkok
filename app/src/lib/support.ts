@@ -4,28 +4,31 @@ import { Linking } from "react-native";
 
 import { getLastFailedRequestId } from "@/lib/api/request-id";
 import { APP_VERSION, DEVICE_NAME } from "@/lib/device";
+import i18n from "@/lib/i18n";
 
 const EMAIL = "hello@jipkok.app";
 
-export const MAIL_FAILED_MESSAGE = `${EMAIL}으로 메일을 보내주시길 바랍니다.`;
+export const MAIL_FAILED_MESSAGE = i18n.t("support.mailFailed", {
+  email: EMAIL,
+});
 
 export const TERMS_URL = "https://jipkok.app/terms";
 export const PRIVACY_URL = "https://jipkok.app/privacy";
-export const BROWSER_FAILED_MESSAGE = "페이지를 열지 못했습니다.";
+export const BROWSER_FAILED_MESSAGE = i18n.t("support.browserFailed");
 
-const APP_NAME = "집콕";
-const PLACEHOLDER = "(여기에 내용을 적어주세요)";
+const APP_NAME = i18n.t("support.appName");
+const PLACEHOLDER = i18n.t("support.placeholder");
 const DIVIDER = "────────────";
 
 const UNKNOWN = "-";
 
 function deviceInfo(memberId?: number) {
   return [
-    `앱 버전: ${APP_VERSION}`,
-    `기기: ${DEVICE_NAME ?? UNKNOWN}`,
+    i18n.t("support.appVersion", { version: APP_VERSION }),
+    i18n.t("support.device", { device: DEVICE_NAME ?? UNKNOWN }),
     `OS: ${Device.osName ?? UNKNOWN} ${Device.osVersion ?? UNKNOWN}`,
-    `회원 ID: ${memberId ?? UNKNOWN}`,
-    `요청 ID: ${getLastFailedRequestId() ?? UNKNOWN}`,
+    i18n.t("support.memberId", { id: memberId ?? UNKNOWN }),
+    i18n.t("support.requestId", { id: getLastFailedRequestId() ?? UNKNOWN }),
   ].join("\n");
 }
 

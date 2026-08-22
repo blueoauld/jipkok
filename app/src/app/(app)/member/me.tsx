@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { PencilSimpleIcon } from "phosphor-react-native/src/icons/PencilSimple";
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, YStack } from "tamagui";
@@ -29,6 +30,7 @@ import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 
 function Profile({ profile }: { profile: MyProfileResponse }) {
+  const { t } = useTranslation();
   const photoGridOpen = usePhotoGridStore((state) => state.open);
   const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
   const [gridPhotoIndex, setGridPhotoIndex] = useState<number | null>(null);
@@ -78,13 +80,13 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
           </YStack>
 
           <ProfileSection
-            title="코멘트"
+            title={t("profile.comment")}
             body={comment}
             placeholder={profileCommentEmptyMessage()}
           />
 
           <ProfileSection
-            title="자기소개"
+            title={t("profile.bio")}
             body={bio}
             placeholder={profileBioEmptyMessage()}
           />
@@ -115,22 +117,26 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
   );
 }
 
-const SCREEN_OPTIONS = {
-  title: "내 프로필",
-  headerRight: () => (
-    <HeaderSoloIconButton
-      icon={PencilSimpleIcon}
-      onPress={() => pushOnce("/member/edit")}
-    />
-  ),
-};
-
 export default function MyProfileScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({
+      title: t("myProfile.title"),
+      headerRight: () => (
+        <HeaderSoloIconButton
+          icon={PencilSimpleIcon}
+          onPress={() => pushOnce("/member/edit")}
+        />
+      ),
+    }),
+    [t],
+  );
+
   const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       {data ? (
         <Profile profile={data} />

@@ -158,32 +158,35 @@ export default function ChatRoomScreen() {
 
   useChatRoomEffects(roomId, messages, partnerId);
 
-  const handlePressReply = useCallback((messageId: number) => {
-    const index = rowsRef.current.findIndex(
-      (row) => row.kind === "message" && row.message.messageId === messageId,
-    );
+  const handlePressReply = useCallback(
+    (messageId: number) => {
+      const index = rowsRef.current.findIndex(
+        (row) => row.kind === "message" && row.message.messageId === messageId,
+      );
 
-    if (index < 0) {
-      showToast("warning", t("chatRoom.replyNotLoaded"));
-      return;
-    }
+      if (index < 0) {
+        showToast("warning", t("chatRoom.replyNotLoaded"));
+        return;
+      }
 
-    listRef.current?.scrollToIndex({
-      index,
-      viewPosition: 0.5,
-      animated: false,
-    });
+      listRef.current?.scrollToIndex({
+        index,
+        viewPosition: 0.5,
+        animated: false,
+      });
 
-    if (highlightTimer.current) {
-      clearTimeout(highlightTimer.current);
-    }
+      if (highlightTimer.current) {
+        clearTimeout(highlightTimer.current);
+      }
 
-    setHighlightedId(messageId);
-    highlightTimer.current = setTimeout(
-      () => setHighlightedId(null),
-      HIGHLIGHT_MILLIS,
-    );
-  }, [t]);
+      setHighlightedId(messageId);
+      highlightTimer.current = setTimeout(
+        () => setHighlightedId(null),
+        HIGHLIGHT_MILLIS,
+      );
+    },
+    [t],
+  );
 
   useEffect(
     () => () => {

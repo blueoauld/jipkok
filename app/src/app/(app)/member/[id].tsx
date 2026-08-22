@@ -11,6 +11,7 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, useTheme, XStack, YStack } from "tamagui";
@@ -59,23 +60,9 @@ const ACTION_ICON_SIZE = 30;
 
 const NOTE_MAX_LENGTH = 100;
 
-const SECRET_PHOTO_EMPTY_MESSAGE = "공개된 비밀 사진이 없습니다.";
-const ID_COPIED_MESSAGE = "회원 아이디를 복사했습니다.";
-
-const NOTE_SENT_MESSAGE = "쪽지를 보냈습니다.";
-
-const BLOCKED_MESSAGE = "차단했습니다.";
-const UNBLOCKED_MESSAGE = "차단을 해제했습니다.";
-const SECRET_PHOTO_OPENED_MESSAGE = "비밀 사진을 공개했습니다.";
-const SECRET_PHOTO_CLOSED_MESSAGE = "비밀 사진을 닫았습니다.";
-
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
 const BADGE_OPACITY = 0.9;
-
-const UNBLOCK_DESCRIPTION = "차단을 해제하시겠습니까?";
-const BLOCK_DESCRIPTION =
-  "차단하면 서로의 목록에 표시되지 않고, 주고받은 대화 내역도 모두 사라집니다.";
 
 const GRID_ICON_SIZE = 20;
 
@@ -207,6 +194,7 @@ function ActionBar({
 }
 
 export default function MemberProfileScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
   const insets = useSafeAreaInsets();
@@ -234,7 +222,7 @@ export default function MemberProfileScreen() {
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      show("info", NOTE_SENT_MESSAGE);
+      show("info", t("memberDetail.noteSent"));
     },
     onError: showApiError,
   });
@@ -291,7 +279,7 @@ export default function MemberProfileScreen() {
   const copyMemberId = async (id: number) => {
     await Clipboard.setStringAsync(String(id));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    showToast("info", ID_COPIED_MESSAGE);
+    showToast("info", t("memberDetail.idCopied"));
   };
 
   const handleAction = useCallback(
@@ -333,7 +321,7 @@ export default function MemberProfileScreen() {
           loadSecretPhotos.mutate(undefined, {
             onSuccess: (photos) =>
               photos.length === 0
-                ? show("info", SECRET_PHOTO_EMPTY_MESSAGE)
+                ? show("info", t("memberDetail.secretPhotoEmpty"))
                 : setSecretPhotoOpen(true),
           });
         }
@@ -348,37 +336,37 @@ export default function MemberProfileScreen() {
       if (key === "block") {
         if (member.blockedByMe) {
           confirm({
-            message: UNBLOCK_DESCRIPTION,
-            confirmLabel: "해제",
+            message: t("memberDetail.unblockConfirm"),
+            confirmLabel: t("memberDetail.unblock"),
             onConfirm: () =>
               relateAwaited.mutate({
                 listKeys: BLOCK_AFFECTED_KEYS,
                 call: () => api.blocks.remove(memberId),
-                successMessage: UNBLOCKED_MESSAGE,
+                successMessage: t("memberDetail.unblocked"),
               }),
           });
         } else {
           confirm({
-            message: BLOCK_DESCRIPTION,
-            confirmLabel: "차단",
+            message: t("memberDetail.blockConfirm"),
+            confirmLabel: t("memberDetail.block"),
             destructive: true,
             onConfirm: () =>
               relateAwaited.mutate({
                 listKeys: BLOCK_AFFECTED_KEYS,
                 call: () => api.blocks.add(memberId),
-                successMessage: BLOCKED_MESSAGE,
+                successMessage: t("memberDetail.blocked"),
               }),
           });
         }
       }
     },
-    [confirm, loadSecretPhotos, member, memberId, relateAwaited, run, show],
+    [confirm, loadSecretPhotos, member, memberId, relateAwaited, run, show, t],
   );
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const screenOptions = useMemo(
     () => ({
-      title: "프로필",
+      title: t("memberDetail.title"),
       headerRight: () => (
         <HeaderSoloIconButton
           icon={DotsThreeIcon}
@@ -387,14 +375,14 @@ export default function MemberProfileScreen() {
         />
       ),
     }),
-    [openMenu],
+    [openMenu, t],
   );
 
   const menuItems: MenuSheetItem[] = [
     {
       label: member?.secretPhotoGrantedByMe
-        ? "비밀 사진 닫기"
-        : "비밀 사진 공개",
+        ? t("memberDetail.closeSecretPhoto")
+        : t("memberDetail.openSecretPhoto"),
       onPress: () => {
         if (member) {
           relateAwaited.mutate({
@@ -404,14 +392,14 @@ export default function MemberProfileScreen() {
                 ? api.secretPhotos.remove(memberId)
                 : api.secretPhotos.add(memberId),
             successMessage: member.secretPhotoGrantedByMe
-              ? SECRET_PHOTO_CLOSED_MESSAGE
-              : SECRET_PHOTO_OPENED_MESSAGE,
+              ? t("memberDetail.secretPhotoClosed")
+              : t("memberDetail.secretPhotoOpened"),
           });
         }
       },
     },
     {
-      label: "신고하기",
+      label: t("memberDetail.report"),
       destructive: true,
       onPress: () => pushOnce(`/report/${id}?type=member`),
     },
@@ -480,13 +468,13 @@ export default function MemberProfileScreen() {
               </YStack>
 
               <ProfileSection
-                title="코멘트"
+                title={t("profile.comment")}
                 body={member.comment}
                 placeholder={profileCommentEmptyMessage()}
               />
 
               <ProfileSection
-                title="자기소개"
+                title={t("profile.bio")}
                 body={member.bio}
                 placeholder={profileBioEmptyMessage()}
               />
@@ -524,11 +512,11 @@ export default function MemberProfileScreen() {
       <TextInputDialog
         open={noteOpen}
         onOpenChange={setNoteOpen}
-        title="쪽지"
-        placeholder="내용 입력"
+        title={t("memberDetail.noteTitle")}
+        placeholder={t("memberDetail.notePlaceholder")}
         maxLength={NOTE_MAX_LENGTH}
         defaultValue={noteContent}
-        submitLabel="전송"
+        submitLabel={t("memberDetail.noteSubmit")}
         onSubmit={(content) => {
           setNoteContent(content);
           sendNote.mutate(content);
