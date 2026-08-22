@@ -18,21 +18,27 @@ import {
 } from "@/hooks/useScrollToTopVisible";
 import type { ChatRoomResponse } from "@/lib/api";
 import { useChatSelectionStore } from "@/lib/chat/store";
+import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 
 const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
 const EMPTY_MESSAGE = "채팅방이 없습니다.";
 const UNREAD_EMPTY_MESSAGE = "안 읽은 채팅방이 없습니다.";
 
-const FILTERS = ["전체", "안읽음"] as const;
+const FILTERS = ["ALL", "UNREAD"] as const;
 type Filter = (typeof FILTERS)[number];
 
+const FILTER_ITEMS = FILTERS.map((value) => ({
+  value,
+  label: i18n.t(`chat.filter.${value}`),
+}));
+
 export default function ChatScreen() {
-  const [filter, setFilter] = useState<Filter>("전체");
+  const [filter, setFilter] = useState<Filter>("ALL");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
-  const unreadOnly = filter === "안읽음";
+  const unreadOnly = filter === "UNREAD";
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const {
     toggleNotification,
@@ -74,7 +80,7 @@ export default function ChatScreen() {
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={FILTERS}
+          items={FILTER_ITEMS}
           value={filter}
           onChange={(next) => {
             setFilter(next);

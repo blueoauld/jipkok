@@ -38,11 +38,11 @@ describe("formatAmount", () => {
 });
 
 describe("라벨", () => {
-  it("성별 필터 라벨은 서버 값과 짝이 맞는다", () => {
+  it("성별 필터 값은 서버 값과 짝이 맞는다", () => {
     expect(GENDER_FILTER_VALUES).toEqual({
-      전체: null,
-      남자: "MALE",
-      여자: "FEMALE",
+      ALL: null,
+      MALE: "MALE",
+      FEMALE: "FEMALE",
     });
     expect(genderLabel("MALE")).toBe("남자");
     expect(genderLabel("FEMALE")).toBe("여자");

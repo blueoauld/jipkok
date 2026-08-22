@@ -26,19 +26,18 @@ import {
 } from "@/hooks/useScrollToTopVisible";
 import { api, type MemberSort } from "@/lib/api";
 import { type MemberFilter, useMemberFilterStore } from "@/lib/filter/store";
+import i18n from "@/lib/i18n";
 import { listErrorMessage, memberEmptyMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
-const FILTERS = ["최근", "거리"] as const;
-type Filter = (typeof FILTERS)[number];
+const SORTS: MemberSort[] = ["RECENT", "DISTANCE"];
 
-const SORTS: Record<Filter, MemberSort> = { 최근: "RECENT", 거리: "DISTANCE" };
-const SORT_LABELS: Record<MemberSort, Filter> = {
-  RECENT: "최근",
-  DISTANCE: "거리",
-};
+const SORT_ITEMS = SORTS.map((value) => ({
+  value,
+  label: i18n.t(`main.sort.${value}`),
+}));
 
 const COMMENT_MAX_LENGTH = 100;
 
@@ -88,11 +87,11 @@ export default function MainScreen() {
   );
 
   const changeFilter = useCallback(
-    async (next: Filter) => {
-      setSort(SORTS[next]);
+    async (next: MemberSort) => {
+      setSort(next);
       scrollToTop();
 
-      if (next === "거리" && (await updateLocation())) {
+      if (next === "DISTANCE" && (await updateLocation())) {
         queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
       }
     },
@@ -147,8 +146,8 @@ export default function MainScreen() {
 
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={FILTERS}
-          value={SORT_LABELS[sort]}
+          items={SORT_ITEMS}
+          value={sort}
           onChange={changeFilter}
         />
       </YStack>

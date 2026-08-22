@@ -1,22 +1,22 @@
 import type { Gender } from "@/lib/api";
+import i18n from "@/lib/i18n";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
-const GENDER_LABELS: Record<Gender, string> = {
-  MALE: "남자",
-  FEMALE: "여자",
-};
-
-export const GENDER_FILTERS = ["전체", "남자", "여자"] as const;
+export const GENDER_FILTERS = ["ALL", "MALE", "FEMALE"] as const;
 export type GenderFilter = (typeof GENDER_FILTERS)[number];
 
 export const GENDER_FILTER_VALUES: Record<GenderFilter, Gender | null> = {
-  전체: null,
-  남자: "MALE",
-  여자: "FEMALE",
+  ALL: null,
+  MALE: "MALE",
+  FEMALE: "FEMALE",
 };
 
 export function genderLabel(gender: Gender) {
-  return GENDER_LABELS[gender];
+  return i18n.t(`gender.${gender}`);
+}
+
+export function genderFilterLabel(filter: GenderFilter) {
+  return i18n.t(`genderFilter.${filter}`);
 }
 
 const METERS_PER_KILOMETER = 1000;

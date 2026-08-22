@@ -27,6 +27,27 @@ export const ja: typeof ko = {
     birthYearInvalid: "生年が正しくありません。",
     ageRange: "{{min}}歳以上{{max}}歳以下のみ登録できます。",
   },
+  gender: {
+    MALE: "男性",
+    FEMALE: "女性",
+  },
+  genderFilter: {
+    ALL: "すべて",
+    MALE: "男性",
+    FEMALE: "女性",
+  },
+  chat: {
+    filter: { ALL: "すべて", UNREAD: "未読" },
+  },
+  main: {
+    sort: { RECENT: "最近", DISTANCE: "距離" },
+  },
+  lounge: {
+    board: { FEED: "フィード", WORRY: "悩み" },
+  },
+  setting: {
+    theme: { blue: "ブルー", pink: "ピンク", dark: "ダーク" },
+  },
   date: {
     justNow: "たった今",
     minutesAgo: "{{count}}分前",

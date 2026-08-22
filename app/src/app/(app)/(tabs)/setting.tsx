@@ -38,6 +38,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { APP_VERSION } from "@/lib/device";
+import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { releaseDevice } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -57,20 +58,12 @@ const LOGOUT_DESCRIPTION = "로그아웃하면 다시 로그인해야 이용할 
 
 const ALREADY_EARNED_MESSAGE = "오늘 출석 보상은 이미 받았습니다.";
 
-const THEME_LABELS = ["블루", "핑크", "다크"] as const;
-type ThemeLabel = (typeof THEME_LABELS)[number];
+const THEME_MODES: ThemeMode[] = ["blue", "pink", "dark"];
 
-const THEME_VALUES: Record<ThemeLabel, ThemeMode> = {
-  블루: "blue",
-  핑크: "pink",
-  다크: "dark",
-};
-
-const THEME_LABELS_BY_MODE: Record<ThemeMode, ThemeLabel> = {
-  blue: "블루",
-  pink: "핑크",
-  dark: "다크",
-};
+const THEME_ITEMS = THEME_MODES.map((value) => ({
+  value,
+  label: i18n.t(`setting.theme.${value}`),
+}));
 
 type SettingAction =
   "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
@@ -380,9 +373,9 @@ export default function SettingScreen() {
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={THEME_LABELS}
-          value={THEME_LABELS_BY_MODE[themeMode]}
-          onChange={(label) => setThemeMode(THEME_VALUES[label])}
+          items={THEME_ITEMS}
+          value={themeMode}
+          onChange={setThemeMode}
         />
       </YStack>
 

@@ -49,6 +49,7 @@ import {
 } from "@/lib/api";
 import { fromDateParam, toDateParam } from "@/lib/date";
 import { type LoungeBoard, useFeedFilterStore } from "@/lib/filter/store";
+import i18n from "@/lib/i18n";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { mapPages } from "@/lib/paging";
@@ -56,17 +57,12 @@ import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
-const BOARDS = ["피드", "고민"] as const;
-type BoardLabel = (typeof BOARDS)[number];
+const BOARDS: LoungeBoard[] = ["FEED", "WORRY"];
 
-const BOARD_VALUES: Record<BoardLabel, LoungeBoard> = {
-  피드: "FEED",
-  고민: "WORRY",
-};
-const BOARD_LABELS: Record<LoungeBoard, BoardLabel> = {
-  FEED: "피드",
-  WORRY: "고민",
-};
+const BOARD_ITEMS = BOARDS.map((value) => ({
+  value,
+  label: i18n.t(`lounge.board.${value}`),
+}));
 
 const SORTS = ["최신", "과거"] as const;
 type Sort = (typeof SORTS)[number];
@@ -188,8 +184,8 @@ export default function FeedScreen() {
 
   // 두 보드가 목록 한 자리를 나눠 쓰므로 전환해도 스크롤이 그대로 남는다.
   const changeBoard = useCallback(
-    (label: BoardLabel) => {
-      setBoard(BOARD_VALUES[label]);
+    (next: LoungeBoard) => {
+      setBoard(next);
       scrollToTop();
       scrollWorriesToTop();
       scrollTop.reset();
@@ -345,8 +341,8 @@ export default function FeedScreen() {
 
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={BOARDS}
-          value={BOARD_LABELS[board]}
+          items={BOARD_ITEMS}
+          value={board}
           onChange={changeBoard}
         />
       </YStack>

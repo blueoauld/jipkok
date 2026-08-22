@@ -16,15 +16,21 @@ import {
   GENDER_FILTER_VALUES,
   GENDER_FILTERS,
   type GenderFilter,
+  genderFilterLabel,
 } from "@/lib/member";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
 function genderFilterOf(gender: MemberFilter["gender"]): GenderFilter {
   return (
-    GENDER_FILTERS.find((label) => GENDER_FILTER_VALUES[label] === gender) ??
-    "전체"
+    GENDER_FILTERS.find((value) => GENDER_FILTER_VALUES[value] === gender) ??
+    "ALL"
   );
 }
+
+const GENDER_FILTER_ITEMS = GENDER_FILTERS.map((value) => ({
+  value,
+  label: genderFilterLabel(value),
+}));
 
 function Label({ children }: { children: string }) {
   return (
@@ -80,7 +86,7 @@ export function MemberFilterSheet({
   };
 
   const reset = () => {
-    setGender("전체");
+    setGender("ALL");
     setAges([DEFAULT_MEMBER_FILTER.minAge, DEFAULT_MEMBER_FILTER.maxAge]);
   };
 
@@ -106,7 +112,7 @@ export function MemberFilterSheet({
         <YStack gap="$2">
           <Label>성별</Label>
           <RetroSegmentedControl
-            values={GENDER_FILTERS}
+            items={GENDER_FILTER_ITEMS}
             value={gender}
             onChange={setGender}
           />

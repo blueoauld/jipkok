@@ -17,13 +17,19 @@ import {
   GENDER_FILTER_VALUES,
   GENDER_FILTERS,
   type GenderFilter,
+  genderFilterLabel,
 } from "@/lib/member";
 import { memberEmptyMessage } from "@/lib/message";
+
+const GENDER_FILTER_ITEMS = GENDER_FILTERS.map((value) => ({
+  value,
+  label: genderFilterLabel(value),
+}));
 
 const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
 
 export default function RankScreen() {
-  const [filter, setFilter] = useState<GenderFilter>("전체");
+  const [filter, setFilter] = useState<GenderFilter>("ALL");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
@@ -35,7 +41,7 @@ export default function RankScreen() {
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
-          values={GENDER_FILTERS}
+          items={GENDER_FILTER_ITEMS}
           value={filter}
           onChange={(next) => {
             setFilter(next);

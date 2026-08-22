@@ -4,12 +4,17 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
+export type SegmentedItem<T extends string> = {
+  value: T;
+  label: string;
+};
+
 export function RetroSegmentedControl<T extends string>({
-  values,
+  items,
   value,
   onChange,
 }: {
-  values: readonly T[];
+  items: readonly SegmentedItem<T>[];
   value: T;
   onChange: (value: T) => void;
 }) {
@@ -20,28 +25,28 @@ export function RetroSegmentedControl<T extends string>({
     <YStack theme="gray">
       <RetroShadow color="$gray8" />
       <XStack bg="$color1" overflow="hidden">
-        {values.map((item, index) => {
-          const selected = item === value;
+        {items.map((item, index) => {
+          const selected = item.value === value;
 
           return (
             <XStack
-              key={item}
+              key={item.value}
               theme={selected ? accent : undefined}
               flex={1}
-              mr={index === values.length - 1 ? -RETRO_BORDER_WIDTH : 0}
+              mr={index === items.length - 1 ? -RETRO_BORDER_WIDTH : 0}
               py={paddingY}
               justify="center"
               bg={selected ? "$color10" : "transparent"}
               borderColor="$gray12"
               borderLeftWidth={index === 0 ? 0 : RETRO_BORDER_WIDTH}
               pressStyle={{ bg: selected ? "$color10" : "$color3" }}
-              onPress={() => onChange(item)}
+              onPress={() => onChange(item.value)}
             >
               <Text
                 fontWeight={selected ? "700" : "400"}
                 color={selected ? "white" : "$color12"}
               >
-                {item}
+                {item.label}
               </Text>
             </XStack>
           );

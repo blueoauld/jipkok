@@ -24,6 +24,27 @@ export const ko = {
     birthYearInvalid: "출생연도가 올바르지 않습니다.",
     ageRange: "{{min}}세 이상 {{max}}세 이하만 가입할 수 있습니다.",
   },
+  gender: {
+    MALE: "남자",
+    FEMALE: "여자",
+  },
+  genderFilter: {
+    ALL: "전체",
+    MALE: "남자",
+    FEMALE: "여자",
+  },
+  chat: {
+    filter: { ALL: "전체", UNREAD: "안읽음" },
+  },
+  main: {
+    sort: { RECENT: "최근", DISTANCE: "거리" },
+  },
+  lounge: {
+    board: { FEED: "피드", WORRY: "고민" },
+  },
+  setting: {
+    theme: { blue: "블루", pink: "핑크", dark: "다크" },
+  },
   date: {
     justNow: "방금 전",
     minutesAgo: "{{count}}분 전",
