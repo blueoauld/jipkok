@@ -10,7 +10,7 @@ import {
   OVERLAY_BG,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
-import i18n, { deviceLocale } from "@/lib/i18n";
+import i18n, { currentLocale } from "@/lib/i18n";
 import {
   useAccent,
   useAccentToken,
@@ -84,7 +84,7 @@ LocaleConfig.locales.ja = {
   today: "今日",
 };
 
-LocaleConfig.defaultLocale = deviceLocale();
+LocaleConfig.defaultLocale = currentLocale();
 
 const DAY_SIZE = 36;
 
