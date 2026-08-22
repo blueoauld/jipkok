@@ -129,6 +129,7 @@ export const ko = {
     leaveRoomNotice: "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.",
     leaveRoomsNotice:
       "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.",
+    monthFormat: "yyyy년 M월",
     channelFeed: "피드",
   },
   connectFailed: "연결에 실패했습니다.",

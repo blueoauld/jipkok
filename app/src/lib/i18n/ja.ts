@@ -132,6 +132,7 @@ export const ja: typeof ko = {
     leaveRoomNotice: "退出すると、やり取りした会話が互いにすべて消えます。",
     leaveRoomsNotice:
       "選択したチャットルームから退出します。やり取りした会話が互いにすべて消えます。",
+    monthFormat: "yyyy年M月",
     channelFeed: "フィード",
   },
   connectFailed: "接続に失敗しました。",

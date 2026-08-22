@@ -10,13 +10,14 @@ import {
   OVERLAY_BG,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
+import i18n, { deviceLocale } from "@/lib/i18n";
 import {
   useAccent,
   useAccentToken,
   useThemeBackground,
 } from "@/lib/theme/accent";
 
-const MONTH_NAMES = [
+const KO_MONTHS = [
   "1월",
   "2월",
   "3월",
@@ -31,7 +32,22 @@ const MONTH_NAMES = [
   "12월",
 ];
 
-const DAY_NAMES = [
+const JA_MONTHS = [
+  "1月",
+  "2月",
+  "3月",
+  "4月",
+  "5月",
+  "6月",
+  "7月",
+  "8月",
+  "9月",
+  "10月",
+  "11月",
+  "12月",
+];
+
+const KO_DAYS = [
   "일요일",
   "월요일",
   "화요일",
@@ -41,15 +57,34 @@ const DAY_NAMES = [
   "토요일",
 ];
 
+const JA_DAYS = [
+  "日曜日",
+  "月曜日",
+  "火曜日",
+  "水曜日",
+  "木曜日",
+  "金曜日",
+  "土曜日",
+];
+
+// 달력은 i18next가 아니라 라이브러리의 로케일 표를 쓴다.
 LocaleConfig.locales.ko = {
-  monthNames: MONTH_NAMES,
-  monthNamesShort: MONTH_NAMES,
-  dayNames: DAY_NAMES,
+  monthNames: KO_MONTHS,
+  monthNamesShort: KO_MONTHS,
+  dayNames: KO_DAYS,
   dayNamesShort: ["일", "월", "화", "수", "목", "금", "토"],
   today: "오늘",
 };
 
-LocaleConfig.defaultLocale = "ko";
+LocaleConfig.locales.ja = {
+  monthNames: JA_MONTHS,
+  monthNamesShort: JA_MONTHS,
+  dayNames: JA_DAYS,
+  dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+  today: "今日",
+};
+
+LocaleConfig.defaultLocale = deviceLocale();
 
 const DAY_SIZE = 36;
 
@@ -163,7 +198,7 @@ export function FeedDatePicker({
               initialDate={selected}
               maxDate={toDateParam(new Date())}
               markedDates={{ [selected]: { selected: true } }}
-              monthFormat="yyyy년 M월"
+              monthFormat={i18n.t("component.monthFormat")}
               showSixWeeks
               dayComponent={CalendarDay}
               onDayPress={(day) => {
