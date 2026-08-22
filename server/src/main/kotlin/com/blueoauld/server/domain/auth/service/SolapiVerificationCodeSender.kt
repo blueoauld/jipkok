@@ -21,6 +21,11 @@ class SolapiVerificationCodeSender(
     private val messageService = SolapiClient.createInstance(properties.apiKey, properties.apiSecret)
 
     override fun send(phoneNumber: String, code: String) {
+        if (!phoneNumber.startsWith(KOREA_DIAL_CODE)) {
+            log.error { "국내 번호가 아니라 인증번호를 보내지 못했다. phoneNumber=$phoneNumber" }
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
+        }
+
         val message = Message().apply {
             from = properties.senderNumber
             to = toDomestic(phoneNumber)
