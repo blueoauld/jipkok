@@ -1,19 +1,20 @@
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 
+import i18n from "@/lib/i18n";
 import { photoPermissionMessage } from "@/lib/message";
 import { saveChatMedia } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
 
-const COPIED_MESSAGE = "메시지를 복사했습니다.";
+const COPIED_MESSAGE = i18n.t("media.copied");
 
 const SAVED_MESSAGE = {
-  photo: "사진을 저장했습니다.",
-  video: "동영상을 저장했습니다.",
+  photo: i18n.t("media.photoSaved"),
+  video: i18n.t("media.videoSaved"),
 };
 const SAVE_FAILED_MESSAGE = {
-  photo: "사진을 저장하지 못했습니다.",
-  video: "동영상을 저장하지 못했습니다.",
+  photo: i18n.t("media.photoSaveFailed"),
+  video: i18n.t("media.videoSaveFailed"),
 };
 
 export type MediaKind = keyof typeof SAVED_MESSAGE;

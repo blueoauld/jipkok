@@ -1,6 +1,7 @@
 import { isApiError } from "@/lib/api";
+import i18n from "@/lib/i18n";
 
-const FALLBACK_MESSAGE = "잠시 후 다시 시도해주시길 바랍니다.";
+const FALLBACK_MESSAGE = i18n.t("media.retryLater");
 
 export function apiErrorMessage(error: unknown, fallback = FALLBACK_MESSAGE) {
   return isApiError(error) ? error.message : fallback;

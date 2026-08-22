@@ -14,9 +14,10 @@ import {
 import { isPending } from "@/lib/chat";
 import { copyMessage, saveMedia } from "@/lib/chat/media";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
+import i18n from "@/lib/i18n";
 import { showToast } from "@/lib/toast/store";
 
-const VIDEO_SAVE_FAILED_MESSAGE = "동영상을 저장하지 못했습니다.";
+const VIDEO_SAVE_FAILED_MESSAGE = i18n.t("hook.videoSaveFailed");
 
 export function useMessageActions(
   roomId: number,
@@ -74,10 +75,14 @@ export function useMessageActions(
   const actions: MessageAction[] = !message
     ? []
     : message.type === "VIDEO"
-      ? [action("저장", () => saveVideo(message.messageId))]
+      ? [action(i18n.t("action.save"), () => saveVideo(message.messageId))]
       : imageUrl
-        ? [action("저장", () => saveMedia(imageUrl, "photo"))]
-        : [action("복사", () => copyMessage(message.content ?? ""))];
+        ? [action(i18n.t("action.save"), () => saveMedia(imageUrl, "photo"))]
+        : [
+            action(i18n.t("action.copy"), () =>
+              copyMessage(message.content ?? ""),
+            ),
+          ];
 
   return { target, message, open, close, myReaction, selectReaction, actions };
 }

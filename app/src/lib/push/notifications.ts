@@ -4,11 +4,11 @@ import { Platform } from "react-native";
 
 import { api, type MemberLocale } from "@/lib/api";
 import { DEVICE_PLATFORM } from "@/lib/device";
-import { deviceLocale } from "@/lib/i18n";
+import i18n, { deviceLocale } from "@/lib/i18n";
 
 const ANDROID_CHANNELS = [
-  { id: "default", name: "알림", importance: "DEFAULT" },
-  { id: "chat", name: "채팅", importance: "HIGH" },
+  { id: "default", name: i18n.t("push.channelDefault"), importance: "DEFAULT" },
+  { id: "chat", name: i18n.t("push.channelChat"), importance: "HIGH" },
   { id: "feed", name: "피드", importance: "HIGH" },
 ] as const;
 

@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 
 import { RetroAlert, type RetroAlertVariant } from "@/components/ui/RetroAlert";
 import { apiErrorMessage } from "@/lib/alert";
+import i18n from "@/lib/i18n";
 
 type AlertState = {
   variant: RetroAlertVariant;
@@ -13,9 +14,9 @@ type AlertState = {
 };
 
 const TITLES: Record<RetroAlertVariant, string> = {
-  error: "에러",
-  info: "알림",
-  warning: "경고",
+  error: i18n.t("alert.error"),
+  info: i18n.t("alert.info"),
+  warning: i18n.t("alert.warning"),
 };
 
 // 훅이 알림을 띄워야 할 때는 화면의 알림을 넘겨받는다. 화면마다 알림은 하나만 둔다.

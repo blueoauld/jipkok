@@ -17,6 +17,7 @@ import {
   type ReplyMessageResponse,
 } from "@/lib/api";
 import { type UploadPhase, useUploadStore } from "@/lib/chat/upload-store";
+import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
 import { toChatPhoto, uploadChatPhotoFile } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
@@ -30,7 +31,7 @@ import {
 
 type Feed = InfiniteData<ChatMessagePage>;
 
-const KEEP_FOREGROUND_MESSAGE = "전송이 끝날 때까지 앱을 켜 두세요.";
+const KEEP_FOREGROUND_MESSAGE = i18n.t("hook.keepForeground");
 
 let lastTempId = 0;
 

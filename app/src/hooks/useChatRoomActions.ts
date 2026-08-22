@@ -16,6 +16,7 @@ import {
   LEAVE_SELECTED_DESCRIPTION,
   toBulkChunks,
 } from "@/lib/chat";
+import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
 
 async function runInChunks(
@@ -156,7 +157,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     (room: ChatRoomResponse, onLeft?: () => void) =>
       confirm({
         message: LEAVE_DESCRIPTION,
-        confirmLabel: "나가기",
+        confirmLabel: i18n.t("action.leave"),
         destructive: true,
         onConfirm: () => leave(room.roomId, { onSuccess: onLeft }),
       }),
@@ -181,7 +182,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     (roomIds: number[], onDone: () => void) =>
       confirm({
         message: LEAVE_SELECTED_DESCRIPTION,
-        confirmLabel: "나가기",
+        confirmLabel: i18n.t("action.leave"),
         destructive: true,
         onConfirm: () => leaveAll(roomIds, { onSuccess: onDone }),
       }),

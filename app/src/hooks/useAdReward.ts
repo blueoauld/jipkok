@@ -6,6 +6,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
 import { api } from "@/lib/api";
+import i18n from "@/lib/i18n";
 import { showToast } from "@/lib/toast/store";
 
 // 보상은 광고 서버가 우리 서버로 콜백을 보내야 들어오므로 시청 직후엔 아직 없을 수 있다.
@@ -13,10 +14,11 @@ const REWARD_POLL_INTERVAL = 2000;
 const REWARD_POLL_COUNT = 6;
 const DAILY_LIMIT = 5;
 
-const REWARD_MESSAGE = "광고 보상을 받았습니다.";
-const REWARD_PENDING_MESSAGE = `보상이 아직 반영되지 않았습니다. 광고 보상은 하루 ${DAILY_LIMIT}번까지 받을 수 있습니다.`;
-const NOT_READY_MESSAGE =
-  "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.";
+const REWARD_MESSAGE = i18n.t("hook.adRewarded");
+const REWARD_PENDING_MESSAGE = i18n.t("hook.adRewardPending", {
+  count: DAILY_LIMIT,
+});
+const NOT_READY_MESSAGE = i18n.t("hook.adLoading");
 
 type RewardOutcome = "rewarded" | "pending" | "unknown";
 

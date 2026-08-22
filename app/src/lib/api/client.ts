@@ -1,4 +1,5 @@
 import { APP_VERSION, DEVICE_PLATFORM } from "@/lib/device";
+import i18n from "@/lib/i18n";
 
 import { API_BASE_URL } from "./config";
 import { ApiError } from "./errors";
@@ -61,7 +62,7 @@ async function toApiError(response: Response) {
   const fallback = new ApiError(
     response.status,
     "UNKNOWN",
-    "요청을 처리하지 못했습니다.",
+    i18n.t("media.requestFailed"),
   );
 
   try {

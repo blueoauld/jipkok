@@ -100,6 +100,34 @@ export const ja: typeof ko = {
   main: {
     sort: { RECENT: "最近", DISTANCE: "距離" },
   },
+  hook: {
+    videoUrlFailed: "動画を読み込めませんでした。",
+    videoDurationUnknown: "再生時間を確認できない動画は送信できません。",
+    videoSaveFailed: "動画を保存できませんでした。",
+    adRewarded: "広告報酬を受け取りました。",
+    adRewardPending:
+      "報酬がまだ反映されていません。広告報酬は1日{{count}}回まで受け取れます。",
+    adLoading: "広告を準備しています。しばらくしてからもう一度お試しください。",
+    cameraDenied: "カメラの権限が必要です。",
+    keepForeground: "送信が終わるまでアプリを開いたままにしてください。",
+    withdrawNotice:
+      "退会するとプロフィールとやり取りした会話、活動履歴がすべて削除され、復元できません。",
+    locationDenied: "位置情報の権限を許可すると距離順で見られます。",
+    locationOff: "端末の位置情報をオンにすると距離順で見られます。",
+    locationFailed:
+      "位置を確認できませんでした。しばらくしてからもう一度お試しください。",
+  },
+  action: {
+    save: "保存",
+    copy: "コピー",
+    leave: "退出",
+    withdraw: "退会",
+  },
+  alert: {
+    error: "エラー",
+    info: "お知らせ",
+    warning: "警告",
+  },
   lounge: {
     board: { FEED: "フィード", WORRY: "悩み" },
   },
@@ -108,6 +136,26 @@ export const ja: typeof ko = {
   },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",
+  },
+  media: {
+    uploadFailed: "アップロードできませんでした。",
+    sendFailed: "送信できませんでした。",
+    cancelled: "送信を取り消しました。",
+    requestFailed: "リクエストを処理できませんでした。",
+    retryLater: "しばらくしてからもう一度お試しください。",
+    copied: "メッセージをコピーしました。",
+    photoSaved: "写真を保存しました。",
+    videoSaved: "動画を保存しました。",
+    photoSaveFailed: "写真を保存できませんでした。",
+    videoSaveFailed: "動画を保存できませんでした。",
+    videoTooLong: "動画は{{minutes}}分まで送信できます。",
+    videoTooLarge: "動画が大きすぎます。150MBまで送信できます。",
+    photoSummary: "写真",
+    videoSummary: "動画",
+  },
+  push: {
+    channelDefault: "通知",
+    channelChat: "チャット",
   },
   point: {
     history: {

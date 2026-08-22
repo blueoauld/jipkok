@@ -1,11 +1,12 @@
 import { File } from "expo-file-system";
 
 import { ApiError } from "@/lib/api";
+import i18n from "@/lib/i18n";
 
 const CANCELLED_CODE = "UPLOAD_CANCELLED";
 const FAILED_CODE = "UPLOAD_FAILED";
-const FAILED_MESSAGE = "업로드하지 못했습니다.";
-const MEDIA_FAILED_MESSAGE = "보내지 못했습니다.";
+const FAILED_MESSAGE = i18n.t("media.uploadFailed");
+const MEDIA_FAILED_MESSAGE = i18n.t("media.sendFailed");
 
 export type IssueUploadUrl = (
   contentType: string,
@@ -14,7 +15,7 @@ export type IssueUploadUrl = (
 export type UploadProgress = (progress: number) => void;
 
 export function uploadCancelled() {
-  return new ApiError(0, CANCELLED_CODE, "전송을 취소했습니다.");
+  return new ApiError(0, CANCELLED_CODE, i18n.t("media.cancelled"));
 }
 
 export function isUploadCancelled(error: unknown) {

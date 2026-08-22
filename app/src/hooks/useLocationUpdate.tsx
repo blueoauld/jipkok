@@ -6,12 +6,11 @@ import { Platform } from "react-native";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
+import i18n from "@/lib/i18n";
 
-const DENIED_MESSAGE = "위치 권한을 허용해야 거리순으로 볼 수 있습니다.";
-const SERVICES_OFF_MESSAGE =
-  "기기의 위치 기능을 켜야 거리순으로 볼 수 있습니다.";
-const FAILED_MESSAGE =
-  "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.";
+const DENIED_MESSAGE = i18n.t("hook.locationDenied");
+const SERVICES_OFF_MESSAGE = i18n.t("hook.locationOff");
+const FAILED_MESSAGE = i18n.t("hook.locationFailed");
 
 const LOCATION_TIMEOUT = 10_000;
 

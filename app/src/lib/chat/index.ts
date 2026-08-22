@@ -7,6 +7,7 @@ import {
   type ReplyMessageResponse,
 } from "@/lib/api";
 import { isSameDay } from "@/lib/date";
+import i18n from "@/lib/i18n";
 
 export const LEAVE_DESCRIPTION =
   "나가면 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
@@ -14,8 +15,8 @@ export const LEAVE_DESCRIPTION =
 export const LEAVE_SELECTED_DESCRIPTION =
   "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.";
 
-export const PHOTO_SUMMARY = "사진";
-export const VIDEO_SUMMARY = "동영상";
+export const PHOTO_SUMMARY = i18n.t("media.photoSummary");
+export const VIDEO_SUMMARY = i18n.t("media.videoSummary");
 
 export function mediaSummary(type: ChatMessageType) {
   return type === "VIDEO" ? VIDEO_SUMMARY : PHOTO_SUMMARY;

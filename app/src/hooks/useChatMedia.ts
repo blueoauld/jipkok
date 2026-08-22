@@ -7,6 +7,7 @@ import { MAX_PHOTOS, pickChatMedia } from "@/hooks/usePhotos";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, type ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound } from "@/lib/chat";
+import i18n from "@/lib/i18n";
 import { showToast } from "@/lib/toast/store";
 import {
   isVideoTooLong,
@@ -14,9 +15,8 @@ import {
   videoDurationSeconds,
 } from "@/lib/video";
 
-const VIDEO_URL_FAILED_MESSAGE = "동영상을 불러오지 못했습니다.";
-const UNKNOWN_DURATION_MESSAGE =
-  "재생 시간을 확인할 수 없는 동영상은 보낼 수 없습니다.";
+const VIDEO_URL_FAILED_MESSAGE = i18n.t("hook.videoUrlFailed");
+const UNKNOWN_DURATION_MESSAGE = i18n.t("hook.videoDurationUnknown");
 
 export function useChatMedia({
   roomId,

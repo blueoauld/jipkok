@@ -5,6 +5,7 @@ import { Video as VideoCompressor } from "react-native-compressor";
 
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, ApiError } from "@/lib/api";
+import i18n from "@/lib/i18n";
 import { uploadCancelled, uploadFile, type UploadProgress } from "@/lib/upload";
 
 // 서버 ChatMessage.VIDEO_MAX_SECONDS / VIDEO_MAX_BYTES와 같다.
@@ -18,8 +19,10 @@ const THUMBNAIL_QUALITY = 0.8;
 
 const TOO_LARGE_CODE = "VIDEO_TOO_LARGE";
 
-export const VIDEO_TOO_LONG_MESSAGE = `동영상은 ${VIDEO_MAX_SECONDS / 60}분까지 보낼 수 있습니다.`;
-const TOO_LARGE_MESSAGE = "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.";
+export const VIDEO_TOO_LONG_MESSAGE = i18n.t("media.videoTooLong", {
+  minutes: VIDEO_MAX_SECONDS / 60,
+});
+const TOO_LARGE_MESSAGE = i18n.t("media.videoTooLarge");
 
 export type VideoKeys = { objectKey: string; thumbnailKey: string };
 

@@ -1,6 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 
 import { ApiError } from "@/lib/api";
+import i18n from "@/lib/i18n";
 import { photoPermissionMessage } from "@/lib/message";
 import { VIDEO_MAX_SECONDS } from "@/lib/video";
 
@@ -9,7 +10,7 @@ export const MAX_PHOTOS = 6;
 const PICK_QUALITY = 1;
 
 const PERMISSION_DENIED_CODE = "PERMISSION_DENIED";
-const CAMERA_DENIED_MESSAGE = "카메라 권한이 필요합니다.";
+const CAMERA_DENIED_MESSAGE = i18n.t("hook.cameraDenied");
 
 // 취소는 빈 결과로, 권한 거부는 예외로 갈라 호출부가 구분할 수 있게 한다.
 function denied(message: string) {

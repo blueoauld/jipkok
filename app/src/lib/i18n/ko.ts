@@ -97,6 +97,35 @@ export const ko = {
   main: {
     sort: { RECENT: "최근", DISTANCE: "거리" },
   },
+  hook: {
+    videoUrlFailed: "동영상을 불러오지 못했습니다.",
+    videoDurationUnknown:
+      "재생 시간을 확인할 수 없는 동영상은 보낼 수 없습니다.",
+    videoSaveFailed: "동영상을 저장하지 못했습니다.",
+    adRewarded: "광고 보상을 받았습니다.",
+    adRewardPending:
+      "보상이 아직 반영되지 않았습니다. 광고 보상은 하루 {{count}}번까지 받을 수 있습니다.",
+    adLoading: "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+    cameraDenied: "카메라 권한이 필요합니다.",
+    keepForeground: "전송이 끝날 때까지 앱을 켜 두세요.",
+    withdrawNotice:
+      "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.",
+    locationDenied: "위치 권한을 허용해야 거리순으로 볼 수 있습니다.",
+    locationOff: "기기의 위치 기능을 켜야 거리순으로 볼 수 있습니다.",
+    locationFailed:
+      "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+  },
+  action: {
+    save: "저장",
+    copy: "복사",
+    leave: "나가기",
+    withdraw: "탈퇴",
+  },
+  alert: {
+    error: "에러",
+    info: "알림",
+    warning: "경고",
+  },
   lounge: {
     board: { FEED: "피드", WORRY: "고민" },
   },
@@ -105,6 +134,26 @@ export const ko = {
   },
   rank: {
     errorMessage: "랭킹을 불러오지 못했습니다.",
+  },
+  media: {
+    uploadFailed: "업로드하지 못했습니다.",
+    sendFailed: "보내지 못했습니다.",
+    cancelled: "전송을 취소했습니다.",
+    requestFailed: "요청을 처리하지 못했습니다.",
+    retryLater: "잠시 후 다시 시도해주시길 바랍니다.",
+    copied: "메시지를 복사했습니다.",
+    photoSaved: "사진을 저장했습니다.",
+    videoSaved: "동영상을 저장했습니다.",
+    photoSaveFailed: "사진을 저장하지 못했습니다.",
+    videoSaveFailed: "동영상을 저장하지 못했습니다.",
+    videoTooLong: "동영상은 {{minutes}}분까지 보낼 수 있습니다.",
+    videoTooLarge: "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.",
+    photoSummary: "사진",
+    videoSummary: "동영상",
+  },
+  push: {
+    channelDefault: "알림",
+    channelChat: "채팅",
   },
   point: {
     history: {
