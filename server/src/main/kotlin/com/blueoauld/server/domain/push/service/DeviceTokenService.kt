@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.push.service
 
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.dto.request.RegisterDeviceTokenRequest
 import com.blueoauld.server.domain.push.entity.DeviceToken
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
@@ -11,10 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 class DeviceTokenService(
 
     private val deviceTokenRepository: DeviceTokenRepository,
+    private val memberRepository: MemberRepository,
 ) {
 
     @Transactional
     fun register(memberId: Long, request: RegisterDeviceTokenRequest) {
+        applyLocale(memberId, request.locale)
+
         val token = deviceTokenRepository.findByToken(request.token)
 
         if (token == null) {
@@ -24,6 +29,18 @@ class DeviceTokenService(
 
         token.memberId = memberId
         token.platform = request.platform
+    }
+
+    private fun applyLocale(memberId: Long, locale: MemberLocale?) {
+        if (locale == null) {
+            return
+        }
+
+        memberRepository.findById(memberId).ifPresent {
+            if (it.locale != locale) {
+                it.locale = locale
+            }
+        }
     }
 
     @Transactional

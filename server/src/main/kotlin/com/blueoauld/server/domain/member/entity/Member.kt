@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.entity
 
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
@@ -46,6 +47,10 @@ class Member(
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     val role: MemberRole = MemberRole.MEMBER,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "locale", nullable = false)
+    var locale: MemberLocale = MemberLocale.KO,
 
     @Column(name = "latitude")
     var latitude: Double? = null,
