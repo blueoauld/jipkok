@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
 
@@ -13,6 +14,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
+import { genderLabel } from "@/lib/member";
 import { codeSentMessage } from "@/lib/message";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
@@ -25,20 +27,18 @@ import {
   VERIFICATION_CODE_RULES,
 } from "@/lib/validation";
 
-const MINOR_NOTICE =
-  "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.";
-
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
 const RESEND_COOLDOWN_SECONDS = 30;
 
 const SIGN_UP_METHOD = "phone";
 
 const GENDERS = [
-  { value: "MALE", label: "남자" },
-  { value: "FEMALE", label: "여자" },
+  "MALE",
+  "FEMALE",
 ] as const;
 
 export default function SignupScreen() {
+  const { t } = useTranslation();
   const { control, handleSubmit } = useForm<SignupRequest>({
     defaultValues: {
       phoneNumber: "",
@@ -50,7 +50,7 @@ export default function SignupScreen() {
 
   const { alertElement, show, showApiError } = useRetroAlert({
     variant: "warning",
-    message: MINOR_NOTICE,
+    message: t("auth.signup.minorNotice"),
   });
 
   const accent = useAccent();
@@ -104,7 +104,7 @@ export default function SignupScreen() {
               disabled={signup.isPending}
               onPress={handleSubmit((values) => signup.mutate(values))}
             >
-              {signup.isPending ? <Spinner color="white" /> : "회원가입"}
+              {signup.isPending ? <Spinner color="white" /> : t("auth.signup.submit")}
             </RetroButton>
 
             <XStack justify="center" items="center" gap="$2" pt="$3">
@@ -114,7 +114,7 @@ export default function SignupScreen() {
                 fontSize="$2"
                 onPress={() => openLegal(PRIVACY_URL)}
               >
-                개인정보 처리방침
+                {t("auth.signup.privacy")}
               </Text>
               <Text theme="gray" color="$color8" fontSize="$2">
                 |
@@ -125,7 +125,7 @@ export default function SignupScreen() {
                 fontSize="$2"
                 onPress={() => openLegal(TERMS_URL)}
               >
-                서비스 이용약관
+                {t("auth.signup.terms")}
               </Text>
             </XStack>
           </>
@@ -137,7 +137,7 @@ export default function SignupScreen() {
               control={control}
               name="phoneNumber"
               rules={PHONE_NUMBER_RULES}
-              placeholder="휴대폰 번호"
+              placeholder={t("auth.phoneNumberPlaceholder")}
               keyboardType="number-pad"
               textContentType="telephoneNumber"
               autoComplete="tel"
@@ -154,9 +154,9 @@ export default function SignupScreen() {
             {sendCode.isPending ? (
               <Spinner color="white" />
             ) : cooldown.remaining > 0 ? (
-              `${cooldown.remaining}초`
+              t("auth.resendCountdown", { count: cooldown.remaining })
             ) : (
-              "전송"
+              t("auth.sendCode")
             )}
           </RetroButton>
         </XStack>
@@ -165,7 +165,7 @@ export default function SignupScreen() {
           control={control}
           name="verificationCode"
           rules={VERIFICATION_CODE_RULES}
-          placeholder="인증번호"
+          placeholder={t("auth.codePlaceholder")}
           keyboardType="number-pad"
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
@@ -177,7 +177,7 @@ export default function SignupScreen() {
           control={control}
           name="password"
           rules={PASSWORD_RULES}
-          placeholder="비밀번호"
+          placeholder={t("auth.passwordPlaceholder")}
           secureTextEntry
           textContentType="newPassword"
           autoComplete="new-password"
@@ -188,7 +188,7 @@ export default function SignupScreen() {
           control={control}
           name="passwordConfirm"
           rules={PASSWORD_CONFIRM_RULES}
-          placeholder="비밀번호 확인"
+          placeholder={t("auth.signup.passwordConfirmPlaceholder")}
           secureTextEntry
           textContentType="newPassword"
           autoComplete="new-password"
@@ -198,18 +198,18 @@ export default function SignupScreen() {
         <Controller
           control={control}
           name="gender"
-          rules={{ required: "성별을 선택해주시길 바랍니다." }}
+          rules={{ required: t("auth.signup.genderRequired") }}
           render={({ field, fieldState }) => (
             <FormField error={fieldState.error?.message}>
               <XStack gap="$3">
-                {GENDERS.map(({ value, label }) => (
+                {GENDERS.map((gender) => (
                   <RetroButton
-                    key={value}
+                    key={gender}
                     flex={1}
-                    theme={field.value === value ? accent : "gray"}
-                    onPress={() => field.onChange(value)}
+                    theme={field.value === gender ? accent : "gray"}
+                    onPress={() => field.onChange(gender)}
                   >
-                    {label}
+                    {genderLabel(gender)}
                   </RetroButton>
                 ))}
               </XStack>

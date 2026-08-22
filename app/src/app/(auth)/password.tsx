@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, XStack, YStack } from "tamagui";
 
@@ -23,11 +24,11 @@ import {
 
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
 const RESEND_COOLDOWN_SECONDS = 30;
-const RESET_MESSAGE = "비밀번호를 바꿨습니다. 다시 로그인해주시길 바랍니다.";
 
 const PURPOSE = "PASSWORD_RESET";
 
 export default function PasswordScreen() {
+  const { t } = useTranslation();
   const { control, handleSubmit } = useForm<ResetPasswordRequest>({
     defaultValues: {
       phoneNumber: "",
@@ -55,7 +56,7 @@ export default function PasswordScreen() {
     mutationFn: api.auth.resetPassword,
     onSuccess: () => {
       router.back();
-      showToast("info", RESET_MESSAGE);
+      showToast("info", t("auth.password.resetMessage"));
     },
     onError: showApiError,
   });
@@ -76,7 +77,7 @@ export default function PasswordScreen() {
             disabled={reset.isPending}
             onPress={handleSubmit((values) => reset.mutate(values))}
           >
-            {reset.isPending ? <Spinner color="white" /> : "비밀번호 변경"}
+            {reset.isPending ? <Spinner color="white" /> : t("auth.password.submit")}
           </RetroButton>
         }
       >
@@ -86,7 +87,7 @@ export default function PasswordScreen() {
               control={control}
               name="phoneNumber"
               rules={PHONE_NUMBER_RULES}
-              placeholder="휴대폰 번호"
+              placeholder={t("auth.phoneNumberPlaceholder")}
               keyboardType="number-pad"
               textContentType="telephoneNumber"
               autoComplete="tel"
@@ -103,9 +104,9 @@ export default function PasswordScreen() {
             {sendCode.isPending ? (
               <Spinner color="white" />
             ) : cooldown.remaining > 0 ? (
-              `${cooldown.remaining}초`
+              t("auth.resendCountdown", { count: cooldown.remaining })
             ) : (
-              "전송"
+              t("auth.sendCode")
             )}
           </RetroButton>
         </XStack>
@@ -114,7 +115,7 @@ export default function PasswordScreen() {
           control={control}
           name="verificationCode"
           rules={VERIFICATION_CODE_RULES}
-          placeholder="인증번호"
+          placeholder={t("auth.codePlaceholder")}
           keyboardType="number-pad"
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
@@ -126,7 +127,7 @@ export default function PasswordScreen() {
           control={control}
           name="password"
           rules={PASSWORD_RULES}
-          placeholder="새 비밀번호"
+          placeholder={t("auth.password.newPlaceholder")}
           secureTextEntry
           textContentType="newPassword"
           autoComplete="new-password"
@@ -137,7 +138,7 @@ export default function PasswordScreen() {
           control={control}
           name="passwordConfirm"
           rules={PASSWORD_CONFIRM_RULES}
-          placeholder="새 비밀번호 확인"
+          placeholder={t("auth.password.newConfirmPlaceholder")}
           secureTextEntry
           textContentType="newPassword"
           autoComplete="new-password"

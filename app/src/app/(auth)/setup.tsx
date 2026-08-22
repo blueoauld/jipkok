@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text } from "tamagui";
 
@@ -26,6 +27,7 @@ type SetupForm = {
 };
 
 export default function SetupScreen() {
+  const { t } = useTranslation();
   const { control, handleSubmit } = useForm<SetupForm>({
     defaultValues: { nickname: "", birthYear: "", bio: "" },
   });
@@ -58,7 +60,7 @@ export default function SetupScreen() {
               }),
             )}
           >
-            {setupProfile.isPending ? <Spinner color="white" /> : "들어가기"}
+            {setupProfile.isPending ? <Spinner color="white" /> : t("auth.setup.submit")}
           </RetroButton>
         }
       >
@@ -66,7 +68,7 @@ export default function SetupScreen() {
           control={control}
           name="nickname"
           rules={NICKNAME_RULES}
-          placeholder="닉네임"
+          placeholder={t("auth.setup.nicknamePlaceholder")}
           maxLength={NICKNAME_MAX_LENGTH}
           textContentType="nickname"
           autoCapitalize="none"
@@ -77,7 +79,7 @@ export default function SetupScreen() {
           control={control}
           name="birthYear"
           rules={BIRTH_YEAR_RULES}
-          placeholder="출생연도"
+          placeholder={t("auth.setup.birthYearPlaceholder")}
           keyboardType="number-pad"
           maxLength={BIRTH_YEAR_LENGTH}
         />
@@ -88,7 +90,7 @@ export default function SetupScreen() {
           rules={{
             maxLength: {
               value: BIO_MAX_LENGTH,
-              message: "자기소개가 너무 깁니다.",
+              message: t("auth.setup.bioTooLong"),
             },
           }}
           renderRight={(value) => (
@@ -99,7 +101,7 @@ export default function SetupScreen() {
           multiline
           rows={7}
           textAlignVertical="top"
-          placeholder="자기소개"
+          placeholder={t("auth.setup.bioPlaceholder")}
           maxLength={BIO_MAX_LENGTH}
         />
       </FormScreen>

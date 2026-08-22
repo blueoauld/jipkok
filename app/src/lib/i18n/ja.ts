@@ -36,6 +36,44 @@ export const ja: typeof ko = {
     MALE: "男性",
     FEMALE: "女性",
   },
+  auth: {
+    phoneNumberPlaceholder: "携帯電話番号",
+    codePlaceholder: "認証番号",
+    passwordPlaceholder: "パスワード",
+    sendCode: "送信",
+    resendCountdown: "{{count}}秒",
+    login: {
+      title: "ログイン",
+      submit: "ログイン",
+      signup: "新規登録",
+      findPassword: "パスワードを忘れた方",
+    },
+    signup: {
+      title: "新規登録",
+      submit: "新規登録",
+      minorNotice:
+        "未成年者は登録できません。発覚した場合、サービスの利用が制限されます。",
+      passwordConfirmPlaceholder: "パスワード確認",
+      genderRequired: "性別を選択してください。",
+      privacy: "プライバシーポリシー",
+      terms: "利用規約",
+    },
+    password: {
+      title: "パスワードを忘れた方",
+      submit: "パスワード変更",
+      newPlaceholder: "新しいパスワード",
+      newConfirmPlaceholder: "新しいパスワード確認",
+      resetMessage: "パスワードを変更しました。もう一度ログインしてください。",
+    },
+    setup: {
+      title: "プロフィール設定",
+      submit: "はじめる",
+      nicknamePlaceholder: "ニックネーム",
+      birthYearPlaceholder: "生年",
+      bioPlaceholder: "自己紹介",
+      bioTooLong: "自己紹介が長すぎます。",
+    },
+  },
   chat: {
     filter: { ALL: "すべて", UNREAD: "未読" },
     list: {

@@ -33,6 +33,44 @@ export const ko = {
     MALE: "남자",
     FEMALE: "여자",
   },
+  auth: {
+    phoneNumberPlaceholder: "휴대폰 번호",
+    codePlaceholder: "인증번호",
+    passwordPlaceholder: "비밀번호",
+    sendCode: "전송",
+    resendCountdown: "{{count}}초",
+    login: {
+      title: "로그인",
+      submit: "로그인",
+      signup: "회원가입",
+      findPassword: "비밀번호 찾기",
+    },
+    signup: {
+      title: "회원가입",
+      submit: "회원가입",
+      minorNotice:
+        "미성년자는 가입할 수 없습니다. 적발 시 서비스 이용이 제한됩니다.",
+      passwordConfirmPlaceholder: "비밀번호 확인",
+      genderRequired: "성별을 선택해주시길 바랍니다.",
+      privacy: "개인정보 처리방침",
+      terms: "서비스 이용약관",
+    },
+    password: {
+      title: "비밀번호 찾기",
+      submit: "비밀번호 변경",
+      newPlaceholder: "새 비밀번호",
+      newConfirmPlaceholder: "새 비밀번호 확인",
+      resetMessage: "비밀번호를 바꿨습니다. 다시 로그인해주시길 바랍니다.",
+    },
+    setup: {
+      title: "프로필 설정",
+      submit: "들어가기",
+      nicknamePlaceholder: "닉네임",
+      birthYearPlaceholder: "출생연도",
+      bioPlaceholder: "자기소개",
+      bioTooLong: "자기소개가 너무 깁니다.",
+    },
+  },
   chat: {
     filter: { ALL: "전체", UNREAD: "안읽음" },
     list: {

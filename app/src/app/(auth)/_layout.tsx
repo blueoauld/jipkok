@@ -1,6 +1,9 @@
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function AuthLayout() {
+  const { t } = useTranslation();
+
   return (
     <Stack
       screenOptions={{
@@ -9,13 +12,16 @@ export default function AuthLayout() {
         headerTitleAlign: "center",
       }}
     >
-      <Stack.Screen name="login" options={{ title: "로그인" }} />
-      <Stack.Screen name="signup" options={{ title: "회원가입" }} />
-      <Stack.Screen name="password" options={{ title: "비밀번호 찾기" }} />
+      <Stack.Screen name="login" options={{ title: t("auth.login.title") }} />
+      <Stack.Screen name="signup" options={{ title: t("auth.signup.title") }} />
+      <Stack.Screen
+        name="password"
+        options={{ title: t("auth.password.title") }}
+      />
       <Stack.Screen
         name="setup"
         options={{
-          title: "프로필 설정",
+          title: t("auth.setup.title"),
           headerBackVisible: false,
           gestureEnabled: false,
         }}
