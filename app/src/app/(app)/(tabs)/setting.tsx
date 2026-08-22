@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Href, Tabs } from "expo-router";
-import { reloadAsync } from "expo-updates";
 import type { Icon } from "phosphor-react-native";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
@@ -51,6 +50,7 @@ import { ko } from "@/lib/i18n/ko";
 import { useLocaleStore } from "@/lib/i18n/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { releaseDevice } from "@/lib/push/notifications";
+import { reloadApp } from "@/lib/reload";
 import { pushOnce } from "@/lib/router";
 import {
   BROWSER_FAILED_MESSAGE,
@@ -281,7 +281,7 @@ export default function SettingScreen() {
       confirmLabel: t("setting.languageChange"),
       onConfirm: () => {
         setLocale(next);
-        reloadAsync();
+        reloadApp();
       },
     });
   };
