@@ -88,7 +88,7 @@ class Member(
         const val PHONE_NUMBER_LENGTH = 16
         const val NICKNAME_MAX_LENGTH = 10
         const val PHONE_NUMBER_PATTERN = "^(\\+8210|\\+81[789]0)\\d{8}$"
-        const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$"
+        const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣぁ-ゖァ-ヺー々一-龯a-zA-Z0-9 ]+$"
         const val COMMENT_MAX_LENGTH = 100
         const val BIO_MAX_LENGTH = 1000
 

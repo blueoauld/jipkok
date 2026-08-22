@@ -11,13 +11,17 @@ describe("NICKNAME_RULES", () => {
     );
   });
 
-  it("한글, 영문, 숫자, 공백만 허용한다", () => {
+  it("한글, 일본어, 영문, 숫자, 공백만 허용한다", () => {
     expect(NICKNAME_RULES.validate("집콕 이 1")).toBe(true);
     expect(NICKNAME_RULES.validate("ㅋㅋ")).toBe(true);
+    expect(NICKNAME_RULES.validate("さくら")).toBe(true);
+    expect(NICKNAME_RULES.validate("ユーカ")).toBe(true);
+    expect(NICKNAME_RULES.validate("佐々木")).toBe(true);
     expect(NICKNAME_RULES.validate("nick!")).toBe(
       "닉네임이 올바르지 않습니다.",
     );
     expect(NICKNAME_RULES.validate("😀")).toBe("닉네임이 올바르지 않습니다.");
+    expect(NICKNAME_RULES.validate("ﾊﾝｶｸ")).toBe("닉네임이 올바르지 않습니다.");
   });
 });
 

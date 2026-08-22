@@ -16,6 +16,12 @@ class SetupProfileRequestTest {
             "hong123",
             "ㅋㅋㅋ",
             "ㅏㅑㅓ",
+            "さくら",
+            "サクラ",
+            "ユーカ",
+            "田中太郎",
+            "佐々木",
+            "たなか123",
         ],
     )
     fun `허용하는 닉네임`(nickname: String) {
@@ -38,6 +44,7 @@ class SetupProfileRequestTest {
             "홍길동😀",
             "홍길동!",
             "홍길동@",
+            "ﾊﾝｶｸ",
         ],
     )
     fun `막아야 하는 닉네임`(nickname: String) {

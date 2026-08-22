@@ -30,7 +30,7 @@ class OpenAiTextModerator(
 
             SEXUAL: 노골적인 성적 표현, 성매매 암시
             ABUSE: 욕설, 특정 집단 비하
-            CONTACT: 카카오톡 아이디, 전화번호, 인스타그램 아이디 등 외부 유도
+            CONTACT: 카카오톡, LINE, 전화번호, 인스타그램 아이디 등 외부 유도
             ADVERTISEMENT: 상업적 홍보, 다른 서비스 유도
 
             해당하지 않으면 inappropriate 를 false 로 하고 category 를 NONE 으로 한다.
