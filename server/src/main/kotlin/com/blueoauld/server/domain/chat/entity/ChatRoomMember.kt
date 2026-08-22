@@ -19,7 +19,13 @@ import jakarta.persistence.UniqueConstraint
             columnNames = ["room_id", "member_id"],
         ),
     ],
-    indexes = [Index(name = "idx_chat_room_member_member_id", columnList = "member_id")],
+    indexes = [
+        Index(name = "idx_chat_room_member_member_id", columnList = "member_id"),
+        Index(
+            name = "idx_chat_room_member_member_id_last_message_id",
+            columnList = "member_id, last_message_id desc",
+        ),
+    ],
 )
 class ChatRoomMember(
 
@@ -28,6 +34,9 @@ class ChatRoomMember(
 
     @Column(name = "member_id", nullable = false, updatable = false)
     val memberId: Long,
+
+    @Column(name = "last_message_id", nullable = false)
+    var lastMessageId: Long = 0,
 
     @Column(name = "last_read_message_id", nullable = false)
     var lastReadMessageId: Long = 0,

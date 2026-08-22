@@ -14,11 +14,16 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
     @Query(
         """
         update ChatRoomMember m
-        set m.unreadCount = m.unreadCount + 1
-        where m.roomId = :roomId and m.memberId = :memberId
+        set m.lastMessageId = :lastMessageId,
+            m.unreadCount = case when m.memberId = :partnerId then m.unreadCount + 1 else m.unreadCount end
+        where m.roomId = :roomId
         """,
     )
-    fun increaseUnreadCount(@Param("roomId") roomId: Long, @Param("memberId") memberId: Long)
+    fun applyLastMessage(
+        @Param("roomId") roomId: Long,
+        @Param("lastMessageId") lastMessageId: Long,
+        @Param("partnerId") partnerId: Long,
+    )
 
     @Query(
         """

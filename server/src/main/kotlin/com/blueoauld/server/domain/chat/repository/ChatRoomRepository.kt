@@ -26,7 +26,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
-               r.lastMessageId as lastMessageId,
+               crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,
                m.createdAt as lastMessageAt
@@ -34,7 +34,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
         where crm.memberId = :memberId
           and r.id = :roomId
           and r.id = crm.roomId
-          and m.id = r.lastMessageId
+          and m.id = crm.lastMessageId
         """,
     )
     fun findRoom(@Param("memberId") memberId: Long, @Param("roomId") roomId: Long): ChatRoomRow?
@@ -45,17 +45,17 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
-               r.lastMessageId as lastMessageId,
+               crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,
                m.createdAt as lastMessageAt
         from ChatRoomMember crm, ChatRoom r, ChatMessage m
         where crm.memberId = :memberId
           and r.id = crm.roomId
-          and m.id = r.lastMessageId
+          and m.id = crm.lastMessageId
           and crm.unreadCount >= :minUnreadCount
-          and r.lastMessageId < :cursor
-        order by r.lastMessageId desc
+          and crm.lastMessageId < :cursor
+        order by crm.lastMessageId desc
         """,
     )
     fun findRooms(
@@ -71,18 +71,18 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                p.id as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
-               r.lastMessageId as lastMessageId,
+               crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,
                m.createdAt as lastMessageAt
         from ChatRoomMember crm, ChatRoom r, ChatMessage m, Member p
         where crm.memberId = :memberId
           and r.id = crm.roomId
-          and m.id = r.lastMessageId
+          and m.id = crm.lastMessageId
           and p.id = (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end)
           and lower(p.nickname) like lower(:keyword) escape '\'
-          and r.lastMessageId < :cursor
-        order by r.lastMessageId desc
+          and crm.lastMessageId < :cursor
+        order by crm.lastMessageId desc
         """,
     )
     fun searchRooms(

@@ -154,7 +154,7 @@ class ChatMessageService(
         val partnerId = room.partnerIdOf(senderId)
 
         room.lastMessageId = saved.id
-        chatRoomMemberRepository.increaseUnreadCount(room.id, partnerId)
+        chatRoomMemberRepository.applyLastMessage(room.id, saved.id, partnerId)
         photoUploadService.confirm(listOfNotNull(saved.objectKey, saved.thumbnailObjectKey))
 
         val response = ChatMessageResponse.of(saved, toMediaUrls(saved), replyTarget?.let(::toReplyResponse))

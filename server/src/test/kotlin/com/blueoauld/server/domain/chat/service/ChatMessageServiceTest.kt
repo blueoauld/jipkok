@@ -206,12 +206,13 @@ class ChatMessageServiceTest {
     }
 
     @Test
-    fun `메시지를 보내면 상대의 안읽음 수가 올라간다`() {
+    fun `메시지를 보내면 방과 방 멤버에 마지막 메시지를 옮기고 상대의 안읽음 수를 올린다`() {
         // when
-        chatMessageService.send(ME_ID, ROOM_ID, text("안녕하세요."))
+        val response = chatMessageService.send(ME_ID, ROOM_ID, text("안녕하세요."))
 
         // then
-        verify { chatRoomMemberRepository.increaseUnreadCount(room.id, PARTNER_ID) }
+        assertThat(room.lastMessageId).isEqualTo(response.messageId)
+        verify { chatRoomMemberRepository.applyLastMessage(room.id, response.messageId, PARTNER_ID) }
     }
 
     @Test
