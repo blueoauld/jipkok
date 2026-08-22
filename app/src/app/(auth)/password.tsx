@@ -3,22 +3,22 @@ import { router } from "expo-router";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, XStack, YStack } from "tamagui";
+import { Spinner } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
+import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { codeSentMessage } from "@/lib/message";
+import { patternOf, usePhoneCountry } from "@/lib/phone";
 import { showToast } from "@/lib/toast/store";
 import {
   PASSWORD_CONFIRM_RULES,
   PASSWORD_RULES,
-  PHONE_NUMBER_PATTERN,
-  PHONE_NUMBER_RULES,
   VERIFICATION_CODE_RULES,
 } from "@/lib/validation";
 
@@ -61,10 +61,11 @@ export default function PasswordScreen() {
     onError: showApiError,
   });
 
+  const country = usePhoneCountry();
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
 
   const canSendCode =
-    PHONE_NUMBER_PATTERN.test(phoneNumber) &&
+    patternOf(country).test(phoneNumber) &&
     !sendCode.isPending &&
     cooldown.remaining === 0;
 
@@ -85,35 +86,25 @@ export default function PasswordScreen() {
           </RetroButton>
         }
       >
-        <XStack gap="$2" items="flex-start">
-          <YStack flex={1}>
-            <ControlledInput
-              control={control}
-              name="phoneNumber"
-              rules={PHONE_NUMBER_RULES}
-              placeholder={t("auth.phoneNumberPlaceholder")}
-              keyboardType="number-pad"
-              textContentType="telephoneNumber"
-              autoComplete="tel"
-              maxLength={11}
-              clearable
-            />
-          </YStack>
-
-          <RetroButton
-            width={SEND_CODE_BUTTON_WIDTH}
-            disabled={!canSendCode}
-            onPress={() => sendCode.mutate(phoneNumber)}
-          >
-            {sendCode.isPending ? (
-              <Spinner color="white" />
-            ) : cooldown.remaining > 0 ? (
-              t("auth.resendCountdown", { count: cooldown.remaining })
-            ) : (
-              t("auth.sendCode")
-            )}
-          </RetroButton>
-        </XStack>
+        <PhoneNumberField
+          control={control}
+          name="phoneNumber"
+          right={
+            <RetroButton
+              width={SEND_CODE_BUTTON_WIDTH}
+              disabled={!canSendCode}
+              onPress={() => sendCode.mutate(phoneNumber)}
+            >
+              {sendCode.isPending ? (
+                <Spinner color="white" />
+              ) : cooldown.remaining > 0 ? (
+                t("auth.resendCountdown", { count: cooldown.remaining })
+              ) : (
+                t("auth.sendCode")
+              )}
+            </RetroButton>
+          }
+        />
 
         <ControlledInput
           control={control}

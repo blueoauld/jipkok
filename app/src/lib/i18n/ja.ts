@@ -195,6 +195,8 @@ export const ja: typeof ko = {
     codePlaceholder: "認証番号",
     passwordPlaceholder: "パスワード",
     sendCode: "送信",
+    countryKR: "韓国",
+    countryJP: "日本",
     resendCountdown: "{{count}}秒",
     login: {
       title: "ログイン",

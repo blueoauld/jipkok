@@ -7,12 +7,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
+import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type LoginRequest } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
-import { PHONE_NUMBER_RULES } from "@/lib/validation";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -38,17 +38,7 @@ export default function LoginScreen() {
       >
         <YStack flex={1} justify="space-between" p="$4">
           <YStack gap="$4">
-            <ControlledInput
-              control={control}
-              name="phoneNumber"
-              rules={PHONE_NUMBER_RULES}
-              placeholder={t("auth.phoneNumberPlaceholder")}
-              keyboardType="number-pad"
-              textContentType="telephoneNumber"
-              autoComplete="tel"
-              maxLength={11}
-              clearable
-            />
+            <PhoneNumberField control={control} name="phoneNumber" />
 
             <ControlledInput
               control={control}

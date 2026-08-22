@@ -191,6 +191,8 @@ export const ko = {
     codePlaceholder: "인증번호",
     passwordPlaceholder: "비밀번호",
     sendCode: "전송",
+    countryKR: "대한민국",
+    countryJP: "일본",
     resendCountdown: "{{count}}초",
     login: {
       title: "로그인",

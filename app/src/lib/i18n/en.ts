@@ -193,6 +193,8 @@ export const en: typeof ko = {
     codePlaceholder: "Verification code",
     passwordPlaceholder: "Password",
     sendCode: "Send",
+    countryKR: "South Korea",
+    countryJP: "Japan",
     resendCountdown: "{{count}}s",
     login: {
       title: "Log in",

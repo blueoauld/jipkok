@@ -1,6 +1,5 @@
 import i18n from "@/lib/i18n";
-
-export const PHONE_NUMBER_PATTERN = /^010\d{8}$/;
+import { patternOf, type PhoneCountry } from "@/lib/phone";
 
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 ]+$/;
 
@@ -18,18 +17,20 @@ export const MAX_AGE = 90;
 
 const BIRTH_YEAR_PATTERN = /^\d{4}$/;
 
-// 기기 언어는 실행 중에 바뀌지 않아서 규칙은 한 번만 만든다.
-// 앱 안에 언어 전환을 넣으면 이 상수들을 함수로 바꿔야 한다.
-export const PHONE_NUMBER_RULES = {
-  required: i18n.t("validation.phoneNumberRequired"),
-  pattern: {
-    value: PHONE_NUMBER_PATTERN,
-    message: i18n.t("validation.phoneNumberInvalid"),
-  },
-};
+// 나라는 실행 중에 바뀌므로 규칙을 상수로 둘 수 없다.
+export function phoneNumberRules(country: PhoneCountry) {
+  return {
+    required: i18n.t("validation.phoneNumberRequired"),
+    pattern: {
+      value: patternOf(country),
+      message: i18n.t("validation.phoneNumberInvalid"),
+    },
+  };
+}
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 
+// 언어를 바꾸면 앱이 다시 시작하므로 아래 규칙들은 한 번만 만들어도 된다.
 export const VERIFICATION_CODE_RULES = {
   required: i18n.t("validation.codeRequired"),
   pattern: {
