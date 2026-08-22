@@ -5,7 +5,7 @@ const WORRY_CATEGORY_LABELS: Record<WorryCategory, string> = {
   RELATIONSHIP: "인간관계",
   WORK: "직장",
   FAMILY: "가족",
-  MIND: "마음",
+  MIND: "심리",
   LIFE: "생활",
   ETC: "기타",
 };
