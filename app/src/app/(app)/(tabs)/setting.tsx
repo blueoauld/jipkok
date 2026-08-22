@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Href, Tabs } from "expo-router";
+import { reloadAsync } from "expo-updates";
 import type { Icon } from "phosphor-react-native";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
@@ -18,6 +19,7 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { ShieldCheckIcon } from "phosphor-react-native/src/icons/ShieldCheck";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
+import { TranslateIcon } from "phosphor-react-native/src/icons/Translate";
 import { TrayArrowDownIcon } from "phosphor-react-native/src/icons/TrayArrowDown";
 import { UserIcon } from "phosphor-react-native/src/icons/User";
 import { useCallback, useMemo, useState } from "react";
@@ -40,7 +42,13 @@ import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { APP_VERSION } from "@/lib/device";
 import i18n from "@/lib/i18n";
+import {
+  currentLocale,
+  SUPPORTED_LOCALES,
+  type SupportedLocale,
+} from "@/lib/i18n";
 import { ko } from "@/lib/i18n/ko";
+import { useLocaleStore } from "@/lib/i18n/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { releaseDevice } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
@@ -253,12 +261,30 @@ export default function SettingScreen() {
   const space = getTokens().space;
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
 
   const { data: profile } = useMyProfile();
   const profileViewCount = useProfileViewNewCount();
   const themeMode = useThemeStore((state) => state.mode);
   const setThemeMode = useThemeStore((state) => state.setMode);
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const locale = currentLocale();
+  const setLocale = useLocaleStore((state) => state.setLocale);
+
+  const changeLanguage = (next: SupportedLocale) => {
+    if (next === locale) {
+      return;
+    }
+
+    confirm({
+      message: t("setting.languageChangeNotice"),
+      confirmLabel: t("setting.languageChange"),
+      onConfirm: () => {
+        setLocale(next);
+        reloadAsync();
+      },
+    });
+  };
 
   const logout = useMutation({
     mutationFn: async () => {
@@ -398,14 +424,24 @@ export default function SettingScreen() {
     },
   ];
   const openMenu = useCallback(() => setMenuOpen(true), []);
+  const openLanguage = useCallback(() => setLanguageOpen(true), []);
+
+  const languageItems: MenuSheetItem[] = SUPPORTED_LOCALES.map((value) => ({
+    label: t(value === "ko" ? "setting.languageKo" : "setting.languageJa"),
+    selected: value === locale,
+    onPress: () => changeLanguage(value),
+  }));
 
   const screenOptions = useMemo(
     () => ({
+      headerLeft: () => (
+        <HeaderIconButton icon={TranslateIcon} onPress={openLanguage} />
+      ),
       headerRight: () => (
         <HeaderIconButton icon={SignOutIcon} onPress={openMenu} />
       ),
     }),
-    [openMenu],
+    [openLanguage, openMenu],
   );
 
   return (
@@ -439,6 +475,12 @@ export default function SettingScreen() {
         </YStack>
 
         <Tabs.Screen options={screenOptions} />
+
+        <MenuSheet
+          open={languageOpen}
+          onOpenChange={setLanguageOpen}
+          items={languageItems}
+        />
 
         <MenuSheet
           open={menuOpen}

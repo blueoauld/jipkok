@@ -90,7 +90,8 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
       "^expo-modules-core$": "<rootDir>/node_modules/expo/node_modules/expo-modules-core",
-      "^expo-modules-core/(.*)$": "<rootDir>/node_modules/expo/node_modules/expo-modules-core/$1"
+      "^expo-modules-core/(.*)$": "<rootDir>/node_modules/expo/node_modules/expo-modules-core/$1",
+      "^react-native-mmkv$": "<rootDir>/src/lib/__tests__/mmkv-mock.ts"
     },
     "testMatch": [
       "<rootDir>/src/**/*.test.ts",
