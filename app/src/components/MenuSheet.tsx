@@ -1,4 +1,6 @@
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
+import { useEffect } from "react";
+import { Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
@@ -22,6 +24,13 @@ export function MenuSheet({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  // 키보드가 올라와 있으면 시트를 덮는다. 둘은 같이 떠 있을 수 없다.
+  useEffect(() => {
+    if (open) {
+      Keyboard.dismiss();
+    }
+  }, [open]);
 
   return (
     <Sheet
