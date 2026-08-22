@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size
 
 data class CreateWorryCommentRequest(
 
-    @field:NotBlank(message = "내용을 입력해주세요.")
+    @field:NotBlank(message = "내용을 입력해주시길 바랍니다.")
     @field:Size(max = WorryComment.CONTENT_MAX_LENGTH, message = "내용이 너무 깁니다.")
     val content: String,
 

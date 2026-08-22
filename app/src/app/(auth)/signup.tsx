@@ -16,6 +16,7 @@ import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { CODE_SENT_MESSAGE } from "@/lib/message";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
+import { showToast } from "@/lib/toast/store";
 import {
   PASSWORD_CONFIRM_RULES,
   PASSWORD_RULES,
@@ -64,7 +65,7 @@ export default function SignupScreen() {
     onSuccess: () => {
       logAppEvent(APP_EVENT.verificationCodeSent);
       cooldown.start(RESEND_COOLDOWN_SECONDS);
-      show("info", CODE_SENT_MESSAGE);
+      showToast("info", CODE_SENT_MESSAGE);
     },
     onError: (error) => {
       logAppEvent(APP_EVENT.verificationCodeFailed, {

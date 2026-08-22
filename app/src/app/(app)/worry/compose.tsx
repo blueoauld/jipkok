@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, YStack } from "tamagui";
+import { Spinner, Text, YStack } from "tamagui";
 
 import { FormScreen } from "@/components/FormScreen";
 import { CountedInput } from "@/components/ui/CountedInput";
@@ -11,7 +11,6 @@ import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { WORRIES_KEY } from "@/hooks/useWorryPosts";
 import { api, type WorryCategory } from "@/lib/api";
-import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
@@ -47,8 +46,6 @@ export default function WorryComposeScreen() {
     onError: showApiError,
   });
 
-  useLoadingOverlay(compose.isPending);
-
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={{ title: "고민 작성" }} />
@@ -62,7 +59,7 @@ export default function WorryComposeScreen() {
               compose.mutate({ category, content: contentRef.current.trim() })
             }
           >
-            등록
+            {compose.isPending ? <Spinner color="white" /> : "등록"}
           </RetroButton>
         }
       >

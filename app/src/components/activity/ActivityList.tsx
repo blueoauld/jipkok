@@ -45,7 +45,7 @@ export function ActivityList({
       renderItem={({ item }) => (
         <UserRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
       )}
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
       contentContainerStyle={contentStyle}
       ListEmptyComponent={<ListEmpty>{MEMBER_EMPTY_MESSAGE}</ListEmpty>}
     />

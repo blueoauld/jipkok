@@ -58,10 +58,10 @@ const REPLY_PREVIEW_GAP = 2;
 const SUBMIT_BUTTON_WIDTH = 80;
 
 const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
-const COMMENT_EMPTY_MESSAGE = "첫 댓글을 남겨보세요.";
+const COMMENT_EMPTY_MESSAGE = "댓글이 없습니다.";
 const COMMENT_ERROR_MESSAGE = "댓글을 불러오지 못했습니다.";
-const POST_DELETED_MESSAGE = "고민을 지웠습니다.";
-const COMMENT_DELETED_MESSAGE = "댓글을 지웠습니다.";
+const POST_DELETED_MESSAGE = "고민을 삭제했습니다.";
+const COMMENT_DELETED_MESSAGE = "댓글을 삭제했습니다.";
 const DELETED_COMMENT_PLACEHOLDER = "삭제된 댓글입니다.";
 const REPORT_DELETED_COMMENT_PLACEHOLDER = "신고 누적으로 삭제된 댓글입니다.";
 
@@ -381,7 +381,7 @@ export default function WorryDetailScreen() {
   const confirmRemoveComment = useCallback(
     (commentId: number) =>
       confirm({
-        message: "지운 댓글은 되돌릴 수 없습니다.",
+        message: "삭제한 댓글은 되돌릴 수 없습니다.",
         confirmLabel: "삭제",
         destructive: true,
         onConfirm: () => removeCommentMutate(commentId),

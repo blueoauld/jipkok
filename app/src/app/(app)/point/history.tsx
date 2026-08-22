@@ -89,7 +89,7 @@ export default function PointHistoryScreen() {
             data={histories}
             keyExtractor={(history) => String(history.historyId)}
             renderItem={({ item }) => <HistoryRow history={item} />}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             contentContainerStyle={{
               paddingHorizontal: space.$4.val,
               paddingBottom: space.$4.val,

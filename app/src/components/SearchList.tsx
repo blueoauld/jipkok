@@ -87,7 +87,7 @@ export function SearchList<T>({
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           ListEmptyComponent={
             <YStack items="center" gap="$4" py="$8">
               {!query.enabled ? (

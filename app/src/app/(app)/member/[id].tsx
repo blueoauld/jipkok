@@ -43,7 +43,11 @@ import { api, type MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
-import { PROFILE_ERROR_MESSAGE } from "@/lib/message";
+import {
+  PROFILE_BIO_EMPTY_MESSAGE,
+  PROFILE_COMMENT_EMPTY_MESSAGE,
+  PROFILE_ERROR_MESSAGE,
+} from "@/lib/message";
 import { useNoteStore } from "@/lib/note/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
@@ -68,9 +72,6 @@ const SECRET_PHOTO_CLOSED_MESSAGE = "비밀 사진을 닫았습니다.";
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
 const BADGE_OPACITY = 0.9;
-
-const COMMENT_PLACEHOLDER = "코멘트가 없습니다.";
-const BIO_PLACEHOLDER = "자기소개가 없습니다.";
 
 const UNBLOCK_DESCRIPTION = "차단을 해제하시겠습니까?";
 const BLOCK_DESCRIPTION =
@@ -481,13 +482,13 @@ export default function MemberProfileScreen() {
               <ProfileSection
                 title="코멘트"
                 body={member.comment}
-                placeholder={COMMENT_PLACEHOLDER}
+                placeholder={PROFILE_COMMENT_EMPTY_MESSAGE}
               />
 
               <ProfileSection
                 title="자기소개"
                 body={member.bio}
-                placeholder={BIO_PLACEHOLDER}
+                placeholder={PROFILE_BIO_EMPTY_MESSAGE}
               />
             </YStack>
           </ScrollView>
