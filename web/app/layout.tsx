@@ -15,21 +15,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jipkok.app"),
-  title: "집콕",
+  title: "Jipkok",
   description:
-    "집콕은 가까운 동네 친구를 만드는 채팅 커뮤니티입니다. 시간대별 사진 피드로 일상을 나누고, 쪽지로 가볍게 대화를 시작해 보세요.",
+    "Jipkok is a chat community for meeting people nearby. Share your day through an hourly photo feed, and start a conversation with a single note.",
   openGraph: {
-    title: "집콕",
-    description: "가까운 동네 친구와 대화를 시작해요",
+    title: "Jipkok",
+    description: "Start a conversation with someone nearby",
     type: "website",
-    locale: "ko_KR",
+    locale: "en_US",
   },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="ko"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">

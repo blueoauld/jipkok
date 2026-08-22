@@ -3,181 +3,219 @@ import type { Metadata } from "next";
 import { LegalPage, Section, Table } from "@/app/components/legal";
 
 export const metadata: Metadata = {
-  title: "서비스 이용약관 | 집콕",
-  description: "집콕을 이용할 때 지켜야 할 내용을 알려드립니다.",
+  title: "Terms of Service | Jipkok",
+  description: "The rules that apply when you use Jipkok.",
 };
 
-export default function Terms() {
+export default function EnglishTerms() {
   return (
-    <LegalPage title="서비스 이용약관" effectiveDate="2026년 8월 24일">
+    <LegalPage title="Terms of Service" effectiveDate="August 24, 2026">
       <p>
-        이 약관은 집콕(이하 &ldquo;서비스&rdquo;)을 이용할 때 회사와 이용자
-        사이에 적용되는 내용을 정합니다. 서비스에 가입하면 이 약관에 동의한
-        것으로 봅니다.
+        These terms set out what applies between us and you when you use Jipkok
+        (the &ldquo;Service&rdquo;). By signing up, you agree to them.
       </p>
 
-      <Section title="1. 가입">
+      <Section title="1. Signing up">
         <ul>
-          <li>19세 이상만 가입할 수 있습니다.</li>
-          <li>본인의 휴대폰 번호로 인증해야 가입이 완료됩니다.</li>
-          <li>한 사람이 여러 계정을 만들 수 없습니다.</li>
+          <li>You must be 19 or older to sign up.</li>
           <li>
-            다른 사람의 정보를 쓰거나 사실과 다른 정보를 입력하면 이용을 제한할
-            수 있습니다.
+            Sign-up is complete once you verify your own mobile phone number.
+          </li>
+          <li>One person may not create multiple accounts.</li>
+          <li>
+            Using someone else&rsquo;s information, or entering information that
+            is not true, may result in restricted access.
           </li>
         </ul>
       </Section>
 
-      <Section title="2. 서비스 내용">
-        <p>서비스는 다음 기능을 제공합니다.</p>
+      <Section title="2. What the Service does">
+        <p>The Service provides the following.</p>
         <ul>
-          <li>가까운 거리에 있는 회원을 둘러보는 목록</li>
-          <li>쪽지와 1대1 대화</li>
-          <li>사진과 짧은 글을 올리는 피드</li>
-          <li>좋아요, 즐겨찾기, 차단</li>
-          <li>출석, 접속, 광고 시청으로 쌓는 포인트</li>
-        </ul>
-        <p>
-          서비스 내용은 운영 사정에 따라 바뀔 수 있으며, 중요한 변경은 미리
-          알려드립니다.
-        </p>
-      </Section>
-
-      <Section title="3. 금지하는 행위">
-        <p>
-          서비스는 이용자를 보호하기 위해 부적절한 콘텐츠에 대해 무관용 원칙으로
-          대응합니다. 아래 행위를 하면 사전 통보 없이 게시물을 가리거나 이용을
-          정지할 수 있고, 반복되면 계정을 지울 수 있습니다.
-        </p>
-        <ul>
-          <li>성적인 내용을 올리거나 성매매를 암시하는 행위</li>
-          <li>욕설, 협박, 특정 집단을 비하하는 표현</li>
-          <li>다른 사람을 괴롭히거나 스토킹하는 행위</li>
-          <li>카카오톡 아이디, 전화번호 등을 적어 외부로 유도하는 행위</li>
-          <li>상업적 홍보, 다른 서비스로 유인하는 행위</li>
-          <li>다른 사람의 사진이나 정보를 자기 것처럼 쓰는 행위</li>
-          <li>금전을 요구하거나 사기를 시도하는 행위</li>
-          <li>자동화 도구로 서비스를 이용하거나 시스템을 방해하는 행위</li>
-        </ul>
-      </Section>
-
-      <Section title="4. 아동과 청소년 보호">
-        <p>
-          서비스는 19세 이상만 이용할 수 있으며, 아동과 청소년을 성적으로
-          착취하거나 학대하는 행위를 어떤 경우에도 용납하지 않습니다.
-        </p>
-        <ul>
+          <li>A list of members near you</li>
+          <li>Notes and one-to-one chat</li>
+          <li>A feed for photos and short posts</li>
+          <li>Likes, favorites, and blocking</li>
           <li>
-            아동과 청소년이 등장하는 성착취물을 올리거나 주고받거나 요구하는
-            행위
-          </li>
-          <li>미성년자에게 성적인 목적으로 접근하거나 대화를 거는 행위</li>
-          <li>나이를 속여 가입하거나 미성년자의 가입을 돕는 행위</li>
-          <li>
-            아동과 청소년을 대상으로 한 성적 표현을 옹호하거나 미화하는 행위
+            Points earned from daily check-ins, login rewards, and watching ads
           </li>
         </ul>
         <p>
-          이런 행위가 확인되면 사전 통보 없이 계정을 영구 정지하고, 관련 자료를
-          보전해 청소년성보호법을 비롯한 관계 법령에 따라 수사기관에 신고합니다.
-          이 경우 이용 제한에 대한 이의 신청을 받지 않습니다.
-        </p>
-        <p>
-          미성년자로 의심되는 계정이나 아동과 청소년을 대상으로 한 행위를 보시면
-          앱의 신고 기능으로 알려주세요. 다른 신고보다 먼저 확인합니다.
+          What the Service offers may change as we operate it. We announce
+          significant changes in advance.
         </p>
       </Section>
 
-      <Section title="5. 게시물의 관리">
+      <Section title="3. Prohibited conduct">
+        <p>
+          To protect our users, we take a zero-tolerance approach to
+          inappropriate content. We may hide posts or suspend access without
+          prior notice for any of the following, and may delete the account if
+          it happens repeatedly.
+        </p>
         <ul>
+          <li>Posting sexual content, or implying paid sex</li>
+          <li>Abuse, threats, or demeaning a particular group</li>
+          <li>Harassing or stalking another person</li>
           <li>
-            이용자가 올린 사진과 글의 권리는 이용자에게 있습니다. 서비스는 이를
-            표시하고 전달하는 데 필요한 범위에서만 사용합니다.
+            Writing out messaging IDs, phone numbers, or similar to move people
+            off the Service
           </li>
+          <li>Commercial promotion, or drawing users to another service</li>
           <li>
-            자기소개와 코멘트는 자동으로 검수하며, 부적절하다고 판단되면 다른
-            이용자에게 보이지 않도록 가립니다.
+            Using another person&rsquo;s photos or information as your own
           </li>
-          <li>신고가 들어온 게시물과 대화는 확인 후 24시간 안에 조치합니다.</li>
+          <li>Demanding money, or attempting fraud</li>
           <li>
-            법령을 어기거나 다른 사람의 권리를 침해하는 게시물은 사전 통보 없이
-            지울 수 있습니다.
+            Using the Service through automated tools, or interfering with our
+            systems
           </li>
         </ul>
       </Section>
 
-      <Section title="6. 신고와 차단">
+      <Section title="4. Protection of children and young people">
         <p>
-          불쾌한 프로필이나 대화를 만나면 언제든 신고하거나 차단할 수 있습니다.
-          차단한 사람은 목록과 피드에서 보이지 않고 대화도 오갈 수 없습니다.
+          The Service is for users 19 and older. We do not tolerate the sexual
+          exploitation or abuse of children and young people under any
+          circumstances.
+        </p>
+        <ul>
+          <li>
+            Posting, exchanging, or requesting sexual exploitation material
+            involving children or young people
+          </li>
+          <li>
+            Approaching or engaging a minor in conversation for sexual purposes
+          </li>
+          <li>Lying about your age to sign up, or helping a minor sign up</li>
+          <li>
+            Defending or glamorizing sexual expression directed at children and
+            young people
+          </li>
+        </ul>
+        <p>
+          When such conduct is confirmed, we permanently suspend the account
+          without prior notice, preserve the related material, and report it to
+          investigative authorities under the Act on the Protection of Children
+          and Youth Against Sex Offenses and other applicable law. We do not
+          accept appeals against restrictions in these cases.
+        </p>
+        <p>
+          If you come across an account that appears to belong to a minor, or
+          conduct directed at children and young people, report it using the
+          report feature in the app. We review those reports ahead of all
+          others.
         </p>
       </Section>
 
-      <Section title="7. 포인트">
+      <Section title="5. Handling of content">
+        <ul>
+          <li>
+            The rights to the photos and text you post remain yours. We use them
+            only to the extent needed to display and deliver them.
+          </li>
+          <li>
+            Bios and comments are screened automatically, and anything judged
+            inappropriate is hidden from other users.
+          </li>
+          <li>
+            Reported posts and conversations are reviewed and acted on within 24
+            hours.
+          </li>
+          <li>
+            We may remove content that breaks the law or infringes on
+            someone&rsquo;s rights without prior notice.
+          </li>
+        </ul>
+      </Section>
+
+      <Section title="6. Reporting and blocking">
+        <p>
+          If you come across a profile or conversation you find unpleasant, you
+          can report or block it at any time. Blocked users do not appear in
+          your lists or feed, and no messages can pass between you.
+        </p>
+      </Section>
+
+      <Section title="7. Points">
         <Table
-          head={["구분", "내용"]}
+          head={["Item", "Detail"]}
           rows={[
-            ["쌓는 방법", "출석, 접속, 광고 시청"],
-            ["쓰는 곳", "쪽지 보내기"],
-            ["현금 교환", "불가"],
-            ["소멸", "탈퇴하면 남은 포인트가 사라집니다"],
+            ["How to earn", "Daily check-in, login reward, watching ads"],
+            ["What they are for", "Sending notes"],
+            ["Exchange for cash", "Not possible"],
+            [
+              "Expiry",
+              "Remaining points are lost when you delete your account",
+            ],
           ]}
         />
         <p>
-          포인트는 서비스 안에서만 쓸 수 있으며 현금이나 다른 재화로 바꿀 수
-          없습니다.
+          Points can only be used within the Service and cannot be exchanged for
+          cash or anything else of value.
         </p>
       </Section>
 
-      <Section title="8. 이용 제한">
+      <Section title="8. Restrictions on use">
         <p>
-          약관을 어기면 아래와 같이 단계적으로 제한합니다. 사안이 무거우면
-          곧바로 영구 정지할 수 있습니다.
+          When these terms are broken, we apply restrictions in stages as
+          follows. Where the matter is serious, we may move straight to
+          permanent suspension.
         </p>
         <ul>
-          <li>게시물 가림 또는 삭제</li>
-          <li>일정 기간 이용 정지</li>
-          <li>영구 이용 정지</li>
+          <li>Hiding or deleting content</li>
+          <li>Suspension for a set period</li>
+          <li>Permanent suspension</li>
         </ul>
-        <p>제한 사유에 이의가 있으면 아래 연락처로 문의하실 수 있습니다.</p>
-      </Section>
-
-      <Section title="9. 탈퇴">
         <p>
-          이용자는 앱의 설정에서 언제든 탈퇴할 수 있습니다. 탈퇴하면 대화, 피드
-          게시물, 좋아요, 포인트가 상대와 다른 이용자에게 보이지 않게 되며
-          되돌릴 수 없습니다. 부정 이용을 막기 위해 탈퇴한 계정 정보와 대화
-          내용은 90일 동안 보관한 뒤 완전히 지웁니다.
+          If you disagree with the reason for a restriction, you can contact us
+          at the address below.
         </p>
       </Section>
 
-      <Section title="10. 책임의 한계">
+      <Section title="9. Deleting your account">
+        <p>
+          You can delete your account at any time from the app settings. Once
+          you do, your conversations, feed posts, likes, and points stop being
+          visible to the other person and to other users, and this cannot be
+          undone. To prevent misuse, we keep the deleted account&rsquo;s
+          information and conversations for 90 days and then erase them
+          completely.
+        </p>
+      </Section>
+
+      <Section title="10. Limits of responsibility">
         <ul>
           <li>
-            서비스는 이용자끼리 주고받는 대화나 만남에서 생긴 일에 대해 책임지지
-            않습니다.
+            We are not responsible for what happens in conversations between
+            users, or when they meet.
           </li>
           <li>
-            이용자가 올린 정보의 정확성은 보장하지 않습니다. 상대방을 만나기
-            전에 신중히 판단하시기 바랍니다.
+            We do not guarantee the accuracy of the information users post.
+            Please use your own judgment before meeting anyone.
           </li>
           <li>
-            천재지변, 통신 장애 등 어쩔 수 없는 사유로 서비스를 제공하지 못하는
-            경우 책임을 지지 않습니다.
+            We are not responsible where we cannot provide the Service for
+            reasons beyond our control, such as natural disasters or network
+            failures.
           </li>
         </ul>
       </Section>
 
-      <Section title="11. 약관 변경">
+      <Section title="11. Changes to these terms">
         <p>
-          이 약관을 고칠 때는 시행일 7일 전부터 서비스 안에서 알려드립니다.
-          이용자에게 불리한 변경은 30일 전에 알려드리며, 변경에 동의하지 않으면
-          탈퇴하실 수 있습니다.
+          When we change these terms, we announce it in the Service from 7 days
+          before the effective date. Changes that disadvantage users are
+          announced 30 days in advance, and if you do not agree to the change,
+          you may delete your account.
         </p>
       </Section>
 
-      <Section title="12. 문의">
-        <p>서비스 이용에 관해 궁금한 점이 있으면 아래로 연락해 주세요.</p>
+      <Section title="12. Contact">
+        <p>
+          If you have any questions about using the Service, please get in
+          touch.
+        </p>
         <p>
           <a href="mailto:hello@jipkok.app" className="font-medium">
             hello@jipkok.app

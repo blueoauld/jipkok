@@ -12,7 +12,7 @@ export function LegalPage({
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-16">
       <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-      <p className="pt-2 text-sm text-muted">시행일 {effectiveDate}</p>
+      <p className="pt-2 text-sm text-muted">Effective {effectiveDate}</p>
 
       <div className="flex flex-col gap-10 pt-10 text-[15px] leading-7">
         {children}
@@ -41,13 +41,7 @@ export function Section({
 }
 
 // 좁은 화면에서는 열이 한 글자 폭까지 찌그러진다. 행을 카드로 쌓아 라벨과 값으로 읽힌다.
-export function Table({
-  head,
-  rows,
-}: {
-  head: string[];
-  rows: ReactNode[][];
-}) {
+export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   return (
     <>
       <div className="retro-panel hidden overflow-x-auto sm:block">

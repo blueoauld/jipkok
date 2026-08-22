@@ -3,167 +3,231 @@ import type { Metadata } from "next";
 import { LegalPage, Section, Table } from "@/app/components/legal";
 
 export const metadata: Metadata = {
-  title: "개인정보 처리방침 | 집콕",
-  description: "집콕이 개인정보를 어떻게 다루는지 알려드립니다.",
+  title: "Privacy Policy | Jipkok",
+  description: "How Jipkok handles your personal information.",
 };
 
-export default function Privacy() {
+export default function EnglishPrivacy() {
   return (
-    <LegalPage title="개인정보 처리방침" effectiveDate="2026년 8월 24일">
+    <LegalPage title="Privacy Policy" effectiveDate="August 24, 2026">
       <p>
-        집콕(이하 &ldquo;서비스&rdquo;)은 이용자의 개인정보를 소중히 다루며,
-        개인정보 보호법을 비롯한 관계 법령을 지킵니다. 이 방침은 서비스가 어떤
-        정보를 왜 모으고, 얼마나 보관하며, 이용자가 무엇을 요구할 수 있는지
-        설명합니다.
+        Jipkok (the &ldquo;Service&rdquo;) treats your personal information with
+        care and follows the Personal Information Protection Act and other
+        applicable law. This policy explains what information we collect and
+        why, how long we keep it, and what you can ask us to do.
       </p>
 
-      <Section title="1. 수집하는 항목과 이용 목적">
+      <Section title="1. What we collect and why">
         <Table
-          head={["항목", "이용 목적", "수집 시점"]}
+          head={["Item", "Purpose", "Collected"]}
           rows={[
-            ["휴대폰 번호", "가입, 로그인, 본인 확인, 중복 보상 방지", "가입"],
-            ["비밀번호", "로그인 (되돌릴 수 없는 방식으로 암호화해 보관)", "가입"],
-            ["닉네임, 성별, 출생연도", "프로필 표시, 연령 확인", "가입"],
-            ["위치(위도, 경도)", "가까운 회원 목록 제공", "앱 사용 중"],
-            ["프로필 사진, 비밀 사진", "프로필 표시", "프로필 등록"],
-            ["자기소개, 코멘트", "프로필 표시", "프로필 등록"],
-            ["피드 사진", "피드 게시", "게시물 작성"],
-            ["대화 내용", "쪽지와 채팅 전달", "대화 중"],
-            ["신고 내용", "이용자 보호, 제재 판단", "신고 시"],
-            ["접속 IP", "부정 이용 방지, 발송 제한", "앱 사용 중"],
-            ["기기 토큰", "알림 발송", "알림 허용"],
-            ["광고 식별자", "광고 표시", "광고 추적 허용"],
             [
-              "앱 사용 기록(화면 이동, 기기 정보)",
-              "이용 통계 분석, 오류 진단, 서비스 개선",
-              "앱 사용 중",
+              "Mobile phone number",
+              "Sign-up, login, identity check, preventing duplicate rewards",
+              "At sign-up",
+            ],
+            [
+              "Password",
+              "Login (stored encrypted in a form that cannot be reversed)",
+              "At sign-up",
+            ],
+            [
+              "Nickname, gender, birth year",
+              "Profile display, age verification",
+              "At sign-up",
+            ],
+            [
+              "Location (latitude, longitude)",
+              "Providing the list of members near you",
+              "While using the app",
+            ],
+            [
+              "Profile photos, private photos",
+              "Profile display",
+              "When you add photos",
+            ],
+            [
+              "Bio, comment",
+              "Profile display",
+              "When you fill in your profile",
+            ],
+            ["Feed photos", "Publishing to the feed", "When you post"],
+            ["Conversations", "Delivering notes and chat", "While chatting"],
+            [
+              "Report details",
+              "Protecting users, deciding on action",
+              "When you report",
+            ],
+            [
+              "IP address",
+              "Preventing misuse, limiting how often messages are sent",
+              "While using the app",
+            ],
+            [
+              "Device token",
+              "Sending notifications",
+              "When you allow notifications",
+            ],
+            ["Advertising ID", "Showing ads", "When you allow ad tracking"],
+            [
+              "App usage (screens visited, device details)",
+              "Usage analytics, diagnosing errors, improving the Service",
+              "While using the app",
             ],
           ]}
         />
         <p>
-          이용자가 직접 입력하지 않아도 서비스 이용 과정에서 접속 IP, 기기 토큰,
-          앱 사용 기록이 자동으로 모일 수 있습니다.
+          Even where you do not enter it yourself, your IP address, device
+          token, and app usage may be collected automatically as you use the
+          Service.
         </p>
       </Section>
 
-      <Section title="2. 보유 기간">
+      <Section title="2. How long we keep it">
         <ul>
           <li>
-            회원 정보는 탈퇴할 때까지 보관하며, 탈퇴하면 좋아요, 즐겨찾기, 차단,
-            피드 게시물과 피드 좋아요, 비밀 사진 열람 권한, 프로필 조회 기록,
-            포인트 내역, 기기 토큰을 곧바로 지웁니다.
+            Account information is kept until you delete your account. At that
+            point we immediately erase likes, favorites, blocks, feed posts and
+            feed likes, private photo access, profile view history, point
+            history, and device tokens.
           </li>
           <li>
-            탈퇴한 계정 정보는 부정 이용을 막기 위해 90일 동안 보관한 뒤 완전히
-            지웁니다.
+            Information from a deleted account is kept for 90 days to prevent
+            misuse, then erased completely.
           </li>
           <li>
-            나간 대화방의 대화 내용은 상대에게도 보이지 않게 된 뒤 90일 동안
-            보관하며, 그 뒤 사진까지 완전히 지웁니다. 탈퇴할 때도 같습니다.
+            Conversations in a chat you have left are kept for 90 days after
+            they stop being visible to the other person, and are then erased
+            completely along with any photos. The same applies when you delete
+            your account.
           </li>
           <li>
-            삭제한 피드 게시물과 사진은 90일 뒤 저장소에서 완전히 지웁니다.
+            Deleted feed posts and photos are erased completely from storage
+            after 90 days.
           </li>
-          <li>신고 내용은 접수한 날부터 90일 동안 보관한 뒤 지웁니다.</li>
           <li>
-            이용 정지 기록은 반복되는 위반을 판단하기 위해 정지가 끝난 뒤 1년
-            동안 보관합니다.
+            Reports are kept for 90 days from the date they are received, then
+            erased.
           </li>
-          <li>접속 기록(IP 주소, 기기 정보)은 90일 동안 보관한 뒤 지웁니다.</li>
-          <li>법령에서 보관하도록 정한 정보는 그 기간 동안 따로 보관합니다.</li>
+          <li>
+            Records of suspensions are kept for 1 year after the suspension ends
+            so that repeated violations can be assessed.
+          </li>
+          <li>
+            Access records (IP address, device details) are kept for 90 days,
+            then erased.
+          </li>
+          <li>
+            Where the law requires information to be retained, we keep it for
+            that period.
+          </li>
         </ul>
       </Section>
 
-      <Section title="3. 처리 위탁">
+      <Section title="3. Processing entrusted to others">
         <p>
-          서비스 운영에 필요한 범위에서 아래 업체에 개인정보 처리를 맡기고
-          있습니다.
+          We entrust the processing of personal information to the following
+          providers, to the extent needed to operate the Service.
         </p>
         <Table
-          head={["위탁받는 곳", "맡기는 일", "전달하는 정보"]}
+          head={["Provider", "What they handle", "What they receive"]}
           rows={[
             [
               "Amazon Web Services",
-              "서버와 데이터베이스 운영",
-              "수집한 정보 전체",
+              "Running servers and the database",
+              "All collected information",
             ],
-            ["Cloudflare", "사진 저장, 트래픽 처리", "사진"],
-            ["솔라피", "인증번호 문자 발송", "휴대폰 번호"],
-            ["OpenAI", "자기소개와 코멘트 검수", "자기소개, 코멘트"],
+            ["Cloudflare", "Photo storage, traffic handling", "Photos"],
+            [
+              "Solapi",
+              "Sending verification codes by SMS",
+              "Mobile phone number",
+            ],
+            ["OpenAI", "Screening bios and comments", "Bio, comment"],
             [
               "Discord",
-              "신고와 검수 결과를 운영자에게 전달",
-              "닉네임, 회원 번호, 신고된 대화 내용",
+              "Passing reports and screening results to operators",
+              "Nickname, member ID, reported conversation content",
             ],
-            ["Expo", "알림 발송", "기기 토큰"],
+            ["Expo", "Sending notifications", "Device token"],
             [
               "Google",
-              "광고 표시, 이용 통계 분석",
-              "광고 식별자, 앱 사용 기록",
+              "Showing ads, usage analytics",
+              "Advertising ID, app usage",
             ],
           ]}
         />
         <p>
-          Amazon Web Services와 Cloudflare는 국내 지역에 정보를 보관하며, 그 외
-          업체는 서비스 제공에 필요한 범위에서 국외로 정보가 전송될 수 있습니다.
+          Amazon Web Services and Cloudflare store information in a domestic
+          region. For other providers, information may be transferred overseas
+          to the extent needed to provide the Service.
         </p>
       </Section>
 
-      <Section title="4. 제3자 제공">
+      <Section title="4. Sharing with third parties">
         <p>
-          서비스는 이용자의 개인정보를 제3자에게 팔거나 넘기지 않습니다. 다만
-          법령에 따라 수사기관이 적법한 절차로 요청하는 경우에는 제공할 수
-          있습니다.
+          We do not sell or hand over your personal information to third
+          parties. We may provide it where investigative authorities request it
+          through a lawful process under applicable law.
         </p>
       </Section>
 
-      <Section title="5. 이용자의 권리">
+      <Section title="5. Your rights">
         <p>
-          이용자는 언제든지 자신의 개인정보를 보고, 고치고, 지우고, 처리를
-          멈추게 할 수 있습니다. 앱의 설정에서 프로필을 수정하거나 탈퇴할 수
-          있으며, 아래 연락처로 요청하셔도 됩니다.
+          You may view, correct, delete, or stop the processing of your personal
+          information at any time. You can edit your profile or delete your
+          account from the app settings, or make a request at the contact below.
         </p>
       </Section>
 
-      <Section title="6. 파기 절차">
+      <Section title="6. How we erase information">
         <p>
-          보유 기간이 끝나거나 처리 목적을 이룬 정보는 지체 없이 파기합니다.
-          전자 파일은 복구할 수 없는 방법으로 지우고, 종이 문서는 분쇄하거나
-          소각합니다.
+          Information is destroyed without delay once the retention period ends
+          or the purpose of processing has been met. Electronic files are
+          deleted in a way that cannot be recovered, and paper documents are
+          shredded or incinerated.
         </p>
       </Section>
 
-      <Section title="7. 안전성 확보 조치">
+      <Section title="7. How we keep information safe">
         <ul>
-          <li>비밀번호는 되돌릴 수 없는 방식으로 암호화해 보관합니다.</li>
-          <li>통신 구간은 암호화해 주고받습니다.</li>
           <li>
-            개인정보를 다루는 사람을 최소한으로 두고 접근 권한을 관리합니다.
+            Passwords are stored encrypted in a form that cannot be reversed.
           </li>
-          <li>자기소개와 코멘트는 자동으로 검수해 부적절한 내용을 가립니다.</li>
+          <li>Traffic is encrypted in transit.</li>
+          <li>
+            We keep the number of people who handle personal information to a
+            minimum and manage their access rights.
+          </li>
+          <li>
+            Bios and comments are screened automatically so that inappropriate
+            content is hidden.
+          </li>
         </ul>
       </Section>
 
-      <Section title="8. 아동과 청소년 보호">
+      <Section title="8. Protection of children and young people">
         <p>
-          서비스는 19세 미만은 가입할 수 없습니다. 가입할 때 출생연도를 받아
-          연령을 확인하며, 미성년자가 가입한 사실을 알게 되면 계정과 그 계정의
-          정보를 지웁니다.
+          People under 19 cannot sign up for the Service. We collect your birth
+          year at sign-up to verify age, and if we learn that a minor has signed
+          up, we delete the account and its information.
         </p>
         <p>
-          아동과 청소년을 성적으로 착취하거나 학대한 정황이 확인되면 관련 자료를
-          보전해 청소년성보호법을 비롯한 관계 법령에 따라 수사기관에 신고하며,
-          그 자료는 법령이 정한 기간 동안 보관합니다.
+          Where we confirm signs of sexual exploitation or abuse of children and
+          young people, we preserve the related material and report it to
+          investigative authorities under the Act on the Protection of Children
+          and Youth Against Sex Offenses and other applicable law, and retain
+          that material for the period the law requires.
         </p>
       </Section>
 
-      <Section title="9. 개인정보 보호책임자">
+      <Section title="9. Data protection officer">
         <Table
-          head={["구분", "내용"]}
+          head={["Item", "Detail"]}
           rows={[
-            ["책임자", "김수환"],
+            ["Officer", "Suhwan Kim"],
             [
-              "문의",
+              "Contact",
               <a
                 key="email"
                 href="mailto:hello@jipkok.app"
@@ -176,34 +240,107 @@ export default function Privacy() {
         />
       </Section>
 
-      <Section title="10. 권익 침해 구제 방법">
+      <Section title="10. Where to seek help">
         <p>
-          개인정보와 관련해 도움이 필요하시면 아래 기관에 문의하실 수 있습니다.
+          If you need help with anything relating to personal information, you
+          can contact the following bodies.
         </p>
         <ul>
-          <li>개인정보 침해신고센터 (<a href="https://privacy.kisa.or.kr" className="underline underline-offset-4">privacy.kisa.or.kr</a>, 국번 없이 118)</li>
-          <li>개인정보 분쟁조정위원회 (<a href="https://kopico.go.kr" className="underline underline-offset-4">kopico.go.kr</a>, 1833-6972)</li>
-          <li>대검찰청 사이버수사과 (<a href="https://spo.go.kr" className="underline underline-offset-4">spo.go.kr</a>, 국번 없이 1301)</li>
-          <li>경찰청 사이버수사국 (<a href="https://ecrm.police.go.kr" className="underline underline-offset-4">ecrm.police.go.kr</a>, 국번 없이 182)</li>
+          <li>
+            Privacy Infringement Report Center (
+            <a
+              href="https://privacy.kisa.or.kr"
+              className="underline underline-offset-4"
+            >
+              privacy.kisa.or.kr
+            </a>
+            , 118)
+          </li>
+          <li>
+            Personal Information Dispute Mediation Committee (
+            <a
+              href="https://kopico.go.kr"
+              className="underline underline-offset-4"
+            >
+              kopico.go.kr
+            </a>
+            , 1833-6972)
+          </li>
+          <li>
+            Supreme Prosecutors&rsquo; Office Cyber Investigation Division (
+            <a
+              href="https://spo.go.kr"
+              className="underline underline-offset-4"
+            >
+              spo.go.kr
+            </a>
+            , 1301)
+          </li>
+          <li>
+            National Police Agency Cyber Bureau (
+            <a
+              href="https://ecrm.police.go.kr"
+              className="underline underline-offset-4"
+            >
+              ecrm.police.go.kr
+            </a>
+            , 182)
+          </li>
         </ul>
         <p>
-          아동과 청소년 관련 피해나 디지털 성범죄는 아래 기관에서 상담과 삭제
-          지원을 받으실 수 있습니다.
+          For harm involving children and young people, or digital sex crimes,
+          the following bodies offer counselling and help with removal.
         </p>
         <ul>
-          <li>디지털성범죄피해자지원센터 (<a href="https://d4u.stop.or.kr" className="underline underline-offset-4">d4u.stop.or.kr</a>, 02-735-8994)</li>
-          <li>여성긴급전화 (<a href="https://women1366.kr" className="underline underline-offset-4">women1366.kr</a>, 국번 없이 1366)</li>
-          <li>청소년상담전화 (<a href="https://1388.go.kr" className="underline underline-offset-4">1388.go.kr</a>, 국번 없이 1388)</li>
           <li>
-            불법, 유해정보 신고 (방송통신심의위원회 <a href="https://kocsc.or.kr" className="underline underline-offset-4">kocsc.or.kr</a>, 국번 없이 1377)
+            Digital Sex Crime Victim Support Center (
+            <a
+              href="https://d4u.stop.or.kr"
+              className="underline underline-offset-4"
+            >
+              d4u.stop.or.kr
+            </a>
+            , 02-735-8994)
+          </li>
+          <li>
+            Women&rsquo;s Emergency Hotline (
+            <a
+              href="https://women1366.kr"
+              className="underline underline-offset-4"
+            >
+              women1366.kr
+            </a>
+            , 1366)
+          </li>
+          <li>
+            Youth Counselling Hotline (
+            <a
+              href="https://1388.go.kr"
+              className="underline underline-offset-4"
+            >
+              1388.go.kr
+            </a>
+            , 1388)
+          </li>
+          <li>
+            Reporting illegal or harmful information (Korea Communications
+            Standards Commission,{" "}
+            <a
+              href="https://kocsc.or.kr"
+              className="underline underline-offset-4"
+            >
+              kocsc.or.kr
+            </a>
+            , 1377)
           </li>
         </ul>
       </Section>
 
-      <Section title="11. 방침 변경">
+      <Section title="11. Changes to this policy">
         <p>
-          이 방침을 고칠 때는 시행일 7일 전부터 서비스 안에서 알려드립니다.
-          이용자에게 중요한 영향을 주는 변경은 30일 전에 알려드립니다.
+          When we change this policy, we announce it in the Service from 7 days
+          before the effective date. Changes that materially affect users are
+          announced 30 days in advance.
         </p>
       </Section>
     </LegalPage>

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const CONTACT_EMAIL = "hello@jipkok.app";
 
-const STORES = ["App Store 준비 중", "Google Play 준비 중"];
+const STORES = ["Coming to the App Store", "Coming to Google Play"];
 
 export default function Home() {
   return (
@@ -18,18 +18,18 @@ export default function Home() {
             className="size-14"
           />
           <h1 className="text-3xl font-bold tracking-tight text-accent">
-            집콕
+            Jipkok
           </h1>
           <p className="text-base leading-7 font-medium">
-            가까운 이웃의 프로필을 구경하고
+            Browse the people nearby and
             <br />
-            쪽지 한 통으로 가볍게 말을 걸어 보세요.
+            say hello with a single note.
           </p>
         </div>
 
         <Image
           src="/mock.png"
-          alt="집콕 앱 화면"
+          alt="The Jipkok app"
           width={659}
           height={1300}
           priority
@@ -56,11 +56,11 @@ export default function Home() {
           <span>© 2026 JIPKOK</span>
           <span aria-hidden="true">|</span>
           <Link href="/privacy" className="hover:underline">
-            개인정보 처리방침
+            Privacy Policy
           </Link>
           <span aria-hidden="true">|</span>
           <Link href="/terms" className="hover:underline">
-            서비스 이용약관
+            Terms of Service
           </Link>
         </p>
       </footer>
