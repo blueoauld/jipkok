@@ -130,7 +130,7 @@ class MemberHeartbeatServiceTest {
 
         private const val IP_ADDRESS = "203.0.113.7"
         private const val APP_VERSION = "1.8.2"
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val MEMBER_ID = 0L
         private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")

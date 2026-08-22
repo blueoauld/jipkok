@@ -31,5 +31,7 @@ export function formatCount(value: number) {
 }
 
 export function formatPhoneNumber(value: string) {
-  return value.replace(/^(\d{3})(\d{4})(\d{4})$/, "$1-$2-$3");
+  return value
+    .replace(/^\+82/, "0")
+    .replace(/^(\d{3})(\d{4})(\d{4})$/, "$1-$2-$3");
 }

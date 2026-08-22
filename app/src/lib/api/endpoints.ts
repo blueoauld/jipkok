@@ -1,4 +1,5 @@
 import { DEVICE_NAME, DEVICE_PLATFORM } from "@/lib/device";
+import { toE164 } from "@/lib/phone";
 
 import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
@@ -96,21 +97,21 @@ export const auth = {
   sendVerificationCode: (phoneNumber: string, purpose: VerificationPurpose) =>
     request<void>("/api/auth/verification-codes", {
       method: "POST",
-      body: { phoneNumber, purpose },
+      body: { phoneNumber: toE164(phoneNumber), purpose },
       auth: false,
     }),
 
   resetPassword: (body: ResetPasswordRequest) =>
     request<void>("/api/auth/password", {
       method: "POST",
-      body,
+      body: { ...body, phoneNumber: toE164(body.phoneNumber) },
       auth: false,
     }),
 
   login: async (body: LoginRequest) => {
     const tokens = await request<TokenResponse>("/api/auth/login", {
       method: "POST",
-      body,
+      body: { ...body, phoneNumber: toE164(body.phoneNumber) },
       auth: false,
     });
     await saveTokens(tokens);
@@ -138,7 +139,7 @@ export const members = {
   signup: async (body: SignupRequest) => {
     const response = await request<TokenResponse>("/api/members", {
       method: "POST",
-      body,
+      body: { ...body, phoneNumber: toE164(body.phoneNumber) },
       auth: false,
     });
     await saveTokens(response);

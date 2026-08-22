@@ -102,7 +102,7 @@ class AdminSuspensionServiceTest {
     }
 
     private fun suspension(expiresAt: Instant?) = MemberSuspension(
-        phoneNumber = "01011112222",
+        phoneNumber = "+821011112222",
         memberId = MEMBER_ID,
         nickname = "밤산책",
         type = SuspensionType.SERVICE,

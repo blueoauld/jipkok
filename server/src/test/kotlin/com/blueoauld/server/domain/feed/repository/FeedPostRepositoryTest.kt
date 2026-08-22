@@ -59,9 +59,9 @@ class FeedPostRepositoryTest {
 
     @BeforeEach
     fun setUp() {
-        meId = save(member("01088880000", Gender.MALE)).id
-        maleId = save(member("01088880001", Gender.MALE)).id
-        femaleId = save(member("01088880002", Gender.FEMALE)).id
+        meId = save(member("+821088880000", Gender.MALE)).id
+        maleId = save(member("+821088880001", Gender.MALE)).id
+        femaleId = save(member("+821088880002", Gender.FEMALE)).id
 
         savePost(maleId, slot(9).minusSeconds(DAY_SECONDS))
         morningPostId = savePost(maleId, slot(9)).id

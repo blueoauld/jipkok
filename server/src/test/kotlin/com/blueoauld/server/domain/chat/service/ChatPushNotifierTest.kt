@@ -149,7 +149,7 @@ class ChatPushNotifierTest {
     )
 
     private fun sender() = Member(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         password = "encoded-password",
         gender = Gender.MALE,
         nickname = "보낸이",

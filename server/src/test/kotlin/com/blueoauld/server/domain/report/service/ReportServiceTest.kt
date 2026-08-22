@@ -144,7 +144,7 @@ class ReportServiceTest {
             .contains("\"nickname\":\"신고자\"")
             .contains("\"nickname\":\"피신고자\"")
             .contains("\"birthYear\":1998")
-            .contains("\"phoneNumber\":\"01012345672\"")
+            .contains("\"phoneNumber\":\"+821012345672\"")
     }
 
     @Test
@@ -324,7 +324,7 @@ class ReportServiceTest {
     private fun member(id: Long, nickname: String) = mockk<Member>(relaxed = true) {
         every { this@mockk.id } returns id
         every { this@mockk.nickname } returns nickname
-        every { phoneNumber } returns "0101234567$id"
+        every { phoneNumber } returns "+82101234567$id"
         every { gender } returns Gender.MALE
         every { birthYear } returns 1998
     }

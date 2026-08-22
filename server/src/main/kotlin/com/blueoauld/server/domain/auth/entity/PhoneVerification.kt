@@ -62,7 +62,7 @@ class PhoneVerification(
 
     companion object {
 
-        const val PHONE_NUMBER_LENGTH = 11
+        const val PHONE_NUMBER_LENGTH = 16
         const val CODE_LENGTH = 6
         const val IP_ADDRESS_LENGTH = 45
         const val PURPOSE_LENGTH = 20

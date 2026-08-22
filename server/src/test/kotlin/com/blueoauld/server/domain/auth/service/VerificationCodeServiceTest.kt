@@ -287,7 +287,7 @@ class VerificationCodeServiceTest {
 
     companion object {
 
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val CODE = "123456"
         private const val IP_ADDRESS = "127.0.0.1"
         private val NOW: Instant = Instant.parse("2026-07-31T00:00:00Z")

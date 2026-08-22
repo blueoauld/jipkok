@@ -86,7 +86,7 @@ class AccessRewardServiceTest {
 
     companion object {
 
-        private const val PHONE_NUMBER = "01011112222"
+        private const val PHONE_NUMBER = "+821011112222"
         private const val DEVICE_NAME = "iPhone 15 Pro"
         private const val IP_ADDRESS = "203.0.113.7"
 

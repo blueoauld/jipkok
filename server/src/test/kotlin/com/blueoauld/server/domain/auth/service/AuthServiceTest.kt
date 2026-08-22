@@ -277,7 +277,7 @@ class AuthServiceTest {
     companion object {
 
         private const val IP_ADDRESS = "203.0.113.7"
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val PASSWORD = "password1234"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val ACCESS_TOKEN = "access-token"

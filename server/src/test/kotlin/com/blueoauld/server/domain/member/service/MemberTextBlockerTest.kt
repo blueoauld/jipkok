@@ -54,7 +54,7 @@ class MemberTextBlockerTest {
     }
 
     private fun member() = Member(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         password = "encoded-password",
         gender = Gender.MALE,
         nickname = "닉네임",

@@ -107,7 +107,7 @@ class AdminReportServiceTest {
 
         // then
         assertThat(response.reported.age).isEqualTo(28)
-        assertThat(response.reported.phoneNumber).isEqualTo("01011112222")
+        assertThat(response.reported.phoneNumber).isEqualTo("+821011112222")
         assertThat(response.messages).hasSize(2)
         assertThat(response.messages[0].photoUrl).isNull()
         assertThat(response.messages[1].photoUrl).isEqualTo("https://photo/70001")
@@ -129,7 +129,7 @@ class AdminReportServiceTest {
     private fun report() = Report(
         reporterId = REPORTER_ID,
         reportedMemberId = REPORTED_MEMBER_ID,
-        reportedPhoneNumber = "01011112222",
+        reportedPhoneNumber = "+821011112222",
         type = ReportType.CHAT,
         reason = ReportReason.ABUSE,
     )
@@ -144,7 +144,7 @@ class AdminReportServiceTest {
             reporter = ReporterSnapshot(REPORTER_ID, "밤산책"),
             reported = ReportedMemberSnapshot(
                 memberId = REPORTED_MEMBER_ID,
-                phoneNumber = "01011112222",
+                phoneNumber = "+821011112222",
                 nickname = "구름빵",
                 gender = Gender.FEMALE,
                 birthYear = 1998,

@@ -23,7 +23,7 @@ class AccessLogServiceTest {
     fun `한국 날짜 기준으로 접속 기록을 남긴다`() {
         // given
         val member = Member(
-            phoneNumber = "01012345678",
+            phoneNumber = "+821012345678",
             password = "encoded",
             gender = Gender.MALE,
             nickname = "회원",
@@ -37,7 +37,7 @@ class AccessLogServiceTest {
         verify {
             accessLogRepository.upsert(
                 memberId = member.id,
-                phoneNumber = "01012345678",
+                phoneNumber = "+821012345678",
                 platform = "IOS",
                 deviceName = "iPhone",
                 ipAddress = "1.2.3.4",

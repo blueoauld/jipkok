@@ -200,7 +200,7 @@ class MemberDetailServiceTest {
     }
 
     private fun member(latitude: Double?, longitude: Double?, nickname: String = "나") = Member(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         password = "encoded-password",
         gender = Gender.MALE,
         nickname = nickname,

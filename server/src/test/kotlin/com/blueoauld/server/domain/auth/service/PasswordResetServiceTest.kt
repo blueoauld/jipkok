@@ -140,7 +140,7 @@ class PasswordResetServiceTest {
 
     companion object {
 
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val VERIFICATION_CODE = "123456"
         private const val NEW_PASSWORD = "newpassword1"
         private const val OLD_ENCODED_PASSWORD = "encoded-old"

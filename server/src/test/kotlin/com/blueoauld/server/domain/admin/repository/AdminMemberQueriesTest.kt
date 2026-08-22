@@ -41,14 +41,14 @@ class AdminMemberQueriesTest {
 
     @BeforeEach
     fun setUp() {
-        normalId = saveMember("01011112222", "밤산책", Gender.MALE).id
-        suspendedId = saveMember("01033334444", "구름빵", Gender.FEMALE).id
-        val withdrawn = saveMember("01055556666", "초록불", Gender.MALE)
+        normalId = saveMember("+821011112222", "밤산책", Gender.MALE).id
+        suspendedId = saveMember("+821033334444", "구름빵", Gender.FEMALE).id
+        val withdrawn = saveMember("+821055556666", "초록불", Gender.MALE)
         withdrawnId = withdrawn.id
 
         memberSuspensionRepository.saveAndFlush(
             MemberSuspension(
-                phoneNumber = "01033334444",
+                phoneNumber = "+821033334444",
                 memberId = suspendedId,
                 nickname = "구름빵",
                 type = SuspensionType.SERVICE,
@@ -112,10 +112,10 @@ class AdminMemberQueriesTest {
     @Test
     fun `재가입 회원은 이전 계정의 정지가 살아 있으면 정지로 판정한다`() {
         // given
-        val rejoined = saveMember("01033334445", "구름빵둘", Gender.FEMALE)
+        val rejoined = saveMember("+821033334445", "구름빵둘", Gender.FEMALE)
         memberSuspensionRepository.saveAndFlush(
             MemberSuspension(
-                phoneNumber = "01033334445",
+                phoneNumber = "+821033334445",
                 memberId = rejoined.id - 1,
                 nickname = "구름빵",
                 type = SuspensionType.SERVICE,

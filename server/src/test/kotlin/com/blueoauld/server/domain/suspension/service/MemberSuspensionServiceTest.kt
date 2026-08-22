@@ -296,7 +296,7 @@ class MemberSuspensionServiceTest {
 
         private const val MEMBER_ID = 1L
         private const val OTHER_MEMBER_ID = 2L
-        private const val PHONE_NUMBER = "01011112222"
+        private const val PHONE_NUMBER = "+821011112222"
 
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:00Z")
     }

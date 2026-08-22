@@ -38,7 +38,7 @@ class MemberListServiceTest {
     )
 
     private val me = Member(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         password = "encoded",
         gender = Gender.MALE,
         nickname = "나",

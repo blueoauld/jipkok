@@ -251,7 +251,7 @@ class AdminDashboardServiceTest {
     )
 
     private fun suspension() = MemberSuspension(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         memberId = 2877,
         nickname = "구름빵",
         type = SuspensionType.SERVICE,

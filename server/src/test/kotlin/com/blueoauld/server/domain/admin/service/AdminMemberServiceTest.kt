@@ -128,7 +128,7 @@ class AdminMemberServiceTest {
         every { memberAdminRepository.findRowById(MEMBER_ID) } returns row()
         every { memberAdminService.findPhotoUrls(MEMBER_ID, PhotoVisibility.PUBLIC) } returns listOf("public-1")
         every { memberAdminService.findPhotoUrls(MEMBER_ID, PhotoVisibility.SECRET) } returns listOf("secret-1")
-        every { memberSuspensionRepository.findByPhoneNumberOrderByIdDesc("01011112222") } returns listOf(
+        every { memberSuspensionRepository.findByPhoneNumberOrderByIdDesc("+821011112222") } returns listOf(
             suspension(expiresAt = NOW.plusSeconds(3600)),
             suspension(expiresAt = NOW.minusSeconds(3600)),
             suspension(expiresAt = null, releasedAt = NOW.minusSeconds(60)),
@@ -183,7 +183,7 @@ class AdminMemberServiceTest {
     private fun row() = object : AdminMemberRow {
         override val id = MEMBER_ID
         override val nickname = "밤산책"
-        override val phoneNumber = "01011112222"
+        override val phoneNumber = "+821011112222"
         override val gender = "MALE"
         override val birthYear = 1998
         override val comment = null
@@ -200,7 +200,7 @@ class AdminMemberServiceTest {
 
     private fun suspension(expiresAt: Instant?, releasedAt: Instant? = null): MemberSuspension {
         val suspension = MemberSuspension(
-            phoneNumber = "01011112222",
+            phoneNumber = "+821011112222",
             memberId = MEMBER_ID,
             nickname = "밤산책",
             type = SuspensionType.SERVICE,

@@ -89,7 +89,7 @@ class MemberSummaryServiceTest {
     }
 
     private fun member(id: Long, birthYear: Int) = Member(
-        phoneNumber = "0101234${id.toString().padStart(4, '0')}",
+        phoneNumber = "+82101234${id.toString().padStart(4, '0')}",
         password = "encoded",
         gender = Gender.MALE,
         nickname = "회원$id",

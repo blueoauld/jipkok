@@ -24,11 +24,11 @@ class AdminReportQueriesTest {
 
     @BeforeEach
     fun setUp() {
-        saveReport(reportedMemberId = 1, phoneNumber = "01011112222", reason = ReportReason.ABUSE)
-        saveReport(reportedMemberId = 1, phoneNumber = "01011112222", reason = ReportReason.ETC, handled = true)
+        saveReport(reportedMemberId = 1, phoneNumber = "+821011112222", reason = ReportReason.ABUSE)
+        saveReport(reportedMemberId = 1, phoneNumber = "+821011112222", reason = ReportReason.ETC, handled = true)
         saveReport(
             reportedMemberId = 2,
-            phoneNumber = "01033334444",
+            phoneNumber = "+821033334444",
             reason = ReportReason.ABUSE,
             type = ReportType.CHAT,
         )
@@ -68,12 +68,12 @@ class AdminReportQueriesTest {
 
         // when
         val byMember = reportRepository.findAllForAdmin(null, null, null, 1, null, 20, 0)
-        val byPhone = reportRepository.findAllForAdmin(null, null, null, null, "01011112222", 20, 0)
+        val byPhone = reportRepository.findAllForAdmin(null, null, null, null, "+821011112222", 20, 0)
 
         // then
         assertThat(byMember).hasSize(2)
         assertThat(byPhone).hasSize(2)
-        assertThat(reportRepository.countForAdmin(null, null, null, null, "01011112222")).isEqualTo(2)
+        assertThat(reportRepository.countForAdmin(null, null, null, null, "+821011112222")).isEqualTo(2)
     }
 
     @Test

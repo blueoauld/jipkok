@@ -83,7 +83,7 @@ class MemberWithdrawServiceTest {
     )
 
     private val member = Member(
-        phoneNumber = "01011112222",
+        phoneNumber = "+821011112222",
         password = "encoded-password",
         gender = Gender.MALE,
         nickname = "홍길동",

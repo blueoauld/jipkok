@@ -59,7 +59,7 @@ class Report(
     companion object {
 
         const val DETAIL_MAX_LENGTH = 1000
-        const val PHONE_NUMBER_LENGTH = 11
+        const val PHONE_NUMBER_LENGTH = 16
         const val PHOTO_MAX_COUNT = 6
     }
 }

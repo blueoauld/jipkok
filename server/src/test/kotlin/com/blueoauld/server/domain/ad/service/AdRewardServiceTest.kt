@@ -171,7 +171,7 @@ class AdRewardServiceTest {
     companion object {
 
         private const val MEMBER_ID = 1L
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val TRANSACTION_ID = "transaction-id"
         private const val KEY_ID = "3335741209"
         private const val SIGNATURE = "signature"

@@ -210,7 +210,7 @@ class ChatNoteServiceTest {
     }
 
     private fun member(noteReceiveEnabled: Boolean = true) = Member(
-        phoneNumber = "01012345678",
+        phoneNumber = "+821012345678",
         password = "encoded-password",
         gender = Gender.FEMALE,
         nickname = "상대",

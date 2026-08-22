@@ -122,7 +122,7 @@ class AttendanceServiceTest {
     companion object {
 
         private const val MEMBER_ID = 1L
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val POINT_BALANCE = 200
 
         private val NOW: Instant = Instant.parse("2026-08-01T16:00:00Z")

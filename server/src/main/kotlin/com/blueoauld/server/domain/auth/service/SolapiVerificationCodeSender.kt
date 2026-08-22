@@ -23,7 +23,7 @@ class SolapiVerificationCodeSender(
     override fun send(phoneNumber: String, code: String) {
         val message = Message().apply {
             from = properties.senderNumber
-            to = phoneNumber
+            to = toDomestic(phoneNumber)
             text = "$MESSAGE_PREFIX $code"
         }
 
@@ -35,8 +35,11 @@ class SolapiVerificationCodeSender(
         }
     }
 
+    private fun toDomestic(phoneNumber: String) = "0" + phoneNumber.removePrefix(KOREA_DIAL_CODE)
+
     companion object {
 
         private const val MESSAGE_PREFIX = "[집콕] 인증번호"
+        private const val KOREA_DIAL_CODE = "+82"
     }
 }

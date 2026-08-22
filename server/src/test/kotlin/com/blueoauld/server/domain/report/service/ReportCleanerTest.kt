@@ -102,7 +102,7 @@ class ReportCleanerTest {
         reporter = ReporterSnapshot(1L, "신고자"),
         reported = ReportedMemberSnapshot(
             2L,
-            "01012345678",
+            "+821012345678",
             "피신고자",
             Gender.MALE,
             1998,

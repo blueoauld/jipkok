@@ -72,7 +72,7 @@ class MemberSuspensionRepositoryTest {
     @Test
     fun `다른 번호의 정지는 세지 않는다`() {
         // given
-        save(expiresAt = null, phoneNumber = "01099998888")
+        save(expiresAt = null, phoneNumber = "+821099998888")
 
         // when
         val exists = existsActive(SuspensionType.SERVICE)
@@ -110,7 +110,7 @@ class MemberSuspensionRepositoryTest {
     companion object {
 
         private const val MEMBER_ID = 1L
-        private const val PHONE_NUMBER = "01011112222"
+        private const val PHONE_NUMBER = "+821011112222"
 
         private val NOW: Instant = Instant.parse("2026-08-21T00:00:00Z")
     }

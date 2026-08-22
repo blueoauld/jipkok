@@ -33,7 +33,7 @@ class GlobalExceptionHandlerTest {
         val result = mockMvc.perform(
             post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"phoneNumber":"01011112222"}"""),
+                .content("""{"phoneNumber":"+821011112222"}"""),
         )
 
         // then

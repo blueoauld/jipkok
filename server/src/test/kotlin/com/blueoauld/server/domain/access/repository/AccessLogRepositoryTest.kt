@@ -48,7 +48,7 @@ class AccessLogRepositoryTest {
     private fun upsert(appVersion: String?, now: Instant) {
         accessLogRepository.upsert(
             memberId = MEMBER_ID,
-            phoneNumber = "01011112222",
+            phoneNumber = "+821011112222",
             platform = "IOS",
             deviceName = null,
             ipAddress = "127.0.0.1",

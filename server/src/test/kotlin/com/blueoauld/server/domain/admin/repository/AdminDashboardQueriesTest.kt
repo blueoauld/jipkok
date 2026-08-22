@@ -49,8 +49,8 @@ class AdminDashboardQueriesTest {
     @Test
     fun `일별 가입 수는 한국 시간 날짜로 묶는다`() {
         // given
-        val memberId = saveMember("01088880001").id
-        val boundaryId = saveMember("01088880002").id
+        val memberId = saveMember("+821088880001").id
+        val boundaryId = saveMember("+821088880002").id
         setCreatedAt("member", memberId, Instant.parse("2026-08-19T10:00:00Z"))
         setCreatedAt("member", boundaryId, Instant.parse("2026-08-19T15:30:00Z"))
 
@@ -66,8 +66,8 @@ class AdminDashboardQueriesTest {
     @Test
     fun `신규 가입 수는 시작 시각부터 센다`() {
         // given
-        val beforeId = saveMember("01088880011").id
-        val afterId = saveMember("01088880012").id
+        val beforeId = saveMember("+821088880011").id
+        val afterId = saveMember("+821088880012").id
         setCreatedAt("member", beforeId, Instant.parse("2026-08-18T23:59:59Z"))
         setCreatedAt("member", afterId, Instant.parse("2026-08-19T00:00:00Z"))
 
@@ -81,7 +81,7 @@ class AdminDashboardQueriesTest {
     @Test
     fun `탈퇴 집계는 탈퇴 시각을 기준으로 센다`() {
         // given
-        val member = saveMember("01088880003")
+        val member = saveMember("+821088880003")
         memberRepository.delete(member)
         entityManager.flush()
 
@@ -97,9 +97,9 @@ class AdminDashboardQueriesTest {
     @Test
     fun `회원 구성은 탈퇴 회원을 빼고 성별과 출생연도로 묶는다`() {
         // given
-        saveMember("01088880004", Gender.MALE, 1998)
-        saveMember("01088880005", Gender.FEMALE, 1998)
-        val withdrawn = saveMember("01088880006", Gender.MALE, 1998)
+        saveMember("+821088880004", Gender.MALE, 1998)
+        saveMember("+821088880005", Gender.FEMALE, 1998)
+        val withdrawn = saveMember("+821088880006", Gender.MALE, 1998)
         memberRepository.delete(withdrawn)
         entityManager.flush()
 
@@ -115,7 +115,7 @@ class AdminDashboardQueriesTest {
     @Test
     fun `닉네임 조회는 탈퇴 회원도 준다`() {
         // given
-        val member = saveMember("01088880007")
+        val member = saveMember("+821088880007")
         memberRepository.delete(member)
         entityManager.flush()
 
@@ -153,7 +153,7 @@ class AdminDashboardQueriesTest {
         val now = Instant.parse("2026-08-20T00:00:00Z")
         saveSuspension(memberId = 1, expiresAt = now.plusSeconds(3600))
         saveSuspension(memberId = 1, expiresAt = null)
-        saveSuspension(memberId = 11, phoneNumber = "01088881", expiresAt = null)
+        saveSuspension(memberId = 11, phoneNumber = "+821088881", expiresAt = null)
         saveSuspension(memberId = 2, expiresAt = now.minusSeconds(3600))
         val released = saveSuspension(memberId = 3, expiresAt = null)
         released.releasedAt = now.minusSeconds(60)
@@ -204,7 +204,7 @@ class AdminDashboardQueriesTest {
     private fun saveSuspension(
         memberId: Long,
         expiresAt: Instant?,
-        phoneNumber: String = "0108888$memberId",
+        phoneNumber: String = "+82108888$memberId",
     ) = memberSuspensionRepository.saveAndFlush(
         MemberSuspension(
             phoneNumber = phoneNumber,
@@ -221,7 +221,7 @@ class AdminDashboardQueriesTest {
         accessLogRepository.saveAndFlush(
             AccessLog(
                 memberId = memberId,
-                phoneNumber = "0108888$memberId",
+                phoneNumber = "+82108888$memberId",
                 platform = platform,
                 deviceName = null,
                 ipAddress = "127.0.0.1",

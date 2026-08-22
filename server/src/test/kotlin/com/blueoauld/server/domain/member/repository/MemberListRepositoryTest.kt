@@ -41,14 +41,14 @@ class MemberListRepositoryTest {
     fun setUp() {
         val now = Instant.now()
 
-        meId = save(member("01099990000", Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
+        meId = save(member("+821099990000", Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
         nearId = save(
-            member("01099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))
+            member("+821099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))
                 .apply { receivedLikeCount = 3 },
         ).id
-        farId = save(member("01099990002", Gender.MALE, 37.9, 127.0, now.minusSeconds(120))).id
+        farId = save(member("+821099990002", Gender.MALE, 37.9, 127.0, now.minusSeconds(120))).id
         hongId = save(
-            member("01099990003", Gender.MALE, 37.5, 127.0, now.minusSeconds(180))
+            member("+821099990003", Gender.MALE, 37.5, 127.0, now.minusSeconds(180))
                 .apply {
                     nickname = "HongGil"
                     receivedLikeCount = 7
@@ -179,11 +179,11 @@ class MemberListRepositoryTest {
         // given
         val now = Instant.now()
         val older = save(
-            member("01099990004", Gender.MALE, 37.5, 127.0, now.minusSeconds(600))
+            member("+821099990004", Gender.MALE, 37.5, 127.0, now.minusSeconds(600))
                 .apply { receivedLikeCount = 7 },
         ).id
         val newer = save(
-            member("01099990005", Gender.MALE, 37.5, 127.0, now)
+            member("+821099990005", Gender.MALE, 37.5, 127.0, now)
                 .apply { receivedLikeCount = 7 },
         ).id
 

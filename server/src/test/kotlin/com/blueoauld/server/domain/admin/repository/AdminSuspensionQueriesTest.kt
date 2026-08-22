@@ -78,7 +78,7 @@ class AdminSuspensionQueriesTest {
         // given
         val current = memberRepository.saveAndFlush(
             Member(
-                phoneNumber = "01011112221",
+                phoneNumber = "+821011112221",
                 password = "encoded-password",
                 gender = Gender.MALE,
                 nickname = "재가입회원",
@@ -113,7 +113,7 @@ class AdminSuspensionQueriesTest {
         released: Boolean = false,
     ): MemberSuspension {
         val suspension = MemberSuspension(
-            phoneNumber = "0101111222$memberId",
+            phoneNumber = "+82101111222$memberId",
             memberId = memberId,
             nickname = "회원$memberId",
             type = type,

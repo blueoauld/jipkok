@@ -55,8 +55,8 @@ class WorryPostRepositoryTest {
 
     @BeforeEach
     fun setUp() {
-        meId = save(member("01088880000")).id
-        authorId = save(member("01088880001")).id
+        meId = save(member("+821088880000")).id
+        authorId = save(member("+821088880001")).id
 
         quietPostId = savePost(authorId).id
         likedPostId = savePost(authorId, likeCount = 5).id

@@ -616,7 +616,7 @@ class MemberServiceTest {
 
     companion object {
 
-        private const val PHONE_NUMBER = "01012345678"
+        private const val PHONE_NUMBER = "+821012345678"
         private const val ENCODED_PASSWORD = "encoded-password"
         private const val MEMBER_ID = 0L
         private const val NICKNAME = "닉네임"

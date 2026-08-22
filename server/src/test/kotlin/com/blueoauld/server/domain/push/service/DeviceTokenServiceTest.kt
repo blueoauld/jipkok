@@ -117,7 +117,7 @@ class DeviceTokenServiceTest {
     }
 
     private fun member(locale: MemberLocale) = Member(
-        phoneNumber = "01088880000",
+        phoneNumber = "+821088880000",
         password = "encoded",
         gender = Gender.MALE,
         nickname = "회원",
