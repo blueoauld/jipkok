@@ -30,12 +30,34 @@ class PhotoUploadService(
 
     @Transactional
     fun confirm(objectKeys: List<String>) {
-        if (objectKeys.isNotEmpty()) {
-            photoUploadRepository.deleteAllByObjectKeyIn(objectKeys)
+        if (objectKeys.isEmpty()) {
+            return
+        }
+
+        val uploads = photoUploadRepository.findAllByObjectKeyIn(objectKeys)
+
+        uploads.forEach { validateUploaded(it.objectKey) }
+        photoUploadRepository.deleteAll(uploads)
+    }
+
+    private fun validateUploaded(objectKey: String) {
+        val stored = photoStorage.head(objectKey) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+
+        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == true) {
+            return
+        }
+
+        if (stored.contentLength > PHOTO_MAX_BYTES) {
+            photoStorage.delete(listOf(objectKey))
+            throw BusinessException(ErrorCode.PHOTO_TOO_LARGE)
         }
     }
 
     companion object {
+
+        const val PHOTO_MAX_BYTES = 10L * 1024 * 1024
+
+        private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
 
         private val MEDIA_EXTENSIONS = mapOf(
             "image/jpeg" to "jpg",

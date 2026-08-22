@@ -67,6 +67,7 @@ enum class ErrorCode(
 
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "PHOTO_001", "지원하지 않는 이미지 형식입니다."),
     INVALID_PHOTO_KEY(HttpStatus.BAD_REQUEST, "PHOTO_002", "사진 정보가 올바르지 않습니다."),
+    PHOTO_TOO_LARGE(HttpStatus.BAD_REQUEST, "PHOTO_003", "사진이 너무 큽니다. 10MB까지 올릴 수 있습니다."),
 
     SELF_LIKE(HttpStatus.BAD_REQUEST, "LIKE_001", "자기 자신에게는 좋아요를 누를 수 없습니다."),
 

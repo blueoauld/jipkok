@@ -6,7 +6,7 @@ import java.time.Instant
 
 interface PhotoUploadRepository : JpaRepository<PhotoUpload, Long> {
 
-    fun deleteAllByObjectKeyIn(objectKeys: List<String>)
+    fun findAllByObjectKeyIn(objectKeys: List<String>): List<PhotoUpload>
 
     fun findAllByIssuedAtLessThan(issuedAt: Instant): List<PhotoUpload>
 }
