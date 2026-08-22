@@ -8,8 +8,8 @@ jest.mock("expo-localization", () => ({
 describe("currentLocale", () => {
   afterEach(() => useLocaleStore.setState({ locale: null }));
 
-  it("고른 언어가 없으면 기기 언어를 따르고 모르는 언어는 한국어로 떨어진다", () => {
-    expect(currentLocale()).toBe("ko");
+  it("고른 언어가 없으면 기기 언어를 따르고 모르는 언어는 영어로 떨어진다", () => {
+    expect(currentLocale()).toBe("en");
   });
 
   it("고른 언어가 있으면 기기 언어보다 앞선다", () => {

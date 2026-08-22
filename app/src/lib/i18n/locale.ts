@@ -4,7 +4,7 @@ export const SUPPORTED_LOCALES = ["ko", "ja", "en"] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
-const FALLBACK_LOCALE: SupportedLocale = "ko";
+const FALLBACK_LOCALE: SupportedLocale = "en";
 
 function isSupported(code: string | null): code is SupportedLocale {
   return SUPPORTED_LOCALES.includes(code as SupportedLocale);
