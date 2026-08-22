@@ -9,6 +9,7 @@ import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
@@ -43,6 +44,7 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { useAccentToken, useThemeBackground } from "@/lib/theme/accent";
@@ -57,17 +59,10 @@ const REPLY_INDENT = "$5";
 const REPLY_PREVIEW_GAP = 2;
 const SUBMIT_BUTTON_WIDTH = 80;
 
-const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
-const COMMENT_SECTION_LABEL = "댓글";
-const COMMENT_EMPTY_MESSAGE = "댓글이 없습니다.";
-const COMMENT_ERROR_MESSAGE = "댓글을 불러오지 못했습니다.";
-const POST_DELETED_MESSAGE = "고민을 삭제했습니다.";
-const COMMENT_DELETED_MESSAGE = "댓글을 삭제했습니다.";
-const DELETED_COMMENT_PLACEHOLDER = "삭제된 댓글입니다.";
-const REPORT_DELETED_COMMENT_PLACEHOLDER = "신고 누적으로 삭제된 댓글입니다.";
-
 function commentLabel(comment: WorryCommentResponse) {
-  return comment.byAuthor ? "글쓴이" : `익명${comment.anonymousNo}`;
+  return comment.byAuthor
+    ? i18n.t("worry.detail.author")
+    : i18n.t("worry.detail.anonymousNo", { no: comment.anonymousNo });
 }
 
 function CountBadge({
@@ -109,13 +104,14 @@ function PostSection({
   post: WorryPostResponse;
   onToggleLike: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <RetroCard gap="$2.5">
       <XStack items="center" justify="space-between">
         <XStack items="center" gap="$2">
           <WorryCategoryTag category={post.category} />
           <Text fontSize="$3" fontWeight="700">
-            {post.mine ? "내 고민" : "익명"}
+            {post.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
           </Text>
         </XStack>
         <Text theme="gray" color="$color11" fontSize="$2">
@@ -140,8 +136,8 @@ function PostSection({
 
 function deletedPlaceholder(comment: WorryCommentResponse) {
   return comment.status === "REPORT_DELETED"
-    ? REPORT_DELETED_COMMENT_PLACEHOLDER
-    : DELETED_COMMENT_PLACEHOLDER;
+    ? i18n.t("worry.detail.reportDeletedComment")
+    : i18n.t("worry.detail.deletedComment");
 }
 
 function RowAction({
@@ -180,6 +176,7 @@ function CommentRow({
   onRemove: (commentId: number) => void;
   onReport: (commentId: number) => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const accentToken = useAccentToken();
   const active = comment.status === "ACTIVE";
@@ -222,17 +219,20 @@ function CommentRow({
         {active && (
           <XStack self="flex-end" gap="$4">
             {!reply && (
-              <RowAction label="답글" onPress={() => onReply(comment)} />
+              <RowAction
+                label={t("worry.detail.reply")}
+                onPress={() => onReply(comment)}
+              />
             )}
             {comment.mine ? (
               <RowAction
-                label="삭제"
+                label={t("action.delete")}
                 destructive
                 onPress={() => onRemove(comment.commentId)}
               />
             ) : (
               <RowAction
-                label="신고"
+                label={t("action.report")}
                 destructive
                 onPress={() => onReport(comment.commentId)}
               />
@@ -245,6 +245,7 @@ function CommentRow({
 }
 
 export default function WorryDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const queryClient = useQueryClient();
@@ -323,7 +324,7 @@ export default function WorryDetailScreen() {
     mutationFn: () => api.worries.remove(postId),
     onSuccess: async () => {
       await invalidateList();
-      showToast("info", POST_DELETED_MESSAGE);
+      showToast("info", t("worry.detail.postDeleted"));
       router.back();
     },
     onError: showApiError,
@@ -366,7 +367,7 @@ export default function WorryDetailScreen() {
         current?.commentId === commentId ? null : current,
       );
       await invalidateComments();
-      showToast("info", COMMENT_DELETED_MESSAGE);
+      showToast("info", t("worry.detail.commentDeleted"));
     },
     onError: showApiError,
   });
@@ -390,23 +391,23 @@ export default function WorryDetailScreen() {
   const confirmRemoveComment = useCallback(
     (commentId: number) =>
       confirm({
-        message: "삭제한 댓글은 되돌릴 수 없습니다.",
-        confirmLabel: "삭제",
+        message: t("worry.detail.deleteCommentConfirm"),
+        confirmLabel: t("action.delete"),
         destructive: true,
         onConfirm: () => removeCommentMutate(commentId),
       }),
-    [confirm, removeCommentMutate],
+    [confirm, removeCommentMutate, t],
   );
 
   const confirmReportComment = useCallback(
     (commentId: number) =>
       confirm({
-        message: "신고한 댓글은 검토 후 조치됩니다.",
-        confirmLabel: "신고",
+        message: t("worry.detail.reportCommentConfirm"),
+        confirmLabel: t("action.report"),
         destructive: true,
         onConfirm: () => reportCommentMutate(commentId),
       }),
-    [confirm, reportCommentMutate],
+    [confirm, reportCommentMutate, t],
   );
 
   const { mutate: toggleLikeMutate } = toggleLike;
@@ -423,28 +424,28 @@ export default function WorryDetailScreen() {
   const confirmRemovePost = useCallback(
     () =>
       confirm({
-        message: "삭제한 고민은 되돌릴 수 없습니다.",
-        confirmLabel: "삭제",
+        message: t("worry.detail.deletePostConfirm"),
+        confirmLabel: t("action.delete"),
         destructive: true,
         onConfirm: () => removePost.mutate(),
       }),
-    [confirm, removePost],
+    [confirm, removePost, t],
   );
 
   const confirmReportPost = useCallback(
     () =>
       confirm({
-        message: "신고한 고민은 검토 후 조치됩니다.",
-        confirmLabel: "신고",
+        message: t("worry.detail.reportPostConfirm"),
+        confirmLabel: t("action.report"),
         destructive: true,
         onConfirm: () => reportPost.mutate(),
       }),
-    [confirm, reportPost],
+    [confirm, reportPost, t],
   );
 
   const screenOptions = useMemo(
     () => ({
-      title: "고민",
+      title: t("worry.detail.title"),
       headerRight: post
         ? () => (
             <HeaderSoloIconButton
@@ -454,7 +455,7 @@ export default function WorryDetailScreen() {
           )
         : undefined,
     }),
-    [confirmRemovePost, confirmReportPost, post],
+    [confirmRemovePost, confirmReportPost, post, t],
   );
 
   const trimmed = content.trim();
@@ -499,7 +500,7 @@ export default function WorryDetailScreen() {
                     fontSize="$3"
                     fontWeight="600"
                   >
-                    {COMMENT_SECTION_LABEL}
+                    {t("worry.detail.commentSection")}
                   </Text>
                 </YStack>
               }
@@ -507,8 +508,8 @@ export default function WorryDetailScreen() {
                 commentsQuery.isPending ? null : (
                   <ListEmpty>
                     {commentsError
-                      ? COMMENT_ERROR_MESSAGE
-                      : COMMENT_EMPTY_MESSAGE}
+                      ? t("worry.detail.commentError")
+                      : t("worry.detail.commentEmpty")}
                   </ListEmpty>
                 )
               }
@@ -536,7 +537,9 @@ export default function WorryDetailScreen() {
                   >
                     <YStack flex={1} gap={REPLY_PREVIEW_GAP}>
                       <Text fontSize="$2" fontWeight="600" color="$color12">
-                        {`${commentLabel(replyTo)}에게 답글`}
+                        {t("worry.detail.replyTo", {
+                          name: commentLabel(replyTo),
+                        })}
                       </Text>
                       <Text fontSize="$3" color="$color11" numberOfLines={1}>
                         {replyTo.content}
@@ -575,7 +578,11 @@ export default function WorryDetailScreen() {
                   value={content}
                   onChangeText={setContent}
                   autoFocusNative={replyTo !== null}
-                  placeholder={replyTo ? "답글 입력" : "댓글 입력"}
+                  placeholder={
+                    replyTo
+                      ? t("worry.detail.replyPlaceholder")
+                      : t("worry.detail.commentPlaceholder")
+                  }
                   maxLength={WORRY_COMMENT_MAX_LENGTH}
                 />
               </YStack>
@@ -587,7 +594,7 @@ export default function WorryDetailScreen() {
                 {createComment.isPending ? (
                   <Spinner size="small" color="white" />
                 ) : (
-                  "등록"
+                  t("worry.detail.submit")
                 )}
               </RetroButton>
             </XStack>
@@ -596,7 +603,7 @@ export default function WorryDetailScreen() {
       ) : (
         <ScreenState
           error={detail.error}
-          message={ERROR_MESSAGE}
+          message={t("worry.detail.errorMessage")}
           onRetry={detail.refetch}
         />
       )}

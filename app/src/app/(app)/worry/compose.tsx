@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
@@ -14,12 +15,14 @@ import { api, type WorryCategory } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
-const ANONYMOUS_NOTICE =
-  "작성된 고민은 익명으로 올라갑니다. 부적절한 내용 작성 시 서비스 이용이 제한됩니다.";
-const POSTED_MESSAGE = "고민을 올렸습니다.";
-const CATEGORY_LABEL = "분류";
 
 export default function WorryComposeScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({ title: t("worry.compose.title") }),
+    [t],
+  );
+
   const queryClient = useQueryClient();
   const contentRef = useRef("");
   const [empty, setEmpty] = useState(true);
@@ -27,8 +30,8 @@ export default function WorryComposeScreen() {
   const { alertElement, show, showApiError } = useRetroAlert();
 
   useEffect(() => {
-    show("info", ANONYMOUS_NOTICE);
-  }, [show]);
+    show("info", t("worry.compose.notice"));
+  }, [show, t]);
 
   const compose = useMutation({
     mutationFn: ({
@@ -40,7 +43,7 @@ export default function WorryComposeScreen() {
     }) => api.worries.create(picked, content),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: WORRIES_KEY });
-      showToast("info", POSTED_MESSAGE);
+      showToast("info", t("worry.compose.posted"));
       router.back();
     },
     onError: showApiError,
@@ -48,7 +51,7 @@ export default function WorryComposeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={{ title: "고민 작성" }} />
+      <Stack.Screen options={screenOptions} />
 
       <FormScreen
         footer={
@@ -59,13 +62,13 @@ export default function WorryComposeScreen() {
               compose.mutate({ category, content: contentRef.current.trim() })
             }
           >
-            {compose.isPending ? <Spinner color="white" /> : "등록"}
+            {compose.isPending ? <Spinner color="white" /> : t("worry.compose.submit")}
           </RetroButton>
         }
       >
         <YStack gap="$2">
           <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {CATEGORY_LABEL}
+            {t("worry.compose.categoryLabel")}
           </Text>
           <WorryCategoryPicker value={category} onChange={setCategory} />
         </YStack>
@@ -75,7 +78,7 @@ export default function WorryComposeScreen() {
           multiline
           rows={10}
           textAlignVertical="top"
-          placeholder="내용 입력"
+          placeholder={t("worry.compose.placeholder")}
           maxLength={WORRY_CONTENT_MAX_LENGTH}
           onChangeText={(text) => setEmpty(text.trim().length === 0)}
         />
