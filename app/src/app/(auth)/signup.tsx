@@ -32,10 +32,7 @@ const RESEND_COOLDOWN_SECONDS = 30;
 
 const SIGN_UP_METHOD = "phone";
 
-const GENDERS = [
-  "MALE",
-  "FEMALE",
-] as const;
+const GENDERS = ["MALE", "FEMALE"] as const;
 
 export default function SignupScreen() {
   const { t } = useTranslation();
@@ -104,7 +101,11 @@ export default function SignupScreen() {
               disabled={signup.isPending}
               onPress={handleSubmit((values) => signup.mutate(values))}
             >
-              {signup.isPending ? <Spinner color="white" /> : t("auth.signup.submit")}
+              {signup.isPending ? (
+                <Spinner color="white" />
+              ) : (
+                t("auth.signup.submit")
+              )}
             </RetroButton>
 
             <XStack justify="center" items="center" gap="$2" pt="$3">

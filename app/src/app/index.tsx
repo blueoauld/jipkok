@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -7,6 +8,7 @@ import { restoreSession } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 
 export default function IndexScreen() {
+  const { t } = useTranslation();
   const status = useAuthStore((state) => state.status);
   const [failed, setFailed] = useState(false);
 
@@ -33,7 +35,7 @@ export default function IndexScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScreenState
         error={failed}
-        message="연결에 실패했습니다."
+        message={t("connectFailed")}
         onRetry={retry}
       />
     </SafeAreaView>

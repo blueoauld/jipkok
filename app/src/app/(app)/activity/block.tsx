@@ -1,4 +1,6 @@
 import { Stack } from "expo-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
@@ -12,9 +14,10 @@ import { api } from "@/lib/api";
 
 const BLOCKS_KEY = relationListKey("blocks", "mine");
 
-const SCREEN_OPTIONS = { title: "차단 목록" };
-
 export default function BlockListScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(() => ({ title: t("activity.block") }), [t]);
+
   const query = useMemberList(BLOCKS_KEY, api.blocks.mine);
   const { alertElement, showApiError } = useRetroAlert();
   const remove = useRemoveFromMemberList(
@@ -25,7 +28,7 @@ export default function BlockListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

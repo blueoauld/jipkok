@@ -1,4 +1,6 @@
 import { Stack } from "expo-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
@@ -12,9 +14,13 @@ import { api } from "@/lib/api";
 
 const GRANTED_SECRET_PHOTOS_KEY = relationListKey("secretPhotos", "granted");
 
-const SCREEN_OPTIONS = { title: "비밀 사진 목록" };
-
 export default function SecretPhotoListScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({ title: t("activity.secretPhoto") }),
+    [t],
+  );
+
   const query = useMemberList(
     GRANTED_SECRET_PHOTOS_KEY,
     api.secretPhotos.granted,
@@ -28,7 +34,7 @@ export default function SecretPhotoListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <ActivityList query={query} onDelete={remove.mutate} />
 

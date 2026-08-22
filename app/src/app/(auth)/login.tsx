@@ -96,7 +96,11 @@ export default function LoginScreen() {
             disabled={login.isPending}
             onPress={handleSubmit((values) => login.mutate(values))}
           >
-            {login.isPending ? <Spinner color="white" /> : t("auth.login.submit")}
+            {login.isPending ? (
+              <Spinner color="white" />
+            ) : (
+              t("auth.login.submit")
+            )}
           </RetroButton>
         </YStack>
       </KeyboardAvoidingView>

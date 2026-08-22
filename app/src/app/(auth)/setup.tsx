@@ -60,7 +60,11 @@ export default function SetupScreen() {
               }),
             )}
           >
-            {setupProfile.isPending ? <Spinner color="white" /> : t("auth.setup.submit")}
+            {setupProfile.isPending ? (
+              <Spinner color="white" />
+            ) : (
+              t("auth.setup.submit")
+            )}
           </RetroButton>
         }
       >

@@ -77,7 +77,11 @@ export default function PasswordScreen() {
             disabled={reset.isPending}
             onPress={handleSubmit((values) => reset.mutate(values))}
           >
-            {reset.isPending ? <Spinner color="white" /> : t("auth.password.submit")}
+            {reset.isPending ? (
+              <Spinner color="white" />
+            ) : (
+              t("auth.password.submit")
+            )}
           </RetroButton>
         }
       >

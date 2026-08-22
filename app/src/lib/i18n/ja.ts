@@ -36,6 +36,17 @@ export const ja: typeof ko = {
     MALE: "男性",
     FEMALE: "女性",
   },
+  activity: {
+    block: "ブロックリスト",
+    favoriteReceived: "受け取ったお気に入りリスト",
+    favorite: "お気に入りリスト",
+    likeReceived: "受け取ったいいねリスト",
+    like: "いいねリスト",
+    secretPhotoOpened: "公開されたシークレット写真リスト",
+    secretPhoto: "シークレット写真リスト",
+    profileView: "プロフィール閲覧リスト",
+  },
+  connectFailed: "接続に失敗しました。",
   auth: {
     phoneNumberPlaceholder: "携帯電話番号",
     codePlaceholder: "認証番号",

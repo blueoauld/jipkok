@@ -33,6 +33,17 @@ export const ko = {
     MALE: "남자",
     FEMALE: "여자",
   },
+  activity: {
+    block: "차단 목록",
+    favoriteReceived: "받은 즐겨찾기 목록",
+    favorite: "즐겨찾기 목록",
+    likeReceived: "받은 좋아요 목록",
+    like: "좋아요 목록",
+    secretPhotoOpened: "공개된 비밀 사진 목록",
+    secretPhoto: "비밀 사진 목록",
+    profileView: "내 프로필 조회 목록",
+  },
+  connectFailed: "연결에 실패했습니다.",
   auth: {
     phoneNumberPlaceholder: "휴대폰 번호",
     codePlaceholder: "인증번호",

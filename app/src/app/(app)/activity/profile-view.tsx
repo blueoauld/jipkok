@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ActivityList } from "@/components/activity/ActivityList";
@@ -8,9 +9,13 @@ import {
   useProfileViews,
 } from "@/hooks/useProfileViews";
 
-const SCREEN_OPTIONS = { title: "내 프로필 조회 목록" };
-
 export default function ProfileViewListScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({ title: t("activity.profileView") }),
+    [t],
+  );
+
   const query = useProfileViews();
 
   useMarkProfileViewsSeen(query.isSuccess);
@@ -30,7 +35,7 @@ export default function ProfileViewListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <ActivityList
         query={{ ...query, members }}
