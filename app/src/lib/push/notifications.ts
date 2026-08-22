@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 
 import { api, type MemberLocale } from "@/lib/api";
 import { DEVICE_PLATFORM } from "@/lib/device";
-import i18n, { deviceLocale } from "@/lib/i18n";
+import i18n, { currentLocale } from "@/lib/i18n";
 
 const ANDROID_CHANNELS = [
   { id: "default", name: i18n.t("push.channelDefault"), importance: "DEFAULT" },
@@ -102,5 +102,5 @@ export async function releaseDevice() {
 
 // 서버 enum은 대문자다.
 function serverLocale(): MemberLocale {
-  return deviceLocale().toUpperCase() as MemberLocale;
+  return currentLocale().toUpperCase() as MemberLocale;
 }
