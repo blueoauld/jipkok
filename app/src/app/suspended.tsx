@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, useTheme, YStack } from "tamagui";
 
@@ -17,12 +18,9 @@ import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
 
 const ICON_SIZE = 56;
 
-const TITLE = "서비스 이용이 정지되었습니다.";
-const FOREVER = "영구 정지";
-
-const MAIL_TITLE = "정지문의";
-
 export default function SuspendedScreen() {
+  const { t } = useTranslation();
+
   const theme = useTheme();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const { confirmWithdraw } = useWithdraw({ show, showApiError, confirm });
@@ -51,7 +49,7 @@ export default function SuspendedScreen() {
 
         <YStack gap="$2" items="center">
           <Text fontSize="$6" fontWeight="700" text="center">
-            {TITLE}
+            {t("suspended.title")}
           </Text>
 
           {suspension && (
@@ -62,8 +60,10 @@ export default function SuspendedScreen() {
 
               <Text theme="gray" color="$color10" fontSize="$4">
                 {suspension.expiresAt
-                  ? `해제일: ${formatDateTime(suspension.expiresAt)}`
-                  : FOREVER}
+                  ? t("suspended.releaseAt", {
+                      at: formatDateTime(suspension.expiresAt),
+                    })
+                  : t("suspended.forever")}
               </Text>
             </>
           )}
@@ -71,9 +71,11 @@ export default function SuspendedScreen() {
 
         <YStack width="100%" gap="$4">
           <RetroButton
-            onPress={() => openSupportMail(MAIL_TITLE, profile?.memberId, show)}
+            onPress={() =>
+              openSupportMail(t("suspended.mailTitle"), profile?.memberId, show)
+            }
           >
-            문의하기
+            {t("suspended.contact")}
           </RetroButton>
 
           <RetroButton
@@ -81,11 +83,15 @@ export default function SuspendedScreen() {
             disabled={logout.isPending}
             onPress={() => logout.mutate()}
           >
-            {logout.isPending ? <Spinner color="white" /> : "로그아웃"}
+            {logout.isPending ? (
+              <Spinner color="white" />
+            ) : (
+              t("suspended.logout")
+            )}
           </RetroButton>
 
           <RetroButton theme="red" onPress={confirmWithdraw}>
-            회원탈퇴
+            {t("suspended.withdraw")}
           </RetroButton>
         </YStack>
       </YStack>

@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
@@ -46,16 +47,11 @@ import { useDeletedRoomStore } from "@/lib/chat/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
-const ERROR_MESSAGE = "대화를 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "대화 내용이 없습니다.";
-
-const PARTNER_LEFT_MESSAGE = "상대가 채팅방을 나갔습니다.";
-
-const REPLY_NOT_LOADED_MESSAGE = "원문을 아직 불러오지 못했습니다.";
-
 const HIGHLIGHT_MILLIS = 800;
 
 export default function ChatRoomScreen() {
+  const { t } = useTranslation();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
   const validRoom = Number.isInteger(roomId) && roomId > 0;
@@ -156,9 +152,9 @@ export default function ChatRoomScreen() {
   useEffect(() => {
     if (partnerLeft) {
       clearDeletedRoom();
-      show("info", PARTNER_LEFT_MESSAGE, () => router.back());
+      show("info", t("chatRoom.partnerLeft"), () => router.back());
     }
-  }, [clearDeletedRoom, partnerLeft, show]);
+  }, [clearDeletedRoom, partnerLeft, show, t]);
 
   useChatRoomEffects(roomId, messages, partnerId);
 
@@ -168,7 +164,7 @@ export default function ChatRoomScreen() {
     );
 
     if (index < 0) {
-      showToast("warning", REPLY_NOT_LOADED_MESSAGE);
+      showToast("warning", t("chatRoom.replyNotLoaded"));
       return;
     }
 
@@ -187,7 +183,7 @@ export default function ChatRoomScreen() {
       () => setHighlightedId(null),
       HIGHLIGHT_MILLIS,
     );
-  }, []);
+  }, [t]);
 
   useEffect(
     () => () => {
@@ -202,7 +198,7 @@ export default function ChatRoomScreen() {
 
   const menuItems: MenuSheetItem[] = [
     {
-      label: "프로필",
+      label: t("chatRoom.profile"),
       onPress: () => {
         if (room) {
           pushOnce(`/member/${room.memberId}`);
@@ -210,7 +206,7 @@ export default function ChatRoomScreen() {
       },
     },
     {
-      label: "나가기",
+      label: t("chatRoom.leave"),
       onPress: () => {
         if (room) {
           confirmLeave(room, () => router.back());
@@ -218,7 +214,7 @@ export default function ChatRoomScreen() {
       },
     },
     {
-      label: "신고하기",
+      label: t("chatRoom.report"),
       destructive: true,
       onPress: () => {
         if (room) {
@@ -230,7 +226,7 @@ export default function ChatRoomScreen() {
 
   const replyNameOf = (message: ChatMessageResponse) =>
     message.replyMessage?.senderId === myMemberId
-      ? "나"
+      ? t("chatRoom.me")
       : (room?.nickname ?? "");
 
   const handlePressAvatar = useCallback(
@@ -322,12 +318,14 @@ export default function ChatRoomScreen() {
               </YStack>
             ) : null
           }
-          ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
+          ListEmptyComponent={
+            <ListEmpty>{t("chatRoom.emptyMessage")}</ListEmpty>
+          }
         />
       ) : (
         <ScreenState
           error={failure}
-          message={ERROR_MESSAGE}
+          message={t("chatRoom.errorMessage")}
           onRetry={() => {
             refetch();
             chatMessages.refetch();
@@ -344,7 +342,7 @@ export default function ChatRoomScreen() {
           replyName={
             replyTarget && replyTarget.senderId !== profile?.memberId
               ? (room?.nickname ?? "")
-              : "나"
+              : t("chatRoom.me")
           }
           onSend={(content) => {
             sendText(content, replyTarget && toReply(replyTarget));

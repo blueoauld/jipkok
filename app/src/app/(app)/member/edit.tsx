@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { router, Stack } from "expo-router";
-import { type RefObject, useRef } from "react";
+import { type RefObject, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, YStack } from "tamagui";
 
@@ -33,8 +34,6 @@ const uploadPublicPhoto = (asset: ImagePickerAsset) =>
 const uploadSecretPhoto = (asset: ImagePickerAsset) =>
   uploadProfilePhoto(asset, "SECRET");
 
-const EDITED_MESSAGE = "프로필을 저장했습니다.";
-
 type EditValues = { nickname: string; birthYear: string };
 
 function BioField({
@@ -44,6 +43,8 @@ function BioField({
   valueRef: RefObject<string>;
   initialValue: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <CountedInput
       valueRef={valueRef}
@@ -51,13 +52,15 @@ function BioField({
       rows={7}
       textAlignVertical="top"
       defaultValue={initialValue}
-      placeholder="자기소개"
+      placeholder={t("auth.setup.bioPlaceholder")}
       maxLength={BIO_MAX_LENGTH}
     />
   );
 }
 
 function EditForm({ profile }: { profile: MyProfileResponse }) {
+  const { t } = useTranslation();
+
   const queryClient = useQueryClient();
   const { alertElement, show, showApiError } = useRetroAlert();
   const publicPhotos = useUploadPhotos(
@@ -91,7 +94,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
       queryClient.invalidateQueries({ queryKey: FEEDS_KEY });
-      show("info", EDITED_MESSAGE, () => router.back());
+      show("info", t("profileEdit.saved"), () => router.back());
     },
     onError: showApiError,
   });
@@ -113,13 +116,13 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       <FormScreen
         footer={
           <RetroButton disabled={busy} onPress={submit}>
-            {save.isPending ? <Spinner color="white" /> : "저장"}
+            {save.isPending ? <Spinner color="white" /> : t("profileEdit.save")}
           </RetroButton>
         }
       >
         <YStack gap="$2">
           <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            공개 사진
+            {t("profileEdit.publicPhotos")}
           </Text>
           <PhotoGrid
             photos={publicPhotos.urls}
@@ -132,7 +135,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
         <YStack gap="$2">
           <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            비밀 사진
+            {t("profileEdit.secretPhotos")}
           </Text>
           <PhotoGrid
             photos={secretPhotos.urls}
@@ -146,7 +149,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           control={control}
           name="nickname"
           rules={NICKNAME_RULES}
-          placeholder="닉네임"
+          placeholder={t("auth.setup.nicknamePlaceholder")}
           maxLength={NICKNAME_MAX_LENGTH}
           textContentType="nickname"
           autoCapitalize="none"
@@ -157,7 +160,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           control={control}
           name="birthYear"
           rules={BIRTH_YEAR_RULES}
-          placeholder="출생연도"
+          placeholder={t("auth.setup.birthYearPlaceholder")}
           keyboardType="number-pad"
           maxLength={BIRTH_YEAR_LENGTH}
         />
@@ -170,14 +173,15 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   );
 }
 
-const SCREEN_OPTIONS = { title: "프로필 편집" };
-
 export default function MemberEditScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(() => ({ title: t("profileEdit.title") }), [t]);
+
   const { data, isError, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       {data ? (
         <EditForm profile={data} />

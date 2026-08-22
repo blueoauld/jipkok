@@ -7,6 +7,7 @@ import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, useTheme, XStack } from "tamagui";
@@ -36,19 +37,22 @@ const BADGE_FONT_SIZE = 11;
 const BADGE_TOP =
   (BOTTOM_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
+type TabTitleKey =
+  "tabs.main" | "tabs.chat" | "tabs.lounge" | "tabs.rank" | "tabs.setting";
+
 type Tab = {
   name: string;
-  title: string;
+  titleKey: TabTitleKey;
   icon: Icon;
   headerLeft?: () => React.ReactNode;
   headerRight?: () => React.ReactNode;
 };
 
 const TABS: Tab[] = [
-  { name: "main", title: "메인", icon: HouseIcon },
+  { name: "main", titleKey: "tabs.main", icon: HouseIcon },
   {
     name: "chat",
-    title: "채팅",
+    titleKey: "tabs.chat",
     icon: ChatCircleIcon,
     headerLeft: () => (
       <HeaderIconButton
@@ -58,15 +62,13 @@ const TABS: Tab[] = [
     ),
     headerRight: () => <ChatHeaderRight />,
   },
-  { name: "feed", title: "라운지", icon: FireIcon },
-  { name: "rank", title: "랭킹", icon: TrophyIcon },
-  { name: "setting", title: "설정", icon: GearIcon },
+  { name: "feed", titleKey: "tabs.lounge", icon: FireIcon },
+  { name: "rank", titleKey: "tabs.rank", icon: TrophyIcon },
+  { name: "setting", titleKey: "tabs.setting", icon: GearIcon },
 ];
 
-const NOTE_RECEIVE_ON_MESSAGE = "이제 새로운 쪽지를 받을 수 있습니다.";
-const NOTE_RECEIVE_OFF_MESSAGE = "이제 새로운 쪽지를 받지 않습니다.";
-
 function NoteReceiveButton() {
+  const { t } = useTranslation();
   const { data: profile } = useMyProfile();
 
   return (
@@ -74,8 +76,8 @@ function NoteReceiveButton() {
       enabled={profile?.noteReceiveEnabled ?? true}
       field="noteReceiveEnabled"
       update={api.members.updateNoteReceive}
-      onMessage={NOTE_RECEIVE_ON_MESSAGE}
-      offMessage={NOTE_RECEIVE_OFF_MESSAGE}
+      onMessage={t("tabs.noteReceiveOn")}
+      offMessage={t("tabs.noteReceiveOff")}
     />
   );
 }
@@ -115,12 +117,14 @@ function ChatHeaderRight() {
 }
 
 function SelectionCancelButton() {
+  const { t } = useTranslation();
   const endSelection = useChatSelectionStore((state) => state.end);
 
-  return <HeaderTextButton label="취소" onPress={endSelection} />;
+  return <HeaderTextButton label={t("tabs.cancel")} onPress={endSelection} />;
 }
 
 function SelectAllButton() {
+  const { t } = useTranslation();
   const selectedCount = useChatSelectionStore((state) => state.selected.size);
   const roomCount = useChatSelectionStore((state) => state.roomIds.length);
   const selectAll = useChatSelectionStore((state) => state.selectAll);
@@ -130,13 +134,14 @@ function SelectAllButton() {
 
   return (
     <HeaderTextButton
-      label={all ? "전체 해제" : "전체 선택"}
+      label={all ? t("tabs.deselectAll") : t("tabs.selectAll")}
       onPress={all ? clear : selectAll}
     />
   );
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const accent = useAccentColor();
@@ -180,7 +185,7 @@ export default function TabsLayout() {
         tabBarIconStyle: { width: ICON_SIZE, flex: 1 },
       }}
     >
-      {TABS.map(({ name, title, icon: Icon, headerLeft, headerRight }) => {
+      {TABS.map(({ name, titleKey, icon: Icon, headerLeft, headerRight }) => {
         const selecting = name === "chat" && chatSelecting;
 
         return (
@@ -188,7 +193,9 @@ export default function TabsLayout() {
             key={name}
             name={name}
             options={{
-              title: selecting ? `${selectedCount}개 선택` : title,
+              title: selecting
+                ? t("tabs.selectedCount", { count: selectedCount })
+                : t(titleKey),
               headerLeft: selecting
                 ? () => <SelectionCancelButton />
                 : headerLeft,
