@@ -7,7 +7,9 @@ import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -29,17 +31,21 @@ class ChatPushNotifierTest {
 
     private val memberSuspensionService = mockk<MemberSuspensionService>()
 
+    private val pushMessages = mockk<PushMessages>(relaxed = true)
+
     private val notifier = ChatPushNotifier(
         pushService,
         memberRepository,
         chatRoomMemberRepository,
         memberSuspensionService,
+        pushMessages,
     )
 
     @BeforeEach
     fun setUp() {
         every { pushService.isConnected(RECEIVER_ID) } returns false
         every { memberRepository.findById(SENDER_ID) } returns Optional.of(sender())
+        every { memberRepository.findLocaleById(RECEIVER_ID) } returns MemberLocale.KO
         every { memberSuspensionService.isSuspended(RECEIVER_ID, SuspensionType.SERVICE) } returns false
     }
 

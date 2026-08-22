@@ -1,6 +1,9 @@
 package com.blueoauld.server.domain.feed.service
 
+import com.blueoauld.server.domain.member.dto.projection.FeedReminderTarget
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
 import io.mockk.every
 import io.mockk.mockk
@@ -18,16 +21,20 @@ class FeedReminderTest {
 
     private val pushService = mockk<PushService>(relaxed = true)
 
+    private val pushMessages = mockk<PushMessages>()
+
     private val feedReminder = FeedReminder(
         memberRepository,
         pushService,
+        pushMessages,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @Test
     fun `이번 시간에 올리지 않은 회원에게 보낸다`() {
         // given
-        every { memberRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns TARGETS
+        every { memberRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(target(1L, MemberLocale.KO))
+        every { pushMessages.get(MemberLocale.KO, any()) } returns "문구"
 
         // when
         feedReminder.remind()
@@ -35,9 +42,9 @@ class FeedReminderTest {
         // then
         verify {
             pushService.sendAll(
-                TARGETS,
-                FeedReminder.TITLE,
-                FeedReminder.bodyOf(NOW),
+                listOf(1L),
+                "문구",
+                "문구",
                 FeedReminder.DATA,
                 FeedReminder.COLLAPSE_KEY,
                 FeedReminder.CHANNEL_ID,
@@ -47,13 +54,34 @@ class FeedReminderTest {
     }
 
     @Test
-    fun `문구는 시간마다 달라진다`() {
+    fun `언어가 다르면 나눠 보낸다`() {
+        // given
+        every { memberRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(
+            target(1L, MemberLocale.KO),
+            target(2L, MemberLocale.JA),
+            target(3L, MemberLocale.KO),
+        )
+        every { pushMessages.get(MemberLocale.KO, any()) } returns "한국어"
+        every { pushMessages.get(MemberLocale.JA, any()) } returns "일본어"
+
         // when
-        val bodies = (0..23).map { hour -> FeedReminder.bodyOf(NOW.plus(hour.toLong(), ChronoUnit.HOURS)) }
+        feedReminder.remind()
 
         // then
-        assertThat(bodies.toSet()).hasSize(FeedReminder.BODIES.size)
-        assertThat(bodies.zipWithNext().none { (a, b) -> a == b }).isTrue()
+        verify {
+            pushService.sendAll(listOf(1L, 3L), "한국어", "한국어", any(), any(), any(), any())
+            pushService.sendAll(listOf(2L), "일본어", "일본어", any(), any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `문구는 시간마다 달라진다`() {
+        // when
+        val codes = (0..23).map { hour -> FeedReminder.bodyCodeOf(NOW.plus(hour.toLong(), ChronoUnit.HOURS)) }
+
+        // then
+        assertThat(codes.toSet()).hasSize(FeedReminder.BODY_COUNT)
+        assertThat(codes.zipWithNext().none { (a, b) -> a == b }).isTrue()
     }
 
     @Test
@@ -68,11 +96,15 @@ class FeedReminderTest {
         verify(exactly = 0) { pushService.sendAll(any(), any(), any(), any(), any(), any(), any()) }
     }
 
+    private fun target(memberId: Long, locale: MemberLocale) = object : FeedReminderTarget {
+        override fun getMemberId() = memberId
+
+        override fun getLocale() = locale
+    }
+
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:30Z")
         private val SLOT_AT: Instant = Instant.parse("2026-08-03T05:00:00Z")
-
-        private val TARGETS = listOf(1L, 2L)
     }
 }

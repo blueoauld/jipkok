@@ -1,7 +1,12 @@
 package com.blueoauld.server.domain.member.entity.type
 
-enum class MemberLocale {
+import java.util.*
 
-    KO,
-    JA,
+enum class MemberLocale(
+
+    val javaLocale: Locale,
+) {
+
+    KO(Locale.KOREAN),
+    JA(Locale.JAPANESE),
 }

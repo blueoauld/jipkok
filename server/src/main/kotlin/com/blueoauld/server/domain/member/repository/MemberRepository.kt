@@ -3,7 +3,9 @@ package com.blueoauld.server.domain.member.repository
 import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.MemberNickname
+import com.blueoauld.server.domain.member.dto.projection.FeedReminderTarget
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -25,9 +27,12 @@ interface MemberRepository : JpaRepository<Member, Long> {
 
     fun findByPhoneNumber(phoneNumber: String): Member?
 
+    @Query("select m.locale from Member m where m.id = :memberId")
+    fun findLocaleById(@Param("memberId") memberId: Long): MemberLocale?
+
     @Query(
         """
-        select m.id
+        select m.id as memberId, m.locale as locale
         from Member m
         where m.feedNotificationEnabled = true
           and not exists (
@@ -43,7 +48,10 @@ interface MemberRepository : JpaRepository<Member, Long> {
           )
         """,
     )
-    fun findFeedReminderTargets(@Param("slotAt") slotAt: Instant, @Param("now") now: Instant): List<Long>
+    fun findFeedReminderTargets(
+        @Param("slotAt") slotAt: Instant,
+        @Param("now") now: Instant,
+    ): List<FeedReminderTarget>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(

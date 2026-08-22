@@ -3,7 +3,9 @@ package com.blueoauld.server.domain.chat.service
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -22,6 +24,7 @@ class ChatPushNotifier(
     private val memberRepository: MemberRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val memberSuspensionService: MemberSuspensionService,
+    private val pushMessages: PushMessages,
 ) {
 
     @Async
@@ -47,11 +50,12 @@ class ChatPushNotifier(
         }
 
         val sender = memberRepository.findById(event.message.senderId).orElse(null) ?: return
+        val locale = memberRepository.findLocaleById(event.receiverId) ?: MemberLocale.KO
 
         pushService.send(
             memberId = event.receiverId,
             title = sender.nickname,
-            body = toBody(event),
+            body = toBody(event, locale),
             data = mapOf(ROOM_ID_KEY to event.message.roomId.toString()),
             badge = chatRoomMemberRepository.sumUnreadCount(event.receiverId).toInt(),
             channelId = CHANNEL_ID,
@@ -59,17 +63,17 @@ class ChatPushNotifier(
         )
     }
 
-    private fun toBody(event: ChatMessageSentEvent) = when (event.message.type) {
+    private fun toBody(event: ChatMessageSentEvent, locale: MemberLocale) = when (event.message.type) {
         ChatMessageType.TEXT -> event.message.content.orEmpty()
-        ChatMessageType.PHOTO -> PHOTO_BODY
-        ChatMessageType.VIDEO -> VIDEO_BODY
+        ChatMessageType.PHOTO -> pushMessages.get(locale, PHOTO_CODE)
+        ChatMessageType.VIDEO -> pushMessages.get(locale, VIDEO_CODE)
     }
 
     companion object {
 
         private const val ROOM_ID_KEY = "roomId"
-        private const val PHOTO_BODY = "사진을 보냈습니다."
-        private const val VIDEO_BODY = "동영상을 보냈습니다."
+        private const val PHOTO_CODE = "push.chat.photo"
+        private const val VIDEO_CODE = "push.chat.video"
         private const val CHANNEL_ID = "chat"
         private const val HIGH_PRIORITY = "high"
     }
