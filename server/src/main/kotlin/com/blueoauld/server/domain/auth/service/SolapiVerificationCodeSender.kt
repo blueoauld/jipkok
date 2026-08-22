@@ -21,14 +21,15 @@ class SolapiVerificationCodeSender(
     private val messageService = SolapiClient.createInstance(properties.apiKey, properties.apiSecret)
 
     override fun send(phoneNumber: String, code: String) {
-        if (!phoneNumber.startsWith(KOREA_DIAL_CODE)) {
-            log.error { "국내 번호가 아니라 인증번호를 보내지 못했다. phoneNumber=$phoneNumber" }
+        val dialCode = dialCodeOf(phoneNumber) ?: run {
+            log.error { "국가 코드를 알 수 없어 인증번호를 보내지 못했다. phoneNumber=$phoneNumber" }
             throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
         }
 
         val message = Message().apply {
             from = properties.senderNumber
-            to = toDomestic(phoneNumber)
+            country = dialCode.removePrefix(PLUS)
+            to = nationalOf(phoneNumber, dialCode)
             text = "$MESSAGE_PREFIX $code"
         }
 
@@ -40,11 +41,16 @@ class SolapiVerificationCodeSender(
         }
     }
 
-    private fun toDomestic(phoneNumber: String) = "0" + phoneNumber.removePrefix(KOREA_DIAL_CODE)
-
     companion object {
 
-        private const val MESSAGE_PREFIX = "[집콕] 인증번호"
-        private const val KOREA_DIAL_CODE = "+82"
+        private const val MESSAGE_PREFIX = "JIPKOK Verification Code:"
+        private const val PLUS = "+"
+        private const val TRUNK_PREFIX = "0"
+
+        private val DIAL_CODES = listOf("+82", "+81")
+
+        fun dialCodeOf(phoneNumber: String) = DIAL_CODES.firstOrNull { phoneNumber.startsWith(it) }
+
+        fun nationalOf(phoneNumber: String, dialCode: String) = TRUNK_PREFIX + phoneNumber.removePrefix(dialCode)
     }
 }
