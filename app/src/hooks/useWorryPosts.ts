@@ -21,7 +21,7 @@ export function worryDetailKey(postId: number) {
   return [...WORRIES_KEY, "detail", postId];
 }
 
-export const MY_WORRIES_KEY = [...WORRY_LIST_KEY, "mine"];
+const MY_WORRIES_KEY = [...WORRY_LIST_KEY, "mine"];
 
 export function useMyWorryPosts() {
   const query = useInfiniteQuery({

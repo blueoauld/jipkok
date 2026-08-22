@@ -10,7 +10,7 @@ import { uploadCancelled, uploadFile, type UploadProgress } from "@/lib/upload";
 
 // 서버 ChatMessage.VIDEO_MAX_SECONDS / VIDEO_MAX_BYTES와 같다.
 export const VIDEO_MAX_SECONDS = 300;
-export const VIDEO_MAX_BYTES = 150 * 1024 * 1024;
+const VIDEO_MAX_BYTES = 150 * 1024 * 1024;
 
 const VIDEO_CONTENT_TYPE = "video/mp4";
 const THUMBNAIL_CONTENT_TYPE = "image/jpeg";

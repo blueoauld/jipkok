@@ -8,7 +8,7 @@ import i18n from "@/lib/i18n";
 
 const EMAIL = "hello@jipkok.app";
 
-export const MAIL_FAILED_MESSAGE = i18n.t("support.mailFailed", {
+const MAIL_FAILED_MESSAGE = i18n.t("support.mailFailed", {
   email: EMAIL,
 });
 

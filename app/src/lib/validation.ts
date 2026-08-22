@@ -3,8 +3,8 @@ import { patternOf, type PhoneCountry } from "@/lib/phone";
 
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣぁ-ゖァ-ヺー々一-龯a-zA-Z0-9 ]+$/;
 
-export const PASSWORD_MIN_LENGTH = 8;
-export const PASSWORD_MAX_LENGTH = 30;
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 30;
 
 export const NICKNAME_MAX_LENGTH = 10;
 export const BIRTH_YEAR_LENGTH = 4;

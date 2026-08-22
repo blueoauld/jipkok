@@ -85,7 +85,7 @@ export async function dismissRoomNotifications(roomId: number) {
   );
 }
 
-export async function unregisterPushToken() {
+async function unregisterPushToken() {
   if (!registeredToken) {
     return;
   }

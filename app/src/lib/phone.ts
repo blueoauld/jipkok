@@ -10,13 +10,14 @@ export type PhoneCountry = (typeof SUPPORTED_COUNTRIES)[number];
 
 const FALLBACK_COUNTRY: PhoneCountry = "KR";
 
-// 두 나라 모두 국내 표기로는 11자리이고, 국가 코드를 붙일 때 앞의 0이 빠진다.
-const RULES: Record<PhoneCountry, { dialCode: string; pattern: RegExp }> = {
-  KR: { dialCode: "+82", pattern: /^010\d{8}$/ },
-  JP: { dialCode: "+81", pattern: /^0[789]0\d{8}$/ },
+// 국가 코드를 붙일 때 국내 표기의 앞 0이 빠진다. 자릿수는 나라마다 다를 수 있다.
+const RULES: Record<
+  PhoneCountry,
+  { dialCode: string; pattern: RegExp; maxLength: number }
+> = {
+  KR: { dialCode: "+82", pattern: /^010\d{8}$/, maxLength: 11 },
+  JP: { dialCode: "+81", pattern: /^0[789]0\d{8}$/, maxLength: 11 },
 };
-
-export const PHONE_NUMBER_MAX_LENGTH = 11;
 
 const STORAGE_KEY = "jipkok.phoneCountry";
 
@@ -60,6 +61,10 @@ export function usePhoneCountry(): PhoneCountry {
 
 function dialCodeOf(country: PhoneCountry) {
   return RULES[country].dialCode;
+}
+
+export function maxLengthOf(country: PhoneCountry) {
+  return RULES[country].maxLength;
 }
 
 export function patternOf(country: PhoneCountry) {

@@ -6,7 +6,7 @@ import { useFlatItems } from "@/lib/paging";
 
 export const MEMBERS_KEY = ["members", "list"];
 
-export function membersKey(sort: MemberSort, filter: MemberFilter) {
+function membersKey(sort: MemberSort, filter: MemberFilter) {
   return [
     ...MEMBERS_KEY,
     sort,

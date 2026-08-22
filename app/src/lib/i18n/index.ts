@@ -8,7 +8,7 @@ import { deviceLocale, type SupportedLocale } from "@/lib/i18n/locale";
 import { useLocaleStore } from "@/lib/i18n/store";
 
 export type { SupportedLocale } from "@/lib/i18n/locale";
-export { deviceLocale, SUPPORTED_LOCALES } from "@/lib/i18n/locale";
+export { SUPPORTED_LOCALES } from "@/lib/i18n/locale";
 
 // 고른 언어가 있으면 그것을, 없으면 기기 언어를 쓴다.
 export function currentLocale(): SupportedLocale {

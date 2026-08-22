@@ -9,7 +9,7 @@ import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { COUNTRY_BUTTON_WIDTH } from "@/lib/design";
 import {
-  PHONE_NUMBER_MAX_LENGTH,
+  maxLengthOf,
   type PhoneCountry,
   SUPPORTED_COUNTRIES,
   usePhoneCountry,
@@ -63,7 +63,7 @@ export function PhoneNumberField<T extends FieldValues>({
             keyboardType="number-pad"
             textContentType="telephoneNumber"
             autoComplete="tel"
-            maxLength={PHONE_NUMBER_MAX_LENGTH}
+            maxLength={maxLengthOf(country)}
             clearable
           />
         </YStack>

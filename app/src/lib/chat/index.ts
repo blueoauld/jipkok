@@ -13,8 +13,8 @@ export const LEAVE_DESCRIPTION = i18n.t("component.leaveRoomNotice");
 
 export const LEAVE_SELECTED_DESCRIPTION = i18n.t("component.leaveRoomsNotice");
 
-export const PHOTO_SUMMARY = i18n.t("media.photoSummary");
-export const VIDEO_SUMMARY = i18n.t("media.videoSummary");
+const PHOTO_SUMMARY = i18n.t("media.photoSummary");
+const VIDEO_SUMMARY = i18n.t("media.videoSummary");
 
 export function mediaSummary(type: ChatMessageType) {
   return type === "VIDEO" ? VIDEO_SUMMARY : PHOTO_SUMMARY;
