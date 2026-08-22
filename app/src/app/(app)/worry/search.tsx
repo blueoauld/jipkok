@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchList } from "@/components/SearchList";
@@ -8,11 +9,13 @@ import { MIN_KEYWORD_LENGTH, useWorrySearch } from "@/hooks/useWorrySearch";
 import { pushOnce } from "@/lib/router";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
-const HINT_MESSAGE = `내용을 ${MIN_KEYWORD_LENGTH}자 이상 입력해주시길 바랍니다.`;
-
-const SCREEN_OPTIONS = { title: "고민 검색" };
-
 export default function WorrySearchScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({ title: t("worry.search.title") }),
+    [t],
+  );
+
   const [submitted, setSubmitted] = useState("");
   const search = useWorrySearch(submitted);
 
@@ -23,11 +26,11 @@ export default function WorrySearchScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <SearchList
-        hint={HINT_MESSAGE}
-        placeholder="고민 내용"
+        hint={t("worry.search.hint", { count: MIN_KEYWORD_LENGTH })}
+        placeholder={t("worry.search.placeholder")}
         maxLength={WORRY_CONTENT_MAX_LENGTH}
         query={search}
         submitted={submitted}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
@@ -21,10 +22,6 @@ import { useChatSelectionStore } from "@/lib/chat/store";
 import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 
-const ERROR_MESSAGE = "채팅방을 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "채팅방이 없습니다.";
-const UNREAD_EMPTY_MESSAGE = "안 읽은 채팅방이 없습니다.";
-
 const FILTERS = ["ALL", "UNREAD"] as const;
 type Filter = (typeof FILTERS)[number];
 
@@ -34,6 +31,8 @@ const FILTER_ITEMS = FILTERS.map((value) => ({
 }));
 
 export default function ChatScreen() {
+  const { t } = useTranslation();
+
   const [filter, setFilter] = useState<Filter>("ALL");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
@@ -113,14 +112,16 @@ export default function ChatScreen() {
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           ListEmptyComponent={
             <ListEmpty>
-              {unreadOnly ? UNREAD_EMPTY_MESSAGE : EMPTY_MESSAGE}
+              {unreadOnly
+                ? t("chat.list.unreadEmptyMessage")
+                : t("chat.list.emptyMessage")}
             </ListEmpty>
           }
         />
       ) : (
         <ScreenState
           error={error}
-          message={ERROR_MESSAGE}
+          message={t("chat.list.errorMessage")}
           onRetry={() => chatRooms.refetch()}
         />
       )}

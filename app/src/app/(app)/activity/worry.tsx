@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,12 +11,10 @@ import { usePagedList } from "@/hooks/usePagedList";
 import { useMyWorryPosts } from "@/hooks/useWorryPosts";
 import { pushOnce } from "@/lib/router";
 
-const SCREEN_OPTIONS = { title: "고민 목록" };
-
-const EMPTY_MESSAGE = "올린 고민이 없습니다.";
-const ERROR_MESSAGE = "고민을 불러오지 못했습니다.";
-
 export default function MyWorryListScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(() => ({ title: t("worry.list.title") }), [t]);
+
   const [refreshing, setRefreshing] = useState(false);
   const worries = useMyWorryPosts();
   const { posts, error, refetch } = worries;
@@ -38,7 +37,7 @@ export default function MyWorryListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       {posts ? (
         <FlatList
@@ -52,10 +51,16 @@ export default function MyWorryListScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-          ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
+          ListEmptyComponent={
+            <ListEmpty>{t("worry.list.emptyMessage")}</ListEmpty>
+          }
         />
       ) : (
-        <ScreenState error={error} message={ERROR_MESSAGE} onRetry={refetch} />
+        <ScreenState
+          error={error}
+          message={t("worry.list.errorMessage")}
+          onRetry={refetch}
+        />
       )}
     </SafeAreaView>
   );

@@ -1,4 +1,6 @@
 import { Stack } from "expo-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Text, XStack, YStack } from "tamagui";
@@ -13,10 +15,8 @@ import { formatDateTime } from "@/lib/date";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
 import { useAccentToken } from "@/lib/theme/accent";
 
-const ERROR_MESSAGE = "내역을 불러오지 못했습니다.";
-const EMPTY_MESSAGE = "내역이 없습니다.";
-
 function Balance() {
+  const { t } = useTranslation();
   const { data } = usePointBalance();
 
   return (
@@ -24,7 +24,7 @@ function Balance() {
       <RetroCard p="$4">
         <XStack items="center" justify="space-between" gap="$3">
           <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            보유 포인트
+            {t("point.history.balance")}
           </Text>
 
           <Text fontSize="$6" fontWeight="700">
@@ -67,9 +67,13 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   );
 }
 
-const SCREEN_OPTIONS = { title: "포인트 내역" };
-
 export default function PointHistoryScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(
+    () => ({ title: t("point.history.title") }),
+    [t],
+  );
+
   const space = getTokens().space;
 
   const query = usePointHistories();
@@ -78,7 +82,7 @@ export default function PointHistoryScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <YStack flex={1} gap="$4" pt="$4">
         <Balance />
@@ -95,12 +99,14 @@ export default function PointHistoryScreen() {
               paddingBottom: space.$4.val,
               gap: space.$4.val,
             }}
-            ListEmptyComponent={<ListEmpty>{EMPTY_MESSAGE}</ListEmpty>}
+            ListEmptyComponent={
+              <ListEmpty>{t("point.history.emptyMessage")}</ListEmpty>
+            }
           />
         ) : (
           <ScreenState
             error={error}
-            message={ERROR_MESSAGE}
+            message={t("point.history.errorMessage")}
             onRetry={() => query.refetch()}
           />
         )}

@@ -38,6 +38,15 @@ export const ja: typeof ko = {
   },
   chat: {
     filter: { ALL: "すべて", UNREAD: "未読" },
+    list: {
+      errorMessage: "チャットルームを読み込めませんでした。",
+      emptyMessage: "チャットルームがありません。",
+      unreadEmptyMessage: "未読のチャットルームがありません。",
+    },
+    search: {
+      title: "チャット検索",
+      hint: "ニックネームを入力してください。",
+    },
   },
   main: {
     sort: { RECENT: "最近", DISTANCE: "距離" },
@@ -47,6 +56,35 @@ export const ja: typeof ko = {
   },
   setting: {
     theme: { blue: "ブルー", pink: "ピンク", dark: "ダーク" },
+  },
+  rank: {
+    errorMessage: "ランキングを読み込めませんでした。",
+  },
+  point: {
+    history: {
+      title: "ポイント履歴",
+      balance: "保有ポイント",
+      errorMessage: "履歴を読み込めませんでした。",
+      emptyMessage: "履歴がありません。",
+    },
+  },
+  worry: {
+    list: {
+      title: "悩みリスト",
+      emptyMessage: "投稿した悩みがありません。",
+      errorMessage: "悩みを読み込めませんでした。",
+    },
+    search: {
+      title: "悩み検索",
+      hint: "内容を{{count}}文字以上入力してください。",
+      placeholder: "悩みの内容",
+    },
+  },
+  member: {
+    search: {
+      title: "会員検索",
+      hint: "ニックネームを{{count}}文字以上入力してください。",
+    },
   },
   date: {
     justNow: "たった今",

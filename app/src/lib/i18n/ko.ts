@@ -35,6 +35,15 @@ export const ko = {
   },
   chat: {
     filter: { ALL: "전체", UNREAD: "안읽음" },
+    list: {
+      errorMessage: "채팅방을 불러오지 못했습니다.",
+      emptyMessage: "채팅방이 없습니다.",
+      unreadEmptyMessage: "안 읽은 채팅방이 없습니다.",
+    },
+    search: {
+      title: "채팅 검색",
+      hint: "닉네임을 입력해주시길 바랍니다.",
+    },
   },
   main: {
     sort: { RECENT: "최근", DISTANCE: "거리" },
@@ -44,6 +53,35 @@ export const ko = {
   },
   setting: {
     theme: { blue: "블루", pink: "핑크", dark: "다크" },
+  },
+  rank: {
+    errorMessage: "랭킹을 불러오지 못했습니다.",
+  },
+  point: {
+    history: {
+      title: "포인트 내역",
+      balance: "보유 포인트",
+      errorMessage: "내역을 불러오지 못했습니다.",
+      emptyMessage: "내역이 없습니다.",
+    },
+  },
+  worry: {
+    list: {
+      title: "고민 목록",
+      emptyMessage: "올린 고민이 없습니다.",
+      errorMessage: "고민을 불러오지 못했습니다.",
+    },
+    search: {
+      title: "고민 검색",
+      hint: "내용을 {{count}}자 이상 입력해주시길 바랍니다.",
+      placeholder: "고민 내용",
+    },
+  },
+  member: {
+    search: {
+      title: "회원 검색",
+      hint: "닉네임을 {{count}}자 이상 입력해주시길 바랍니다.",
+    },
   },
   date: {
     justNow: "방금 전",

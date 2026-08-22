@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
@@ -26,9 +27,9 @@ const GENDER_FILTER_ITEMS = GENDER_FILTERS.map((value) => ({
   label: genderFilterLabel(value),
 }));
 
-const ERROR_MESSAGE = "랭킹을 불러오지 못했습니다.";
-
 export default function RankScreen() {
+  const { t } = useTranslation();
+
   const [filter, setFilter] = useState<GenderFilter>("ALL");
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
@@ -65,7 +66,7 @@ export default function RankScreen() {
       ) : (
         <ScreenState
           error={error}
-          message={ERROR_MESSAGE}
+          message={t("rank.errorMessage")}
           onRetry={() => ranking.refetch()}
         />
       )}

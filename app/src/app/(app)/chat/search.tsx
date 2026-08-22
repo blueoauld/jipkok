@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
@@ -8,11 +9,10 @@ import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 
-const HINT_MESSAGE = "닉네임을 입력해주시길 바랍니다.";
-
-const SCREEN_OPTIONS = { title: "채팅 검색" };
-
 export default function ChatSearchScreen() {
+  const { t } = useTranslation();
+  const screenOptions = useMemo(() => ({ title: t("chat.search.title") }), [t]);
+
   const [submitted, setSubmitted] = useState("");
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const { toggleNotification, markRoomRead, confirmLeave } = useChatRoomActions(
@@ -26,10 +26,10 @@ export default function ChatSearchScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={screenOptions} />
 
       <SearchList
-        hint={HINT_MESSAGE}
+        hint={t("chat.search.hint")}
         query={search}
         submitted={submitted}
         onSubmit={setSubmitted}
