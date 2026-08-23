@@ -13,6 +13,10 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "jipkok",
+    "locales": {
+      "ja": "./locales/ja.json",
+      "en": "./locales/en.json"
+    },
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.blueoauld.jipkok",
