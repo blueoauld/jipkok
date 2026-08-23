@@ -25,7 +25,7 @@ class TranslationLimitCache(
 
     companion object {
 
-        const val DAILY_LIMIT = 200L
+        const val DAILY_LIMIT = 20L
 
         private const val KEY_PREFIX = "translation:count:"
         private val WINDOW: Duration = Duration.ofDays(1)

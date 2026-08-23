@@ -131,6 +131,9 @@ export const en: typeof ko = {
     WORRY_006: "You can only delete your own comments.",
     WORRY_007: "You've already reported this comment.",
     WORRY_008: "You can't reply to a reply.",
+    TRANSLATION_001: "Couldn't translate. Please try again in a moment.",
+    TRANSLATION_002:
+      "You've reached the translation limit. Please try again in a moment.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },
