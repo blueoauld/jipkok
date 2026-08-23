@@ -393,6 +393,8 @@ export const en: typeof ko = {
       commentError: "Couldn't load the comments.",
       postDeleted: "Post deleted.",
       postCopied: "Worry copied.",
+      translate: "Translate",
+      showOriginal: "Original",
       commentCopied: "Comment copied.",
       commentDeleted: "Comment deleted.",
       deletedComment: "This comment was deleted.",

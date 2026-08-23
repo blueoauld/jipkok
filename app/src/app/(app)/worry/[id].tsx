@@ -28,6 +28,7 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { CommentScrollView } from "@/components/worry/CommentScrollView";
 import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
+import { useContentTranslation } from "@/hooks/useContentTranslation";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWorryComments, worryCommentsKey } from "@/hooks/useWorryComments";
@@ -106,6 +107,8 @@ function PostSection({
   onToggleLike: () => void;
 }) {
   const { t } = useTranslation();
+  const translation = useContentTranslation("WORRY_POST", post.worryId);
+
   return (
     <RetroCard
       gap="$2.5"
@@ -123,16 +126,27 @@ function PostSection({
         </Text>
       </XStack>
 
-      <Text fontSize="$4">{post.content}</Text>
+      <Text fontSize="$4">{translation.contentOf(post.content)}</Text>
 
-      <XStack gap="$4">
-        <CountBadge
-          icon={HeartIcon}
-          value={post.likeCount}
-          active={post.likedByMe}
-          onPress={onToggleLike}
+      <XStack items="center" justify="space-between">
+        <XStack gap="$4">
+          <CountBadge
+            icon={HeartIcon}
+            value={post.likeCount}
+            active={post.likedByMe}
+            onPress={onToggleLike}
+          />
+          <CountBadge icon={ChatCircleIcon} value={post.commentCount} />
+        </XStack>
+
+        <RowAction
+          label={
+            translation.showing
+              ? t("worry.detail.showOriginal")
+              : t("worry.detail.translate")
+          }
+          onPress={translation.toggle}
         />
-        <CountBadge icon={ChatCircleIcon} value={post.commentCount} />
       </XStack>
     </RetroCard>
   );
@@ -186,6 +200,7 @@ function CommentRow({
   const active = comment.status === "ACTIVE";
   const reply = comment.parentId != null;
   const copyTarget = active ? comment.content : null;
+  const translation = useContentTranslation("WORRY_COMMENT", comment.commentId);
 
   return (
     <RetroListRow
@@ -225,7 +240,7 @@ function CommentRow({
         </XStack>
 
         {active ? (
-          <Text fontSize="$4">{comment.content}</Text>
+          <Text fontSize="$4">{translation.contentOf(comment.content)}</Text>
         ) : (
           <Text theme="gray" color="$color11" fontSize="$4">
             {deletedPlaceholder(comment)}
@@ -234,6 +249,14 @@ function CommentRow({
 
         {active && (
           <XStack self="flex-end" gap="$4">
+            <RowAction
+              label={
+                translation.showing
+                  ? t("worry.detail.showOriginal")
+                  : t("worry.detail.translate")
+              }
+              onPress={translation.toggle}
+            />
             {!reply && (
               <RowAction
                 label={t("worry.detail.reply")}

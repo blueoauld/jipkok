@@ -18,6 +18,9 @@ r2:
     bucket: ""
     public-base-url: ""
 
+google-translate:
+    api-key: ""
+
 solapi:
     api-key: ""
     api-secret: ""

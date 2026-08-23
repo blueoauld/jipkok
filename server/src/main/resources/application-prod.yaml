@@ -50,6 +50,9 @@ r2:
     bucket: ${R2_BUCKET}
     public-base-url: ${R2_PUBLIC_BASE_URL}
 
+google-translate:
+    api-key: ${GOOGLE_TRANSLATE_API_KEY:}
+
 solapi:
     api-key: ${SOLAPI_API_KEY:}
     api-secret: ${SOLAPI_API_SECRET:}

@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.worry.service
 
+import com.blueoauld.server.domain.translation.entity.type.TranslationSource
+import com.blueoauld.server.domain.translation.repository.TranslationRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
@@ -23,6 +25,7 @@ class WorryCleaner(
     private val worryPostReportRepository: WorryPostReportRepository,
     private val worryCommentRepository: WorryCommentRepository,
     private val worryCommentReportRepository: WorryCommentReportRepository,
+    private val translationRepository: TranslationRepository,
     private val clock: Clock,
 ) {
 
@@ -46,9 +49,11 @@ class WorryCleaner(
 
         if (commentIds.isNotEmpty()) {
             worryCommentReportRepository.deleteAllByCommentIdIn(commentIds)
+            translationRepository.deleteAllBySourceTypeAndSourceIdIn(TranslationSource.WORRY_COMMENT, commentIds)
             worryCommentRepository.deleteAllByIdIn(commentIds)
         }
 
+        translationRepository.deleteAllBySourceTypeAndSourceIdIn(TranslationSource.WORRY_POST, postIds)
         worryPostLikeRepository.deleteAllByPostIdIn(postIds)
         worryPostReportRepository.deleteAllByPostIdIn(postIds)
         worryPostRepository.deleteAllByIdIn(postIds)
@@ -64,6 +69,7 @@ class WorryCleaner(
         }
 
         worryCommentReportRepository.deleteAllByCommentIdIn(commentIds)
+        translationRepository.deleteAllBySourceTypeAndSourceIdIn(TranslationSource.WORRY_COMMENT, commentIds)
         worryCommentRepository.deleteAllByIdIn(commentIds)
 
         log.info { "삭제된 고민 댓글 ${commentIds.size}건을 정리했다." }

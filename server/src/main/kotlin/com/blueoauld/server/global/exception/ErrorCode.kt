@@ -118,4 +118,7 @@ enum class ErrorCode(
     NOT_WORRY_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "WORRY_006", "본인이 쓴 댓글만 지울 수 있습니다."),
     DUPLICATE_WORRY_COMMENT_REPORT(HttpStatus.CONFLICT, "WORRY_007", "이미 신고한 댓글입니다."),
     NESTED_WORRY_REPLY(HttpStatus.BAD_REQUEST, "WORRY_008", "답글에는 답글을 달 수 없습니다."),
+
+    TRANSLATE_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "TRANSLATION_001", "번역하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
+    TRANSLATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "TRANSLATION_002", "번역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
 }

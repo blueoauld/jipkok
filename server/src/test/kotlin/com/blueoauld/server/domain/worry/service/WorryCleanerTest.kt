@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.worry.service
 
+import com.blueoauld.server.domain.translation.entity.type.TranslationSource
+import com.blueoauld.server.domain.translation.repository.TranslationRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
@@ -27,12 +29,15 @@ class WorryCleanerTest {
 
     private val worryCommentReportRepository = mockk<WorryCommentReportRepository>(relaxed = true)
 
+    private val translationRepository = mockk<TranslationRepository>(relaxed = true)
+
     private val cleaner = WorryCleaner(
         worryPostRepository,
         worryPostLikeRepository,
         worryPostReportRepository,
         worryCommentRepository,
         worryCommentReportRepository,
+        translationRepository,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -100,6 +105,18 @@ class WorryCleanerTest {
         // then
         verify(exactly = 0) { worryPostRepository.deleteAllByIdIn(any()) }
         verify(exactly = 0) { worryCommentRepository.deleteAllByIdIn(any()) }
+    }
+
+    @Test
+    fun `글과 댓글의 번역도 같이 지운다`() {
+        // given, when
+        cleaner.cleanUp()
+
+        // then
+        verify {
+            translationRepository.deleteAllBySourceTypeAndSourceIdIn(TranslationSource.WORRY_COMMENT, COMMENT_IDS)
+            translationRepository.deleteAllBySourceTypeAndSourceIdIn(TranslationSource.WORRY_POST, POST_IDS)
+        }
     }
 
     companion object {

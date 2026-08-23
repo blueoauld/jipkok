@@ -4,6 +4,7 @@ import com.blueoauld.server.global.properties.AdMobProperties
 import com.blueoauld.server.global.properties.AppVersionProperties
 import com.blueoauld.server.global.properties.CorsProperties
 import com.blueoauld.server.global.properties.DiscordProperties
+import com.blueoauld.server.global.properties.GoogleTranslateProperties
 import com.blueoauld.server.global.properties.JwtProperties
 import com.blueoauld.server.global.properties.R2Properties
 import com.blueoauld.server.global.properties.SolapiProperties
@@ -31,6 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
     AdMobProperties::class,
     DiscordProperties::class,
     SolapiProperties::class,
+    GoogleTranslateProperties::class,
     AppVersionProperties::class,
     CorsProperties::class,
 )

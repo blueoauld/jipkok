@@ -72,3 +72,7 @@ export type MemberListPage = Schemas["ScrollResponseMemberListItemResponse"];
 export type MemberSearchPage = Schemas["ScrollResponseMemberSummaryResponse"];
 export type ProfileViewPage = Schemas["ScrollResponseProfileViewResponse"];
 export type PointHistoryPage = Schemas["CursorResponsePointHistoryResponse"];
+
+export type TranslateRequest = Schemas["TranslateRequest"];
+export type TranslationSource = TranslateRequest["sourceType"];
+export type TranslationResponse = Schemas["TranslationResponse"];

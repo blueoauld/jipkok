@@ -38,6 +38,8 @@ import type {
   SetupProfileRequest,
   SignupRequest,
   TokenResponse,
+  TranslationResponse,
+  TranslationSource,
   UpdateCommentRequest,
   VerificationPurpose,
   WorryCategory,
@@ -463,5 +465,13 @@ export const worries = {
   reportComment: (commentId: number) =>
     request<void>(`/api/worries/comments/${commentId}/reports`, {
       method: "POST",
+    }),
+};
+
+export const translations = {
+  translate: (sourceType: TranslationSource, sourceId: number) =>
+    request<TranslationResponse>("/api/translations", {
+      method: "POST",
+      body: { sourceType, sourceId },
     }),
 };
