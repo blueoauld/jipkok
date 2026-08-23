@@ -49,7 +49,10 @@ function Blink({ active, children }: { active: boolean; children: ReactNode }) {
 
   const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
-  return <Animated.View style={style}>{children}</Animated.View>;
+  // 이 래퍼가 줄어들지 않으면 긴 말풍선이 최대 너비를 넘어 시각이 화면 밖으로 밀린다.
+  return (
+    <Animated.View style={[{ flexShrink: 1 }, style]}>{children}</Animated.View>
+  );
 }
 
 function ReplyAction() {
