@@ -392,6 +392,8 @@ export const ko = {
       commentEmpty: "댓글이 없습니다.",
       commentError: "댓글을 불러오지 못했습니다.",
       postDeleted: "고민을 삭제했습니다.",
+      postCopied: "고민이 복사되었습니다.",
+      commentCopied: "댓글이 복사되었습니다.",
       commentDeleted: "댓글을 삭제했습니다.",
       deletedComment: "삭제된 댓글입니다.",
       reportDeletedComment: "신고 누적으로 삭제된 댓글입니다.",

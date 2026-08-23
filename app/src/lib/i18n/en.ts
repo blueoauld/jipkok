@@ -392,6 +392,8 @@ export const en: typeof ko = {
       commentEmpty: "No comments yet.",
       commentError: "Couldn't load the comments.",
       postDeleted: "Post deleted.",
+      postCopied: "Worry copied.",
+      commentCopied: "Comment copied.",
       commentDeleted: "Comment deleted.",
       deletedComment: "This comment was deleted.",
       reportDeletedComment: "This comment was removed after multiple reports.",

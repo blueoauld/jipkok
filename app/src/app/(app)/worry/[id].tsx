@@ -37,6 +37,7 @@ import {
   type WorryCommentResponse,
   type WorryPostResponse,
 } from "@/lib/api";
+import { copyText } from "@/lib/clipboard";
 import { formatRelativeTime } from "@/lib/date";
 import {
   KEYBOARD_OVERLAP,
@@ -106,7 +107,10 @@ function PostSection({
 }) {
   const { t } = useTranslation();
   return (
-    <RetroCard gap="$2.5">
+    <RetroCard
+      gap="$2.5"
+      onLongPress={() => copyText(post.content, t("worry.detail.postCopied"))}
+    >
       <XStack items="center" justify="space-between">
         <XStack items="center" gap="$2">
           <WorryCategoryTag category={post.category} />
@@ -181,9 +185,21 @@ function CommentRow({
   const accentToken = useAccentToken();
   const active = comment.status === "ACTIVE";
   const reply = comment.parentId != null;
+  const copyTarget = active ? comment.content : null;
 
   return (
-    <RetroListRow divider={divider} pl={reply ? REPLY_INDENT : "$4"} gap="$2.5">
+    <RetroListRow
+      divider={divider}
+      pl={reply ? REPLY_INDENT : "$4"}
+      gap="$2.5"
+      onLongPress={
+        copyTarget
+          ? () => copyText(copyTarget, t("worry.detail.commentCopied"))
+          : undefined
+      }
+      // 꾹 눌러 복사하는 것뿐이라 누른 것처럼 보일 필요가 없다.
+      pressStyle={undefined}
+    >
       {reply && (
         <YStack self="flex-start" mt={REPLY_ICON_TOP}>
           <ArrowBendDownRightIcon

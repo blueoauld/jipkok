@@ -395,6 +395,8 @@ export const ja: typeof ko = {
       commentEmpty: "コメントがありません。",
       commentError: "コメントを読み込めませんでした。",
       postDeleted: "悩みを削除しました。",
+      postCopied: "悩みをコピーしました。",
+      commentCopied: "コメントをコピーしました。",
       commentDeleted: "コメントを削除しました。",
       deletedComment: "削除されたコメントです。",
       reportDeletedComment: "通報が重なり削除されたコメントです。",
