@@ -394,6 +394,7 @@ export const ko = {
       postDeleted: "고민을 삭제했습니다.",
       postCopied: "고민이 복사되었습니다.",
       translate: "번역",
+      translating: "번역 중",
       showOriginal: "원문",
       commentCopied: "댓글이 복사되었습니다.",
       commentDeleted: "댓글을 삭제했습니다.",

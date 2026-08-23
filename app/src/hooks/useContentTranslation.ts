@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { apiErrorMessage } from "@/lib/alert";
 import { api, type TranslationSource } from "@/lib/api";
+import i18n from "@/lib/i18n";
 import { showToast } from "@/lib/toast/store";
 
 // 번역은 한 번 받아두면 바뀌지 않아 화면이 살아 있는 동안 다시 부르지 않는다.
@@ -28,14 +29,28 @@ export function useContentTranslation(
       return;
     }
 
+    if (translate.isPending) {
+      return;
+    }
+
     translate.mutate();
   };
 
   return {
-    showing,
     pending: translate.isPending,
+    label: labelOf(translate.isPending, showing),
     toggle,
     contentOf: (original: string | null | undefined) =>
       showing && translated ? translated : (original ?? ""),
   };
+}
+
+function labelOf(pending: boolean, showing: boolean) {
+  if (pending) {
+    return i18n.t("worry.detail.translating");
+  }
+
+  return showing
+    ? i18n.t("worry.detail.showOriginal")
+    : i18n.t("worry.detail.translate");
 }

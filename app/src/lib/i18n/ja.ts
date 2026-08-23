@@ -397,6 +397,7 @@ export const ja: typeof ko = {
       postDeleted: "悩みを削除しました。",
       postCopied: "悩みをコピーしました。",
       translate: "翻訳",
+      translating: "翻訳中",
       showOriginal: "原文",
       commentCopied: "コメントをコピーしました。",
       commentDeleted: "コメントを削除しました。",

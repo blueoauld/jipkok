@@ -41,6 +41,7 @@ import {
 import { copyText } from "@/lib/clipboard";
 import { formatRelativeTime } from "@/lib/date";
 import {
+  DISABLED_OPACITY,
   KEYBOARD_OVERLAP,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
@@ -140,11 +141,8 @@ function PostSection({
         </XStack>
 
         <RowAction
-          label={
-            translation.showing
-              ? t("worry.detail.showOriginal")
-              : t("worry.detail.translate")
-          }
+          label={translation.label}
+          disabled={translation.pending}
           onPress={translation.toggle}
         />
       </XStack>
@@ -161,19 +159,25 @@ function deletedPlaceholder(comment: WorryCommentResponse) {
 function RowAction({
   label,
   destructive,
+  disabled,
   onPress,
 }: {
   label: string;
   destructive?: boolean;
+  disabled?: boolean;
   onPress: () => void;
 }) {
   return (
-    <XStack pressStyle={{ opacity: PRESS_OPACITY }} onPress={onPress}>
+    <XStack
+      pressStyle={disabled ? undefined : { opacity: PRESS_OPACITY }}
+      onPress={disabled ? undefined : onPress}
+    >
       <Text
         theme="gray"
         color={destructive ? "$red10" : "$color11"}
         fontSize="$3"
         fontWeight="600"
+        opacity={disabled ? DISABLED_OPACITY : 1}
       >
         {label}
       </Text>
@@ -250,11 +254,8 @@ function CommentRow({
         {active && (
           <XStack self="flex-end" gap="$4">
             <RowAction
-              label={
-                translation.showing
-                  ? t("worry.detail.showOriginal")
-                  : t("worry.detail.translate")
-              }
+              label={translation.label}
+              disabled={translation.pending}
               onPress={translation.toggle}
             />
             {!reply && (

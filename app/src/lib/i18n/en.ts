@@ -394,6 +394,7 @@ export const en: typeof ko = {
       postDeleted: "Post deleted.",
       postCopied: "Worry copied.",
       translate: "Translate",
+      translating: "Translating",
       showOriginal: "Original",
       commentCopied: "Comment copied.",
       commentDeleted: "Comment deleted.",
