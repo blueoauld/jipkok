@@ -11,6 +11,10 @@ export const profileCommentEmptyMessage = () =>
 
 export const profileBioEmptyMessage = () => i18n.t("common.profileBioEmpty");
 
+export const commentCopiedMessage = () => i18n.t("common.commentCopied");
+
+export const bioCopiedMessage = () => i18n.t("common.bioCopied");
+
 export const reportedMessage = () => i18n.t("common.reported");
 
 export const photoPermissionMessage = () => i18n.t("common.photoPermission");

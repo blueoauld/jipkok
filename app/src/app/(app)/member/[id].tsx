@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -41,10 +40,13 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
+import { copyText } from "@/lib/clipboard";
 import { FAVORITE_COLOR } from "@/lib/color";
 import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import {
+  bioCopiedMessage,
+  commentCopiedMessage,
   profileBioEmptyMessage,
   profileCommentEmptyMessage,
   profileErrorMessage,
@@ -54,7 +56,6 @@ import { useLoadingOverlay } from "@/lib/overlay/store";
 import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
-import { showToast } from "@/lib/toast/store";
 
 const ACTION_ICON_SIZE = 30;
 
@@ -276,11 +277,8 @@ export default function MemberProfileScreen() {
     [queryClient, queryKey, relate],
   );
 
-  const copyMemberId = async (id: number) => {
-    await Clipboard.setStringAsync(String(id));
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    showToast("info", t("memberDetail.idCopied"));
-  };
+  const copyMemberId = (id: number) =>
+    copyText(String(id), t("memberDetail.idCopied"));
 
   const handleAction = useCallback(
     (key: ActionKey) => {
@@ -471,12 +469,14 @@ export default function MemberProfileScreen() {
                 title={t("profile.comment")}
                 body={member.comment}
                 placeholder={profileCommentEmptyMessage()}
+                copiedMessage={commentCopiedMessage()}
               />
 
               <ProfileSection
                 title={t("profile.bio")}
                 body={member.bio}
                 placeholder={profileBioEmptyMessage()}
+                copiedMessage={bioCopiedMessage()}
               />
             </YStack>
           </ScrollView>

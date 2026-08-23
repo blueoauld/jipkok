@@ -22,6 +22,8 @@ import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
 import {
+  bioCopiedMessage,
+  commentCopiedMessage,
   profileBioEmptyMessage,
   profileCommentEmptyMessage,
   profileErrorMessage,
@@ -83,12 +85,14 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
             title={t("profile.comment")}
             body={comment}
             placeholder={profileCommentEmptyMessage()}
+            copiedMessage={commentCopiedMessage()}
           />
 
           <ProfileSection
             title={t("profile.bio")}
             body={bio}
             placeholder={profileBioEmptyMessage()}
+            copiedMessage={bioCopiedMessage()}
           />
         </YStack>
       </ScrollView>

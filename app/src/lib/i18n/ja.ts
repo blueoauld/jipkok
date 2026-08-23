@@ -10,6 +10,8 @@ export const ja: typeof ko = {
     reported: "通報を受け付けました。",
     photoPermission: "写真へのアクセス権限が必要です。",
     codeSent: "認証番号を送信しました。",
+    commentCopied: "コメントをコピーしました。",
+    bioCopied: "自己紹介をコピーしました。",
     contentPlaceholder: "内容を入力",
   },
   tabs: {

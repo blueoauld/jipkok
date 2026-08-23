@@ -1,6 +1,6 @@
-import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 
+import { copyText } from "@/lib/clipboard";
 import i18n from "@/lib/i18n";
 import { photoPermissionMessage } from "@/lib/message";
 import { saveChatMedia } from "@/lib/photo";
@@ -20,13 +20,7 @@ const SAVE_FAILED_MESSAGE = {
 export type MediaKind = keyof typeof SAVED_MESSAGE;
 
 export async function copyMessage(content: string) {
-  if (!content) {
-    return;
-  }
-
-  await Clipboard.setStringAsync(content);
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  showToast("info", COPIED_MESSAGE);
+  await copyText(content, COPIED_MESSAGE);
 }
 
 export async function saveMedia(url: string, kind: MediaKind) {

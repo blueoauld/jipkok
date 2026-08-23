@@ -10,6 +10,8 @@ export const en: typeof ko = {
     reported: "Your report has been submitted.",
     photoPermission: "Photo access is required.",
     codeSent: "Verification code sent.",
+    commentCopied: "Comment copied.",
+    bioCopied: "Bio copied.",
     contentPlaceholder: "Write here",
   },
   tabs: {

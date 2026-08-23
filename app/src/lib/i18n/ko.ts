@@ -8,6 +8,8 @@ export const ko = {
     reported: "신고가 접수되었습니다.",
     photoPermission: "사진 접근 권한이 필요합니다.",
     codeSent: "인증번호를 보냈습니다.",
+    commentCopied: "코멘트가 복사되었습니다.",
+    bioCopied: "자기소개가 복사되었습니다.",
     contentPlaceholder: "내용 입력",
   },
   tabs: {
