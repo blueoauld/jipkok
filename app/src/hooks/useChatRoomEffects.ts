@@ -13,9 +13,12 @@ export function useChatRoomEffects(
 ) {
   const queryClient = useQueryClient();
 
+  // 전역 기본값은 즉시 실패지만 이건 멈춰 뒀다 연결되면 보낸다. 아래에서 markedMessageId를
+  // 먼저 올리기 때문에, 실패하면 그 메시지의 읽음 표시가 다시 시도되지 않고 사라진다.
   const { mutate: markRead } = useMutation({
     mutationFn: (lastReadMessageId: number) =>
       api.chats.markRead(roomId, lastReadMessageId),
+    networkMode: "online",
     onSuccess: () => invalidateChatLists(queryClient),
   });
 
