@@ -22,8 +22,8 @@ i18n.use(initReactI18next).init({
   resources: {
     ko: { translation: ko },
     ja: { translation: ja },
-    en: { translation: en },
     zh: { translation: zh },
+    en: { translation: en },
   },
   lng: currentLocale(),
   fallbackLng: "ko",

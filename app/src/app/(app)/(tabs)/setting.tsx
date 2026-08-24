@@ -74,8 +74,8 @@ const THEME_ITEMS = THEME_MODES.map((value) => ({
 const LANGUAGE_LABEL_KEYS = {
   ko: "setting.languageKo",
   ja: "setting.languageJa",
-  en: "setting.languageEn",
   zh: "setting.languageZh",
+  en: "setting.languageEn",
 } as const satisfies Record<SupportedLocale, string>;
 
 type SettingAction =

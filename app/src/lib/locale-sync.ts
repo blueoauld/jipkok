@@ -6,8 +6,8 @@ import { currentLocale, type SupportedLocale } from "@/lib/i18n";
 const SERVER_LOCALES: Record<SupportedLocale, MemberLocale> = {
   ko: "KO",
   ja: "JA",
-  en: "EN",
   zh: "ZH_TW",
+  en: "EN",
 };
 
 export function serverLocale(): MemberLocale {
