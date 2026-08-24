@@ -30,9 +30,6 @@ const config: QueryClientConfig = {
         return failureCount < RETRY_COUNT;
       },
     },
-    // 기본값 "online"은 연결이 없으면 뮤테이션을 실패시키지 않고 멈춰 세운다. 그러면
-    // onError가 오지 않아 재전송과 롤백이 죽고, isPending으로 띄우는 전체 화면 오버레이가
-    // 풀리지 않아 화면이 잠긴다. 조회만 연결 상태를 따르게 두고 뮤테이션은 즉시 실패시킨다.
     mutations: {
       retry: false,
       networkMode: "always",
@@ -53,7 +50,6 @@ function useAppStateFocus() {
 function useNetworkOnline() {
   useEffect(() => {
     onlineManager.setEventListener((setOnline) => {
-      // 리스너는 상태가 바뀔 때만 불리므로 첫 상태는 따로 읽어 채운다.
       let received = false;
       const subscription = Network.addNetworkStateListener((state) => {
         received = true;

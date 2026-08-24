@@ -10,15 +10,10 @@ import {
   type UploadProgress,
 } from "@/lib/upload";
 
-// 같은 화질에서 JPEG보다 30% 가까이 작다. 사진은 한 번 올라가 여러 번 조회되므로
-// 인코딩이 느려지는 대가를 치를 값어치가 있다. 서버는 image/webp를 이미 허용한다.
 const CONTENT_TYPE = "image/webp";
 
 const LOCAL_URI_PREFIX = "file://";
 
-// WEBP 인코딩 비용은 픽셀 수에 비례한다. 1440에서 1280으로 낮추면 장당 80ms에서
-// 65ms로 준다. 품질값을 낮추는 쪽은 시간에 거의 영향이 없어 해상도로 잡는다.
-// PhotoViewer가 확대 보기를 지원하므로 더 낮추면 확대 시 뭉개짐이 보인다.
 const MAX_LENGTH = 1280;
 const COMPRESS = 0.8;
 

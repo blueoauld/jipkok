@@ -22,9 +22,6 @@ export function useUploadPhotos(
 
       setUploading(true);
 
-      // iOS는 expo 모듈의 비동기 호출이 하나의 직렬 큐를 공유한다. 한꺼번에 밀어 넣으면
-      // 인코딩이 빨라지지도 않으면서 그동안 다른 모듈 호출까지 뒤에서 막힌다.
-      // 한 장씩 넣고 끝나는 대로 반영해, 중간에 실패해도 앞의 것은 남는다.
       for (const asset of assets) {
         const photo = await upload(asset);
 

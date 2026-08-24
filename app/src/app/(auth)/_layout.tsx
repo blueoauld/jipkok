@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
-// 화면 오류를 여기서 먼저 잡아야 루트가 살아남아 쿼리 캐시가 유지된다.
 export { AppErrorBoundary as ErrorBoundary } from "@/components/AppErrorBoundary";
 
 export default function AuthLayout() {
