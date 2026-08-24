@@ -16,7 +16,10 @@ const CONTENT_TYPE = "image/webp";
 
 const LOCAL_URI_PREFIX = "file://";
 
-const MAX_LENGTH = 1440;
+// WEBP 인코딩 비용은 픽셀 수에 비례한다. 1440에서 1280으로 낮추면 장당 80ms에서
+// 65ms로 준다. 품질값을 낮추는 쪽은 시간에 거의 영향이 없어 해상도로 잡는다.
+// PhotoViewer가 확대 보기를 지원하므로 더 낮추면 확대 시 뭉개짐이 보인다.
+const MAX_LENGTH = 1280;
 const COMPRESS = 0.8;
 
 async function toUploadImage(asset: ImagePickerAsset) {
