@@ -10337,7 +10337,7 @@
                 "properties": {
                     "phoneNumber": {
                         "type": "string",
-                        "pattern": "^(\\+8210|\\+81[789]0)\\d{8}$"
+                        "pattern": "^(\\+8210|\\+81[789]0|\\+8869)\\d{8}$"
                     },
                     "verificationCode": {
                         "type": "string",
@@ -10752,7 +10752,7 @@
                 "properties": {
                     "phoneNumber": {
                         "type": "string",
-                        "pattern": "^(\\+8210|\\+81[789]0)\\d{8}$"
+                        "pattern": "^(\\+8210|\\+81[789]0|\\+8869)\\d{8}$"
                     },
                     "purpose": {
                         "type": "string",
@@ -10783,7 +10783,7 @@
                 "properties": {
                     "phoneNumber": {
                         "type": "string",
-                        "pattern": "^(\\+8210|\\+81[789]0)\\d{8}$"
+                        "pattern": "^(\\+8210|\\+81[789]0|\\+8869)\\d{8}$"
                     },
                     "verificationCode": {
                         "type": "string",

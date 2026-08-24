@@ -12,6 +12,7 @@ import spec from "../../../openapi.json";
 const SAMPLES: Record<PhoneCountry, string> = {
   KR: "01012345678",
   JP: "09012345678",
+  TW: "0912345678",
 };
 
 // 서버가 받는 패턴은 OpenAPI 문서에 실려 나온다. 앱에만 나라를 더하면 이 테스트가 깨진다.

@@ -47,6 +47,10 @@ describe("phone", () => {
     usePhoneCountryStore.getState().setCountry("JP");
 
     expect(toE164("09012345678")).toBe("+819012345678");
+
+    usePhoneCountryStore.getState().setCountry("TW");
+
+    expect(toE164("0912345678")).toBe("+886912345678");
   });
 
   it("한국은 010으로 시작하는 11자리만 받는다", () => {
@@ -65,5 +69,14 @@ describe("phone", () => {
     expect(pattern.test("09012345678")).toBe(true);
     expect(pattern.test("06012345678")).toBe(false);
     expect(pattern.test("01012345678")).toBe(false);
+  });
+
+  it("대만은 09로 시작하는 10자리만 받는다", () => {
+    const pattern = patternOf("TW");
+
+    expect(pattern.test("0912345678")).toBe(true);
+    expect(pattern.test("0812345678")).toBe(false);
+    expect(pattern.test("09123456789")).toBe(false);
+    expect(pattern.test("091234567")).toBe(false);
   });
 });

@@ -20,6 +20,7 @@ import { phoneNumberRules } from "@/lib/validation";
 const COUNTRY_LABEL_KEYS = {
   KR: "auth.countryKR",
   JP: "auth.countryJP",
+  TW: "auth.countryTW",
 } as const satisfies Record<PhoneCountry, string>;
 
 export function PhoneNumberField<T extends FieldValues>({

@@ -197,6 +197,7 @@ export const zh: typeof ko = {
     sendCode: "傳送",
     countryKR: "韓國",
     countryJP: "日本",
+    countryTW: "台灣",
     resendCountdown: "{{count}}秒",
     login: {
       title: "登入",

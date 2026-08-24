@@ -23,6 +23,12 @@ class MemberPhoneNumberPatternTest {
     }
 
     @Test
+    fun `국가 코드가 붙은 대만 휴대폰 번호를 받는다`() {
+        // given, when, then
+        assertThat(pattern.matches("+886912345678")).isTrue()
+    }
+
+    @Test
     fun `국가 코드가 없으면 받지 않는다`() {
         // given, when
         val numbers = listOf("01012345678", "09012345678")
@@ -43,7 +49,7 @@ class MemberPhoneNumberPatternTest {
     @Test
     fun `자릿수가 어긋나면 받지 않는다`() {
         // given, when
-        val numbers = listOf("+82101234567", "+8210123456789", "+81901234567")
+        val numbers = listOf("+82101234567", "+8210123456789", "+81901234567", "+88691234567")
 
         // then
         assertThat(numbers).noneMatch { pattern.matches(it) }
@@ -53,5 +59,11 @@ class MemberPhoneNumberPatternTest {
     fun `일본 휴대폰이 아닌 앞자리는 받지 않는다`() {
         // given, when, then
         assertThat(pattern.matches("+816012345678")).isFalse()
+    }
+
+    @Test
+    fun `대만 휴대폰이 아닌 앞자리는 받지 않는다`() {
+        // given, when, then
+        assertThat(pattern.matches("+886812345678")).isFalse()
     }
 }

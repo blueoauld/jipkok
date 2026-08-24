@@ -206,6 +206,7 @@ export const en: typeof ko = {
     sendCode: "Send",
     countryKR: "South Korea",
     countryJP: "Japan",
+    countryTW: "Taiwan",
     resendCountdown: "{{count}}s",
     login: {
       title: "Log in",

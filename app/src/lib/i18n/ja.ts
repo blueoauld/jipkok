@@ -209,6 +209,7 @@ export const ja: typeof ko = {
     sendCode: "送信",
     countryKR: "韓国",
     countryJP: "日本",
+    countryTW: "台湾",
     resendCountdown: "{{count}}秒",
     login: {
       title: "ログイン",

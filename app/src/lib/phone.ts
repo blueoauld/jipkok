@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 
 import { storage } from "@/lib/storage";
 
-export const SUPPORTED_COUNTRIES = ["KR", "JP"] as const;
+export const SUPPORTED_COUNTRIES = ["KR", "JP", "TW"] as const;
 
 export type PhoneCountry = (typeof SUPPORTED_COUNTRIES)[number];
 
@@ -17,6 +17,7 @@ const RULES: Record<
 > = {
   KR: { dialCode: "+82", pattern: /^010\d{8}$/, maxLength: 11 },
   JP: { dialCode: "+81", pattern: /^0[789]0\d{8}$/, maxLength: 11 },
+  TW: { dialCode: "+886", pattern: /^09\d{8}$/, maxLength: 10 },
 };
 
 const STORAGE_KEY = "jipkok.phoneCountry";

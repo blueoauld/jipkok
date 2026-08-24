@@ -2,9 +2,11 @@ package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.entity.PhoneVerification
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
+import com.blueoauld.server.domain.auth.repository.DailySendLimitCache
 import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -12,11 +14,14 @@ import java.security.SecureRandom
 import java.time.Clock
 import java.time.Duration
 
+private val log = KotlinLogging.logger {}
+
 @Service
 class VerificationCodeService(
 
     private val phoneVerificationRepository: PhoneVerificationRepository,
     private val verificationCodeSender: VerificationCodeSender,
+    private val dailySendLimitCache: DailySendLimitCache,
     private val clock: Clock,
 ) {
 
@@ -41,6 +46,16 @@ class VerificationCodeService(
             >= HOURLY_IP_SEND_LIMIT
         ) {
             throw BusinessException(ErrorCode.VERIFICATION_CODE_IP_LIMIT_EXCEEDED)
+        }
+
+        val dailyCount = dailySendLimitCache.increaseAndCount()
+
+        if (dailyCount > DailySendLimitCache.DAILY_LIMIT) {
+            if (dailyCount == DailySendLimitCache.DAILY_LIMIT + 1) {
+                log.error { "인증번호 일일 발송 상한에 걸렸다. limit=${DailySendLimitCache.DAILY_LIMIT}" }
+            }
+
+            throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
         }
 
         val code = generateCode()

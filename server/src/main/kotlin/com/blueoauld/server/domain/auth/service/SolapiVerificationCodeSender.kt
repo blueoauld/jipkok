@@ -47,7 +47,7 @@ class SolapiVerificationCodeSender(
         private const val PLUS = "+"
         private const val TRUNK_PREFIX = "0"
 
-        private val DIAL_CODES = listOf("+82", "+81")
+        private val DIAL_CODES = listOf("+82", "+81", "+886")
 
         fun dialCodeOf(phoneNumber: String) = DIAL_CODES.firstOrNull { phoneNumber.startsWith(it) }
 

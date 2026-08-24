@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.entity.PhoneVerification
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
+import com.blueoauld.server.domain.auth.repository.DailySendLimitCache
 import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -24,9 +25,12 @@ class VerificationCodeServiceTest {
 
     private val verificationCodeSender = mockk<VerificationCodeSender>(relaxed = true)
 
+    private val dailySendLimitCache = mockk<DailySendLimitCache>()
+
     private val verificationCodeService = VerificationCodeService(
         phoneVerificationRepository,
         verificationCodeSender,
+        dailySendLimitCache,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -43,6 +47,7 @@ class VerificationCodeServiceTest {
         every {
             phoneVerificationRepository.countByIpAddressAndIssuedAtGreaterThanEqual(IP_ADDRESS, any())
         } returns 0
+        every { dailySendLimitCache.increaseAndCount() } returns 1
     }
 
     @Test
@@ -143,6 +148,22 @@ class VerificationCodeServiceTest {
 
         // then
         verify(exactly = 1) { verificationCodeSender.send(PHONE_NUMBER, any()) }
+    }
+
+    @Test
+    fun `하루 전체 발송 상한을 넘으면 보내지 않는다`() {
+        // given
+        every { dailySendLimitCache.increaseAndCount() } returns DailySendLimitCache.DAILY_LIMIT + 1
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
+        verify(exactly = 0) { phoneVerificationRepository.save(any()) }
+        verify(exactly = 0) { verificationCodeSender.send(any(), any()) }
     }
 
     @Test

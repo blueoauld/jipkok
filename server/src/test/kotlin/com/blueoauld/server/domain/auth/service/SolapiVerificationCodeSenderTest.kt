@@ -14,6 +14,7 @@ class SolapiVerificationCodeSenderTest {
         // given, when, then
         assertThat(dialCodeOf("+821012345678")).isEqualTo("+82")
         assertThat(dialCodeOf("+819012345678")).isEqualTo("+81")
+        assertThat(dialCodeOf("+886912345678")).isEqualTo("+886")
     }
 
     @Test
@@ -27,6 +28,7 @@ class SolapiVerificationCodeSenderTest {
         // given, when, then
         assertThat(nationalOf("+821012345678", "+82")).isEqualTo("01012345678")
         assertThat(nationalOf("+819012345678", "+81")).isEqualTo("09012345678")
+        assertThat(nationalOf("+886912345678", "+886")).isEqualTo("0912345678")
     }
 
     @Test
@@ -44,6 +46,7 @@ class SolapiVerificationCodeSenderTest {
             "+817012345678",
             "+818012345678",
             "+819012345678",
+            "+886912345678",
         )
 
         // when, then
