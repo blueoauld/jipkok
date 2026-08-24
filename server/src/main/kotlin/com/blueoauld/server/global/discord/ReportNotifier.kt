@@ -74,8 +74,11 @@ class ReportNotifier(
             snapshot.reported.nickname
         }
 
-    private fun contentOf(message: ChatMessageSnapshot) =
-        if (message.type == ChatMessageType.PHOTO) "사진" else message.content ?: ""
+    private fun contentOf(message: ChatMessageSnapshot) = when (message.type) {
+        ChatMessageType.TEXT -> message.content ?: ""
+        ChatMessageType.PHOTO -> "사진"
+        ChatMessageType.VIDEO -> "동영상"
+    }
 
     companion object {
 

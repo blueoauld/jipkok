@@ -59,7 +59,6 @@ export type WorryPostResponse = Schemas["WorryPostResponse"];
 export type WorryCategory = WorryPostResponse["category"];
 export type WorryPostPage = Schemas["CursorResponseWorryPostResponse"];
 export type WorryCommentResponse = Schemas["WorryCommentResponse"];
-export type WorryCommentStatus = WorryCommentResponse["status"];
 export type WorryCommentPage = Schemas["CursorResponseWorryCommentResponse"];
 export type CreateWorryPostRequest = Schemas["CreateWorryPostRequest"];
 export type CreateWorryCommentRequest = Schemas["CreateWorryCommentRequest"];

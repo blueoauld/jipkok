@@ -1591,7 +1591,7 @@
         "/api/translations": {
             "post": {
                 "tags": [
-                    "\ubc88\uc5ed"
+                    "translation-controller"
                 ],
                 "summary": "\ubc88\uc5ed \uc870\ud68c",
                 "description": "\ud68c\uc6d0\uc758 \uc5b8\uc5b4 \uc124\uc815\uc73c\ub85c \ubc88\uc5ed\ud55c\ub2e4. \uc774\ubbf8 \ubc88\uc5ed\ud55c \uac83\uc774 \uc788\uc73c\uba74 \uadf8\ub300\ub85c \uc900\ub2e4.",

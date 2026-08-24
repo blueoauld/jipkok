@@ -7,7 +7,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminFeedReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
@@ -19,7 +19,7 @@ class AdminFeedService(
 
     private val feedPostReportRepository: FeedPostReportRepository,
     private val feedPostRepository: FeedPostRepository,
-    private val memberRepository: MemberRepository,
+    private val memberAdminService: MemberAdminService,
     private val photoStorage: PhotoStorage,
     private val adminActionRecorder: AdminActionRecorder,
 ) {
@@ -46,19 +46,16 @@ class AdminFeedService(
             ?.let { feedPostReportRepository.findReportersByPostIdIn(it) }
             .orEmpty()
 
-        val memberIds = (posts.map { it.authorId } + reporters.map { it.reporterId }).distinct()
-        val nicknames = if (memberIds.isEmpty()) {
-            emptyMap()
-        } else {
-            memberRepository.findNicknamesByIdIn(memberIds).associate { it.id to it.nickname }
-        }
+        val nicknames = memberAdminService.findNicknames(
+            posts.map { it.authorId } + reporters.map { it.reporterId },
+        )
 
         return AdminFeedReportPageResponse(
             items = posts.map { post ->
                 AdminFeedReportResponse(
                     postId = post.postId,
                     authorId = post.authorId,
-                    authorNickname = nicknames[post.authorId] ?: UNKNOWN_NICKNAME,
+                    authorNickname = nicknames.getValue(post.authorId),
                     thumbnailUrl = photoStorage.toPublicUrl(post.objectKey),
                     caption = post.caption,
                     reportCount = post.reportCount,
@@ -67,7 +64,7 @@ class AdminFeedService(
                     reporters = reporters.filter { it.postId == post.postId }.map {
                         AdminFeedReporterResponse(
                             id = it.reporterId,
-                            nickname = nicknames[it.reporterId] ?: UNKNOWN_NICKNAME,
+                            nickname = nicknames.getValue(it.reporterId),
                             reportedAt = it.createdAt,
                         )
                     },
@@ -87,10 +84,5 @@ class AdminFeedService(
 
         feedPostRepository.delete(post)
         adminActionRecorder.record(actorId, AdminActionType.DELETE_FEED_POST, postId)
-    }
-
-    companion object {
-
-        private const val UNKNOWN_NICKNAME = "알 수 없음"
     }
 }

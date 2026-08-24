@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.report.entity
 
+import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.global.entity.BaseEntity
@@ -30,7 +31,7 @@ class Report(
     @Column(name = "reported_member_id", nullable = false, updatable = false)
     val reportedMemberId: Long,
 
-    @Column(name = "reported_phone_number", length = PHONE_NUMBER_LENGTH, updatable = false)
+    @Column(name = "reported_phone_number", length = Member.PHONE_NUMBER_LENGTH, updatable = false)
     val reportedPhoneNumber: String? = null,
 
     @Enumerated(EnumType.STRING)
@@ -59,7 +60,6 @@ class Report(
     companion object {
 
         const val DETAIL_MAX_LENGTH = 1000
-        const val PHONE_NUMBER_LENGTH = 16
         const val PHOTO_MAX_COUNT = 6
     }
 }

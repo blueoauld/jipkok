@@ -294,7 +294,6 @@ export const en: typeof ko = {
       logout: "Log out",
       withdraw: "Delete account",
     },
-    language: "Language",
     languageKo: "Korean",
     languageJa: "Japanese",
     languageEn: "English",

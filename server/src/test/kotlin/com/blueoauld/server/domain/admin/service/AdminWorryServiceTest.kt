@@ -3,9 +3,8 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminWorryCommentRow
 import com.blueoauld.server.domain.admin.dto.AdminWorryPostRow
 import com.blueoauld.server.domain.admin.dto.AdminWorryReporterRow
-import com.blueoauld.server.domain.admin.dto.MemberNickname
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.type.WorryCategory
@@ -35,7 +34,7 @@ class AdminWorryServiceTest {
 
     private val worryCommentRepository = mockk<WorryCommentRepository>()
 
-    private val memberRepository = mockk<MemberRepository>()
+    private val memberAdminService = mockk<MemberAdminService>()
 
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
@@ -44,7 +43,7 @@ class AdminWorryServiceTest {
         worryCommentReportRepository,
         worryPostRepository,
         worryCommentRepository,
-        memberRepository,
+        memberAdminService,
         adminActionRecorder,
     )
 
@@ -57,9 +56,8 @@ class AdminWorryServiceTest {
             reporterRow(POST_ID, 11),
             reporterRow(POST_ID, 10),
         )
-        every { memberRepository.findNicknamesByIdIn(listOf(AUTHOR_ID, 11L, 10L)) } returns listOf(
-            memberNickname(10, "밤산책"),
-        )
+        every { memberAdminService.findNicknames(listOf(AUTHOR_ID, 11L, 10L)) } returns
+            mapOf(AUTHOR_ID to "알 수 없음", 11L to "알 수 없음", 10L to "밤산책")
 
         // when
         val response = adminWorryService.findPostReports(null, null, 1, 20)
@@ -81,9 +79,8 @@ class AdminWorryServiceTest {
         every { worryCommentReportRepository.findReportersByCommentIdIn(listOf(COMMENT_ID)) } returns listOf(
             reporterRow(COMMENT_ID, 10),
         )
-        every { memberRepository.findNicknamesByIdIn(listOf(AUTHOR_ID, 10L)) } returns listOf(
-            memberNickname(AUTHOR_ID, "익명이"),
-        )
+        every { memberAdminService.findNicknames(listOf(AUTHOR_ID, 10L)) } returns
+            mapOf(AUTHOR_ID to "익명이", 10L to "알 수 없음")
 
         // when
         val response = adminWorryService.findCommentReports(
@@ -187,11 +184,6 @@ class AdminWorryServiceTest {
         override val targetId = targetId
         override val reporterId = reporterId
         override val createdAt: Instant = NOW
-    }
-
-    private fun memberNickname(id: Long, nickname: String) = object : MemberNickname {
-        override val id = id
-        override val nickname = nickname
     }
 
     companion object {

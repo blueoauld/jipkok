@@ -11,6 +11,7 @@ export const BIRTH_YEAR_LENGTH = 4;
 export const BIO_MAX_LENGTH = 1000;
 export const WORRY_CONTENT_MAX_LENGTH = 1000;
 export const WORRY_COMMENT_MAX_LENGTH = 300;
+export const MIN_KEYWORD_LENGTH = 2;
 
 export const MIN_AGE = 19;
 export const MAX_AGE = 90;

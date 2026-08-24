@@ -29,6 +29,19 @@ class MemberAdminService(
     fun findNickname(memberId: Long): String = findMember(memberId).nickname
 
     @Transactional(readOnly = true)
+    fun findNicknames(memberIds: Collection<Long>): Map<Long, String> {
+        val ids = memberIds.distinct()
+
+        if (ids.isEmpty()) {
+            return emptyMap()
+        }
+
+        val found = memberRepository.findNicknamesByIdIn(ids).associate { it.id to it.nickname }
+
+        return ids.associateWith { found[it] ?: UNKNOWN_NICKNAME }
+    }
+
+    @Transactional(readOnly = true)
     fun findPhotoUrls(memberId: Long, visibility: PhotoVisibility): List<String> {
         val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
             photoStorage::toPublicUrl
@@ -73,5 +86,10 @@ class MemberAdminService(
 
     private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
         BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    companion object {
+
+        private const val UNKNOWN_NICKNAME = "알 수 없음"
     }
 }

@@ -4,7 +4,6 @@ import com.blueoauld.server.domain.translation.dto.request.TranslateRequest
 import com.blueoauld.server.domain.translation.dto.response.TranslationResponse
 import com.blueoauld.server.domain.translation.service.TranslationService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "번역")
 @RestController
 @RequestMapping("/api/translations")
 class TranslationController(

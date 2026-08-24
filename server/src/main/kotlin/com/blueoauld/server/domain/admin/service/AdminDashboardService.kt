@@ -15,6 +15,7 @@ import com.blueoauld.server.domain.admin.dto.response.TrendPointResponse
 import com.blueoauld.server.domain.admin.dto.response.VersionCountResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
@@ -30,6 +31,7 @@ import java.time.LocalDate
 class AdminDashboardService(
 
     private val memberRepository: MemberRepository,
+    private val memberAdminService: MemberAdminService,
     private val reportRepository: ReportRepository,
     private val memberSuspensionRepository: MemberSuspensionRepository,
     private val accessLogRepository: AccessLogRepository,
@@ -127,12 +129,7 @@ class AdminDashboardService(
     @Transactional(readOnly = true)
     fun findRecent(): RecentActivityResponse {
         val reports = reportRepository.findTop5ByOrderByIdDesc()
-        val nicknames = reports.map { it.reportedMemberId }
-            .distinct()
-            .takeIf { it.isNotEmpty() }
-            ?.let { memberRepository.findNicknamesByIdIn(it) }
-            ?.associate { it.id to it.nickname }
-            .orEmpty()
+        val nicknames = memberAdminService.findNicknames(reports.map { it.reportedMemberId })
 
         return RecentActivityResponse(
             reports = reports.map {
@@ -141,7 +138,7 @@ class AdminDashboardService(
                     type = it.type,
                     reason = it.reason,
                     reportedMemberId = it.reportedMemberId,
-                    reportedNickname = nicknames[it.reportedMemberId] ?: UNKNOWN_NICKNAME,
+                    reportedNickname = nicknames.getValue(it.reportedMemberId),
                     createdAt = it.createdAt,
                 )
             },
@@ -174,7 +171,6 @@ class AdminDashboardService(
 
         private const val VERSION_PART_WIDTH = 5
 
-        private const val UNKNOWN_NICKNAME = "알 수 없음"
         private const val UNDER_20_LABEL = "20대 미만"
 
         private val AGE_GROUPS = listOf(

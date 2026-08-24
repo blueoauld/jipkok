@@ -3,10 +3,10 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
-import com.blueoauld.server.domain.admin.dto.MemberNickname
 import com.blueoauld.server.domain.admin.dto.PlatformCount
 import com.blueoauld.server.domain.admin.dto.VersionCount
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.type.ReportReason
@@ -18,7 +18,6 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
@@ -30,6 +29,8 @@ class AdminDashboardServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val memberAdminService = mockk<MemberAdminService>()
+
     private val reportRepository = mockk<ReportRepository>()
 
     private val memberSuspensionRepository = mockk<MemberSuspensionRepository>()
@@ -38,6 +39,7 @@ class AdminDashboardServiceTest {
 
     private val adminDashboardService = AdminDashboardService(
         memberRepository,
+        memberAdminService,
         reportRepository,
         memberSuspensionRepository,
         accessLogRepository,
@@ -182,15 +184,14 @@ class AdminDashboardServiceTest {
     }
 
     @Test
-    fun `최근 신고의 피신고자 닉네임을 회원에서 찾고 없으면 대체 문구를 쓴다`() {
+    fun `최근 신고에 피신고자 닉네임을 채운다`() {
         // given
         every { reportRepository.findTop5ByOrderByIdDesc() } returns listOf(
             report(reportedMemberId = 3310),
             report(reportedMemberId = 9999),
         )
-        every { memberRepository.findNicknamesByIdIn(listOf(3310, 9999)) } returns listOf(
-            memberNickname(3310, "밤산책"),
-        )
+        every { memberAdminService.findNicknames(listOf(3310L, 9999L)) } returns
+            mapOf(3310L to "밤산책", 9999L to "알 수 없음")
         every { memberSuspensionRepository.findTop5ByOrderByIdDesc() } returns listOf(suspension())
 
         // when
@@ -203,9 +204,10 @@ class AdminDashboardServiceTest {
     }
 
     @Test
-    fun `신고가 없으면 닉네임을 조회하지 않는다`() {
+    fun `신고가 없으면 빈 목록을 준다`() {
         // given
         every { reportRepository.findTop5ByOrderByIdDesc() } returns emptyList()
+        every { memberAdminService.findNicknames(emptyList()) } returns emptyMap()
         every { memberSuspensionRepository.findTop5ByOrderByIdDesc() } returns emptyList()
 
         // when
@@ -213,7 +215,6 @@ class AdminDashboardServiceTest {
 
         // then
         assertThat(recent.reports).isEmpty()
-        verify(exactly = 0) { memberRepository.findNicknamesByIdIn(any()) }
     }
 
     private fun dailyCount(day: LocalDate, count: Long) = object : DailyCount {
@@ -236,11 +237,6 @@ class AdminDashboardServiceTest {
         override val version = version
         override val platform = platform
         override val count = count
-    }
-
-    private fun memberNickname(id: Long, nickname: String) = object : MemberNickname {
-        override val id = id
-        override val nickname = nickname
     }
 
     private fun report(reportedMemberId: Long) = Report(

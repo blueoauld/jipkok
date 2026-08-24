@@ -33,6 +33,8 @@ jobs:
 
       - name: OTA 발행
         working-directory: app
-        run: npx eas-cli update --branch "${{ inputs.branch }}" --message "${{ inputs.message }}" --non-interactive
+        run: npx eas-cli update --branch "$BRANCH" --message "$MESSAGE" --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          BRANCH: ${{ inputs.branch }}
+          MESSAGE: ${{ inputs.message }}

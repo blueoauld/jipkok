@@ -5,7 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchList } from "@/components/SearchList";
 import { UserRow } from "@/components/UserRow";
-import { MIN_KEYWORD_LENGTH, useMemberSearch } from "@/hooks/useMemberSearch";
+import { useMemberSearch } from "@/hooks/useMemberSearch";
+import { MIN_KEYWORD_LENGTH } from "@/lib/validation";
 
 export default function MemberSearchScreen() {
   const { t } = useTranslation();

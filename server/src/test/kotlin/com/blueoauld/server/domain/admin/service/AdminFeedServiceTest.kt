@@ -2,12 +2,11 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
 import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
-import com.blueoauld.server.domain.admin.dto.MemberNickname
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
@@ -27,7 +26,7 @@ class AdminFeedServiceTest {
 
     private val feedPostRepository = mockk<FeedPostRepository>()
 
-    private val memberRepository = mockk<MemberRepository>()
+    private val memberAdminService = mockk<MemberAdminService>()
 
     private val photoStorage = mockk<PhotoStorage>()
 
@@ -36,7 +35,7 @@ class AdminFeedServiceTest {
     private val adminFeedService = AdminFeedService(
         feedPostReportRepository,
         feedPostRepository,
-        memberRepository,
+        memberAdminService,
         photoStorage,
         adminActionRecorder,
     )
@@ -50,9 +49,8 @@ class AdminFeedServiceTest {
             reporterRow(11),
             reporterRow(10),
         )
-        every { memberRepository.findNicknamesByIdIn(listOf(1L, 11L, 10L)) } returns listOf(
-            memberNickname(10, "밤산책"),
-        )
+        every { memberAdminService.findNicknames(listOf(1L, 11L, 10L)) } returns
+            mapOf(1L to "알 수 없음", 11L to "알 수 없음", 10L to "밤산책")
         every { photoStorage.toPublicUrl("feeds/1/photo.jpg") } returns "https://photo/feeds/1/photo.jpg"
 
         // when
@@ -109,11 +107,6 @@ class AdminFeedServiceTest {
         override val postId = POST_ID
         override val reporterId = reporterId
         override val createdAt: Instant = NOW
-    }
-
-    private fun memberNickname(id: Long, nickname: String) = object : MemberNickname {
-        override val id = id
-        override val nickname = nickname
     }
 
     companion object {

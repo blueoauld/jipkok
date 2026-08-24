@@ -5,9 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchList } from "@/components/SearchList";
 import { WorryCard } from "@/components/worry/WorryCard";
-import { MIN_KEYWORD_LENGTH, useWorrySearch } from "@/hooks/useWorrySearch";
+import { useWorrySearch } from "@/hooks/useWorrySearch";
 import { pushOnce } from "@/lib/router";
-import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
+import { MIN_KEYWORD_LENGTH, WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
 export default function WorrySearchScreen() {
   const { t } = useTranslation();

@@ -105,6 +105,21 @@ class ChatPushNotifierTest {
     }
 
     @Test
+    fun `동영상 메시지는 받는 사람의 언어로 문구를 만든다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns
+            roomMember(notificationEnabled = true)
+        every { memberRepository.findLocaleById(RECEIVER_ID) } returns MemberLocale.JA
+        every { pushMessages.get(MemberLocale.JA, "push.chat.video") } returns "動画"
+
+        // when
+        notifier.notifySent(event(ChatMessageType.VIDEO))
+
+        // then
+        verify { pushService.send(RECEIVER_ID, any(), "動画", any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `알림을 끈 방이면 푸시를 보내지 않는다`() {
         // given
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, RECEIVER_ID) } returns

@@ -295,7 +295,6 @@ export const ko = {
       logout: "로그아웃",
       withdraw: "회원탈퇴",
     },
-    language: "언어",
     languageKo: "한국어",
     languageJa: "일본어",
     languageEn: "영어",

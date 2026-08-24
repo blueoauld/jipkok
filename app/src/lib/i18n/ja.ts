@@ -298,7 +298,6 @@ export const ja: typeof ko = {
       logout: "ログアウト",
       withdraw: "退会",
     },
-    language: "言語",
     languageKo: "韓国語",
     languageJa: "日本語",
     languageEn: "英語",

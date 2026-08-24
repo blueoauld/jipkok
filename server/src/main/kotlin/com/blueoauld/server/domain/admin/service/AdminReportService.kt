@@ -8,8 +8,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReportedMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
-import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.report.entity.Report
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.repository.ReportRepository
@@ -23,7 +22,7 @@ import java.time.Clock
 class AdminReportService(
 
     private val reportRepository: ReportRepository,
-    private val memberRepository: MemberRepository,
+    private val memberAdminService: MemberAdminService,
     private val reportService: ReportService,
     private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
@@ -58,7 +57,9 @@ class AdminReportService(
             reportedMemberId = reportedMemberId,
             reportedPhoneNumber = reportedPhoneNumber,
         )
-        val nicknames = findNicknames(reports)
+        val nicknames = memberAdminService.findNicknames(
+            reports.flatMap { listOf(it.reporterId, it.reportedMemberId) },
+        )
 
         return AdminReportPageResponse(
             items = reports.map {
@@ -67,9 +68,9 @@ class AdminReportService(
                     type = it.type,
                     reason = it.reason,
                     reporterId = it.reporterId,
-                    reporterNickname = nicknames[it.reporterId] ?: UNKNOWN_NICKNAME,
+                    reporterNickname = nicknames.getValue(it.reporterId),
                     reportedMemberId = it.reportedMemberId,
-                    reportedNickname = nicknames[it.reportedMemberId] ?: UNKNOWN_NICKNAME,
+                    reportedNickname = nicknames.getValue(it.reportedMemberId),
                     createdAt = it.createdAt,
                     handledAt = it.handledAt,
                 )
@@ -125,18 +126,5 @@ class AdminReportService(
     fun handle(actorId: Long, reportId: Long) {
         reportService.handle(reportId)
         adminActionRecorder.record(actorId, AdminActionType.HANDLE_REPORT, reportId)
-    }
-
-    private fun findNicknames(reports: List<Report>): Map<Long, String> {
-        val memberIds = reports.flatMap { listOf(it.reporterId, it.reportedMemberId) }.distinct()
-
-        if (memberIds.isEmpty()) return emptyMap()
-
-        return memberRepository.findNicknamesByIdIn(memberIds).associate { it.id to it.nickname }
-    }
-
-    companion object {
-
-        private const val UNKNOWN_NICKNAME = "알 수 없음"
     }
 }

@@ -1,11 +1,10 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminReportStatus
-import com.blueoauld.server.domain.admin.dto.MemberNickname
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.Gender
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
@@ -31,7 +30,7 @@ class AdminReportServiceTest {
 
     private val reportRepository = mockk<ReportRepository>()
 
-    private val memberRepository = mockk<MemberRepository>()
+    private val memberAdminService = mockk<MemberAdminService>()
 
     private val reportService = mockk<ReportService>()
 
@@ -39,7 +38,7 @@ class AdminReportServiceTest {
 
     private val adminReportService = AdminReportService(
         reportRepository,
-        memberRepository,
+        memberAdminService,
         reportService,
         adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -52,9 +51,8 @@ class AdminReportServiceTest {
             reportRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
         } returns listOf(report())
         every { reportRepository.countForAdmin(false, null, null, null, null) } returns 1
-        every { memberRepository.findNicknamesByIdIn(listOf(REPORTER_ID, REPORTED_MEMBER_ID)) } returns listOf(
-            memberNickname(REPORTER_ID, "밤산책"),
-        )
+        every { memberAdminService.findNicknames(listOf(REPORTER_ID, REPORTED_MEMBER_ID)) } returns
+            mapOf(REPORTER_ID to "밤산책", REPORTED_MEMBER_ID to "알 수 없음")
 
         // when
         val response = adminReportService.findReports(
@@ -78,6 +76,7 @@ class AdminReportServiceTest {
         // given
         every { reportRepository.findAllForAdmin(null, null, null, null, null, 100, 0) } returns emptyList()
         every { reportRepository.countForAdmin(null, null, null, null, null) } returns 0
+        every { memberAdminService.findNicknames(emptyList()) } returns emptyMap()
 
         // when
         val response = adminReportService.findReports(
@@ -93,7 +92,6 @@ class AdminReportServiceTest {
         // then
         assertThat(response.page).isEqualTo(1)
         assertThat(response.size).isEqualTo(100)
-        verify(exactly = 0) { memberRepository.findNicknamesByIdIn(any()) }
     }
 
     @Test
@@ -175,11 +173,6 @@ class AdminReportServiceTest {
         evidencePhotoUrls = emptyList(),
         profilePhotoUrls = emptyList(),
     )
-
-    private fun memberNickname(id: Long, nickname: String) = object : MemberNickname {
-        override val id = id
-        override val nickname = nickname
-    }
 
     companion object {
 

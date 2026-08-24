@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.auth.entity
 
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
+import com.blueoauld.server.domain.member.entity.Member
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -22,7 +23,7 @@ import java.time.Instant
 )
 class PhoneVerification(
 
-    @Column(name = "phone_number", nullable = false, length = PHONE_NUMBER_LENGTH)
+    @Column(name = "phone_number", nullable = false, length = Member.PHONE_NUMBER_LENGTH)
     val phoneNumber: String,
 
     @Column(name = "code", nullable = false, length = CODE_LENGTH)
@@ -62,7 +63,6 @@ class PhoneVerification(
 
     companion object {
 
-        const val PHONE_NUMBER_LENGTH = 16
         const val CODE_LENGTH = 6
         const val IP_ADDRESS_LENGTH = 45
         const val PURPOSE_LENGTH = 20

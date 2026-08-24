@@ -7,7 +7,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminWorryPostReportPageRe
 import com.blueoauld.server.domain.admin.dto.response.AdminWorryPostReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminWorryReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
@@ -25,7 +25,7 @@ class AdminWorryService(
     private val worryCommentReportRepository: WorryCommentReportRepository,
     private val worryPostRepository: WorryPostRepository,
     private val worryCommentRepository: WorryCommentRepository,
-    private val memberRepository: MemberRepository,
+    private val memberAdminService: MemberAdminService,
     private val adminActionRecorder: AdminActionRecorder,
 ) {
 
@@ -50,14 +50,16 @@ class AdminWorryService(
             .takeIf { it.isNotEmpty() }
             ?.let { worryPostReportRepository.findReportersByPostIdIn(it) }
             .orEmpty()
-        val nicknames = findNicknames(posts.map { it.authorId } + reporters.map { it.reporterId })
+        val nicknames = memberAdminService.findNicknames(
+            posts.map { it.authorId } + reporters.map { it.reporterId },
+        )
 
         return AdminWorryPostReportPageResponse(
             items = posts.map { post ->
                 AdminWorryPostReportResponse(
                     postId = post.postId,
                     authorId = post.authorId,
-                    authorNickname = nicknames[post.authorId] ?: UNKNOWN_NICKNAME,
+                    authorNickname = nicknames.getValue(post.authorId),
                     content = post.content,
                     reportCount = post.reportCount,
                     postDeletedAt = post.postDeletedAt,
@@ -93,7 +95,9 @@ class AdminWorryService(
             .takeIf { it.isNotEmpty() }
             ?.let { worryCommentReportRepository.findReportersByCommentIdIn(it) }
             .orEmpty()
-        val nicknames = findNicknames(comments.map { it.authorId } + reporters.map { it.reporterId })
+        val nicknames = memberAdminService.findNicknames(
+            comments.map { it.authorId } + reporters.map { it.reporterId },
+        )
 
         return AdminWorryCommentReportPageResponse(
             items = comments.map { comment ->
@@ -101,7 +105,7 @@ class AdminWorryService(
                     commentId = comment.commentId,
                     postId = comment.postId,
                     authorId = comment.authorId,
-                    authorNickname = nicknames[comment.authorId] ?: UNKNOWN_NICKNAME,
+                    authorNickname = nicknames.getValue(comment.authorId),
                     content = comment.content,
                     reportCount = comment.reportCount,
                     commentDeletedAt = comment.commentDeletedAt,
@@ -138,28 +142,13 @@ class AdminWorryService(
         adminActionRecorder.record(actorId, AdminActionType.DELETE_WORRY_COMMENT, commentId)
     }
 
-    private fun findNicknames(memberIds: List<Long>): Map<Long, String> {
-        val distinct = memberIds.distinct()
-
-        if (distinct.isEmpty()) {
-            return emptyMap()
-        }
-
-        return memberRepository.findNicknamesByIdIn(distinct).associate { it.id to it.nickname }
-    }
-
     private fun toReporter(
         reporterId: Long,
         reportedAt: Instant,
         nicknames: Map<Long, String>,
     ) = AdminWorryReporterResponse(
         id = reporterId,
-        nickname = nicknames[reporterId] ?: UNKNOWN_NICKNAME,
+        nickname = nicknames.getValue(reporterId),
         reportedAt = reportedAt,
     )
-
-    companion object {
-
-        private const val UNKNOWN_NICKNAME = "알 수 없음"
-    }
 }
