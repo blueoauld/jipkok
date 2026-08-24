@@ -1,5 +1,6 @@
 import {
   type InfiniteData,
+  onlineManager,
   type QueryClient,
   useMutation,
   useQueryClient,
@@ -21,7 +22,11 @@ import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
 import { toChatPhoto, uploadChatPhotoFile } from "@/lib/photo";
 import { showToast } from "@/lib/toast/store";
-import { describeUploadError, isUploadCancelled } from "@/lib/upload";
+import {
+  describeUploadError,
+  isUploadCancelled,
+  uploadOffline,
+} from "@/lib/upload";
 import {
   compressVideo,
   createVideoThumbnail,
@@ -129,6 +134,15 @@ export function useSendMessage(
     };
 
     uploads().set(id, { phase: initialPhase, progress: 0, cancel, retry });
+
+    // 압축이 업로드보다 먼저라, 연결이 없으면 5분짜리 영상을 다 압축해 놓고 실패한다.
+    // 여기서 멈춰 두면 그 일을 하지 않고 실패 상태로 남아 재전송 버튼이 그대로 산다.
+    if (!onlineManager.isOnline()) {
+      uploads().set(id, { phase: "failed", progress: 0, cancel, retry });
+      onError(uploadOffline());
+
+      return;
+    }
 
     try {
       const sent = await work(controller.signal, (phase, progress) =>

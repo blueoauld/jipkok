@@ -5,6 +5,7 @@ import { reportError } from "@/lib/crash";
 import i18n from "@/lib/i18n";
 
 const CANCELLED_CODE = "UPLOAD_CANCELLED";
+const OFFLINE_CODE = "UPLOAD_OFFLINE";
 const FAILED_CODE = "UPLOAD_FAILED";
 const FAILED_MESSAGE = i18n.t("media.uploadFailed");
 const MEDIA_FAILED_MESSAGE = i18n.t("media.sendFailed");
@@ -21,6 +22,10 @@ export function uploadCancelled() {
 
 export function isUploadCancelled(error: unknown) {
   return error instanceof ApiError && error.code === CANCELLED_CODE;
+}
+
+export function uploadOffline() {
+  return new ApiError(0, OFFLINE_CODE, i18n.t("media.offline"));
 }
 
 export function describeUploadError(error: unknown) {

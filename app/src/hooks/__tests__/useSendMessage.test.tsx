@@ -1,4 +1,4 @@
-import type { InfiniteData } from "@tanstack/react-query";
+import { type InfiniteData, onlineManager } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import type { ImagePickerAsset } from "expo-image-picker";
 
@@ -127,6 +127,7 @@ afterEach(async () => {
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(console, "error").mockImplementation(() => undefined);
+  onlineManager.setOnline(true);
   useUploadStore.setState({ uploads: {} });
   toJpeg.mockResolvedValue("file:///a.jpeg");
   uploadPhoto.mockResolvedValue("photo-key");
@@ -266,6 +267,26 @@ describe("useSendMessage 사진", () => {
 });
 
 describe("useSendMessage 동영상", () => {
+  it("연결이 없으면 압축도 업로드도 않고, 연결된 뒤 재전송하면 보낸다", async () => {
+    const hook = await setup();
+    onlineManager.setOnline(false);
+
+    await act(async () => hook.result.current.sendVideos([asset]));
+
+    await waitFor(() => expect(uploads()[0]?.phase).toBe("failed"));
+    expect(compress).not.toHaveBeenCalled();
+    expect(uploadVideo).not.toHaveBeenCalled();
+    expect(hook.onError).toHaveBeenCalled();
+
+    onlineManager.setOnline(true);
+    send.mockResolvedValue(serverMessage(2, { type: "VIDEO", content: null }));
+
+    await act(async () => uploads()[0].retry());
+
+    await settle(() => items(hook.client)[0]?.messageId === 2);
+    expect(compress).toHaveBeenCalledTimes(1);
+  });
+
   it("압축 후 업로드하고, 재전송 땐 압축을 건너뛴다", async () => {
     const hook = await setup();
     uploadVideo.mockRejectedValueOnce(new Error("network"));
