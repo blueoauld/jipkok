@@ -14,6 +14,10 @@ export const en: typeof ko = {
     bioCopied: "Bio copied.",
     contentPlaceholder: "Write here",
   },
+  crash: {
+    title: "Something went wrong.",
+    description: "We couldn't open this screen. Please try again.",
+  },
   tabs: {
     main: "Home",
     chat: "Chat",

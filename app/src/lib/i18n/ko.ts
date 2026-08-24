@@ -12,6 +12,10 @@ export const ko = {
     bioCopied: "자기소개가 복사되었습니다.",
     contentPlaceholder: "내용 입력",
   },
+  crash: {
+    title: "문제가 발생했습니다.",
+    description: "화면을 여는 중에 오류가 났습니다. 다시 시도해주시길 바랍니다.",
+  },
   tabs: {
     main: "메인",
     chat: "채팅",

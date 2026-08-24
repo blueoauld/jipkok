@@ -14,6 +14,10 @@ export const ja: typeof ko = {
     bioCopied: "自己紹介をコピーしました。",
     contentPlaceholder: "内容を入力",
   },
+  crash: {
+    title: "問題が発生しました。",
+    description: "画面を開く際にエラーが発生しました。もう一度お試しください。",
+  },
   tabs: {
     main: "メイン",
     chat: "チャット",

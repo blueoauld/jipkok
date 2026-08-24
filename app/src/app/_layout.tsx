@@ -26,6 +26,9 @@ import {
 } from "@/lib/theme/store";
 import { tamaguiConfig } from "@/tamagui.config";
 
+// 프로바이더 스택까지 깨졌을 때를 받는 최후의 그물이다.
+export { AppErrorBoundary as ErrorBoundary } from "@/components/AppErrorBoundary";
+
 export default function RootLayout() {
   const mode = useThemeStore((state) => state.mode);
   const scheme = colorScheme(mode);
