@@ -4,8 +4,9 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +22,7 @@ class ChatRoomCleaner(
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
     private val chatMessageReactionRepository: ChatMessageReactionRepository,
-    private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
@@ -43,7 +44,7 @@ class ChatRoomCleaner(
         chatRoomRepository.deleteAllByIdIn(roomIds)
 
         if (objectKeys.isNotEmpty()) {
-            photoStorage.delete(objectKeys)
+            eventPublisher.publishEvent(PhotosDeletedEvent(objectKeys))
         }
 
         log.info { "나간 채팅방 ${roomIds.size}건을 정리했다." }

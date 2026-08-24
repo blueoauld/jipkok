@@ -2,9 +2,11 @@ package com.blueoauld.server.global.push
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+import java.time.Duration
 
 private val log = KotlinLogging.logger {}
 
@@ -32,7 +34,14 @@ data class ExpoPushMessage(
 @Component
 class ExpoPushClient {
 
-    private val restClient = RestClient.create()
+    private val restClient = RestClient.builder()
+        .requestFactory(
+            SimpleClientHttpRequestFactory().apply {
+                setConnectTimeout(CONNECT_TIMEOUT)
+                setReadTimeout(READ_TIMEOUT)
+            },
+        )
+        .build()
 
     fun send(messages: List<ExpoPushMessage>): List<String> {
         if (messages.isEmpty()) {
@@ -66,5 +75,8 @@ class ExpoPushClient {
         private const val SEND_URL = "https://exp.host/--/api/v2/push/send"
 
         private const val DEVICE_NOT_REGISTERED = "DeviceNotRegistered"
+
+        private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(2)
+        private val READ_TIMEOUT: Duration = Duration.ofSeconds(10)
     }
 }

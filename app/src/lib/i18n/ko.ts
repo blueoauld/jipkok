@@ -14,7 +14,8 @@ export const ko = {
   },
   crash: {
     title: "문제가 발생했습니다.",
-    description: "화면을 여는 중에 오류가 났습니다. 다시 시도해주시길 바랍니다.",
+    description:
+      "화면을 여는 중에 오류가 났습니다. 다시 시도해주시길 바랍니다.",
   },
   tabs: {
     main: "메인",
@@ -330,7 +331,8 @@ export const ko = {
     uploadFailed: "업로드하지 못했습니다.",
     sendFailed: "보내지 못했습니다.",
     cancelled: "전송을 취소했습니다.",
-    offline: "연결이 없어 보내지 못했습니다. 연결된 뒤에 다시 시도해주시길 바랍니다.",
+    offline:
+      "연결이 없어 보내지 못했습니다. 연결된 뒤에 다시 시도해주시길 바랍니다.",
     requestFailed: "요청을 처리하지 못했습니다.",
     retryLater: "잠시 후 다시 시도해주시길 바랍니다.",
     copied: "메시지를 복사했습니다.",

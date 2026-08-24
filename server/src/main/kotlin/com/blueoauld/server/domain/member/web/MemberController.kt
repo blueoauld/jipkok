@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateLocaleRequest
 import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
@@ -160,6 +161,16 @@ class MemberController(
         @Valid @RequestBody request: EnabledRequest,
     ) {
         memberService.updateFeedNotification(memberId, request)
+    }
+
+    @Operation(summary = "언어 저장", description = "번역과 푸시 문구가 이 언어를 따른다.")
+    @PutMapping("/me/locale")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateLocale(
+        @AuthenticationPrincipal memberId: Long,
+        @Valid @RequestBody request: UpdateLocaleRequest,
+    ) {
+        memberService.updateLocale(memberId, request)
     }
 
     @Operation(summary = "코멘트 저장")

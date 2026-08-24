@@ -3,8 +3,9 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,7 @@ class MemberCleaner(
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
     private val nicknameHistoryRepository: NicknameHistoryRepository,
-    private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
@@ -39,7 +40,7 @@ class MemberCleaner(
         memberRepository.deleteAllByIdIn(memberIds)
 
         if (objectKeys.isNotEmpty()) {
-            photoStorage.delete(objectKeys)
+            eventPublisher.publishEvent(PhotosDeletedEvent(objectKeys))
         }
 
         log.info { "탈퇴 회원 ${memberIds.size}명을 정리했다." }

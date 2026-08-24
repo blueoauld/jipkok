@@ -66,6 +66,5 @@ class ChatMessage(
         const val CONTENT_MAX_LENGTH = 1000
         const val CLIENT_MESSAGE_ID_MAX_LENGTH = 36
         const val VIDEO_MAX_SECONDS = 300
-        const val VIDEO_MAX_BYTES = 150L * 1024 * 1024
     }
 }

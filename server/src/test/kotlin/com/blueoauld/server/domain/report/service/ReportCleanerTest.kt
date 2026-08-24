@@ -11,7 +11,7 @@ import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -19,6 +19,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 import java.time.Instant
@@ -32,7 +33,7 @@ class ReportCleanerTest {
 
     private val reportSnapshotRepository = mockk<ReportSnapshotRepository>(relaxed = true)
 
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val objectMapper = JsonMapper.builder().build()
 
@@ -40,7 +41,7 @@ class ReportCleanerTest {
         reportRepository,
         reportPhotoRepository,
         reportSnapshotRepository,
-        photoStorage,
+        eventPublisher,
         objectMapper,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -57,7 +58,7 @@ class ReportCleanerTest {
     @Test
     fun `보관 기간이 지난 신고는 증거 사진과 스냅샷 속 사진까지 지운다`() {
         // given
-        val deleted = slot<List<String>>()
+        val deleted = slot<PhotosDeletedEvent>()
 
         // when
         cleaner.cleanUpOldReports()
@@ -67,8 +68,8 @@ class ReportCleanerTest {
         verify { reportPhotoRepository.deleteAllByReportIdIn(REPORT_IDS) }
         verify { reportSnapshotRepository.deleteAllByReportIdIn(REPORT_IDS) }
         verify { reportRepository.deleteAllByIdIn(REPORT_IDS) }
-        verify { photoStorage.delete(capture(deleted)) }
-        assertThat(deleted.captured).containsExactly(EVIDENCE_KEY, PROFILE_KEY, MESSAGE_KEY)
+        verify { eventPublisher.publishEvent(capture(deleted)) }
+        assertThat(deleted.captured.objectKeys).containsExactly(EVIDENCE_KEY, PROFILE_KEY, MESSAGE_KEY)
     }
 
     @Test
@@ -82,7 +83,7 @@ class ReportCleanerTest {
 
         // then
         verify { reportRepository.deleteAllByIdIn(REPORT_IDS) }
-        verify { photoStorage.delete(listOf(EVIDENCE_KEY)) }
+        verify { eventPublisher.publishEvent(PhotosDeletedEvent(listOf(EVIDENCE_KEY))) }
     }
 
     @Test
@@ -95,7 +96,7 @@ class ReportCleanerTest {
 
         // then
         verify(exactly = 0) { reportRepository.deleteAllByIdIn(any()) }
-        verify(exactly = 0) { photoStorage.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
     private fun snapshot() = ReportSnapshotContent(

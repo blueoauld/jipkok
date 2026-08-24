@@ -5,8 +5,9 @@ import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -22,7 +23,7 @@ class ReportCleaner(
     private val reportRepository: ReportRepository,
     private val reportPhotoRepository: ReportPhotoRepository,
     private val reportSnapshotRepository: ReportSnapshotRepository,
-    private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
     private val clock: Clock,
 ) {
@@ -45,7 +46,7 @@ class ReportCleaner(
         reportRepository.deleteAllByIdIn(reportIds)
 
         if (objectKeys.isNotEmpty()) {
-            photoStorage.delete(objectKeys)
+            eventPublisher.publishEvent(PhotosDeletedEvent(objectKeys))
         }
 
         log.info { "신고 ${reportIds.size}건을 정리했다." }

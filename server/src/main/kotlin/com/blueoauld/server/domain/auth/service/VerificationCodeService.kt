@@ -22,7 +22,6 @@ class VerificationCodeService(
 
     private val random = SecureRandom()
 
-    @Transactional
     fun send(phoneNumber: String, purpose: VerificationPurpose, ipAddress: String) {
         val now = clock.instant()
         val since = now.minus(SEND_LIMIT_WINDOW)
@@ -45,8 +44,14 @@ class VerificationCodeService(
         }
 
         val code = generateCode()
-        phoneVerificationRepository.save(PhoneVerification(phoneNumber, code, ipAddress, now, purpose))
-        verificationCodeSender.send(phoneNumber, code)
+        val verification = PhoneVerification(phoneNumber, code, ipAddress, now, purpose)
+        phoneVerificationRepository.save(verification)
+
+        runCatching { verificationCodeSender.send(phoneNumber, code) }
+            .onFailure {
+                phoneVerificationRepository.delete(verification)
+                throw it
+            }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = [BusinessException::class])

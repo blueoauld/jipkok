@@ -165,7 +165,7 @@ class ChatMessageService(
     }
 
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
-        photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
+        photoUploadService.createMediaUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
 
     @Transactional(readOnly = true)
     fun findVideoUrl(memberId: Long, roomId: Long, messageId: Long): ChatVideoUrlResponse {
@@ -287,7 +287,7 @@ class ChatMessageService(
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
 
-        if (stored.contentLength > ChatMessage.VIDEO_MAX_BYTES) {
+        if (stored.contentLength > PhotoUploadService.VIDEO_MAX_BYTES) {
             photoStorage.delete(listOf(key))
             throw BusinessException(ErrorCode.VIDEO_TOO_LARGE)
         }

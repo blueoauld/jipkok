@@ -67,6 +67,32 @@ class PhotoUploadServiceTest {
     }
 
     @Test
+    fun `이미지 발급은 동영상 형식을 거절한다`() {
+        // given
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            photoUploadService.createUploadUrl(1L, "members/1/", "video/mp4")
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
+        verify(exactly = 0) { photoUploadRepository.save(any()) }
+    }
+
+    @Test
+    fun `미디어 발급은 동영상 형식도 받는다`() {
+        // given
+
+        // when
+        val issued = photoUploadService.createMediaUploadUrl(1L, "chats/1/", "video/mp4")
+
+        // then
+        assertThat(issued.objectKey).startsWith("chats/1/")
+        assertThat(issued.objectKey).endsWith(".mp4")
+    }
+
+    @Test
     fun `확정한 키는 발급 기록에서 지운다`() {
         // given
         val upload = issued(PHOTO_KEY)
@@ -156,12 +182,12 @@ class PhotoUploadServiceTest {
     }
 
     @Test
-    fun `동영상은 사진 상한을 적용하지 않는다`() {
+    fun `동영상은 사진 상한 대신 동영상 상한으로 검사한다`() {
         // given
         issued(VIDEO_KEY)
         stored(
             VIDEO_KEY,
-            contentLength = PhotoUploadService.PHOTO_MAX_BYTES * 10,
+            contentLength = PhotoUploadService.VIDEO_MAX_BYTES,
             contentType = "video/mp4",
         )
 
@@ -170,6 +196,26 @@ class PhotoUploadServiceTest {
 
         // then
         verify(exactly = 0) { photoStorage.delete(any()) }
+    }
+
+    @Test
+    fun `상한을 넘은 동영상은 지우고 거절한다`() {
+        // given
+        issued(VIDEO_KEY)
+        stored(
+            VIDEO_KEY,
+            contentLength = PhotoUploadService.VIDEO_MAX_BYTES + 1,
+            contentType = "video/mp4",
+        )
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            photoUploadService.confirm(listOf(VIDEO_KEY))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VIDEO_TOO_LARGE)
+        verify { photoStorage.delete(listOf(VIDEO_KEY)) }
     }
 
     private fun issued(objectKey: String): PhotoUpload {

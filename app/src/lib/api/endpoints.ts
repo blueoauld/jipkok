@@ -175,6 +175,12 @@ export const members = {
       body: { enabled },
     }),
 
+  updateLocale: (locale: MemberLocale) =>
+    request<void>("/api/members/me/locale", {
+      method: "PUT",
+      body: { locale },
+    }),
+
   sendNote: (memberId: number, content: string) =>
     request<void>(`/api/members/${memberId}/notes`, {
       method: "POST",

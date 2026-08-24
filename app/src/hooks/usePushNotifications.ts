@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { useAuthStore } from "@/lib/auth/store";
 import { reportError } from "@/lib/crash";
+import { syncLocale } from "@/lib/locale-sync";
 import { registerPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
@@ -28,6 +29,7 @@ export function usePushNotifications() {
       return;
     }
 
+    syncLocale().catch((error) => reportError("locale-sync", error));
     registerPushToken().catch((error) => reportError("push-token", error));
   }, [status]);
 

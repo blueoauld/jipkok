@@ -49,28 +49,28 @@ class PushService(
         channelId: String? = null,
         priority: String? = null,
     ) {
-        if (memberIds.isEmpty()) {
-            return
+        memberIds.chunked(MEMBER_BATCH_SIZE).forEach { chunk ->
+            deviceTokenService.findTokens(chunk)
+                .map {
+                    ExpoPushMessage(
+                        to = it,
+                        title = title,
+                        body = body,
+                        data = data,
+                        collapseId = collapseKey,
+                        tag = collapseKey,
+                        channelId = channelId,
+                        priority = priority,
+                    )
+                }
+                .chunked(BATCH_SIZE)
+                .forEach { deviceTokenService.removeExpired(expoPushClient.send(it)) }
         }
-
-        deviceTokenService.findTokens(memberIds)
-            .map {
-                ExpoPushMessage(
-                    to = it,
-                    title = title,
-                    body = body,
-                    data = data,
-                    collapseId = collapseKey,
-                    tag = collapseKey,
-                    channelId = channelId,
-                    priority = priority,
-                )
-            }
-            .chunked(BATCH_SIZE)
-            .forEach { deviceTokenService.removeExpired(expoPushClient.send(it)) }
     }
 
     companion object {
+
+        const val MEMBER_BATCH_SIZE = 1000
 
         private const val BATCH_SIZE = 100
     }

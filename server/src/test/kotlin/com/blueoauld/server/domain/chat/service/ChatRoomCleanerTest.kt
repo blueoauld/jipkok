@@ -4,12 +4,13 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -24,14 +25,14 @@ class ChatRoomCleanerTest {
 
     private val chatMessageReactionRepository = mockk<ChatMessageReactionRepository>(relaxed = true)
 
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val chatRoomCleaner = ChatRoomCleaner(
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageRepository,
         chatMessageReactionRepository,
-        photoStorage,
+        eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -52,7 +53,7 @@ class ChatRoomCleanerTest {
         chatRoomCleaner.cleanUpLeftRooms()
 
         // then
-        verify { photoStorage.delete(listOf("chats/10/v.mp4", "chats/10/t.jpg")) }
+        verify { eventPublisher.publishEvent(PhotosDeletedEvent(listOf("chats/10/v.mp4", "chats/10/t.jpg"))) }
     }
 
     @Test
@@ -76,16 +77,16 @@ class ChatRoomCleanerTest {
         chatRoomCleaner.cleanUpLeftRooms()
 
         // then
-        verify { photoStorage.delete(OBJECT_KEYS) }
+        verify { eventPublisher.publishEvent(PhotosDeletedEvent(OBJECT_KEYS)) }
     }
 
     @Test
-    fun `사진이 없으면 저장소를 건드리지 않는다`() {
+    fun `사진이 없으면 삭제 이벤트를 내지 않는다`() {
         // when
         chatRoomCleaner.cleanUpLeftRooms()
 
         // then
-        verify(exactly = 0) { photoStorage.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
     @Test

@@ -3,8 +3,9 @@ package com.blueoauld.server.domain.feed.service
 import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,7 @@ class FeedPostCleaner(
     private val feedPostRepository: FeedPostRepository,
     private val feedPostLikeRepository: FeedPostLikeRepository,
     private val feedPostReportRepository: FeedPostReportRepository,
-    private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
@@ -39,7 +40,7 @@ class FeedPostCleaner(
         feedPostRepository.deleteAllByIdIn(postIds)
 
         if (objectKeys.isNotEmpty()) {
-            photoStorage.delete(objectKeys)
+            eventPublisher.publishEvent(PhotosDeletedEvent(objectKeys))
         }
 
         log.info { "삭제된 피드 ${postIds.size}건을 정리했다." }

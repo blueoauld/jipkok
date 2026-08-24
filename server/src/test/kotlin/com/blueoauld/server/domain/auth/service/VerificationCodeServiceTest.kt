@@ -146,6 +146,26 @@ class VerificationCodeServiceTest {
     }
 
     @Test
+    fun `발송에 실패하면 저장한 인증번호를 지운다`() {
+        // given
+        val saved = slot<PhoneVerification>()
+        every { phoneVerificationRepository.delete(any()) } returns Unit
+        every {
+            verificationCodeSender.send(any(), any())
+        } throws BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            verificationCodeService.send(PHONE_NUMBER, PURPOSE, IP_ADDRESS)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
+        verify { phoneVerificationRepository.save(capture(saved)) }
+        verify { phoneVerificationRepository.delete(saved.captured) }
+    }
+
+    @Test
     fun `인증번호가 일치하면 확인에 성공한다`() {
         // given
         val latest = PhoneVerification(PHONE_NUMBER, CODE, IP_ADDRESS, NOW, PURPOSE)

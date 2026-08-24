@@ -334,7 +334,8 @@ export const ja: typeof ko = {
     uploadFailed: "アップロードできませんでした。",
     sendFailed: "送信できませんでした。",
     cancelled: "送信を取り消しました。",
-    offline: "接続がないため送信できませんでした。接続後にもう一度お試しください。",
+    offline:
+      "接続がないため送信できませんでした。接続後にもう一度お試しください。",
     requestFailed: "リクエストを処理できませんでした。",
     retryLater: "しばらくしてからもう一度お試しください。",
     copied: "メッセージをコピーしました。",

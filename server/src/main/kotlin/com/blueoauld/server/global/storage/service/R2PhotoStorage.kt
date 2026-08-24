@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.net.URI
+import java.time.Duration
 
 @Component
 @ConditionalOnProperty(prefix = "r2", name = ["enabled"], havingValue = "true")
@@ -42,6 +43,10 @@ class R2PhotoStorage(
         .endpointOverride(URI.create(r2Properties.endpoint))
         .credentialsProvider(credentials)
         .region(REGION)
+        .overrideConfiguration {
+            it.apiCallTimeout(API_CALL_TIMEOUT)
+            it.apiCallAttemptTimeout(API_CALL_ATTEMPT_TIMEOUT)
+        }
         .build()
 
     override fun createUploadUrl(objectKey: String, contentType: String): String {
@@ -93,24 +98,27 @@ class R2PhotoStorage(
     }
 
     override fun delete(objectKeys: List<String>) {
-        if (objectKeys.isEmpty()) {
-            return
+        objectKeys.chunked(DELETE_BATCH_SIZE).forEach { chunk ->
+            val delete = Delete.builder()
+                .objects(chunk.map { ObjectIdentifier.builder().key(it).build() })
+                .build()
+
+            client.deleteObjects(
+                DeleteObjectsRequest.builder()
+                    .bucket(r2Properties.bucket)
+                    .delete(delete)
+                    .build(),
+            )
         }
-
-        val delete = Delete.builder()
-            .objects(objectKeys.map { ObjectIdentifier.builder().key(it).build() })
-            .build()
-
-        client.deleteObjects(
-            DeleteObjectsRequest.builder()
-                .bucket(r2Properties.bucket)
-                .delete(delete)
-                .build(),
-        )
     }
 
     companion object {
 
         private val REGION: Region = Region.of("auto")
+
+        private const val DELETE_BATCH_SIZE = 1000
+
+        private val API_CALL_ATTEMPT_TIMEOUT: Duration = Duration.ofSeconds(5)
+        private val API_CALL_TIMEOUT: Duration = Duration.ofSeconds(10)
     }
 }

@@ -19,8 +19,20 @@ class PhotoUploadService(
 ) {
 
     @Transactional
-    fun createUploadUrl(memberId: Long, keyPrefix: String, contentType: String): PhotoUploadUrlResponse {
-        val extension = MEDIA_EXTENSIONS[contentType] ?: throw BusinessException(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
+    fun createUploadUrl(memberId: Long, keyPrefix: String, contentType: String): PhotoUploadUrlResponse =
+        create(memberId, keyPrefix, contentType, IMAGE_EXTENSIONS)
+
+    @Transactional
+    fun createMediaUploadUrl(memberId: Long, keyPrefix: String, contentType: String): PhotoUploadUrlResponse =
+        create(memberId, keyPrefix, contentType, MEDIA_EXTENSIONS)
+
+    private fun create(
+        memberId: Long,
+        keyPrefix: String,
+        contentType: String,
+        extensions: Map<String, String>,
+    ): PhotoUploadUrlResponse {
+        val extension = extensions[contentType] ?: throw BusinessException(ErrorCode.UNSUPPORTED_IMAGE_TYPE)
         val objectKey = "$keyPrefix${UUID.randomUUID()}.$extension"
 
         photoUploadRepository.save(PhotoUpload(memberId, objectKey, clock.instant()))
@@ -43,27 +55,31 @@ class PhotoUploadService(
     private fun validateUploaded(objectKey: String) {
         val stored = photoStorage.head(objectKey) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
 
-        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == true) {
-            return
+        val (maxBytes, errorCode) = if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == true) {
+            VIDEO_MAX_BYTES to ErrorCode.VIDEO_TOO_LARGE
+        } else {
+            PHOTO_MAX_BYTES to ErrorCode.PHOTO_TOO_LARGE
         }
 
-        if (stored.contentLength > PHOTO_MAX_BYTES) {
+        if (stored.contentLength > maxBytes) {
             photoStorage.delete(listOf(objectKey))
-            throw BusinessException(ErrorCode.PHOTO_TOO_LARGE)
+            throw BusinessException(errorCode)
         }
     }
 
     companion object {
 
         const val PHOTO_MAX_BYTES = 10L * 1024 * 1024
+        const val VIDEO_MAX_BYTES = 150L * 1024 * 1024
 
         private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
 
-        private val MEDIA_EXTENSIONS = mapOf(
+        private val IMAGE_EXTENSIONS = mapOf(
             "image/jpeg" to "jpg",
             "image/png" to "png",
             "image/webp" to "webp",
-            "video/mp4" to "mp4",
         )
+
+        private val MEDIA_EXTENSIONS = IMAGE_EXTENSIONS + ("video/mp4" to "mp4")
     }
 }

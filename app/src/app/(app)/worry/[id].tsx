@@ -8,7 +8,7 @@ import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
@@ -185,7 +185,7 @@ function RowAction({
   );
 }
 
-function CommentRow({
+const CommentRow = memo(function CommentRow({
   comment,
   divider,
   onReply,
@@ -282,6 +282,65 @@ function CommentRow({
       </YStack>
     </RetroListRow>
   );
+});
+
+function CommentComposer({
+  replyTo,
+  pending,
+  onSubmit,
+}: {
+  replyTo: WorryCommentResponse | null;
+  pending: boolean;
+  onSubmit: (content: string) => Promise<unknown>;
+}) {
+  const { t } = useTranslation();
+  const background = useThemeBackground();
+  const [content, setContent] = useState("");
+
+  const trimmed = content.trim();
+
+  return (
+    <XStack
+      px="$4"
+      pt="$3"
+      pb={getTokens().space.$3.val + KEYBOARD_OVERLAP}
+      mb={-KEYBOARD_OVERLAP}
+      gap="$3"
+      items="center"
+      bg={background}
+    >
+      <YStack flex={1}>
+        {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
+        <RetroInput
+          key={replyTo?.commentId ?? "comment"}
+          shadow="$gray12"
+          value={content}
+          onChangeText={setContent}
+          autoFocusNative={replyTo !== null}
+          placeholder={
+            replyTo
+              ? t("worry.detail.replyPlaceholder")
+              : t("worry.detail.commentPlaceholder")
+          }
+          maxLength={WORRY_COMMENT_MAX_LENGTH}
+        />
+      </YStack>
+      <RetroButton
+        width={SUBMIT_BUTTON_WIDTH}
+        disabled={!trimmed || pending}
+        onPress={() => {
+          setContent("");
+          onSubmit(trimmed).catch(() => setContent(trimmed));
+        }}
+      >
+        {pending ? (
+          <Spinner size="small" color="white" />
+        ) : (
+          t("worry.detail.submit")
+        )}
+      </RetroButton>
+    </XStack>
+  );
 }
 
 export default function WorryDetailScreen() {
@@ -294,7 +353,6 @@ export default function WorryDetailScreen() {
   const background = useThemeBackground();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
-  const [content, setContent] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [replyTo, setReplyTo] = useState<WorryCommentResponse | null>(null);
 
@@ -393,7 +451,6 @@ export default function WorryDetailScreen() {
     mutationFn: (text: string) =>
       api.worries.createComment(postId, text, replyTo?.commentId),
     onSuccess: async () => {
-      setContent("");
       setReplyTo(null);
       await invalidateComments();
     },
@@ -498,7 +555,28 @@ export default function WorryDetailScreen() {
     [confirmRemovePost, confirmReportPost, post, t],
   );
 
-  const trimmed = content.trim();
+  const listData = useMemo(
+    () => (comments && comments.length > 0 ? [comments] : []),
+    [comments],
+  );
+
+  const renderComments = useCallback(
+    ({ item }: { item: WorryCommentResponse[] }) => (
+      <RetroListPanel>
+        {item.map((comment, index) => (
+          <CommentRow
+            key={comment.commentId}
+            comment={comment}
+            divider={index < item.length - 1}
+            onReply={setReplyTo}
+            onRemove={confirmRemoveComment}
+            onReport={confirmReportComment}
+          />
+        ))}
+      </RetroListPanel>
+    ),
+    [confirmRemoveComment, confirmReportComment],
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -510,22 +588,9 @@ export default function WorryDetailScreen() {
             <FlatList
               {...paged}
               contentContainerStyle={listStyle}
-              data={comments && comments.length > 0 ? [comments] : []}
+              data={listData}
               keyExtractor={() => "comments"}
-              renderItem={({ item }) => (
-                <RetroListPanel>
-                  {item.map((comment, index) => (
-                    <CommentRow
-                      key={comment.commentId}
-                      comment={comment}
-                      divider={index < item.length - 1}
-                      onReply={setReplyTo}
-                      onRemove={confirmRemoveComment}
-                      onReport={confirmReportComment}
-                    />
-                  ))}
-                </RetroListPanel>
-              )}
+              renderItem={renderComments}
               renderScrollComponent={(scrollProps: ScrollViewProps) => (
                 <CommentScrollView {...scrollProps} offset={insets.bottom} />
               )}
@@ -601,43 +666,11 @@ export default function WorryDetailScreen() {
               </YStack>
             )}
 
-            <XStack
-              px="$4"
-              pt="$3"
-              pb={getTokens().space.$3.val + KEYBOARD_OVERLAP}
-              mb={-KEYBOARD_OVERLAP}
-              gap="$3"
-              items="center"
-              bg={background}
-            >
-              <YStack flex={1}>
-                {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
-                <RetroInput
-                  key={replyTo?.commentId ?? "comment"}
-                  shadow="$gray12"
-                  value={content}
-                  onChangeText={setContent}
-                  autoFocusNative={replyTo !== null}
-                  placeholder={
-                    replyTo
-                      ? t("worry.detail.replyPlaceholder")
-                      : t("worry.detail.commentPlaceholder")
-                  }
-                  maxLength={WORRY_COMMENT_MAX_LENGTH}
-                />
-              </YStack>
-              <RetroButton
-                width={SUBMIT_BUTTON_WIDTH}
-                disabled={!trimmed || createComment.isPending}
-                onPress={() => createComment.mutate(trimmed)}
-              >
-                {createComment.isPending ? (
-                  <Spinner size="small" color="white" />
-                ) : (
-                  t("worry.detail.submit")
-                )}
-              </RetroButton>
-            </XStack>
+            <CommentComposer
+              replyTo={replyTo}
+              pending={createComment.isPending}
+              onSubmit={createComment.mutateAsync}
+            />
           </KeyboardStickyView>
         </>
       ) : (

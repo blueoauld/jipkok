@@ -3,6 +3,8 @@ package com.blueoauld.server.global.storage.service
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -18,9 +20,11 @@ class PhotoCleaner(
 
     private val photoUploadRepository: PhotoUploadRepository,
     private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun deletePhotos(event: PhotosDeletedEvent) {
         runCatching { photoStorage.delete(event.objectKeys) }
@@ -36,8 +40,8 @@ class PhotoCleaner(
             return
         }
 
-        photoStorage.delete(abandoned.map { it.objectKey })
         photoUploadRepository.deleteAll(abandoned)
+        eventPublisher.publishEvent(PhotosDeletedEvent(abandoned.map { it.objectKey }))
         log.info { "확정되지 않은 사진 ${abandoned.size}건을 정리했다." }
     }
 

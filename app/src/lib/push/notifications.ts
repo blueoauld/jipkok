@@ -2,9 +2,10 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
-import { api, type MemberLocale } from "@/lib/api";
+import { api } from "@/lib/api";
 import { DEVICE_PLATFORM } from "@/lib/device";
-import i18n, { currentLocale, type SupportedLocale } from "@/lib/i18n";
+import i18n from "@/lib/i18n";
+import { serverLocale } from "@/lib/locale-sync";
 
 const ANDROID_CHANNELS = [
   { id: "default", name: i18n.t("push.channelDefault"), importance: "DEFAULT" },
@@ -98,16 +99,4 @@ async function unregisterPushToken() {
 export async function releaseDevice() {
   await unregisterPushToken().catch(() => undefined);
   setBadgeCount(0);
-}
-
-// 앱의 언어 목록과 서버가 받는 값을 여기서 묶는다.
-// 앱에 언어를 더하면 이 표가 비어 컴파일이 막는다.
-const SERVER_LOCALES: Record<SupportedLocale, MemberLocale> = {
-  ko: "KO",
-  ja: "JA",
-  en: "EN",
-};
-
-function serverLocale(): MemberLocale {
-  return SERVER_LOCALES[currentLocale()];
 }

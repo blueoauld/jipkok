@@ -9,6 +9,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -19,9 +20,12 @@ class PhotoCleanerTest {
 
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
     private val photoCleaner = PhotoCleaner(
         photoUploadRepository,
         photoStorage,
+        eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -50,26 +54,26 @@ class PhotoCleanerTest {
     }
 
     @Test
-    fun `보관 기간이 지난 발급 기록은 저장소와 기록에서 함께 지운다`() {
+    fun `보관 기간이 지난 발급 기록은 기록을 지우고 삭제 이벤트를 낸다`() {
         // given
         val abandoned = listOf(
             PhotoUpload(1L, "members/1/a.jpg", NOW.minus(PhotoCleaner.RETENTION)),
             PhotoUpload(1L, "members/1/b.jpg", NOW.minus(PhotoCleaner.RETENTION)),
         )
         every { photoUploadRepository.findAllByIssuedAtLessThan(any()) } returns abandoned
-        val deleted = slot<List<String>>()
+        val deleted = slot<PhotosDeletedEvent>()
 
         // when
         photoCleaner.cleanUpAbandonedUploads()
 
         // then
-        verify { photoStorage.delete(capture(deleted)) }
         verify { photoUploadRepository.deleteAll(abandoned) }
-        assertThat(deleted.captured).containsExactly("members/1/a.jpg", "members/1/b.jpg")
+        verify { eventPublisher.publishEvent(capture(deleted)) }
+        assertThat(deleted.captured.objectKeys).containsExactly("members/1/a.jpg", "members/1/b.jpg")
     }
 
     @Test
-    fun `정리할 기록이 없으면 저장소를 건드리지 않는다`() {
+    fun `정리할 기록이 없으면 아무것도 하지 않는다`() {
         // given
         every { photoUploadRepository.findAllByIssuedAtLessThan(any()) } returns emptyList()
 
@@ -77,7 +81,7 @@ class PhotoCleanerTest {
         photoCleaner.cleanUpAbandonedUploads()
 
         // then
-        verify(exactly = 0) { photoStorage.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         verify(exactly = 0) { photoUploadRepository.deleteAll(any<List<PhotoUpload>>()) }
     }
 

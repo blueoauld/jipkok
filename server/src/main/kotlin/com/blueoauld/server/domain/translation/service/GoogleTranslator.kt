@@ -6,9 +6,11 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.GoogleTranslateProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+import java.time.Duration
 
 private val log = KotlinLogging.logger {}
 
@@ -19,7 +21,14 @@ class GoogleTranslator(
     private val properties: GoogleTranslateProperties,
 ) : Translator {
 
-    private val restClient = RestClient.create()
+    private val restClient = RestClient.builder()
+        .requestFactory(
+            SimpleClientHttpRequestFactory().apply {
+                setConnectTimeout(CONNECT_TIMEOUT)
+                setReadTimeout(READ_TIMEOUT)
+            },
+        )
+        .build()
 
     override fun translate(text: String, targetLocale: MemberLocale): String {
         val response = runCatching {
@@ -51,5 +60,8 @@ class GoogleTranslator(
 
         private const val TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key={apiKey}"
         private const val FORMAT_TEXT = "text"
+
+        private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(2)
+        private val READ_TIMEOUT: Duration = Duration.ofSeconds(10)
     }
 }

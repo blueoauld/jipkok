@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUr
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateLocaleRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
@@ -130,6 +131,11 @@ class MemberService(
     @Transactional
     fun updateFeedNotification(memberId: Long, request: EnabledRequest) {
         findMember(memberId).feedNotificationEnabled = request.enabled
+    }
+
+    @Transactional
+    fun updateLocale(memberId: Long, request: UpdateLocaleRequest) {
+        findMember(memberId).locale = request.locale
     }
 
     @Transactional

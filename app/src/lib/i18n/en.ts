@@ -330,7 +330,8 @@ export const en: typeof ko = {
     uploadFailed: "Couldn't upload.",
     sendFailed: "Couldn't send.",
     cancelled: "Upload cancelled.",
-    offline: "No connection, so this wasn't sent. Please try again once you're back online.",
+    offline:
+      "No connection, so this wasn't sent. Please try again once you're back online.",
     requestFailed: "Couldn't process the request.",
     retryLater: "Please try again in a moment.",
     copied: "Message copied.",

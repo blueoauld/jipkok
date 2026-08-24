@@ -95,6 +95,20 @@ class PushServiceTest {
     }
 
     @Test
+    fun `묶음 발송은 회원 목록을 잘라 토큰을 조회한다`() {
+        // given
+        val memberIds = (1L..PushService.MEMBER_BATCH_SIZE + 1L).toList()
+        every { deviceTokenService.findTokens(any<List<Long>>()) } returns listOf(TOKEN)
+
+        // when
+        pushService.sendAll(memberIds, TITLE, BODY)
+
+        // then
+        verify { deviceTokenService.findTokens(memberIds.take(PushService.MEMBER_BATCH_SIZE)) }
+        verify { deviceTokenService.findTokens(listOf(memberIds.last())) }
+    }
+
+    @Test
     fun `소켓에 붙어 있으면 접속 중으로 본다`() {
         // given
         every { simpUserRegistry.getUser(MEMBER_ID.toString()) } returns mockk()

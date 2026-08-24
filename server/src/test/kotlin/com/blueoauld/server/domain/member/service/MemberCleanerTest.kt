@@ -5,13 +5,14 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -24,13 +25,13 @@ class MemberCleanerTest {
 
     private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
 
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val cleaner = MemberCleaner(
         memberRepository,
         memberPhotoRepository,
         nicknameHistoryRepository,
-        photoStorage,
+        eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -54,12 +55,14 @@ class MemberCleanerTest {
             memberPhotoRepository.deleteAllByMemberIdIn(MEMBER_IDS)
             nicknameHistoryRepository.deleteAllByMemberIdIn(MEMBER_IDS)
             memberRepository.deleteAllByIdIn(MEMBER_IDS)
-            photoStorage.delete(listOf("members/10/public/a.jpg", "members/11/secret/b.jpg"))
+            eventPublisher.publishEvent(
+                PhotosDeletedEvent(listOf("members/10/public/a.jpg", "members/11/secret/b.jpg")),
+            )
         }
     }
 
     @Test
-    fun `사진이 없으면 저장소를 건드리지 않는다`() {
+    fun `사진이 없으면 삭제 이벤트를 내지 않는다`() {
         // given
         every { memberPhotoRepository.findAllByMemberIdIn(MEMBER_IDS) } returns emptyList()
 
@@ -67,7 +70,7 @@ class MemberCleanerTest {
         cleaner.cleanUpWithdrawnMembers()
 
         // then
-        verify(exactly = 0) { photoStorage.delete(any()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
     @Test

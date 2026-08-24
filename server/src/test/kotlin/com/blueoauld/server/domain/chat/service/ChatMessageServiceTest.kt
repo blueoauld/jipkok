@@ -98,7 +98,7 @@ class ChatMessageServiceTest {
     fun `영상이 상한보다 크면 지우고 거절한다`() {
         // given
         every { photoStorage.head(VIDEO_KEY) } returns
-            StoredObject(ChatMessage.VIDEO_MAX_BYTES + 1, "video/mp4")
+            StoredObject(PhotoUploadService.VIDEO_MAX_BYTES + 1, "video/mp4")
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
