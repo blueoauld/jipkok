@@ -6,7 +6,11 @@ function pad(value: number) {
 
 export function formatDateTime(isoString: string) {
   const date = new Date(isoString);
-  const day = `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+  const day = i18n.t("date.fullDate", {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+  });
 
   return `${day} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }

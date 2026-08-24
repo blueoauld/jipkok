@@ -33,7 +33,8 @@ class GoogleTranslator(
     override fun translate(text: String, targetLocale: MemberLocale): String {
         val response = runCatching {
             restClient.post()
-                .uri(TRANSLATE_URL, properties.apiKey)
+                .uri(TRANSLATE_URL)
+                .header(API_KEY_HEADER, properties.apiKey)
                 .body(TranslateRequestBody(q = text, target = targetLocale.javaLocale.language))
                 .retrieve()
                 .body<TranslateResponseBody>()
@@ -58,7 +59,8 @@ class GoogleTranslator(
 
     companion object {
 
-        private const val TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key={apiKey}"
+        private const val TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2"
+        private const val API_KEY_HEADER = "X-goog-api-key"
         private const val FORMAT_TEXT = "text"
 
         private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(2)

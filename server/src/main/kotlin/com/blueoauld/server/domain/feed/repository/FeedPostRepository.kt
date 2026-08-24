@@ -2,7 +2,9 @@ package com.blueoauld.server.domain.feed.repository
 
 import com.blueoauld.server.domain.feed.dto.projection.FeedPostRow
 import com.blueoauld.server.domain.feed.entity.FeedPost
+import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -11,6 +13,10 @@ import java.time.Instant
 interface FeedPostRepository : JpaRepository<FeedPost, Long> {
 
     fun existsByMemberIdAndSlotAt(memberId: Long, slotAt: Instant): Boolean
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from FeedPost p where p.id = :postId")
+    fun findLockedById(@Param("postId") postId: Long): FeedPost?
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from FeedPost p where p.memberId = :memberId")

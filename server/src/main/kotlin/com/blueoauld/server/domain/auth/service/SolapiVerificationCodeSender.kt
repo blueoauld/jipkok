@@ -22,7 +22,7 @@ class SolapiVerificationCodeSender(
 
     override fun send(phoneNumber: String, code: String) {
         val dialCode = dialCodeOf(phoneNumber) ?: run {
-            log.error { "국가 코드를 알 수 없어 인증번호를 보내지 못했다. phoneNumber=$phoneNumber" }
+            log.error { "국가 코드를 알 수 없어 인증번호를 보내지 못했다. phoneNumber=${masked(phoneNumber)}" }
             throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
         }
 
@@ -36,7 +36,7 @@ class SolapiVerificationCodeSender(
         try {
             messageService.send(message, null)
         } catch (e: Exception) {
-            log.error(e) { "인증번호를 보내지 못했다. phoneNumber=$phoneNumber" }
+            log.error(e) { "인증번호를 보내지 못했다. phoneNumber=${masked(phoneNumber)}" }
             throw BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED)
         }
     }
@@ -52,5 +52,9 @@ class SolapiVerificationCodeSender(
         fun dialCodeOf(phoneNumber: String) = DIAL_CODES.firstOrNull { phoneNumber.startsWith(it) }
 
         fun nationalOf(phoneNumber: String, dialCode: String) = TRUNK_PREFIX + phoneNumber.removePrefix(dialCode)
+
+        fun masked(phoneNumber: String) = "***" + phoneNumber.takeLast(MASKED_VISIBLE_DIGITS)
+
+        private const val MASKED_VISIBLE_DIGITS = 4
     }
 }

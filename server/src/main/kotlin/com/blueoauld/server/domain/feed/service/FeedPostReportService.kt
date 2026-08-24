@@ -20,9 +20,8 @@ class FeedPostReportService(
 
     @Transactional
     fun report(reporterId: Long, postId: Long) {
-        val post = feedPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
-        }
+        val post = feedPostRepository.findLockedById(postId)
+            ?: throw BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
 
         if (post.memberId == reporterId) {
             throw BusinessException(ErrorCode.SELF_REPORT)

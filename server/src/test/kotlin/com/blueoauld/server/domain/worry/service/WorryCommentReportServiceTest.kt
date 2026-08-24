@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.util.*
 
 class WorryCommentReportServiceTest {
 
@@ -38,7 +37,7 @@ class WorryCommentReportServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment(AUTHOR_ID))
+        every { worryCommentRepository.findLockedById(COMMENT_ID) } returns comment(AUTHOR_ID)
         every { worryCommentReportRepository.existsByReporterIdAndCommentId(any(), any()) } returns false
         every { worryCommentReportRepository.saveAndFlush(any()) } answers { firstArg() }
         every { worryCommentRepository.saveAndFlush(any()) } answers { firstArg() }
@@ -60,10 +59,21 @@ class WorryCommentReportServiceTest {
     }
 
     @Test
+    fun `신고 수를 세기 전에 댓글을 잠근다`() {
+        // given
+
+        // when
+        worryCommentReportService.report(REPORTER_ID, COMMENT_ID)
+
+        // then
+        verify { worryCommentRepository.findLockedById(COMMENT_ID) }
+    }
+
+    @Test
     fun `신고가 쌓이면 신고 삭제로 표시한 뒤 지우고 글의 댓글 수를 줄인다`() {
         // given
         val comment = comment(AUTHOR_ID)
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment)
+        every { worryCommentRepository.findLockedById(COMMENT_ID) } returns comment
         every {
             worryCommentReportRepository.countByCommentId(COMMENT_ID)
         } returns WorryCommentReportService.AUTO_DELETE_REPORT_COUNT.toLong()
@@ -114,7 +124,7 @@ class WorryCommentReportServiceTest {
     @Test
     fun `내 댓글은 신고할 수 없다`() {
         // given
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment(REPORTER_ID))
+        every { worryCommentRepository.findLockedById(COMMENT_ID) } returns comment(REPORTER_ID)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -144,7 +154,7 @@ class WorryCommentReportServiceTest {
     @Test
     fun `없는 댓글이면 실패한다`() {
         // given
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.empty()
+        every { worryCommentRepository.findLockedById(COMMENT_ID) } returns null
 
         // when
         val exception = assertThrows(BusinessException::class.java) {

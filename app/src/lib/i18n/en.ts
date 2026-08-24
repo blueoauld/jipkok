@@ -2,6 +2,8 @@ import type { ko } from "@/lib/i18n/ko";
 
 export const en: typeof ko = {
   common: {
+    reloadFailed:
+      "Couldn't restart the app. Fully close and reopen it to apply the change.",
     profileLoadFailed: "Couldn't load the profile.",
     listLoadFailed: "Couldn't load the list.",
     memberEmpty: "No members yet.",

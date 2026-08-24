@@ -33,6 +33,8 @@ spring:
             hibernate:
                 format_sql: false
                 default_batch_fetch_size: 100
+                jdbc:
+                    batch_size: 100
 
     data:
         redis:

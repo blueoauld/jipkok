@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.time.Instant
-import java.util.*
 
 class FeedPostReportServiceTest {
 
@@ -35,7 +34,7 @@ class FeedPostReportServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { feedPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
+        every { feedPostRepository.findLockedById(POST_ID) } returns post(AUTHOR_ID)
         every { feedPostReportRepository.existsByReporterIdAndPostId(any(), any()) } returns false
         every { feedPostReportRepository.saveAndFlush(any()) } answers { firstArg() }
         every { feedPostReportRepository.countByPostId(POST_ID) } returns 1
@@ -53,6 +52,17 @@ class FeedPostReportServiceTest {
         verify { feedPostReportRepository.saveAndFlush(capture(saved)) }
         assertThat(saved.captured.reporterId).isEqualTo(REPORTER_ID)
         assertThat(saved.captured.postId).isEqualTo(POST_ID)
+    }
+
+    @Test
+    fun `신고 수를 세기 전에 게시물을 잠근다`() {
+        // given
+
+        // when
+        feedPostReportService.report(REPORTER_ID, POST_ID)
+
+        // then
+        verify { feedPostRepository.findLockedById(POST_ID) }
     }
 
     @Test
@@ -103,7 +113,7 @@ class FeedPostReportServiceTest {
     @Test
     fun `내 게시물은 신고할 수 없다`() {
         // given
-        every { feedPostRepository.findById(POST_ID) } returns Optional.of(post(REPORTER_ID))
+        every { feedPostRepository.findLockedById(POST_ID) } returns post(REPORTER_ID)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -133,7 +143,7 @@ class FeedPostReportServiceTest {
     @Test
     fun `없는 게시물이면 실패한다`() {
         // given
-        every { feedPostRepository.findById(POST_ID) } returns Optional.empty()
+        every { feedPostRepository.findLockedById(POST_ID) } returns null
 
         // when
         val exception = assertThrows(BusinessException::class.java) {

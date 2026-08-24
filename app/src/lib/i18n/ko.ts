@@ -1,5 +1,7 @@
 export const ko = {
   common: {
+    reloadFailed:
+      "앱을 다시 시작하지 못했습니다. 앱을 완전히 닫았다 열면 적용됩니다.",
     profileLoadFailed: "프로필을 불러오지 못했습니다.",
     listLoadFailed: "목록을 불러오지 못했습니다.",
     memberEmpty: "회원이 없습니다.",

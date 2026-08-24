@@ -11,7 +11,7 @@ interface DeviceTokenRepository : JpaRepository<DeviceToken, Long> {
 
     fun findAllByMemberIdIn(memberIds: List<Long>): List<DeviceToken>
 
-    fun deleteByToken(token: String)
+    fun deleteByTokenAndMemberId(token: String, memberId: Long)
 
     fun deleteAllByTokenIn(tokens: List<String>)
 

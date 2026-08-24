@@ -52,10 +52,10 @@ describe("clock formats", () => {
     expect(formatClockTime(new Date(2026, 0, 1, 23, 7))).toBe("오후 11:07");
   });
 
-  it("날짜시각과 슬롯 시각은 두 자리로 채운다", () => {
+  it("날짜시각은 연월일 표기를 따르고 슬롯 시각은 두 자리로 채운다", () => {
     const iso = new Date(2026, 2, 4, 9, 3).toISOString();
 
-    expect(formatDateTime(iso)).toBe("2026.03.04 09:03");
+    expect(formatDateTime(iso)).toBe("2026. 3. 4. 09:03");
     expect(formatSlotTime(iso)).toBe("09:03");
   });
 });

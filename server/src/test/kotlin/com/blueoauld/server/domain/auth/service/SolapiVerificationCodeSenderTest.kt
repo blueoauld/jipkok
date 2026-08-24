@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.service.SolapiVerificationCodeSender.Companion.dialCodeOf
+import com.blueoauld.server.domain.auth.service.SolapiVerificationCodeSender.Companion.masked
 import com.blueoauld.server.domain.auth.service.SolapiVerificationCodeSender.Companion.nationalOf
 import com.blueoauld.server.domain.member.entity.Member
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +27,12 @@ class SolapiVerificationCodeSenderTest {
         // given, when, then
         assertThat(nationalOf("+821012345678", "+82")).isEqualTo("01012345678")
         assertThat(nationalOf("+819012345678", "+81")).isEqualTo("09012345678")
+    }
+
+    @Test
+    fun `로그에 남길 번호는 뒤 네 자리만 남기고 가린다`() {
+        // given, when, then
+        assertThat(masked("+821012345678")).isEqualTo("***5678")
     }
 
     @Test

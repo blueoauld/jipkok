@@ -22,9 +22,8 @@ class WorryCommentReportService(
 
     @Transactional
     fun report(reporterId: Long, commentId: Long) {
-        val comment = worryCommentRepository.findById(commentId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
-        }
+        val comment = worryCommentRepository.findLockedById(commentId)
+            ?: throw BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
 
         if (comment.memberId == reporterId) {
             throw BusinessException(ErrorCode.SELF_REPORT)

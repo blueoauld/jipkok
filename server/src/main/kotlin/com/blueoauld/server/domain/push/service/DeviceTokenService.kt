@@ -44,8 +44,8 @@ class DeviceTokenService(
     }
 
     @Transactional
-    fun remove(token: String) {
-        deviceTokenRepository.deleteByToken(token)
+    fun remove(memberId: Long, token: String) {
+        deviceTokenRepository.deleteByTokenAndMemberId(token, memberId)
     }
 
     @Transactional(readOnly = true)

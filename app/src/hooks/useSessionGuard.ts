@@ -11,6 +11,9 @@ export function useSessionGuard() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
+      Object.values(useUploadStore.getState().uploads).forEach((upload) =>
+        upload.cancel(),
+      );
       queryClient.clear();
       useUploadStore.getState().clear();
       router.replace("/login");

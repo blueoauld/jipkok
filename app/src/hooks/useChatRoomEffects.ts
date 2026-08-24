@@ -17,6 +17,7 @@ export function useChatRoomEffects(
     mutationFn: (lastReadMessageId: number) =>
       api.chats.markRead(roomId, lastReadMessageId),
     networkMode: "online",
+    retry: 2,
     onSuccess: () => invalidateChatLists(queryClient),
   });
 

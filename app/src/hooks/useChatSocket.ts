@@ -35,14 +35,27 @@ export function useChatSocket() {
       return;
     }
 
-    const prepend = (roomId: number, message: ChatMessageResponse) =>
+    const prepend = async (roomId: number, message: ChatMessageResponse) => {
+      const queryKey = chatMessagesKey(roomId);
+
+      if (!queryClient.getQueryData(queryKey)) {
+        await queryClient.invalidateQueries({ queryKey });
+
+        return;
+      }
+
+      await queryClient.cancelQueries({ queryKey });
       queryClient.setQueryData<InfiniteData<ChatMessagePage>>(
-        chatMessagesKey(roomId),
+        queryKey,
         (current) =>
           mapPages(current, (items, index) =>
-            index === 0 ? [message, ...items] : items,
+            index === 0 &&
+            !items.some((item) => item.messageId === message.messageId)
+              ? [message, ...items]
+              : items,
           ),
       );
+    };
 
     const handle = (event: ChatEvent) => {
       if (event.type === "REACTION") {

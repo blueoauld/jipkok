@@ -2,6 +2,8 @@ import type { ko } from "@/lib/i18n/ko";
 
 export const ja: typeof ko = {
   common: {
+    reloadFailed:
+      "アプリを再起動できませんでした。アプリを完全に閉じて開き直すと反映されます。",
     profileLoadFailed: "プロフィールを読み込めませんでした。",
     listLoadFailed: "リストを読み込めませんでした。",
     memberEmpty: "ユーザーがいません。",
