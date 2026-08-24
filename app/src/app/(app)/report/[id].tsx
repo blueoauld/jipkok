@@ -100,7 +100,7 @@ export default function ReportScreen() {
 
   const busy = report.isPending || photos.uploading;
 
-  useLoadingOverlay(busy);
+  useLoadingOverlay(busy, photos.progress.done, photos.progress.total);
 
   const screenOptions = useMemo(
     () => ({ title: member ? `${title} (${member.nickname})` : title }),

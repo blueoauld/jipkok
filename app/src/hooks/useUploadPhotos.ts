@@ -11,6 +11,7 @@ export function useUploadPhotos(
 ) {
   const [photos, setPhotos] = useState(initial);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const add = useCallback(async () => {
     try {
@@ -22,7 +23,9 @@ export function useUploadPhotos(
 
       setUploading(true);
 
-      for (const asset of assets) {
+      for (const [index, asset] of assets.entries()) {
+        setProgress({ done: index + 1, total: assets.length });
+
         const photo = await upload(asset);
 
         setPhotos((current) => [...current, photo].slice(0, MAX_PHOTOS));
@@ -31,6 +34,7 @@ export function useUploadPhotos(
       onError(error);
     } finally {
       setUploading(false);
+      setProgress({ done: 0, total: 0 });
     }
   }, [onError, photos.length, upload]);
 
@@ -57,5 +61,5 @@ export function useUploadPhotos(
     [photos],
   );
 
-  return { urls, objectKeys, uploading, add, remove, move };
+  return { urls, objectKeys, uploading, progress, add, remove, move };
 }

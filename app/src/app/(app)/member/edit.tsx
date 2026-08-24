@@ -100,8 +100,11 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   });
 
   const uploading = publicPhotos.uploading || secretPhotos.uploading;
+  const progress = publicPhotos.uploading
+    ? publicPhotos.progress
+    : secretPhotos.progress;
 
-  useLoadingOverlay(uploading);
+  useLoadingOverlay(uploading, progress.done, progress.total);
   const busy = save.isPending || uploading;
 
   const submit = handleSubmit((values) =>
