@@ -297,6 +297,7 @@ export const en: typeof ko = {
     languageKo: "Korean",
     languageJa: "Japanese",
     languageEn: "English",
+    languageZh: "Traditional Chinese",
     languageChangeNotice: "Changing the language restarts the app.",
     languageChange: "Change",
     logoutNotice: "You'll need to log in again.",

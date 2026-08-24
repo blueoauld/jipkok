@@ -7,6 +7,7 @@ const SERVER_LOCALES: Record<SupportedLocale, MemberLocale> = {
   ko: "KO",
   ja: "JA",
   en: "EN",
+  zh: "ZH_TW",
 };
 
 export function serverLocale(): MemberLocale {

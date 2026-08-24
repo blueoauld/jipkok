@@ -35,7 +35,7 @@ class GoogleTranslator(
             restClient.post()
                 .uri(TRANSLATE_URL)
                 .header(API_KEY_HEADER, properties.apiKey)
-                .body(TranslateRequestBody(q = text, target = targetLocale.javaLocale.language))
+                .body(TranslateRequestBody(q = text, target = targetLocale.javaLocale.toLanguageTag()))
                 .retrieve()
                 .body<TranslateResponseBody>()
         }.onFailure { log.error(it) { "번역하지 못했다. targetLocale=$targetLocale" } }

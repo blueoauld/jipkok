@@ -15,7 +15,8 @@
     "scheme": "jipkok",
     "locales": {
       "ja": "./locales/ja.json",
-      "en": "./locales/en.json"
+      "en": "./locales/en.json",
+      "zh-Hant": "./locales/zh-Hant.json"
     },
     "userInterfaceStyle": "automatic",
     "ios": {

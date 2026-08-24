@@ -1636,7 +1636,7 @@ export interface components {
         };
         UpdateLocaleRequest: {
             /** @enum {string} */
-            locale: "KO" | "JA" | "EN";
+            locale: "KO" | "JA" | "EN" | "ZH_TW";
         };
         UpdateCommentRequest: {
             comment?: string | null;
@@ -1733,7 +1733,7 @@ export interface components {
             /** @enum {string} */
             platform: "IOS" | "ANDROID";
             /** @enum {string|null} */
-            locale?: "KO" | "JA" | "EN" | null;
+            locale?: "KO" | "JA" | "EN" | "ZH_TW" | null;
         };
         CreateFeedPostRequest: {
             objectKey: string;

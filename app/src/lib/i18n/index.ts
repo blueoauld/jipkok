@@ -6,6 +6,7 @@ import { ja } from "@/lib/i18n/ja";
 import { ko } from "@/lib/i18n/ko";
 import { deviceLocale, type SupportedLocale } from "@/lib/i18n/locale";
 import { useLocaleStore } from "@/lib/i18n/store";
+import { zh } from "@/lib/i18n/zh";
 
 export type { SupportedLocale } from "@/lib/i18n/locale";
 export { SUPPORTED_LOCALES } from "@/lib/i18n/locale";
@@ -22,6 +23,7 @@ i18n.use(initReactI18next).init({
     ko: { translation: ko },
     ja: { translation: ja },
     en: { translation: en },
+    zh: { translation: zh },
   },
   lng: currentLocale(),
   fallbackLng: "ko",

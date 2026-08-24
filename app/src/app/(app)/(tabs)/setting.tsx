@@ -75,6 +75,7 @@ const LANGUAGE_LABEL_KEYS = {
   ko: "setting.languageKo",
   ja: "setting.languageJa",
   en: "setting.languageEn",
+  zh: "setting.languageZh",
 } as const satisfies Record<SupportedLocale, string>;
 
 type SettingAction =

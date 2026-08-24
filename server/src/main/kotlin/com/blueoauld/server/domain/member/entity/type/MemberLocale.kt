@@ -10,4 +10,5 @@ enum class MemberLocale(
     KO(Locale.KOREAN),
     JA(Locale.JAPANESE),
     EN(Locale.ENGLISH),
+    ZH_TW(Locale.TRADITIONAL_CHINESE),
 }
