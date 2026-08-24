@@ -1,4 +1,4 @@
-import type { InfiniteData } from "@tanstack/react-query";
+import { type InfiniteData, onlineManager } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
@@ -68,6 +68,7 @@ describe("useChatSocket", () => {
     });
     useAuthStore.setState({ status: "authenticated" });
     useDeletedRoomStore.getState().clear();
+    onlineManager.setOnline(true);
   });
 
   it("로그인 상태에서만 소켓을 연다", async () => {
@@ -79,6 +80,39 @@ describe("useChatSocket", () => {
     });
 
     expect(createChatSocket).not.toHaveBeenCalled();
+    client.clear();
+  });
+
+  it("연결이 끊기면 소켓을 닫고 돌아오면 다시 열면서 목록을 새로 받는다", async () => {
+    const client = createTestQueryClient();
+    seedRoom(client, 1);
+    await renderHook(() => useChatSocket(), {
+      wrapper: withQueryClient(client),
+    });
+
+    expect(socket.activate).toHaveBeenCalledTimes(1);
+
+    await act(async () => onlineManager.setOnline(false));
+
+    expect(socket.deactivate).toHaveBeenCalledTimes(1);
+
+    await act(async () => onlineManager.setOnline(true));
+
+    expect(socket.activate).toHaveBeenCalledTimes(2);
+    expect(client.getQueryState(CHAT_ROOMS_KEY)?.isInvalidated).toBe(true);
+    client.clear();
+  });
+
+  it("연결이 없으면 소켓을 열지 않는다", async () => {
+    onlineManager.setOnline(false);
+    const client = createTestQueryClient();
+
+    await renderHook(() => useChatSocket(), {
+      wrapper: withQueryClient(client),
+    });
+
+    expect(createChatSocket).toHaveBeenCalled();
+    expect(socket.activate).not.toHaveBeenCalled();
     client.clear();
   });
 

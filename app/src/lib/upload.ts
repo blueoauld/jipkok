@@ -1,6 +1,7 @@
 import { File } from "expo-file-system";
 
 import { ApiError } from "@/lib/api";
+import { reportError } from "@/lib/crash";
 import i18n from "@/lib/i18n";
 
 const CANCELLED_CODE = "UPLOAD_CANCELLED";
@@ -27,7 +28,7 @@ export function describeUploadError(error: unknown) {
     return error;
   }
 
-  console.error("[upload]", error);
+  reportError("upload", error);
 
   return new ApiError(0, FAILED_CODE, MEDIA_FAILED_MESSAGE);
 }

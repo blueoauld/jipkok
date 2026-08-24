@@ -3,6 +3,7 @@ import { useSegments } from "expo-router";
 import { useEffect, useRef } from "react";
 
 import { useAuthStore } from "@/lib/auth/store";
+import { reportError } from "@/lib/crash";
 import { registerPushToken } from "@/lib/push/notifications";
 import { pushOnce } from "@/lib/router";
 
@@ -27,7 +28,7 @@ export function usePushNotifications() {
       return;
     }
 
-    registerPushToken().catch(() => undefined);
+    registerPushToken().catch((error) => reportError("push-token", error));
   }, [status]);
 
   useEffect(() => {

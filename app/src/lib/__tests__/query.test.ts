@@ -72,6 +72,15 @@ describe("createQueryClient", () => {
     client.clear();
   });
 
+  // networkMode가 기본값이면 오프라인 뮤테이션이 일시정지돼 execute()가 영영 안 풀린다.
+  // 동작으로 검사하면 실패가 아니라 멈춤으로 끝나서 설정값을 직접 본다.
+  it("연결이 없어도 뮤테이션을 멈추지 않는다", () => {
+    const client = testClient();
+
+    expect(client.getDefaultOptions().mutations?.networkMode).toBe("always");
+    client.clear();
+  });
+
   it("4xx는 재시도하지 않고 5xx는 재시도한다", async () => {
     const client = testClient();
     const clientError = jest
