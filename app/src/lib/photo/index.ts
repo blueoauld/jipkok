@@ -10,14 +10,16 @@ import {
   type UploadProgress,
 } from "@/lib/upload";
 
-const CONTENT_TYPE = "image/jpeg";
+// 같은 화질에서 JPEG보다 30% 가까이 작다. 사진은 한 번 올라가 여러 번 조회되므로
+// 인코딩이 느려지는 대가를 치를 값어치가 있다. 서버는 image/webp를 이미 허용한다.
+const CONTENT_TYPE = "image/webp";
 
 const LOCAL_URI_PREFIX = "file://";
 
 const MAX_LENGTH = 1440;
 const COMPRESS = 0.8;
 
-async function toJpeg(asset: ImagePickerAsset) {
+async function toUploadImage(asset: ImagePickerAsset) {
   const context = ImageManipulator.manipulate(asset.uri);
   const longest = Math.max(asset.width, asset.height);
 
@@ -31,7 +33,7 @@ async function toJpeg(asset: ImagePickerAsset) {
 
   const image = await context.renderAsync();
   const result = await image.saveAsync({
-    format: SaveFormat.JPEG,
+    format: SaveFormat.WEBP,
     compress: COMPRESS,
   });
 
@@ -45,7 +47,7 @@ async function upload(
   asset: ImagePickerAsset,
   issue: IssueUploadUrl,
 ): Promise<ProfilePhoto> {
-  const uri = await toJpeg(asset);
+  const uri = await toUploadImage(asset);
   const objectKey = await uploadFile(
     uri,
     CONTENT_TYPE,
@@ -57,9 +59,9 @@ async function upload(
   return { objectKey, url: uri };
 }
 
-// 채팅은 진행률과 취소가 필요하고, 재전송 때 다시 줄이지 않도록 JPEG 변환을 따로 뗀다.
+// 채팅은 진행률과 취소가 필요하고, 재전송 때 다시 줄이지 않도록 변환을 따로 뗀다.
 export function toChatPhoto(asset: ImagePickerAsset) {
-  return toJpeg(asset);
+  return toUploadImage(asset);
 }
 
 export function uploadChatPhotoFile(
