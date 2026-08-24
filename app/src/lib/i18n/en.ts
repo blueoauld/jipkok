@@ -154,8 +154,8 @@ export const en: typeof ko = {
     composeTitle: "Feed",
     composeClose: "Close",
     composeSubmit: "Post",
-    commentSaved: "Caption saved.",
-    commentTitle: "Caption",
+    commentSaved: "Comment saved.",
+    commentTitle: "Comment",
   },
   gender: {
     MALE: "Male",

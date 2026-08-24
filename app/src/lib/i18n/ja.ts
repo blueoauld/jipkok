@@ -183,7 +183,7 @@ export const ja: typeof ko = {
     ageLabel: "年齢",
     reset: "リセット",
     apply: "適用",
-    metaLine: "{{gender}} · {{age}}歳 · ",
+    metaLine: "{{gender}}・{{age}}歳・",
     searchEmpty: "検索結果がありません。",
     searchError: "検索できませんでした。",
     nicknamePlaceholder: "ニックネーム",
@@ -194,7 +194,7 @@ export const ja: typeof ko = {
     all: "すべて",
     ageAll: "すべて",
     ageFrom: "{{min}}歳",
-    ageRange: "{{min}}歳 ~ {{max}}歳",
+    ageRange: "{{min}}歳〜{{max}}歳",
     leaveRoomNotice: "退出すると、やり取りした会話が互いにすべて消えます。",
     leaveRoomsNotice:
       "選択したチャットルームから退出します。やり取りした会話が互いにすべて消えます。",
@@ -360,7 +360,7 @@ export const ja: typeof ko = {
     unblocked: "ブロックを解除しました。",
     secretPhotoOpened: "シークレット写真を公開しました。",
     secretPhotoClosed: "シークレット写真を閉じました。",
-    unblockConfirm: "ブロックを解除しますか?",
+    unblockConfirm: "ブロックを解除しますか？",
     blockConfirm:
       "ブロックすると互いのリストに表示されず、やり取りした会話もすべて消えます。",
     unblock: "解除",
