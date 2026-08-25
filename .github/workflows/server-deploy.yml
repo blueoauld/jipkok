@@ -18,6 +18,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -68,6 +69,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       contents: read
@@ -106,6 +108,7 @@ jobs:
         id: meta
         run: |
           echo "image=${IMAGE_NAME,,}:${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "latest=${IMAGE_NAME,,}:latest" >> "$GITHUB_OUTPUT"
 
       - name: 이미지 빌드와 푸시
         uses: docker/build-push-action@v6
@@ -115,13 +118,14 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.image }}
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ steps.meta.outputs.latest }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -148,6 +152,6 @@ jobs:
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             export SERVER_IMAGE="${{ needs.build.outputs.image }}"
             docker compose pull server
-            docker compose up -d --remove-orphans
+            docker compose up -d --wait --remove-orphans
             docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
-            docker image prune -af
+            docker image prune -af --filter "until=168h"

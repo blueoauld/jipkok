@@ -17,6 +17,7 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +34,7 @@ jobs:
 
       - name: OTA 발행
         working-directory: app
-        run: npx eas-cli update --branch "$BRANCH" --message "$MESSAGE" --non-interactive
+        run: npx eas-cli@22 update --branch "$BRANCH" --message "$MESSAGE" --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           BRANCH: ${{ inputs.branch }}

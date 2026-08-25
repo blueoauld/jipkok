@@ -8,9 +8,14 @@ on:
       - ".github/workflows/app-check.yml"
   workflow_dispatch:
 
+concurrency:
+  group: app-check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   typecheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
