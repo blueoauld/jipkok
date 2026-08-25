@@ -21,10 +21,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const authed = mounted && getAccessToken() !== null;
 
   useEffect(() => {
-    if (mounted && !isLogin && !authed) router.replace(LOGIN_PATH);
+    if (!mounted) return;
+    if (!isLogin && !authed) router.replace(LOGIN_PATH);
+    if (isLogin && authed) router.replace("/");
   }, [mounted, isLogin, authed, router]);
 
-  if (isLogin) return children;
+  if (isLogin) return authed ? null : children;
 
   if (!authed) return null;
 

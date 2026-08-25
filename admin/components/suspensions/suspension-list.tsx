@@ -9,6 +9,7 @@ import {
 } from "@/components/suspensions/suspension-filters";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
 import { QuerySection } from "@/components/query-section";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -22,10 +23,12 @@ import { fetchSuspensions } from "@/lib/api/suspensions";
 export function SuspensionList() {
   const [filter, setFilter] = useState(defaultSuspensionFilter);
   const [page, setPage] = useState(1);
+  const memberId = useDebouncedValue(filter.memberId.trim());
+  const queryFilter = { ...filter, memberId };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["suspensions", filter, page],
-    queryFn: () => fetchSuspensions({ ...filter, page }),
+    queryKey: ["suspensions", queryFilter, page],
+    queryFn: () => fetchSuspensions({ ...queryFilter, page }),
     placeholderData: keepPreviousData,
   });
 

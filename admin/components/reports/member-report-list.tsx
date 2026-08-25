@@ -9,6 +9,7 @@ import {
 } from "@/components/reports/member-report-filters";
 import { MemberReportTable } from "@/components/reports/member-report-table";
 import { QuerySection } from "@/components/query-section";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -22,10 +23,12 @@ import { fetchMemberReports } from "@/lib/api/reports";
 export function MemberReportList() {
   const [filter, setFilter] = useState(defaultMemberReportFilter);
   const [page, setPage] = useState(1);
+  const reportedMemberId = useDebouncedValue(filter.reportedMemberId.trim());
+  const queryFilter = { ...filter, reportedMemberId };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["reports", filter, page],
-    queryFn: () => fetchMemberReports({ ...filter, page }),
+    queryKey: ["reports", queryFilter, page],
+    queryFn: () => fetchMemberReports({ ...queryFilter, page }),
     placeholderData: keepPreviousData,
   });
 

@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.*
 
 class AdminReportServiceTest {
 
@@ -79,7 +78,7 @@ class AdminReportServiceTest {
 
         // when
         val response = adminReportService.findReports(
-            status = AdminReportStatus.ALL,
+            status = null,
             type = null,
             reason = null,
             reportedMemberId = null,
@@ -97,7 +96,6 @@ class AdminReportServiceTest {
     fun `상세는 스냅샷과 사진 URL을 합쳐서 준다`() {
         // given
         every { reportService.findDetail(REPORT_ID) } returns detail()
-        every { reportRepository.findById(REPORT_ID) } returns Optional.of(report())
 
         // when
         val response = adminReportService.findDetail(REPORT_ID)
@@ -149,6 +147,7 @@ class AdminReportServiceTest {
         reason = ReportReason.ABUSE,
         detail = "욕설이 심합니다",
         reportedAt = NOW,
+        handledAt = null,
         snapshot = ReportSnapshotContent(
             reporter = ReporterSnapshot(REPORTER_ID, "밤산책"),
             reported = ReportedMemberSnapshot(

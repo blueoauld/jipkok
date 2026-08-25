@@ -9215,7 +9215,7 @@ export interface operations {
     findReports: {
         parameters: {
             query?: {
-                status?: "ALL" | "PENDING" | "HANDLED";
+                status?: "PENDING" | "HANDLED";
                 type?: "PROFILE" | "CHAT";
                 reason?: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
                 reportedMemberId?: number;
@@ -9373,7 +9373,7 @@ export interface operations {
     findMembers_1: {
         parameters: {
             query?: {
-                status?: "ALL" | "NORMAL" | "SUSPENDED" | "WITHDRAWN";
+                status?: "NORMAL" | "SUSPENDED" | "WITHDRAWN";
                 gender?: "MALE" | "FEMALE";
                 keyword?: string;
                 page?: number;

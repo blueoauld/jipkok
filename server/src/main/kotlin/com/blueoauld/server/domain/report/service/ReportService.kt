@@ -130,6 +130,7 @@ class ReportService(
             reason = report.reason,
             detail = report.detail,
             reportedAt = report.createdAt,
+            handledAt = report.handledAt,
             snapshot = content,
             messagePhotoUrls = content.messages
                 .mapNotNull { message -> message.photoKey?.let { message.messageId to it } }

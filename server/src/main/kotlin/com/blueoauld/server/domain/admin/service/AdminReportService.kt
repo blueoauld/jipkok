@@ -30,7 +30,7 @@ class AdminReportService(
 
     @Transactional(readOnly = true)
     fun findReports(
-        status: AdminReportStatus,
+        status: AdminReportStatus?,
         type: ReportType?,
         reason: ReportReason?,
         reportedMemberId: Long?,
@@ -42,7 +42,7 @@ class AdminReportService(
         val safeSize = AdminPaging.size(size)
 
         val reports = reportRepository.findAllForAdmin(
-            handled = status.handled,
+            handled = status?.handled,
             type = type?.name,
             reason = reason?.name,
             reportedMemberId = reportedMemberId,
@@ -51,7 +51,7 @@ class AdminReportService(
             offset = AdminPaging.offset(safePage, safeSize),
         )
         val totalCount = reportRepository.countForAdmin(
-            handled = status.handled,
+            handled = status?.handled,
             type = type?.name,
             reason = reason?.name,
             reportedMemberId = reportedMemberId,
@@ -84,7 +84,6 @@ class AdminReportService(
     @Transactional(readOnly = true)
     fun findDetail(reportId: Long): AdminReportDetailResponse {
         val detail = reportService.findDetail(reportId)
-        val handledAt = reportRepository.findById(reportId).map { it.handledAt }.orElse(null)
         val reported = detail.snapshot.reported
 
         return AdminReportDetailResponse(
@@ -93,7 +92,7 @@ class AdminReportService(
             reason = detail.reason,
             detail = detail.detail,
             createdAt = detail.reportedAt,
-            handledAt = handledAt,
+            handledAt = detail.handledAt,
             reporter = AdminReporterResponse(
                 id = detail.snapshot.reporter.memberId,
                 nickname = detail.snapshot.reporter.nickname,

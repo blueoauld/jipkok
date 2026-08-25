@@ -30,7 +30,7 @@ class AdminMemberController(
     @Operation(summary = "회원 목록", description = "검색어는 숫자면 회원 ID와 전화번호, 아니면 닉네임에 맞춘다.")
     @GetMapping
     fun findMembers(
-        @RequestParam(defaultValue = "ALL") status: AdminMemberStatus,
+        @RequestParam(required = false) status: AdminMemberStatus?,
         @RequestParam(required = false) gender: Gender?,
         @RequestParam(required = false) keyword: String?,
         @RequestParam(defaultValue = "1") page: Int,

@@ -14,7 +14,7 @@ export type MemberReportListParams = MemberReportFilter & {
 export const fetchMemberReports = (params: MemberReportListParams) =>
   api<MemberReportPage>("/api/admin/reports", {
     query: {
-      status: params.status,
+      status: params.status === "ALL" ? undefined : params.status,
       type: params.type === "ALL" ? undefined : params.type,
       reason:
         params.reason === "ALL" ? undefined : (params.reason as ReportReason),

@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.admin.dto.DailyCount
+import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.response.AccessEnvironmentResponse
 import com.blueoauld.server.domain.admin.dto.response.ActiveUsersResponse
 import com.blueoauld.server.domain.admin.dto.response.AgeGroupResponse
@@ -25,7 +26,10 @@ import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
+import java.util.concurrent.atomic.AtomicReference
 
 @Service
 class AdminDashboardService(
@@ -37,6 +41,8 @@ class AdminDashboardService(
     private val accessLogRepository: AccessLogRepository,
     private val clock: Clock,
 ) {
+
+    private val demographicsCache = AtomicReference<CachedDemographics?>(null)
 
     @Transactional(readOnly = true)
     fun findSummary(): DashboardSummaryResponse {
@@ -85,7 +91,7 @@ class AdminDashboardService(
 
     @Transactional(readOnly = true)
     fun findDemographics(): DemographicsResponse {
-        val rows = memberRepository.countByGenderAndBirthYear()
+        val rows = findDemographicRows()
         val currentYear = clock.currentYear()
 
         val ageGroups = AGE_GROUPS.map { group ->
@@ -103,6 +109,19 @@ class AdminDashboardService(
             female = rows.filter { it.gender == Gender.FEMALE.name }.sumOf { it.count },
             ageGroups = ageGroups.filter { it.label != UNDER_20_LABEL || it.male + it.female > 0 },
         )
+    }
+
+    private fun findDemographicRows(): List<GenderBirthYearCount> {
+        val now = clock.instant()
+
+        demographicsCache.get()
+            ?.takeIf { it.cachedAt.plus(DEMOGRAPHICS_TTL).isAfter(now) }
+            ?.let { return it.rows }
+
+        val rows = memberRepository.countByGenderAndBirthYear()
+        demographicsCache.set(CachedDemographics(now, rows))
+
+        return rows
     }
 
     @Transactional(readOnly = true)
@@ -165,9 +184,13 @@ class AdminDashboardService(
         fun contains(age: Int) = age in range
     }
 
+    private class CachedDemographics(val cachedAt: Instant, val rows: List<GenderBirthYearCount>)
+
     companion object {
 
         const val TREND_DAYS = 14
+
+        private val DEMOGRAPHICS_TTL: Duration = Duration.ofMinutes(1)
 
         private const val VERSION_PART_WIDTH = 5
 

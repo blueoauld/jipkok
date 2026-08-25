@@ -12,6 +12,7 @@ data class ReportDetail(
     val reason: ReportReason,
     val detail: String?,
     val reportedAt: Instant,
+    val handledAt: Instant?,
     val snapshot: ReportSnapshotContent,
     val messagePhotoUrls: Map<Long, String>,
     val evidencePhotoUrls: List<String>,

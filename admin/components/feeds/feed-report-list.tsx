@@ -9,6 +9,7 @@ import {
 } from "@/components/feeds/feed-report-filters";
 import { FeedReportTable } from "@/components/feeds/feed-report-table";
 import { QuerySection } from "@/components/query-section";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -22,10 +23,12 @@ import { fetchFeedReports } from "@/lib/api/feed-reports";
 export function FeedReportList() {
   const [filter, setFilter] = useState(defaultFeedReportFilter);
   const [page, setPage] = useState(1);
+  const authorId = useDebouncedValue(filter.authorId.trim());
+  const queryFilter = { ...filter, authorId };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["feed-reports", filter, page],
-    queryFn: () => fetchFeedReports({ ...filter, page }),
+    queryKey: ["feed-reports", queryFilter, page],
+    queryFn: () => fetchFeedReports({ ...queryFilter, page }),
     placeholderData: keepPreviousData,
   });
 

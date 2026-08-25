@@ -42,18 +42,19 @@ class MemberAdminService(
     }
 
     @Transactional(readOnly = true)
-    fun findPhotoUrls(memberId: Long, visibility: PhotoVisibility): List<String> {
-        val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
-            photoStorage::toPublicUrl
-        } else {
-            photoStorage::createSignedViewUrl
-        }
-
-        return memberPhotoRepository.findAllByMemberId(memberId)
-            .filter { it.visibility == visibility }
+    fun findPhotoUrls(memberId: Long): Map<PhotoVisibility, List<String>> =
+        memberPhotoRepository.findAllByMemberId(memberId)
             .sortedBy { it.displayOrder }
-            .map { toUrl(it.objectKey) }
-    }
+            .groupBy { it.visibility }
+            .mapValues { (visibility, photos) ->
+                val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
+                    photoStorage::toPublicUrl
+                } else {
+                    photoStorage::createSignedViewUrl
+                }
+
+                photos.map { toUrl(it.objectKey) }
+            }
 
     @Transactional
     fun resetProfile(memberId: Long, target: ProfileTarget) {

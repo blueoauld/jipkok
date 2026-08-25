@@ -8438,9 +8438,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "default": "ALL",
                             "enum": [
-                                "ALL",
                                 "PENDING",
                                 "HANDLED"
                             ]
@@ -8693,9 +8691,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "default": "ALL",
                             "enum": [
-                                "ALL",
                                 "NORMAL",
                                 "SUSPENDED",
                                 "WITHDRAWN"

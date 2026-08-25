@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDateTime, formatPhoneNumber } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import { genderLabels } from "@/lib/labels";
 import type { MemberSummary } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
@@ -67,7 +67,7 @@ export function MemberTable({ members }: Props) {
               {member.age}
             </TableCell>
             <TableCell className="tabular-nums">
-              {formatPhoneNumber(member.phoneNumber)}
+              {member.phoneNumber}
             </TableCell>
             <TableCell className="text-right tabular-nums">
               {member.publicPhotoCount}

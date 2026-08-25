@@ -57,7 +57,7 @@ class AdminMemberServiceTest {
         every { memberAdminRepository.countForAdmin(null, null, 1000, "%1000%", null, NOW) } returns 0
 
         // when
-        val response = adminMemberService.findMembers(AdminMemberStatus.ALL, null, " 1000 ", 1, 20)
+        val response = adminMemberService.findMembers(null, null, " 1000 ", 1, 20)
 
         // then
         assertThat(response.totalCount).isZero()
@@ -72,8 +72,8 @@ class AdminMemberServiceTest {
         every { memberAdminRepository.countForAdmin(null, null, null, null, null, NOW) } returns 63
 
         // when
-        adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, 1, 20)
-        val response = adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, 1, 20)
+        adminMemberService.findMembers(null, null, null, 1, 20)
+        val response = adminMemberService.findMembers(null, null, null, 1, 20)
 
         // then
         assertThat(response.totalCount).isEqualTo(63)
@@ -115,7 +115,7 @@ class AdminMemberServiceTest {
         every { memberAdminRepository.countForAdmin(null, null, null, null, null, NOW) } returns 0
 
         // when
-        val response = adminMemberService.findMembers(AdminMemberStatus.ALL, null, null, Int.MAX_VALUE, 500)
+        val response = adminMemberService.findMembers(null, null, null, Int.MAX_VALUE, 500)
 
         // then
         assertThat(response.page).isEqualTo(AdminPaging.MAX_PAGE)
@@ -126,8 +126,10 @@ class AdminMemberServiceTest {
     fun `상세는 사진 URL과 전화번호 기준 정지 이력을 합친다`() {
         // given
         every { memberAdminRepository.findRowById(MEMBER_ID) } returns row()
-        every { memberAdminService.findPhotoUrls(MEMBER_ID, PhotoVisibility.PUBLIC) } returns listOf("public-1")
-        every { memberAdminService.findPhotoUrls(MEMBER_ID, PhotoVisibility.SECRET) } returns listOf("secret-1")
+        every { memberAdminService.findPhotoUrls(MEMBER_ID) } returns mapOf(
+            PhotoVisibility.PUBLIC to listOf("public-1"),
+            PhotoVisibility.SECRET to listOf("secret-1"),
+        )
         every { memberSuspensionRepository.findByPhoneNumberOrderByIdDesc("+821011112222") } returns listOf(
             suspension(expiresAt = NOW.plusSeconds(3600)),
             suspension(expiresAt = NOW.minusSeconds(3600)),

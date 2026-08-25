@@ -27,7 +27,7 @@ class AdminReportController(
     @Operation(summary = "회원 신고 목록")
     @GetMapping
     fun findReports(
-        @RequestParam(defaultValue = "ALL") status: AdminReportStatus,
+        @RequestParam(required = false) status: AdminReportStatus?,
         @RequestParam(required = false) type: ReportType?,
         @RequestParam(required = false) reason: ReportReason?,
         @RequestParam(required = false) reportedMemberId: Long?,

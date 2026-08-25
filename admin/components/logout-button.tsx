@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, LogOut } from "lucide-react";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { logout } from "@/lib/api/auth";
@@ -9,6 +10,7 @@ import { clearTokens, getRefreshToken } from "@/lib/auth";
 
 export function LogoutButton() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [pending, setPending] = useState(false);
 
   const handleLogout = async () => {
@@ -16,6 +18,7 @@ export function LogoutButton() {
     const refreshToken = getRefreshToken();
     if (refreshToken) await logout(refreshToken).catch(() => {});
     clearTokens();
+    queryClient.clear();
     router.replace("/login");
   };
 

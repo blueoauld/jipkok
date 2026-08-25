@@ -17,6 +17,7 @@ import {
   type WorryReportFilter,
 } from "@/components/worries/worry-report-filters";
 import { WorryReportTable } from "@/components/worries/worry-report-table";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import {
   fetchWorryCommentReports,
@@ -40,10 +41,12 @@ type Props<T> = {
 function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
   const [filter, setFilter] = useState(defaultWorryReportFilter);
   const [page, setPage] = useState(1);
+  const authorId = useDebouncedValue(filter.authorId.trim());
+  const queryFilter = { ...filter, authorId };
 
   const { data, isPending, error } = useQuery({
-    queryKey: [queryKey, filter, page],
-    queryFn: () => fetchPage({ ...filter, page }),
+    queryKey: [queryKey, queryFilter, page],
+    queryFn: () => fetchPage({ ...queryFilter, page }),
     placeholderData: keepPreviousData,
   });
 

@@ -18,6 +18,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
@@ -144,6 +145,22 @@ class AdminDashboardServiceTest {
         // then
         assertThat(demographics.ageGroups.first().label).isEqualTo("20대 미만")
         assertThat(demographics.ageGroups.first().female).isEqualTo(2)
+    }
+
+    @Test
+    fun `회원 구성은 캐시한다`() {
+        // given
+        every { memberRepository.countByGenderAndBirthYear() } returns listOf(
+            genderBirthYearCount("MALE", CURRENT_YEAR - 24, 4),
+        )
+
+        // when
+        adminDashboardService.findDemographics()
+        val demographics = adminDashboardService.findDemographics()
+
+        // then
+        assertThat(demographics.male).isEqualTo(4)
+        verify(exactly = 1) { memberRepository.countByGenderAndBirthYear() }
     }
 
     @Test

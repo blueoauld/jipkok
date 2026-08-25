@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
@@ -36,7 +36,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatCount, formatDateTime, formatPhoneNumber } from "@/lib/format";
+import { formatCount, formatDateTime } from "@/lib/format";
 import {
   genderLabels,
   profileTargetLabels,
@@ -231,7 +231,7 @@ function Loaded({ member }: { member: MemberDetailData }) {
               items={[
                 {
                   label: "전화번호",
-                  value: formatPhoneNumber(member.phoneNumber),
+                  value: member.phoneNumber,
                 },
                 {
                   label: "성별 / 나이",
@@ -336,6 +336,7 @@ function ReceivedReports({ phoneNumber }: { phoneNumber: string }) {
         reportedPhoneNumber: phoneNumber,
         page,
       }),
+    placeholderData: keepPreviousData,
   });
 
   usePageGuard(page, setPage, data);

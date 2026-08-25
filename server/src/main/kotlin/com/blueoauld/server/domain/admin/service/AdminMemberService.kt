@@ -39,7 +39,7 @@ class AdminMemberService(
 
     @Transactional(readOnly = true)
     fun findMembers(
-        status: AdminMemberStatus,
+        status: AdminMemberStatus?,
         gender: Gender?,
         keyword: String?,
         page: Int,
@@ -56,7 +56,7 @@ class AdminMemberService(
         val phoneLike = digits?.let { "%$it%" }
         val nicknameLike = trimmed?.takeIf { digits == null }?.let { "%${it.escapeLike()}%" }
 
-        val statusName = status.takeIf { it != AdminMemberStatus.ALL }?.name
+        val statusName = status?.name
 
         val rows = memberAdminRepository.findAllForAdmin(
             status = statusName,
@@ -120,6 +120,7 @@ class AdminMemberService(
         val row = memberAdminRepository.findRowById(memberId)
             ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         val now = clock.instant()
+        val photoUrls = memberAdminService.findPhotoUrls(memberId)
 
         return AdminMemberDetailResponse(
             id = row.id,
@@ -137,8 +138,8 @@ class AdminMemberService(
             locatedAt = row.locatedAt,
             joinedAt = row.joinedAt,
             withdrawnAt = row.withdrawnAt,
-            publicPhotoUrls = memberAdminService.findPhotoUrls(memberId, PhotoVisibility.PUBLIC),
-            secretPhotoUrls = memberAdminService.findPhotoUrls(memberId, PhotoVisibility.SECRET),
+            publicPhotoUrls = photoUrls[PhotoVisibility.PUBLIC].orEmpty(),
+            secretPhotoUrls = photoUrls[PhotoVisibility.SECRET].orEmpty(),
             suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
                 .map { AdminSuspensionResponse.of(it, now) },
         )

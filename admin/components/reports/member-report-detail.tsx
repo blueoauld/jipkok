@@ -14,7 +14,7 @@ import { ChatTranscript } from "@/components/reports/chat-transcript";
 import { PendingButton } from "@/components/pending-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDateTime, formatPhoneNumber } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import type { MemberReportDetail as MemberReportDetailData } from "@/lib/types";
 import {
   genderLabels,
@@ -202,7 +202,7 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
                   },
                   {
                     label: "전화번호",
-                    value: formatPhoneNumber(reported.phoneNumber),
+                    value: reported.phoneNumber,
                   },
                   {
                     label: "성별 / 나이",
