@@ -44,7 +44,7 @@ export function RecentSuspensions({ suspensions }: Props) {
               <TableHead className="w-24">유형</TableHead>
               <TableHead>회원</TableHead>
               <TableHead>사유</TableHead>
-              <TableHead className="text-right">해제일</TableHead>
+              <TableHead className="text-right">종료일</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -124,7 +124,8 @@ class AdminReportService(
 
     @Transactional
     fun handle(actorId: Long, reportId: Long) {
-        reportService.handle(reportId)
-        adminActionRecorder.record(actorId, AdminActionType.HANDLE_REPORT, reportId)
+        if (reportService.handle(reportId)) {
+            adminActionRecorder.record(actorId, AdminActionType.HANDLE_REPORT, reportId)
+        }
     }
 }

@@ -160,7 +160,13 @@ function Loaded({ member }: { member: MemberDetailData }) {
         description={`${member.nickname} #${member.id}을 탈퇴 처리합니다. 되돌릴 수 없습니다.`}
         confirmLabel="탈퇴"
         errorFallback="탈퇴 처리하지 못했습니다."
-        invalidateKeys={[["members"], ["dashboard"]]}
+        invalidateKeys={[
+          ["members"],
+          ["dashboard"],
+          ["feed-reports"],
+          ["worry-reports"],
+          ["worry-comment-reports"],
+        ]}
         action={() => withdrawMember(member.id)}
       />
 

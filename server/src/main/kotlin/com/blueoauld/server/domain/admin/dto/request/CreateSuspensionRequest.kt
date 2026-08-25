@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.admin.dto.request
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -19,6 +20,7 @@ data class CreateSuspensionRequest(
     val reason: SuspensionReason? = null,
 
     @field:Min(value = 1, message = "정지 일수가 올바르지 않습니다.")
+    @field:Max(value = 3650, message = "정지 일수가 올바르지 않습니다.")
     val days: Long? = null,
 
     @field:Size(max = MemberSuspension.DETAIL_MAX_LENGTH, message = "상세 사유가 너무 깁니다.")

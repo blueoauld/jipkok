@@ -16,7 +16,6 @@ import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.service.ReportService
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -114,7 +113,7 @@ class AdminReportServiceTest {
     @Test
     fun `처리는 신고 서비스에 위임한다`() {
         // given
-        justRun { reportService.handle(REPORT_ID) }
+        every { reportService.handle(REPORT_ID) } returns true
 
         // when
         adminReportService.handle(ACTOR_ID, REPORT_ID)
@@ -122,6 +121,18 @@ class AdminReportServiceTest {
         // then
         verify { reportService.handle(REPORT_ID) }
         verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.HANDLE_REPORT, REPORT_ID) }
+    }
+
+    @Test
+    fun `이미 처리된 신고는 감사 기록을 남기지 않는다`() {
+        // given
+        every { reportService.handle(REPORT_ID) } returns false
+
+        // when
+        adminReportService.handle(ACTOR_ID, REPORT_ID)
+
+        // then
+        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any()) }
     }
 
     private fun report() = Report(

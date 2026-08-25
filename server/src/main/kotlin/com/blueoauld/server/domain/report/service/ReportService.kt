@@ -101,12 +101,18 @@ class ReportService(
     }
 
     @Transactional
-    fun handle(reportId: Long) {
+    fun handle(reportId: Long): Boolean {
         val report = reportRepository.findById(reportId).orElseThrow {
             BusinessException(ErrorCode.REPORT_NOT_FOUND)
         }
 
+        if (report.handledAt != null) {
+            return false
+        }
+
         report.handledAt = clock.instant()
+
+        return true
     }
 
     @Transactional(readOnly = true)

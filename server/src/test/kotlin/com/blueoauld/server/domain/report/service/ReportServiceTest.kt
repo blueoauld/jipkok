@@ -341,10 +341,31 @@ class ReportServiceTest {
         every { reportRepository.findById(REPORT_ID) } returns Optional.of(report)
 
         // when
-        reportService.handle(REPORT_ID)
+        val handled = reportService.handle(REPORT_ID)
 
         // then
+        assertThat(handled).isTrue()
         assertThat(report.handledAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `이미 처리된 신고는 처리 시각을 유지한다`() {
+        // given
+        val firstHandledAt = NOW.minusSeconds(3600)
+        val report = Report(
+            reporterId = REPORTER_ID,
+            reportedMemberId = REPORTED_MEMBER_ID,
+            type = ReportType.PROFILE,
+            reason = ReportReason.ABUSE,
+        ).apply { handledAt = firstHandledAt }
+        every { reportRepository.findById(REPORT_ID) } returns Optional.of(report)
+
+        // when
+        val handled = reportService.handle(REPORT_ID)
+
+        // then
+        assertThat(handled).isFalse()
+        assertThat(report.handledAt).isEqualTo(firstHandledAt)
     }
 
     @Test
