@@ -3,7 +3,8 @@ import Link from "next/link";
 
 const CONTACT_EMAIL = "hello@jipkok.app";
 
-const STORES = ["Coming to the App Store", "Coming to Google Play"];
+const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.blueoauld.jipkok";
 
 export default function Home() {
   return (
@@ -36,15 +37,24 @@ export default function Home() {
           className="h-[46vh] min-h-64 w-auto"
         />
 
-        <div className="flex flex-wrap items-stretch justify-center gap-2.5">
-          {STORES.map((store) => (
-            <span
-              key={store}
-              className="retro-panel flex w-44 items-center justify-center bg-disabled px-4 py-3 text-sm font-bold text-ink/70"
-            >
-              {store}
-            </span>
-          ))}
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
+          {/* 앱스토어는 아직 미출시라 배지를 흐리게만 보여준다. */}
+          <Image
+            src="/app-store-badge.svg"
+            alt="Coming soon to the App Store"
+            width={120}
+            height={40}
+            className="h-12 w-40 opacity-40 grayscale"
+          />
+          <a href={PLAY_STORE_URL}>
+            <Image
+              src="/google-play-badge.png"
+              alt="Get it on Google Play"
+              width={564}
+              height={168}
+              className="h-12 w-40"
+            />
+          </a>
         </div>
       </main>
 
