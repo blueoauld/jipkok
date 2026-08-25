@@ -2,8 +2,9 @@
 
 import { Fragment, useState } from "react";
 import Image from "next/image";
-import { DeletePostDialog } from "@/components/feeds/delete-post-dialog";
+import { DeleteDialogButton } from "@/components/delete-dialog-button";
 import { MemberCell } from "@/components/member-cell";
+import { ReporterList } from "@/components/reporter-list";
 import { StatusText } from "@/components/status-text";
 import {
   Table,
@@ -13,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteFeedPost } from "@/lib/api/feed-reports";
 import { formatCount, formatDateTime } from "@/lib/format";
 import { inactiveRowClassName } from "@/lib/styles";
 import { cn } from "@/lib/utils";
@@ -96,9 +98,11 @@ export function FeedReportTable({ reports }: Props) {
                 className="text-right"
                 onClick={(event) => event.stopPropagation()}
               >
-                <DeletePostDialog
-                  postId={report.postId}
-                  authorNickname={report.authorNickname}
+                <DeleteDialogButton
+                  title="피드 삭제"
+                  description={`${report.authorNickname}의 피드 #${report.postId}을 삭제합니다. 되돌릴 수 없습니다.`}
+                  invalidateKeys={[["feed-reports"]]}
+                  action={() => deleteFeedPost(report.postId)}
                   disabled={report.postDeletedAt != null}
                 />
               </TableCell>
@@ -106,21 +110,7 @@ export function FeedReportTable({ reports }: Props) {
             {expandedPostId === report.postId && (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={8} className="bg-muted/50 px-6 py-3">
-                  <div className="grid w-fit grid-cols-[12rem_auto] gap-x-8 gap-y-1.5 text-sm">
-                    <span className="text-muted-foreground">신고자</span>
-                    <span className="text-muted-foreground">신고일</span>
-                    {report.reporters.map((reporter) => (
-                      <Fragment key={reporter.id}>
-                        <MemberCell
-                          id={reporter.id}
-                          nickname={reporter.nickname}
-                        />
-                        <span className="tabular-nums">
-                          {formatDateTime(reporter.reportedAt)}
-                        </span>
-                      </Fragment>
-                    ))}
-                  </div>
+                  <ReporterList reporters={report.reporters} />
                 </TableCell>
               </TableRow>
             )}

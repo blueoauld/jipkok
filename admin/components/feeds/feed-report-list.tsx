@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-  defaultFeedReportFilter,
-  FeedReportFilters,
-  type FeedReportFilter,
-} from "@/components/feeds/feed-report-filters";
 import { FeedReportTable } from "@/components/feeds/feed-report-table";
+import {
+  defaultPostReportFilter,
+  PostReportFilters,
+  type PostReportFilter,
+} from "@/components/post-report-filters";
 import { QuerySection } from "@/components/query-section";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
@@ -21,7 +21,7 @@ import {
 import { fetchFeedReports } from "@/lib/api/feed-reports";
 
 export function FeedReportList() {
-  const [filter, setFilter] = useState(defaultFeedReportFilter);
+  const [filter, setFilter] = useState(defaultPostReportFilter);
   const [page, setPage] = useState(1);
   const authorId = useDebouncedValue(filter.authorId.trim());
   const queryFilter = { ...filter, authorId };
@@ -34,7 +34,7 @@ export function FeedReportList() {
 
   usePageGuard(page, setPage, data);
 
-  const changeFilter = (next: FeedReportFilter) => {
+  const changeFilter = (next: PostReportFilter) => {
     setFilter(next);
     setPage(1);
   };
@@ -48,7 +48,7 @@ export function FeedReportList() {
       {data && (
         <Card>
           <CardHeader>
-            <FeedReportFilters value={filter} onChange={changeFilter} />
+            <PostReportFilters value={filter} onChange={changeFilter} />
           </CardHeader>
           <CardContent>
             <FeedReportTable reports={data.items} />

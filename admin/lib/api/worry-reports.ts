@@ -1,8 +1,8 @@
 import { api } from "@/lib/api/client";
-import type { WorryReportFilter } from "@/components/worries/worry-report-filters";
+import type { PostReportFilter } from "@/components/post-report-filters";
 import type { WorryCommentReportPage, WorryReportPage } from "@/lib/types";
 
-export type WorryReportListParams = WorryReportFilter & { page: number };
+export type WorryReportListParams = PostReportFilter & { page: number };
 
 const toQuery = (params: WorryReportListParams) => ({
   status: params.status === "ALL" ? undefined : params.status,

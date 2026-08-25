@@ -42,8 +42,6 @@ export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
 
 export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
 
-export type MemberReportType = ReportType;
-
 export type Gender = "MALE" | "FEMALE";
 
 export type ProfileTarget =

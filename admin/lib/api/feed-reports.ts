@@ -1,8 +1,8 @@
 import { api } from "@/lib/api/client";
-import type { FeedReportFilter } from "@/components/feeds/feed-report-filters";
+import type { PostReportFilter } from "@/components/post-report-filters";
 import type { FeedReportPage } from "@/lib/types";
 
-export type FeedReportListParams = FeedReportFilter & { page: number };
+export type FeedReportListParams = PostReportFilter & { page: number };
 
 export const fetchFeedReports = (params: FeedReportListParams) =>
   api<FeedReportPage>("/api/admin/feed-reports", {

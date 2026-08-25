@@ -4,13 +4,13 @@ import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 import { reportReasonLabels, reportTypeLabels } from "@/lib/labels";
-import type { MemberReportType, ReportReason } from "@/lib/types";
+import type { ReportReason, ReportType } from "@/lib/types";
 
 export type MemberReportStatus = "ALL" | "HANDLED" | "PENDING";
 
 export type MemberReportFilter = {
   status: MemberReportStatus;
-  type: MemberReportType | "ALL";
+  type: ReportType | "ALL";
   reason: ReportReason | "ALL";
   reportedMemberId: string;
 };
@@ -28,7 +28,7 @@ const statusItems: Record<MemberReportStatus, string> = {
   PENDING: "미처리",
 };
 
-const typeItems: Record<MemberReportType | "ALL", string> = {
+const typeItems: Record<ReportType | "ALL", string> = {
   ALL: "모든 종류",
   PROFILE: reportTypeLabels.PROFILE,
   CHAT: reportTypeLabels.CHAT,

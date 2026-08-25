@@ -1,8 +1,9 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { DeleteWorryCommentDialog } from "@/components/worries/delete-worry-dialog";
+import { DeleteDialogButton } from "@/components/delete-dialog-button";
 import { MemberCell } from "@/components/member-cell";
+import { ReporterList } from "@/components/reporter-list";
 import { StatusText } from "@/components/status-text";
 import {
   Table,
@@ -12,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteWorryComment } from "@/lib/api/worry-reports";
 import { formatCount, formatDateTime } from "@/lib/format";
 import { inactiveRowClassName } from "@/lib/styles";
 import { cn } from "@/lib/utils";
@@ -93,9 +95,11 @@ export function WorryCommentReportTable({ reports }: Props) {
                 className="text-right"
                 onClick={(event) => event.stopPropagation()}
               >
-                <DeleteWorryCommentDialog
-                  commentId={report.commentId}
-                  authorNickname={report.authorNickname}
+                <DeleteDialogButton
+                  title="고민 댓글 삭제"
+                  description={`${report.authorNickname}의 댓글 #${report.commentId}을 삭제합니다. 되돌릴 수 없습니다.`}
+                  invalidateKeys={[["worry-comment-reports"]]}
+                  action={() => deleteWorryComment(report.commentId)}
                   disabled={report.commentDeletedAt != null}
                 />
               </TableCell>
@@ -107,21 +111,7 @@ export function WorryCommentReportTable({ reports }: Props) {
                     <p className="mb-1.5 text-muted-foreground">내용</p>
                     <p className="whitespace-pre-wrap">{report.content}</p>
                   </div>
-                  <div className="grid w-fit grid-cols-[12rem_auto] gap-x-8 gap-y-1.5 text-sm">
-                    <span className="text-muted-foreground">신고자</span>
-                    <span className="text-muted-foreground">신고일</span>
-                    {report.reporters.map((reporter) => (
-                      <Fragment key={reporter.id}>
-                        <MemberCell
-                          id={reporter.id}
-                          nickname={reporter.nickname}
-                        />
-                        <span className="tabular-nums">
-                          {formatDateTime(reporter.reportedAt)}
-                        </span>
-                      </Fragment>
-                    ))}
-                  </div>
+                  <ReporterList reporters={report.reporters} />
                 </TableCell>
               </TableRow>
             )}

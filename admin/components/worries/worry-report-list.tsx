@@ -10,12 +10,12 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { WorryCommentReportTable } from "@/components/worries/worry-comment-report-table";
 import {
-  defaultWorryReportFilter,
-  WorryReportFilters,
-  type WorryReportFilter,
-} from "@/components/worries/worry-report-filters";
+  defaultPostReportFilter,
+  PostReportFilters,
+  type PostReportFilter,
+} from "@/components/post-report-filters";
+import { WorryCommentReportTable } from "@/components/worries/worry-comment-report-table";
 import { WorryReportTable } from "@/components/worries/worry-report-table";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { usePageGuard } from "@/hooks/use-page-guard";
@@ -39,7 +39,7 @@ type Props<T> = {
 };
 
 function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
-  const [filter, setFilter] = useState(defaultWorryReportFilter);
+  const [filter, setFilter] = useState(defaultPostReportFilter);
   const [page, setPage] = useState(1);
   const authorId = useDebouncedValue(filter.authorId.trim());
   const queryFilter = { ...filter, authorId };
@@ -52,7 +52,7 @@ function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
 
   usePageGuard(page, setPage, data);
 
-  const changeFilter = (next: WorryReportFilter) => {
+  const changeFilter = (next: PostReportFilter) => {
     setFilter(next);
     setPage(1);
   };
@@ -66,7 +66,7 @@ function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
       {data && (
         <Card>
           <CardHeader>
-            <WorryReportFilters value={filter} onChange={changeFilter} />
+            <PostReportFilters value={filter} onChange={changeFilter} />
           </CardHeader>
           <CardContent>{renderTable(data.items)}</CardContent>
           <CardFooter className="bg-transparent">

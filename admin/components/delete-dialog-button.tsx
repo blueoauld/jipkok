@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteFeedPost } from "@/lib/api/feed-reports";
 
 type Props = {
-  postId: number;
-  authorNickname: string;
+  title: string;
+  description: string;
+  invalidateKeys: string[][];
+  action: () => Promise<unknown>;
   disabled?: boolean;
 };
 
-export function DeletePostDialog({ postId, authorNickname, disabled }: Props) {
+export function DeleteDialogButton({
+  title,
+  description,
+  invalidateKeys,
+  action,
+  disabled,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,12 +34,12 @@ export function DeletePostDialog({ postId, authorNickname, disabled }: Props) {
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}
-        title="피드 삭제"
-        description={`${authorNickname}의 피드 #${postId}을 삭제합니다. 되돌릴 수 없습니다.`}
+        title={title}
+        description={description}
         confirmLabel="삭제"
         errorFallback="삭제하지 못했습니다."
-        invalidateKeys={[["feed-reports"]]}
-        action={() => deleteFeedPost(postId)}
+        invalidateKeys={invalidateKeys}
+        action={action}
       />
     </>
   );

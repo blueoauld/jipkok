@@ -1,9 +1,5 @@
 import { api } from "@/lib/api/client";
-import type {
-  MemberReportDetail,
-  MemberReportPage,
-  ReportReason,
-} from "@/lib/types";
+import type { MemberReportDetail, MemberReportPage } from "@/lib/types";
 import type { MemberReportFilter } from "@/components/reports/member-report-filters";
 
 export type MemberReportListParams = MemberReportFilter & {
@@ -16,8 +12,7 @@ export const fetchMemberReports = (params: MemberReportListParams) =>
     query: {
       status: params.status === "ALL" ? undefined : params.status,
       type: params.type === "ALL" ? undefined : params.type,
-      reason:
-        params.reason === "ALL" ? undefined : (params.reason as ReportReason),
+      reason: params.reason === "ALL" ? undefined : params.reason,
       reportedMemberId: params.reportedMemberId || undefined,
       reportedPhoneNumber: params.reportedPhoneNumber,
       page: params.page,

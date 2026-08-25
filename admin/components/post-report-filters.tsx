@@ -4,30 +4,30 @@ import { FilterResetButton } from "@/components/filter-reset-button";
 import { FilterSelect } from "@/components/filter-select";
 import { SearchInput } from "@/components/search-input";
 
-export type FeedReportStatus = "ALL" | "ACTIVE" | "DELETED";
+export type PostReportStatus = "ALL" | "ACTIVE" | "DELETED";
 
-export type FeedReportFilter = {
-  status: FeedReportStatus;
+export type PostReportFilter = {
+  status: PostReportStatus;
   authorId: string;
 };
 
-export const defaultFeedReportFilter: FeedReportFilter = {
+export const defaultPostReportFilter: PostReportFilter = {
   status: "ALL",
   authorId: "",
 };
 
-const statusItems: Record<FeedReportStatus, string> = {
+const statusItems: Record<PostReportStatus, string> = {
   ALL: "전체",
   ACTIVE: "게시",
   DELETED: "삭제",
 };
 
 type Props = {
-  value: FeedReportFilter;
-  onChange: (value: FeedReportFilter) => void;
+  value: PostReportFilter;
+  onChange: (value: PostReportFilter) => void;
 };
 
-export function FeedReportFilters({ value, onChange }: Props) {
+export function PostReportFilters({ value, onChange }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <FilterSelect
@@ -43,7 +43,7 @@ export function FeedReportFilters({ value, onChange }: Props) {
       />
       <FilterResetButton
         value={value}
-        defaultValue={defaultFeedReportFilter}
+        defaultValue={defaultPostReportFilter}
         onReset={onChange}
       />
     </div>
