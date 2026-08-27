@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.auth.repository
 
+import com.blueoauld.server.global.repository.increaseWithWindow
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Repository
 import java.time.Duration
@@ -10,15 +11,7 @@ class DailySendLimitCache(
     private val stringRedisTemplate: StringRedisTemplate,
 ) {
 
-    fun increaseAndCount(): Long {
-        val count = stringRedisTemplate.opsForValue().increment(KEY) ?: 0
-
-        if (count == 1L) {
-            stringRedisTemplate.expire(KEY, WINDOW)
-        }
-
-        return count
-    }
+    fun increaseAndCount(): Long = stringRedisTemplate.increaseWithWindow(KEY, WINDOW)
 
     companion object {
 

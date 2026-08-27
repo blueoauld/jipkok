@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.translation.repository
 
+import com.blueoauld.server.global.repository.increaseWithWindow
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Repository
 import java.time.Duration
@@ -10,16 +11,8 @@ class TranslationLimitCache(
     private val stringRedisTemplate: StringRedisTemplate,
 ) {
 
-    fun increaseAndCount(memberId: Long): Long {
-        val key = key(memberId)
-        val count = stringRedisTemplate.opsForValue().increment(key) ?: 0
-
-        if (count == 1L) {
-            stringRedisTemplate.expire(key, WINDOW)
-        }
-
-        return count
-    }
+    fun increaseAndCount(memberId: Long): Long =
+        stringRedisTemplate.increaseWithWindow(key(memberId), WINDOW)
 
     private fun key(memberId: Long) = "$KEY_PREFIX$memberId"
 

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.auth.repository
 
+import com.blueoauld.server.global.repository.increaseWithWindow
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Repository
 import java.time.Duration
@@ -22,8 +23,8 @@ class LoginAttemptCache(
     )
 
     fun increase(phoneNumber: String, ipAddress: String) {
-        increase(phoneNumberKey(phoneNumber))
-        increase(ipAddressKey(ipAddress))
+        stringRedisTemplate.increaseWithWindow(phoneNumberKey(phoneNumber), WINDOW)
+        stringRedisTemplate.increaseWithWindow(ipAddressKey(ipAddress), WINDOW)
     }
 
     fun clear(phoneNumber: String) {
@@ -31,12 +32,6 @@ class LoginAttemptCache(
     }
 
     private fun count(key: String) = stringRedisTemplate.opsForValue()[key]?.toLongOrNull() ?: 0
-
-    private fun increase(key: String) {
-        if (stringRedisTemplate.opsForValue().increment(key) == 1L) {
-            stringRedisTemplate.expire(key, WINDOW)
-        }
-    }
 
     private fun phoneNumberKey(phoneNumber: String) = PHONE_NUMBER_KEY_PREFIX + phoneNumber
 
