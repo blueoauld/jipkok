@@ -14,7 +14,6 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,8 +44,7 @@ class SecretPhotoAccessService(
             return
         }
 
-        runCatching { secretPhotoAccessRepository.saveAndFlush(SecretPhotoAccess(ownerId, viewerId)) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        secretPhotoAccessRepository.saveAndFlush(SecretPhotoAccess(ownerId, viewerId))
     }
 
     @Transactional(readOnly = true)

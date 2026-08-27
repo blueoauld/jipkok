@@ -9,7 +9,6 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,9 +36,8 @@ class MemberBlockService(
             return
         }
 
-        runCatching { memberBlockRepository.saveAndFlush(MemberBlock(blockerId, blockedMemberId)) }
-            .onSuccess { chatRoomService.deleteBetween(blockerId, blockedMemberId) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        memberBlockRepository.saveAndFlush(MemberBlock(blockerId, blockedMemberId))
+        chatRoomService.deleteBetween(blockerId, blockedMemberId)
     }
 
     @Transactional

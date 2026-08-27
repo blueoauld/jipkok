@@ -7,7 +7,6 @@ import com.blueoauld.server.domain.profileview.entity.ProfileView
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -38,8 +37,7 @@ class ProfileViewService(
             return
         }
 
-        runCatching { profileViewRepository.saveAndFlush(ProfileView(viewerId, viewedMemberId, viewedAt)) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        profileViewRepository.saveAndFlush(ProfileView(viewerId, viewedMemberId, viewedAt))
     }
 
     @Transactional(readOnly = true)

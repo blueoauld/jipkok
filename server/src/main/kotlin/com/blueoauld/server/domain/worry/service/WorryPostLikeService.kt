@@ -5,7 +5,6 @@ import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,9 +25,8 @@ class WorryPostLikeService(
             return
         }
 
-        runCatching { worryPostLikeRepository.saveAndFlush(WorryPostLike(postId, memberId)) }
-            .onSuccess { worryPostRepository.increaseLikeCount(postId) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        worryPostLikeRepository.saveAndFlush(WorryPostLike(postId, memberId))
+        worryPostRepository.increaseLikeCount(postId)
     }
 
     @Transactional

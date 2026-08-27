@@ -8,7 +8,6 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -35,9 +34,8 @@ class MemberLikeService(
             return
         }
 
-        runCatching { memberLikeRepository.saveAndFlush(MemberLike(likerId, likedMemberId)) }
-            .onSuccess { memberRepository.increaseReceivedLikeCount(likedMemberId) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        memberLikeRepository.saveAndFlush(MemberLike(likerId, likedMemberId))
+        memberRepository.increaseReceivedLikeCount(likedMemberId)
     }
 
     @Transactional

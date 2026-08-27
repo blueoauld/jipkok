@@ -5,7 +5,6 @@ import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,9 +25,8 @@ class FeedPostLikeService(
             return
         }
 
-        runCatching { feedPostLikeRepository.saveAndFlush(FeedPostLike(postId, memberId)) }
-            .onSuccess { feedPostRepository.increaseLikeCount(postId) }
-            .onFailure { if (it !is DataIntegrityViolationException) throw it }
+        feedPostLikeRepository.saveAndFlush(FeedPostLike(postId, memberId))
+        feedPostRepository.increaseLikeCount(postId)
     }
 
     @Transactional
