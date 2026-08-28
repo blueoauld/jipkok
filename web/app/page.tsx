@@ -63,8 +63,6 @@ export default function Home() {
           {CONTACT_EMAIL}
         </a>
         <p className="flex flex-wrap items-center justify-center gap-x-2">
-          <span>© 2026 JIPKOK</span>
-          <span aria-hidden="true">|</span>
           <Link href="/privacy" className="hover:underline">
             Privacy Policy
           </Link>
@@ -72,7 +70,12 @@ export default function Home() {
           <Link href="/terms" className="hover:underline">
             Terms of Service
           </Link>
+          <span aria-hidden="true">|</span>
+          <Link href="/delete-account" className="hover:underline">
+            Delete Account
+          </Link>
         </p>
+        <p>© 2026 JIPKOK</p>
       </footer>
     </div>
   );

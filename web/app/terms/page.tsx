@@ -11,8 +11,9 @@ export default function EnglishTerms() {
   return (
     <LegalPage title="Terms of Service" effectiveDate="August 24, 2026">
       <p>
-        These terms set out what applies between us and you when you use Jipkok
-        (the &ldquo;Service&rdquo;). By signing up, you agree to them.
+        These terms set out what applies between us and you when you use 집콕
+        (Jipkok, the &ldquo;Service&rdquo;), published by blueoauld. By signing
+        up, you agree to them.
       </p>
 
       <Section title="1. Signing up">

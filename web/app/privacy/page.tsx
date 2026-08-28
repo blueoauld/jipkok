@@ -11,10 +11,11 @@ export default function EnglishPrivacy() {
   return (
     <LegalPage title="Privacy Policy" effectiveDate="August 24, 2026">
       <p>
-        Jipkok (the &ldquo;Service&rdquo;) treats your personal information with
-        care and follows the Personal Information Protection Act and other
-        applicable law. This policy explains what information we collect and
-        why, how long we keep it, and what you can ask us to do.
+        집콕 (Jipkok, the &ldquo;Service&rdquo;), published by blueoauld, treats
+        your personal information with care and follows the Personal Information
+        Protection Act and other applicable law. This policy explains what
+        information we collect and why, how long we keep it, and what you can
+        ask us to do.
       </p>
 
       <Section title="1. What we collect and why">
