@@ -14,6 +14,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
+import { formatCountdown } from "@/lib/date";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { codeSentMessage } from "@/lib/message";
@@ -29,6 +30,9 @@ import {
 
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
 const RESEND_COOLDOWN_SECONDS = 30;
+
+// 서버 VerificationCodeService.CODE_TIME_TO_LIVE와 같다.
+const CODE_TIME_TO_LIVE_SECONDS = 180;
 
 const SIGN_UP_METHOD = "phone";
 
@@ -55,6 +59,7 @@ export default function SignupScreen() {
   const openLegal = (url: string) => openWebPage(url, show);
 
   const cooldown = useCountdown();
+  const expiry = useCountdown();
 
   const sendCode = useMutation({
     mutationFn: (phoneNumber: string) =>
@@ -62,6 +67,7 @@ export default function SignupScreen() {
     onSuccess: () => {
       logAppEvent(APP_EVENT.verificationCodeSent);
       cooldown.start(RESEND_COOLDOWN_SECONDS);
+      expiry.start(CODE_TIME_TO_LIVE_SECONDS);
       showToast("info", codeSentMessage());
     },
     onError: (error) => {
@@ -144,8 +150,8 @@ export default function SignupScreen() {
             >
               {sendCode.isPending ? (
                 <Spinner color="white" />
-              ) : cooldown.remaining > 0 ? (
-                t("auth.resendCountdown", { count: cooldown.remaining })
+              ) : expiry.remaining > 0 ? (
+                formatCountdown(expiry.remaining)
               ) : (
                 t("auth.sendCode")
               )}

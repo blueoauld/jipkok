@@ -113,6 +113,10 @@ export function formatFullDate(date: Date) {
   });
 }
 
+export function formatCountdown(seconds: number) {
+  return `${Math.floor(seconds / 60)}:${pad(seconds % 60)}`;
+}
+
 function monthDay(date: Date) {
   return i18n.t("date.monthDay", {
     month: date.getMonth() + 1,

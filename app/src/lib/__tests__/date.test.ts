@@ -1,6 +1,7 @@
 import {
   formatChatTime,
   formatClockTime,
+  formatCountdown,
   formatDateLabel,
   formatDateTime,
   formatFullDate,
@@ -80,5 +81,14 @@ describe("formatChatTime", () => {
     expect(formatChatTime(lastYear.toISOString())).toBe(
       `${today.getFullYear() - 1}. 12. 25.`,
     );
+  });
+});
+
+describe("formatCountdown", () => {
+  it("남은 초를 분:초로 적고 초는 두 자리로 채운다", () => {
+    expect(formatCountdown(180)).toBe("3:00");
+    expect(formatCountdown(65)).toBe("1:05");
+    expect(formatCountdown(9)).toBe("0:09");
+    expect(formatCountdown(0)).toBe("0:00");
   });
 });

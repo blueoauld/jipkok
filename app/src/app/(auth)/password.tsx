@@ -12,6 +12,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
+import { formatCountdown } from "@/lib/date";
 import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
 import { codeSentMessage } from "@/lib/message";
 import { patternOf, usePhoneCountry } from "@/lib/phone";
@@ -24,6 +25,9 @@ import {
 
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
 const RESEND_COOLDOWN_SECONDS = 30;
+
+// 서버 VerificationCodeService.CODE_TIME_TO_LIVE와 같다.
+const CODE_TIME_TO_LIVE_SECONDS = 180;
 
 const PURPOSE = "PASSWORD_RESET";
 
@@ -41,12 +45,14 @@ export default function PasswordScreen() {
   const { alertElement, showApiError } = useRetroAlert();
 
   const cooldown = useCountdown();
+  const expiry = useCountdown();
 
   const sendCode = useMutation({
     mutationFn: (phoneNumber: string) =>
       api.auth.sendVerificationCode(phoneNumber, PURPOSE),
     onSuccess: () => {
       cooldown.start(RESEND_COOLDOWN_SECONDS);
+      expiry.start(CODE_TIME_TO_LIVE_SECONDS);
       showToast("info", codeSentMessage());
     },
     onError: showApiError,
@@ -97,8 +103,8 @@ export default function PasswordScreen() {
             >
               {sendCode.isPending ? (
                 <Spinner color="white" />
-              ) : cooldown.remaining > 0 ? (
-                t("auth.resendCountdown", { count: cooldown.remaining })
+              ) : expiry.remaining > 0 ? (
+                formatCountdown(expiry.remaining)
               ) : (
                 t("auth.sendCode")
               )}

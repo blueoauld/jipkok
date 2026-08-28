@@ -206,7 +206,6 @@ export const ko = {
     countryKR: "대한민국",
     countryJP: "일본",
     countryTW: "대만",
-    resendCountdown: "{{count}}초",
     login: {
       title: "로그인",
       submit: "로그인",
