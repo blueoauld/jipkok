@@ -29,7 +29,7 @@ export const en: typeof ko = {
     selectedCount: "{{count}} selected",
     cancel: "Cancel",
     selectAll: "Select all",
-    deselectAll: "Deselect all",
+    deselectAll: "None",
     noteReceiveOn: "You'll now receive new notes.",
     noteReceiveOff: "You'll no longer receive new notes.",
   },
