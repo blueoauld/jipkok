@@ -20,10 +20,11 @@ import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
 
-const REPORT_BUTTON_SPACE = 56;
-
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = MIN_TAP_SIZE;
+
+// 신고 버튼이 차지하는 자리다. 닉네임이 그 아래로 물리지 않게 비운다.
+const REPORT_BUTTON_SPACE = CARD_ICON_BUTTON_SIZE + 16;
 
 const HARD_SHADOW = {
   width: RETRO_SHADOW_OFFSET_SM,
@@ -104,6 +105,7 @@ function Card({
           bg="$yellow9"
           px="$3"
           py="$2"
+          minH={CARD_ICON_BUTTON_SIZE}
           pressBg="$yellow10"
           onPress={() =>
             pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
