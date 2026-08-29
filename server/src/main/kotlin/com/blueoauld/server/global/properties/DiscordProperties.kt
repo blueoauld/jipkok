@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class DiscordProperties(
 
     val token: String,
-    val guildId: String,
     val reportChannelId: String,
     val moderationChannelId: String,
     val errorChannelId: String,

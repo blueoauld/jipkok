@@ -6,8 +6,6 @@ import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.events.session.ReadyEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 
@@ -20,9 +18,7 @@ class DiscordBot(
     discordProperties: DiscordProperties,
 ) {
 
-    private val jda: JDA = JDABuilder.createLight(discordProperties.token)
-        .addEventListeners(commandCleaner(discordProperties.guildId))
-        .build()
+    private val jda: JDA = JDABuilder.createLight(discordProperties.token).build()
 
     fun send(channelId: String, embeds: List<MessageEmbed>) {
         jda.getTextChannelById(channelId)
@@ -34,19 +30,5 @@ class DiscordBot(
     @PreDestroy
     fun shutdown() {
         jda.shutdown()
-    }
-
-    private fun commandCleaner(guildId: String) = object : ListenerAdapter() {
-
-        override fun onReady(event: ReadyEvent) {
-            if (guildId.isBlank()) {
-                return
-            }
-
-            event.jda.getGuildById(guildId)
-                ?.updateCommands()
-                ?.queue()
-                ?: log.error { "디스코드 길드를 찾지 못했다. guildId=$guildId" }
-        }
     }
 }
