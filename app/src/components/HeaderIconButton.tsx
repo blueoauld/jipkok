@@ -1,7 +1,9 @@
 import type { Icon, IconWeight } from "phosphor-react-native";
 import { useTheme, XStack } from "tamagui";
 
-import { PRESS_OPACITY } from "@/lib/design";
+import { GlassSurface } from "@/components/ui/GlassSurface";
+import { HEADER_GLASS_SIZE, PRESS_OPACITY } from "@/lib/design";
+import { GLASS_ENABLED } from "@/lib/glass";
 
 const ICON_SIZE = 28;
 
@@ -20,11 +22,14 @@ export function HeaderIconButton({
     <XStack
       items="center"
       justify="center"
-      p="$3"
+      // 유리 원이 이미 탭 영역만 하다. 패딩을 더하면 묶인 아이콘 사이가 벌어진다.
+      p={GLASS_ENABLED ? 0 : "$3"}
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />
+      <GlassSurface size={HEADER_GLASS_SIZE}>
+        <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />
+      </GlassSurface>
     </XStack>
   );
 }

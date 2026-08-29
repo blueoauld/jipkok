@@ -12,13 +12,14 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
-import { XStack, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { FeedCard } from "@/components/feed/FeedCard";
 import { FeedComposeDialog } from "@/components/feed/FeedComposeDialog";
 import { FeedDatePicker } from "@/components/feed/FeedDatePicker";
 import { FeedNotificationButton } from "@/components/feed/FeedNotificationButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
@@ -303,7 +304,7 @@ export default function FeedScreen() {
               />
             ),
       headerRight: () => (
-        <XStack>
+        <HeaderIconGroup>
           <HeaderIconButton
             icon={FunnelSimpleIcon}
             onPress={board === "FEED" ? openFilter : openWorryFilter}
@@ -312,7 +313,7 @@ export default function FeedScreen() {
             icon={NotePencilIcon}
             onPress={board === "FEED" ? openCompose : openWorryCompose}
           />
-        </XStack>
+        </HeaderIconGroup>
       ),
     }),
     [

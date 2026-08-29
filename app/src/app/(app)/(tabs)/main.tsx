@@ -6,9 +6,10 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
-import { XStack, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MemberFilterSheet } from "@/components/MemberFilterSheet";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
@@ -131,10 +132,10 @@ export default function MainScreen() {
         />
       ),
       headerRight: () => (
-        <XStack>
+        <HeaderIconGroup>
           <HeaderIconButton icon={FunnelSimpleIcon} onPress={openFilter} />
           <HeaderIconButton icon={NotePencilIcon} onPress={openComment} />
-        </XStack>
+        </HeaderIconGroup>
       ),
     }),
     [openFilter, openComment],

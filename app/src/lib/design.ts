@@ -6,6 +6,11 @@ export const PHOTO_PRESS_OPACITY = 0.8;
 
 export const FLOATING_BUTTON_SIZE = 40;
 
+// iOS가 직접 그리는 네이티브 뒤로가기 버튼과 같은 지름이라야 화면을 옮겨 다녀도 안 튄다.
+export const HEADER_GLASS_SIZE = 44;
+
+export const HEADER_GLASS_GAP = 8;
+
 // 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다.
 export const SEND_CODE_BUTTON_WIDTH = 80;
 

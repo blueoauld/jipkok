@@ -7,6 +7,8 @@ const ICON_SIZE = 28;
 const BUTTON_WIDTH = 36;
 const BUTTON_HEIGHT = 40;
 
+// 네이티브 스택 헤더 전용이다. iOS 26이 UINavigationBar 버튼에 유리를 알아서 입히므로
+// 여기서 GlassSurface를 쓰면 두 겹이 된다. 탭 헤더는 HeaderIconButton을 쓸 것.
 export function HeaderSoloIconButton({
   icon: Icon,
   weight,

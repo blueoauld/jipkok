@@ -14,6 +14,7 @@ import { Text, useTheme, XStack } from "tamagui";
 
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
@@ -25,13 +26,15 @@ import {
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
+import { GLASS_ENABLED } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
 const ICON_SIZE = 30;
 const TAB_ITEM_PADDING = 5;
 const TAB_ITEM_MAX_WIDTH = 500;
-const HEADER_EDGE_PADDING = 4;
+// 유리일 때는 네이티브 스택 헤더가 버튼을 앉히는 자리와 같아야 화면을 오갈 때 안 튄다.
+const HEADER_EDGE_PADDING = GLASS_ENABLED ? 16 : 4;
 
 const BADGE_FONT_SIZE = 11;
 const BADGE_TOP =
@@ -109,10 +112,10 @@ function ChatHeaderRight() {
   const startSelection = useChatSelectionStore((state) => state.start);
 
   return (
-    <XStack items="center">
+    <HeaderIconGroup>
       <HeaderIconButton icon={CheckSquareIcon} onPress={startSelection} />
       <NoteReceiveButton />
-    </XStack>
+    </HeaderIconGroup>
   );
 }
 
