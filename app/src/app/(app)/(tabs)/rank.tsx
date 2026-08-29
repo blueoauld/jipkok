@@ -8,6 +8,7 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useMemberRanking } from "@/hooks/useMemberRanking";
 import { usePagedList } from "@/hooks/usePagedList";
 import {
@@ -36,7 +37,8 @@ export default function RankScreen() {
 
   const ranking = useMemberRanking(GENDER_FILTER_VALUES[filter]);
   const { members, error } = ranking;
-  const paged = usePagedList(ranking);
+  const tabBarOverlay = useTabBarOverlay();
+  const paged = usePagedList(ranking, tabBarOverlay);
 
   return (
     <YStack flex={1}>

@@ -17,6 +17,7 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { MEMBERS_KEY, useMembers } from "@/hooks/useMembers";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
@@ -76,7 +77,8 @@ export default function MainScreen() {
     onError: showApiError,
   });
   const { members, error, refetch: refetchFeed } = feed;
-  const paged = usePagedList(feed);
+  const tabBarOverlay = useTabBarOverlay();
+  const paged = usePagedList(feed, tabBarOverlay);
 
   useLoadingOverlay(updateComment.isPending);
   const { update: updateLocation, refresh: refreshLocation } = location;

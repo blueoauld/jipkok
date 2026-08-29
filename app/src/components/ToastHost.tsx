@@ -1,14 +1,10 @@
 import { useEffect } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatePresence, getTokens, Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
-import {
-  bottomBarHeight,
-  RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET,
-} from "@/lib/design";
+import { useBottomBarHeight } from "@/hooks/useBottomBar";
+import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useToastStore } from "@/lib/toast/store";
 
 const VISIBLE_DURATION = 2500;
@@ -25,7 +21,7 @@ const ACCENT_BAR_COLORS = {
 export function ToastHost() {
   const toast = useToastStore((state) => state.toast);
   const hide = useToastStore((state) => state.hide);
-  const insets = useSafeAreaInsets();
+  const barHeight = useBottomBarHeight();
   const textPaddingY = getTokens().space.$3.val + RETRO_BORDER_WIDTH;
 
   useEffect(() => {
@@ -43,14 +39,12 @@ export function ToastHost() {
       position="absolute"
       l={SIDE_GAP}
       r={SIDE_GAP}
-      b={bottomBarHeight(insets.bottom) + SIDE_GAP}
+      b={barHeight + SIDE_GAP}
       pr={RETRO_SHADOW_OFFSET}
       pb={RETRO_SHADOW_OFFSET}
       pointerEvents="box-none"
     >
-      <KeyboardStickyView
-        offset={{ closed: 0, opened: bottomBarHeight(insets.bottom) }}
-      >
+      <KeyboardStickyView offset={{ closed: 0, opened: barHeight }}>
         <AnimatePresence>
           {toast && (
             <YStack

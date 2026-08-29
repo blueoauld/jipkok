@@ -24,8 +24,6 @@ export const RETRO_SHADOW_OFFSET_SM = 2;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
-export const BOTTOM_BAR_HEIGHT = 64;
-
 // 폼 화면 아래 고정 버튼이 스크롤 내용을 가리지 않게 띄우는 높이다.
 export const FORM_FOOTER_HEIGHT = 80;
 
@@ -42,6 +40,34 @@ export const COVER_IMAGE_STYLE = {
   right: -1,
 } as const;
 
+export const BOTTOM_BAR_HEIGHT = 64;
+
 export function bottomBarHeight(bottomInset: number) {
   return BOTTOM_BAR_HEIGHT + bottomInset;
+}
+
+// 유리 바만 화면을 가로지르지 않고 가장자리에서 띄운다. 레트로 바는 흐름 안에 있다.
+export const FLOATING_BAR_HEIGHT = 56;
+
+const FLOATING_BAR_SIDE_GAP = 32;
+
+const FLOATING_BAR_BOTTOM_GAP = 8;
+
+export const FLOATING_BAR_RADIUS = FLOATING_BAR_HEIGHT / 2;
+
+export function floatingBarHeight(bottomInset: number) {
+  return FLOATING_BAR_HEIGHT + FLOATING_BAR_BOTTOM_GAP + bottomInset;
+}
+
+// 탭 바와 프로필 액션 바가 같은 자리에 서야 화면을 오갈 때 바가 튀지 않는다.
+// left/right로 밀면 여백이 안 먹어서 상자를 줄이는 쪽으로 낸다.
+export function floatingBarStyle(bottomInset: number) {
+  return {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    marginHorizontal: FLOATING_BAR_SIDE_GAP,
+    bottom: bottomInset + FLOATING_BAR_BOTTOM_GAP,
+    height: FLOATING_BAR_HEIGHT,
+  } as const;
 }

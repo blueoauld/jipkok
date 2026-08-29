@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { GlassView } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -30,6 +31,7 @@ import { TextInputDialog } from "@/components/TextInputDialog";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
@@ -42,7 +44,13 @@ import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { bottomBarHeight, RETRO_BORDER_WIDTH } from "@/lib/design";
+import {
+  bottomBarHeight,
+  FLOATING_BAR_RADIUS,
+  floatingBarStyle,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
+import { GLASS_ENABLED, useGlassColorScheme } from "@/lib/glass";
 import { formatDistance } from "@/lib/member";
 import {
   bioCopiedMessage,
@@ -129,6 +137,7 @@ function ActionBar({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scheme = useGlassColorScheme();
 
   const filled: Record<ActionKey, boolean> = {
     like: member.likedByMe,
@@ -155,6 +164,45 @@ function ActionBar({
     block: false,
   };
 
+  const items = ACTIONS.map(({ key, icon: Icon }) => (
+    <XStack
+      key={key}
+      flex={1}
+      height="100%"
+      items="center"
+      justify="center"
+      opacity={pending === key || disabled[key] ? 0.4 : 1}
+      onPress={disabled[key] ? undefined : () => onPress(key)}
+    >
+      <YStack>
+        <Icon
+          size={ACTION_ICON_SIZE}
+          weight={filled[key] && key !== "block" ? "fill" : "regular"}
+          color={filled[key] ? colors[key] : theme.color12.val}
+        />
+
+        {key === "secretPhoto" && (
+          <CountBadge count={member.secretPhotoCount} />
+        )}
+      </YStack>
+    </XStack>
+  ));
+
+  if (GLASS_ENABLED) {
+    return (
+      <GlassView
+        style={{
+          ...floatingBarStyle(insets.bottom),
+          borderRadius: FLOATING_BAR_RADIUS,
+          flexDirection: "row",
+        }}
+        colorScheme={scheme}
+      >
+        {items}
+      </GlassView>
+    );
+  }
+
   return (
     <XStack
       position="absolute"
@@ -167,29 +215,7 @@ function ActionBar({
       borderTopWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"
     >
-      {ACTIONS.map(({ key, icon: Icon }) => (
-        <XStack
-          key={key}
-          flex={1}
-          height="100%"
-          items="center"
-          justify="center"
-          opacity={pending === key || disabled[key] ? 0.4 : 1}
-          onPress={disabled[key] ? undefined : () => onPress(key)}
-        >
-          <YStack>
-            <Icon
-              size={ACTION_ICON_SIZE}
-              weight={filled[key] && key !== "block" ? "fill" : "regular"}
-              color={filled[key] ? colors[key] : theme.color12.val}
-            />
-
-            {key === "secretPhoto" && (
-              <CountBadge count={member.secretPhotoCount} />
-            )}
-          </YStack>
-        </XStack>
-      ))}
+      {items}
     </XStack>
   );
 }
@@ -198,7 +224,7 @@ export default function MemberProfileScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
-  const insets = useSafeAreaInsets();
+  const barHeight = useBottomBarHeight();
   const queryClient = useQueryClient();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -413,7 +439,7 @@ export default function MemberProfileScreen() {
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              paddingBottom: bottomBarHeight(insets.bottom),
+              paddingBottom: barHeight,
             }}
           >
             <YStack>
@@ -490,7 +516,7 @@ export default function MemberProfileScreen() {
           <YStack
             position="absolute"
             r={SCROLL_TO_TOP_SIDE_GAP}
-            b={bottomBarHeight(insets.bottom) + SCROLL_TO_TOP_BOTTOM_GAP}
+            b={barHeight + SCROLL_TO_TOP_BOTTOM_GAP}
           >
             <RetroFloatingButton onPress={togglePhotoGrid}>
               <SquaresFourIcon

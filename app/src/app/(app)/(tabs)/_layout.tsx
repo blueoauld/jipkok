@@ -1,3 +1,4 @@
+import { GlassView } from "expo-glass-effect";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
@@ -23,10 +24,13 @@ import { useChatSelectionStore } from "@/lib/chat/store";
 import {
   BOTTOM_BAR_HEIGHT,
   bottomBarHeight,
+  FLOATING_BAR_HEIGHT,
+  FLOATING_BAR_RADIUS,
+  floatingBarStyle,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
-import { GLASS_ENABLED } from "@/lib/glass";
+import { GLASS_ENABLED, useGlassColorScheme } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
@@ -37,8 +41,8 @@ const TAB_ITEM_MAX_WIDTH = 500;
 const HEADER_EDGE_PADDING = GLASS_ENABLED ? 16 : 4;
 
 const BADGE_FONT_SIZE = 11;
-const BADGE_TOP =
-  (BOTTOM_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
+const BAR_HEIGHT = GLASS_ENABLED ? FLOATING_BAR_HEIGHT : BOTTOM_BAR_HEIGHT;
+const BADGE_TOP = (BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
 type TabTitleKey =
   "tabs.main" | "tabs.chat" | "tabs.lounge" | "tabs.rank" | "tabs.setting";
@@ -108,6 +112,35 @@ function HeaderTextButton({
   );
 }
 
+// 레트로 테두리는 유리와 같이 못 쓴다. 유리가 자기 경계를 그리는데 그 위에 검은 2px을
+// 얹으면 둘 다 죽는다.
+function TabBarBackground() {
+  const theme = useTheme();
+  const scheme = useGlassColorScheme();
+
+  if (GLASS_ENABLED) {
+    return (
+      <GlassView
+        style={[StyleSheet.absoluteFill, { borderRadius: FLOATING_BAR_RADIUS }]}
+        colorScheme={scheme}
+      />
+    );
+  }
+
+  return (
+    <View
+      style={[
+        StyleSheet.absoluteFill,
+        {
+          backgroundColor: theme.color1.val,
+          borderTopWidth: RETRO_BORDER_WIDTH,
+          borderColor: theme.gray12.val,
+        },
+      ]}
+    />
+  );
+}
+
 function ChatHeaderRight() {
   const startSelection = useChatSelectionStore((state) => state.start);
 
@@ -165,25 +198,22 @@ export default function TabsLayout() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: accent,
         tabBarInactiveTintColor: theme.color12.val,
-        tabBarStyle: {
-          height: bottomBarHeight(insets.bottom),
-          paddingBottom: insets.bottom,
-          borderTopWidth: 0,
-          backgroundColor: "transparent",
-          elevation: 0,
-        },
-        tabBarBackground: () => (
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: theme.color1.val,
-                borderTopWidth: RETRO_BORDER_WIDTH,
-                borderColor: theme.gray12.val,
-              },
-            ]}
-          />
-        ),
+        // 유리 바만 띄운다. 덮이는 만큼은 useTabBarOverlay가 비운다.
+        tabBarStyle: GLASS_ENABLED
+          ? {
+              ...floatingBarStyle(insets.bottom),
+              borderTopWidth: 0,
+              backgroundColor: "transparent",
+              elevation: 0,
+            }
+          : {
+              height: bottomBarHeight(insets.bottom),
+              paddingBottom: insets.bottom,
+              borderTopWidth: 0,
+              backgroundColor: "transparent",
+              elevation: 0,
+            },
+        tabBarBackground: () => <TabBarBackground />,
         tabBarItemStyle: { maxWidth: TAB_ITEM_MAX_WIDTH },
         tabBarIconStyle: { width: ICON_SIZE, flex: 1 },
       }}

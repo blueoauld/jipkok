@@ -32,6 +32,7 @@ import { RetroBadge } from "@/components/ui/RetroBadge";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
@@ -266,6 +267,7 @@ function SettingSection({
 export default function SettingScreen() {
   const { t } = useTranslation();
   const space = getTokens().space;
+  const tabBarOverlay = useTabBarOverlay();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
@@ -466,7 +468,7 @@ export default function SettingScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: space.$2.val,
-          paddingBottom: space.$4.val,
+          paddingBottom: space.$4.val + tabBarOverlay,
         }}
       >
         <YStack gap="$5">

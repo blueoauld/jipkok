@@ -28,6 +28,7 @@ import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { WorryCard } from "@/components/worry/WorryCard";
 import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
@@ -126,7 +127,8 @@ export default function FeedScreen() {
   );
   const feed = useFeedPosts(date, sort);
   const { posts, error, refetch: refetchFeed } = feed;
-  const paged = usePagedList(feed);
+  const tabBarOverlay = useTabBarOverlay();
+  const paged = usePagedList(feed, tabBarOverlay);
 
   const worryFeed = useWorryPosts(worrySort, worryCategory);
   const {
@@ -134,7 +136,7 @@ export default function FeedScreen() {
     error: worryError,
     refetch: refetchWorries,
   } = worryFeed;
-  const pagedWorries = usePagedList(worryFeed);
+  const pagedWorries = usePagedList(worryFeed, tabBarOverlay);
   const [worryRefreshing, setWorryRefreshing] = useState(false);
 
   const refreshWorries = useCallback(async () => {

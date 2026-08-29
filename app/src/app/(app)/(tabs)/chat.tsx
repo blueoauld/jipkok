@@ -9,6 +9,7 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -49,7 +50,8 @@ export default function ChatScreen() {
   } = useChatRoomActions({ show, showApiError, confirm });
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error } = chatRooms;
-  const paged = usePagedList(chatRooms);
+  const tabBarOverlay = useTabBarOverlay();
+  const paged = usePagedList(chatRooms, tabBarOverlay);
 
   const selecting = useChatSelectionStore((state) => state.active);
   const selected = useChatSelectionStore((state) => state.selected);

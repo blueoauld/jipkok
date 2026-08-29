@@ -2,6 +2,7 @@ import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
 import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { FLOATING_BUTTON_SIZE } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
@@ -18,6 +19,7 @@ export function ScrollToTopButton({
   onPress: () => void;
 }) {
   const accent = useAccent();
+  const tabBarOverlay = useTabBarOverlay();
 
   if (!visible) {
     return null;
@@ -27,7 +29,7 @@ export function ScrollToTopButton({
     <XStack
       position="absolute"
       r={SCROLL_TO_TOP_SIDE_GAP}
-      b={SCROLL_TO_TOP_BOTTOM_GAP}
+      b={tabBarOverlay + SCROLL_TO_TOP_BOTTOM_GAP}
     >
       <RetroCard
         theme={accent}

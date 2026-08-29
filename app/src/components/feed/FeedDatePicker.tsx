@@ -4,6 +4,7 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroCard } from "@/components/ui/RetroCard";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import {
   FLOATING_BUTTON_SIZE,
@@ -232,12 +233,13 @@ export function FeedDatePicker({
   const [open, setOpen] = useState(false);
   const background = useThemeBackground();
   const selected = toDateParam(date);
+  const tabBarOverlay = useTabBarOverlay();
 
   return (
     <>
       <XStack
         position="absolute"
-        b={SCROLL_TO_TOP_BOTTOM_GAP}
+        b={tabBarOverlay + SCROLL_TO_TOP_BOTTOM_GAP}
         l={0}
         r={0}
         justify="center"
@@ -255,7 +257,8 @@ export function FeedDatePicker({
             l={0}
             r={0}
             pt="$2"
-            pb={getTokens().space.$4.val}
+            // 떠 있는 탭 바가 이 위에 얹히므로 마지막 줄이 가리지 않게 그만큼 더 비운다.
+            pb={getTokens().space.$4.val + tabBarOverlay}
             bg={background}
             borderTopWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
