@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform, Text as NativeText } from "react-native";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
@@ -76,6 +77,7 @@ function Card({
   onReport: (postId: number) => void;
   onToggleLike: (post: FeedPostResponse) => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
@@ -123,6 +125,8 @@ function Card({
           <CardButton
             width={CARD_ICON_BUTTON_SIZE}
             height={CARD_ICON_BUTTON_SIZE}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.report")}
             onPress={() => onReport(post.postId)}
           >
             <SirenIcon
@@ -138,6 +142,9 @@ function Card({
         <CardButton
           width={CARD_ICON_BUTTON_SIZE}
           height={CARD_ICON_BUTTON_SIZE}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.like")}
+          accessibilityState={{ selected: post.likedByMe }}
           onPress={() => onToggleLike(post)}
         >
           <HeartIcon

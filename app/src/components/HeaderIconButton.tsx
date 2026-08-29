@@ -9,10 +9,12 @@ const ICON_SIZE = 28;
 
 export function HeaderIconButton({
   icon: Icon,
+  label,
   weight,
   onPress,
 }: {
   icon: Icon;
+  label: string;
   weight?: IconWeight;
   onPress?: () => void;
 }) {
@@ -25,6 +27,8 @@ export function HeaderIconButton({
       // 유리 원이 이미 탭 영역만 하다. 패딩을 더하면 묶인 아이콘 사이가 벌어진다.
       p={GLASS_ENABLED ? 0 : "$3"}
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
     >
       <GlassSurface size={HEADER_GLASS_SIZE}>

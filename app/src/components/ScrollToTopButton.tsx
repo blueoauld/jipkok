@@ -1,4 +1,5 @@
 import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
+import { useTranslation } from "react-i18next";
 import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -18,6 +19,7 @@ export function ScrollToTopButton({
   visible: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const accent = useAccent();
   const tabBarOverlay = useTabBarOverlay();
 
@@ -41,6 +43,8 @@ export function ScrollToTopButton({
         height={FLOATING_BUTTON_SIZE}
         items="center"
         justify="center"
+        accessibilityRole="button"
+        accessibilityLabel={t("a11y.scrollToTop")}
         onPress={onPress}
       >
         <CaretUpIcon size={ICON_SIZE} weight="bold" color="white" />

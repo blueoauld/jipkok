@@ -11,10 +11,12 @@ const BUTTON_HEIGHT = 40;
 // 여기서 GlassSurface를 쓰면 두 겹이 된다. 탭 헤더는 HeaderIconButton을 쓸 것.
 export function HeaderSoloIconButton({
   icon: Icon,
+  label,
   weight,
   onPress,
 }: {
   icon: Icon;
+  label: string;
   weight?: IconWeight;
   onPress?: () => void;
 }) {
@@ -27,6 +29,8 @@ export function HeaderSoloIconButton({
       items="center"
       justify="center"
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
     >
       <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />

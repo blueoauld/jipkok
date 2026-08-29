@@ -135,6 +135,7 @@ function ActionBar({
   pending: ActionKey | null;
   onPress: (key: ActionKey) => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const scheme = useGlassColorScheme();
@@ -172,6 +173,9 @@ function ActionBar({
       items="center"
       justify="center"
       opacity={pending === key || disabled[key] ? 0.4 : 1}
+      accessibilityRole="button"
+      accessibilityLabel={t(`a11y.${key}`)}
+      accessibilityState={{ selected: filled[key], disabled: disabled[key] }}
       onPress={disabled[key] ? undefined : () => onPress(key)}
     >
       <YStack>
@@ -394,6 +398,7 @@ export default function MemberProfileScreen() {
       headerRight: () => (
         <HeaderSoloIconButton
           icon={DotsThreeIcon}
+          label={t("a11y.more")}
           weight="bold"
           onPress={openMenu}
         />
@@ -518,7 +523,10 @@ export default function MemberProfileScreen() {
             r={SCROLL_TO_TOP_SIDE_GAP}
             b={barHeight + SCROLL_TO_TOP_BOTTOM_GAP}
           >
-            <RetroFloatingButton onPress={togglePhotoGrid}>
+            <RetroFloatingButton
+              label={t("a11y.photoGrid")}
+              onPress={togglePhotoGrid}
+            >
               <SquaresFourIcon
                 size={GRID_ICON_SIZE}
                 weight={photoGridOpen ? "fill" : "regular"}

@@ -6,9 +6,11 @@ import { useAccent } from "@/lib/theme/accent";
 
 export function RetroFloatingButton({
   children,
+  label,
   onPress,
 }: {
   children: ReactNode;
+  label: string;
   onPress: () => void;
 }) {
   const accent = useAccent();
@@ -22,6 +24,8 @@ export function RetroFloatingButton({
       pressBg="$color11"
       items="center"
       justify="center"
+      accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
     >
       {children}

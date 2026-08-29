@@ -10,6 +10,7 @@ export function FeedNotificationButton() {
 
   return (
     <BellToggleButton
+      label={t("a11y.feedNotification")}
       enabled={profile?.feedNotificationEnabled ?? true}
       field="feedNotificationEnabled"
       update={api.members.updateFeedNotification}

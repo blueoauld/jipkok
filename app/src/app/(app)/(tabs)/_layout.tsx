@@ -31,6 +31,7 @@ import {
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED, useGlassColorScheme } from "@/lib/glass";
+import i18n from "@/lib/i18n";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
@@ -64,6 +65,7 @@ const TABS: Tab[] = [
     headerLeft: () => (
       <HeaderIconButton
         icon={MagnifyingGlassIcon}
+        label={i18n.t("a11y.search")}
         onPress={() => pushOnce("/chat/search")}
       />
     ),
@@ -80,6 +82,7 @@ function NoteReceiveButton() {
 
   return (
     <BellToggleButton
+      label={t("a11y.noteReceive")}
       enabled={profile?.noteReceiveEnabled ?? true}
       field="noteReceiveEnabled"
       update={api.members.updateNoteReceive}
@@ -142,11 +145,16 @@ function TabBarBackground() {
 }
 
 function ChatHeaderRight() {
+  const { t } = useTranslation();
   const startSelection = useChatSelectionStore((state) => state.start);
 
   return (
     <HeaderIconGroup>
-      <HeaderIconButton icon={CheckSquareIcon} onPress={startSelection} />
+      <HeaderIconButton
+        icon={CheckSquareIcon}
+        label={t("a11y.selectRooms")}
+        onPress={startSelection}
+      />
       <NoteReceiveButton />
     </HeaderIconGroup>
   );

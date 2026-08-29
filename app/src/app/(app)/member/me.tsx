@@ -102,7 +102,10 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
         r={SCROLL_TO_TOP_SIDE_GAP}
         b={SCROLL_TO_TOP_BOTTOM_GAP}
       >
-        <RetroFloatingButton onPress={togglePhotoGrid}>
+        <RetroFloatingButton
+          label={t("a11y.photoGrid")}
+          onPress={togglePhotoGrid}
+        >
           <SquaresFourIcon
             size={20}
             weight={photoGridOpen ? "fill" : "regular"}
@@ -129,6 +132,7 @@ export default function MyProfileScreen() {
       headerRight: () => (
         <HeaderSoloIconButton
           icon={PencilSimpleIcon}
+          label={t("a11y.editProfile")}
           onPress={() => pushOnce("/member/edit")}
         />
       ),

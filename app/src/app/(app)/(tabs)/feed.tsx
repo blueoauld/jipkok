@@ -302,6 +302,7 @@ export default function FeedScreen() {
           : () => (
               <HeaderIconButton
                 icon={MagnifyingGlassIcon}
+                label={t("a11y.search")}
                 onPress={openWorrySearch}
               />
             ),
@@ -309,10 +310,12 @@ export default function FeedScreen() {
         <HeaderIconGroup>
           <HeaderIconButton
             icon={FunnelSimpleIcon}
+            label={t("a11y.filter")}
             onPress={board === "FEED" ? openFilter : openWorryFilter}
           />
           <HeaderIconButton
             icon={NotePencilIcon}
+            label={t("a11y.compose")}
             onPress={board === "FEED" ? openCompose : openWorryCompose}
           />
         </HeaderIconGroup>
@@ -325,6 +328,7 @@ export default function FeedScreen() {
       openWorryCompose,
       openWorryFilter,
       openWorrySearch,
+      t,
     ],
   );
 

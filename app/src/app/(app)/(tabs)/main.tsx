@@ -130,17 +130,26 @@ export default function MainScreen() {
       headerLeft: () => (
         <HeaderIconButton
           icon={MagnifyingGlassIcon}
+          label={t("a11y.search")}
           onPress={() => pushOnce("/member/search")}
         />
       ),
       headerRight: () => (
         <HeaderIconGroup>
-          <HeaderIconButton icon={FunnelSimpleIcon} onPress={openFilter} />
-          <HeaderIconButton icon={NotePencilIcon} onPress={openComment} />
+          <HeaderIconButton
+            icon={FunnelSimpleIcon}
+            label={t("a11y.filter")}
+            onPress={openFilter}
+          />
+          <HeaderIconButton
+            icon={NotePencilIcon}
+            label={t("a11y.compose")}
+            onPress={openComment}
+          />
         </HeaderIconGroup>
       ),
     }),
-    [openFilter, openComment],
+    [openFilter, openComment, t],
   );
 
   return (

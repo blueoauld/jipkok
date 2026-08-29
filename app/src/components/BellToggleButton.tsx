@@ -11,12 +11,14 @@ import { showToast } from "@/lib/toast/store";
 type ToggleField = "noteReceiveEnabled" | "feedNotificationEnabled";
 
 export function BellToggleButton({
+  label,
   enabled,
   field,
   update,
   onMessage,
   offMessage,
 }: {
+  label: string;
   enabled: boolean;
   field: ToggleField;
   update: (enabled: boolean) => Promise<void>;
@@ -48,6 +50,7 @@ export function BellToggleButton({
   return (
     <HeaderIconButton
       icon={enabled ? BellIcon : BellSlashIcon}
+      label={label}
       onPress={toggle.isPending ? undefined : () => toggle.mutate()}
     />
   );

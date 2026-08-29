@@ -547,6 +547,7 @@ export default function WorryDetailScreen() {
         ? () => (
             <HeaderSoloIconButton
               icon={post.mine ? TrashIcon : SirenIcon}
+              label={post.mine ? t("action.delete") : t("a11y.report")}
               onPress={post.mine ? confirmRemovePost : confirmReportPost}
             />
           )

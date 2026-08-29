@@ -444,13 +444,21 @@ export default function SettingScreen() {
   const screenOptions = useMemo(
     () => ({
       headerLeft: () => (
-        <HeaderIconButton icon={TranslateIcon} onPress={openLanguage} />
+        <HeaderIconButton
+          icon={TranslateIcon}
+          label={t("a11y.language")}
+          onPress={openLanguage}
+        />
       ),
       headerRight: () => (
-        <HeaderIconButton icon={SignOutIcon} onPress={openMenu} />
+        <HeaderIconButton
+          icon={SignOutIcon}
+          label={t("a11y.menu")}
+          onPress={openMenu}
+        />
       ),
     }),
-    [openLanguage, openMenu],
+    [openLanguage, openMenu, t],
   );
 
   return (

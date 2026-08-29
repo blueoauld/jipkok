@@ -250,12 +250,13 @@ export default function ChatRoomScreen() {
       headerRight: () => (
         <HeaderSoloIconButton
           icon={DotsThreeIcon}
+          label={t("a11y.more")}
           weight="bold"
           onPress={openMenu}
         />
       ),
     }),
-    [openMenu, room?.nickname],
+    [openMenu, room?.nickname, t],
   );
 
   return (
