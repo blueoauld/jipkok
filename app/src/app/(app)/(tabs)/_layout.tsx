@@ -273,8 +273,12 @@ export default function TabsLayout() {
                 color: "white",
                 fontSize: BADGE_FONT_SIZE,
               },
-              tabBarIcon: ({ color }) => (
-                <Icon color={color as string} size={ICON_SIZE} weight="fill" />
+              tabBarIcon: ({ color, focused }) => (
+                <Icon
+                  color={color as string}
+                  size={ICON_SIZE}
+                  weight={focused ? "fill" : "regular"}
+                />
               ),
             }}
           />
