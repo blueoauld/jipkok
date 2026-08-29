@@ -1,4 +1,4 @@
-const DEVELOPMENT_BASE_URL = "http://192.168.0.14:8080";
+const DEVELOPMENT_BASE_URL = "http://192.168.0.15:8080";
 const PRODUCTION_BASE_URL = "https://api.jipkok.app";
 
 export const API_BASE_URL =
