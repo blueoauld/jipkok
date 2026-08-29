@@ -27,10 +27,10 @@ import { XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
-import { IMAGE_TRANSITION, PRESS_OPACITY } from "@/lib/design";
+import { IMAGE_TRANSITION, MIN_TAP_SIZE, PRESS_OPACITY } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
-const CLOSE_BUTTON_SIZE = 40;
+const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
 
 const CLOSE_ICON_SIZE = 24;
 

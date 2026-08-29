@@ -4,7 +4,10 @@ export const DISABLED_OPACITY = 0.4;
 
 export const PHOTO_PRESS_OPACITY = 0.8;
 
-export const FLOATING_BUTTON_SIZE = 40;
+// 애플이 권하는 최소 탭 영역이다. 손가락이 닿는 면이라 더 줄이지 말 것.
+export const MIN_TAP_SIZE = 44;
+
+export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
 
 // iOS가 직접 그리는 네이티브 뒤로가기 버튼과 같은 지름이라야 화면을 옮겨 다녀도 안 튄다.
 export const HEADER_GLASS_SIZE = 44;

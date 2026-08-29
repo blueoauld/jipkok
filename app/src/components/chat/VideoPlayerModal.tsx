@@ -24,10 +24,15 @@ import Animated, {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
 
-import { OVERLAY_BG, PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
+import {
+  MIN_TAP_SIZE,
+  OVERLAY_BG,
+  PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
 import { formatDuration } from "@/lib/video";
 
-const CLOSE_BUTTON_SIZE = 40;
+const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
 const CLOSE_ICON_SIZE = 24;
 const PLAY_BUTTON_SIZE = 64;
 const PLAY_ICON_SIZE = 30;

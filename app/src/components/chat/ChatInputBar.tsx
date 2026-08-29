@@ -33,7 +33,9 @@ const MAX_LENGTH = 1000;
 const FONT_SIZE = 16;
 const LINE_HEIGHT = 22;
 const MAX_LINES = 7;
-const VERTICAL_PADDING = 7;
+// 한 줄일 때 입력 칸이 양옆 버튼과 같은 높이여야 나란히 선다. 버튼 크기가 바뀌면 따라간다.
+const VERTICAL_PADDING =
+  (FLOATING_BUTTON_SIZE - RETRO_BORDER_WIDTH * 2 - LINE_HEIGHT) / 2;
 
 export type ChatInputBarHandle = {
   restore: (text: string) => void;

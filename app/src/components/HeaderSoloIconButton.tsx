@@ -1,11 +1,19 @@
 import type { Icon, IconWeight } from "phosphor-react-native";
 import { useTheme, XStack } from "tamagui";
 
-import { PRESS_OPACITY } from "@/lib/design";
+import { MIN_TAP_SIZE, PRESS_OPACITY } from "@/lib/design";
 
 const ICON_SIZE = 28;
 const BUTTON_WIDTH = 36;
 const BUTTON_HEIGHT = 40;
+
+// 크기를 키우면 아래 주석의 유리도 같이 커져 뒤로가기 버튼과 어긋난다. 닿는 면만 넓힌다.
+const TAP_SLOP = {
+  left: (MIN_TAP_SIZE - BUTTON_WIDTH) / 2,
+  right: (MIN_TAP_SIZE - BUTTON_WIDTH) / 2,
+  top: (MIN_TAP_SIZE - BUTTON_HEIGHT) / 2,
+  bottom: (MIN_TAP_SIZE - BUTTON_HEIGHT) / 2,
+};
 
 // 네이티브 스택 헤더 전용이다. iOS 26이 UINavigationBar 버튼에 유리를 알아서 입히므로
 // 여기서 GlassSurface를 쓰면 두 겹이 된다. 탭 헤더는 HeaderIconButton을 쓸 것.
@@ -29,6 +37,7 @@ export function HeaderSoloIconButton({
       items="center"
       justify="center"
       pressStyle={{ opacity: PRESS_OPACITY }}
+      hitSlop={TAP_SLOP}
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}

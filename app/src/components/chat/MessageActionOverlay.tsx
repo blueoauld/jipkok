@@ -10,10 +10,10 @@ import {
   layoutActionOverlay,
   type MessageFrame,
 } from "@/lib/chat/overlay-layout";
-import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { MIN_TAP_SIZE, OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
-const EMOJI_ITEM_SIZE = 40;
+const EMOJI_ITEM_SIZE = MIN_TAP_SIZE;
 const EMOJI_FONT_SIZE = 22;
 const BAR_PADDING = 4;
 const BAR_HEIGHT = EMOJI_ITEM_SIZE + BAR_PADDING * 2 + RETRO_BORDER_WIDTH * 2;

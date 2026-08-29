@@ -13,6 +13,7 @@ import { formatSlotTime } from "@/lib/date";
 import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
+  MIN_TAP_SIZE,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
@@ -22,7 +23,7 @@ export const CARD_RATIO = 2;
 const REPORT_BUTTON_SPACE = 56;
 
 const CARD_ICON_SIZE = 22;
-const CARD_ICON_BUTTON_SIZE = 40;
+const CARD_ICON_BUTTON_SIZE = MIN_TAP_SIZE;
 
 const HARD_SHADOW = {
   width: RETRO_SHADOW_OFFSET_SM,
