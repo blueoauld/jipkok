@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { GlassView } from "expo-glass-effect";
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams } from "expo-router";
 import type { Icon } from "phosphor-react-native";
@@ -28,6 +27,7 @@ import {
   SCROLL_TO_TOP_SIDE_GAP,
 } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { Glass } from "@/components/ui/Glass";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -50,7 +50,7 @@ import {
   floatingBarStyle,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
-import { GLASS_ENABLED, useGlassColorScheme } from "@/lib/glass";
+import { GLASS_ENABLED } from "@/lib/glass";
 import { formatDistance } from "@/lib/member";
 import {
   bioCopiedMessage,
@@ -138,7 +138,6 @@ function ActionBar({
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const scheme = useGlassColorScheme();
 
   const filled: Record<ActionKey, boolean> = {
     like: member.likedByMe,
@@ -194,16 +193,15 @@ function ActionBar({
 
   if (GLASS_ENABLED) {
     return (
-      <GlassView
+      <Glass
         style={{
           ...floatingBarStyle(insets.bottom),
           borderRadius: FLOATING_BAR_RADIUS,
           flexDirection: "row",
         }}
-        colorScheme={scheme}
       >
         {items}
-      </GlassView>
+      </Glass>
     );
   }
 

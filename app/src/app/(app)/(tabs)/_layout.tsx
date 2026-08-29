@@ -1,4 +1,3 @@
-import { GlassView } from "expo-glass-effect";
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
@@ -16,6 +15,7 @@ import { Text, useTheme, XStack } from "tamagui";
 import { BellToggleButton } from "@/components/BellToggleButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
+import { Glass } from "@/components/ui/Glass";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { api } from "@/lib/api";
@@ -27,10 +27,11 @@ import {
   FLOATING_BAR_HEIGHT,
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
+  HEADER_GLASS_SIZE,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
-import { GLASS_ENABLED, useGlassColorScheme } from "@/lib/glass";
+import { GLASS_ENABLED } from "@/lib/glass";
 import i18n from "@/lib/i18n";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
@@ -40,6 +41,9 @@ const TAB_ITEM_PADDING = 5;
 const TAB_ITEM_MAX_WIDTH = 500;
 // 유리일 때는 네이티브 스택 헤더가 버튼을 앉히는 자리와 같아야 화면을 오갈 때 안 튄다.
 const HEADER_EDGE_PADDING = GLASS_ENABLED ? 16 : 4;
+
+// 유리 캡슐 안에서 글자가 벽에 붙지 않을 만큼이다.
+const HEADER_TEXT_PADDING = 14;
 
 const BADGE_FONT_SIZE = 11;
 const BAR_HEIGHT = GLASS_ENABLED ? FLOATING_BAR_HEIGHT : BOTTOM_BAR_HEIGHT;
@@ -99,18 +103,38 @@ function HeaderTextButton({
   label: string;
   onPress: () => void;
 }) {
+  const text = (
+    <Text fontSize="$4" fontWeight="600">
+      {label}
+    </Text>
+  );
+
   return (
     <XStack
       items="center"
       justify="center"
-      px="$3"
-      py="$2"
+      px={GLASS_ENABLED ? 0 : "$3"}
+      py={GLASS_ENABLED ? 0 : "$2"}
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessibilityRole="button"
       onPress={onPress}
     >
-      <Text fontSize="$4" fontWeight="600">
-        {label}
-      </Text>
+      {GLASS_ENABLED ? (
+        <Glass
+          style={{
+            height: HEADER_GLASS_SIZE,
+            borderRadius: HEADER_GLASS_SIZE / 2,
+            paddingHorizontal: HEADER_TEXT_PADDING,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          isInteractive
+        >
+          {text}
+        </Glass>
+      ) : (
+        text
+      )}
     </XStack>
   );
 }
@@ -119,13 +143,11 @@ function HeaderTextButton({
 // 얹으면 둘 다 죽는다.
 function TabBarBackground() {
   const theme = useTheme();
-  const scheme = useGlassColorScheme();
 
   if (GLASS_ENABLED) {
     return (
-      <GlassView
+      <Glass
         style={[StyleSheet.absoluteFill, { borderRadius: FLOATING_BAR_RADIUS }]}
-        colorScheme={scheme}
       />
     );
   }

@@ -51,9 +51,10 @@ export default function ChatScreen() {
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error } = chatRooms;
   const tabBarOverlay = useTabBarOverlay();
-  const paged = usePagedList(chatRooms, tabBarOverlay);
-
   const selecting = useChatSelectionStore((state) => state.active);
+  // 셀렉션 바가 흐름 안에서 그 자리를 이미 차지하므로 목록까지 비우면 두 번 센다.
+  const paged = usePagedList(chatRooms, selecting ? 0 : tabBarOverlay);
+
   const selected = useChatSelectionStore((state) => state.selected);
   const toggleSelected = useChatSelectionStore((state) => state.toggle);
   const setRoomIds = useChatSelectionStore((state) => state.setRoomIds);

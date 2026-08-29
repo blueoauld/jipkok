@@ -1,12 +1,8 @@
-import { GlassView } from "expo-glass-effect";
 import { type ReactNode, useContext } from "react";
 import { XStack } from "tamagui";
 
-import {
-  GLASS_ENABLED,
-  GlassGroupContext,
-  useGlassColorScheme,
-} from "@/lib/glass";
+import { Glass } from "@/components/ui/Glass";
+import { GLASS_ENABLED, GlassGroupContext } from "@/lib/glass";
 
 export function GlassSurface({
   size,
@@ -16,7 +12,6 @@ export function GlassSurface({
   children: ReactNode;
 }) {
   const grouped = useContext(GlassGroupContext);
-  const scheme = useGlassColorScheme();
 
   if (!GLASS_ENABLED) {
     return <>{children}</>;
@@ -32,7 +27,7 @@ export function GlassSurface({
   }
 
   return (
-    <GlassView
+    <Glass
       style={{
         width: size,
         height: size,
@@ -40,10 +35,9 @@ export function GlassSurface({
         alignItems: "center",
         justifyContent: "center",
       }}
-      colorScheme={scheme}
       isInteractive
     >
       {children}
-    </GlassView>
+    </Glass>
   );
 }
