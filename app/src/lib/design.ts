@@ -11,10 +11,11 @@ export const HEADER_GLASS_SIZE = 44;
 
 export const HEADER_GLASS_GAP = 8;
 
-// 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다.
-export const SEND_CODE_BUTTON_WIDTH = 80;
+// 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다. 고정 폭이 아니라
+// 최소 폭인 이유는 글씨 크기를 키운 사용자에게 글자가 잘리면 안 되기 때문이다.
+export const SEND_CODE_BUTTON_MIN_WIDTH = 80;
 
-export const COUNTRY_BUTTON_WIDTH = 70;
+export const COUNTRY_BUTTON_MIN_WIDTH = 70;
 
 export const RETRO_BORDER_WIDTH = 2;
 

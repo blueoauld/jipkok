@@ -7,7 +7,7 @@ import { XStack, YStack } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { COUNTRY_BUTTON_WIDTH } from "@/lib/design";
+import { COUNTRY_BUTTON_MIN_WIDTH } from "@/lib/design";
 import {
   maxLengthOf,
   type PhoneCountry,
@@ -49,7 +49,7 @@ export function PhoneNumberField<T extends FieldValues>({
         <RetroButton
           theme="purple"
           shadow="$gray8"
-          width={COUNTRY_BUTTON_WIDTH}
+          minW={COUNTRY_BUTTON_MIN_WIDTH}
           onPress={() => setOpen(true)}
         >
           {country}

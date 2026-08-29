@@ -13,7 +13,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type ResetPasswordRequest } from "@/lib/api";
 import { formatCountdown } from "@/lib/date";
-import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
+import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
 import { codeSentMessage } from "@/lib/message";
 import { patternOf, usePhoneCountry } from "@/lib/phone";
 import { showToast } from "@/lib/toast/store";
@@ -97,7 +97,7 @@ export default function PasswordScreen() {
           name="phoneNumber"
           right={
             <RetroButton
-              width={SEND_CODE_BUTTON_WIDTH}
+              minW={SEND_CODE_BUTTON_MIN_WIDTH}
               disabled={!canSendCode}
               onPress={() => sendCode.mutate(phoneNumber)}
             >

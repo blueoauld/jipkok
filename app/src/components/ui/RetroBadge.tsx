@@ -11,7 +11,7 @@ export function RetroBadge({ children }: { children: ReactNode }) {
     <XStack
       shrink={0}
       minW={SIZE}
-      height={SIZE}
+      minH={SIZE}
       px="$1.5"
       borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"

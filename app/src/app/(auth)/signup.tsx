@@ -15,7 +15,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
 import { formatCountdown } from "@/lib/date";
-import { SEND_CODE_BUTTON_WIDTH } from "@/lib/design";
+import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { codeSentMessage } from "@/lib/message";
 import { patternOf, usePhoneCountry } from "@/lib/phone";
@@ -144,7 +144,7 @@ export default function SignupScreen() {
           name="phoneNumber"
           right={
             <RetroButton
-              width={SEND_CODE_BUTTON_WIDTH}
+              minW={SEND_CODE_BUTTON_MIN_WIDTH}
               disabled={!canSendCode}
               onPress={() => sendCode.mutate(phoneNumber)}
             >
