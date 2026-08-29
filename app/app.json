@@ -91,6 +91,7 @@
       "@react-native-firebase/perf",
       "./plugins/withFirebaseDisableSPM",
       "./plugins/withAndroidAdsKotlinFix",
+      "./plugins/withAndroidR8Optimization",
       [
         "expo-media-library",
         {
