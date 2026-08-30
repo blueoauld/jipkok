@@ -1,0 +1,40 @@
+name: 앱 스토어 배포
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "빌드할 플랫폼"
+        type: choice
+        default: android
+        options:
+          - android
+          - ios
+          - all
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: 의존성 설치
+        working-directory: app
+        run: npm ci
+
+      # 대기열이 길어 붙잡고 있을 이유가 없다. 큐에 넣고 잡은 끝낸다. 빌드가 끝나면
+      # EAS가 제출까지 이어서 하므로, 결과는 GitHub이 아니라 EAS에서 봐야 한다.
+      - name: 빌드와 제출 요청
+        working-directory: app
+        run: npx eas-cli@22 build --platform "$PLATFORM" --profile production --auto-submit --no-wait --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PLATFORM: ${{ inputs.platform }}
