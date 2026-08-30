@@ -18,8 +18,9 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# 파이어베이스 서비스 계정 키 (푸시 발송용 서버 자격증명)
-*-firebase-adminsdk-*.json
+# 구글 서비스 계정 키. 구글이 프로젝트 이름으로 파일명을 지어 주므로 앞자리로 잡는다.
+# 푸시 발송용(firebase-adminsdk)과 Play 제출용이 여기 걸린다.
+jipkok-*.json
 
 # Metro
 .metro-health-check*
