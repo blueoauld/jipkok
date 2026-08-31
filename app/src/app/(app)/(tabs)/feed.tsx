@@ -33,6 +33,7 @@ import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { usePagedList } from "@/hooks/usePagedList";
+import { usePullRefresh } from "@/hooks/usePullRefresh";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
@@ -92,7 +93,6 @@ export default function FeedScreen() {
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [worryFilterOpen, setWorryFilterOpen] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const listRef = useRef<FlatList<FeedPostResponse>>(null);
   const worryListRef = useRef<FlatList<WorryPostResponse>>(null);
@@ -137,17 +137,8 @@ export default function FeedScreen() {
     refetch: refetchWorries,
   } = worryFeed;
   const pagedWorries = usePagedList(worryFeed, tabBarOverlay);
-  const [worryRefreshing, setWorryRefreshing] = useState(false);
 
-  const refreshWorries = useCallback(async () => {
-    setWorryRefreshing(true);
-
-    try {
-      await refetchWorries();
-    } finally {
-      setWorryRefreshing(false);
-    }
-  }, [refetchWorries]);
+  const worryRefresh = usePullRefresh(refetchWorries);
 
   const queryKey = feedPostsKey(date, sort);
   const invalidate = useCallback(
@@ -155,15 +146,7 @@ export default function FeedScreen() {
     [queryClient],
   );
 
-  const refresh = useCallback(async () => {
-    setRefreshing(true);
-
-    try {
-      await refetchFeed();
-    } finally {
-      setRefreshing(false);
-    }
-  }, [refetchFeed]);
+  const feedRefresh = usePullRefresh(refetchFeed);
 
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
@@ -368,8 +351,8 @@ export default function FeedScreen() {
             scrollEventThrottle={SCROLL_EVENT_THROTTLE}
             refreshControl={
               <RefreshControl
-                refreshing={worryRefreshing}
-                onRefresh={refreshWorries}
+                refreshing={worryRefresh.refreshing}
+                onRefresh={worryRefresh.onRefresh}
               />
             }
             ListEmptyComponent={
@@ -402,7 +385,10 @@ export default function FeedScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+            <RefreshControl
+              refreshing={feedRefresh.refreshing}
+              onRefresh={feedRefresh.onRefresh}
+            />
           }
           ListEmptyComponent={<ListEmpty>{t("feed.emptyMessage")}</ListEmpty>}
         />

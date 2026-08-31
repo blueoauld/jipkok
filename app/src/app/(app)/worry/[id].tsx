@@ -30,6 +30,7 @@ import { CommentScrollView } from "@/components/worry/CommentScrollView";
 import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
 import { useContentTranslation } from "@/hooks/useContentTranslation";
 import { usePagedList } from "@/hooks/usePagedList";
+import { usePullRefresh } from "@/hooks/usePullRefresh";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWorryComments, worryCommentsKey } from "@/hooks/useWorryComments";
 import { WORRY_LIST_KEY, worryDetailKey } from "@/hooks/useWorryPosts";
@@ -353,7 +354,6 @@ export default function WorryDetailScreen() {
   const background = useThemeBackground();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
 
-  const [refreshing, setRefreshing] = useState(false);
   const [replyTo, setReplyTo] = useState<WorryCommentResponse | null>(null);
 
   const detailKey = useMemo(() => worryDetailKey(postId), [postId]);
@@ -384,15 +384,12 @@ export default function WorryDetailScreen() {
     [queryClient],
   );
 
-  const refresh = useCallback(async () => {
-    setRefreshing(true);
-
-    try {
-      await Promise.all([detail.refetch(), refetchComments()]);
-    } finally {
-      setRefreshing(false);
-    }
-  }, [detail, refetchComments]);
+  const { refreshing, onRefresh } = usePullRefresh(
+    useCallback(
+      () => Promise.all([detail.refetch(), refetchComments()]),
+      [detail, refetchComments],
+    ),
+  );
 
   const toggleLike = useMutation({
     mutationFn: (current: WorryPostResponse) =>
@@ -620,7 +617,7 @@ export default function WorryDetailScreen() {
                 )
               }
               refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
             />
           </YStack>

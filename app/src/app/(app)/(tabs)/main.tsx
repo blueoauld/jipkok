@@ -22,6 +22,7 @@ import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { MEMBERS_KEY, useMembers } from "@/hooks/useMembers";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
+import { usePullRefresh } from "@/hooks/usePullRefresh";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
@@ -48,7 +49,6 @@ export default function MainScreen() {
   const { t } = useTranslation();
   const [filterOpen, setFilterOpen] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const listRef = useRef<FlatList>(null);
   const scrollTop = useScrollToTopVisible();
 
@@ -105,15 +105,12 @@ export default function MainScreen() {
     refreshLocation();
   }, [refreshLocation]);
 
-  const refresh = useCallback(async () => {
-    setRefreshing(true);
-
-    try {
-      await Promise.all([refreshLocation(), refetchFeed()]);
-    } finally {
-      setRefreshing(false);
-    }
-  }, [refetchFeed, refreshLocation]);
+  const { refreshing, onRefresh } = usePullRefresh(
+    useCallback(
+      () => Promise.all([refreshLocation(), refetchFeed()]),
+      [refetchFeed, refreshLocation],
+    ),
+  );
 
   const openFilter = useCallback(() => setFilterOpen(true), []);
   const openComment = useCallback(() => setCommentOpen(true), []);
@@ -175,7 +172,7 @@ export default function MainScreen() {
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
         />
