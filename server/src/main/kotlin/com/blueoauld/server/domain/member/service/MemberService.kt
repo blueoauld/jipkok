@@ -10,11 +10,13 @@ import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.NicknameHistory
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -46,7 +48,7 @@ class MemberService(
 
     @Transactional
     fun setupProfile(memberId: Long, request: SetupProfileRequest) {
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
 
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
@@ -61,7 +63,7 @@ class MemberService(
 
     @Transactional(readOnly = true)
     fun findMyProfile(memberId: Long): MyProfileResponse {
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
         val photos = memberPhotoRepository.findAllByMemberId(memberId)
 
         return MyProfileResponse(
@@ -85,7 +87,7 @@ class MemberService(
     fun editProfile(memberId: Long, request: EditProfileRequest) {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
 
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
@@ -125,30 +127,26 @@ class MemberService(
 
     @Transactional
     fun updateNoteReceive(memberId: Long, request: EnabledRequest) {
-        findMember(memberId).noteReceiveEnabled = request.enabled
+        memberRepository.getMember(memberId).noteReceiveEnabled = request.enabled
     }
 
     @Transactional
     fun updateFeedNotification(memberId: Long, request: EnabledRequest) {
-        findMember(memberId).feedNotificationEnabled = request.enabled
+        memberRepository.getMember(memberId).feedNotificationEnabled = request.enabled
     }
 
     @Transactional
     fun updateLocale(memberId: Long, request: UpdateLocaleRequest) {
-        findMember(memberId).locale = request.locale
+        memberRepository.getMember(memberId).locale = request.locale
     }
 
     @Transactional
     fun updateComment(memberId: Long, request: UpdateCommentRequest) {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        findMember(memberId).comment = request.comment?.ifEmpty { null }
+        memberRepository.getMember(memberId).comment = request.comment?.ifEmpty { null }
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
-    }
-
-    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
     private fun changeNickname(member: Member, nickname: String) {
@@ -200,8 +198,7 @@ class MemberService(
         photos: List<MemberPhoto>,
         visibility: PhotoVisibility,
         toUrl: (String) -> String,
-    ) = photos.filter { it.visibility == visibility }
-        .sortedBy { it.displayOrder }
+    ) = photos.displayOrdered(visibility)
         .map { ProfilePhotoResponse(it.objectKey, toUrl(it.objectKey)) }
 
     private fun photoKeyPrefix(memberId: Long, visibility: PhotoVisibility) =

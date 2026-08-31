@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -35,9 +36,9 @@ class MemberSummaryService(
 
     private fun findProfileImageUrls(memberIds: List<Long>) =
         memberPhotoRepository.findAllByMemberIdIn(memberIds)
-            .filter { it.visibility == PhotoVisibility.PUBLIC }
+            .displayOrdered(PhotoVisibility.PUBLIC)
             .groupBy { it.memberId }
-            .mapValues { (_, photos) -> photoStorage.toPublicUrl(photos.minBy { it.displayOrder }.objectKey) }
+            .mapValues { (_, photos) -> photoStorage.toPublicUrl(photos.first().objectKey) }
 
     private fun toSummary(member: Member, profileImageUrl: String?) = MemberSummaryResponse(
         memberId = member.id,

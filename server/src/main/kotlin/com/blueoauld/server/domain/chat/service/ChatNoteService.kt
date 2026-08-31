@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
 import com.blueoauld.server.global.exception.BusinessException
@@ -33,9 +34,7 @@ class ChatNoteService(
             throw BusinessException(ErrorCode.SELF_NOTE)
         }
 
-        val receiver = memberRepository.findById(receiverId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        val receiver = memberRepository.getMember(receiverId)
 
         if (isBlocked(senderId, receiverId)) {
             throw BusinessException(ErrorCode.NOTE_BLOCKED)

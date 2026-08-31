@@ -91,6 +91,8 @@ class Member(
         const val NICKNAME_PATTERN = "^[가-힣ㄱ-ㅎㅏ-ㅣぁ-ゖァ-ヺー々一-龯a-zA-Z0-9 ]+$"
         const val COMMENT_MAX_LENGTH = 100
         const val BIO_MAX_LENGTH = 1000
+        const val PASSWORD_MIN_LENGTH = 8
+        const val PASSWORD_MAX_LENGTH = 30
 
         fun generateNickname() = UUID.randomUUID().toString().replace("-", "").take(NICKNAME_MAX_LENGTH)
     }

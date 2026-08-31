@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.suspension.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
@@ -32,7 +33,7 @@ class MemberSuspensionService(
         days: Long?,
         detail: String?,
     ): SuspensionDetail {
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
         val now = clock.instant()
 
         if (findActiveOf(memberId, type, now).isNotEmpty()) {
@@ -56,7 +57,7 @@ class MemberSuspensionService(
 
     @Transactional
     fun release(memberId: Long, type: SuspensionType): List<SuspensionDetail> {
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
         val now = clock.instant()
         val suspensions = findActiveOf(memberId, type, now)
 
@@ -78,10 +79,6 @@ class MemberSuspensionService(
     @Transactional(readOnly = true)
     fun findActive(memberId: Long): List<MemberSuspension> =
         memberSuspensionRepository.findActive(memberId, clock.instant())
-
-    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
 
     private fun evict(suspension: MemberSuspension) {
         suspendedMemberCache.evict(suspension.memberId)

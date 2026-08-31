@@ -5,9 +5,9 @@ import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
-import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension

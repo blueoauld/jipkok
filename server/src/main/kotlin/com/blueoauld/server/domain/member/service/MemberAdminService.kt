@@ -7,8 +7,7 @@ import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.exception.BusinessException
-import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.context.ApplicationEventPublisher
@@ -26,7 +25,7 @@ class MemberAdminService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findNickname(memberId: Long): String = findMember(memberId).nickname
+    fun findNickname(memberId: Long): String = memberRepository.getMember(memberId).nickname
 
     @Transactional(readOnly = true)
     fun findNicknames(memberIds: Collection<Long>): Map<Long, String> {
@@ -58,7 +57,7 @@ class MemberAdminService(
 
     @Transactional
     fun resetProfile(memberId: Long, target: ProfileTarget) {
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
 
         when (target) {
             ProfileTarget.NICKNAME -> resetNickname(member)
@@ -83,10 +82,6 @@ class MemberAdminService(
 
         memberPhotoRepository.deleteAll(photos)
         eventPublisher.publishEvent(PhotosDeletedEvent(photos.map { it.objectKey }))
-    }
-
-    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
     companion object {

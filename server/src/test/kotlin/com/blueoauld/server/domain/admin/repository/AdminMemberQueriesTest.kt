@@ -3,7 +3,6 @@ package com.blueoauld.server.domain.admin.repository
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
-import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType

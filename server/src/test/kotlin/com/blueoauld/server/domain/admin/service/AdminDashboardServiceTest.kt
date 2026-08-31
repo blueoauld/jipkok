@@ -5,7 +5,7 @@ import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.PlatformCount
 import com.blueoauld.server.domain.admin.dto.VersionCount
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.entity.Report
@@ -28,7 +28,7 @@ import java.time.ZoneOffset
 
 class AdminDashboardServiceTest {
 
-    private val memberRepository = mockk<MemberRepository>()
+    private val memberAdminRepository = mockk<MemberAdminRepository>()
 
     private val memberAdminService = mockk<MemberAdminService>()
 
@@ -39,7 +39,7 @@ class AdminDashboardServiceTest {
     private val accessLogRepository = mockk<AccessLogRepository>()
 
     private val adminDashboardService = AdminDashboardService(
-        memberRepository,
+        memberAdminRepository,
         memberAdminService,
         reportRepository,
         memberSuspensionRepository,
@@ -52,8 +52,8 @@ class AdminDashboardServiceTest {
         // given
         every { reportRepository.countByHandledAtIsNull() } returns 7
         every { memberSuspensionRepository.countSuspendedMembers(NOW) } returns 12
-        every { memberRepository.countCreatedSince(TODAY_START) } returns 41
-        every { memberRepository.countDeletedSince(TODAY_START) } returns 6
+        every { memberAdminRepository.countCreatedSince(TODAY_START) } returns 41
+        every { memberAdminRepository.countDeletedSince(TODAY_START) } returns 6
 
         // when
         val summary = adminDashboardService.findSummary()
@@ -68,8 +68,8 @@ class AdminDashboardServiceTest {
     @Test
     fun `추이는 14일을 채우고 집계가 없는 날은 0으로 둔다`() {
         // given
-        every { memberRepository.countDailyCreatedSince(any()) } returns listOf(dailyCount(TODAY, 5))
-        every { memberRepository.countDailyDeletedSince(any()) } returns listOf(dailyCount(TODAY.minusDays(1), 2))
+        every { memberAdminRepository.countDailyCreatedSince(any()) } returns listOf(dailyCount(TODAY, 5))
+        every { memberAdminRepository.countDailyDeletedSince(any()) } returns listOf(dailyCount(TODAY.minusDays(1), 2))
         every { reportRepository.countDailyCreatedSince(any()) } returns emptyList()
 
         // when
@@ -106,7 +106,7 @@ class AdminDashboardServiceTest {
     @Test
     fun `회원 구성은 나이 구간별로 성별 수를 묶는다`() {
         // given
-        every { memberRepository.countByGenderAndBirthYear() } returns listOf(
+        every { memberAdminRepository.countByGenderAndBirthYear() } returns listOf(
             genderBirthYearCount("MALE", CURRENT_YEAR - 22, 3),
             genderBirthYearCount("MALE", CURRENT_YEAR - 24, 4),
             genderBirthYearCount("FEMALE", CURRENT_YEAR - 27, 5),
@@ -135,7 +135,7 @@ class AdminDashboardServiceTest {
     @Test
     fun `20대 미만 회원이 있으면 구간을 추가한다`() {
         // given
-        every { memberRepository.countByGenderAndBirthYear() } returns listOf(
+        every { memberAdminRepository.countByGenderAndBirthYear() } returns listOf(
             genderBirthYearCount("FEMALE", CURRENT_YEAR - 19, 2),
         )
 
@@ -150,7 +150,7 @@ class AdminDashboardServiceTest {
     @Test
     fun `회원 구성은 캐시한다`() {
         // given
-        every { memberRepository.countByGenderAndBirthYear() } returns listOf(
+        every { memberAdminRepository.countByGenderAndBirthYear() } returns listOf(
             genderBirthYearCount("MALE", CURRENT_YEAR - 24, 4),
         )
 
@@ -160,7 +160,7 @@ class AdminDashboardServiceTest {
 
         // then
         assertThat(demographics.male).isEqualTo(4)
-        verify(exactly = 1) { memberRepository.countByGenderAndBirthYear() }
+        verify(exactly = 1) { memberAdminRepository.countByGenderAndBirthYear() }
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.repository.MemberListRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
@@ -37,7 +38,7 @@ class MemberListService(
     ): ScrollResponse<MemberListItemResponse> {
         val pageSize = CursorResponse.pageSize(size)
         val birthYears = toBirthYearRange(minAge, maxAge)
-        val member = findMember(memberId)
+        val member = memberRepository.getMember(memberId)
         val rows = findRows(member, sort, gender, birthYears, MemberListCursor.decode(cursor), pageSize)
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
@@ -118,10 +119,6 @@ class MemberListService(
                 )
             }
         }
-    }
-
-    private fun findMember(memberId: Long): Member = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
     private data class BirthYearRange(

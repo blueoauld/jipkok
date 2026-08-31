@@ -115,19 +115,6 @@ class MemberTextModerationServiceTest {
     }
 
     @Test
-    fun `검수기가 없으면 아무것도 하지 않는다`() {
-        // given
-
-        // when
-        MemberTextModerationService(memberRepository, memberTextBlocker, eventPublisher, null)
-            .moderate(MemberTextChangedEvent(MEMBER_ID))
-
-        // then
-        verify(exactly = 0) { memberRepository.findById(any()) }
-        verify(exactly = 0) { memberTextBlocker.block(any(), any()) }
-    }
-
-    @Test
     fun `비어 있는 글은 검수하지 않는다`() {
         // given
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member().apply { comment = null })

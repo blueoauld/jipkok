@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.access.service.AccessLogService
 import com.blueoauld.server.domain.access.service.AccessRewardService
 import com.blueoauld.server.domain.member.dto.request.HeartbeatRequest
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -28,9 +29,7 @@ class MemberHeartbeatService(
         ipAddress: String,
         appVersion: String?,
     ): PointRewardResponse {
-        val member = memberRepository.findById(memberId).orElseThrow {
-            BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        val member = memberRepository.getMember(memberId)
 
         if ((request.latitude == null) != (request.longitude == null)) {
             throw BusinessException(ErrorCode.INVALID_LOCATION)

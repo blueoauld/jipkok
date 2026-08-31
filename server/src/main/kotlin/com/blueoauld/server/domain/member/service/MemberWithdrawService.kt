@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
@@ -16,8 +17,6 @@ import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepos
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
-import com.blueoauld.server.global.exception.BusinessException
-import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -44,8 +43,7 @@ class MemberWithdrawService(
 
     @Transactional
     fun withdraw(memberId: Long) {
-        val member = memberRepository.findById(memberId)
-            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+        val member = memberRepository.getMember(memberId)
 
         leaveRooms(memberId)
         feedPostRepository.deleteAllByMemberId(memberId)

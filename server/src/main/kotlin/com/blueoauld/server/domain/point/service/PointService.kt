@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.point.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.point.dto.response.PointHistoryResponse
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.point.entity.PointHistory
@@ -56,8 +57,7 @@ class PointService(
     }
 
     @Transactional(readOnly = true)
-    fun findBalance(memberId: Long) = memberRepository.findById(memberId)
-        .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+    fun findBalance(memberId: Long) = memberRepository.getMember(memberId)
         .pointBalance
 
     @Transactional(readOnly = true)

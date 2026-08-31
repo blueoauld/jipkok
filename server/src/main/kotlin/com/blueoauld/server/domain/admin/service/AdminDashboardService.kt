@@ -14,8 +14,8 @@ import com.blueoauld.server.domain.admin.dto.response.RecentReportResponse
 import com.blueoauld.server.domain.admin.dto.response.RecentSuspensionResponse
 import com.blueoauld.server.domain.admin.dto.response.TrendPointResponse
 import com.blueoauld.server.domain.admin.dto.response.VersionCountResponse
+import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
-import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.repository.ReportRepository
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference
 @Service
 class AdminDashboardService(
 
-    private val memberRepository: MemberRepository,
+    private val memberAdminRepository: MemberAdminRepository,
     private val memberAdminService: MemberAdminService,
     private val reportRepository: ReportRepository,
     private val memberSuspensionRepository: MemberSuspensionRepository,
@@ -51,8 +51,8 @@ class AdminDashboardService(
         return DashboardSummaryResponse(
             pendingMemberReports = reportRepository.countByHandledAtIsNull(),
             suspendedMembers = memberSuspensionRepository.countSuspendedMembers(clock.instant()),
-            todaySignups = memberRepository.countCreatedSince(todayStart),
-            todayWithdrawals = memberRepository.countDeletedSince(todayStart),
+            todaySignups = memberAdminRepository.countCreatedSince(todayStart),
+            todayWithdrawals = memberAdminRepository.countDeletedSince(todayStart),
         )
     }
 
@@ -61,8 +61,8 @@ class AdminDashboardService(
         val startDate = clock.today().minusDays(TREND_DAYS - 1L)
         val start = startDate.atStartOfDay(KOREA).toInstant()
 
-        val signups = memberRepository.countDailyCreatedSince(start).toMap()
-        val withdrawals = memberRepository.countDailyDeletedSince(start).toMap()
+        val signups = memberAdminRepository.countDailyCreatedSince(start).toMap()
+        val withdrawals = memberAdminRepository.countDailyDeletedSince(start).toMap()
         val reports = reportRepository.countDailyCreatedSince(start).toMap()
 
         return dates(startDate).map {
@@ -118,7 +118,7 @@ class AdminDashboardService(
             ?.takeIf { it.cachedAt.plus(DEMOGRAPHICS_TTL).isAfter(now) }
             ?.let { return it.rows }
 
-        val rows = memberRepository.countByGenderAndBirthYear()
+        val rows = memberAdminRepository.countByGenderAndBirthYear()
         demographicsCache.set(CachedDemographics(now, rows))
 
         return rows

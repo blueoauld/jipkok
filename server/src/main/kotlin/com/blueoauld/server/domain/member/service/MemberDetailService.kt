@@ -6,9 +6,11 @@ import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.dto.response.MemberDetailResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.profileview.event.ProfileViewedEvent
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -40,8 +42,8 @@ class MemberDetailService(
             throw BusinessException(ErrorCode.SELF_MEMBER_DETAIL)
         }
 
-        val me = findMember(memberId)
-        val target = findMember(targetId)
+        val me = memberRepository.getMember(memberId)
+        val target = memberRepository.getMember(targetId)
         val blockedByThem = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(targetId, memberId)
         val blockedByMe = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(memberId, targetId)
         val photos = memberPhotoRepository.findAllByMemberId(targetId)
@@ -72,8 +74,7 @@ class MemberDetailService(
     }
 
     private fun publicPhotoUrls(photos: List<MemberPhoto>) = photos
-        .filter { it.visibility == PhotoVisibility.PUBLIC }
-        .sortedBy { it.displayOrder }
+        .displayOrdered(PhotoVisibility.PUBLIC)
         .map { photoStorage.toPublicUrl(it.objectKey) }
 
     private fun distanceBetween(me: Member, target: Member): Double? {
@@ -83,9 +84,5 @@ class MemberDetailService(
         val targetLongitude = target.longitude ?: return null
 
         return sphericalDistanceMeters(myLatitude, myLongitude, targetLatitude, targetLongitude)
-    }
-
-    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
     }
 }

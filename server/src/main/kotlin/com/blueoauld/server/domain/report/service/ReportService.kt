@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
@@ -59,8 +60,8 @@ class ReportService(
             throw BusinessException(ErrorCode.SELF_REPORT)
         }
 
-        val reporter = findMember(reporterId)
-        val reported = findMember(request.reportedMemberId)
+        val reporter = memberRepository.getMember(reporterId)
+        val reported = memberRepository.getMember(request.reportedMemberId)
 
         validatePhotoKeys(reporterId, request.photoKeys)
 
@@ -197,10 +198,6 @@ class ReportService(
         copies = (profilePhotoKeys + messages.mapNotNull { it.objectKey })
             .map { PhotoCopy(it, snapshotKeyOf(reportId, it)) },
     )
-
-    private fun findMember(memberId: Long) = memberRepository.findById(memberId).orElseThrow {
-        BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
 
     private fun validatePhotoKeys(reporterId: Long, objectKeys: List<String>) {
         val prefix = evidenceKeyPrefix(reporterId)

@@ -20,23 +20,21 @@ class MemberTextModerationService(
     private val memberRepository: MemberRepository,
     private val memberTextBlocker: MemberTextBlocker,
     private val eventPublisher: ApplicationEventPublisher,
-    private val textModerator: TextModerator?,
+    private val textModerator: TextModerator,
 ) {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun moderate(event: MemberTextChangedEvent) {
-        val moderator = textModerator ?: return
         val member = memberRepository.findById(event.memberId).orElse(null) ?: return
 
         runCatching {
-            blockIfNeeded(moderator, event.memberId, member.nickname, TextTarget.COMMENT, member.comment)
-            blockIfNeeded(moderator, event.memberId, member.nickname, TextTarget.BIO, member.bio)
+            blockIfNeeded(event.memberId, member.nickname, TextTarget.COMMENT, member.comment)
+            blockIfNeeded(event.memberId, member.nickname, TextTarget.BIO, member.bio)
         }.onFailure { log.error(it) { "글을 검수하지 못했다. memberId=${event.memberId}" } }
     }
 
     private fun blockIfNeeded(
-        moderator: TextModerator,
         memberId: Long,
         nickname: String,
         target: TextTarget,
@@ -46,7 +44,7 @@ class MemberTextModerationService(
             return
         }
 
-        val result = moderator.moderate(text)
+        val result = textModerator.moderate(text)
 
         if (!result.inappropriate) {
             return

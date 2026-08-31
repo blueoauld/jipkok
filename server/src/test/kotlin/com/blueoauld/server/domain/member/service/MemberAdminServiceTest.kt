@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.admin.dto.MemberNickname
+import com.blueoauld.server.domain.member.dto.projection.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender

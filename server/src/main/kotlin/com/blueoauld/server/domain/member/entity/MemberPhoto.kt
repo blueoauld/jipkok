@@ -48,3 +48,6 @@ class MemberPhoto(
         const val MAX_COUNT_PER_VISIBILITY = 6
     }
 }
+
+fun List<MemberPhoto>.displayOrdered(visibility: PhotoVisibility): List<MemberPhoto> =
+    filter { it.visibility == visibility }.sortedBy { it.displayOrder }

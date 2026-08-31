@@ -7,9 +7,9 @@ import com.blueoauld.server.domain.admin.dto.response.AdminMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
-import com.blueoauld.server.domain.member.repository.MemberAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository

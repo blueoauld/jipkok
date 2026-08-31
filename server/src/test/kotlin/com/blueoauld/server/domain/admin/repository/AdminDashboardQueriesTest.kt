@@ -35,6 +35,9 @@ class AdminDashboardQueriesTest {
     private lateinit var memberRepository: MemberRepository
 
     @Autowired
+    private lateinit var memberAdminRepository: MemberAdminRepository
+
+    @Autowired
     private lateinit var reportRepository: ReportRepository
 
     @Autowired
@@ -55,7 +58,7 @@ class AdminDashboardQueriesTest {
         setCreatedAt("member", boundaryId, Instant.parse("2026-08-19T15:30:00Z"))
 
         // when
-        val counts = memberRepository.countDailyCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
+        val counts = memberAdminRepository.countDailyCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
 
         // then
         val byDay = counts.associate { it.day to it.count }
@@ -72,7 +75,7 @@ class AdminDashboardQueriesTest {
         setCreatedAt("member", afterId, Instant.parse("2026-08-19T00:00:00Z"))
 
         // when
-        val count = memberRepository.countCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
+        val count = memberAdminRepository.countCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
 
         // then
         assertThat(count).isEqualTo(1)
@@ -86,8 +89,8 @@ class AdminDashboardQueriesTest {
         entityManager.flush()
 
         // when
-        val count = memberRepository.countDeletedSince(Instant.now().minusSeconds(60))
-        val daily = memberRepository.countDailyDeletedSince(Instant.now().minusSeconds(60))
+        val count = memberAdminRepository.countDeletedSince(Instant.now().minusSeconds(60))
+        val daily = memberAdminRepository.countDailyDeletedSince(Instant.now().minusSeconds(60))
 
         // then
         assertThat(count).isEqualTo(1)
@@ -104,7 +107,7 @@ class AdminDashboardQueriesTest {
         entityManager.flush()
 
         // when
-        val rows = memberRepository.countByGenderAndBirthYear()
+        val rows = memberAdminRepository.countByGenderAndBirthYear()
 
         // then
         val row1998 = rows.filter { it.birthYear == 1998 }
