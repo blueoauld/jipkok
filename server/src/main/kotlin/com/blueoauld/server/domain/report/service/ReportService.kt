@@ -3,7 +3,9 @@ package com.blueoauld.server.domain.report.service
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.chat.repository.getRoomOf
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -65,7 +67,7 @@ class ReportService(
 
         validatePhotoKeys(reporterId, request.photoKeys)
 
-        val room = request.roomId?.let { findRoom(reporterId, it) }
+        val room = request.roomId?.let { chatRoomRepository.getRoomOf(reporterId, it) }
         val report = reportRepository.save(
             Report(
                 reporterId = reporterId,
@@ -145,18 +147,13 @@ class ReportService(
     fun createPhotoUploadUrl(reporterId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
         photoUploadService.createUploadUrl(reporterId, evidenceKeyPrefix(reporterId), request.contentType)
 
-    private fun findRoom(reporterId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
-        .filter { it.contains(reporterId) }
-        .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
-
     private fun findMessages(roomId: Long) =
         chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(roomId, Long.MAX_VALUE, Limit.of(MESSAGE_COUNT))
             .asReversed()
 
     private fun findPublicPhotoKeys(reportedMemberId: Long) =
         memberPhotoRepository.findAllByMemberId(reportedMemberId)
-            .filter { it.visibility == PhotoVisibility.PUBLIC }
-            .sortedBy { it.displayOrder }
+            .displayOrdered(PhotoVisibility.PUBLIC)
             .map { it.objectKey }
 
     private fun toSnapshot(

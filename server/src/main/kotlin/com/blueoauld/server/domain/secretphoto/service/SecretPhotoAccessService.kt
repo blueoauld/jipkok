@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.secretphoto.service
 
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -62,8 +63,7 @@ class SecretPhotoAccessService(
         }
 
         return memberPhotoRepository.findAllByMemberId(ownerId)
-            .filter { it.visibility == PhotoVisibility.SECRET }
-            .sortedBy { it.displayOrder }
+            .displayOrdered(PhotoVisibility.SECRET)
             .map { photoStorage.createSignedViewUrl(it.objectKey) }
     }
 
