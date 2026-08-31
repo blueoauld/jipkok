@@ -6,13 +6,12 @@ import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger {}
 
 @Component
-@ConditionalOnExpression("!'\${discord.token:}'.isEmpty()")
+@ConditionalOnDiscord
 class DiscordBot(
 
     discordProperties: DiscordProperties,
@@ -21,10 +20,12 @@ class DiscordBot(
     private val jda: JDA = JDABuilder.createLight(discordProperties.token).build()
 
     fun send(channelId: String, embeds: List<MessageEmbed>) {
-        jda.getTextChannelById(channelId)
-            ?.sendMessageEmbeds(embeds)
-            ?.queue()
-            ?: log.error { "채널을 찾지 못했다. channelId=$channelId, status=${jda.status}" }
+        runCatching {
+            jda.getTextChannelById(channelId)
+                ?.sendMessageEmbeds(embeds)
+                ?.queue()
+                ?: log.error { "채널을 찾지 못했다. channelId=$channelId, status=${jda.status}" }
+        }.onFailure { log.error(it) { "알림을 보내지 못했다. title=${embeds.firstOrNull()?.title}" } }
     }
 
     @PreDestroy

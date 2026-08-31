@@ -14,7 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 
 @Component
-@ConditionalOnExpression("!'\${discord.token:}'.isEmpty() && !'\${discord.error-channel-id:}'.isEmpty()")
+@ConditionalOnDiscord
+@ConditionalOnExpression("!'\${discord.error-channel-id:}'.isEmpty()")
 class ErrorLogNotifier(
 
     private val discordBot: DiscordBot,

@@ -1,19 +1,16 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.event.MemberTextBlockedEvent
+import com.blueoauld.server.global.discord.ConditionalOnDiscord
 import com.blueoauld.server.global.discord.DiscordBot
 import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
-private val log = KotlinLogging.logger {}
-
 @Component
-@ConditionalOnExpression("!'\${discord.token:}'.isEmpty()")
+@ConditionalOnDiscord
 class ModerationNotifier(
 
     private val discordBot: DiscordBot,
@@ -22,8 +19,7 @@ class ModerationNotifier(
 
     @EventListener
     fun notifyBlocked(event: MemberTextBlockedEvent) {
-        runCatching { discordBot.send(discordProperties.moderationChannelId, toEmbeds(event)) }
-            .onFailure { log.error(it) { "검수 결과를 알리지 못했다. memberId=${event.memberId}" } }
+        discordBot.send(discordProperties.moderationChannelId, toEmbeds(event))
     }
 
     private fun toEmbeds(event: MemberTextBlockedEvent): List<MessageEmbed> {

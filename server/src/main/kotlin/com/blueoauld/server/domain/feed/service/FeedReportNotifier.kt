@@ -2,21 +2,18 @@ package com.blueoauld.server.domain.feed.service
 
 import com.blueoauld.server.domain.feed.event.FeedPostAutoDeletedEvent
 import com.blueoauld.server.domain.member.service.MemberAdminService
+import com.blueoauld.server.global.discord.ConditionalOnDiscord
 import com.blueoauld.server.global.discord.DiscordBot
 import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
-private val log = KotlinLogging.logger {}
-
 @Component
-@ConditionalOnExpression("!'\${discord.token:}'.isEmpty()")
+@ConditionalOnDiscord
 class FeedReportNotifier(
 
     private val discordBot: DiscordBot,
@@ -27,8 +24,7 @@ class FeedReportNotifier(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun notifyAutoDeleted(event: FeedPostAutoDeletedEvent) {
-        runCatching { discordBot.send(discordProperties.reportChannelId, toEmbeds(event)) }
-            .onFailure { log.error(it) { "피드 삭제를 알리지 못했다. postId=${event.postId}" } }
+        discordBot.send(discordProperties.reportChannelId, toEmbeds(event))
     }
 
     private fun toEmbeds(event: FeedPostAutoDeletedEvent): List<MessageEmbed> {

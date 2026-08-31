@@ -5,20 +5,17 @@ import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.event.ReportCreatedEvent
+import com.blueoauld.server.global.discord.ConditionalOnDiscord
 import com.blueoauld.server.global.discord.DiscordBot
 import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
-private val log = KotlinLogging.logger {}
-
 @Component
-@ConditionalOnExpression("!'\${discord.token:}'.isEmpty()")
+@ConditionalOnDiscord
 class ReportNotifier(
 
     private val discordBot: DiscordBot,
@@ -27,8 +24,7 @@ class ReportNotifier(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun notifyCreated(event: ReportCreatedEvent) {
-        runCatching { discordBot.send(discordProperties.reportChannelId, toEmbeds(event)) }
-            .onFailure { log.error(it) { "신고를 알리지 못했다. reportId=${event.reportId}" } }
+        discordBot.send(discordProperties.reportChannelId, toEmbeds(event))
     }
 
     private fun toEmbeds(event: ReportCreatedEvent): List<MessageEmbed> {
