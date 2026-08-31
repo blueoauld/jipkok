@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
@@ -28,7 +29,7 @@ class ReportCleaner(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUpOldReports() {
         val reportIds = reportRepository.findHandledIdsCreatedBefore(clock.instant().minus(RETENTION))
@@ -64,6 +65,5 @@ class ReportCleaner(
         val RETENTION: Duration = Duration.ofDays(90)
 
         private const val CLEAN_UP_CRON = "0 45 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

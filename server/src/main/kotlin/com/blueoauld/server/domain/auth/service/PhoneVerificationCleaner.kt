@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.repository.PhoneVerificationRepository
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ class PhoneVerificationCleaner(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUp() {
         val removed = phoneVerificationRepository.deleteAllIssuedBefore(clock.instant().minus(RETENTION))
@@ -32,6 +33,5 @@ class PhoneVerificationCleaner(
         val RETENTION: Duration = Duration.ofDays(90)
 
         private const val CLEAN_UP_CRON = "0 55 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

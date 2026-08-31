@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -29,7 +30,7 @@ class WorryCleaner(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUp() {
         val threshold = clock.instant().minus(RETENTION)
@@ -80,6 +81,5 @@ class WorryCleaner(
         val RETENTION: Duration = Duration.ofDays(90)
 
         private const val CLEAN_UP_CRON = "0 45 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

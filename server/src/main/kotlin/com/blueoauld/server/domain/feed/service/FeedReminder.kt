@@ -3,12 +3,13 @@ package com.blueoauld.server.domain.feed.service
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
+import com.blueoauld.server.global.time.KOREA
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 private val log = KotlinLogging.logger {}
@@ -22,7 +23,7 @@ class FeedReminder(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = REMIND_CRON, zone = KOREA)
+    @Scheduled(cron = REMIND_CRON, zone = KOREA_ID)
     fun remind() {
         val now = clock.instant()
         val targets = memberRepository.findFeedReminderTargets(now.truncatedTo(ChronoUnit.HOURS), now)
@@ -60,9 +61,8 @@ class FeedReminder(
 
         const val BODY_COUNT = 5
 
-        fun bodyCodeOf(now: Instant) = "push.feed.body.${now.atZone(ZoneId.of(KOREA)).hour % BODY_COUNT}"
+        fun bodyCodeOf(now: Instant) = "push.feed.body.${now.atZone(KOREA).hour % BODY_COUNT}"
 
         private const val REMIND_CRON = "0 0 9-21/3 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

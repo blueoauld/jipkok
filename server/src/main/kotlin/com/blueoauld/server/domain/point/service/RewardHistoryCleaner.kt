@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.point.service
 import com.blueoauld.server.domain.access.repository.AccessRewardRepository
 import com.blueoauld.server.domain.ad.repository.AdRewardRepository
 import com.blueoauld.server.domain.attendance.repository.AttendanceRepository
+import com.blueoauld.server.global.time.KOREA_ID
 import com.blueoauld.server.global.time.today
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,7 +23,7 @@ class RewardHistoryCleaner(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUp() {
         val threshold = clock.today().minus(RETENTION)
@@ -41,6 +42,5 @@ class RewardHistoryCleaner(
         val RETENTION: Period = Period.ofDays(90)
 
         private const val CLEAN_UP_CRON = "0 55 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

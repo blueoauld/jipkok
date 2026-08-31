@@ -4,7 +4,9 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 
-val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
+const val KOREA_ID = "Asia/Seoul"
+
+val KOREA: ZoneId = ZoneId.of(KOREA_ID)
 
 fun Clock.today(): LocalDate = LocalDate.now(withZone(KOREA))
 

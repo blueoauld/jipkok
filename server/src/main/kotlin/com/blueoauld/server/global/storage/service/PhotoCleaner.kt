@@ -2,6 +2,7 @@ package com.blueoauld.server.global.storage.service
 
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
@@ -31,7 +32,7 @@ class PhotoCleaner(
             .onFailure { log.error(it) { "사진을 지우지 못했다. objectKeys=${event.objectKeys}" } }
     }
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUpAbandonedUploads() {
         val abandoned = photoUploadRepository.findAllByIssuedAtLessThan(clock.instant().minus(RETENTION))
@@ -50,6 +51,5 @@ class PhotoCleaner(
         val RETENTION: Duration = Duration.ofDays(1)
 
         private const val CLEAN_UP_CRON = "0 0 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }

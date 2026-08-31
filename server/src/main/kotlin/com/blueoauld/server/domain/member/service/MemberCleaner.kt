@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
@@ -24,7 +25,7 @@ class MemberCleaner(
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA)
+    @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional
     fun cleanUpWithdrawnMembers() {
         val memberIds = memberRepository.findIdsDeletedBefore(clock.instant().minus(RETENTION))
@@ -51,6 +52,5 @@ class MemberCleaner(
         val RETENTION: Duration = Duration.ofDays(90)
 
         private const val CLEAN_UP_CRON = "0 40 4 * * *"
-        private const val KOREA = "Asia/Seoul"
     }
 }
