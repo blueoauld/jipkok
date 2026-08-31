@@ -6,10 +6,8 @@ import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.FeedAdminRepository
-import com.blueoauld.server.domain.feed.repository.FeedPostRepository
+import com.blueoauld.server.domain.feed.service.FeedPostService
 import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.global.exception.BusinessException
-import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class AdminFeedService(
 
     private val feedAdminRepository: FeedAdminRepository,
-    private val feedPostRepository: FeedPostRepository,
+    private val feedPostService: FeedPostService,
     private val memberAdminService: MemberAdminService,
     private val photoStorage: PhotoStorage,
     private val adminActionRecorder: AdminActionRecorder,
@@ -78,11 +76,7 @@ class AdminFeedService(
 
     @Transactional
     fun deletePost(actorId: Long, postId: Long) {
-        val post = feedPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
-        }
-
-        feedPostRepository.delete(post)
+        feedPostService.deleteByAdmin(postId)
         adminActionRecorder.record(actorId, AdminActionType.DELETE_FEED_POST, postId)
     }
 }

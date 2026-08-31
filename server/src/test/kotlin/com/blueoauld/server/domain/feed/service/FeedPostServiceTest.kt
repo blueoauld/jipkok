@@ -23,6 +23,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.util.*
 
 class FeedPostServiceTest {
 
@@ -138,6 +139,33 @@ class FeedPostServiceTest {
     }
 
     @Test
+    fun `관리자 삭제는 게시물을 소프트 삭제한다`() {
+        // given
+        val post = FeedPost(memberId = MEMBER_ID, slotAt = NOW, objectKey = photoKey())
+        every { feedPostRepository.findById(POST_ID) } returns Optional.of(post)
+
+        // when
+        feedPostService.deleteByAdmin(POST_ID)
+
+        // then
+        verify { feedPostRepository.delete(post) }
+    }
+
+    @Test
+    fun `없는 게시물은 관리자도 지울 수 없다`() {
+        // given
+        every { feedPostRepository.findById(POST_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            feedPostService.deleteByAdmin(POST_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.FEED_POST_NOT_FOUND)
+    }
+
+    @Test
     fun `업로드 URL은 피드 폴더 아래로 발급한다`() {
         // given
         val prefix = slot<String>()
@@ -160,6 +188,7 @@ class FeedPostServiceTest {
     companion object {
 
         private const val MEMBER_ID = 1L
+        private const val POST_ID = 10L
 
         private val NOW: Instant = Instant.parse("2026-08-02T05:37:12Z")
     }

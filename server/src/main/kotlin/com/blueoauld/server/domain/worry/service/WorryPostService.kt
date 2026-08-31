@@ -131,15 +131,22 @@ class WorryPostService(
 
     @Transactional
     fun delete(memberId: Long, postId: Long) {
-        val post = worryPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
-        }
+        val post = findPost(postId)
 
         if (post.memberId != memberId) {
             throw BusinessException(ErrorCode.NOT_WORRY_POST_AUTHOR)
         }
 
         worryPostRepository.delete(post)
+    }
+
+    @Transactional
+    fun deleteByAdmin(postId: Long) {
+        worryPostRepository.delete(findPost(postId))
+    }
+
+    private fun findPost(postId: Long) = worryPostRepository.findById(postId).orElseThrow {
+        BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
     }
 
     private fun emptyPage() = CursorResponse<WorryPostResponse>(emptyList(), null)

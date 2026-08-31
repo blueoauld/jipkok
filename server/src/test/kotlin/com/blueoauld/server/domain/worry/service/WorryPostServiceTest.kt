@@ -139,6 +139,19 @@ class WorryPostServiceTest {
     }
 
     @Test
+    fun `관리자 삭제는 작성자 검사 없이 지운다`() {
+        // given
+        val post = post(OTHER_MEMBER_ID)
+        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post)
+
+        // when
+        worryPostService.deleteByAdmin(POST_ID)
+
+        // then
+        verify { worryPostRepository.delete(post) }
+    }
+
+    @Test
     fun `남의 글은 지울 수 없다`() {
         // given
         every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(OTHER_MEMBER_ID))

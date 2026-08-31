@@ -106,6 +106,15 @@ class FeedPostService(
         photoUploadService.confirm(listOf(request.objectKey))
     }
 
+    @Transactional
+    fun deleteByAdmin(postId: Long) {
+        val post = feedPostRepository.findById(postId).orElseThrow {
+            BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
+        }
+
+        feedPostRepository.delete(post)
+    }
+
     fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
         photoUploadService.createUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
 

@@ -73,14 +73,25 @@ class WorryCommentService(
 
     @Transactional
     fun delete(memberId: Long, commentId: Long) {
-        val comment = worryCommentRepository.findById(commentId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
-        }
+        val comment = findComment(commentId)
 
         if (comment.memberId != memberId) {
             throw BusinessException(ErrorCode.NOT_WORRY_COMMENT_AUTHOR)
         }
 
+        remove(comment)
+    }
+
+    @Transactional
+    fun deleteByAdmin(commentId: Long) {
+        remove(findComment(commentId))
+    }
+
+    private fun findComment(commentId: Long) = worryCommentRepository.findById(commentId).orElseThrow {
+        BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
+    }
+
+    private fun remove(comment: WorryComment) {
         worryCommentRepository.delete(comment)
         worryPostRepository.decreaseCommentCount(comment.postId)
     }

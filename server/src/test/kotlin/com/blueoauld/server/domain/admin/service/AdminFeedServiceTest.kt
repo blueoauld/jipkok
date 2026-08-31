@@ -4,8 +4,7 @@ import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
 import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.FeedAdminRepository
-import com.blueoauld.server.domain.feed.entity.FeedPost
-import com.blueoauld.server.domain.feed.repository.FeedPostRepository
+import com.blueoauld.server.domain.feed.service.FeedPostService
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -18,13 +17,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.util.*
 
 class AdminFeedServiceTest {
 
     private val feedAdminRepository = mockk<FeedAdminRepository>()
 
-    private val feedPostRepository = mockk<FeedPostRepository>()
+    private val feedPostService = mockk<FeedPostService>()
 
     private val memberAdminService = mockk<MemberAdminService>()
 
@@ -34,7 +32,7 @@ class AdminFeedServiceTest {
 
     private val adminFeedService = AdminFeedService(
         feedAdminRepository,
-        feedPostRepository,
+        feedPostService,
         memberAdminService,
         photoStorage,
         adminActionRecorder,
@@ -66,24 +64,22 @@ class AdminFeedServiceTest {
     }
 
     @Test
-    fun `게시물 삭제는 소프트 삭제로 위임한다`() {
+    fun `게시물 삭제는 도메인 서비스에 위임하고 기록한다`() {
         // given
-        val post = FeedPost(memberId = 1, slotAt = NOW, objectKey = "feeds/1/photo.jpg")
-        every { feedPostRepository.findById(POST_ID) } returns Optional.of(post)
-        justRun { feedPostRepository.delete(post) }
+        justRun { feedPostService.deleteByAdmin(POST_ID) }
 
         // when
         adminFeedService.deletePost(ACTOR_ID, POST_ID)
 
         // then
-        verify { feedPostRepository.delete(post) }
+        verify { feedPostService.deleteByAdmin(POST_ID) }
         verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.DELETE_FEED_POST, POST_ID) }
     }
 
     @Test
-    fun `없거나 이미 삭제된 게시물이면 예외를 던진다`() {
+    fun `없거나 이미 삭제된 게시물이면 예외를 던지고 기록하지 않는다`() {
         // given
-        every { feedPostRepository.findById(POST_ID) } returns Optional.empty()
+        every { feedPostService.deleteByAdmin(POST_ID) } throws BusinessException(ErrorCode.FEED_POST_NOT_FOUND)
 
         // when
         // then
@@ -91,6 +87,8 @@ class AdminFeedServiceTest {
             .isInstanceOf(BusinessException::class.java)
             .extracting { (it as BusinessException).errorCode }
             .isEqualTo(ErrorCode.FEED_POST_NOT_FOUND)
+
+        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any(), any()) }
     }
 
     private fun postRow() = object : AdminFeedPostRow {

@@ -174,6 +174,20 @@ class WorryCommentServiceTest {
     }
 
     @Test
+    fun `관리자 삭제는 작성자 검사 없이 지우고 댓글 수를 줄인다`() {
+        // given
+        val comment = comment(OTHER_MEMBER_ID, anonymousNo = 1)
+        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment)
+
+        // when
+        worryCommentService.deleteByAdmin(COMMENT_ID)
+
+        // then
+        verify { worryCommentRepository.delete(comment) }
+        verify { worryPostRepository.decreaseCommentCount(POST_ID) }
+    }
+
+    @Test
     fun `남의 댓글은 지울 수 없다`() {
         // given
         every { worryCommentRepository.findById(COMMENT_ID) } returns

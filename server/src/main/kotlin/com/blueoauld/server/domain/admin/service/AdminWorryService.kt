@@ -9,10 +9,8 @@ import com.blueoauld.server.domain.admin.dto.response.AdminWorryReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.WorryAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
-import com.blueoauld.server.domain.worry.repository.WorryPostRepository
-import com.blueoauld.server.global.exception.BusinessException
-import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.domain.worry.service.WorryCommentService
+import com.blueoauld.server.domain.worry.service.WorryPostService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -21,8 +19,8 @@ import java.time.Instant
 class AdminWorryService(
 
     private val worryAdminRepository: WorryAdminRepository,
-    private val worryPostRepository: WorryPostRepository,
-    private val worryCommentRepository: WorryCommentRepository,
+    private val worryPostService: WorryPostService,
+    private val worryCommentService: WorryCommentService,
     private val memberAdminService: MemberAdminService,
     private val adminActionRecorder: AdminActionRecorder,
 ) {
@@ -121,22 +119,13 @@ class AdminWorryService(
 
     @Transactional
     fun deletePost(actorId: Long, postId: Long) {
-        val post = worryPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
-        }
-
-        worryPostRepository.delete(post)
+        worryPostService.deleteByAdmin(postId)
         adminActionRecorder.record(actorId, AdminActionType.DELETE_WORRY_POST, postId)
     }
 
     @Transactional
     fun deleteComment(actorId: Long, commentId: Long) {
-        val comment = worryCommentRepository.findById(commentId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
-        }
-
-        worryCommentRepository.delete(comment)
-        worryPostRepository.decreaseCommentCount(comment.postId)
+        worryCommentService.deleteByAdmin(commentId)
         adminActionRecorder.record(actorId, AdminActionType.DELETE_WORRY_COMMENT, commentId)
     }
 

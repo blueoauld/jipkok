@@ -6,11 +6,8 @@ import com.blueoauld.server.domain.admin.dto.AdminWorryReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.WorryAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.domain.worry.entity.WorryComment
-import com.blueoauld.server.domain.worry.entity.WorryPost
-import com.blueoauld.server.domain.worry.entity.type.WorryCategory
-import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
-import com.blueoauld.server.domain.worry.repository.WorryPostRepository
+import com.blueoauld.server.domain.worry.service.WorryCommentService
+import com.blueoauld.server.domain.worry.service.WorryPostService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -21,15 +18,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.util.*
 
 class AdminWorryServiceTest {
 
     private val worryAdminRepository = mockk<WorryAdminRepository>()
 
-    private val worryPostRepository = mockk<WorryPostRepository>(relaxed = true)
+    private val worryPostService = mockk<WorryPostService>()
 
-    private val worryCommentRepository = mockk<WorryCommentRepository>()
+    private val worryCommentService = mockk<WorryCommentService>()
 
     private val memberAdminService = mockk<MemberAdminService>()
 
@@ -37,8 +33,8 @@ class AdminWorryServiceTest {
 
     private val adminWorryService = AdminWorryService(
         worryAdminRepository,
-        worryPostRepository,
-        worryCommentRepository,
+        worryPostService,
+        worryCommentService,
         memberAdminService,
         adminActionRecorder,
     )
@@ -95,45 +91,35 @@ class AdminWorryServiceTest {
     }
 
     @Test
-    fun `고민 삭제는 소프트 삭제로 위임한다`() {
+    fun `고민 삭제는 도메인 서비스에 위임하고 기록한다`() {
         // given
-        val post = WorryPost(memberId = AUTHOR_ID, category = WorryCategory.WORK, content = "이직 고민")
-        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post)
-        justRun { worryPostRepository.delete(post) }
+        justRun { worryPostService.deleteByAdmin(POST_ID) }
 
         // when
         adminWorryService.deletePost(ACTOR_ID, POST_ID)
 
         // then
-        verify { worryPostRepository.delete(post) }
+        verify { worryPostService.deleteByAdmin(POST_ID) }
         verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.DELETE_WORRY_POST, POST_ID) }
     }
 
     @Test
-    fun `댓글 삭제는 글의 댓글 수도 줄인다`() {
+    fun `댓글 삭제는 도메인 서비스에 위임하고 기록한다`() {
         // given
-        val comment = WorryComment(
-            postId = POST_ID,
-            memberId = AUTHOR_ID,
-            content = "댓글 내용",
-            anonymousNo = 1,
-        )
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment)
-        justRun { worryCommentRepository.delete(comment) }
+        justRun { worryCommentService.deleteByAdmin(COMMENT_ID) }
 
         // when
         adminWorryService.deleteComment(ACTOR_ID, COMMENT_ID)
 
         // then
-        verify { worryCommentRepository.delete(comment) }
-        verify { worryPostRepository.decreaseCommentCount(POST_ID) }
+        verify { worryCommentService.deleteByAdmin(COMMENT_ID) }
         verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.DELETE_WORRY_COMMENT, COMMENT_ID) }
     }
 
     @Test
-    fun `없거나 이미 삭제된 고민이면 예외를 던진다`() {
+    fun `없거나 이미 삭제된 고민이면 예외를 던지고 기록하지 않는다`() {
         // given
-        every { worryPostRepository.findById(POST_ID) } returns Optional.empty()
+        every { worryPostService.deleteByAdmin(POST_ID) } throws BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
 
         // when
         // then
@@ -141,19 +127,8 @@ class AdminWorryServiceTest {
             .isInstanceOf(BusinessException::class.java)
             .extracting { (it as BusinessException).errorCode }
             .isEqualTo(ErrorCode.WORRY_POST_NOT_FOUND)
-    }
 
-    @Test
-    fun `없거나 이미 삭제된 댓글이면 예외를 던진다`() {
-        // given
-        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.empty()
-
-        // when
-        // then
-        assertThatThrownBy { adminWorryService.deleteComment(ACTOR_ID, COMMENT_ID) }
-            .isInstanceOf(BusinessException::class.java)
-            .extracting { (it as BusinessException).errorCode }
-            .isEqualTo(ErrorCode.WORRY_COMMENT_NOT_FOUND)
+        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any(), any()) }
     }
 
     private fun postRow() = object : AdminWorryPostRow {
