@@ -3,8 +3,8 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
 import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.FeedAdminRepository
 import com.blueoauld.server.domain.feed.entity.FeedPost
-import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.exception.BusinessException
@@ -22,7 +22,7 @@ import java.util.*
 
 class AdminFeedServiceTest {
 
-    private val feedPostReportRepository = mockk<FeedPostReportRepository>()
+    private val feedAdminRepository = mockk<FeedAdminRepository>()
 
     private val feedPostRepository = mockk<FeedPostRepository>()
 
@@ -33,7 +33,7 @@ class AdminFeedServiceTest {
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
     private val adminFeedService = AdminFeedService(
-        feedPostReportRepository,
+        feedAdminRepository,
         feedPostRepository,
         memberAdminService,
         photoStorage,
@@ -43,9 +43,9 @@ class AdminFeedServiceTest {
     @Test
     fun `목록은 피드 단위로 신고자 목록과 닉네임, 사진 URL을 채운다`() {
         // given
-        every { feedPostReportRepository.findPostsForAdmin(null, null, 20, 0) } returns listOf(postRow())
-        every { feedPostReportRepository.countPostsForAdmin(null, null) } returns 1
-        every { feedPostReportRepository.findReportersByPostIdIn(listOf(POST_ID)) } returns listOf(
+        every { feedAdminRepository.findPostsForAdmin(null, null, 20, 0) } returns listOf(postRow())
+        every { feedAdminRepository.countPostsForAdmin(null, null) } returns 1
+        every { feedAdminRepository.findReportersByPostIdIn(listOf(POST_ID)) } returns listOf(
             reporterRow(11),
             reporterRow(10),
         )

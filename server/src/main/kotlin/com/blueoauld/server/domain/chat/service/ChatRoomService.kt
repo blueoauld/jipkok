@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.chat.repository.getRoomOf
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -81,9 +82,7 @@ class ChatRoomService(
 
     @Transactional
     fun leave(memberId: Long, roomId: Long) {
-        val room = chatRoomRepository.findById(roomId)
-            .filter { it.contains(memberId) }
-            .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
+        val room = chatRoomRepository.getRoomOf(memberId, roomId)
 
         delete(room, room.partnerIdOf(memberId))
     }

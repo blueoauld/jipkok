@@ -38,24 +38,8 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.category as category,
-               p.content as content,
-               p.created_at as createdAt,
-               p.like_count as likeCount,
-               p.comment_count as commentCount,
-               exists (
-                 select 1 from worry_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from worry_post p
-        where p.deleted_at is null
-          and not exists (
-            select 1 from worry_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
-          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
+        $SELECT_ROW
+        where $VISIBLE $CATEGORY
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
         order by p.id desc
         limit :size
@@ -71,24 +55,8 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.category as category,
-               p.content as content,
-               p.created_at as createdAt,
-               p.like_count as likeCount,
-               p.comment_count as commentCount,
-               exists (
-                 select 1 from worry_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from worry_post p
-        where p.deleted_at is null
-          and not exists (
-            select 1 from worry_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
-          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
+        $SELECT_ROW
+        where $VISIBLE $CATEGORY
           and (
             cast(:cursorId as bigint) is null
             or (p.like_count, p.id) < (cast(:cursorLikeCount as integer), cast(:cursorId as bigint))
@@ -108,24 +76,8 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.category as category,
-               p.content as content,
-               p.created_at as createdAt,
-               p.like_count as likeCount,
-               p.comment_count as commentCount,
-               exists (
-                 select 1 from worry_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from worry_post p
-        where p.deleted_at is null
-          and not exists (
-            select 1 from worry_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
-          and (cast(:category as varchar) is null or p.category = cast(:category as varchar))
+        $SELECT_ROW
+        where $VISIBLE $CATEGORY
           and (
             cast(:cursorId as bigint) is null
             or (p.comment_count, p.id) < (cast(:cursorCommentCount as integer), cast(:cursorId as bigint))
@@ -145,18 +97,7 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.category as category,
-               p.content as content,
-               p.created_at as createdAt,
-               p.like_count as likeCount,
-               p.comment_count as commentCount,
-               exists (
-                 select 1 from worry_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from worry_post p
+        $SELECT_ROW
         where p.deleted_at is null
           and p.member_id = :memberId
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
@@ -173,24 +114,9 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.category as category,
-               p.content as content,
-               p.created_at as createdAt,
-               p.like_count as likeCount,
-               p.comment_count as commentCount,
-               exists (
-                 select 1 from worry_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from worry_post p
-        where p.deleted_at is null
+        $SELECT_ROW
+        where $VISIBLE
           and p.content ilike :keyword escape '\'
-          and not exists (
-            select 1 from worry_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
         order by p.id desc
         limit :size
@@ -282,4 +208,30 @@ interface WorryPostRepository : JpaRepository<WorryPost, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "delete from worry_post where id in (:postIds)", nativeQuery = true)
     fun deleteAllByIdIn(@Param("postIds") postIds: List<Long>)
+
+    companion object {
+
+        private const val SELECT_ROW = """
+        select p.id as postId,
+               p.member_id as memberId,
+               p.category as category,
+               p.content as content,
+               p.created_at as createdAt,
+               p.like_count as likeCount,
+               p.comment_count as commentCount,
+               exists (
+                 select 1 from worry_post_like l
+                 where l.post_id = p.id and l.member_id = :memberId
+               ) as likedByMe
+        from worry_post p"""
+
+        private const val VISIBLE = """p.deleted_at is null
+          and not exists (
+            select 1 from worry_post_report r
+            where r.reporter_id = :memberId and r.post_id = p.id
+          )"""
+
+        private const val CATEGORY =
+            """and (cast(:category as varchar) is null or p.category = cast(:category as varchar))"""
+    }
 }

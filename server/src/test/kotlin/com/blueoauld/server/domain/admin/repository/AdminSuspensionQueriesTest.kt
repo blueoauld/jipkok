@@ -26,6 +26,9 @@ class AdminSuspensionQueriesTest {
     private lateinit var memberSuspensionRepository: MemberSuspensionRepository
 
     @Autowired
+    private lateinit var suspensionAdminRepository: SuspensionAdminRepository
+
+    @Autowired
     private lateinit var memberRepository: MemberRepository
 
     private var activeId = 0L
@@ -46,10 +49,10 @@ class AdminSuspensionQueriesTest {
         // given
 
         // when
-        val all = memberSuspensionRepository.findAllForAdmin(null, null, null, NOW, 20, 0)
-        val active = memberSuspensionRepository.findAllForAdmin("ACTIVE", null, null, NOW, 20, 0)
-        val expired = memberSuspensionRepository.findAllForAdmin("EXPIRED", null, null, NOW, 20, 0)
-        val released = memberSuspensionRepository.findAllForAdmin("RELEASED", null, null, NOW, 20, 0)
+        val all = suspensionAdminRepository.findAllForAdmin(null, null, null, NOW, 20, 0)
+        val active = suspensionAdminRepository.findAllForAdmin("ACTIVE", null, null, NOW, 20, 0)
+        val expired = suspensionAdminRepository.findAllForAdmin("EXPIRED", null, null, NOW, 20, 0)
+        val released = suspensionAdminRepository.findAllForAdmin("RELEASED", null, null, NOW, 20, 0)
 
         // then
         assertThat(all.map { it.id }).containsExactly(releasedId, expiredId, activeId)
@@ -63,9 +66,9 @@ class AdminSuspensionQueriesTest {
         // given
 
         // when
-        val services = memberSuspensionRepository.findAllForAdmin(null, "SERVICE", null, NOW, 20, 0)
-        val member1 = memberSuspensionRepository.findAllForAdmin(null, null, 1, NOW, 20, 0)
-        val count = memberSuspensionRepository.countForAdmin("ACTIVE", "SERVICE", 1, NOW)
+        val services = suspensionAdminRepository.findAllForAdmin(null, "SERVICE", null, NOW, 20, 0)
+        val member1 = suspensionAdminRepository.findAllForAdmin(null, null, 1, NOW, 20, 0)
+        val count = suspensionAdminRepository.countForAdmin("ACTIVE", "SERVICE", 1, NOW)
 
         // then
         assertThat(services.map { it.id }).containsExactly(releasedId, activeId)
@@ -87,7 +90,7 @@ class AdminSuspensionQueriesTest {
         )
 
         // when
-        val suspensions = memberSuspensionRepository.findAllForAdmin(null, null, current.id, NOW, 20, 0)
+        val suspensions = suspensionAdminRepository.findAllForAdmin(null, null, current.id, NOW, 20, 0)
 
         // then
         assertThat(suspensions.map { it.id }).containsExactly(expiredId, activeId)
@@ -98,8 +101,8 @@ class AdminSuspensionQueriesTest {
         // given
 
         // when
-        val firstPage = memberSuspensionRepository.findAllForAdmin(null, null, null, NOW, 2, 0)
-        val secondPage = memberSuspensionRepository.findAllForAdmin(null, null, null, NOW, 2, 2)
+        val firstPage = suspensionAdminRepository.findAllForAdmin(null, null, null, NOW, 2, 0)
+        val secondPage = suspensionAdminRepository.findAllForAdmin(null, null, null, NOW, 2, 2)
 
         // then
         assertThat(firstPage).hasSize(2)

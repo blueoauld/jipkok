@@ -24,29 +24,8 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.slot_at as slotAt,
-               p.caption as caption,
-               p.object_key as objectKey,
-               exists (
-                 select 1 from feed_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from feed_post p
-        join member m on m.id = p.member_id and m.deleted_at is null
-        where p.deleted_at is null
-          and p.slot_at >= :from and p.slot_at < :to
-          and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
-          and not exists (
-            select 1 from member_block b
-            where (b.blocker_id = :memberId and b.blocked_member_id = p.member_id)
-               or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
-          )
-          and not exists (
-            select 1 from feed_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
+        $SELECT_ROW
+        where $VISIBLE
           and (cast(:cursor as bigint) is null or p.id > cast(:cursor as bigint))
         order by p.slot_at, p.id
         limit :size
@@ -64,29 +43,8 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
 
     @Query(
         value = """
-        select p.id as postId,
-               p.member_id as memberId,
-               p.slot_at as slotAt,
-               p.caption as caption,
-               p.object_key as objectKey,
-               exists (
-                 select 1 from feed_post_like l
-                 where l.post_id = p.id and l.member_id = :memberId
-               ) as likedByMe
-        from feed_post p
-        join member m on m.id = p.member_id and m.deleted_at is null
-        where p.deleted_at is null
-          and p.slot_at >= :from and p.slot_at < :to
-          and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
-          and not exists (
-            select 1 from member_block b
-            where (b.blocker_id = :memberId and b.blocked_member_id = p.member_id)
-               or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
-          )
-          and not exists (
-            select 1 from feed_post_report r
-            where r.reporter_id = :memberId and r.post_id = p.id
-          )
+        $SELECT_ROW
+        where $VISIBLE
           and (cast(:cursor as bigint) is null or p.id < cast(:cursor as bigint))
         order by p.slot_at desc, p.id desc
         limit :size
@@ -142,4 +100,33 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "delete from feed_post where id in (:postIds)", nativeQuery = true)
     fun deleteAllByIdIn(@Param("postIds") postIds: List<Long>)
+
+    companion object {
+
+        private const val SELECT_ROW = """
+        select p.id as postId,
+               p.member_id as memberId,
+               p.slot_at as slotAt,
+               p.caption as caption,
+               p.object_key as objectKey,
+               exists (
+                 select 1 from feed_post_like l
+                 where l.post_id = p.id and l.member_id = :memberId
+               ) as likedByMe
+        from feed_post p
+        join member m on m.id = p.member_id and m.deleted_at is null"""
+
+        private const val VISIBLE = """p.deleted_at is null
+          and p.slot_at >= :from and p.slot_at < :to
+          and (cast(:gender as varchar) is null or m.gender = cast(:gender as varchar))
+          and not exists (
+            select 1 from member_block b
+            where (b.blocker_id = :memberId and b.blocked_member_id = p.member_id)
+               or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
+          )
+          and not exists (
+            select 1 from feed_post_report r
+            where r.reporter_id = :memberId and r.post_id = p.id
+          )"""
+    }
 }

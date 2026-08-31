@@ -37,6 +37,9 @@ class AdminWorryReportQueriesTest {
     @Autowired
     private lateinit var worryCommentReportRepository: WorryCommentReportRepository
 
+    @Autowired
+    private lateinit var worryAdminRepository: WorryAdminRepository
+
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 
@@ -81,10 +84,10 @@ class AdminWorryReportQueriesTest {
         // given
 
         // when
-        val all = worryPostReportRepository.findPostsForAdmin(null, null, 20, 0)
-        val active = worryPostReportRepository.findPostsForAdmin("ACTIVE", null, 20, 0)
-        val deleted = worryPostReportRepository.findPostsForAdmin("DELETED", null, 20, 0)
-        val byAuthor = worryPostReportRepository.findPostsForAdmin(null, 1, 20, 0)
+        val all = worryAdminRepository.findPostsForAdmin(null, null, 20, 0)
+        val active = worryAdminRepository.findPostsForAdmin("ACTIVE", null, 20, 0)
+        val deleted = worryAdminRepository.findPostsForAdmin("DELETED", null, 20, 0)
+        val byAuthor = worryAdminRepository.findPostsForAdmin(null, 1, 20, 0)
 
         // then
         assertThat(all.map { it.postId }).containsExactly(deletedPostId, activePostId)
@@ -100,8 +103,8 @@ class AdminWorryReportQueriesTest {
         // given
 
         // when
-        val count = worryPostReportRepository.countPostsForAdmin(null, null)
-        val reporters = worryPostReportRepository.findReportersByPostIdIn(listOf(activePostId))
+        val count = worryAdminRepository.countPostsForAdmin(null, null)
+        val reporters = worryAdminRepository.findReportersByPostIdIn(listOf(activePostId))
 
         // then
         assertThat(count).isEqualTo(2)
@@ -114,10 +117,10 @@ class AdminWorryReportQueriesTest {
         // given
 
         // when
-        val all = worryCommentReportRepository.findCommentsForAdmin(null, null, 20, 0)
-        val active = worryCommentReportRepository.findCommentsForAdmin("ACTIVE", null, 20, 0)
-        val deleted = worryCommentReportRepository.findCommentsForAdmin("DELETED", null, 20, 0)
-        val count = worryCommentReportRepository.countCommentsForAdmin(null, null)
+        val all = worryAdminRepository.findCommentsForAdmin(null, null, 20, 0)
+        val active = worryAdminRepository.findCommentsForAdmin("ACTIVE", null, 20, 0)
+        val deleted = worryAdminRepository.findCommentsForAdmin("DELETED", null, 20, 0)
+        val count = worryAdminRepository.countCommentsForAdmin(null, null)
 
         // then
         assertThat(all.map { it.commentId }).containsExactlyInAnyOrder(activeCommentId, deletedCommentId)
@@ -134,7 +137,7 @@ class AdminWorryReportQueriesTest {
         // given
 
         // when
-        val reporters = worryCommentReportRepository.findReportersByCommentIdIn(listOf(activeCommentId))
+        val reporters = worryAdminRepository.findReportersByCommentIdIn(listOf(activeCommentId))
 
         // then
         assertThat(reporters.map { it.reporterId }).containsExactly(10)

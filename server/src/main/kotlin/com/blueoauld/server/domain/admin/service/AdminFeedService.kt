@@ -5,7 +5,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportPageRespons
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminFeedReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
-import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
+import com.blueoauld.server.domain.admin.repository.FeedAdminRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.global.exception.BusinessException
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class AdminFeedService(
 
-    private val feedPostReportRepository: FeedPostReportRepository,
+    private val feedAdminRepository: FeedAdminRepository,
     private val feedPostRepository: FeedPostRepository,
     private val memberAdminService: MemberAdminService,
     private val photoStorage: PhotoStorage,
@@ -34,16 +34,16 @@ class AdminFeedService(
         val safePage = AdminPaging.page(page)
         val safeSize = AdminPaging.size(size)
 
-        val posts = feedPostReportRepository.findPostsForAdmin(
+        val posts = feedAdminRepository.findPostsForAdmin(
             status = status?.name,
             authorId = authorId,
             size = safeSize,
             offset = AdminPaging.offset(safePage, safeSize),
         )
-        val totalCount = feedPostReportRepository.countPostsForAdmin(status?.name, authorId)
+        val totalCount = feedAdminRepository.countPostsForAdmin(status?.name, authorId)
         val reporters = posts.map { it.postId }
             .takeIf { it.isNotEmpty() }
-            ?.let { feedPostReportRepository.findReportersByPostIdIn(it) }
+            ?.let { feedAdminRepository.findReportersByPostIdIn(it) }
             .orEmpty()
 
         val nicknames = memberAdminService.findNicknames(

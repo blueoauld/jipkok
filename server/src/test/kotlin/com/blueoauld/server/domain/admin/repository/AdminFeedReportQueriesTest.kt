@@ -25,6 +25,9 @@ class AdminFeedReportQueriesTest {
     private lateinit var feedPostReportRepository: FeedPostReportRepository
 
     @Autowired
+    private lateinit var feedAdminRepository: FeedAdminRepository
+
+    @Autowired
     private lateinit var feedPostRepository: FeedPostRepository
 
     @PersistenceContext
@@ -55,10 +58,10 @@ class AdminFeedReportQueriesTest {
         // given
 
         // when
-        val all = feedPostReportRepository.findPostsForAdmin(null, null, 20, 0)
-        val active = feedPostReportRepository.findPostsForAdmin("ACTIVE", null, 20, 0)
-        val deleted = feedPostReportRepository.findPostsForAdmin("DELETED", null, 20, 0)
-        val byAuthor = feedPostReportRepository.findPostsForAdmin(null, 1, 20, 0)
+        val all = feedAdminRepository.findPostsForAdmin(null, null, 20, 0)
+        val active = feedAdminRepository.findPostsForAdmin("ACTIVE", null, 20, 0)
+        val deleted = feedAdminRepository.findPostsForAdmin("DELETED", null, 20, 0)
+        val byAuthor = feedAdminRepository.findPostsForAdmin(null, 1, 20, 0)
 
         // then
         assertThat(all.map { it.postId }).containsExactly(deletedPostId, activePostId)
@@ -74,8 +77,8 @@ class AdminFeedReportQueriesTest {
         // given
 
         // when
-        val count = feedPostReportRepository.countPostsForAdmin(null, null)
-        val reporters = feedPostReportRepository.findReportersByPostIdIn(listOf(activePostId))
+        val count = feedAdminRepository.countPostsForAdmin(null, null)
+        val reporters = feedAdminRepository.findReportersByPostIdIn(listOf(activePostId))
 
         // then
         assertThat(count).isEqualTo(2)

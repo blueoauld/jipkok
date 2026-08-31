@@ -1,9 +1,6 @@
 package com.blueoauld.server.domain.access.repository
 
 import com.blueoauld.server.domain.access.entity.AccessLog
-import com.blueoauld.server.domain.admin.dto.DailyCount
-import com.blueoauld.server.domain.admin.dto.PlatformCount
-import com.blueoauld.server.domain.admin.dto.VersionCount
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -38,37 +35,4 @@ interface AccessLogRepository : JpaRepository<AccessLog, Long> {
     @Modifying
     @Query("delete from AccessLog l where l.createdAt < :threshold")
     fun deleteAllCreatedBefore(@Param("threshold") threshold: Instant): Int
-
-    @Query(
-        """
-        select l.accessedOn as day, count(l) as count
-        from AccessLog l
-        where l.accessedOn >= :start
-        group by l.accessedOn
-        """,
-    )
-    fun countDailySince(@Param("start") start: LocalDate): List<DailyCount>
-
-    @Query("select count(distinct l.memberId) from AccessLog l where l.accessedOn >= :start")
-    fun countDistinctMembersSince(@Param("start") start: LocalDate): Long
-
-    @Query(
-        """
-        select l.platform as platform, count(distinct l.memberId) as count
-        from AccessLog l
-        where l.accessedOn >= :start
-        group by l.platform
-        """,
-    )
-    fun countByPlatformSince(@Param("start") start: LocalDate): List<PlatformCount>
-
-    @Query(
-        """
-        select l.appVersion as version, l.platform as platform, count(distinct l.memberId) as count
-        from AccessLog l
-        where l.accessedOn >= :start and l.appVersion is not null
-        group by l.appVersion, l.platform
-        """,
-    )
-    fun countByVersionSince(@Param("start") start: LocalDate): List<VersionCount>
 }

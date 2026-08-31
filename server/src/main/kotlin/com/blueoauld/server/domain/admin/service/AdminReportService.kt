@@ -8,10 +8,10 @@ import com.blueoauld.server.domain.admin.dto.response.AdminReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReportedMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.ReportAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
-import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.service.ReportService
 import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
@@ -21,7 +21,7 @@ import java.time.Clock
 @Service
 class AdminReportService(
 
-    private val reportRepository: ReportRepository,
+    private val reportAdminRepository: ReportAdminRepository,
     private val memberAdminService: MemberAdminService,
     private val reportService: ReportService,
     private val adminActionRecorder: AdminActionRecorder,
@@ -41,7 +41,7 @@ class AdminReportService(
         val safePage = AdminPaging.page(page)
         val safeSize = AdminPaging.size(size)
 
-        val reports = reportRepository.findAllForAdmin(
+        val reports = reportAdminRepository.findAllForAdmin(
             handled = status?.handled,
             type = type?.name,
             reason = reason?.name,
@@ -50,7 +50,7 @@ class AdminReportService(
             size = safeSize,
             offset = AdminPaging.offset(safePage, safeSize),
         )
-        val totalCount = reportRepository.countForAdmin(
+        val totalCount = reportAdminRepository.countForAdmin(
             handled = status?.handled,
             type = type?.name,
             reason = reason?.name,

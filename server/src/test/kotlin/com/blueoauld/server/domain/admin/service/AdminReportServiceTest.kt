@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminReportStatus
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.ReportAdminRepository
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.service.MemberAdminService
@@ -13,7 +14,6 @@ import com.blueoauld.server.domain.report.dto.response.ReportDetail
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
-import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.service.ReportService
 import io.mockk.every
 import io.mockk.mockk
@@ -26,7 +26,7 @@ import java.time.ZoneOffset
 
 class AdminReportServiceTest {
 
-    private val reportRepository = mockk<ReportRepository>()
+    private val reportAdminRepository = mockk<ReportAdminRepository>()
 
     private val memberAdminService = mockk<MemberAdminService>()
 
@@ -35,7 +35,7 @@ class AdminReportServiceTest {
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
     private val adminReportService = AdminReportService(
-        reportRepository,
+        reportAdminRepository,
         memberAdminService,
         reportService,
         adminActionRecorder,
@@ -46,9 +46,9 @@ class AdminReportServiceTest {
     fun `목록은 상태를 처리 여부로 바꾸고 닉네임을 채운다`() {
         // given
         every {
-            reportRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
+            reportAdminRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
         } returns listOf(report())
-        every { reportRepository.countForAdmin(false, null, null, null, null) } returns 1
+        every { reportAdminRepository.countForAdmin(false, null, null, null, null) } returns 1
         every { memberAdminService.findNicknames(listOf(REPORTER_ID, REPORTED_MEMBER_ID)) } returns
             mapOf(REPORTER_ID to "밤산책", REPORTED_MEMBER_ID to "알 수 없음")
 
@@ -72,8 +72,8 @@ class AdminReportServiceTest {
     @Test
     fun `페이지와 크기를 안전한 범위로 맞춘다`() {
         // given
-        every { reportRepository.findAllForAdmin(null, null, null, null, null, 100, 0) } returns emptyList()
-        every { reportRepository.countForAdmin(null, null, null, null, null) } returns 0
+        every { reportAdminRepository.findAllForAdmin(null, null, null, null, null, 100, 0) } returns emptyList()
+        every { reportAdminRepository.countForAdmin(null, null, null, null, null) } returns 0
         every { memberAdminService.findNicknames(emptyList()) } returns emptyMap()
 
         // when

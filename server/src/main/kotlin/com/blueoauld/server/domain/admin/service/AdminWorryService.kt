@@ -7,10 +7,9 @@ import com.blueoauld.server.domain.admin.dto.response.AdminWorryPostReportPageRe
 import com.blueoauld.server.domain.admin.dto.response.AdminWorryPostReportResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminWorryReporterResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.WorryAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
-import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
-import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -21,8 +20,7 @@ import java.time.Instant
 @Service
 class AdminWorryService(
 
-    private val worryPostReportRepository: WorryPostReportRepository,
-    private val worryCommentReportRepository: WorryCommentReportRepository,
+    private val worryAdminRepository: WorryAdminRepository,
     private val worryPostRepository: WorryPostRepository,
     private val worryCommentRepository: WorryCommentRepository,
     private val memberAdminService: MemberAdminService,
@@ -39,16 +37,16 @@ class AdminWorryService(
         val safePage = AdminPaging.page(page)
         val safeSize = AdminPaging.size(size)
 
-        val posts = worryPostReportRepository.findPostsForAdmin(
+        val posts = worryAdminRepository.findPostsForAdmin(
             status = status?.name,
             authorId = authorId,
             size = safeSize,
             offset = AdminPaging.offset(safePage, safeSize),
         )
-        val totalCount = worryPostReportRepository.countPostsForAdmin(status?.name, authorId)
+        val totalCount = worryAdminRepository.countPostsForAdmin(status?.name, authorId)
         val reporters = posts.map { it.postId }
             .takeIf { it.isNotEmpty() }
-            ?.let { worryPostReportRepository.findReportersByPostIdIn(it) }
+            ?.let { worryAdminRepository.findReportersByPostIdIn(it) }
             .orEmpty()
         val nicknames = memberAdminService.findNicknames(
             posts.map { it.authorId } + reporters.map { it.reporterId },
@@ -84,16 +82,16 @@ class AdminWorryService(
         val safePage = AdminPaging.page(page)
         val safeSize = AdminPaging.size(size)
 
-        val comments = worryCommentReportRepository.findCommentsForAdmin(
+        val comments = worryAdminRepository.findCommentsForAdmin(
             status = status?.name,
             authorId = authorId,
             size = safeSize,
             offset = AdminPaging.offset(safePage, safeSize),
         )
-        val totalCount = worryCommentReportRepository.countCommentsForAdmin(status?.name, authorId)
+        val totalCount = worryAdminRepository.countCommentsForAdmin(status?.name, authorId)
         val reporters = comments.map { it.commentId }
             .takeIf { it.isNotEmpty() }
-            ?.let { worryCommentReportRepository.findReportersByCommentIdIn(it) }
+            ?.let { worryAdminRepository.findReportersByCommentIdIn(it) }
             .orEmpty()
         val nicknames = memberAdminService.findNicknames(
             comments.map { it.authorId } + reporters.map { it.reporterId },

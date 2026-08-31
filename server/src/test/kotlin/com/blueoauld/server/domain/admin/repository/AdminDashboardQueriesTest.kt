@@ -41,10 +41,19 @@ class AdminDashboardQueriesTest {
     private lateinit var reportRepository: ReportRepository
 
     @Autowired
+    private lateinit var reportAdminRepository: ReportAdminRepository
+
+    @Autowired
     private lateinit var memberSuspensionRepository: MemberSuspensionRepository
 
     @Autowired
+    private lateinit var suspensionAdminRepository: SuspensionAdminRepository
+
+    @Autowired
     private lateinit var accessLogRepository: AccessLogRepository
+
+    @Autowired
+    private lateinit var accessLogAdminRepository: AccessLogAdminRepository
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
@@ -144,7 +153,7 @@ class AdminDashboardQueriesTest {
         setCreatedAt("report", report.id, Instant.parse("2026-08-19T16:00:00Z"))
 
         // when
-        val counts = reportRepository.countDailyCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
+        val counts = reportAdminRepository.countDailyCreatedSince(Instant.parse("2026-08-19T00:00:00Z"))
 
         // then
         assertThat(counts.associate { it.day to it.count }[LocalDate.of(2026, 8, 20)]).isEqualTo(1)
@@ -163,7 +172,7 @@ class AdminDashboardQueriesTest {
         entityManager.flush()
 
         // when
-        val count = memberSuspensionRepository.countSuspendedMembers(now)
+        val count = suspensionAdminRepository.countSuspendedMembers(now)
 
         // then
         assertThat(count).isEqualTo(1)
@@ -179,10 +188,10 @@ class AdminDashboardQueriesTest {
         saveAccessLog(memberId = 3, accessedOn = today.minusDays(40), platform = DevicePlatform.IOS)
 
         // when
-        val daily = accessLogRepository.countDailySince(today.minusDays(13))
-        val distinct = accessLogRepository.countDistinctMembersSince(today.minusDays(29))
-        val platforms = accessLogRepository.countByPlatformSince(today.minusDays(6))
-        val versions = accessLogRepository.countByVersionSince(today.minusDays(6))
+        val daily = accessLogAdminRepository.countDailySince(today.minusDays(13))
+        val distinct = accessLogAdminRepository.countDistinctMembersSince(today.minusDays(29))
+        val platforms = accessLogAdminRepository.countByPlatformSince(today.minusDays(6))
+        val versions = accessLogAdminRepository.countByVersionSince(today.minusDays(6))
 
         // then
         assertThat(daily.associate { it.day to it.count }[today]).isEqualTo(2)

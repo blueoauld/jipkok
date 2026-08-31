@@ -6,8 +6,8 @@ import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,7 +16,7 @@ import java.time.Clock
 @Service
 class AdminSuspensionService(
 
-    private val memberSuspensionRepository: MemberSuspensionRepository,
+    private val suspensionAdminRepository: SuspensionAdminRepository,
     private val memberSuspensionService: MemberSuspensionService,
     private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
@@ -34,7 +34,7 @@ class AdminSuspensionService(
         val safeSize = AdminPaging.size(size)
         val now = clock.instant()
 
-        val suspensions = memberSuspensionRepository.findAllForAdmin(
+        val suspensions = suspensionAdminRepository.findAllForAdmin(
             status = status?.name,
             type = type?.name,
             memberId = memberId,
@@ -42,7 +42,7 @@ class AdminSuspensionService(
             size = safeSize,
             offset = AdminPaging.offset(safePage, safeSize),
         )
-        val totalCount = memberSuspensionRepository.countForAdmin(
+        val totalCount = suspensionAdminRepository.countForAdmin(
             status = status?.name,
             type = type?.name,
             memberId = memberId,

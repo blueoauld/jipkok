@@ -4,11 +4,11 @@ import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.mockk.every
 import io.mockk.mockk
@@ -21,14 +21,14 @@ import java.time.ZoneOffset
 
 class AdminSuspensionServiceTest {
 
-    private val memberSuspensionRepository = mockk<MemberSuspensionRepository>()
+    private val suspensionAdminRepository = mockk<SuspensionAdminRepository>()
 
     private val memberSuspensionService = mockk<MemberSuspensionService>()
 
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
     private val adminSuspensionService = AdminSuspensionService(
-        memberSuspensionRepository,
+        suspensionAdminRepository,
         memberSuspensionService,
         adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -38,12 +38,12 @@ class AdminSuspensionServiceTest {
     fun `목록은 상태를 계산해서 준다`() {
         // given
         every {
-            memberSuspensionRepository.findAllForAdmin(null, null, null, NOW, 20, 0)
+            suspensionAdminRepository.findAllForAdmin(null, null, null, NOW, 20, 0)
         } returns listOf(
             suspension(expiresAt = NOW.plusSeconds(3600)),
             suspension(expiresAt = NOW.minusSeconds(3600)),
         )
-        every { memberSuspensionRepository.countForAdmin(null, null, null, NOW) } returns 2
+        every { suspensionAdminRepository.countForAdmin(null, null, null, NOW) } returns 2
 
         // when
         val response = adminSuspensionService.findSuspensions(null, null, null, 1, 20)

@@ -4,13 +4,12 @@ import com.blueoauld.server.domain.admin.dto.AdminWorryCommentRow
 import com.blueoauld.server.domain.admin.dto.AdminWorryPostRow
 import com.blueoauld.server.domain.admin.dto.AdminWorryReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.WorryAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.type.WorryCategory
-import com.blueoauld.server.domain.worry.repository.WorryCommentReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
-import com.blueoauld.server.domain.worry.repository.WorryPostReportRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -26,9 +25,7 @@ import java.util.*
 
 class AdminWorryServiceTest {
 
-    private val worryPostReportRepository = mockk<WorryPostReportRepository>()
-
-    private val worryCommentReportRepository = mockk<WorryCommentReportRepository>()
+    private val worryAdminRepository = mockk<WorryAdminRepository>()
 
     private val worryPostRepository = mockk<WorryPostRepository>(relaxed = true)
 
@@ -39,8 +36,7 @@ class AdminWorryServiceTest {
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
     private val adminWorryService = AdminWorryService(
-        worryPostReportRepository,
-        worryCommentReportRepository,
+        worryAdminRepository,
         worryPostRepository,
         worryCommentRepository,
         memberAdminService,
@@ -50,9 +46,9 @@ class AdminWorryServiceTest {
     @Test
     fun `고민 목록은 신고자와 닉네임을 채우고 내용을 그대로 준다`() {
         // given
-        every { worryPostReportRepository.findPostsForAdmin(null, null, 20, 0) } returns listOf(postRow())
-        every { worryPostReportRepository.countPostsForAdmin(null, null) } returns 1
-        every { worryPostReportRepository.findReportersByPostIdIn(listOf(POST_ID)) } returns listOf(
+        every { worryAdminRepository.findPostsForAdmin(null, null, 20, 0) } returns listOf(postRow())
+        every { worryAdminRepository.countPostsForAdmin(null, null) } returns 1
+        every { worryAdminRepository.findReportersByPostIdIn(listOf(POST_ID)) } returns listOf(
             reporterRow(POST_ID, 11),
             reporterRow(POST_ID, 10),
         )
@@ -74,9 +70,9 @@ class AdminWorryServiceTest {
     @Test
     fun `댓글 목록은 자동 삭제 여부를 함께 준다`() {
         // given
-        every { worryCommentReportRepository.findCommentsForAdmin("DELETED", null, 20, 0) } returns listOf(commentRow())
-        every { worryCommentReportRepository.countCommentsForAdmin("DELETED", null) } returns 1
-        every { worryCommentReportRepository.findReportersByCommentIdIn(listOf(COMMENT_ID)) } returns listOf(
+        every { worryAdminRepository.findCommentsForAdmin("DELETED", null, 20, 0) } returns listOf(commentRow())
+        every { worryAdminRepository.countCommentsForAdmin("DELETED", null) } returns 1
+        every { worryAdminRepository.findReportersByCommentIdIn(listOf(COMMENT_ID)) } returns listOf(
             reporterRow(COMMENT_ID, 10),
         )
         every { memberAdminService.findNicknames(listOf(AUTHOR_ID, 10L)) } returns

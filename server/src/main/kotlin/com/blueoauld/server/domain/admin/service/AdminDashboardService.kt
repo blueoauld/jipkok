@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.response.AccessEnvironmentResponse
@@ -14,12 +13,13 @@ import com.blueoauld.server.domain.admin.dto.response.RecentReportResponse
 import com.blueoauld.server.domain.admin.dto.response.RecentSuspensionResponse
 import com.blueoauld.server.domain.admin.dto.response.TrendPointResponse
 import com.blueoauld.server.domain.admin.dto.response.VersionCountResponse
+import com.blueoauld.server.domain.admin.repository.AccessLogAdminRepository
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.ReportAdminRepository
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
-import com.blueoauld.server.domain.report.repository.ReportRepository
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.time.KOREA
 import com.blueoauld.server.global.time.currentYear
 import com.blueoauld.server.global.time.today
@@ -36,9 +36,9 @@ class AdminDashboardService(
 
     private val memberAdminRepository: MemberAdminRepository,
     private val memberAdminService: MemberAdminService,
-    private val reportRepository: ReportRepository,
-    private val memberSuspensionRepository: MemberSuspensionRepository,
-    private val accessLogRepository: AccessLogRepository,
+    private val reportAdminRepository: ReportAdminRepository,
+    private val suspensionAdminRepository: SuspensionAdminRepository,
+    private val accessLogAdminRepository: AccessLogAdminRepository,
     private val clock: Clock,
 ) {
 
@@ -49,8 +49,8 @@ class AdminDashboardService(
         val todayStart = clock.today().atStartOfDay(KOREA).toInstant()
 
         return DashboardSummaryResponse(
-            pendingMemberReports = reportRepository.countByHandledAtIsNull(),
-            suspendedMembers = memberSuspensionRepository.countSuspendedMembers(clock.instant()),
+            pendingMemberReports = reportAdminRepository.countByHandledAtIsNull(),
+            suspendedMembers = suspensionAdminRepository.countSuspendedMembers(clock.instant()),
             todaySignups = memberAdminRepository.countCreatedSince(todayStart),
             todayWithdrawals = memberAdminRepository.countDeletedSince(todayStart),
         )
@@ -63,7 +63,7 @@ class AdminDashboardService(
 
         val signups = memberAdminRepository.countDailyCreatedSince(start).toMap()
         val withdrawals = memberAdminRepository.countDailyDeletedSince(start).toMap()
-        val reports = reportRepository.countDailyCreatedSince(start).toMap()
+        val reports = reportAdminRepository.countDailyCreatedSince(start).toMap()
 
         return dates(startDate).map {
             TrendPointResponse(
@@ -79,12 +79,12 @@ class AdminDashboardService(
     fun findActiveUsers(): ActiveUsersResponse {
         val today = clock.today()
         val startDate = today.minusDays(TREND_DAYS - 1L)
-        val daily = accessLogRepository.countDailySince(startDate).toMap()
+        val daily = accessLogAdminRepository.countDailySince(startDate).toMap()
 
         return ActiveUsersResponse(
             dau = daily[today] ?: 0,
-            wau = accessLogRepository.countDistinctMembersSince(today.minusDays(6)),
-            mau = accessLogRepository.countDistinctMembersSince(today.minusDays(29)),
+            wau = accessLogAdminRepository.countDistinctMembersSince(today.minusDays(6)),
+            mau = accessLogAdminRepository.countDistinctMembersSince(today.minusDays(29)),
             trend = dates(startDate).map { DauPointResponse(date = it, dau = daily[it] ?: 0) },
         )
     }
@@ -127,9 +127,9 @@ class AdminDashboardService(
     @Transactional(readOnly = true)
     fun findAccessEnvironment(): AccessEnvironmentResponse {
         val start = clock.today().minusDays(6)
-        val counts = accessLogRepository.countByPlatformSince(start).associate { it.platform to it.count }
+        val counts = accessLogAdminRepository.countByPlatformSince(start).associate { it.platform to it.count }
 
-        val versions = accessLogRepository.countByVersionSince(start)
+        val versions = accessLogAdminRepository.countByVersionSince(start)
             .map { VersionCountResponse(version = it.version, platform = it.platform, count = it.count) }
             .sortedWith(
                 compareByDescending<VersionCountResponse> { versionKey(it.version) }
@@ -147,7 +147,7 @@ class AdminDashboardService(
 
     @Transactional(readOnly = true)
     fun findRecent(): RecentActivityResponse {
-        val reports = reportRepository.findTop5ByOrderByIdDesc()
+        val reports = reportAdminRepository.findTop5ByOrderByIdDesc()
         val nicknames = memberAdminService.findNicknames(reports.map { it.reportedMemberId })
 
         return RecentActivityResponse(
@@ -161,7 +161,7 @@ class AdminDashboardService(
                     createdAt = it.createdAt,
                 )
             },
-            suspensions = memberSuspensionRepository.findTop5ByOrderByIdDesc().map {
+            suspensions = suspensionAdminRepository.findTop5ByOrderByIdDesc().map {
                 RecentSuspensionResponse(
                     id = it.id,
                     memberId = it.memberId,

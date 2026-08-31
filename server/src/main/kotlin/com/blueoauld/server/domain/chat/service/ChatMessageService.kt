@@ -16,6 +16,7 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.chat.repository.getRoomOf
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
@@ -47,7 +48,7 @@ class ChatMessageService(
         cursor: Long?,
         size: Int,
     ): CursorResponse<ChatMessageResponse> {
-        findRoom(memberId, roomId)
+        chatRoomRepository.getRoomOf(memberId, roomId)
 
         val pageSize = CursorResponse.pageSize(size)
         val messages = chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(
@@ -82,7 +83,7 @@ class ChatMessageService(
 
     @Transactional
     fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse {
-        val room = findRoom(memberId, roomId)
+        val room = chatRoomRepository.getRoomOf(memberId, roomId)
 
         findAlreadySent(roomId, request.clientMessageId)?.let { return it }
 
@@ -93,7 +94,7 @@ class ChatMessageService(
 
     @Transactional
     fun react(memberId: Long, roomId: Long, messageId: Long, request: ReactMessageRequest): ChatReactionsResponse {
-        val room = findRoom(memberId, roomId)
+        val room = chatRoomRepository.getRoomOf(memberId, roomId)
         val message = findMessage(roomId, messageId)
 
         val existing = chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)
@@ -117,7 +118,7 @@ class ChatMessageService(
 
     @Transactional
     fun unreact(memberId: Long, roomId: Long, messageId: Long): ChatReactionsResponse {
-        val room = findRoom(memberId, roomId)
+        val room = chatRoomRepository.getRoomOf(memberId, roomId)
         val message = findMessage(roomId, messageId)
 
         chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)?.let {
@@ -130,7 +131,7 @@ class ChatMessageService(
 
     @Transactional
     fun markRead(memberId: Long, roomId: Long, lastReadMessageId: Long) {
-        findRoom(memberId, roomId)
+        chatRoomRepository.getRoomOf(memberId, roomId)
         chatRoomMemberRepository.markRead(roomId, memberId, lastReadMessageId)
     }
 
@@ -169,7 +170,7 @@ class ChatMessageService(
 
     @Transactional(readOnly = true)
     fun findVideoUrl(memberId: Long, roomId: Long, messageId: Long): ChatVideoUrlResponse {
-        findRoom(memberId, roomId)
+        chatRoomRepository.getRoomOf(memberId, roomId)
         val message = findMessage(roomId, messageId)
         val objectKey = message.objectKey?.takeIf { message.type == ChatMessageType.VIDEO }
             ?: throw BusinessException(ErrorCode.NOT_VIDEO_MESSAGE)
@@ -188,10 +189,6 @@ class ChatMessageService(
             thumbnailUrl = message.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
         )
     }
-
-    private fun findRoom(memberId: Long, roomId: Long) = chatRoomRepository.findById(roomId)
-        .filter { it.contains(memberId) }
-        .orElseThrow { BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND) }
 
     private fun findMessage(roomId: Long, messageId: Long) = chatMessageRepository.findById(messageId)
         .filter { it.roomId == roomId }

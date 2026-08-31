@@ -1,21 +1,21 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.admin.dto.DailyCount
 import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.PlatformCount
 import com.blueoauld.server.domain.admin.dto.VersionCount
+import com.blueoauld.server.domain.admin.repository.AccessLogAdminRepository
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.ReportAdminRepository
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
-import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -32,26 +32,26 @@ class AdminDashboardServiceTest {
 
     private val memberAdminService = mockk<MemberAdminService>()
 
-    private val reportRepository = mockk<ReportRepository>()
+    private val reportAdminRepository = mockk<ReportAdminRepository>()
 
-    private val memberSuspensionRepository = mockk<MemberSuspensionRepository>()
+    private val suspensionAdminRepository = mockk<SuspensionAdminRepository>()
 
-    private val accessLogRepository = mockk<AccessLogRepository>()
+    private val accessLogAdminRepository = mockk<AccessLogAdminRepository>()
 
     private val adminDashboardService = AdminDashboardService(
         memberAdminRepository,
         memberAdminService,
-        reportRepository,
-        memberSuspensionRepository,
-        accessLogRepository,
+        reportAdminRepository,
+        suspensionAdminRepository,
+        accessLogAdminRepository,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @Test
     fun `운영 요약을 오늘의 한국 시간 기준으로 집계한다`() {
         // given
-        every { reportRepository.countByHandledAtIsNull() } returns 7
-        every { memberSuspensionRepository.countSuspendedMembers(NOW) } returns 12
+        every { reportAdminRepository.countByHandledAtIsNull() } returns 7
+        every { suspensionAdminRepository.countSuspendedMembers(NOW) } returns 12
         every { memberAdminRepository.countCreatedSince(TODAY_START) } returns 41
         every { memberAdminRepository.countDeletedSince(TODAY_START) } returns 6
 
@@ -70,7 +70,7 @@ class AdminDashboardServiceTest {
         // given
         every { memberAdminRepository.countDailyCreatedSince(any()) } returns listOf(dailyCount(TODAY, 5))
         every { memberAdminRepository.countDailyDeletedSince(any()) } returns listOf(dailyCount(TODAY.minusDays(1), 2))
-        every { reportRepository.countDailyCreatedSince(any()) } returns emptyList()
+        every { reportAdminRepository.countDailyCreatedSince(any()) } returns emptyList()
 
         // when
         val trend = adminDashboardService.findTrend()
@@ -87,9 +87,9 @@ class AdminDashboardServiceTest {
     @Test
     fun `활성 회원은 오늘 접속 수와 기간별 고유 접속 수로 만든다`() {
         // given
-        every { accessLogRepository.countDailySince(TODAY.minusDays(13)) } returns listOf(dailyCount(TODAY, 1284))
-        every { accessLogRepository.countDistinctMembersSince(TODAY.minusDays(6)) } returns 4631
-        every { accessLogRepository.countDistinctMembersSince(TODAY.minusDays(29)) } returns 11920
+        every { accessLogAdminRepository.countDailySince(TODAY.minusDays(13)) } returns listOf(dailyCount(TODAY, 1284))
+        every { accessLogAdminRepository.countDistinctMembersSince(TODAY.minusDays(6)) } returns 4631
+        every { accessLogAdminRepository.countDistinctMembersSince(TODAY.minusDays(29)) } returns 11920
 
         // when
         val activeUsers = adminDashboardService.findActiveUsers()
@@ -166,10 +166,10 @@ class AdminDashboardServiceTest {
     @Test
     fun `접속 환경은 집계가 없는 플랫폼을 0으로 채운다`() {
         // given
-        every { accessLogRepository.countByPlatformSince(TODAY.minusDays(6)) } returns listOf(
+        every { accessLogAdminRepository.countByPlatformSince(TODAY.minusDays(6)) } returns listOf(
             platformCount(DevicePlatform.IOS, 2690),
         )
-        every { accessLogRepository.countByVersionSince(TODAY.minusDays(6)) } returns emptyList()
+        every { accessLogAdminRepository.countByVersionSince(TODAY.minusDays(6)) } returns emptyList()
 
         // when
         val accessEnvironment = adminDashboardService.findAccessEnvironment()
@@ -182,8 +182,8 @@ class AdminDashboardServiceTest {
     @Test
     fun `버전 분포는 버전 숫자 내림차순으로 정렬한다`() {
         // given
-        every { accessLogRepository.countByPlatformSince(TODAY.minusDays(6)) } returns emptyList()
-        every { accessLogRepository.countByVersionSince(TODAY.minusDays(6)) } returns listOf(
+        every { accessLogAdminRepository.countByPlatformSince(TODAY.minusDays(6)) } returns emptyList()
+        every { accessLogAdminRepository.countByVersionSince(TODAY.minusDays(6)) } returns listOf(
             versionCount("1.9.0", DevicePlatform.IOS, 10),
             versionCount("1.10.0", DevicePlatform.ANDROID, 20),
             versionCount("1.10.0", DevicePlatform.IOS, 30),
@@ -203,13 +203,13 @@ class AdminDashboardServiceTest {
     @Test
     fun `최근 신고에 피신고자 닉네임을 채운다`() {
         // given
-        every { reportRepository.findTop5ByOrderByIdDesc() } returns listOf(
+        every { reportAdminRepository.findTop5ByOrderByIdDesc() } returns listOf(
             report(reportedMemberId = 3310),
             report(reportedMemberId = 9999),
         )
         every { memberAdminService.findNicknames(listOf(3310L, 9999L)) } returns
             mapOf(3310L to "밤산책", 9999L to "알 수 없음")
-        every { memberSuspensionRepository.findTop5ByOrderByIdDesc() } returns listOf(suspension())
+        every { suspensionAdminRepository.findTop5ByOrderByIdDesc() } returns listOf(suspension())
 
         // when
         val recent = adminDashboardService.findRecent()
@@ -223,9 +223,9 @@ class AdminDashboardServiceTest {
     @Test
     fun `신고가 없으면 빈 목록을 준다`() {
         // given
-        every { reportRepository.findTop5ByOrderByIdDesc() } returns emptyList()
+        every { reportAdminRepository.findTop5ByOrderByIdDesc() } returns emptyList()
         every { memberAdminService.findNicknames(emptyList()) } returns emptyMap()
-        every { memberSuspensionRepository.findTop5ByOrderByIdDesc() } returns emptyList()
+        every { suspensionAdminRepository.findTop5ByOrderByIdDesc() } returns emptyList()
 
         // when
         val recent = adminDashboardService.findRecent()

@@ -22,6 +22,9 @@ class AdminReportQueriesTest {
     @Autowired
     private lateinit var reportRepository: ReportRepository
 
+    @Autowired
+    private lateinit var reportAdminRepository: ReportAdminRepository
+
     @BeforeEach
     fun setUp() {
         saveReport(reportedMemberId = 1, phoneNumber = "+821011112222", reason = ReportReason.ABUSE)
@@ -39,12 +42,12 @@ class AdminReportQueriesTest {
         // given
 
         // when
-        val reports = reportRepository.findAllForAdmin(null, null, null, null, null, 20, 0)
+        val reports = reportAdminRepository.findAllForAdmin(null, null, null, null, null, 20, 0)
 
         // then
         assertThat(reports).hasSize(3)
         assertThat(reports.map { it.id }).isSortedAccordingTo(reverseOrder())
-        assertThat(reportRepository.countForAdmin(null, null, null, null, null)).isEqualTo(3)
+        assertThat(reportAdminRepository.countForAdmin(null, null, null, null, null)).isEqualTo(3)
     }
 
     @Test
@@ -52,9 +55,9 @@ class AdminReportQueriesTest {
         // given
 
         // when
-        val pending = reportRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
-        val chats = reportRepository.findAllForAdmin(null, ReportType.CHAT.name, null, null, null, 20, 0)
-        val etc = reportRepository.findAllForAdmin(null, null, ReportReason.ETC.name, null, null, 20, 0)
+        val pending = reportAdminRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
+        val chats = reportAdminRepository.findAllForAdmin(null, ReportType.CHAT.name, null, null, null, 20, 0)
+        val etc = reportAdminRepository.findAllForAdmin(null, null, ReportReason.ETC.name, null, null, 20, 0)
 
         // then
         assertThat(pending).hasSize(2)
@@ -67,13 +70,13 @@ class AdminReportQueriesTest {
         // given
 
         // when
-        val byMember = reportRepository.findAllForAdmin(null, null, null, 1, null, 20, 0)
-        val byPhone = reportRepository.findAllForAdmin(null, null, null, null, "+821011112222", 20, 0)
+        val byMember = reportAdminRepository.findAllForAdmin(null, null, null, 1, null, 20, 0)
+        val byPhone = reportAdminRepository.findAllForAdmin(null, null, null, null, "+821011112222", 20, 0)
 
         // then
         assertThat(byMember).hasSize(2)
         assertThat(byPhone).hasSize(2)
-        assertThat(reportRepository.countForAdmin(null, null, null, null, "+821011112222")).isEqualTo(2)
+        assertThat(reportAdminRepository.countForAdmin(null, null, null, null, "+821011112222")).isEqualTo(2)
     }
 
     @Test
@@ -81,8 +84,8 @@ class AdminReportQueriesTest {
         // given
 
         // when
-        val firstPage = reportRepository.findAllForAdmin(null, null, null, null, null, 2, 0)
-        val secondPage = reportRepository.findAllForAdmin(null, null, null, null, null, 2, 2)
+        val firstPage = reportAdminRepository.findAllForAdmin(null, null, null, null, null, 2, 0)
+        val secondPage = reportAdminRepository.findAllForAdmin(null, null, null, null, null, 2, 2)
 
         // then
         assertThat(firstPage).hasSize(2)
