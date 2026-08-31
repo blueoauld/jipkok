@@ -23,7 +23,7 @@ class MemberRankingService(
         size: Int,
     ): ScrollResponse<MemberSummaryResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val decoded = ScrollResponse.decodeRanking(cursor)
+        val decoded = MemberListCursor.decodeRanking(cursor)
         val rows = memberListRepository.findByReceivedLikeCount(
             memberId = memberId,
             gender = gender?.name,
@@ -37,7 +37,7 @@ class MemberRankingService(
         return ScrollResponse(
             items = memberSummaryService.findSummaries(rows.map { it.getMemberId() }),
             nextCursor = last?.let {
-                ScrollResponse.encodeRanking(
+                MemberListCursor.encodeRanking(
                     likeCount = it.getOrderValue().toInt(),
                     locatedAt = it.getLocatedAt()?.epochSecond ?: 0,
                     memberId = it.getMemberId(),

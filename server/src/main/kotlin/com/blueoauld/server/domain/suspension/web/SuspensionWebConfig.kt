@@ -1,12 +1,11 @@
-package com.blueoauld.server.global.config
+package com.blueoauld.server.domain.suspension.web
 
-import com.blueoauld.server.global.web.ServiceSuspensionInterceptor
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class WebMvcConfig(
+class SuspensionWebConfig(
 
     private val serviceSuspensionInterceptor: ServiceSuspensionInterceptor,
 ) : WebMvcConfigurer {

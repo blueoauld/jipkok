@@ -1,10 +1,12 @@
-package com.blueoauld.server.global.discord
+package com.blueoauld.server.domain.report.service
 
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.event.ReportCreatedEvent
+import com.blueoauld.server.global.discord.DiscordBot
+import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed

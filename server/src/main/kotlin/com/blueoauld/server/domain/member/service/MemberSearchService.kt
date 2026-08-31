@@ -29,7 +29,7 @@ class MemberSearchService(
         }
 
         val pageSize = CursorResponse.pageSize(size)
-        val decoded = ScrollResponse.decode(cursor)
+        val decoded = MemberListCursor.decode(cursor)
         val rows = memberListRepository.findByNicknamePrefix(
             memberId = memberId,
             keyword = trimmed.escapeLike(),
@@ -41,7 +41,7 @@ class MemberSearchService(
 
         return ScrollResponse(
             items = memberSummaryService.findSummaries(rows.map { it.getMemberId() }),
-            nextCursor = last?.let { ScrollResponse.encode(it.getOrderValue(), it.getMemberId()) },
+            nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }
 

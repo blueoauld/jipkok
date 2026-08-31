@@ -1,7 +1,9 @@
-package com.blueoauld.server.global.discord
+package com.blueoauld.server.domain.feed.service
 
 import com.blueoauld.server.domain.feed.event.FeedPostAutoDeletedEvent
 import com.blueoauld.server.domain.member.service.MemberAdminService
+import com.blueoauld.server.global.discord.DiscordBot
+import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.github.oshai.kotlinlogging.KotlinLogging

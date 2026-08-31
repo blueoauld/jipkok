@@ -4,7 +4,6 @@ import com.blueoauld.server.domain.member.dto.projection.MemberListRow
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberListRepository
-import com.blueoauld.server.global.response.ScrollResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -51,13 +50,13 @@ class MemberRankingServiceTest {
 
         // then
         assertThat(response.nextCursor)
-            .isEqualTo(ScrollResponse.encodeRanking(3, LOCATED_AT.epochSecond, 3L))
+            .isEqualTo(MemberListCursor.encodeRanking(3, LOCATED_AT.epochSecond, 3L))
     }
 
     @Test
     fun `커서를 풀어서 조회에 넘긴다`() {
         // given
-        val cursor = ScrollResponse.encodeRanking(3, LOCATED_AT.epochSecond, 3L)
+        val cursor = MemberListCursor.encodeRanking(3, LOCATED_AT.epochSecond, 3L)
         every { memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any()) } returns
             emptyList()
 

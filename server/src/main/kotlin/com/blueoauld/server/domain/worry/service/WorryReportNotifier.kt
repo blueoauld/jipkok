@@ -1,8 +1,10 @@
-package com.blueoauld.server.global.discord
+package com.blueoauld.server.domain.worry.service
 
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.worry.event.WorryCommentAutoDeletedEvent
 import com.blueoauld.server.domain.worry.event.WorryPostReportedEvent
+import com.blueoauld.server.global.discord.DiscordBot
+import com.blueoauld.server.global.discord.DiscordEmbeds
 import com.blueoauld.server.global.properties.DiscordProperties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed

@@ -9,7 +9,6 @@ import com.blueoauld.server.domain.member.repository.MemberListRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.response.ScrollResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -97,7 +96,7 @@ class MemberListServiceTest {
         val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 2)
 
         // then
-        assertThat(response.nextCursor).isEqualTo(ScrollResponse.encode(4.0, 3L))
+        assertThat(response.nextCursor).isEqualTo(MemberListCursor.encode(4.0, 3L))
     }
 
     @Test
@@ -121,7 +120,7 @@ class MemberListServiceTest {
             emptyList()
 
         // when
-        service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, ScrollResponse.encode(4.0, 3L), 20)
+        service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, MemberListCursor.encode(4.0, 3L), 20)
 
         // then
         verify { memberListRepository.findRecent(me.id, null, null, null, null, null, 4.0, 3L, 20) }

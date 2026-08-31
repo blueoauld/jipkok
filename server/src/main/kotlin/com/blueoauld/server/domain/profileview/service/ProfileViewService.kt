@@ -58,7 +58,7 @@ class ProfileViewService(
     @Transactional(readOnly = true)
     fun findViewers(viewedMemberId: Long, cursor: String?, size: Int): ScrollResponse<ProfileViewResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val decoded = ScrollResponse.decodeProfileView(cursor)
+        val decoded = ProfileViewCursor.decode(cursor)
 
         val views = if (decoded == null) {
             profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(viewedMemberId, Limit.of(pageSize))
@@ -73,7 +73,7 @@ class ProfileViewService(
             items = views.mapNotNull { view ->
                 summaries[view.viewerId]?.let { ProfileViewResponse(it, view.viewedAt) }
             },
-            nextCursor = last?.let { ScrollResponse.encodeProfileView(it.viewedAt, it.id) },
+            nextCursor = last?.let { ProfileViewCursor.encode(it.viewedAt, it.id) },
         )
     }
 }

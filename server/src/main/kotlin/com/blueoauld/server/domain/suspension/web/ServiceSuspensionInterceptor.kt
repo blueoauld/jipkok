@@ -1,4 +1,4 @@
-package com.blueoauld.server.global.web
+package com.blueoauld.server.domain.suspension.web
 
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService

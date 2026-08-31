@@ -38,12 +38,12 @@ class MemberListService(
         val pageSize = CursorResponse.pageSize(size)
         val birthYears = toBirthYearRange(minAge, maxAge)
         val member = findMember(memberId)
-        val rows = findRows(member, sort, gender, birthYears, ScrollResponse.decode(cursor), pageSize)
+        val rows = findRows(member, sort, gender, birthYears, MemberListCursor.decode(cursor), pageSize)
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
             items = toItems(rows),
-            nextCursor = last?.let { ScrollResponse.encode(it.getOrderValue(), it.getMemberId()) },
+            nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }
 
