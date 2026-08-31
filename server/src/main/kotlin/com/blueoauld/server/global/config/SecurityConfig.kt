@@ -1,16 +1,8 @@
 package com.blueoauld.server.global.config
 
-import com.blueoauld.server.global.properties.AdMobProperties
-import com.blueoauld.server.global.properties.AppVersionProperties
 import com.blueoauld.server.global.properties.CorsProperties
-import com.blueoauld.server.global.properties.DiscordProperties
-import com.blueoauld.server.global.properties.GoogleTranslateProperties
-import com.blueoauld.server.global.properties.JwtProperties
-import com.blueoauld.server.global.properties.R2Properties
-import com.blueoauld.server.global.properties.SolapiProperties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
 import com.blueoauld.server.global.security.JwtAuthenticationFilter
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -26,16 +18,6 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
-@EnableConfigurationProperties(
-    JwtProperties::class,
-    R2Properties::class,
-    AdMobProperties::class,
-    DiscordProperties::class,
-    SolapiProperties::class,
-    GoogleTranslateProperties::class,
-    AppVersionProperties::class,
-    CorsProperties::class,
-)
 class SecurityConfig(
 
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
