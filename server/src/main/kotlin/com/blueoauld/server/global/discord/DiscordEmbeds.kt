@@ -25,15 +25,17 @@ object DiscordEmbeds {
     fun field(label: String, value: String) = "**$label**\n$value"
 
     private fun chunk(text: String, maxLength: Int) =
-        text.lineSequence().fold(mutableListOf<String>()) { chunks, line ->
-            val last = chunks.lastOrNull()
+        text.lineSequence()
+            .flatMap { it.chunked(maxLength).ifEmpty { listOf("") } }
+            .fold(mutableListOf<String>()) { chunks, line ->
+                val last = chunks.lastOrNull()
 
-            if (last == null || last.length + line.length + 1 > maxLength) {
-                chunks.add(line)
-            } else {
-                chunks[chunks.lastIndex] = "$last\n$line"
+                if (last == null || last.length + line.length + 1 > maxLength) {
+                    chunks.add(line)
+                } else {
+                    chunks[chunks.lastIndex] = "$last\n$line"
+                }
+
+                chunks
             }
-
-            chunks
-        }
 }
