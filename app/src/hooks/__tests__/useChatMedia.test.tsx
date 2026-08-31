@@ -3,10 +3,10 @@ import type { ImagePickerAsset } from "expo-image-picker";
 
 import { useChatMedia } from "@/hooks/useChatMedia";
 import { forgetRoom } from "@/hooks/useChatSocket";
-import { pickChatMedia } from "@/hooks/usePhotos";
 import { logAppEvent } from "@/lib/analytics";
 import { api, ApiError, type ChatMessageResponse } from "@/lib/api";
 import i18n from "@/lib/i18n";
+import { pickChatMedia } from "@/lib/photo/picker";
 import { showToast } from "@/lib/toast/store";
 import { VIDEO_MAX_SECONDS, VIDEO_TOO_LONG_MESSAGE } from "@/lib/video";
 
@@ -16,7 +16,7 @@ jest.mock("@/lib/api", () => ({
   ...jest.requireActual("@/lib/api"),
   api: { chats: { videoUrl: jest.fn() } },
 }));
-jest.mock("@/hooks/usePhotos", () => ({
+jest.mock("@/lib/photo/picker", () => ({
   MAX_PHOTOS: 6,
   pickChatMedia: jest.fn(),
 }));

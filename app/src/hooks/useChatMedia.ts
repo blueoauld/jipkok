@@ -3,11 +3,11 @@ import type { ImagePickerAsset } from "expo-image-picker";
 import { useCallback, useState } from "react";
 
 import { forgetRoom } from "@/hooks/useChatSocket";
-import { MAX_PHOTOS, pickChatMedia } from "@/hooks/usePhotos";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, type ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound } from "@/lib/chat";
 import i18n from "@/lib/i18n";
+import { MAX_PHOTOS, pickChatMedia } from "@/lib/photo/picker";
 import { showToast } from "@/lib/toast/store";
 import {
   isVideoTooLong,

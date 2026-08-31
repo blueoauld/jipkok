@@ -1,8 +1,8 @@
 import type { ImagePickerAsset } from "expo-image-picker";
 import { useCallback, useMemo, useState } from "react";
 
-import { MAX_PHOTOS, pickPhotos } from "@/hooks/usePhotos";
 import type { ProfilePhoto } from "@/lib/api";
+import { MAX_PHOTOS, pickPhotos } from "@/lib/photo/picker";
 
 export function useUploadPhotos(
   upload: (asset: ImagePickerAsset) => Promise<ProfilePhoto>,

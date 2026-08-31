@@ -10,7 +10,6 @@ import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { LockBadge } from "@/components/ui/LockBadge";
 import { RetroPressable } from "@/components/ui/RetroPressable";
-import { MAX_PHOTOS } from "@/hooks/usePhotos";
 import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
@@ -18,6 +17,7 @@ import {
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
+import { MAX_PHOTOS } from "@/lib/photo/picker";
 import { useAccentToken } from "@/lib/theme/accent";
 
 const COLUMNS = 3;

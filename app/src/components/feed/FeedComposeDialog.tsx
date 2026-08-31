@@ -14,12 +14,12 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroPressable } from "@/components/ui/RetroPressable";
-import { pickSinglePhoto, takePhoto } from "@/hooks/usePhotos";
 import {
   COVER_IMAGE_STYLE,
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
+import { pickSinglePhoto, takePhoto } from "@/lib/photo/picker";
 
 const CAPTION_MAX_LENGTH = 30;
 
