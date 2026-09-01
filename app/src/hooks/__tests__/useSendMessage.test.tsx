@@ -10,6 +10,8 @@ import {
   ApiError,
   type ChatMessagePage,
   type ChatMessageResponse,
+  type ChatRoomPage,
+  type ChatRoomResponse,
 } from "@/lib/api";
 import { useUploadStore } from "@/lib/chat/upload-store";
 import { toChatPhoto, uploadChatPhotoFile } from "@/lib/photo";
@@ -136,7 +138,91 @@ beforeEach(() => {
   uploadVideo.mockResolvedValue({ objectKey: "v", thumbnailKey: "t" });
 });
 
+const roomsKey = [...CHAT_ROOMS_KEY, false];
+
+function chatRoom(
+  roomId: number,
+  extra: Partial<ChatRoomResponse> = {},
+): ChatRoomResponse {
+  return {
+    roomId,
+    memberId: 2,
+    nickname: "상대",
+    lastMessageType: "TEXT",
+    lastMessageContent: "old",
+    lastMessageAt: "2026-08-18T00:00:00Z",
+    unreadCount: 0,
+    notificationEnabled: true,
+    pinned: false,
+    ...extra,
+  };
+}
+
+function seedRooms(
+  client: ReturnType<typeof createTestQueryClient>,
+  rooms: ChatRoomResponse[] = [chatRoom(ROOM_ID)],
+) {
+  const data: InfiniteData<ChatRoomPage> = {
+    pages: [{ items: rooms, nextCursor: null }],
+    pageParams: [undefined],
+  };
+  client.setQueryData(roomsKey, data);
+}
+
+function seededRooms(client: ReturnType<typeof createTestQueryClient>) {
+  return (
+    client.getQueryData<InfiniteData<ChatRoomPage>>(roomsKey)?.pages[0].items ??
+    []
+  );
+}
+
 describe("useSendMessage 텍스트", () => {
+  it("서버 응답 전에 방 목록 미리보기를 바꾼다", async () => {
+    const hook = await setup();
+    seedRooms(hook.client);
+    send.mockReturnValue(new Promise(() => undefined));
+
+    await act(async () => hook.result.current.sendText("hi"));
+
+    expect(seededRooms(hook.client)[0]?.lastMessageContent).toBe("hi");
+  });
+
+  it("보낸 방을 1페이지의 고정 섹션 아래 맨 위로 올린다", async () => {
+    const hook = await setup();
+    seedRooms(hook.client, [
+      chatRoom(9, { pinned: true }),
+      chatRoom(8),
+      chatRoom(ROOM_ID),
+    ]);
+    send.mockReturnValue(new Promise(() => undefined));
+
+    await act(async () => hook.result.current.sendText("hi"));
+
+    expect(seededRooms(hook.client).map((room) => room.roomId)).toEqual([
+      9,
+      ROOM_ID,
+      8,
+    ]);
+  });
+
+  it("고정한 방에서 보내면 맨 위로 올린다", async () => {
+    const hook = await setup();
+    seedRooms(hook.client, [
+      chatRoom(9, { pinned: true }),
+      chatRoom(ROOM_ID, { pinned: true }),
+      chatRoom(8),
+    ]);
+    send.mockReturnValue(new Promise(() => undefined));
+
+    await act(async () => hook.result.current.sendText("hi"));
+
+    expect(seededRooms(hook.client).map((room) => room.roomId)).toEqual([
+      ROOM_ID,
+      9,
+      8,
+    ]);
+  });
+
   it("임시 메시지를 앞에 넣었다가 응답으로 바꾸고 방 목록을 갱신한다", async () => {
     const hook = await setup();
     send.mockResolvedValue(serverMessage(2, { content: "hi" }));

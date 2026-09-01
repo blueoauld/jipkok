@@ -15,6 +15,8 @@ import {
   api,
   type ChatMessagePage,
   type ChatMessageResponse,
+  type ChatRoomPage,
+  type ChatRoomResponse,
   type ReplyMessageResponse,
 } from "@/lib/api";
 import { type UploadPhase, useUploadStore } from "@/lib/chat/upload-store";
@@ -76,6 +78,19 @@ function updateFeed(
   );
 }
 
+function raiseToSectionTop(items: ChatRoomResponse[], roomId: number) {
+  const room = items.find((item) => item.roomId === roomId);
+
+  if (!room) {
+    return items;
+  }
+
+  const rest = items.filter((item) => item.roomId !== roomId);
+  const at = room.pinned ? 0 : rest.filter((item) => item.pinned).length;
+
+  return [...rest.slice(0, at), room, ...rest.slice(at)];
+}
+
 export function useSendMessage(
   roomId: number,
   senderId: number,
@@ -84,9 +99,32 @@ export function useSendMessage(
 ) {
   const queryClient = useQueryClient();
 
+  // 목록 미리보기를 낙관적으로 바꾸고, 1페이지 안에서만 자기 섹션(고정/일반) 맨 위로
+  // 올린다. 다른 페이지의 방은 커서가 어긋나지 않게 문구만 바꾸고 재조회가 옮긴다.
+  const previewRooms = (message: ChatMessageResponse) =>
+    queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
+      { queryKey: CHAT_ROOMS_KEY },
+      (current) =>
+        mapPages(current, (items, index) => {
+          const updated = items.map((item) =>
+            item.roomId === roomId
+              ? {
+                  ...item,
+                  lastMessageType: message.type,
+                  lastMessageContent: message.content,
+                  lastMessageAt: message.createdAt,
+                }
+              : item,
+          );
+
+          return index === 0 ? raiseToSectionTop(updated, roomId) : updated;
+        }),
+    );
+
   const prepend = async (messages: ChatMessageResponse[]) => {
     await queryClient.cancelQueries({ queryKey: chatMessagesKey(roomId) });
     updateFeed(queryClient, roomId, (items) => [...messages, ...items]);
+    previewRooms(messages[messages.length - 1]);
   };
 
   const replace = (temp: ChatMessageResponse, message: ChatMessageResponse) =>
@@ -128,6 +166,7 @@ export function useSendMessage(
       controller.abort();
       uploads().remove(id);
       discard([temp.messageId]);
+      refreshRooms();
     };
     const retry = () => {
       void sendMedia(temp, initialPhase, work);
