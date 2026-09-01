@@ -1,8 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 
-import { invalidateChatLists } from "@/hooks/useChatRooms";
-import { api, type ChatMessageResponse } from "@/lib/api";
+import { CHAT_ROOMS_KEY, invalidateChatLists } from "@/hooks/useChatRooms";
+import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
+import { api, type ChatMessageResponse, type ChatRoomPage } from "@/lib/api";
+import { mapPages } from "@/lib/paging";
 import { dismissRoomNotifications } from "@/lib/push/notifications";
 import { maybeRequestReview } from "@/lib/review/store";
 
@@ -13,12 +19,40 @@ export function useChatRoomEffects(
 ) {
   const queryClient = useQueryClient();
 
+  // 방에 들어오자마자 목록 배지와 전체 안읽음 수를 지운다. 실제 값은 재조회가 맞춘다.
+  const clearUnread = () => {
+    let cleared = 0;
+
+    queryClient.setQueriesData<InfiniteData<ChatRoomPage>>(
+      { queryKey: CHAT_ROOMS_KEY },
+      (current) =>
+        mapPages(current, (items) =>
+          items.map((item) => {
+            if (item.roomId !== roomId || item.unreadCount === 0) {
+              return item;
+            }
+
+            cleared = item.unreadCount;
+
+            return { ...item, unreadCount: 0 };
+          }),
+        ),
+    );
+
+    if (cleared > 0) {
+      queryClient.setQueryData<number>(CHAT_UNREAD_COUNT_KEY, (total) =>
+        Math.max(0, (total ?? 0) - cleared),
+      );
+    }
+  };
+
   const { mutate: markRead } = useMutation({
     mutationFn: (lastReadMessageId: number) =>
       api.chats.markRead(roomId, lastReadMessageId),
     networkMode: "online",
     retry: 2,
-    onSuccess: () => invalidateChatLists(queryClient),
+    onMutate: clearUnread,
+    onSettled: () => invalidateChatLists(queryClient),
   });
 
   const newestMessageId = messages?.[0]?.messageId ?? 0;
