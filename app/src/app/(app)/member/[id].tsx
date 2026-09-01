@@ -540,7 +540,12 @@ export default function MemberProfileScreen() {
               />
 
               <YStack gap="$2">
-                <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+                <Text
+                  theme="gray"
+                  color="$color11"
+                  fontSize="$3"
+                  fontWeight="600"
+                >
                   {t("memberDetail.memoTitle")}
                 </Text>
                 <RetroCard onPress={() => setMemoOpen(true)}>
