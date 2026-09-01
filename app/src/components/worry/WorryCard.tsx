@@ -5,10 +5,10 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, useTheme, XStack } from "tamagui";
 
+import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
 import type { WorryPostResponse } from "@/lib/api";
-import { formatRelativeTime } from "@/lib/date";
 
 const CONTENT_MAX_LINES = 3;
 const COUNT_ICON_SIZE = 16;
@@ -47,9 +47,7 @@ function Card({
             {worry.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
           </Text>
         </XStack>
-        <Text theme="gray" color="$color11" fontSize="$2">
-          {formatRelativeTime(worry.createdAt)}
-        </Text>
+        <RelativeTime at={worry.createdAt} />
       </XStack>
 
       <Text fontSize="$4" numberOfLines={CONTENT_MAX_LINES}>

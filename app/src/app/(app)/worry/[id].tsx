@@ -20,6 +20,7 @@ import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
+import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroInput } from "@/components/ui/RetroInput";
@@ -40,7 +41,6 @@ import {
   type WorryPostResponse,
 } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
-import { formatRelativeTime } from "@/lib/date";
 import {
   DISABLED_OPACITY,
   KEYBOARD_OVERLAP,
@@ -123,9 +123,7 @@ function PostSection({
             {post.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
           </Text>
         </XStack>
-        <Text theme="gray" color="$color11" fontSize="$2">
-          {formatRelativeTime(post.createdAt)}
-        </Text>
+        <RelativeTime at={post.createdAt} />
       </XStack>
 
       <Text fontSize="$4">{translation.contentOf(post.content)}</Text>
@@ -239,9 +237,7 @@ const CommentRow = memo(function CommentRow({
           >
             {commentLabel(comment)}
           </Text>
-          <Text theme="gray" color="$color11" fontSize="$2">
-            {formatRelativeTime(comment.createdAt)}
-          </Text>
+          <RelativeTime at={comment.createdAt} />
         </XStack>
 
         {active ? (

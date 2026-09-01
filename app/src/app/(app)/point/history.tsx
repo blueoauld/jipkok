@@ -45,11 +45,11 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
     <RetroCard>
       <XStack items="center" gap="$3">
         <YStack flex={1} gap="$1">
-          <Text numberOfLines={1} fontSize="$4" fontWeight="600">
+          <Text numberOfLines={1} fontSize="$4" fontWeight="500">
             {pointTypeLabel(type)}
           </Text>
 
-          <Text theme="gray" color="$color11" fontSize="$3">
+          <Text theme="gray" color="$color11" fontSize="$2">
             {formatDateTime(recordedAt)}
           </Text>
         </YStack>

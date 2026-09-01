@@ -121,7 +121,7 @@ function Row({
             </Text>
 
             {distance !== undefined && distance !== null && (
-              <Text shrink={0} fontSize="$2">
+              <Text theme="gray" shrink={0} fontSize="$2" color="$color11">
                 {formatDistance(distance)}
               </Text>
             )}

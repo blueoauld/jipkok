@@ -7,7 +7,7 @@ export function RelativeTime({ at, ...props }: TextProps & { at: string }) {
   const now = useNow();
 
   return (
-    <Text shrink={0} fontSize="$2" {...props}>
+    <Text theme="gray" shrink={0} fontSize="$2" color="$color11" {...props}>
       {formatRelativeTime(at, now)}
     </Text>
   );

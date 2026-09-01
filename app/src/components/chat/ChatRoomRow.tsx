@@ -207,7 +207,7 @@ function Row({
                     )}
                   </XStack>
 
-                  <Text shrink={0} fontSize="$2">
+                  <Text theme="gray" shrink={0} fontSize="$2" color="$color11">
                     {formatChatTime(room.lastMessageAt)}
                   </Text>
                 </XStack>
