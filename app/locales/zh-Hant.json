@@ -3,6 +3,7 @@
     "CFBundleDisplayName": "Jipkok",
     "NSPhotoLibraryUsageDescription": "為了在個人檔案與動態新增照片、進行檢舉，以及在聊天中傳送照片與影片，需要照片存取權限。",
     "NSCameraUsageDescription": "為了拍攝並發布或傳送照片，需要相機存取權限。",
+    "NSMicrophoneUsageDescription": "為了錄製並傳送影片，需要麥克風存取權限。",
     "NSPhotoLibraryAddUsageDescription": "為了儲存在聊天中收到的照片與影片，需要照片存取權限。",
     "NSLocationWhenInUseUsageDescription": "為了依距離顯示附近的會員，需要位置資訊存取權限。",
     "NSUserTrackingUsageDescription": "為了顯示符合興趣的廣告，需要追蹤許可。"

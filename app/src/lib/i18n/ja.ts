@@ -49,6 +49,7 @@ export const ja: typeof ko = {
     me: "自分",
     attachAlbum: "アルバム",
     attachCamera: "写真を撮る",
+    attachVideo: "動画を撮る",
   },
   profileEdit: {
     title: "プロフィール編集",
@@ -288,6 +289,7 @@ export const ja: typeof ko = {
       "ボーナスがまだ反映されていません。広告ボーナスは1日{{count}}回まで受け取れます。",
     adLoading: "広告を準備しています。しばらくしてからもう一度お試しください。",
     cameraDenied: "カメラの権限が必要です。",
+    cameraUnavailable: "この端末ではカメラを使用できません。",
     keepForeground: "送信が終わるまでアプリを開いたままにしてください。",
     withdrawNotice:
       "退会するとプロフィールとやり取りした会話、活動履歴がすべて削除され、復元できません。",

@@ -49,6 +49,7 @@ export const en: typeof ko = {
     me: "Me",
     attachAlbum: "Album",
     attachCamera: "Take photo",
+    attachVideo: "Record video",
   },
   profileEdit: {
     title: "Edit profile",
@@ -285,6 +286,7 @@ export const en: typeof ko = {
       "The reward hasn't been applied yet. You can get ad rewards up to {{count}} times a day.",
     adLoading: "Getting the ad ready. Please try again in a moment.",
     cameraDenied: "Camera access is required.",
+    cameraUnavailable: "The camera isn't available on this device.",
     keepForeground: "Keep the app open until the upload finishes.",
     withdrawNotice:
       "Deleting your account removes your profile, conversations, and activity for good. This can't be undone.",

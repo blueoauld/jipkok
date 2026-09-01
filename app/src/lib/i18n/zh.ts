@@ -48,6 +48,7 @@ export const zh: typeof ko = {
     me: "我",
     attachAlbum: "相簿",
     attachCamera: "拍照",
+    attachVideo: "錄影",
   },
   profileEdit: {
     title: "編輯個人檔案",
@@ -274,6 +275,7 @@ export const zh: typeof ko = {
     adRewardPending: "獎勵尚未入帳。廣告獎勵每天最多可獲得 {{count}} 次。",
     adLoading: "廣告準備中。請稍後再試。",
     cameraDenied: "需要相機權限。",
+    cameraUnavailable: "此裝置無法使用相機。",
     keepForeground: "傳送完成前請保持 App 開啟。",
     withdrawNotice:
       "刪除帳號後，個人檔案、對話紀錄與活動紀錄將全部刪除，且無法復原。",

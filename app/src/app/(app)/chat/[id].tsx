@@ -203,6 +203,7 @@ export default function ChatRoomScreen() {
   const attachItems: MenuSheetItem[] = [
     { label: t("chatRoom.attachAlbum"), onPress: media.pick },
     { label: t("chatRoom.attachCamera"), onPress: media.capture },
+    { label: t("chatRoom.attachVideo"), onPress: media.captureVideo },
   ];
 
   const menuItems: MenuSheetItem[] = [

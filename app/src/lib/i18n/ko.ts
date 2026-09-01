@@ -48,6 +48,7 @@ export const ko = {
     me: "나",
     attachAlbum: "앨범",
     attachCamera: "사진 촬영",
+    attachVideo: "동영상 촬영",
   },
   profileEdit: {
     title: "프로필 편집",
@@ -285,6 +286,7 @@ export const ko = {
       "보상이 아직 반영되지 않았습니다. 광고 보상은 하루 {{count}}번까지 받을 수 있습니다.",
     adLoading: "광고를 준비하고 있습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     cameraDenied: "카메라 권한이 필요합니다.",
+    cameraUnavailable: "이 기기에서는 카메라를 쓸 수 없습니다.",
     keepForeground: "전송이 끝날 때까지 앱을 켜 두세요.",
     withdrawNotice:
       "탈퇴하면 프로필과 주고받은 대화, 활동 내역이 모두 삭제되며 복구할 수 없습니다.",

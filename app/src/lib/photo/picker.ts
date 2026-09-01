@@ -1,3 +1,4 @@
+import * as Device from "expo-device";
 import * as ImagePicker from "expo-image-picker";
 
 import { ApiError } from "@/lib/api";
@@ -11,6 +12,7 @@ const PICK_QUALITY = 1;
 
 const PERMISSION_DENIED_CODE = "PERMISSION_DENIED";
 const CAMERA_DENIED_MESSAGE = i18n.t("hook.cameraDenied");
+const CAMERA_UNAVAILABLE_MESSAGE = i18n.t("hook.cameraUnavailable");
 
 // 취소는 빈 결과로, 권한 거부는 예외로 갈라 호출부가 구분할 수 있게 한다.
 function denied(message: string) {
@@ -26,6 +28,11 @@ async function requireLibrary() {
 }
 
 async function requireCamera() {
+  // 시뮬레이터에는 카메라가 없어서 네이티브 피커가 크래시한다.
+  if (!Device.isDevice) {
+    throw denied(CAMERA_UNAVAILABLE_MESSAGE);
+  }
+
   const { granted } = await ImagePicker.requestCameraPermissionsAsync();
 
   if (!granted) {
@@ -80,6 +87,17 @@ export async function takePhoto() {
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images"],
     quality: PICK_QUALITY,
+  });
+
+  return result.canceled ? null : result.assets[0];
+}
+
+export async function takeVideo() {
+  await requireCamera();
+
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ["videos"],
+    videoMaxDuration: VIDEO_MAX_SECONDS,
   });
 
   return result.canceled ? null : result.assets[0];
