@@ -6950,7 +6950,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ScrollResponseMemberSummaryResponse"];
+                    "application/json": components["schemas"]["ScrollResponseMemberListItemResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

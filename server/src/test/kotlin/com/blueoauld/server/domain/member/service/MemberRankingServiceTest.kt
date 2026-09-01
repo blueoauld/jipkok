@@ -26,7 +26,7 @@ class MemberRankingServiceTest {
     }
 
     @Test
-    fun `좋아요 순으로 조회해 요약을 준다`() {
+    fun `좋아요 순으로 조회해 접속 시각과 함께 준다`() {
         // given
         every { memberListRepository.findByReceivedLikeCount(ME_ID, "FEMALE", null, null, null, 20) } returns
             listOf(row(2L, 7.0), row(3L, 3.0))
@@ -36,6 +36,7 @@ class MemberRankingServiceTest {
 
         // then
         assertThat(response.items.map { it.memberId }).containsExactly(2L, 3L)
+        assertThat(response.items.map { it.locatedAt }).containsExactly(LOCATED_AT, LOCATED_AT)
         assertThat(response.nextCursor).isNull()
     }
 

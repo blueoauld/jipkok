@@ -85,7 +85,7 @@ class MemberController(
         @RequestParam(required = false) gender: Gender?,
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
-    ): ScrollResponse<MemberSummaryResponse> = memberRankingService.findRanking(memberId, gender, cursor, size)
+    ): ScrollResponse<MemberListItemResponse> = memberRankingService.findRanking(memberId, gender, cursor, size)
 
     @Operation(summary = "닉네임 검색")
     @GetMapping("/search")

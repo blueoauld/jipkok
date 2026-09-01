@@ -6376,7 +6376,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ScrollResponseMemberSummaryResponse"
+                                    "$ref": "#/components/schemas/ScrollResponseMemberListItemResponse"
                                 }
                             }
                         }

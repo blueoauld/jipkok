@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
+import com.blueoauld.server.domain.member.dto.projection.MemberListRow
+import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberListRepository
 import com.blueoauld.server.global.response.CursorResponse
@@ -21,7 +22,7 @@ class MemberRankingService(
         gender: Gender?,
         cursor: String?,
         size: Int,
-    ): ScrollResponse<MemberSummaryResponse> {
+    ): ScrollResponse<MemberListItemResponse> {
         val pageSize = CursorResponse.pageSize(size)
         val decoded = MemberListCursor.decodeRanking(cursor)
         val rows = memberListRepository.findByReceivedLikeCount(
@@ -35,7 +36,7 @@ class MemberRankingService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }),
+            items = toItems(memberId, rows),
             nextCursor = last?.let {
                 MemberListCursor.encodeRanking(
                     likeCount = it.getOrderValue().toInt(),
@@ -44,5 +45,16 @@ class MemberRankingService(
                 )
             },
         )
+    }
+
+    private fun toItems(memberId: Long, rows: List<MemberListRow>): List<MemberListItemResponse> {
+        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() })
+            .associateBy { it.memberId }
+
+        return rows.mapNotNull { row ->
+            summaries[row.getMemberId()]?.let {
+                MemberListItemResponse.of(it, row.getLocatedAt(), row.getDistance(), row.getFavoritedByMe())
+            }
+        }
     }
 }

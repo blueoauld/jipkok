@@ -154,7 +154,7 @@ export const members = {
     request<MemberListPage>("/api/members", { query: params }),
 
   ranking: (params: MemberRankingParams = {}) =>
-    request<MemberSearchPage>("/api/members/ranking", { query: params }),
+    request<MemberListPage>("/api/members/ranking", { query: params }),
 
   search: (params: MemberSearchParams) =>
     request<MemberSearchPage>("/api/members/search", { query: params }),
