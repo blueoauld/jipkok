@@ -7,7 +7,7 @@ import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, type ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound } from "@/lib/chat";
 import i18n from "@/lib/i18n";
-import { MAX_PHOTOS, pickChatMedia } from "@/lib/photo/picker";
+import { MAX_PHOTOS, pickChatMedia, takePhoto } from "@/lib/photo/picker";
 import { showToast } from "@/lib/toast/store";
 import {
   isVideoTooLong,
@@ -96,6 +96,19 @@ export function useChatMedia({
     }
   };
 
+  const capture = async () => {
+    try {
+      const photo = await takePhoto();
+
+      if (photo) {
+        sendPhotos([photo]);
+        onPicked();
+      }
+    } catch (error) {
+      onError(error);
+    }
+  };
+
   return {
     viewerUrl,
     openViewer: setViewerUrl,
@@ -104,5 +117,6 @@ export function useChatMedia({
     playVideo,
     closePlayer: () => setPlayingUrl(null),
     pick,
+    capture,
   };
 }

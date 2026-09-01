@@ -47,6 +47,8 @@ export const en: typeof ko = {
     profile: "Profile",
     leave: "Leave",
     me: "Me",
+    attachAlbum: "Album",
+    attachCamera: "Take photo",
   },
   profileEdit: {
     title: "Edit profile",

@@ -48,7 +48,7 @@ export function ChatInputBar({
   reply,
   replyName,
   onSend,
-  onPickPhotos,
+  onAttach,
   onCancelReply,
 }: {
   ref?: Ref<ChatInputBarHandle>;
@@ -57,7 +57,7 @@ export function ChatInputBar({
   reply: ChatMessageResponse | null;
   replyName: string;
   onSend: (content: string) => void;
-  onPickPhotos: () => void;
+  onAttach: () => void;
   onCancelReply: () => void;
 }) {
   const { t } = useTranslation();
@@ -149,7 +149,7 @@ export function ChatInputBar({
           pressBg="$yellow10"
           items="center"
           justify="center"
-          onPress={uploading ? undefined : onPickPhotos}
+          onPress={uploading ? undefined : onAttach}
         >
           {uploading ? (
             <Spinner size="small" color="white" />

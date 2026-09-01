@@ -46,6 +46,8 @@ export const zh: typeof ko = {
     profile: "個人檔案",
     leave: "離開",
     me: "我",
+    attachAlbum: "相簿",
+    attachCamera: "拍照",
   },
   profileEdit: {
     title: "編輯個人檔案",

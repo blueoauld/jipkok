@@ -62,7 +62,7 @@
         "expo-image-picker",
         {
           "photosPermission": "프로필, 피드, 신고에 사진을 올리고 대화에서 사진과 동영상을 보내기 위해 사진 접근 권한이 필요합니다.",
-          "cameraPermission": "피드에 올릴 사진을 찍기 위해 카메라 접근 권한이 필요합니다.",
+          "cameraPermission": "사진을 찍어 올리거나 보내기 위해 카메라 접근 권한이 필요합니다.",
           "microphonePermission": false
         }
       ],

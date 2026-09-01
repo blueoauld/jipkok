@@ -60,6 +60,7 @@ export default function ChatRoomScreen() {
   const keyboardOffset = useSafeAreaInsets().bottom;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState<ChatMessageResponse | null>(
     null,
   );
@@ -198,6 +199,11 @@ export default function ChatRoomScreen() {
   );
 
   const { confirmLeave } = useChatRoomActions({ show, showApiError, confirm });
+
+  const attachItems: MenuSheetItem[] = [
+    { label: t("chatRoom.attachAlbum"), onPress: media.pick },
+    { label: t("chatRoom.attachCamera"), onPress: media.capture },
+  ];
 
   const menuItems: MenuSheetItem[] = [
     {
@@ -353,12 +359,18 @@ export default function ChatRoomScreen() {
             setReplyTarget(null);
             scrollToBottom();
           }}
-          onPickPhotos={media.pick}
+          onAttach={() => setAttachOpen(true)}
           onCancelReply={() => setReplyTarget(null)}
         />
       </KeyboardStickyView>
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
+
+      <MenuSheet
+        open={attachOpen}
+        onOpenChange={setAttachOpen}
+        items={attachItems}
+      />
 
       <MessageActionOverlay
         target={actions.target}

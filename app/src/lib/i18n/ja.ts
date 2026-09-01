@@ -47,6 +47,8 @@ export const ja: typeof ko = {
     profile: "プロフィール",
     leave: "退出",
     me: "自分",
+    attachAlbum: "アルバム",
+    attachCamera: "写真を撮る",
   },
   profileEdit: {
     title: "プロフィール編集",

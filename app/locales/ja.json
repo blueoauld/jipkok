@@ -2,7 +2,7 @@
   "ios": {
     "CFBundleDisplayName": "Jipkok",
     "NSPhotoLibraryUsageDescription": "プロフィールやフィードへの写真の追加、通報、チャットでの写真や動画の送信のために写真へのアクセスが必要です。",
-    "NSCameraUsageDescription": "フィードに投稿する写真を撮影するためにカメラへのアクセスが必要です。",
+    "NSCameraUsageDescription": "写真を撮影して投稿・送信するためにカメラへのアクセスが必要です。",
     "NSPhotoLibraryAddUsageDescription": "チャットで受け取った写真や動画を保存するために写真へのアクセスが必要です。",
     "NSLocationWhenInUseUsageDescription": "近くの会員を距離順に表示するために位置情報へのアクセスが必要です。",
     "NSUserTrackingUsageDescription": "興味に合った広告を表示するためにトラッキングの許可が必要です。"

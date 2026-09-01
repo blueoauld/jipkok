@@ -2,7 +2,7 @@
   "ios": {
     "CFBundleDisplayName": "Jipkok",
     "NSPhotoLibraryUsageDescription": "Jipkok uses your photos for your profile, feed posts, reports, and sending photos or videos in chat.",
-    "NSCameraUsageDescription": "Jipkok uses the camera to take photos for your feed.",
+    "NSCameraUsageDescription": "Jipkok uses the camera to take photos to share.",
     "NSPhotoLibraryAddUsageDescription": "Jipkok saves photos and videos you receive in chat to your photo library.",
     "NSLocationWhenInUseUsageDescription": "Jipkok uses your location to show nearby members sorted by distance.",
     "NSUserTrackingUsageDescription": "Jipkok uses your activity to show ads that match your interests."

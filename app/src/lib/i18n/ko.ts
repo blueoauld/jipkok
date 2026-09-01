@@ -46,6 +46,8 @@ export const ko = {
     profile: "프로필",
     leave: "나가기",
     me: "나",
+    attachAlbum: "앨범",
+    attachCamera: "사진 촬영",
   },
   profileEdit: {
     title: "프로필 편집",
