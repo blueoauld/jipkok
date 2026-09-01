@@ -63,6 +63,7 @@ export type WorryCommentPage = Schemas["CursorResponseWorryCommentResponse"];
 export type CreateWorryPostRequest = Schemas["CreateWorryPostRequest"];
 export type CreateWorryCommentRequest = Schemas["CreateWorryCommentRequest"];
 export type PointRewardResponse = Schemas["PointRewardResponse"];
+export type AttendanceDaysResponse = Schemas["AttendanceDaysResponse"];
 export type PointHistoryResponse = Schemas["PointHistoryResponse"];
 export type PointType = PointHistoryResponse["type"];
 

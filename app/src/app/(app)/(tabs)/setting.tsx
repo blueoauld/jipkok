@@ -26,12 +26,18 @@ import { useTranslation } from "react-i18next";
 import { Linking, ScrollView } from "react-native";
 import { getTokens, Spinner, Text, useTheme, YStack } from "tamagui";
 
+import { AttendanceGrass } from "@/components/AttendanceGrass";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { RetroBadge } from "@/components/ui/RetroBadge";
+import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
+import {
+  ATTENDANCE_DAYS_KEY,
+  useAttendanceDays,
+} from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -156,14 +162,14 @@ const SECTIONS: SettingItem[][] = [
       href: "/point/history",
     },
     {
-      labelKey: "setting.menu.attendanceReward",
-      icon: CalendarCheckIcon,
-      action: "attendanceReward",
-    },
-    {
       labelKey: "setting.menu.adReward",
       icon: MonitorPlayIcon,
       action: "adReward",
+    },
+    {
+      labelKey: "setting.menu.attendanceReward",
+      icon: CalendarCheckIcon,
+      action: "attendanceReward",
     },
   ],
   [
@@ -228,6 +234,22 @@ function SettingRow({
       {hasNew && <RetroBadge>N</RetroBadge>}
       {pending && <Spinner size="small" />}
     </RetroListRow>
+  );
+}
+
+function AttendanceCard() {
+  const data = useAttendanceDays();
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <YStack mx="$4">
+      <RetroCard p="$4">
+        <AttendanceGrass today={data.today} days={data.days} />
+      </RetroCard>
+    </YStack>
   );
 }
 
@@ -316,6 +338,7 @@ export default function SettingScreen() {
 
       queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
       await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_DAYS_KEY });
       showToast(
         "info",
         t("setting.rewarded", { amount: reward.amount.toLocaleString() }),
@@ -481,13 +504,18 @@ export default function SettingScreen() {
       >
         <YStack gap="$5">
           {SECTIONS.map((items) => (
-            <SettingSection
-              key={items[0].labelKey}
-              items={items}
-              pendingAction={pendingAction}
-              profileViewCount={profileViewCount}
-              onItemPress={handlePress}
-            />
+            <YStack key={items[0].labelKey} gap="$5">
+              <SettingSection
+                items={items}
+                pendingAction={pendingAction}
+                profileViewCount={profileViewCount}
+                onItemPress={handlePress}
+              />
+
+              {items.some((item) => item.action === "adReward") && (
+                <AttendanceCard />
+              )}
+            </YStack>
           ))}
         </YStack>
 

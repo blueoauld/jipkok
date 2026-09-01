@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.attendance.service
 
+import com.blueoauld.server.domain.attendance.dto.response.AttendanceDaysResponse
 import com.blueoauld.server.domain.attendance.entity.Attendance
 import com.blueoauld.server.domain.attendance.repository.AttendanceRepository
 import com.blueoauld.server.domain.member.entity.Member
@@ -118,6 +119,25 @@ class AttendanceServiceTest {
         nickname = "닉네임",
         birthYear = 1998,
     ).apply { pointBalance = POINT_BALANCE }
+
+    @Test
+    fun `최근 91일의 출석 날짜를 오늘 기준과 함께 준다`() {
+        // given
+        val today = LocalDate.of(2026, 8, 2)
+        val from = today.minusDays(90)
+        every {
+            attendanceRepository.findAllByMemberIdAndAttendedOnGreaterThanEqualOrderByAttendedOn(MEMBER_ID, from)
+        } returns listOf(
+            Attendance("+821011112222", MEMBER_ID, from),
+            Attendance("+821011112222", MEMBER_ID, today),
+        )
+
+        // when
+        val response = attendanceService.findDays(MEMBER_ID)
+
+        // then
+        assertThat(response).isEqualTo(AttendanceDaysResponse(today = today, days = listOf(from, today)))
+    }
 
     companion object {
 

@@ -5,6 +5,7 @@ import { request } from "./client";
 import { clearTokens, getRefreshToken, saveTokens } from "./tokens";
 import type {
   AppVersionResponse,
+  AttendanceDaysResponse,
   ChatMessagePage,
   ChatMessageResponse,
   ChatReactionsResponse,
@@ -311,6 +312,8 @@ export const points = {
 export const attendances = {
   checkIn: () =>
     request<PointRewardResponse>("/api/attendances", { method: "POST" }),
+
+  days: () => request<AttendanceDaysResponse>("/api/attendances/me/days"),
 };
 
 export const feeds = {

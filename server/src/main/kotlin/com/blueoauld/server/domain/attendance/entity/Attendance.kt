@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import java.time.LocalDate
@@ -18,6 +19,9 @@ import java.time.LocalDate
             name = "uk_attendance_phone_number_attended_on",
             columnNames = ["phone_number", "attended_on"],
         ),
+    ],
+    indexes = [
+        Index(name = "idx_attendance_member_id_attended_on", columnList = "member_id, attended_on"),
     ],
 )
 class Attendance(

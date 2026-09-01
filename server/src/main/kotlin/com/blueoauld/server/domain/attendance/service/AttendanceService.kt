@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.attendance.service
 
+import com.blueoauld.server.domain.attendance.dto.response.AttendanceDaysResponse
 import com.blueoauld.server.domain.attendance.entity.Attendance
 import com.blueoauld.server.domain.attendance.repository.AttendanceRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -32,5 +33,23 @@ class AttendanceService(
 
         attendanceRepository.saveAndFlush(Attendance(member.phoneNumber, memberId, today))
         return pointService.earn(memberId, PointType.ATTENDANCE_REWARD)
+    }
+
+    @Transactional(readOnly = true)
+    fun findDays(memberId: Long): AttendanceDaysResponse {
+        val today = clock.today()
+        val from = today.minusDays(GRASS_DAYS - 1L)
+
+        return AttendanceDaysResponse(
+            today = today,
+            days = attendanceRepository
+                .findAllByMemberIdAndAttendedOnGreaterThanEqualOrderByAttendedOn(memberId, from)
+                .map { it.attendedOn },
+        )
+    }
+
+    companion object {
+
+        const val GRASS_DAYS = 91
     }
 }
