@@ -113,7 +113,7 @@ class MemberFavoriteServiceTest {
         every {
             memberFavoriteRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, Long.MAX_VALUE, any())
         } returns favorites
-        every { memberSummaryService.findSummaries(listOf(FAVORITE_MEMBER_ID, 3L)) } returns
+        every { memberSummaryService.findSummaries(any(), listOf(FAVORITE_MEMBER_ID, 3L)) } returns
             listOf(summary(FAVORITE_MEMBER_ID), summary(3L))
 
         // when
@@ -135,7 +135,7 @@ class MemberFavoriteServiceTest {
         memberFavoriteService.findReceived(FAVORITE_MEMBER_ID, 40L, 20)
 
         // then
-        verify { memberSummaryService.findSummaries(listOf(MEMBER_ID)) }
+        verify { memberSummaryService.findSummaries(any(), listOf(MEMBER_ID)) }
     }
 
     private fun favorite(id: Long, favoriteMemberId: Long) = mockk<MemberFavorite>(relaxed = true) {
@@ -152,6 +152,7 @@ class MemberFavoriteServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     companion object {

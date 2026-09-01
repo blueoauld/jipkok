@@ -11,6 +11,7 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
+import com.blueoauld.server.domain.memo.service.MemberMemoService
 import com.blueoauld.server.domain.profileview.event.ProfileViewedEvent
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -31,6 +32,7 @@ class MemberDetailService(
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val memberMemoService: MemberMemoService,
     private val eventPublisher: ApplicationEventPublisher,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
@@ -64,6 +66,7 @@ class MemberDetailService(
             distance = distanceBetween(me, target),
             comment = if (blockedByThem) null else target.comment,
             bio = if (blockedByThem) null else target.bio,
+            memo = memberMemoService.findContent(memberId, targetId),
             likedByMe = memberLikeRepository.existsByLikerIdAndLikedMemberId(memberId, targetId),
             favoritedByMe = memberFavoriteRepository.existsByMemberIdAndFavoriteMemberId(memberId, targetId),
             secretPhotoGrantedToMe = secretPhotoAccessRepository.existsByOwnerIdAndViewerId(targetId, memberId),

@@ -47,7 +47,7 @@ class MemberListServiceTest {
     @BeforeEach
     fun setUp() {
         every { memberRepository.findById(ME_ID) } returns Optional.of(me)
-        every { memberSummaryService.findSummaries(any()) } answers { firstArg<List<Long>>().map(::summary) }
+        every { memberSummaryService.findSummaries(any(), any()) } answers { secondArg<List<Long>>().map(::summary) }
     }
 
     @Test
@@ -132,7 +132,7 @@ class MemberListServiceTest {
         every {
             memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
         } returns listOf(row(2L, 5.0), row(3L, 4.0))
-        every { memberSummaryService.findSummaries(listOf(2L, 3L)) } returns listOf(summary(3L))
+        every { memberSummaryService.findSummaries(any(), listOf(2L, 3L)) } returns listOf(summary(3L))
 
         // when
         val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 20)
@@ -216,6 +216,7 @@ class MemberListServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     companion object {

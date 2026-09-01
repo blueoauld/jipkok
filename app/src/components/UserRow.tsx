@@ -67,6 +67,7 @@ function Row({
     locatedAt,
     distance,
     favoritedByMe,
+    memo,
   } = member;
 
   return (
@@ -81,7 +82,7 @@ function Row({
         <YStack flex={1} gap="$1">
           <XStack items="center" justify="space-between" gap="$2">
             <XStack flex={1} items="center" gap="$1.5">
-              <Text shrink={1} numberOfLines={1} fontSize="$4" fontWeight="600">
+              <Text shrink={0} fontSize="$4" fontWeight="600">
                 {nickname}
               </Text>
 
@@ -91,6 +92,17 @@ function Row({
                   weight="fill"
                   color={FAVORITE_COLOR}
                 />
+              )}
+
+              {memo && (
+                <Text
+                  shrink={1}
+                  numberOfLines={1}
+                  fontSize="$2"
+                  color="$color11"
+                >
+                  {memo}
+                </Text>
               )}
             </XStack>
 

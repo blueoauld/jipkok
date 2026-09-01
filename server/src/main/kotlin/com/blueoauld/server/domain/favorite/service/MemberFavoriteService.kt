@@ -51,7 +51,7 @@ class MemberFavoriteService(
             Limit.of(pageSize),
         )
 
-        return toResponse(favorites, pageSize) { it.favoriteMemberId }
+        return toResponse(memberId, favorites, pageSize) { it.favoriteMemberId }
     }
 
     @Transactional(readOnly = true)
@@ -63,15 +63,16 @@ class MemberFavoriteService(
             Limit.of(pageSize),
         )
 
-        return toResponse(favorites, pageSize) { it.memberId }
+        return toResponse(favoriteMemberId, favorites, pageSize) { it.memberId }
     }
 
     private fun toResponse(
+        viewerId: Long,
         favorites: List<MemberFavorite>,
         pageSize: Int,
         toMemberId: (MemberFavorite) -> Long,
     ) = CursorResponse(
-        items = memberSummaryService.findSummaries(favorites.map(toMemberId)),
+        items = memberSummaryService.findSummaries(viewerId, favorites.map(toMemberId)),
         nextCursor = favorites.lastOrNull()?.id.takeIf { favorites.size == pageSize },
     )
 }

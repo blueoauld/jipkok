@@ -16,6 +16,7 @@ data class MemberDetailResponse(
     val distance: Double?,
     val comment: String?,
     val bio: String?,
+    val memo: String?,
     val likedByMe: Boolean,
     val favoritedByMe: Boolean,
     val secretPhotoGrantedToMe: Boolean,

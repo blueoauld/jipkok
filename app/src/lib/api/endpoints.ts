@@ -187,6 +187,12 @@ export const members = {
       body: { content },
     }),
 
+  updateMemo: (memberId: number, content: string) =>
+    request<void>(`/api/members/${memberId}/memo`, {
+      method: "PUT",
+      body: { content },
+    }),
+
   updateFeedNotification: (enabled: boolean) =>
     request<void>("/api/members/me/feed-notification", {
       method: "PUT",

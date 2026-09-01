@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.memo.service.MemberMemoService
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
@@ -22,11 +23,18 @@ class MemberSummaryServiceTest {
 
     private val memberPhotoRepository = mockk<MemberPhotoRepository>()
 
+    private val memberMemoService = mockk<MemberMemoService>()
+
     private val photoStorage = mockk<PhotoStorage>()
+
+    init {
+        every { memberMemoService.findContents(any(), any()) } returns emptyMap()
+    }
 
     private val service = MemberSummaryService(
         memberRepository,
         memberPhotoRepository,
+        memberMemoService,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -38,7 +46,7 @@ class MemberSummaryServiceTest {
         every { memberPhotoRepository.findAllByMemberIdIn(any()) } returns emptyList()
 
         // when
-        val summaries = service.findSummaries(listOf(2L, 9L, 1L))
+        val summaries = service.findSummaries(VIEWER_ID, listOf(2L, 9L, 1L))
 
         // then
         assertThat(summaries.map { it.memberId }).containsExactly(2L, 1L)
@@ -57,7 +65,7 @@ class MemberSummaryServiceTest {
         every { photoStorage.toPublicUrl("members/1/public/first.jpg") } returns "https://cdn/first.jpg"
 
         // when
-        val summary = service.findSummaries(listOf(1L)).single()
+        val summary = service.findSummaries(VIEWER_ID, listOf(1L)).single()
 
         // then
         assertThat(summary.profileImageUrl).isEqualTo("https://cdn/first.jpg")
@@ -72,16 +80,30 @@ class MemberSummaryServiceTest {
         )
 
         // when
-        val summary = service.findSummaries(listOf(1L)).single()
+        val summary = service.findSummaries(VIEWER_ID, listOf(1L)).single()
 
         // then
         assertThat(summary.profileImageUrl).isNull()
     }
 
     @Test
+    fun `내가 남긴 메모를 요약에 싣는다`() {
+        // given
+        every { memberRepository.findAllById(listOf(1L)) } returns listOf(member(1L, 1998))
+        every { memberPhotoRepository.findAllByMemberIdIn(listOf(1L)) } returns emptyList()
+        every { memberMemoService.findContents(VIEWER_ID, listOf(1L)) } returns mapOf(1L to "등산 얘기했던 분")
+
+        // when
+        val summary = service.findSummaries(VIEWER_ID, listOf(1L)).single()
+
+        // then
+        assertThat(summary.memo).isEqualTo("등산 얘기했던 분")
+    }
+
+    @Test
     fun `빈 목록이면 조회하지 않는다`() {
         // when
-        val summaries = service.findSummaries(emptyList())
+        val summaries = service.findSummaries(VIEWER_ID, emptyList())
 
         // then
         assertThat(summaries).isEmpty()
@@ -102,6 +124,8 @@ class MemberSummaryServiceTest {
     }
 
     companion object {
+
+        private const val VIEWER_ID = 99L
 
         private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")
     }

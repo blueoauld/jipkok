@@ -29,6 +29,7 @@ import {
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { Glass } from "@/components/ui/Glass";
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
@@ -38,6 +39,7 @@ import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { relationKey } from "@/hooks/useMemberList";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
+import { PROFILE_VIEWS_KEY } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
@@ -68,6 +70,7 @@ import { useAccentColor } from "@/lib/theme/accent";
 const ACTION_ICON_SIZE = 30;
 
 const NOTE_MAX_LENGTH = 100;
+const MEMO_MAX_LENGTH = 100;
 
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
@@ -85,6 +88,16 @@ const BLOCK_AFFECTED_KEYS = [
   CHAT_ROOMS_KEY,
   CHAT_UNREAD_COUNT_KEY,
   FEEDS_KEY,
+];
+// 메모는 회원 요약을 쓰는 모든 목록에 실려 나온다.
+const MEMO_AFFECTED_KEYS = [
+  ["members"],
+  LIKES_KEY,
+  FAVORITES_KEY,
+  SECRET_PHOTOS_KEY,
+  BLOCKS_KEY,
+  CHAT_ROOMS_KEY,
+  PROFILE_VIEWS_KEY,
 ];
 
 type Relation = {
@@ -232,6 +245,7 @@ export default function MemberProfileScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [gridPhotoIndex, setGridPhotoIndex] = useState<number | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
+  const [memoOpen, setMemoOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
 
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
@@ -252,6 +266,21 @@ export default function MemberProfileScreen() {
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       show("info", t("memberDetail.noteSent"));
+    },
+    onError: showApiError,
+  });
+
+  const updateMemo = useMutation({
+    mutationFn: (content: string) => api.members.updateMemo(memberId, content),
+    onSuccess: (_data, content) => {
+      queryClient.setQueryData<MemberDetailResponse>(
+        queryKey,
+        (current) => current && { ...current, memo: content.trim() || null },
+      );
+      MEMO_AFFECTED_KEYS.forEach((key) =>
+        queryClient.invalidateQueries({ queryKey: key }),
+      );
+      show("info", t("memberDetail.memoSaved"));
     },
     onError: showApiError,
   });
@@ -287,7 +316,9 @@ export default function MemberProfileScreen() {
     onError: showApiError,
   });
 
-  useLoadingOverlay(relateAwaited.isPending || sendNote.isPending);
+  useLoadingOverlay(
+    relateAwaited.isPending || sendNote.isPending || updateMemo.isPending,
+  );
 
   const run = useCallback(
     (
@@ -507,6 +538,20 @@ export default function MemberProfileScreen() {
                 placeholder={profileBioEmptyMessage()}
                 copiedMessage={bioCopiedMessage()}
               />
+
+              <YStack gap="$2">
+                <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
+                  {t("memberDetail.memoTitle")}
+                </Text>
+                <RetroCard onPress={() => setMemoOpen(true)}>
+                  <Text
+                    fontSize="$4"
+                    color={member.memo ? undefined : "$color11"}
+                  >
+                    {member.memo || t("memberDetail.memoPlaceholder")}
+                  </Text>
+                </RetroCard>
+              </YStack>
             </YStack>
           </ScrollView>
 
@@ -553,6 +598,17 @@ export default function MemberProfileScreen() {
           setNoteContent(content);
           sendNote.mutate(content);
         }}
+      />
+
+      <TextInputDialog
+        open={memoOpen}
+        onOpenChange={setMemoOpen}
+        title={t("memberDetail.memoTitle")}
+        placeholder={t("common.contentPlaceholder")}
+        maxLength={MEMO_MAX_LENGTH}
+        defaultValue={member?.memo ?? ""}
+        clearable
+        onSubmit={(content) => updateMemo.mutate(content)}
       />
 
       <PhotoViewer

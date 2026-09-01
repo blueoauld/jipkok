@@ -34,7 +34,7 @@ class ChatRoomService(
     fun findRoom(memberId: Long, roomId: Long): ChatRoomResponse {
         val row = chatRoomRepository.findRoom(memberId, roomId)
             ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
-        val partner = memberSummaryService.findSummaries(listOf(row.getPartnerId())).firstOrNull()
+        val partner = memberSummaryService.findSummaries(memberId, listOf(row.getPartnerId())).firstOrNull()
             ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 
         return ChatRoomResponse.of(row, partner)
@@ -50,7 +50,7 @@ class ChatRoomService(
             limit = Limit.of(pageSize),
         )
 
-        return toResponse(rows, pageSize)
+        return toResponse(memberId, rows, pageSize)
     }
 
     @Transactional(readOnly = true)
@@ -69,7 +69,7 @@ class ChatRoomService(
             limit = Limit.of(pageSize),
         )
 
-        return toResponse(rows, pageSize)
+        return toResponse(memberId, rows, pageSize)
     }
 
     @Transactional
@@ -97,8 +97,12 @@ class ChatRoomService(
         chatRoomRepository.findByMembers(memberId, partnerId)?.let { delete(it, partnerId) }
     }
 
-    private fun toResponse(rows: List<ChatRoomRow>, pageSize: Int): CursorResponse<ChatRoomResponse> {
-        val partners = memberSummaryService.findSummaries(rows.map { it.getPartnerId() })
+    private fun toResponse(
+        memberId: Long,
+        rows: List<ChatRoomRow>,
+        pageSize: Int,
+    ): CursorResponse<ChatRoomResponse> {
+        val partners = memberSummaryService.findSummaries(memberId, rows.map { it.getPartnerId() })
             .associateBy { it.memberId }
 
         return CursorResponse(

@@ -108,6 +108,7 @@ export const ja: typeof ko = {
     PHOTO_003: "写真が大きすぎます。10MBまでアップロードできます。",
     LIKE_001: "自分にはいいねを押せません。",
     FAVORITE_001: "自分はお気に入りに追加できません。",
+    MEMO_001: "自分にはメモを残せません。",
     SECRET_PHOTO_001: "自分にはシークレット写真を公開できません。",
     SECRET_PHOTO_002: "シークレット写真を見ることができません。",
     SUSPENSION_001: "シークレット写真の利用が停止されました。",
@@ -388,6 +389,9 @@ export const ja: typeof ko = {
     openSecretPhoto: "シークレット写真を公開",
     noteTitle: "レター",
     noteSubmit: "送信",
+    memoTitle: "メモ",
+    memoPlaceholder: "自分だけが見られるメモを残せます。",
+    memoSaved: "メモを保存しました。",
   },
   profile: {
     comment: "コメント",

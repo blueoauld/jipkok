@@ -11,4 +11,5 @@ data class MemberSummaryResponse(
     val receivedLikeCount: Int,
     val comment: String?,
     val profileImageUrl: String?,
+    val memo: String?,
 )

@@ -64,7 +64,7 @@ class FeedPostService(
                 size = pageSize,
             )
         }
-        val summaries = memberSummaryService.findSummaries(rows.map { it.getMemberId() }.distinct())
+        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }.distinct())
             .associateBy { it.memberId }
 
         return CursorResponse(

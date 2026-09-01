@@ -55,7 +55,7 @@ class MemberBlockService(
         )
 
         return CursorResponse(
-            items = memberSummaryService.findSummaries(blocks.map { it.blockedMemberId }),
+            items = memberSummaryService.findSummaries(blockerId, blocks.map { it.blockedMemberId }),
             nextCursor = blocks.lastOrNull()?.id.takeIf { blocks.size == pageSize },
         )
     }

@@ -135,6 +135,7 @@ class MemberLikeServiceTest {
         } returns likes
         every {
             memberSummaryService.findSummaries(
+                any(),
                 listOf(
                     LIKED_MEMBER_ID,
                     3L,
@@ -179,7 +180,7 @@ class MemberLikeServiceTest {
         memberLikeService.findReceived(LIKED_MEMBER_ID, 40L, 20)
 
         // then
-        verify { memberSummaryService.findSummaries(listOf(LIKER_ID)) }
+        verify { memberSummaryService.findSummaries(any(), listOf(LIKER_ID)) }
     }
 
     @Test
@@ -215,6 +216,7 @@ class MemberLikeServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     companion object {

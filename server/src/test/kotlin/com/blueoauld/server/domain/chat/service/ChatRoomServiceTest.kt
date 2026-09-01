@@ -65,7 +65,7 @@ class ChatRoomServiceTest {
     fun `방을 조회하면 상대 정보를 함께 준다`() {
         // given
         every { chatRoomRepository.findRoom(ME_ID, ROOM_ID) } returns row()
-        every { memberSummaryService.findSummaries(listOf(PARTNER_ID)) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(any(), listOf(PARTNER_ID)) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRoom(ME_ID, ROOM_ID)
@@ -94,7 +94,7 @@ class ChatRoomServiceTest {
     fun `목록은 상대 정보와 마지막 메시지를 함께 준다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(listOf(PARTNER_ID)) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(any(), listOf(PARTNER_ID)) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -136,7 +136,7 @@ class ChatRoomServiceTest {
     fun `페이지가 가득 차면 다음 커서를 준다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 1)
@@ -149,7 +149,7 @@ class ChatRoomServiceTest {
     fun `마지막 페이지면 다음 커서가 없다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -162,7 +162,7 @@ class ChatRoomServiceTest {
     fun `탈퇴한 상대의 방은 빠진다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any()) } returns emptyList()
+        every { memberSummaryService.findSummaries(any(), any()) } returns emptyList()
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -175,7 +175,7 @@ class ChatRoomServiceTest {
     fun `닉네임 일부만 넣어도 방을 찾는다`() {
         // given
         every { chatRoomRepository.searchRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.searchRooms(ME_ID, "대", cursor = null, size = 20)
@@ -358,6 +358,7 @@ class ChatRoomServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     @Test

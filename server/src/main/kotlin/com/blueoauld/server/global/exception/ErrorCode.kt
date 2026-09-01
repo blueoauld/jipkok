@@ -97,6 +97,8 @@ enum class ErrorCode(
     FEED_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "FEED_002", "게시물을 찾을 수 없습니다."),
     DUPLICATE_FEED_POST_REPORT(HttpStatus.CONFLICT, "FEED_003", "이미 신고한 게시물입니다."),
 
+    SELF_MEMO(HttpStatus.BAD_REQUEST, "MEMO_001", "자기 자신에게는 메모를 남길 수 없습니다."),
+
     SELF_NOTE(HttpStatus.BAD_REQUEST, "CHAT_001", "자기 자신에게는 쪽지를 보낼 수 없습니다."),
     NOTE_RECEIVE_DISABLED(HttpStatus.BAD_REQUEST, "CHAT_002", "상대가 쪽지를 받지 않습니다."),
     NOTE_BLOCKED(HttpStatus.BAD_REQUEST, "CHAT_003", "쪽지를 보낼 수 없습니다."),

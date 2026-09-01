@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
+import com.blueoauld.server.domain.memo.repository.MemberMemoRepository
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
@@ -34,6 +35,7 @@ class MemberWithdrawService(
     private val memberBlockRepository: MemberBlockRepository,
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val memberLikeRepository: MemberLikeRepository,
+    private val memberMemoRepository: MemberMemoRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val profileViewRepository: ProfileViewRepository,
     private val pointHistoryRepository: PointHistoryRepository,
@@ -58,6 +60,7 @@ class MemberWithdrawService(
         memberFavoriteRepository.deleteAllByMember(memberId)
         memberRepository.decreaseReceivedLikeCountLikedBy(memberId)
         memberLikeRepository.deleteAllByMember(memberId)
+        memberMemoRepository.deleteAllByMember(memberId)
         secretPhotoAccessRepository.deleteAllByMember(memberId)
         profileViewRepository.deleteAllByMember(memberId)
         pointHistoryRepository.deleteAllByMemberId(memberId)

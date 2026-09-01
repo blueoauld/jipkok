@@ -99,6 +99,7 @@ export const zh: typeof ko = {
     PHOTO_003: "照片太大。最多可上傳 10MB。",
     LIKE_001: "無法對自己按讚。",
     FAVORITE_001: "無法收藏自己。",
+    MEMO_001: "無法對自己留下備註。",
     SECRET_PHOTO_001: "無法對自己公開私密照片。",
     SECRET_PHOTO_002: "無法查看私密照片。",
     SUSPENSION_001: "私密照片功能已被停權。",
@@ -372,6 +373,9 @@ export const zh: typeof ko = {
     openSecretPhoto: "公開私密照片",
     noteTitle: "私訊",
     noteSubmit: "傳送",
+    memoTitle: "備註",
+    memoPlaceholder: "可以留下只有自己看得到的備註。",
+    memoSaved: "已儲存備註。",
   },
   profile: {
     comment: "留言",

@@ -43,7 +43,7 @@ class MemberListService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = toItems(rows),
+            items = toItems(memberId, rows),
             nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }
@@ -105,8 +105,8 @@ class MemberListService(
         )
     }
 
-    private fun toItems(rows: List<MemberListRow>): List<MemberListItemResponse> {
-        val summaries = memberSummaryService.findSummaries(rows.map { it.getMemberId() })
+    private fun toItems(memberId: Long, rows: List<MemberListRow>): List<MemberListItemResponse> {
+        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() })
             .associateBy { it.memberId }
 
         return rows.mapNotNull { row ->

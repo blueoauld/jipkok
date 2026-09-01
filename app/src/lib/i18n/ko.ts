@@ -105,6 +105,7 @@ export const ko = {
     PHOTO_003: "사진이 너무 큽니다. 10MB까지 올릴 수 있습니다.",
     LIKE_001: "자기 자신에게는 좋아요를 누를 수 없습니다.",
     FAVORITE_001: "자기 자신은 즐겨찾기할 수 없습니다.",
+    MEMO_001: "자기 자신에게는 메모를 남길 수 없습니다.",
     SECRET_PHOTO_001: "자기 자신에게는 비밀 사진을 공개할 수 없습니다.",
     SECRET_PHOTO_002: "비밀 사진을 볼 수 없습니다.",
     SUSPENSION_001: "비밀 사진 이용이 정지되었습니다.",
@@ -385,6 +386,9 @@ export const ko = {
     openSecretPhoto: "비밀 사진 공개",
     noteTitle: "쪽지",
     noteSubmit: "전송",
+    memoTitle: "메모",
+    memoPlaceholder: "나만 보는 메모를 남길 수 있습니다.",
+    memoSaved: "메모를 저장했습니다.",
   },
   profile: {
     comment: "코멘트",

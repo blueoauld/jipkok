@@ -105,6 +105,7 @@ export const en: typeof ko = {
     PHOTO_003: "That photo is too large. You can upload up to 10MB.",
     LIKE_001: "You can't like yourself.",
     FAVORITE_001: "You can't add yourself to favorites.",
+    MEMO_001: "You can't leave a memo on yourself.",
     SECRET_PHOTO_001: "You can't share private photos with yourself.",
     SECRET_PHOTO_002: "You can't view these private photos.",
     SUSPENSION_001: "Your access to private photos has been suspended.",
@@ -384,6 +385,9 @@ export const en: typeof ko = {
     openSecretPhoto: "Share private photos",
     noteTitle: "Note",
     noteSubmit: "Send",
+    memoTitle: "Memo",
+    memoPlaceholder: "Leave a memo only you can see.",
+    memoSaved: "Memo saved.",
   },
   profile: {
     comment: "Comment",

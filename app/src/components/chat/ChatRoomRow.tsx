@@ -162,12 +162,7 @@ function Row({
               <YStack flex={1} gap="$2">
                 <XStack items="center" justify="space-between" gap="$2">
                   <XStack flex={1} items="center" gap="$1.5">
-                    <Text
-                      shrink={1}
-                      numberOfLines={1}
-                      fontSize="$4"
-                      fontWeight="600"
-                    >
+                    <Text shrink={0} fontSize="$4" fontWeight="600">
                       {room.nickname}
                     </Text>
 
@@ -177,6 +172,17 @@ function Row({
                         weight="fill"
                         color={theme.gray9.val}
                       />
+                    )}
+
+                    {room.memo && (
+                      <Text
+                        shrink={1}
+                        numberOfLines={1}
+                        fontSize="$2"
+                        color="$color11"
+                      >
+                        {room.memo}
+                      </Text>
                     )}
                   </XStack>
 

@@ -35,7 +35,7 @@ class MemberRankingService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = memberSummaryService.findSummaries(rows.map { it.getMemberId() }),
+            items = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }),
             nextCursor = last?.let {
                 MemberListCursor.encodeRanking(
                     likeCount = it.getOrderValue().toInt(),

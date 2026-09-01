@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.memo.service.MemberMemoService
 import com.blueoauld.server.domain.profileview.event.ProfileViewedEvent
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -42,6 +43,8 @@ class MemberDetailServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val memberMemoService = mockk<MemberMemoService>()
+
     private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
@@ -53,6 +56,7 @@ class MemberDetailServiceTest {
         memberFavoriteRepository,
         secretPhotoAccessRepository,
         memberBlockRepository,
+        memberMemoService,
         eventPublisher,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -60,6 +64,7 @@ class MemberDetailServiceTest {
 
     @BeforeEach
     fun setUp() {
+        every { memberMemoService.findContent(any(), any()) } returns null
         every { memberRepository.findById(ME_ID) } returns Optional.of(member(37.5, 127.0))
         every { memberRepository.findById(TARGET_ID) } returns Optional.of(member(37.51, 127.0, "상대"))
         every { memberPhotoRepository.findAllByMemberId(TARGET_ID) } returns listOf(

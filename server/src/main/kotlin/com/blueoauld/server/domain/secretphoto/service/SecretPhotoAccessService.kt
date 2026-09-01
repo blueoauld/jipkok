@@ -85,7 +85,7 @@ class SecretPhotoAccessService(
             Limit.of(pageSize),
         )
 
-        return toResponse(accesses, pageSize) { it.viewerId }
+        return toResponse(ownerId, accesses, pageSize) { it.viewerId }
     }
 
     @Transactional(readOnly = true)
@@ -97,15 +97,16 @@ class SecretPhotoAccessService(
             Limit.of(pageSize),
         )
 
-        return toResponse(accesses, pageSize) { it.ownerId }
+        return toResponse(viewerId, accesses, pageSize) { it.ownerId }
     }
 
     private fun toResponse(
+        requesterId: Long,
         accesses: List<SecretPhotoAccess>,
         pageSize: Int,
         toMemberId: (SecretPhotoAccess) -> Long,
     ) = CursorResponse(
-        items = memberSummaryService.findSummaries(accesses.map(toMemberId)),
+        items = memberSummaryService.findSummaries(requesterId, accesses.map(toMemberId)),
         nextCursor = accesses.lastOrNull()?.id.takeIf { accesses.size == pageSize },
     )
 }

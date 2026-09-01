@@ -22,7 +22,7 @@ class MemberRankingServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { memberSummaryService.findSummaries(any()) } answers { firstArg<List<Long>>().map(::summary) }
+        every { memberSummaryService.findSummaries(any(), any()) } answers { secondArg<List<Long>>().map(::summary) }
     }
 
     @Test
@@ -83,6 +83,7 @@ class MemberRankingServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     companion object {

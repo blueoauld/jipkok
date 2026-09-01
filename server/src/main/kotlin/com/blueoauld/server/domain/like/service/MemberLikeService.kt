@@ -54,7 +54,7 @@ class MemberLikeService(
             Limit.of(pageSize),
         )
 
-        return toResponse(likes, pageSize) { it.likedMemberId }
+        return toResponse(likerId, likes, pageSize) { it.likedMemberId }
     }
 
     @Transactional(readOnly = true)
@@ -66,12 +66,16 @@ class MemberLikeService(
             Limit.of(pageSize),
         )
 
-        return toResponse(likes, pageSize) { it.likerId }
+        return toResponse(likedMemberId, likes, pageSize) { it.likerId }
     }
 
-    private fun toResponse(likes: List<MemberLike>, pageSize: Int, toMemberId: (MemberLike) -> Long) =
-        CursorResponse(
-            items = memberSummaryService.findSummaries(likes.map(toMemberId)),
-            nextCursor = likes.lastOrNull()?.id.takeIf { likes.size == pageSize },
-        )
+    private fun toResponse(
+        viewerId: Long,
+        likes: List<MemberLike>,
+        pageSize: Int,
+        toMemberId: (MemberLike) -> Long,
+    ) = CursorResponse(
+        items = memberSummaryService.findSummaries(viewerId, likes.map(toMemberId)),
+        nextCursor = likes.lastOrNull()?.id.takeIf { likes.size == pageSize },
+    )
 }

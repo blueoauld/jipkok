@@ -216,7 +216,7 @@ class SecretPhotoAccessServiceTest {
         every {
             secretPhotoAccessRepository.findByOwnerIdAndIdLessThanOrderByIdDesc(OWNER_ID, Long.MAX_VALUE, any())
         } returns accesses
-        every { memberSummaryService.findSummaries(listOf(VIEWER_ID, 3L)) } returns
+        every { memberSummaryService.findSummaries(any(), listOf(VIEWER_ID, 3L)) } returns
             listOf(summary(VIEWER_ID), summary(3L))
 
         // when
@@ -238,7 +238,7 @@ class SecretPhotoAccessServiceTest {
         secretPhotoAccessService.findReceived(VIEWER_ID, 40L, 20)
 
         // then
-        verify { memberSummaryService.findSummaries(listOf(OWNER_ID)) }
+        verify { memberSummaryService.findSummaries(any(), listOf(OWNER_ID)) }
     }
 
     private fun access(id: Long, viewerId: Long) = mockk<SecretPhotoAccess>(relaxed = true) {
@@ -255,6 +255,7 @@ class SecretPhotoAccessServiceTest {
         receivedLikeCount = 0,
         comment = null,
         profileImageUrl = null,
+        memo = null,
     )
 
     private fun allowView() {

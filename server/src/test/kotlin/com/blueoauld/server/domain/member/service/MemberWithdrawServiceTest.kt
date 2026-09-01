@@ -12,6 +12,7 @@ import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.memo.repository.MemberMemoRepository
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.domain.push.repository.DeviceTokenRepository
@@ -53,6 +54,8 @@ class MemberWithdrawServiceTest {
 
     private val memberLikeRepository = mockk<MemberLikeRepository>(relaxed = true)
 
+    private val memberMemoRepository = mockk<MemberMemoRepository>(relaxed = true)
+
     private val secretPhotoAccessRepository = mockk<SecretPhotoAccessRepository>(relaxed = true)
 
     private val profileViewRepository = mockk<ProfileViewRepository>(relaxed = true)
@@ -75,6 +78,7 @@ class MemberWithdrawServiceTest {
         memberBlockRepository,
         memberFavoriteRepository,
         memberLikeRepository,
+        memberMemoRepository,
         secretPhotoAccessRepository,
         profileViewRepository,
         pointHistoryRepository,
@@ -110,6 +114,7 @@ class MemberWithdrawServiceTest {
         verify { memberBlockRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberFavoriteRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberLikeRepository.deleteAllByMember(MEMBER_ID) }
+        verify { memberMemoRepository.deleteAllByMember(MEMBER_ID) }
         verify { secretPhotoAccessRepository.deleteAllByMember(MEMBER_ID) }
         verify { pointHistoryRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { deviceTokenRepository.deleteAllByMemberId(MEMBER_ID) }

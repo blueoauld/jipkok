@@ -66,7 +66,8 @@ class ProfileViewService(
             profileViewRepository.findNextPage(viewedMemberId, decoded.first, decoded.second, Limit.of(pageSize))
         }
 
-        val summaries = memberSummaryService.findSummaries(views.map { it.viewerId }).associateBy { it.memberId }
+        val summaries = memberSummaryService.findSummaries(viewedMemberId, views.map { it.viewerId })
+            .associateBy { it.memberId }
         val last = views.lastOrNull().takeIf { views.size == pageSize }
 
         return ScrollResponse(

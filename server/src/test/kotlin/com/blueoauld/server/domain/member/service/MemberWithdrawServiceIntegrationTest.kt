@@ -17,6 +17,8 @@ import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.memo.entity.MemberMemo
+import com.blueoauld.server.domain.memo.repository.MemberMemoRepository
 import com.blueoauld.server.domain.point.entity.PointHistory
 import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
@@ -83,6 +85,9 @@ class MemberWithdrawServiceIntegrationTest {
     private lateinit var memberLikeRepository: MemberLikeRepository
 
     @Autowired
+    private lateinit var memberMemoRepository: MemberMemoRepository
+
+    @Autowired
     private lateinit var secretPhotoAccessRepository: SecretPhotoAccessRepository
 
     @Autowired
@@ -124,6 +129,8 @@ class MemberWithdrawServiceIntegrationTest {
         memberBlockRepository.save(MemberBlock(member.id, partner.id))
         memberFavoriteRepository.save(MemberFavorite(member.id, partner.id))
         memberLikeRepository.save(MemberLike(member.id, partner.id))
+        memberMemoRepository.save(MemberMemo(member.id, partner.id, "내가 남긴 메모"))
+        memberMemoRepository.save(MemberMemo(partner.id, member.id, "상대가 남긴 메모"))
         secretPhotoAccessRepository.save(SecretPhotoAccess(member.id, partner.id))
         secretPhotoAccessRepository.save(SecretPhotoAccess(partner.id, member.id))
         profileViewRepository.save(ProfileView(member.id, partner.id, now))
@@ -177,6 +184,7 @@ class MemberWithdrawServiceIntegrationTest {
             "차단" to "member_block|blocker_id = :memberId or blocked_member_id = :memberId",
             "즐겨찾기" to "member_favorite|member_id = :memberId or favorite_member_id = :memberId",
             "좋아요" to "member_like|liker_id = :memberId or liked_member_id = :memberId",
+            "회원 메모" to "member_memo|owner_id = :memberId or target_id = :memberId",
             "비밀 사진 공개" to "secret_photo_access|owner_id = :memberId or viewer_id = :memberId",
             "프로필 열람" to "profile_view|viewer_id = :memberId or viewed_member_id = :memberId",
             "포인트 내역" to "point_history|member_id = :memberId",

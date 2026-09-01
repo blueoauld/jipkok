@@ -40,7 +40,7 @@ class MemberSearchService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = memberSummaryService.findSummaries(rows.map { it.getMemberId() }),
+            items = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }),
             nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }

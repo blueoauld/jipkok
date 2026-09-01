@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.memo.service.MemberMemoService
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
@@ -17,21 +18,23 @@ class MemberSummaryService(
 
     private val memberRepository: MemberRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val memberMemoService: MemberMemoService,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
-    fun findSummaries(memberIds: List<Long>): List<MemberSummaryResponse> {
+    fun findSummaries(viewerId: Long, memberIds: List<Long>): List<MemberSummaryResponse> {
         if (memberIds.isEmpty()) {
             return emptyList()
         }
 
         val members = memberRepository.findAllById(memberIds).associateBy { it.id }
         val profileImageUrls = findProfileImageUrls(memberIds)
+        val memos = memberMemoService.findContents(viewerId, memberIds)
 
         return memberIds.mapNotNull { members[it] }
-            .map { toSummary(it, profileImageUrls[it.id]) }
+            .map { toSummary(it, profileImageUrls[it.id], memos[it.id]) }
     }
 
     private fun findProfileImageUrls(memberIds: List<Long>) =
@@ -40,7 +43,7 @@ class MemberSummaryService(
             .groupBy { it.memberId }
             .mapValues { (_, photos) -> photoStorage.toPublicUrl(photos.first().objectKey) }
 
-    private fun toSummary(member: Member, profileImageUrl: String?) = MemberSummaryResponse(
+    private fun toSummary(member: Member, profileImageUrl: String?, memo: String?) = MemberSummaryResponse(
         memberId = member.id,
         nickname = member.nickname,
         gender = member.gender,
@@ -48,5 +51,6 @@ class MemberSummaryService(
         receivedLikeCount = member.receivedLikeCount,
         comment = member.comment,
         profileImageUrl = profileImageUrl,
+        memo = memo,
     )
 }
