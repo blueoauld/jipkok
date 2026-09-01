@@ -15,6 +15,7 @@ jest.mock("@/lib/api", () => ({
   api: {
     chats: {
       updateNotification: jest.fn(),
+      updatePin: jest.fn(),
       leave: jest.fn(),
       leaveAll: jest.fn(),
       markAllRead: jest.fn(),
@@ -30,6 +31,7 @@ jest.mock("@/lib/push/notifications", () => ({ setBadgeCount: jest.fn() }));
 
 const chats = api.chats as unknown as {
   updateNotification: jest.Mock;
+  updatePin: jest.Mock;
   leave: jest.Mock;
   leaveAll: jest.Mock;
   markAllRead: jest.Mock;
@@ -142,6 +144,46 @@ describe("toggleNotification", () => {
 
     await waitFor(() => expect(hook.showApiError).toHaveBeenCalledWith(error));
     expect(hook.invalidate).toHaveBeenCalledWith({ queryKey: CHAT_ROOMS_KEY });
+  });
+});
+
+describe("togglePin", () => {
+  it("현재 상태의 반대로 고정을 요청하고 성공하면 목록을 갱신한다", async () => {
+    const hook = await setup([room(1)]);
+    chats.updatePin.mockResolvedValue(undefined);
+
+    await act(async () => hook.result.current.togglePin(room(1)));
+
+    expect(chats.updatePin).toHaveBeenCalledWith(1, true);
+    await waitFor(() =>
+      expect(hook.invalidate).toHaveBeenCalledWith({
+        queryKey: CHAT_ROOMS_KEY,
+      }),
+    );
+    expect(hook.invalidate).toHaveBeenCalledWith({ queryKey: chatRoomKey(1) });
+  });
+
+  it("고정된 방이면 해제를 요청한다", async () => {
+    const hook = await setup([room(1, { pinned: true })]);
+    chats.updatePin.mockResolvedValue(undefined);
+
+    await act(async () =>
+      hook.result.current.togglePin(room(1, { pinned: true })),
+    );
+
+    expect(chats.updatePin).toHaveBeenCalledWith(1, false);
+  });
+
+  it("실패하면 오류를 알린다", async () => {
+    const hook = await setup([room(1)]);
+    const error = new Error("boom");
+    chats.updatePin.mockRejectedValue(error);
+
+    await act(async () => hook.result.current.togglePin(room(1)));
+
+    await waitFor(() =>
+      expect(hook.showApiError.mock.calls[0]?.[0]).toBe(error),
+    );
   });
 });
 
