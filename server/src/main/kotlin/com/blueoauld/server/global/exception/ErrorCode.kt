@@ -108,6 +108,7 @@ enum class ErrorCode(
     VIDEO_TOO_LONG(HttpStatus.BAD_REQUEST, "CHAT_007", "동영상은 5분까지 보낼 수 있습니다."),
     VIDEO_TOO_LARGE(HttpStatus.BAD_REQUEST, "CHAT_008", "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다."),
     NOT_VIDEO_MESSAGE(HttpStatus.BAD_REQUEST, "CHAT_009", "동영상 메시지가 아닙니다."),
+    PIN_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "CHAT_010", "채팅방은 5개까지 고정할 수 있습니다."),
 
     SELF_REPORT(HttpStatus.BAD_REQUEST, "REPORT_001", "자기 자신은 신고할 수 없습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_002", "신고를 찾을 수 없습니다."),

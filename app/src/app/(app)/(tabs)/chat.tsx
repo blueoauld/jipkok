@@ -42,6 +42,7 @@ export default function ChatScreen() {
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const {
     toggleNotification,
+    togglePin,
     markRoomRead,
     confirmLeave,
     markRoomsRead,
@@ -106,6 +107,7 @@ export default function ChatScreen() {
               selected={selected.has(item.roomId)}
               onSelect={select}
               onToggleNotification={toggleNotification}
+              onTogglePin={togglePin}
               onMarkRead={markRoomRead}
               onLeave={confirmLeave}
             />

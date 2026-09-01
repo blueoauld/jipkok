@@ -122,6 +122,7 @@ export const zh: typeof ko = {
     CHAT_007: "影片最長可傳送 5 分鐘。",
     CHAT_008: "影片太大。最多可傳送 150MB。",
     CHAT_009: "這不是影片訊息。",
+    CHAT_010: "聊天室最多可置頂 5 個。",
     REPORT_001: "無法檢舉自己。",
     REPORT_002: "找不到檢舉紀錄。",
     WORRY_001: "找不到這則煩惱。",
@@ -254,6 +255,7 @@ export const zh: typeof ko = {
       errorMessage: "無法載入聊天室。",
       emptyMessage: "尚無聊天室。",
       unreadEmptyMessage: "沒有未讀的聊天室。",
+      markedRead: "已標記為已讀。",
     },
     search: {
       title: "聊天搜尋",

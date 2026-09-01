@@ -1,0 +1,2 @@
+ALTER TABLE chat_room_member
+    ADD COLUMN pinned BOOLEAN NOT NULL DEFAULT FALSE;

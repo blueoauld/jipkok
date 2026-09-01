@@ -393,6 +393,12 @@ export const chats = {
       body: { enabled },
     }),
 
+  updatePin: (roomId: number, enabled: boolean) =>
+    request<void>(`/api/chats/${roomId}/pin`, {
+      method: "PUT",
+      body: { enabled },
+    }),
+
   markRead: (roomId: number, lastReadMessageId: number) =>
     request<void>(`/api/chats/${roomId}/read`, {
       method: "POST",

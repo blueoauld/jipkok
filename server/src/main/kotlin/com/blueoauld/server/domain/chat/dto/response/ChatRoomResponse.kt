@@ -17,6 +17,7 @@ data class ChatRoomResponse(
     val lastMessageAt: Instant,
     val unreadCount: Int,
     val notificationEnabled: Boolean,
+    val pinned: Boolean,
 ) {
 
     companion object {
@@ -32,6 +33,7 @@ data class ChatRoomResponse(
             lastMessageAt = row.getLastMessageAt(),
             unreadCount = row.getUnreadCount(),
             notificationEnabled = row.getNotificationEnabled(),
+            pinned = row.getPinned(),
         )
     }
 }

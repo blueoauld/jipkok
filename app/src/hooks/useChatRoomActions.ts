@@ -18,6 +18,7 @@ import {
 } from "@/lib/chat";
 import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
+import { showToast } from "@/lib/toast/store";
 
 async function runInChunks(
   roomIds: number[],
@@ -54,6 +55,16 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       showApiError(error);
     },
+  });
+
+  const { mutate: pin } = useMutation({
+    mutationFn: ({ roomId, enabled }: { roomId: number; enabled: boolean }) =>
+      api.chats.updatePin(roomId, enabled),
+    onSuccess: (_data, { roomId }) => {
+      queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) });
+      invalidateChatLists(queryClient);
+    },
+    onError: showApiError,
   });
 
   const { mutate: leave } = useMutation({
@@ -124,6 +135,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     onSuccess: (_data, roomId) => {
       queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) });
       invalidateChatLists(queryClient);
+      showToast("info", i18n.t("chat.list.markedRead"));
     },
     onError: (error, _roomId, context) => {
       context?.previous.forEach(([queryKey, data]) =>
@@ -151,6 +163,14 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       toggle({ roomId: room.roomId, enabled: !room.notificationEnabled });
     },
     [toggle],
+  );
+
+  const togglePin = useCallback(
+    (room: ChatRoomResponse) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      pin({ roomId: room.roomId, enabled: !room.pinned });
+    },
+    [pin],
   );
 
   const confirmLeave = useCallback(
@@ -191,6 +211,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
 
   return {
     toggleNotification,
+    togglePin,
     markRoomRead,
     confirmLeave,
     markRoomsRead,

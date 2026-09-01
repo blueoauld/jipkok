@@ -2,6 +2,8 @@ import type { Icon, IconWeight } from "phosphor-react-native";
 import { BellIcon } from "phosphor-react-native/src/icons/Bell";
 import { BellSlashIcon } from "phosphor-react-native/src/icons/BellSlash";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
+import { PushPinIcon } from "phosphor-react-native/src/icons/PushPin";
+import { PushPinSlashIcon } from "phosphor-react-native/src/icons/PushPinSlash";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { memo, useRef } from "react";
 import { Pressable } from "react-native-gesture-handler";
@@ -21,6 +23,7 @@ import { pushOnce } from "@/lib/router";
 import { useAccentToken } from "@/lib/theme/accent";
 
 const MUTE_ICON_SIZE = 14;
+const PIN_ICON_SIZE = 14;
 
 const ACTION_SIZE = 40;
 const ACTION_ICON_SIZE = 20;
@@ -88,6 +91,7 @@ function Row({
   selected = false,
   onSelect,
   onToggleNotification,
+  onTogglePin,
   onMarkRead,
   onLeave,
 }: {
@@ -96,6 +100,7 @@ function Row({
   selected?: boolean;
   onSelect?: (room: ChatRoomResponse) => void;
   onToggleNotification: (room: ChatRoomResponse) => void;
+  onTogglePin: (room: ChatRoomResponse) => void;
   onMarkRead: (room: ChatRoomResponse) => void;
   onLeave: (room: ChatRoomResponse) => void;
 }) {
@@ -122,6 +127,18 @@ function Row({
               }}
             />
             <SwipeAction
+              icon={room.pinned ? PushPinSlashIcon : PushPinIcon}
+              bg="$gray10"
+              onPress={() => {
+                swipeable.current?.close();
+                onTogglePin(room);
+              }}
+            />
+          </XStack>
+        )}
+        renderRightActions={() => (
+          <XStack self="center" pl="$3" gap="$2">
+            <SwipeAction
               icon={CheckIcon}
               weight="bold"
               bg="$green10"
@@ -130,10 +147,6 @@ function Row({
                 onMarkRead(room);
               }}
             />
-          </XStack>
-        )}
-        renderRightActions={() => (
-          <YStack self="center" pl="$3">
             <SwipeAction
               icon={SignOutIcon}
               bg="$red10"
@@ -142,7 +155,7 @@ function Row({
                 onLeave(room);
               }}
             />
-          </YStack>
+          </XStack>
         )}
       >
         <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
@@ -165,6 +178,14 @@ function Row({
                     <Text shrink={0} fontSize="$4" fontWeight="600">
                       {room.nickname}
                     </Text>
+
+                    {room.pinned && (
+                      <PushPinIcon
+                        size={PIN_ICON_SIZE}
+                        weight="fill"
+                        color={theme.gray9.val}
+                      />
+                    )}
 
                     {!room.notificationEnabled && (
                       <BellSlashIcon

@@ -26,6 +26,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
+               crm.pinned as pinned,
                crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,
@@ -45,6 +46,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
                (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
+               crm.pinned as pinned,
                crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,
@@ -53,6 +55,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
         where crm.memberId = :memberId
           and r.id = crm.roomId
           and m.id = crm.lastMessageId
+          and crm.pinned = false
           and crm.unreadCount >= :minUnreadCount
           and crm.lastMessageId < :cursor
         order by crm.lastMessageId desc
@@ -68,9 +71,35 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
     @Query(
         """
         select r.id as roomId,
+               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
+               crm.unreadCount as unreadCount,
+               crm.notificationEnabled as notificationEnabled,
+               crm.pinned as pinned,
+               crm.lastMessageId as lastMessageId,
+               m.type as lastMessageType,
+               m.content as lastMessageContent,
+               m.createdAt as lastMessageAt
+        from ChatRoomMember crm, ChatRoom r, ChatMessage m
+        where crm.memberId = :memberId
+          and r.id = crm.roomId
+          and m.id = crm.lastMessageId
+          and crm.pinned = true
+          and crm.unreadCount >= :minUnreadCount
+        order by crm.lastMessageId desc
+        """,
+    )
+    fun findPinnedRooms(
+        @Param("memberId") memberId: Long,
+        @Param("minUnreadCount") minUnreadCount: Int,
+    ): List<ChatRoomRow>
+
+    @Query(
+        """
+        select r.id as roomId,
                p.id as partnerId,
                crm.unreadCount as unreadCount,
                crm.notificationEnabled as notificationEnabled,
+               crm.pinned as pinned,
                crm.lastMessageId as lastMessageId,
                m.type as lastMessageType,
                m.content as lastMessageContent,

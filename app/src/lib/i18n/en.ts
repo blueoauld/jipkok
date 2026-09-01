@@ -128,6 +128,7 @@ export const en: typeof ko = {
     CHAT_007: "Videos can be up to 5 minutes.",
     CHAT_008: "That video is too large. You can send up to 150MB.",
     CHAT_009: "That isn't a video message.",
+    CHAT_010: "You can pin up to 5 chat rooms.",
     REPORT_001: "You can't report yourself.",
     REPORT_002: "Report not found.",
     WORRY_001: "Post not found.",
@@ -264,6 +265,7 @@ export const en: typeof ko = {
       errorMessage: "Couldn't load your chats.",
       emptyMessage: "No chats yet.",
       unreadEmptyMessage: "No unread chats.",
+      markedRead: "Marked as read.",
     },
     search: {
       title: "Search chats",

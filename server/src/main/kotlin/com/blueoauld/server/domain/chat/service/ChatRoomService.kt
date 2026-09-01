@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.chat.service
 import com.blueoauld.server.domain.chat.dto.projection.ChatRoomRow
 import com.blueoauld.server.domain.chat.dto.response.ChatRoomResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
+import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.event.ChatRoomDeletedEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -43,14 +44,20 @@ class ChatRoomService(
     @Transactional(readOnly = true)
     fun findRooms(memberId: Long, unreadOnly: Boolean, cursor: Long?, size: Int): CursorResponse<ChatRoomResponse> {
         val pageSize = CursorResponse.pageSize(size)
+        val minUnreadCount = if (unreadOnly) 1 else 0
+        val pinnedRows = if (cursor == null) {
+            chatRoomRepository.findPinnedRooms(memberId, minUnreadCount)
+        } else {
+            emptyList()
+        }
         val rows = chatRoomRepository.findRooms(
             memberId = memberId,
-            minUnreadCount = if (unreadOnly) 1 else 0,
+            minUnreadCount = minUnreadCount,
             cursor = cursor ?: Long.MAX_VALUE,
             limit = Limit.of(pageSize),
         )
 
-        return toResponse(memberId, rows, pageSize)
+        return toResponse(memberId, rows, pageSize, pinnedRows)
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +88,24 @@ class ChatRoomService(
     }
 
     @Transactional
+    fun updatePin(memberId: Long, roomId: Long, request: EnabledRequest) {
+        val roomMember = chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
+            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+
+        if (request.enabled && !roomMember.pinned) {
+            checkPinLimit(memberId)
+        }
+
+        roomMember.pinned = request.enabled
+    }
+
+    private fun checkPinLimit(memberId: Long) {
+        if (chatRoomMemberRepository.countByMemberIdAndPinnedTrue(memberId) >= ChatRoomMember.PIN_MAX_COUNT) {
+            throw BusinessException(ErrorCode.PIN_LIMIT_EXCEEDED)
+        }
+    }
+
+    @Transactional
     fun leave(memberId: Long, roomId: Long) {
         val room = chatRoomRepository.getRoomOf(memberId, roomId)
 
@@ -101,12 +126,14 @@ class ChatRoomService(
         memberId: Long,
         rows: List<ChatRoomRow>,
         pageSize: Int,
+        pinnedRows: List<ChatRoomRow> = emptyList(),
     ): CursorResponse<ChatRoomResponse> {
-        val partners = memberSummaryService.findSummaries(memberId, rows.map { it.getPartnerId() })
+        val allRows = pinnedRows + rows
+        val partners = memberSummaryService.findSummaries(memberId, allRows.map { it.getPartnerId() })
             .associateBy { it.memberId }
 
         return CursorResponse(
-            items = rows.mapNotNull { row -> partners[row.getPartnerId()]?.let { ChatRoomResponse.of(row, it) } },
+            items = allRows.mapNotNull { row -> partners[row.getPartnerId()]?.let { ChatRoomResponse.of(row, it) } },
             nextCursor = rows.lastOrNull()?.getLastMessageId().takeIf { rows.size == pageSize },
         )
     }

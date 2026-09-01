@@ -10,6 +10,8 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
 
     fun findByRoomIdAndMemberId(roomId: Long, memberId: Long): ChatRoomMember?
 
+    fun countByMemberIdAndPinnedTrue(memberId: Long): Long
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """

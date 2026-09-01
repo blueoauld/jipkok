@@ -13,6 +13,8 @@ interface ChatRoomRow {
 
     fun getNotificationEnabled(): Boolean
 
+    fun getPinned(): Boolean
+
     fun getLastMessageId(): Long
 
     fun getLastMessageType(): ChatMessageType

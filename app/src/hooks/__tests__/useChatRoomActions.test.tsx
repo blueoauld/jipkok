@@ -48,6 +48,7 @@ function room(
     lastMessageAt: "2026-08-18T00:00:00Z",
     unreadCount: 3,
     notificationEnabled: true,
+    pinned: false,
     ...extra,
   };
 }

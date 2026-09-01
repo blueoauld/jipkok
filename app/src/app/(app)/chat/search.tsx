@@ -15,13 +15,12 @@ export default function ChatSearchScreen() {
 
   const [submitted, setSubmitted] = useState("");
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
-  const { toggleNotification, markRoomRead, confirmLeave } = useChatRoomActions(
-    {
+  const { toggleNotification, togglePin, markRoomRead, confirmLeave } =
+    useChatRoomActions({
       show,
       showApiError,
       confirm,
-    },
-  );
+    });
   const search = useChatRoomSearch(submitted);
 
   return (
@@ -39,6 +38,7 @@ export default function ChatSearchScreen() {
           <ChatRoomRow
             room={item}
             onToggleNotification={toggleNotification}
+            onTogglePin={togglePin}
             onMarkRead={markRoomRead}
             onLeave={confirmLeave}
           />

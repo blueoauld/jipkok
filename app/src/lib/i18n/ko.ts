@@ -128,6 +128,7 @@ export const ko = {
     CHAT_007: "동영상은 5분까지 보낼 수 있습니다.",
     CHAT_008: "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.",
     CHAT_009: "동영상 메시지가 아닙니다.",
+    CHAT_010: "채팅방은 5개까지 고정할 수 있습니다.",
     REPORT_001: "자기 자신은 신고할 수 없습니다.",
     REPORT_002: "신고를 찾을 수 없습니다.",
     WORRY_001: "글을 찾을 수 없습니다.",
@@ -263,6 +264,7 @@ export const ko = {
       errorMessage: "채팅방을 불러오지 못했습니다.",
       emptyMessage: "채팅방이 없습니다.",
       unreadEmptyMessage: "안 읽은 채팅방이 없습니다.",
+      markedRead: "읽음 처리되었습니다.",
     },
     search: {
       title: "채팅 검색",

@@ -66,6 +66,17 @@ class ChatRoomController(
         chatRoomService.updateNotification(memberId, roomId, request)
     }
 
+    @Operation(summary = "채팅방 고정 설정", description = "고정한 방은 목록 첫 페이지 맨 위에 나온다. 5개까지 고정할 수 있다.")
+    @PutMapping("/{roomId}/pin")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updatePin(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable roomId: Long,
+        @Valid @RequestBody request: EnabledRequest,
+    ) {
+        chatRoomService.updatePin(memberId, roomId, request)
+    }
+
     @Operation(summary = "채팅방 나가기", description = "방과 대화 내역이 양쪽 모두에서 사라진다.")
     @DeleteMapping("/{roomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

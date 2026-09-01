@@ -339,12 +339,13 @@ class ChatRoomServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
     }
 
-    private fun row() = mockk<ChatRoomRow> {
+    private fun row(pinned: Boolean = false, lastMessageId: Long = LAST_MESSAGE_ID) = mockk<ChatRoomRow> {
         every { getRoomId() } returns ROOM_ID
         every { getPartnerId() } returns PARTNER_ID
         every { getUnreadCount() } returns 3
         every { getNotificationEnabled() } returns true
-        every { getLastMessageId() } returns LAST_MESSAGE_ID
+        every { getPinned() } returns pinned
+        every { getLastMessageId() } returns lastMessageId
         every { getLastMessageType() } returns ChatMessageType.TEXT
         every { getLastMessageContent() } returns "안녕하세요."
         every { getLastMessageAt() } returns NOW
@@ -372,6 +373,118 @@ class ChatRoomServiceTest {
 
         // then
         assertThat(roomMember.notificationEnabled).isFalse()
+    }
+
+    @Test
+    fun `고정한 방은 첫 페이지 맨 위에 나온다`() {
+        // given
+        every { chatRoomRepository.findPinnedRooms(ME_ID, 0) } returns listOf(row(pinned = true, lastMessageId = 10L))
+        every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
+        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
+
+        // when
+        val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 1)
+
+        // then
+        assertThat(response.items.map { it.pinned }).containsExactly(true, false)
+        assertThat(response.nextCursor).isEqualTo(LAST_MESSAGE_ID)
+    }
+
+    @Test
+    fun `다음 페이지부터는 고정한 방을 조회하지 않는다`() {
+        // given
+        every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns emptyList()
+
+        // when
+        chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = CURSOR, size = 20)
+
+        // then
+        verify(exactly = 0) { chatRoomRepository.findPinnedRooms(any(), any()) }
+    }
+
+    @Test
+    fun `안읽음만 볼 때는 고정한 방도 안읽은 것만 나온다`() {
+        // given
+        every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns emptyList()
+
+        // when
+        chatRoomService.findRooms(ME_ID, unreadOnly = true, cursor = null, size = 20)
+
+        // then
+        verify { chatRoomRepository.findPinnedRooms(ME_ID, 1) }
+    }
+
+    @Test
+    fun `채팅방을 고정한다`() {
+        // given
+        val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID)
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
+        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 4
+
+        // when
+        chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(true))
+
+        // then
+        assertThat(roomMember.pinned).isTrue()
+    }
+
+    @Test
+    fun `고정은 5개까지만 할 수 있다`() {
+        // given
+        val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID)
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
+        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 5
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(true))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.PIN_LIMIT_EXCEEDED)
+        assertThat(roomMember.pinned).isFalse()
+    }
+
+    @Test
+    fun `이미 고정한 방을 다시 고정해도 개수 제한에 걸리지 않는다`() {
+        // given
+        val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID, pinned = true)
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
+        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 5
+
+        // when
+        chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(true))
+
+        // then
+        assertThat(roomMember.pinned).isTrue()
+    }
+
+    @Test
+    fun `고정을 풀면 개수와 상관없이 풀린다`() {
+        // given
+        val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID, pinned = true)
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
+
+        // when
+        chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(false))
+
+        // then
+        assertThat(roomMember.pinned).isFalse()
+        verify(exactly = 0) { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(any()) }
+    }
+
+    @Test
+    fun `내가 속하지 않은 방은 고정할 수 없다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, STRANGER_ID) } returns null
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.updatePin(STRANGER_ID, ROOM_ID, EnabledRequest(true))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
     }
 
     @Test

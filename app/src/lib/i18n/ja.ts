@@ -131,6 +131,7 @@ export const ja: typeof ko = {
     CHAT_007: "動画は5分まで送信できます。",
     CHAT_008: "動画が大きすぎます。150MBまで送信できます。",
     CHAT_009: "動画メッセージではありません。",
+    CHAT_010: "チャットルームは5個まで固定できます。",
     REPORT_001: "自分は通報できません。",
     REPORT_002: "通報が見つかりません。",
     WORRY_001: "投稿が見つかりません。",
@@ -267,6 +268,7 @@ export const ja: typeof ko = {
       errorMessage: "チャットルームを読み込めませんでした。",
       emptyMessage: "チャットルームがありません。",
       unreadEmptyMessage: "未読のチャットルームがありません。",
+      markedRead: "既読にしました。",
     },
     search: {
       title: "チャット検索",
