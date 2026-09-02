@@ -23,12 +23,16 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
-import { useAccent } from "@/lib/theme/accent";
+import { useAccent, useThemeBackground } from "@/lib/theme/accent";
 
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
 
 const MAX_LENGTH = 1000;
+
+// iOS 26 키보드는 프레임 위쪽에 투명한 여백이 있어 그 틈으로 메시지가 비친다.
+// 입력창 배경을 그만큼 아래로 더 깔아 가린다.
+const KEYBOARD_TOP_GAP = 16;
 
 const FONT_SIZE = 16;
 const LINE_HEIGHT = 22;
@@ -62,6 +66,7 @@ export function ChatInputBar({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const background = useThemeBackground();
   const accent = useAccent();
   const space = getTokens().space;
   const barPadding = space.$3.val;
@@ -91,7 +96,7 @@ export function ChatInputBar({
   };
 
   return (
-    <YStack>
+    <YStack bg={background}>
       {reply && (
         <YStack
           theme="gray"
@@ -198,6 +203,15 @@ export function ChatInputBar({
           <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
         </RetroPressable>
       </XStack>
+
+      <YStack
+        position="absolute"
+        t="100%"
+        l={0}
+        r={0}
+        height={KEYBOARD_TOP_GAP}
+        bg={background}
+      />
     </YStack>
   );
 }
