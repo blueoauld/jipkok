@@ -39,9 +39,7 @@ class MemberHeartbeatService(
         member.longitude = request.longitude
         member.locatedAt = clock.instant()
 
-        val platform = request.platform ?: throw BusinessException(ErrorCode.INVALID_REQUEST)
-
-        val access = AccessInfo(platform, request.deviceName, ipAddress, appVersion)
+        val access = AccessInfo(request.platform!!, request.deviceName, ipAddress, appVersion)
 
         accessLogService.record(member, access)
 

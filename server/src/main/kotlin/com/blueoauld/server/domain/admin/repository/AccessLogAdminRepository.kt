@@ -1,9 +1,9 @@
 package com.blueoauld.server.domain.admin.repository
 
 import com.blueoauld.server.domain.access.entity.AccessLog
-import com.blueoauld.server.domain.admin.dto.DailyCount
-import com.blueoauld.server.domain.admin.dto.PlatformCount
-import com.blueoauld.server.domain.admin.dto.VersionCount
+import com.blueoauld.server.domain.admin.dto.projection.DailyCount
+import com.blueoauld.server.domain.admin.dto.projection.PlatformCount
+import com.blueoauld.server.domain.admin.dto.projection.VersionCount
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

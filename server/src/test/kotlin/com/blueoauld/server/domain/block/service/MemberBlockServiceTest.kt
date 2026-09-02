@@ -140,7 +140,7 @@ class MemberBlockServiceTest {
         every {
             memberBlockRepository.findByBlockerIdAndIdLessThanOrderByIdDesc(BLOCKER_ID, Long.MAX_VALUE, any())
         } returns blocks
-        every { memberSummaryService.findSummaries(any(), listOf(BLOCKED_MEMBER_ID, 3L)) } returns
+        every { memberSummaryService.findSummaries(BLOCKER_ID, listOf(BLOCKED_MEMBER_ID, 3L)) } returns
             listOf(summary(BLOCKED_MEMBER_ID), summary(3L))
 
         // when

@@ -43,17 +43,17 @@ class MemberListService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = toItems(memberId, rows),
+            items = memberSummaryService.findListItems(memberId, rows),
             nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
     }
 
     private fun toBirthYearRange(minAge: Int?, maxAge: Int?): BirthYearRange {
-        val lower = minAge ?: MemberService.MIN_AGE
-        val upper = maxAge ?: MemberService.MAX_AGE
+        val lower = minAge ?: Member.MIN_AGE
+        val upper = maxAge ?: Member.MAX_AGE
 
-        if (lower !in MemberService.MIN_AGE..MemberService.MAX_AGE ||
-            upper !in MemberService.MIN_AGE..MemberService.MAX_AGE ||
+        if (lower !in Member.MIN_AGE..Member.MAX_AGE ||
+            upper !in Member.MIN_AGE..Member.MAX_AGE ||
             lower > upper
         ) {
             throw BusinessException(ErrorCode.INVALID_AGE_RANGE)
@@ -103,22 +103,6 @@ class MemberListService(
             cursorId = cursor?.second,
             size = pageSize,
         )
-    }
-
-    private fun toItems(memberId: Long, rows: List<MemberListRow>): List<MemberListItemResponse> {
-        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() })
-            .associateBy { it.memberId }
-
-        return rows.mapNotNull { row ->
-            summaries[row.getMemberId()]?.let {
-                MemberListItemResponse.of(
-                    it,
-                    row.getLocatedAt(),
-                    row.getDistance(),
-                    row.getFavoritedByMe(),
-                )
-            }
-        }
     }
 
     private data class BirthYearRange(

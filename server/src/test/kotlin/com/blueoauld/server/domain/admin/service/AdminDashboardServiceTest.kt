@@ -1,9 +1,9 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.DailyCount
-import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
-import com.blueoauld.server.domain.admin.dto.PlatformCount
-import com.blueoauld.server.domain.admin.dto.VersionCount
+import com.blueoauld.server.domain.admin.dto.projection.DailyCount
+import com.blueoauld.server.domain.admin.dto.projection.GenderBirthYearCount
+import com.blueoauld.server.domain.admin.dto.projection.PlatformCount
+import com.blueoauld.server.domain.admin.dto.projection.VersionCount
 import com.blueoauld.server.domain.admin.repository.AccessLogAdminRepository
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.admin.repository.ReportAdminRepository

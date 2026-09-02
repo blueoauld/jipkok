@@ -11,3 +11,5 @@ val KOREA: ZoneId = ZoneId.of(KOREA_ID)
 fun Clock.today(): LocalDate = LocalDate.now(withZone(KOREA))
 
 fun Clock.currentYear(): Int = today().year
+
+fun Clock.ageOf(birthYear: Int): Int = currentYear() - birthYear

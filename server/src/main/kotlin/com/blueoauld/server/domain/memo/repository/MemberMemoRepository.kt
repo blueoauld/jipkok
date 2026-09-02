@@ -12,7 +12,7 @@ interface MemberMemoRepository : JpaRepository<MemberMemo, Long> {
 
     fun findAllByOwnerIdAndTargetIdIn(ownerId: Long, targetIds: Collection<Long>): List<MemberMemo>
 
-    fun deleteByOwnerIdAndTargetId(ownerId: Long, targetId: Long): Long
+    fun deleteByOwnerIdAndTargetId(ownerId: Long, targetId: Long)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from MemberMemo m where m.ownerId = :memberId or m.targetId = :memberId")

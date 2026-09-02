@@ -35,10 +35,10 @@ class AccessReward(
     @Column(name = "platform", nullable = false, updatable = false)
     val platform: DevicePlatform,
 
-    @Column(name = "device_name", updatable = false, length = DEVICE_NAME_MAX_LENGTH)
+    @Column(name = "device_name", updatable = false, length = AccessLog.DEVICE_NAME_MAX_LENGTH)
     val deviceName: String?,
 
-    @Column(name = "ip_address", nullable = false, updatable = false, length = IP_ADDRESS_MAX_LENGTH)
+    @Column(name = "ip_address", nullable = false, updatable = false, length = AccessLog.IP_ADDRESS_MAX_LENGTH)
     val ipAddress: String,
 
     @Column(name = "accessed_on", nullable = false, updatable = false)
@@ -49,10 +49,4 @@ class AccessReward(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0
-
-    companion object {
-
-        const val DEVICE_NAME_MAX_LENGTH = 100
-        const val IP_ADDRESS_MAX_LENGTH = 45
-    }
 }

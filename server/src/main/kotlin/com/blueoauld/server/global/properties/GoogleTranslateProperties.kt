@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "google-translate")
 data class GoogleTranslateProperties(
 
-    val apiKey: String,
+    val apiKey: String = "",
 )

@@ -8,6 +8,8 @@ interface FeedPostRow {
 
     fun getMemberId(): Long
 
+    fun getNickname(): String
+
     fun getSlotAt(): Instant
 
     fun getCaption(): String?

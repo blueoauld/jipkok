@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.repository
 
 import com.blueoauld.server.domain.member.dto.projection.MemberListRow
+import com.blueoauld.server.domain.member.dto.projection.MemberSearchRow
 import com.blueoauld.server.domain.member.entity.Member
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -110,10 +111,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
     @Query(
         value = """
         select m.id as memberId,
-               coalesce(extract(epoch from m.located_at), 0) as orderValue,
-               m.located_at as locatedAt,
-               cast(null as double precision) as distance,
-               $FAVORITED as favoritedByMe
+               coalesce(extract(epoch from m.located_at), 0) as orderValue
         from member m
         where $VISIBLE
           and lower(m.nickname) like lower(:keyword) || '%' escape '\'
@@ -136,7 +134,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         @Param("cursorValue") cursorValue: Double?,
         @Param("cursorId") cursorId: Long?,
         @Param("size") size: Int,
-    ): List<MemberListRow>
+    ): List<MemberSearchRow>
 
     companion object {
 

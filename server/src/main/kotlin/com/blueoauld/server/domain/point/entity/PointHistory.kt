@@ -16,7 +16,6 @@ import java.time.Instant
 @Table(
     name = "point_history",
     indexes = [
-        Index(name = "idx_point_history_member_id_type_recorded_at", columnList = "member_id, type, recorded_at"),
         Index(name = "idx_point_history_member_id_id", columnList = "member_id, id"),
     ],
 )

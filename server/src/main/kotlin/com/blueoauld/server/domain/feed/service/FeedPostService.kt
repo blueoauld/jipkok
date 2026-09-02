@@ -6,7 +6,6 @@ import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
-import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
@@ -28,7 +27,6 @@ class FeedPostService(
 
     private val feedPostRepository: FeedPostRepository,
     private val photoUploadService: PhotoUploadService,
-    private val memberSummaryService: MemberSummaryService,
     private val photoStorage: PhotoStorage,
     private val clock: Clock,
 ) {
@@ -64,22 +62,18 @@ class FeedPostService(
                 size = pageSize,
             )
         }
-        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }.distinct())
-            .associateBy { it.memberId }
 
         return CursorResponse(
-            items = rows.mapNotNull { row ->
-                summaries[row.getMemberId()]?.let {
-                    FeedPostResponse(
-                        postId = row.getPostId(),
-                        imageUrl = photoStorage.toPublicUrl(row.getObjectKey()),
-                        slotAt = row.getSlotAt(),
-                        caption = row.getCaption(),
-                        likedByMe = row.getLikedByMe(),
-                        memberId = it.memberId,
-                        nickname = it.nickname,
-                    )
-                }
+            items = rows.map {
+                FeedPostResponse(
+                    postId = it.getPostId(),
+                    imageUrl = photoStorage.toPublicUrl(it.getObjectKey()),
+                    slotAt = it.getSlotAt(),
+                    caption = it.getCaption(),
+                    likedByMe = it.getLikedByMe(),
+                    memberId = it.getMemberId(),
+                    nickname = it.getNickname(),
+                )
             },
             nextCursor = rows.lastOrNull()?.getPostId().takeIf { rows.size == pageSize },
         )

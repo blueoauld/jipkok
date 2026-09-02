@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.dto.request.LoginRequest
-import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
+import com.blueoauld.server.domain.auth.dto.request.RefreshTokenRequest
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.repository.LoginAttemptCache
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
@@ -49,7 +49,7 @@ class AuthService(
     }
 
     @Transactional(readOnly = true)
-    fun reissue(request: ReissueRequest): TokenResponse {
+    fun reissue(request: RefreshTokenRequest): TokenResponse {
         val memberId = jwtProvider.parseRefreshTokenMemberId(request.refreshToken)
             ?: throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
 

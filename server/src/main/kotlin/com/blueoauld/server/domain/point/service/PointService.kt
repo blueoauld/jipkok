@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.point.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
-import com.blueoauld.server.domain.member.repository.getMember
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.point.dto.response.PointHistoryResponse
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.domain.point.entity.PointHistory
@@ -36,9 +36,7 @@ class PointService(
 
     @Transactional
     fun spend(memberId: Long, type: PointType) {
-        if (!memberRepository.existsById(memberId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(memberId)
 
         if (memberRepository.addPointBalance(memberId, type.amount) == 0) {
             throw BusinessException(ErrorCode.NOT_ENOUGH_POINT)
@@ -48,17 +46,18 @@ class PointService(
     }
 
     private fun record(memberId: Long, type: PointType): Int {
-        val balance = memberRepository.findPointBalance(memberId)
-            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        val balance = getBalance(memberId)
 
         pointHistoryRepository.save(PointHistory(memberId, type, type.amount, balance, clock.instant()))
 
         return balance
     }
 
+    private fun getBalance(memberId: Long) = memberRepository.findPointBalance(memberId)
+        ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+
     @Transactional(readOnly = true)
-    fun findBalance(memberId: Long) = memberRepository.getMember(memberId)
-        .pointBalance
+    fun findBalance(memberId: Long) = getBalance(memberId)
 
     @Transactional(readOnly = true)
     fun findHistories(memberId: Long, cursor: Long?, size: Int): CursorResponse<PointHistoryResponse> {

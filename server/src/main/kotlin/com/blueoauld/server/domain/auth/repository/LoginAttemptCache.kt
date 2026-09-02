@@ -39,7 +39,7 @@ class LoginAttemptCache(
 
     companion object {
 
-        val WINDOW: Duration = Duration.ofMinutes(10)
+        private val WINDOW: Duration = Duration.ofMinutes(10)
 
         private const val PHONE_NUMBER_KEY_PREFIX = "login:phone:"
         private const val IP_ADDRESS_KEY_PREFIX = "login:ip:"

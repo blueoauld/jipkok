@@ -9,8 +9,6 @@ import java.time.Instant
 
 interface MemberSuspensionRepository : JpaRepository<MemberSuspension, Long> {
 
-    fun findByPhoneNumberOrderByIdDesc(phoneNumber: String): List<MemberSuspension>
-
     @Query(
         """
         select s

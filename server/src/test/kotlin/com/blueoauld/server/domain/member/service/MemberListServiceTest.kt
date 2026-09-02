@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.projection.MemberListRow
+import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -47,7 +48,9 @@ class MemberListServiceTest {
     @BeforeEach
     fun setUp() {
         every { memberRepository.findById(ME_ID) } returns Optional.of(me)
-        every { memberSummaryService.findSummaries(any(), any()) } answers { secondArg<List<Long>>().map(::summary) }
+        every { memberSummaryService.findListItems(ME_ID, any()) } answers {
+            secondArg<List<MemberListRow>>().map(::item)
+        }
     }
 
     @Test
@@ -127,21 +130,6 @@ class MemberListServiceTest {
     }
 
     @Test
-    fun `요약을 못 만든 회원은 목록에서 뺀다`() {
-        // given
-        every {
-            memberListRepository.findRecent(any(), any(), any(), any(), any(), any(), any(), any(), any())
-        } returns listOf(row(2L, 5.0), row(3L, 4.0))
-        every { memberSummaryService.findSummaries(any(), listOf(2L, 3L)) } returns listOf(summary(3L))
-
-        // when
-        val response = service.findMembers(ME_ID, MemberSort.RECENT, null, null, null, null, 20)
-
-        // then
-        assertThat(response.items.map { it.memberId }).containsExactly(3L)
-    }
-
-    @Test
     fun `나이 범위를 출생연도 범위로 바꿔 조회에 넘긴다`() {
         // given
         every {
@@ -207,6 +195,13 @@ class MemberListServiceTest {
         every { getDistance() } returns orderValue
         every { getFavoritedByMe() } returns false
     }
+
+    private fun item(row: MemberListRow) = MemberListItemResponse.of(
+        summary(row.getMemberId()),
+        row.getLocatedAt(),
+        row.getDistance(),
+        row.getFavoritedByMe(),
+    )
 
     private fun summary(memberId: Long) = MemberSummaryResponse(
         memberId = memberId,

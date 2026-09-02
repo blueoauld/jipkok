@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.projection.MemberListRow
+import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberListRepository
@@ -22,7 +23,9 @@ class MemberRankingServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { memberSummaryService.findSummaries(any(), any()) } answers { secondArg<List<Long>>().map(::summary) }
+        every { memberSummaryService.findListItems(ME_ID, any()) } answers {
+            secondArg<List<MemberListRow>>().map(::item)
+        }
     }
 
     @Test
@@ -51,13 +54,13 @@ class MemberRankingServiceTest {
 
         // then
         assertThat(response.nextCursor)
-            .isEqualTo(MemberListCursor.encodeRanking(3, LOCATED_AT.epochSecond, 3L))
+            .isEqualTo(MemberListCursor.encodeRanking(3L, LOCATED_AT.epochSecond, 3L))
     }
 
     @Test
     fun `커서를 풀어서 조회에 넘긴다`() {
         // given
-        val cursor = MemberListCursor.encodeRanking(3, LOCATED_AT.epochSecond, 3L)
+        val cursor = MemberListCursor.encodeRanking(3L, LOCATED_AT.epochSecond, 3L)
         every { memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any()) } returns
             emptyList()
 
@@ -75,6 +78,13 @@ class MemberRankingServiceTest {
         every { getDistance() } returns null
         every { getFavoritedByMe() } returns false
     }
+
+    private fun item(row: MemberListRow) = MemberListItemResponse.of(
+        summary(row.getMemberId()),
+        row.getLocatedAt(),
+        row.getDistance(),
+        row.getFavoritedByMe(),
+    )
 
     private fun summary(memberId: Long) = MemberSummaryResponse(
         memberId = memberId,

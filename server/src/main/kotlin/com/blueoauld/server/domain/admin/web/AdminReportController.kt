@@ -24,7 +24,7 @@ class AdminReportController(
     private val adminReportService: AdminReportService,
 ) {
 
-    @Operation(summary = "회원 신고 목록")
+    @Operation(operationId = "findMemberReports", summary = "회원 신고 목록")
     @GetMapping
     fun findReports(
         @RequestParam(required = false) status: AdminReportStatus?,
@@ -44,7 +44,7 @@ class AdminReportController(
         size = size,
     )
 
-    @Operation(summary = "회원 신고 상세")
+    @Operation(operationId = "findMemberReportDetail", summary = "회원 신고 상세")
     @GetMapping("/{reportId}")
     fun findDetail(@PathVariable reportId: Long): AdminReportDetailResponse =
         adminReportService.findDetail(reportId)

@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.member.dto.projection.MemberListRow
+import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.displayOrdered
@@ -8,7 +10,7 @@ import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.memo.service.MemberMemoService
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.time.currentYear
+import com.blueoauld.server.global.time.ageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -37,6 +39,17 @@ class MemberSummaryService(
             .map { toSummary(it, profileImageUrls[it.id], memos[it.id]) }
     }
 
+    @Transactional(readOnly = true)
+    fun findListItems(viewerId: Long, rows: List<MemberListRow>): List<MemberListItemResponse> {
+        val summaries = findSummaries(viewerId, rows.map { it.getMemberId() }).associateBy { it.memberId }
+
+        return rows.mapNotNull { row ->
+            summaries[row.getMemberId()]?.let {
+                MemberListItemResponse.of(it, row.getLocatedAt(), row.getDistance(), row.getFavoritedByMe())
+            }
+        }
+    }
+
     private fun findProfileImageUrls(memberIds: List<Long>) =
         memberPhotoRepository.findAllByMemberIdIn(memberIds)
             .displayOrdered(PhotoVisibility.PUBLIC)
@@ -47,7 +60,7 @@ class MemberSummaryService(
         memberId = member.id,
         nickname = member.nickname,
         gender = member.gender,
-        age = clock.currentYear() - member.birthYear,
+        age = clock.ageOf(member.birthYear),
         receivedLikeCount = member.receivedLikeCount,
         comment = member.comment,
         profileImageUrl = profileImageUrl,

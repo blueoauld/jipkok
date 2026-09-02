@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.memo.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.memo.entity.MemberMemo
 import com.blueoauld.server.domain.memo.repository.MemberMemoRepository
 import com.blueoauld.server.global.exception.BusinessException
@@ -29,9 +30,7 @@ class MemberMemoService(
             return
         }
 
-        if (!memberRepository.existsById(targetId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(targetId)
 
         val memo = memberMemoRepository.findByOwnerIdAndTargetId(ownerId, targetId)
 

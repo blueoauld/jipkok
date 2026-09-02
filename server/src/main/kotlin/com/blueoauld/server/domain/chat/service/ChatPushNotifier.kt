@@ -49,16 +49,16 @@ class ChatPushNotifier(
             return
         }
 
-        val sender = memberRepository.findById(event.message.senderId).orElse(null) ?: return
+        val nickname = memberRepository.findNicknameById(event.message.senderId) ?: return
 
         pushService.send(
             memberId = event.receiverId,
-            title = sender.nickname,
+            title = nickname,
             body = toBody(event),
             data = mapOf(ROOM_ID_KEY to event.message.roomId.toString()),
             badge = chatRoomMemberRepository.sumUnreadCount(event.receiverId).toInt(),
             channelId = CHANNEL_ID,
-            priority = HIGH_PRIORITY,
+            priority = PushService.PRIORITY_HIGH,
         )
     }
 
@@ -68,7 +68,7 @@ class ChatPushNotifier(
         ChatMessageType.VIDEO -> pushMessages.get(localeOf(event.receiverId), VIDEO_CODE)
     }
 
-    private fun localeOf(memberId: Long) = memberRepository.findLocaleById(memberId) ?: MemberLocale.KO
+    private fun localeOf(memberId: Long) = memberRepository.findLocaleById(memberId) ?: MemberLocale.DEFAULT
 
     companion object {
 
@@ -76,6 +76,5 @@ class ChatPushNotifier(
         private const val PHOTO_CODE = "push.chat.photo"
         private const val VIDEO_CODE = "push.chat.video"
         private const val CHANNEL_ID = "chat"
-        private const val HIGH_PRIORITY = "high"
     }
 }

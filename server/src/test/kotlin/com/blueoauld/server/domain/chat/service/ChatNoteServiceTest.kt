@@ -50,7 +50,7 @@ class ChatNoteServiceTest {
     @BeforeEach
     fun setUp() {
         every { memberRepository.findById(RECEIVER_ID) } returns Optional.of(member())
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
+        every { memberBlockRepository.existsBetween(any(), any()) } returns false
         every { chatRoomRepository.findByMembers(any(), any()) } returns null
         every { chatRoomRepository.save(any()) } answers { firstArg() }
     }
@@ -166,24 +166,9 @@ class ChatNoteServiceTest {
     }
 
     @Test
-    fun `내가 차단한 상대에게는 쪽지를 보낼 수 없다`() {
+    fun `차단 관계면 쪽지를 보낼 수 없다`() {
         // given
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(SENDER_ID, RECEIVER_ID) } returns true
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.NOTE_BLOCKED)
-        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
-    }
-
-    @Test
-    fun `나를 차단한 상대에게는 쪽지를 보낼 수 없다`() {
-        // given
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(RECEIVER_ID, SENDER_ID) } returns true
+        every { memberBlockRepository.existsBetween(SENDER_ID, RECEIVER_ID) } returns true
 
         // when
         val exception = assertThrows(BusinessException::class.java) {

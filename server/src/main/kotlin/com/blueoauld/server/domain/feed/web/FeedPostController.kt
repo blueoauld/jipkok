@@ -63,7 +63,7 @@ class FeedPostController(
         feedPostLikeService.like(memberId, postId)
     }
 
-    @Operation(summary = "피드 좋아요 취소")
+    @Operation(operationId = "cancelFeedPostLike", summary = "피드 좋아요 취소")
     @DeleteMapping("/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cancelLike(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {

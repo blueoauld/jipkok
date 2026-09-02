@@ -12,6 +12,7 @@ spring:
 
     ai:
         openai:
+            api-key: ${OPENAI_API_KEY:}
             chat:
                 model: gpt-5.6-luna
 
@@ -79,6 +80,9 @@ jwt:
 
 admob:
     verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
+
+google-translate:
+    api-key: ${GOOGLE_TRANSLATE_API_KEY:}
 
 r2:
     upload-url-validity: 10m

@@ -24,6 +24,8 @@ object DiscordEmbeds {
 
     fun field(label: String, value: String) = "**$label**\n$value"
 
+    fun member(nickname: String, memberId: Long) = "$nickname(`$memberId`)"
+
     private fun chunk(text: String, maxLength: Int) =
         text.lineSequence()
             .flatMap { it.chunked(maxLength).ifEmpty { listOf("") } }

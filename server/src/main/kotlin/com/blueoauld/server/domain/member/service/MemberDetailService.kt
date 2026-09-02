@@ -17,7 +17,7 @@ import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepos
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.time.currentYear
+import com.blueoauld.server.global.time.ageOf
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -60,7 +60,7 @@ class MemberDetailService(
             secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
             nickname = target.nickname,
             gender = target.gender,
-            age = clock.currentYear() - target.birthYear,
+            age = clock.ageOf(target.birthYear),
             receivedLikeCount = target.receivedLikeCount,
             locatedAt = target.locatedAt,
             distance = distanceBetween(me, target),

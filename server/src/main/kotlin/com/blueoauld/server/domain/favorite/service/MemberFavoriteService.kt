@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.favorite.entity.MemberFavorite
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -26,9 +27,7 @@ class MemberFavoriteService(
             throw BusinessException(ErrorCode.SELF_FAVORITE)
         }
 
-        if (!memberRepository.existsById(favoriteMemberId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(favoriteMemberId)
 
         if (memberFavoriteRepository.existsByMemberIdAndFavoriteMemberId(memberId, favoriteMemberId)) {
             return
@@ -67,12 +66,12 @@ class MemberFavoriteService(
     }
 
     private fun toResponse(
-        viewerId: Long,
+        requesterId: Long,
         favorites: List<MemberFavorite>,
         pageSize: Int,
         toMemberId: (MemberFavorite) -> Long,
     ) = CursorResponse(
-        items = memberSummaryService.findSummaries(viewerId, favorites.map(toMemberId)),
+        items = memberSummaryService.findSummaries(requesterId, favorites.map(toMemberId)),
         nextCursor = favorites.lastOrNull()?.id.takeIf { favorites.size == pageSize },
     )
 }

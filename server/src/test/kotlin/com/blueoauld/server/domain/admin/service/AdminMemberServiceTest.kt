@@ -1,11 +1,12 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.AdminMemberRow
 import com.blueoauld.server.domain.admin.dto.AdminMemberStatus
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
+import com.blueoauld.server.domain.admin.dto.projection.AdminMemberRow
 import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.service.MemberAdminService
@@ -13,7 +14,6 @@ import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -31,7 +31,7 @@ class AdminMemberServiceTest {
 
     private val memberAdminRepository = mockk<MemberAdminRepository>()
 
-    private val memberSuspensionRepository = mockk<MemberSuspensionRepository>()
+    private val suspensionAdminRepository = mockk<SuspensionAdminRepository>()
 
     private val memberAdminService = mockk<MemberAdminService>()
 
@@ -41,7 +41,7 @@ class AdminMemberServiceTest {
 
     private val adminMemberService = AdminMemberService(
         memberAdminRepository,
-        memberSuspensionRepository,
+        suspensionAdminRepository,
         memberAdminService,
         memberWithdrawService,
         adminActionRecorder,
@@ -130,7 +130,7 @@ class AdminMemberServiceTest {
             PhotoVisibility.PUBLIC to listOf("public-1"),
             PhotoVisibility.SECRET to listOf("secret-1"),
         )
-        every { memberSuspensionRepository.findByPhoneNumberOrderByIdDesc("+821011112222") } returns listOf(
+        every { suspensionAdminRepository.findByPhoneNumberOrderByIdDesc("+821011112222") } returns listOf(
             suspension(expiresAt = NOW.plusSeconds(3600)),
             suspension(expiresAt = NOW.minusSeconds(3600)),
             suspension(expiresAt = null, releasedAt = NOW.minusSeconds(60)),

@@ -108,7 +108,22 @@ class ChatRoomRepositoryTest {
         assertThat(partner.unreadCount).isEqualTo(1)
     }
 
-    private fun saveRoom(partnerId: Long): Long {
+    @Test
+    fun `나간 방에 남은 고정은 개수에 세지 않는다`() {
+        // given
+        saveRoom(partnerId = 2L, pinned = true)
+        val left = saveRoom(partnerId = 3L, pinned = true)
+        chatRoomRepository.softDeleteAllByIdIn(listOf(left))
+
+        // when
+        val count = chatRoomMemberRepository.countPinnedRooms(ME_ID)
+
+        // then
+        assertThat(count).isEqualTo(1L)
+        assertThat(chatRoomMemberRepository.findByRoomIdAndMemberId(left, ME_ID)!!.pinned).isTrue()
+    }
+
+    private fun saveRoom(partnerId: Long, pinned: Boolean = false): Long {
         val room = chatRoomRepository.saveAndFlush(ChatRoom.of(ME_ID, partnerId))
         val message = chatMessageRepository.saveAndFlush(
             ChatMessage(roomId = room.id, senderId = partnerId, type = ChatMessageType.TEXT, content = "안녕"),
@@ -117,7 +132,7 @@ class ChatRoomRepositoryTest {
         chatRoomRepository.saveAndFlush(room)
         chatRoomMemberRepository.saveAllAndFlush(
             listOf(
-                ChatRoomMember(roomId = room.id, memberId = ME_ID, lastMessageId = message.id),
+                ChatRoomMember(roomId = room.id, memberId = ME_ID, lastMessageId = message.id, pinned = pinned),
                 ChatRoomMember(roomId = room.id, memberId = partnerId, lastMessageId = message.id),
             ),
         )

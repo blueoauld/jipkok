@@ -21,7 +21,7 @@ class AdminFeedController(
     private val adminFeedService: AdminFeedService,
 ) {
 
-    @Operation(summary = "피드 신고 목록")
+    @Operation(operationId = "findFeedReports", summary = "피드 신고 목록")
     @GetMapping("/feed-reports")
     fun findReports(
         @RequestParam(required = false) status: AdminFeedPostStatus?,
@@ -35,7 +35,7 @@ class AdminFeedController(
         size = size,
     )
 
-    @Operation(summary = "피드 게시물 삭제")
+    @Operation(operationId = "deleteFeedPostByAdmin", summary = "피드 게시물 삭제")
     @DeleteMapping("/feed-posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deletePost(

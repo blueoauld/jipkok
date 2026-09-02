@@ -81,28 +81,18 @@ class ChatRoomService(
 
     @Transactional
     fun updateNotification(memberId: Long, roomId: Long, request: EnabledRequest) {
-        val roomMember = chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
-            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
-
-        roomMember.notificationEnabled = request.enabled
+        getRoomMember(memberId, roomId).notificationEnabled = request.enabled
     }
 
     @Transactional
     fun updatePin(memberId: Long, roomId: Long, request: EnabledRequest) {
-        val roomMember = chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
-            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        val roomMember = getRoomMember(memberId, roomId)
 
         if (request.enabled && !roomMember.pinned) {
             checkPinLimit(memberId)
         }
 
         roomMember.pinned = request.enabled
-    }
-
-    private fun checkPinLimit(memberId: Long) {
-        if (chatRoomMemberRepository.countByMemberIdAndPinnedTrue(memberId) >= ChatRoomMember.PIN_MAX_COUNT) {
-            throw BusinessException(ErrorCode.PIN_LIMIT_EXCEEDED)
-        }
     }
 
     @Transactional
@@ -122,6 +112,34 @@ class ChatRoomService(
         chatRoomRepository.findByMembers(memberId, partnerId)?.let { delete(it, partnerId) }
     }
 
+    @Transactional
+    fun deleteAll(memberId: Long, rooms: List<ChatRoom>) {
+        if (rooms.isEmpty()) {
+            return
+        }
+
+        chatRoomRepository.softDeleteAllByIdIn(rooms.map { it.id })
+        rooms.forEach { eventPublisher.publishEvent(ChatRoomDeletedEvent(it.partnerIdOf(memberId), it.id)) }
+    }
+
+    private fun delete(room: ChatRoom, partnerId: Long) {
+        chatRoomRepository.delete(room)
+        eventPublisher.publishEvent(ChatRoomDeletedEvent(partnerId, room.id))
+    }
+
+    private fun getRoomMember(memberId: Long, roomId: Long): ChatRoomMember {
+        chatRoomRepository.getRoomOf(memberId, roomId)
+
+        return chatRoomMemberRepository.findByRoomIdAndMemberId(roomId, memberId)
+            ?: throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    private fun checkPinLimit(memberId: Long) {
+        if (chatRoomMemberRepository.countPinnedRooms(memberId) >= ChatRoomMember.PIN_MAX_COUNT) {
+            throw BusinessException(ErrorCode.PIN_LIMIT_EXCEEDED)
+        }
+    }
+
     private fun toResponse(
         memberId: Long,
         rows: List<ChatRoomRow>,
@@ -136,21 +154,5 @@ class ChatRoomService(
             items = allRows.mapNotNull { row -> partners[row.getPartnerId()]?.let { ChatRoomResponse.of(row, it) } },
             nextCursor = rows.lastOrNull()?.getLastMessageId().takeIf { rows.size == pageSize },
         )
-    }
-
-    @Transactional
-    fun delete(room: ChatRoom, partnerId: Long) {
-        chatRoomRepository.delete(room)
-        eventPublisher.publishEvent(ChatRoomDeletedEvent(partnerId, room.id))
-    }
-
-    @Transactional
-    fun deleteAll(memberId: Long, rooms: List<ChatRoom>) {
-        if (rooms.isEmpty()) {
-            return
-        }
-
-        chatRoomRepository.softDeleteAllByIdIn(rooms.map { it.id })
-        rooms.forEach { eventPublisher.publishEvent(ChatRoomDeletedEvent(it.partnerIdOf(memberId), it.id)) }
     }
 }

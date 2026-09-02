@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.DailyCount
-import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
+import com.blueoauld.server.domain.admin.dto.projection.DailyCount
+import com.blueoauld.server.domain.admin.dto.projection.GenderBirthYearCount
 import com.blueoauld.server.domain.admin.dto.response.AccessEnvironmentResponse
 import com.blueoauld.server.domain.admin.dto.response.ActiveUsersResponse
 import com.blueoauld.server.domain.admin.dto.response.AgeGroupResponse

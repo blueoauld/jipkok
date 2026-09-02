@@ -103,25 +103,10 @@ class SecretPhotoAccessServiceTest {
     }
 
     @Test
-    fun `내가 차단했으면 공개받았어도 볼 수 없다`() {
+    fun `차단 관계면 공개받았어도 볼 수 없다`() {
         // given
         allowView()
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(VIEWER_ID, OWNER_ID) } returns true
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_FORBIDDEN)
-    }
-
-    @Test
-    fun `상대가 나를 차단했으면 공개받았어도 볼 수 없다`() {
-        // given
-        allowView()
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(OWNER_ID, VIEWER_ID) } returns true
+        every { memberBlockRepository.existsBetween(VIEWER_ID, OWNER_ID) } returns true
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -216,7 +201,7 @@ class SecretPhotoAccessServiceTest {
         every {
             secretPhotoAccessRepository.findByOwnerIdAndIdLessThanOrderByIdDesc(OWNER_ID, Long.MAX_VALUE, any())
         } returns accesses
-        every { memberSummaryService.findSummaries(any(), listOf(VIEWER_ID, 3L)) } returns
+        every { memberSummaryService.findSummaries(OWNER_ID, listOf(VIEWER_ID, 3L)) } returns
             listOf(summary(VIEWER_ID), summary(3L))
 
         // when
@@ -238,7 +223,7 @@ class SecretPhotoAccessServiceTest {
         secretPhotoAccessService.findReceived(VIEWER_ID, 40L, 20)
 
         // then
-        verify { memberSummaryService.findSummaries(any(), listOf(OWNER_ID)) }
+        verify { memberSummaryService.findSummaries(VIEWER_ID, listOf(OWNER_ID)) }
     }
 
     private fun access(id: Long, viewerId: Long) = mockk<SecretPhotoAccess>(relaxed = true) {
@@ -260,7 +245,7 @@ class SecretPhotoAccessServiceTest {
 
     private fun allowView() {
         every { secretPhotoAccessRepository.existsByOwnerIdAndViewerId(OWNER_ID, VIEWER_ID) } returns true
-        every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
+        every { memberBlockRepository.existsBetween(any(), any()) } returns false
         every { memberPhotoRepository.findAllByMemberId(OWNER_ID) } returns listOf(
             MemberPhoto(OWNER_ID, PhotoVisibility.SECRET, 2, "b.jpg"),
             MemberPhoto(OWNER_ID, PhotoVisibility.PUBLIC, 1, "public.jpg"),

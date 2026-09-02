@@ -50,7 +50,7 @@ class Member(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "locale", nullable = false)
-    var locale: MemberLocale = MemberLocale.KO,
+    var locale: MemberLocale = MemberLocale.DEFAULT,
 
     @Column(name = "latitude")
     var latitude: Double? = null,
@@ -93,6 +93,8 @@ class Member(
         const val BIO_MAX_LENGTH = 1000
         const val PASSWORD_MIN_LENGTH = 8
         const val PASSWORD_MAX_LENGTH = 30
+        const val MIN_AGE = 19
+        const val MAX_AGE = 90
 
         fun generateNickname() = UUID.randomUUID().toString().replace("-", "").take(NICKNAME_MAX_LENGTH)
     }

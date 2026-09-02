@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.member.dto.projection.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
+import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
@@ -85,16 +86,21 @@ class MemberAdminServiceTest {
     }
 
     @Test
-    fun `닉네임을 초기화하면 무작위 닉네임으로 바꾼다`() {
+    fun `닉네임을 초기화하면 무작위 닉네임으로 바꾸고 이력을 남긴다`() {
         // given
         val member = member()
+        val before = member.nickname
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+        val history = slot<NicknameHistory>()
 
         // when
         memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.NICKNAME)
 
         // then
-        assertThat(member.nickname).isNotEqualTo(NICKNAME)
+        assertThat(member.nickname).isNotEqualTo(before)
+        assertThat(member.nickname).hasSize(Member.NICKNAME_MAX_LENGTH)
+        verify { nicknameHistoryRepository.save(capture(history)) }
+        assertThat(history.captured.nickname).isEqualTo(member.nickname)
     }
 
     @Test
@@ -133,7 +139,6 @@ class MemberAdminServiceTest {
 
         private const val PHONE_NUMBER = "+821012345678"
         private const val ENCODED_PASSWORD = "encoded-password"
-        private const val NICKNAME = "닉네임"
         private const val MEMBER_ID = 0L
     }
 }

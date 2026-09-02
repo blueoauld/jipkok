@@ -59,7 +59,7 @@ class AdminSuspensionService(
 
     @Transactional
     fun suspend(actorId: Long, request: CreateSuspensionRequest): AdminSuspensionResponse {
-        val detail = memberSuspensionService.suspend(
+        val suspension = memberSuspensionService.suspend(
             memberId = request.memberId!!,
             type = request.type!!,
             reason = request.reason!!,
@@ -73,17 +73,7 @@ class AdminSuspensionService(
             detail = "${request.type} ${request.reason} ${request.days?.let { "${it}일" } ?: "영구"}",
         )
 
-        return AdminSuspensionResponse(
-            id = detail.id,
-            memberId = detail.memberId,
-            nickname = detail.nickname,
-            type = detail.type,
-            reason = detail.reason,
-            status = AdminSuspensionStatus.ACTIVE,
-            startedAt = detail.startedAt,
-            expiresAt = detail.expiresAt,
-            releasedAt = detail.releasedAt,
-        )
+        return AdminSuspensionResponse.of(suspension, clock.instant())
     }
 
     @Transactional

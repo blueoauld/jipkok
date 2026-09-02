@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
-import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminFeedPostRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminFeedReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.FeedAdminRepository
 import com.blueoauld.server.domain.feed.service.FeedPostService

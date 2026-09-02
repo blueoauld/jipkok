@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.NicknameHistory
+import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
@@ -41,19 +42,13 @@ class MemberAdminService(
     }
 
     @Transactional(readOnly = true)
-    fun findPhotoUrls(memberId: Long): Map<PhotoVisibility, List<String>> =
-        memberPhotoRepository.findAllByMemberId(memberId)
-            .sortedBy { it.displayOrder }
-            .groupBy { it.visibility }
-            .mapValues { (visibility, photos) ->
-                val toUrl = if (visibility == PhotoVisibility.PUBLIC) {
-                    photoStorage::toPublicUrl
-                } else {
-                    photoStorage::createSignedViewUrl
-                }
+    fun findPhotoUrls(memberId: Long): Map<PhotoVisibility, List<String>> {
+        val photos = memberPhotoRepository.findAllByMemberId(memberId)
 
-                photos.map { toUrl(it.objectKey) }
-            }
+        return PhotoVisibility.entries.associateWith { visibility ->
+            photos.displayOrdered(visibility).map { viewUrl(visibility, it.objectKey) }
+        }
+    }
 
     @Transactional
     fun resetProfile(memberId: Long, target: ProfileTarget) {
@@ -73,8 +68,15 @@ class MemberAdminService(
         nicknameHistoryRepository.save(NicknameHistory(member.id, member.nickname))
     }
 
+    private fun viewUrl(visibility: PhotoVisibility, objectKey: String) =
+        if (visibility == PhotoVisibility.PUBLIC) {
+            photoStorage.toPublicUrl(objectKey)
+        } else {
+            photoStorage.createSignedViewUrl(objectKey)
+        }
+
     private fun deletePhotos(memberId: Long, visibility: PhotoVisibility) {
-        val photos = memberPhotoRepository.findAllByMemberId(memberId).filter { it.visibility == visibility }
+        val photos = memberPhotoRepository.findAllByMemberId(memberId).displayOrdered(visibility)
 
         if (photos.isEmpty()) {
             return

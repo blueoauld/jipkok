@@ -68,7 +68,7 @@ class RequestLoggingFilter : OncePerRequestFilter() {
 
         const val APP_VERSION_HEADER = "X-App-Version"
 
-        private val SENSITIVE_PARAM_PATTERN = Regex("(keyword|phoneNumber|reportedPhoneNumber)=[^&]*")
+        private val SENSITIVE_PARAM_PATTERN = Regex("(keyword|reportedPhoneNumber)=[^&]*")
         private const val PLATFORM_HEADER = "X-Platform"
 
         private const val API_PATH_PREFIX = "/api/"

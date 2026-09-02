@@ -5,12 +5,12 @@ import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
-import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -61,7 +61,7 @@ class AdminSuspensionServiceTest {
         // given
         every {
             memberSuspensionService.suspend(MEMBER_ID, SuspensionType.SERVICE, SuspensionReason.ABUSE, 7, "상세")
-        } returns detail()
+        } returns suspension(NOW.plusSeconds(604_800))
 
         // when
         val response = adminSuspensionService.suspend(
@@ -86,7 +86,7 @@ class AdminSuspensionServiceTest {
     @Test
     fun `해제는 기존 서비스에 위임한다`() {
         // given
-        every { memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE) } returns emptyList()
+        justRun { memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE) }
 
         // when
         adminSuspensionService.release(
@@ -110,8 +110,6 @@ class AdminSuspensionServiceTest {
         startedAt = NOW.minusSeconds(7200),
         expiresAt = expiresAt,
     )
-
-    private fun detail() = SuspensionDetail.of(suspension(NOW.plusSeconds(604_800)))
 
     companion object {
 

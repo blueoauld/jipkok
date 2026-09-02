@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.secretphoto.entity.SecretPhotoAccess
 import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepository
@@ -37,9 +38,7 @@ class SecretPhotoAccessService(
             throw BusinessException(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
         }
 
-        if (!memberRepository.existsById(viewerId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(viewerId)
 
         if (secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId)) {
             return
@@ -47,29 +46,6 @@ class SecretPhotoAccessService(
 
         secretPhotoAccessRepository.saveAndFlush(SecretPhotoAccess(ownerId, viewerId))
     }
-
-    @Transactional(readOnly = true)
-    fun findPhotoUrls(viewerId: Long, ownerId: Long): List<String> {
-        if (viewerId == ownerId) {
-            throw BusinessException(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
-        }
-
-        memberSuspensionService.check(viewerId, SuspensionType.SECRET_PHOTO)
-
-        if (!secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId) ||
-            isBlocked(viewerId, ownerId)
-        ) {
-            throw BusinessException(ErrorCode.SECRET_PHOTO_FORBIDDEN)
-        }
-
-        return memberPhotoRepository.findAllByMemberId(ownerId)
-            .displayOrdered(PhotoVisibility.SECRET)
-            .map { photoStorage.createSignedViewUrl(it.objectKey) }
-    }
-
-    private fun isBlocked(viewerId: Long, ownerId: Long) =
-        memberBlockRepository.existsByBlockerIdAndBlockedMemberId(viewerId, ownerId) ||
-            memberBlockRepository.existsByBlockerIdAndBlockedMemberId(ownerId, viewerId)
 
     @Transactional
     fun revoke(ownerId: Long, viewerId: Long) {
@@ -98,6 +74,25 @@ class SecretPhotoAccessService(
         )
 
         return toResponse(viewerId, accesses, pageSize) { it.ownerId }
+    }
+
+    @Transactional(readOnly = true)
+    fun findPhotoUrls(viewerId: Long, ownerId: Long): List<String> {
+        if (viewerId == ownerId) {
+            throw BusinessException(ErrorCode.SELF_SECRET_PHOTO_ACCESS)
+        }
+
+        memberSuspensionService.check(viewerId, SuspensionType.SECRET_PHOTO)
+
+        if (!secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId) ||
+            memberBlockRepository.existsBetween(viewerId, ownerId)
+        ) {
+            throw BusinessException(ErrorCode.SECRET_PHOTO_FORBIDDEN)
+        }
+
+        return memberPhotoRepository.findAllByMemberId(ownerId)
+            .displayOrdered(PhotoVisibility.SECRET)
+            .map { photoStorage.createSignedViewUrl(it.objectKey) }
     }
 
     private fun toResponse(

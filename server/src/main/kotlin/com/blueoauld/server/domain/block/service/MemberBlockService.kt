@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.service.ChatRoomService
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -28,9 +29,7 @@ class MemberBlockService(
             throw BusinessException(ErrorCode.SELF_BLOCK)
         }
 
-        if (!memberRepository.existsById(blockedMemberId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(blockedMemberId)
 
         if (memberBlockRepository.existsByBlockerIdAndBlockedMemberId(blockerId, blockedMemberId)) {
             return

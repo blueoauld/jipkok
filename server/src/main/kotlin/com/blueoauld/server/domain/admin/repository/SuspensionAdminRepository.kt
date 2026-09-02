@@ -10,6 +10,8 @@ interface SuspensionAdminRepository : JpaRepository<MemberSuspension, Long> {
 
     fun findTop5ByOrderByIdDesc(): List<MemberSuspension>
 
+    fun findByPhoneNumberOrderByIdDesc(phoneNumber: String): List<MemberSuspension>
+
     @Query(
         """
         select count(distinct s.phoneNumber)

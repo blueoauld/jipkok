@@ -20,7 +20,7 @@ class MemberSearchServiceTest {
     @BeforeEach
     fun setUp() {
         every { memberListRepository.findByNicknamePrefix(any(), any(), any(), any(), any()) } returns emptyList()
-        every { memberSummaryService.findSummaries(any(), any()) } returns emptyList()
+        every { memberSummaryService.findSummaries(MEMBER_ID, any()) } returns emptyList()
     }
 
     @Test

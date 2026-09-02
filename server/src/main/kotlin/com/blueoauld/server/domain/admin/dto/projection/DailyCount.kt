@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.admin.dto
+package com.blueoauld.server.domain.admin.dto.projection
 
 import java.time.LocalDate
 

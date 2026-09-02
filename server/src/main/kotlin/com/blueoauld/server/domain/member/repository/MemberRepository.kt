@@ -28,6 +28,9 @@ interface MemberRepository : JpaRepository<Member, Long> {
     @Query("select m.locale from Member m where m.id = :memberId")
     fun findLocaleById(@Param("memberId") memberId: Long): MemberLocale?
 
+    @Query("select m.nickname from Member m where m.id = :memberId")
+    fun findNicknameById(@Param("memberId") memberId: Long): String?
+
     @Query(
         """
         select m.id as memberId, m.locale as locale

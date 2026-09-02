@@ -7,6 +7,8 @@ import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.security.checkPasswordConfirm
+import com.blueoauld.server.global.security.encodePassword
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,9 +25,7 @@ class PasswordResetService(
 
     @Transactional
     fun reset(request: ResetPasswordRequest) {
-        if (request.password != request.passwordConfirm) {
-            throw BusinessException(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
-        }
+        checkPasswordConfirm(request.password, request.passwordConfirm)
 
         verificationCodeService.verify(
             request.phoneNumber,
@@ -36,9 +36,7 @@ class PasswordResetService(
         val member = memberRepository.findByPhoneNumber(request.phoneNumber)
             ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 
-        member.password = checkNotNull(passwordEncoder.encode(request.password)) {
-            "비밀번호를 암호화하지 못했다."
-        }
+        member.password = passwordEncoder.encodePassword(request.password)
 
         refreshTokenRepository.delete(member.id)
         loginAttemptCache.clear(request.phoneNumber)

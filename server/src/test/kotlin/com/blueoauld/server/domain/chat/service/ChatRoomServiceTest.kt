@@ -65,7 +65,7 @@ class ChatRoomServiceTest {
     fun `방을 조회하면 상대 정보를 함께 준다`() {
         // given
         every { chatRoomRepository.findRoom(ME_ID, ROOM_ID) } returns row()
-        every { memberSummaryService.findSummaries(any(), listOf(PARTNER_ID)) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, listOf(PARTNER_ID)) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRoom(ME_ID, ROOM_ID)
@@ -94,7 +94,7 @@ class ChatRoomServiceTest {
     fun `목록은 상대 정보와 마지막 메시지를 함께 준다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), listOf(PARTNER_ID)) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, listOf(PARTNER_ID)) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -136,7 +136,7 @@ class ChatRoomServiceTest {
     fun `페이지가 가득 차면 다음 커서를 준다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 1)
@@ -149,7 +149,7 @@ class ChatRoomServiceTest {
     fun `마지막 페이지면 다음 커서가 없다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -162,7 +162,7 @@ class ChatRoomServiceTest {
     fun `탈퇴한 상대의 방은 빠진다`() {
         // given
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), any()) } returns emptyList()
+        every { memberSummaryService.findSummaries(ME_ID, any()) } returns emptyList()
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 20)
@@ -175,7 +175,7 @@ class ChatRoomServiceTest {
     fun `닉네임 일부만 넣어도 방을 찾는다`() {
         // given
         every { chatRoomRepository.searchRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.searchRooms(ME_ID, "대", cursor = null, size = 20)
@@ -380,7 +380,7 @@ class ChatRoomServiceTest {
         // given
         every { chatRoomRepository.findPinnedRooms(ME_ID, 0) } returns listOf(row(pinned = true, lastMessageId = 10L))
         every { chatRoomRepository.findRooms(any(), any(), any(), any()) } returns listOf(row())
-        every { memberSummaryService.findSummaries(any(), any()) } returns listOf(summary())
+        every { memberSummaryService.findSummaries(ME_ID, any()) } returns listOf(summary())
 
         // when
         val response = chatRoomService.findRooms(ME_ID, unreadOnly = false, cursor = null, size = 1)
@@ -419,7 +419,7 @@ class ChatRoomServiceTest {
         // given
         val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID)
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
-        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 4
+        every { chatRoomMemberRepository.countPinnedRooms(ME_ID) } returns 4
 
         // when
         chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(true))
@@ -433,7 +433,7 @@ class ChatRoomServiceTest {
         // given
         val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID)
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
-        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 5
+        every { chatRoomMemberRepository.countPinnedRooms(ME_ID) } returns 5
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -450,7 +450,7 @@ class ChatRoomServiceTest {
         // given
         val roomMember = ChatRoomMember(roomId = ROOM_ID, memberId = ME_ID, pinned = true)
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, ME_ID) } returns roomMember
-        every { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(ME_ID) } returns 5
+        every { chatRoomMemberRepository.countPinnedRooms(ME_ID) } returns 5
 
         // when
         chatRoomService.updatePin(ME_ID, ROOM_ID, EnabledRequest(true))
@@ -470,14 +470,11 @@ class ChatRoomServiceTest {
 
         // then
         assertThat(roomMember.pinned).isFalse()
-        verify(exactly = 0) { chatRoomMemberRepository.countByMemberIdAndPinnedTrue(any()) }
+        verify(exactly = 0) { chatRoomMemberRepository.countPinnedRooms(any()) }
     }
 
     @Test
     fun `내가 속하지 않은 방은 고정할 수 없다`() {
-        // given
-        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, STRANGER_ID) } returns null
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             chatRoomService.updatePin(STRANGER_ID, ROOM_ID, EnabledRequest(true))
@@ -489,12 +486,37 @@ class ChatRoomServiceTest {
 
     @Test
     fun `내가 속하지 않은 방의 알림은 바꿀 수 없다`() {
-        // given
-        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, STRANGER_ID) } returns null
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             chatRoomService.updateNotification(STRANGER_ID, ROOM_ID, EnabledRequest(false))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    @Test
+    fun `이미 나간 방은 고정할 수 없다`() {
+        // given
+        every { chatRoomRepository.findById(GONE_ROOM_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.updatePin(ME_ID, GONE_ROOM_ID, EnabledRequest(true))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    @Test
+    fun `이미 나간 방의 알림은 바꿀 수 없다`() {
+        // given
+        every { chatRoomRepository.findById(GONE_ROOM_ID) } returns Optional.empty()
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.updateNotification(ME_ID, GONE_ROOM_ID, EnabledRequest(false))
         }
 
         // then

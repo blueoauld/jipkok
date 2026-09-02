@@ -7,11 +7,15 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.time.Instant
 
 @Entity
 @Table(
     name = "photo_upload",
+    uniqueConstraints = [
+        UniqueConstraint(name = "uk_photo_upload_object_key", columnNames = ["object_key"]),
+    ],
     indexes = [Index(name = "idx_photo_upload_issued_at", columnList = "issued_at")],
 )
 class PhotoUpload(
@@ -19,7 +23,7 @@ class PhotoUpload(
     @Column(name = "member_id", nullable = false)
     val memberId: Long,
 
-    @Column(name = "object_key", nullable = false, unique = true, length = OBJECT_KEY_MAX_LENGTH)
+    @Column(name = "object_key", nullable = false, length = OBJECT_KEY_MAX_LENGTH)
     val objectKey: String,
 
     @Column(name = "issued_at", nullable = false)

@@ -24,7 +24,10 @@ import java.time.LocalDate
             columnNames = ["member_id", "accessed_on"],
         ),
     ],
-    indexes = [Index(name = "idx_access_log_created_at", columnList = "created_at")],
+    indexes = [
+        Index(name = "idx_access_log_created_at", columnList = "created_at"),
+        Index(name = "idx_access_log_accessed_on", columnList = "accessed_on"),
+    ],
 )
 class AccessLog(
 
@@ -38,10 +41,10 @@ class AccessLog(
     @Column(name = "platform", nullable = false, updatable = false)
     val platform: DevicePlatform,
 
-    @Column(name = "device_name", updatable = false, length = AccessReward.DEVICE_NAME_MAX_LENGTH)
+    @Column(name = "device_name", updatable = false, length = DEVICE_NAME_MAX_LENGTH)
     val deviceName: String?,
 
-    @Column(name = "ip_address", nullable = false, updatable = false, length = AccessReward.IP_ADDRESS_MAX_LENGTH)
+    @Column(name = "ip_address", nullable = false, updatable = false, length = IP_ADDRESS_MAX_LENGTH)
     val ipAddress: String,
 
     @Column(name = "accessed_on", nullable = false, updatable = false)
@@ -58,6 +61,8 @@ class AccessLog(
 
     companion object {
 
+        const val DEVICE_NAME_MAX_LENGTH = 100
+        const val IP_ADDRESS_MAX_LENGTH = 45
         const val APP_VERSION_MAX_LENGTH = 20
     }
 }

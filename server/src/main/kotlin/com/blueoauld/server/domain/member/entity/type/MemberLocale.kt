@@ -11,4 +11,10 @@ enum class MemberLocale(
     JA(Locale.JAPANESE),
     EN(Locale.ENGLISH),
     ZH_TW(Locale.TRADITIONAL_CHINESE),
+    ;
+
+    companion object {
+
+        val DEFAULT = KO
+    }
 }

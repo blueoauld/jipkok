@@ -13,6 +13,8 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.security.checkPasswordConfirm
+import com.blueoauld.server.global.security.encodePassword
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,9 +32,7 @@ class MemberSignupService(
 
     @Transactional
     fun signup(request: SignupRequest): TokenResponse {
-        if (request.password != request.passwordConfirm) {
-            throw BusinessException(ErrorCode.PASSWORD_CONFIRM_MISMATCH)
-        }
+        checkPasswordConfirm(request.password, request.passwordConfirm)
 
         verificationCodeService.verify(
             request.phoneNumber,
@@ -49,7 +49,7 @@ class MemberSignupService(
         val member = memberRepository.save(
             Member(
                 phoneNumber = request.phoneNumber,
-                password = encodePassword(request.password),
+                password = passwordEncoder.encodePassword(request.password),
                 gender = request.gender,
                 nickname = Member.generateNickname(),
                 birthYear = DEFAULT_BIRTH_YEAR,
@@ -58,10 +58,6 @@ class MemberSignupService(
         nicknameHistoryRepository.save(NicknameHistory(member.id, member.nickname))
 
         return authService.issueTokens(member)
-    }
-
-    private fun encodePassword(rawPassword: String) = checkNotNull(passwordEncoder.encode(rawPassword)) {
-        "비밀번호를 해싱하지 못했다."
     }
 
     companion object {

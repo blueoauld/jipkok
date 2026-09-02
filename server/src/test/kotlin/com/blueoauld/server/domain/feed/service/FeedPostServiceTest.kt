@@ -1,10 +1,10 @@
 package com.blueoauld.server.domain.feed.service
 
+import com.blueoauld.server.domain.feed.dto.projection.FeedPostRow
 import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
-import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
@@ -31,14 +31,11 @@ class FeedPostServiceTest {
 
     private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
 
-    private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
-
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
     private val feedPostService = FeedPostService(
         feedPostRepository,
         photoUploadService,
-        memberSummaryService,
         photoStorage,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -64,6 +61,38 @@ class FeedPostServiceTest {
         // then
         assertThat(from.captured).isEqualTo(Instant.parse("2026-08-01T15:00:00Z"))
         assertThat(to.captured).isEqualTo(Instant.parse("2026-08-02T15:00:00Z"))
+    }
+
+    @Test
+    fun `목록은 행의 닉네임을 그대로 싣고 페이지가 차면 다음 커서를 준다`() {
+        // given
+        every {
+            feedPostRepository.findByDateLatestFirst(any(), any(), any(), any(), any(), any())
+        } returns listOf(row(1L), row(2L))
+        every { photoStorage.toPublicUrl("feeds/1/a.webp") } returns "https://cdn/a.webp"
+
+        // when
+        val response = feedPostService.findByDate(MEMBER_ID, null, FeedSort.LATEST, null, null, 2)
+
+        // then
+        assertThat(response.items.map { it.postId }).containsExactly(1L, 2L)
+        assertThat(response.items.map { it.nickname }).containsExactly("회원1", "회원2")
+        assertThat(response.items.first().imageUrl).isEqualTo("https://cdn/a.webp")
+        assertThat(response.nextCursor).isEqualTo(2L)
+    }
+
+    @Test
+    fun `페이지가 덜 차면 다음 커서가 없다`() {
+        // given
+        every {
+            feedPostRepository.findByDateLatestFirst(any(), any(), any(), any(), any(), any())
+        } returns listOf(row(1L))
+
+        // when
+        val response = feedPostService.findByDate(MEMBER_ID, null, FeedSort.LATEST, null, null, 20)
+
+        // then
+        assertThat(response.nextCursor).isNull()
     }
 
     @Test
@@ -184,6 +213,16 @@ class FeedPostServiceTest {
     }
 
     private fun photoKey() = "feeds/$MEMBER_ID/photo.jpg"
+
+    private fun row(postId: Long) = mockk<FeedPostRow> {
+        every { getPostId() } returns postId
+        every { getMemberId() } returns postId
+        every { getNickname() } returns "회원$postId"
+        every { getSlotAt() } returns NOW
+        every { getCaption() } returns null
+        every { getObjectKey() } returns "feeds/$postId/a.webp"
+        every { getLikedByMe() } returns false
+    }
 
     companion object {
 

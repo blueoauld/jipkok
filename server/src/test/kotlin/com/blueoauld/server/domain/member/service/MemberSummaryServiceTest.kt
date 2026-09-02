@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.member.dto.projection.MemberListRow
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -110,6 +111,42 @@ class MemberSummaryServiceTest {
         verify(exactly = 0) { memberRepository.findAllById(any()) }
     }
 
+    @Test
+    fun `목록 항목은 행의 접속 시각, 거리, 즐겨찾기를 요약에 붙인다`() {
+        // given
+        every { memberRepository.findAllById(listOf(1L)) } returns listOf(member(1L, 1998))
+        every { memberPhotoRepository.findAllByMemberIdIn(any()) } returns emptyList()
+
+        // when
+        val items = service.findListItems(VIEWER_ID, listOf(row(1L)))
+
+        // then
+        assertThat(items.single().memberId).isEqualTo(1L)
+        assertThat(items.single().locatedAt).isEqualTo(LOCATED_AT)
+        assertThat(items.single().distance).isEqualTo(3.5)
+        assertThat(items.single().favoritedByMe).isTrue()
+    }
+
+    @Test
+    fun `요약을 못 만든 회원은 목록 항목에서 뺀다`() {
+        // given
+        every { memberRepository.findAllById(listOf(2L, 3L)) } returns listOf(member(3L, 1998))
+        every { memberPhotoRepository.findAllByMemberIdIn(any()) } returns emptyList()
+
+        // when
+        val items = service.findListItems(VIEWER_ID, listOf(row(2L), row(3L)))
+
+        // then
+        assertThat(items.map { it.memberId }).containsExactly(3L)
+    }
+
+    private fun row(memberId: Long) = mockk<MemberListRow> {
+        every { getMemberId() } returns memberId
+        every { getLocatedAt() } returns LOCATED_AT
+        every { getDistance() } returns 3.5
+        every { getFavoritedByMe() } returns true
+    }
+
     private fun member(id: Long, birthYear: Int) = Member(
         phoneNumber = "+82101234${id.toString().padStart(4, '0')}",
         password = "encoded",
@@ -128,5 +165,6 @@ class MemberSummaryServiceTest {
         private const val VIEWER_ID = 99L
 
         private val NOW: Instant = Instant.parse("2026-08-01T00:00:00Z")
+        private val LOCATED_AT: Instant = Instant.parse("2026-07-31T00:00:00Z")
     }
 }

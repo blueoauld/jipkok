@@ -22,16 +22,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     @Query(
         """
-        select r.id as roomId,
-               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
-               crm.unreadCount as unreadCount,
-               crm.notificationEnabled as notificationEnabled,
-               crm.pinned as pinned,
-               crm.lastMessageId as lastMessageId,
-               m.type as lastMessageType,
-               m.content as lastMessageContent,
-               m.createdAt as lastMessageAt
-        from ChatRoomMember crm, ChatRoom r, ChatMessage m
+        $SELECT_ROW
         where crm.memberId = :memberId
           and r.id = :roomId
           and r.id = crm.roomId
@@ -42,16 +33,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     @Query(
         """
-        select r.id as roomId,
-               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
-               crm.unreadCount as unreadCount,
-               crm.notificationEnabled as notificationEnabled,
-               crm.pinned as pinned,
-               crm.lastMessageId as lastMessageId,
-               m.type as lastMessageType,
-               m.content as lastMessageContent,
-               m.createdAt as lastMessageAt
-        from ChatRoomMember crm, ChatRoom r, ChatMessage m
+        $SELECT_ROW
         where crm.memberId = :memberId
           and r.id = crm.roomId
           and m.id = crm.lastMessageId
@@ -70,16 +52,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     @Query(
         """
-        select r.id as roomId,
-               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
-               crm.unreadCount as unreadCount,
-               crm.notificationEnabled as notificationEnabled,
-               crm.pinned as pinned,
-               crm.lastMessageId as lastMessageId,
-               m.type as lastMessageType,
-               m.content as lastMessageContent,
-               m.createdAt as lastMessageAt
-        from ChatRoomMember crm, ChatRoom r, ChatMessage m
+        $SELECT_ROW
         where crm.memberId = :memberId
           and r.id = crm.roomId
           and m.id = crm.lastMessageId
@@ -95,16 +68,7 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
 
     @Query(
         """
-        select r.id as roomId,
-               p.id as partnerId,
-               crm.unreadCount as unreadCount,
-               crm.notificationEnabled as notificationEnabled,
-               crm.pinned as pinned,
-               crm.lastMessageId as lastMessageId,
-               m.type as lastMessageType,
-               m.content as lastMessageContent,
-               m.createdAt as lastMessageAt
-        from ChatRoomMember crm, ChatRoom r, ChatMessage m, Member p
+        $SELECT_SEARCH_ROW
         where crm.memberId = :memberId
           and r.id = crm.roomId
           and m.id = crm.lastMessageId
@@ -131,4 +95,25 @@ interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from ChatRoom r where r.id in :roomIds")
     fun softDeleteAllByIdIn(@Param("roomIds") roomIds: List<Long>)
+
+    companion object {
+
+        private const val ROW_COLUMNS = """crm.unreadCount as unreadCount,
+               crm.notificationEnabled as notificationEnabled,
+               crm.pinned as pinned,
+               crm.lastMessageId as lastMessageId,
+               m.type as lastMessageType,
+               m.content as lastMessageContent,
+               m.createdAt as lastMessageAt"""
+
+        private const val SELECT_ROW = """select r.id as roomId,
+               (case when r.lowMemberId = :memberId then r.highMemberId else r.lowMemberId end) as partnerId,
+               $ROW_COLUMNS
+        from ChatRoomMember crm, ChatRoom r, ChatMessage m"""
+
+        private const val SELECT_SEARCH_ROW = """select r.id as roomId,
+               p.id as partnerId,
+               $ROW_COLUMNS
+        from ChatRoomMember crm, ChatRoom r, ChatMessage m, Member p"""
+    }
 }

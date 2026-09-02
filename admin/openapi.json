@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "\uc9d1\ucf55 API",
-        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_003 | 400 | \uc0ac\uc9c4\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 10MB\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| MEMO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uba54\ubaa8\ub97c \ub0a8\uae38 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| CHAT_010 | 400 | \ucc44\ud305\ubc29\uc740 5\uac1c\uae4c\uc9c0 \uace0\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_001 | 404 | \uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_002 | 409 | \uace0\ubbfc\uc740 \ud558\ub8e8\uc5d0 5\uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_003 | 403 | \ubcf8\uc778\uc774 \uc4f4 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_004 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uae00\uc785\ub2c8\ub2e4. |\n| WORRY_005 | 404 | \ub313\uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_006 | 403 | \ubcf8\uc778\uc774 \uc4f4 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_007 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \ub313\uae00\uc785\ub2c8\ub2e4. |\n| WORRY_008 | 400 | \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| TRANSLATION_001 | 503 | \ubc88\uc5ed\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| TRANSLATION_002 | 429 | \ubc88\uc5ed \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |",
+        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_003 | 400 | \uc0ac\uc9c4\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 10MB\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| MEMO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uba54\ubaa8\ub97c \ub0a8\uae38 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| CHAT_010 | 400 | \ucc44\ud305\ubc29\uc740 5\uac1c\uae4c\uc9c0 \uace0\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_001 | 404 | \uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_002 | 409 | \uace0\ubbfc\uc740 \ud558\ub8e8\uc5d0 5\uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_003 | 403 | \ubcf8\uc778\uc774 \uc4f4 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_004 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uae00\uc785\ub2c8\ub2e4. |\n| WORRY_005 | 404 | \ub313\uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_006 | 403 | \ubcf8\uc778\uc774 \uc4f4 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_007 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \ub313\uae00\uc785\ub2c8\ub2e4. |\n| WORRY_008 | 400 | \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| TRANSLATION_001 | 503 | \ubc88\uc5ed\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| TRANSLATION_002 | 429 | \ubc88\uc5ed \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |",
         "version": "v1"
     },
     "servers": [
@@ -100,8 +100,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -184,8 +204,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -266,8 +306,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -351,8 +411,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -436,8 +516,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -520,8 +620,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -604,8 +724,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -700,8 +840,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -795,8 +955,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -907,8 +1087,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1006,8 +1206,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1140,8 +1360,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1223,8 +1463,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1308,8 +1568,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1393,8 +1673,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1410,7 +1710,7 @@
                     "worry-controller"
                 ],
                 "summary": "\uace0\ubbfc \uacf5\uac10 \ucde8\uc18c",
-                "operationId": "cancelLike",
+                "operationId": "cancelWorryPostLike",
                 "parameters": [
                     {
                         "name": "postId",
@@ -1476,8 +1776,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1588,8 +1908,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1682,8 +2022,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1767,8 +2127,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1859,8 +2239,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1943,8 +2343,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2034,8 +2454,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2179,8 +2619,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2268,8 +2728,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2353,8 +2833,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2436,8 +2936,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2532,8 +3052,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2617,8 +3157,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2700,8 +3260,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2785,8 +3365,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2868,8 +3468,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2953,8 +3573,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3036,8 +3676,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3110,8 +3770,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3201,8 +3881,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3303,8 +4003,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3388,8 +4108,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3525,8 +4265,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3608,8 +4368,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3693,8 +4473,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3778,8 +4578,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3795,7 +4615,7 @@
                     "feed-post-controller"
                 ],
                 "summary": "\ud53c\ub4dc \uc88b\uc544\uc694 \ucde8\uc18c",
-                "operationId": "cancelLike_1",
+                "operationId": "cancelFeedPostLike",
                 "parameters": [
                     {
                         "name": "postId",
@@ -3861,8 +4681,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3952,8 +4792,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4047,8 +4907,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4159,8 +5039,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4260,8 +5160,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4345,8 +5265,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4363,8 +5303,8 @@
                 "tags": [
                     "chat-message-controller"
                 ],
-                "summary": "\ucc44\ud305 \uc0ac\uc9c4 \uc5c5\ub85c\ub4dc URL \ubc1c\uae09",
-                "operationId": "createChatPhotoUploadUrl",
+                "summary": "\ucc44\ud305 \uc0ac\uc9c4, \ub3d9\uc601\uc0c1 \uc5c5\ub85c\ub4dc URL \ubc1c\uae09",
+                "operationId": "createChatMediaUploadUrl",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -4436,8 +5376,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4521,8 +5481,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4545,7 +5525,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ReissueRequest"
+                                "$ref": "#/components/schemas/RefreshTokenRequest"
                             }
                         }
                     },
@@ -4612,8 +5592,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4697,8 +5697,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4721,7 +5741,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ReissueRequest"
+                                "$ref": "#/components/schemas/RefreshTokenRequest"
                             }
                         }
                     },
@@ -4781,8 +5801,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4873,8 +5913,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4954,8 +6014,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5092,8 +6172,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5182,8 +6282,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5267,8 +6387,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5352,8 +6492,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5448,8 +6608,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5467,7 +6647,7 @@
                     "worry-controller"
                 ],
                 "summary": "\uace0\ubbfc \uc0c1\uc138 \uc870\ud68c",
-                "operationId": "findDetail",
+                "operationId": "findWorryPostDetail",
                 "parameters": [
                     {
                         "name": "postId",
@@ -5540,8 +6720,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5624,8 +6824,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5735,8 +6955,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5837,8 +7077,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5919,8 +7179,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6021,8 +7301,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6040,7 +7340,7 @@
                     "member-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc870\ud68c",
-                "operationId": "findDetail_1",
+                "operationId": "findMemberDetail",
                 "parameters": [
                     {
                         "name": "targetId",
@@ -6113,8 +7413,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6209,8 +7529,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6318,8 +7658,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6431,8 +7791,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6512,8 +7892,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6530,7 +7930,7 @@
                 ],
                 "summary": "\ud68c\uc6d0 \ud0c8\ud1f4",
                 "description": "\ub300\ud654\uc640 \ud53c\ub4dc\uac00 \ud568\uaed8 \uc0ac\ub77c\uc9c0\uba70 \ub418\ub3cc\ub9b4 \uc218 \uc5c6\ub2e4.",
-                "operationId": "withdraw",
+                "operationId": "withdrawMe",
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -6585,8 +7985,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6687,8 +8107,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6789,8 +8229,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6891,8 +8351,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6973,8 +8453,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7075,8 +8575,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7177,8 +8697,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7279,8 +8819,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7381,8 +8941,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7483,8 +9063,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7594,8 +9194,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7677,8 +9297,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7769,8 +9409,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7853,8 +9513,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7955,8 +9635,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8037,8 +9737,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8148,8 +9868,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8230,8 +9970,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8326,8 +10086,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8435,8 +10215,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8560,8 +10360,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8685,8 +10505,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8704,7 +10544,7 @@
                     "admin-report-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc2e0\uace0 \ubaa9\ub85d",
-                "operationId": "findReports",
+                "operationId": "findMemberReports",
                 "parameters": [
                     {
                         "name": "status",
@@ -8845,8 +10685,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8864,7 +10724,7 @@
                     "admin-report-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc2e0\uace0 \uc0c1\uc138",
-                "operationId": "findDetail_2",
+                "operationId": "findMemberReportDetail",
                 "parameters": [
                     {
                         "name": "reportId",
@@ -8937,8 +10797,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8957,7 +10837,7 @@
                 ],
                 "summary": "\ud68c\uc6d0 \ubaa9\ub85d",
                 "description": "\uac80\uc0c9\uc5b4\ub294 \uc22b\uc790\uba74 \ud68c\uc6d0 ID\uc640 \uc804\ud654\ubc88\ud638, \uc544\ub2c8\uba74 \ub2c9\ub124\uc784\uc5d0 \ub9de\ucd98\ub2e4.",
-                "operationId": "findMembers_1",
+                "operationId": "findAdminMembers",
                 "parameters": [
                     {
                         "name": "status",
@@ -9074,8 +10954,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9094,7 +10994,7 @@
                 ],
                 "summary": "\ud68c\uc6d0 \uc0c1\uc138",
                 "description": "\ud0c8\ud1f4\ud55c \ud68c\uc6d0\ub3c4 \uc870\ud68c\ud558\uace0, \uc815\uc9c0 \uc774\ub825\uc740 \uc804\ud654\ubc88\ud638 \uae30\uc900\uc73c\ub85c \uc900\ub2e4.",
-                "operationId": "findDetail_3",
+                "operationId": "findAdminMemberDetail",
                 "parameters": [
                     {
                         "name": "memberId",
@@ -9167,8 +11067,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9185,7 +11105,7 @@
                 ],
                 "summary": "\ud68c\uc6d0 \ud0c8\ud1f4",
                 "description": "\ud68c\uc6d0 \ud0c8\ud1f4\uc640 \uac19\uc740 \uc808\ucc28\ub85c \ucc98\ub9ac\ud55c\ub2e4.",
-                "operationId": "withdraw_1",
+                "operationId": "withdrawByAdmin",
                 "parameters": [
                     {
                         "name": "memberId",
@@ -9251,8 +11171,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9270,7 +11210,7 @@
                     "admin-feed-controller"
                 ],
                 "summary": "\ud53c\ub4dc \uc2e0\uace0 \ubaa9\ub85d",
-                "operationId": "findReports_1",
+                "operationId": "findFeedReports",
                 "parameters": [
                     {
                         "name": "status",
@@ -9375,8 +11315,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9459,8 +11419,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9540,8 +11520,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9621,8 +11621,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9702,8 +11722,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9783,8 +11823,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9864,8 +11924,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9950,8 +12030,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -10034,8 +12134,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -10053,7 +12173,7 @@
                     "admin-worry-controller"
                 ],
                 "summary": "\uace0\ubbfc \uc0ad\uc81c",
-                "operationId": "deletePost",
+                "operationId": "deleteWorryPostByAdmin",
                 "parameters": [
                     {
                         "name": "postId",
@@ -10119,8 +12239,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -10204,8 +12344,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -10223,7 +12383,7 @@
                     "admin-feed-controller"
                 ],
                 "summary": "\ud53c\ub4dc \uac8c\uc2dc\ubb3c \uc0ad\uc81c",
-                "operationId": "deletePost_1",
+                "operationId": "deleteFeedPostByAdmin",
                 "parameters": [
                     {
                         "name": "postId",
@@ -10289,8 +12449,28 @@
                             }
                         }
                     },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -10593,7 +12773,8 @@
                 "type": "object",
                 "properties": {
                     "contentType": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                     }
                 },
                 "required": [
@@ -11050,7 +13231,7 @@
                     "purpose"
                 ]
             },
-            "ReissueRequest": {
+            "RefreshTokenRequest": {
                 "type": "object",
                 "properties": {
                     "refreshToken": {

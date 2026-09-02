@@ -36,7 +36,7 @@ class ChatNoteService(
 
         val receiver = memberRepository.getMember(receiverId)
 
-        if (isBlocked(senderId, receiverId)) {
+        if (memberBlockRepository.existsBetween(senderId, receiverId)) {
             throw BusinessException(ErrorCode.NOTE_BLOCKED)
         }
 
@@ -67,8 +67,4 @@ class ChatNoteService(
 
         return room
     }
-
-    private fun isBlocked(senderId: Long, receiverId: Long) =
-        memberBlockRepository.existsByBlockerIdAndBlockedMemberId(senderId, receiverId) ||
-            memberBlockRepository.existsByBlockerIdAndBlockedMemberId(receiverId, senderId)
 }

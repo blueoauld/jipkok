@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.admin.repository
 
-import com.blueoauld.server.domain.admin.dto.AdminFeedPostRow
-import com.blueoauld.server.domain.admin.dto.AdminFeedReporterRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminFeedPostRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminFeedReporterRow
 import com.blueoauld.server.domain.feed.entity.FeedPostReport
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

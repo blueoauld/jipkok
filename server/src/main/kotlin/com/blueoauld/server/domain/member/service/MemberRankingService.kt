@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.projection.MemberListRow
 import com.blueoauld.server.domain.member.dto.response.MemberListItemResponse
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberListRepository
@@ -36,25 +35,14 @@ class MemberRankingService(
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
 
         return ScrollResponse(
-            items = toItems(memberId, rows),
+            items = memberSummaryService.findListItems(memberId, rows),
             nextCursor = last?.let {
                 MemberListCursor.encodeRanking(
-                    likeCount = it.getOrderValue().toInt(),
+                    likeCount = it.getOrderValue().toLong(),
                     locatedAt = it.getLocatedAt()?.epochSecond ?: 0,
                     memberId = it.getMemberId(),
                 )
             },
         )
-    }
-
-    private fun toItems(memberId: Long, rows: List<MemberListRow>): List<MemberListItemResponse> {
-        val summaries = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() })
-            .associateBy { it.memberId }
-
-        return rows.mapNotNull { row ->
-            summaries[row.getMemberId()]?.let {
-                MemberListItemResponse.of(it, row.getLocatedAt(), row.getDistance(), row.getFavoritedByMe())
-            }
-        }
     }
 }

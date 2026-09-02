@@ -8,15 +8,15 @@ import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
-import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.repository.escapeLike
-import com.blueoauld.server.global.time.currentYear
+import com.blueoauld.server.global.time.ageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference
 class AdminMemberService(
 
     private val memberAdminRepository: MemberAdminRepository,
-    private val memberSuspensionRepository: MemberSuspensionRepository,
+    private val suspensionAdminRepository: SuspensionAdminRepository,
     private val memberAdminService: MemberAdminService,
     private val memberWithdrawService: MemberWithdrawService,
     private val adminActionRecorder: AdminActionRecorder,
@@ -48,7 +48,6 @@ class AdminMemberService(
         val safePage = AdminPaging.page(page)
         val safeSize = AdminPaging.size(size)
         val now = clock.instant()
-        val currentYear = clock.currentYear()
 
         val trimmed = keyword?.trim()?.takeIf { it.isNotEmpty() }
         val digits = trimmed?.takeIf { it.all(Char::isDigit) }
@@ -76,7 +75,7 @@ class AdminMemberService(
                     id = it.id,
                     nickname = it.nickname,
                     gender = Gender.valueOf(it.gender),
-                    age = currentYear - it.birthYear,
+                    age = clock.ageOf(it.birthYear),
                     phoneNumber = it.phoneNumber,
                     publicPhotoCount = it.publicPhotoCount.toInt(),
                     secretPhotoCount = it.secretPhotoCount.toInt(),
@@ -127,7 +126,7 @@ class AdminMemberService(
             nickname = row.nickname,
             phoneNumber = row.phoneNumber,
             gender = Gender.valueOf(row.gender),
-            age = clock.currentYear() - row.birthYear,
+            age = clock.ageOf(row.birthYear),
             comment = row.comment,
             bio = row.bio,
             receivedLikeCount = row.receivedLikeCount,
@@ -140,7 +139,7 @@ class AdminMemberService(
             withdrawnAt = row.withdrawnAt,
             publicPhotoUrls = photoUrls[PhotoVisibility.PUBLIC].orEmpty(),
             secretPhotoUrls = photoUrls[PhotoVisibility.SECRET].orEmpty(),
-            suspensions = memberSuspensionRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
+            suspensions = suspensionAdminRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
                 .map { AdminSuspensionResponse.of(it, now) },
         )
     }

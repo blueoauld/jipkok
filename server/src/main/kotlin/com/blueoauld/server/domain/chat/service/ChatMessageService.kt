@@ -165,7 +165,7 @@ class ChatMessageService(
         return response
     }
 
-    fun createPhotoUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
+    fun createMediaUploadUrl(memberId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
         photoUploadService.createMediaUploadUrl(memberId, photoKeyPrefix(memberId), request.contentType)
 
     @Transactional(readOnly = true)

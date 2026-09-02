@@ -70,6 +70,8 @@ class PushService(
 
     companion object {
 
+        const val PRIORITY_HIGH = "high"
+
         const val MEMBER_BATCH_SIZE = 1000
 
         private const val BATCH_SIZE = 100

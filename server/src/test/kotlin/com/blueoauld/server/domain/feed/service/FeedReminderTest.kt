@@ -48,7 +48,7 @@ class FeedReminderTest {
                 FeedReminder.DATA,
                 FeedReminder.COLLAPSE_KEY,
                 FeedReminder.CHANNEL_ID,
-                FeedReminder.HIGH_PRIORITY,
+                PushService.PRIORITY_HIGH,
             )
         }
     }

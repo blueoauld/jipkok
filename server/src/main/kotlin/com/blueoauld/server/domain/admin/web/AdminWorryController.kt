@@ -50,7 +50,7 @@ class AdminWorryController(
         size = size,
     )
 
-    @Operation(summary = "고민 삭제")
+    @Operation(operationId = "deleteWorryPostByAdmin", summary = "고민 삭제")
     @DeleteMapping("/worry-posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deletePost(

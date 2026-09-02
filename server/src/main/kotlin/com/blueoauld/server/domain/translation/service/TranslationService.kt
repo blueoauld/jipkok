@@ -27,7 +27,7 @@ class TranslationService(
 ) {
 
     fun translate(memberId: Long, request: TranslateRequest): TranslationResponse {
-        val targetLocale = memberRepository.findLocaleById(memberId) ?: MemberLocale.KO
+        val targetLocale = memberRepository.findLocaleById(memberId) ?: MemberLocale.DEFAULT
         val cached = translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(
             request.sourceType,
             request.sourceId,

@@ -1,8 +1,8 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.AdminWorryCommentRow
-import com.blueoauld.server.domain.admin.dto.AdminWorryPostRow
-import com.blueoauld.server.domain.admin.dto.AdminWorryReporterRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryCommentRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryPostRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryReporterRow
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.WorryAdminRepository
 import com.blueoauld.server.domain.member.service.MemberAdminService

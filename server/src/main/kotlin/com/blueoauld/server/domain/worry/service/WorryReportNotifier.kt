@@ -55,7 +55,8 @@ class WorryReportNotifier(
         return DiscordEmbeds.of(COMMENT_DELETED_TITLE, body)
     }
 
-    private fun member(memberId: Long) = "${memberAdminService.findNickname(memberId)}(`$memberId`)"
+    private fun member(memberId: Long) =
+        DiscordEmbeds.member(memberAdminService.findNickname(memberId), memberId)
 
     companion object {
 

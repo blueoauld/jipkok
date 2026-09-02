@@ -4,11 +4,9 @@ import com.blueoauld.server.domain.ad.dto.request.AdRewardCallbackRequest
 import com.blueoauld.server.domain.ad.service.AdRewardService
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -20,7 +18,6 @@ class AdRewardController(
 
     @Operation(summary = "광고 보상 콜백")
     @GetMapping("/rewards/callback")
-    @ResponseStatus(HttpStatus.OK)
     fun reward(
         @RequestParam("user_id", required = false) userId: Long?,
         @RequestParam("transaction_id") transactionId: String,

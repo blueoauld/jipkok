@@ -2,7 +2,6 @@ package com.blueoauld.server.domain.suspension.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
-import com.blueoauld.server.domain.suspension.dto.response.SuspensionDetail
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -32,7 +31,7 @@ class MemberSuspensionService(
         reason: SuspensionReason,
         days: Long?,
         detail: String?,
-    ): SuspensionDetail {
+    ): MemberSuspension {
         val member = memberRepository.getMember(memberId)
         val now = clock.instant()
 
@@ -52,11 +51,10 @@ class MemberSuspensionService(
                 detail = detail,
             ),
         ).also { evict(it) }
-            .let { SuspensionDetail.of(it) }
     }
 
     @Transactional
-    fun release(memberId: Long, type: SuspensionType): List<SuspensionDetail> {
+    fun release(memberId: Long, type: SuspensionType) {
         val member = memberRepository.getMember(memberId)
         val now = clock.instant()
         val suspensions = findActiveOf(memberId, type, now)
@@ -69,8 +67,6 @@ class MemberSuspensionService(
             it.releasedAt = now
             evict(it)
         }
-
-        return suspensions.map { SuspensionDetail.of(it) }
     }
 
     private fun findActiveOf(memberId: Long, type: SuspensionType, now: Instant) =

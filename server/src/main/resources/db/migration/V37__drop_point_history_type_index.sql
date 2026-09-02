@@ -1,0 +1,1 @@
+DROP INDEX idx_point_history_member_id_type_recorded_at;

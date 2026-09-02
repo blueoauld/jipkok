@@ -7,3 +7,9 @@ import com.blueoauld.server.global.exception.ErrorCode
 fun MemberRepository.getMember(memberId: Long): Member = findById(memberId).orElseThrow {
     BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 }
+
+fun MemberRepository.checkMember(memberId: Long) {
+    if (!existsById(memberId)) {
+        throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+    }
+}

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.profileview.service
 
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.profileview.dto.response.ProfileViewResponse
 import com.blueoauld.server.domain.profileview.entity.ProfileView
@@ -42,7 +43,7 @@ class ProfileViewService(
 
     @Transactional(readOnly = true)
     fun countNew(viewedMemberId: Long): Int {
-        val seenAt = memberRepository.findById(viewedMemberId).orElse(null)?.profileViewsSeenAt
+        val seenAt = memberRepository.getMember(viewedMemberId).profileViewsSeenAt
             ?: return profileViewRepository.countByViewedMemberId(viewedMemberId)
 
         return profileViewRepository.countByViewedMemberIdAndViewedAtAfter(viewedMemberId, seenAt)
@@ -50,9 +51,7 @@ class ProfileViewService(
 
     @Transactional
     fun markSeen(viewedMemberId: Long) {
-        memberRepository.findById(viewedMemberId).ifPresent {
-            it.profileViewsSeenAt = clock.instant()
-        }
+        memberRepository.getMember(viewedMemberId).profileViewsSeenAt = clock.instant()
     }
 
     @Transactional(readOnly = true)

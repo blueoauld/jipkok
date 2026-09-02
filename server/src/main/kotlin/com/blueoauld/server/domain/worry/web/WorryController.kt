@@ -74,7 +74,7 @@ class WorryController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<WorryPostResponse> = worryPostService.search(memberId, keyword, cursor, size)
 
-    @Operation(summary = "고민 상세 조회")
+    @Operation(operationId = "findWorryPostDetail", summary = "고민 상세 조회")
     @GetMapping("/{postId}")
     fun findDetail(
         @AuthenticationPrincipal memberId: Long,
@@ -95,7 +95,7 @@ class WorryController(
         worryPostLikeService.like(memberId, postId)
     }
 
-    @Operation(summary = "고민 공감 취소")
+    @Operation(operationId = "cancelWorryPostLike", summary = "고민 공감 취소")
     @DeleteMapping("/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun cancelLike(@AuthenticationPrincipal memberId: Long, @PathVariable postId: Long) {

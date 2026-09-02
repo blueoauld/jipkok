@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.like.entity.MemberLike
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.checkMember
 import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -26,9 +27,7 @@ class MemberLikeService(
             throw BusinessException(ErrorCode.SELF_LIKE)
         }
 
-        if (!memberRepository.existsById(likedMemberId)) {
-            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-        }
+        memberRepository.checkMember(likedMemberId)
 
         if (memberLikeRepository.existsByLikerIdAndLikedMemberId(likerId, likedMemberId)) {
             return
@@ -70,12 +69,12 @@ class MemberLikeService(
     }
 
     private fun toResponse(
-        viewerId: Long,
+        requesterId: Long,
         likes: List<MemberLike>,
         pageSize: Int,
         toMemberId: (MemberLike) -> Long,
     ) = CursorResponse(
-        items = memberSummaryService.findSummaries(viewerId, likes.map(toMemberId)),
+        items = memberSummaryService.findSummaries(requesterId, likes.map(toMemberId)),
         nextCursor = likes.lastOrNull()?.id.takeIf { likes.size == pageSize },
     )
 }

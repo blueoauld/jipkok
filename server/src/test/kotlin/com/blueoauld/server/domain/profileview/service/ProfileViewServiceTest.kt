@@ -92,7 +92,7 @@ class ProfileViewServiceTest {
         every {
             profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any())
         } returns listOf(profileView(30L, VIEWER_ID, NOW), profileView(20L, 3L, older))
-        every { memberSummaryService.findSummaries(any(), listOf(VIEWER_ID, 3L)) } returns
+        every { memberSummaryService.findSummaries(VIEWED_MEMBER_ID, listOf(VIEWER_ID, 3L)) } returns
             listOf(summary(VIEWER_ID), summary(3L))
 
         // when

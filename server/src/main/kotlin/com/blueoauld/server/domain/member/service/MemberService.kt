@@ -4,13 +4,13 @@ import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUr
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
-import com.blueoauld.server.domain.member.dto.request.UpdateLocaleRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.displayOrdered
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
@@ -27,7 +27,7 @@ import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.storage.service.PhotoUploadService
-import com.blueoauld.server.global.time.currentYear
+import com.blueoauld.server.global.time.ageOf
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -71,7 +71,7 @@ class MemberService(
             nickname = member.nickname,
             gender = member.gender,
             birthYear = member.birthYear,
-            age = clock.currentYear() - member.birthYear,
+            age = clock.ageOf(member.birthYear),
             receivedLikeCount = member.receivedLikeCount,
             comment = member.comment,
             bio = member.bio,
@@ -136,8 +136,8 @@ class MemberService(
     }
 
     @Transactional
-    fun updateLocale(memberId: Long, request: UpdateLocaleRequest) {
-        memberRepository.getMember(memberId).locale = request.locale
+    fun updateLocale(memberId: Long, locale: MemberLocale) {
+        memberRepository.getMember(memberId).locale = locale
     }
 
     @Transactional
@@ -167,7 +167,7 @@ class MemberService(
     }
 
     private fun validateBirthYear(birthYear: Int) {
-        if (clock.currentYear() - birthYear !in MIN_AGE..MAX_AGE) {
+        if (clock.ageOf(birthYear) !in Member.MIN_AGE..Member.MAX_AGE) {
             throw BusinessException(ErrorCode.INVALID_BIRTH_YEAR)
         }
     }
@@ -205,9 +205,6 @@ class MemberService(
         "$PHOTO_KEY_ROOT/$memberId/${visibility.name.lowercase()}/"
 
     companion object {
-
-        const val MIN_AGE = 19
-        const val MAX_AGE = 90
 
         private const val PHOTO_KEY_ROOT = "members"
     }

@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.auth.service
 
 import com.blueoauld.server.domain.auth.dto.request.LoginRequest
-import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
+import com.blueoauld.server.domain.auth.dto.request.RefreshTokenRequest
 import com.blueoauld.server.domain.auth.repository.LoginAttemptCache
 import com.blueoauld.server.domain.auth.repository.LoginAttemptCount
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
@@ -161,7 +161,7 @@ class AuthServiceTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
 
         // when
-        val response = authService.reissue(ReissueRequest(REFRESH_TOKEN))
+        val response = authService.reissue(RefreshTokenRequest(REFRESH_TOKEN))
 
         // then
         verify { refreshTokenRepository.save(MEMBER_ID, NEW_REFRESH_TOKEN) }
@@ -175,7 +175,7 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.reissue(ReissueRequest(REFRESH_TOKEN))
+            authService.reissue(RefreshTokenRequest(REFRESH_TOKEN))
         }
 
         // then
@@ -190,7 +190,7 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.reissue(ReissueRequest(REFRESH_TOKEN))
+            authService.reissue(RefreshTokenRequest(REFRESH_TOKEN))
         }
 
         // then
@@ -205,7 +205,7 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.reissue(ReissueRequest(REFRESH_TOKEN))
+            authService.reissue(RefreshTokenRequest(REFRESH_TOKEN))
         }
 
         // then
@@ -222,7 +222,7 @@ class AuthServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            authService.reissue(ReissueRequest(REFRESH_TOKEN))
+            authService.reissue(RefreshTokenRequest(REFRESH_TOKEN))
         }
 
         // then

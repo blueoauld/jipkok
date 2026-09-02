@@ -24,7 +24,7 @@ class ModerationNotifier(
 
     private fun toEmbeds(event: MemberTextBlockedEvent): List<MessageEmbed> {
         val body = listOf(
-            DiscordEmbeds.field("회원", "${event.nickname}(`${event.memberId}`)"),
+            DiscordEmbeds.field("회원", DiscordEmbeds.member(event.nickname, event.memberId)),
             DiscordEmbeds.field("항목", event.field),
             DiscordEmbeds.field("분류", event.category.label),
             DiscordEmbeds.field("내용", event.text),

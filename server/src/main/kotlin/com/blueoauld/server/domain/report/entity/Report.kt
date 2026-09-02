@@ -42,10 +42,10 @@ class Report(
     val roomId: Long? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "reason", nullable = false)
+    @Column(name = "reason", nullable = false, updatable = false)
     val reason: ReportReason,
 
-    @Column(name = "detail", length = DETAIL_MAX_LENGTH)
+    @Column(name = "detail", length = DETAIL_MAX_LENGTH, updatable = false)
     val detail: String? = null,
 
     @Column(name = "handled_at")

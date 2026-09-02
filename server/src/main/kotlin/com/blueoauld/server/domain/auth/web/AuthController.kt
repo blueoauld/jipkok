@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.auth.web
 
 import com.blueoauld.server.domain.auth.dto.request.LoginRequest
-import com.blueoauld.server.domain.auth.dto.request.ReissueRequest
+import com.blueoauld.server.domain.auth.dto.request.RefreshTokenRequest
 import com.blueoauld.server.domain.auth.dto.request.ResetPasswordRequest
 import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.service.AuthService
@@ -34,12 +34,12 @@ class AuthController(
 
     @Operation(summary = "토큰 재발급")
     @PostMapping("/token/reissue")
-    fun reissue(@Valid @RequestBody request: ReissueRequest): TokenResponse = authService.reissue(request)
+    fun reissue(@Valid @RequestBody request: RefreshTokenRequest): TokenResponse = authService.reissue(request)
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun logout(@Valid @RequestBody request: ReissueRequest) {
+    fun logout(@Valid @RequestBody request: RefreshTokenRequest) {
         authService.logout(request.refreshToken)
     }
 

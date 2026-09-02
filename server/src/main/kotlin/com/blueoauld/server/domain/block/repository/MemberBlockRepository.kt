@@ -11,6 +11,16 @@ interface MemberBlockRepository : JpaRepository<MemberBlock, Long> {
 
     fun existsByBlockerIdAndBlockedMemberId(blockerId: Long, blockedMemberId: Long): Boolean
 
+    @Query(
+        """
+        select count(b.id) > 0
+        from MemberBlock b
+        where (b.blockerId = :memberId and b.blockedMemberId = :otherId)
+           or (b.blockerId = :otherId and b.blockedMemberId = :memberId)
+        """,
+    )
+    fun existsBetween(@Param("memberId") memberId: Long, @Param("otherId") otherId: Long): Boolean
+
     fun deleteByBlockerIdAndBlockedMemberId(blockerId: Long, blockedMemberId: Long): Long
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)

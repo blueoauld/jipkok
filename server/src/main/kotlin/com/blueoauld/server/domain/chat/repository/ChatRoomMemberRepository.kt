@@ -10,7 +10,16 @@ interface ChatRoomMemberRepository : JpaRepository<ChatRoomMember, Long> {
 
     fun findByRoomIdAndMemberId(roomId: Long, memberId: Long): ChatRoomMember?
 
-    fun countByMemberIdAndPinnedTrue(memberId: Long): Long
+    @Query(
+        """
+        select count(crm.id)
+        from ChatRoomMember crm, ChatRoom r
+        where crm.memberId = :memberId
+          and r.id = crm.roomId
+          and crm.pinned = true
+        """,
+    )
+    fun countPinnedRooms(@Param("memberId") memberId: Long): Long
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(

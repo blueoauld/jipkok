@@ -3,6 +3,7 @@ package com.blueoauld.server.global.config
 import com.blueoauld.server.global.properties.CorsProperties
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
 import com.blueoauld.server.global.security.JwtAuthenticationFilter
+import com.blueoauld.server.global.security.JwtProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -20,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class SecurityConfig(
 
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val jwtProvider: JwtProvider,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
 ) {
 
@@ -60,7 +61,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .exceptionHandling { it.authenticationEntryPoint(jwtAuthenticationEntryPoint) }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter::class.java)
             .build()
 
     companion object {

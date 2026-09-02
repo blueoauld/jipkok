@@ -29,13 +29,15 @@ class ReportNotifier(
 
     private fun toEmbeds(event: ReportCreatedEvent): List<MessageEmbed> {
         val snapshot = event.snapshot
+        val reporter = snapshot.reporter
+        val reported = snapshot.reported
 
         val body = buildList {
             add(DiscordEmbeds.field("ID", "`${event.reportId}`"))
             add(DiscordEmbeds.field("유형", event.type.label))
             add(DiscordEmbeds.field("사유", event.reason.label))
-            add(DiscordEmbeds.field("신고자", "${snapshot.reporter.nickname}(`${snapshot.reporter.memberId}`)"))
-            add(DiscordEmbeds.field("피신고자", "${snapshot.reported.nickname}(`${snapshot.reported.memberId}`)"))
+            add(DiscordEmbeds.field("신고자", DiscordEmbeds.member(reporter.nickname, reporter.memberId)))
+            add(DiscordEmbeds.field("피신고자", DiscordEmbeds.member(reported.nickname, reported.memberId)))
             add(DiscordEmbeds.field("상세", event.detail ?: NONE))
 
             if (event.type == ReportType.CHAT) {

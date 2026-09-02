@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "solapi")
 data class SolapiProperties(
 
-    val apiKey: String,
-    val apiSecret: String,
-    val senderNumber: String,
+    val apiKey: String = "",
+    val apiSecret: String = "",
+    val senderNumber: String = "",
 )

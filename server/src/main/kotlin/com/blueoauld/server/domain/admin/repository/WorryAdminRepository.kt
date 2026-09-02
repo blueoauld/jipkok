@@ -1,8 +1,8 @@
 package com.blueoauld.server.domain.admin.repository
 
-import com.blueoauld.server.domain.admin.dto.AdminWorryCommentRow
-import com.blueoauld.server.domain.admin.dto.AdminWorryPostRow
-import com.blueoauld.server.domain.admin.dto.AdminWorryReporterRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryCommentRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryPostRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminWorryReporterRow
 import com.blueoauld.server.domain.worry.entity.WorryPostReport
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

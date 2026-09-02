@@ -5,8 +5,6 @@ import com.blueoauld.server.domain.chat.entity.ChatRoomMember
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
-import com.blueoauld.server.domain.member.entity.Member
-import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushMessages
@@ -19,7 +17,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.util.*
 
 class ChatPushNotifierTest {
 
@@ -44,7 +41,7 @@ class ChatPushNotifierTest {
     @BeforeEach
     fun setUp() {
         every { pushService.isConnected(RECEIVER_ID) } returns false
-        every { memberRepository.findById(SENDER_ID) } returns Optional.of(sender())
+        every { memberRepository.findNicknameById(SENDER_ID) } returns SENDER_NICKNAME
         every { memberRepository.findLocaleById(RECEIVER_ID) } returns MemberLocale.KO
         every { memberSuspensionService.isSuspended(RECEIVER_ID, SuspensionType.SERVICE) } returns false
     }
@@ -163,18 +160,11 @@ class ChatPushNotifierTest {
         ),
     )
 
-    private fun sender() = Member(
-        phoneNumber = "+821012345678",
-        password = "encoded-password",
-        gender = Gender.MALE,
-        nickname = "보낸이",
-        birthYear = 1998,
-    )
-
     companion object {
 
         private const val ROOM_ID = 10L
         private const val SENDER_ID = 1L
+        private const val SENDER_NICKNAME = "보낸이"
         private const val RECEIVER_ID = 2L
     }
 }

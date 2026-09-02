@@ -13,7 +13,7 @@ import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.report.entity.type.ReportReason
 import com.blueoauld.server.domain.report.entity.type.ReportType
 import com.blueoauld.server.domain.report.service.ReportService
-import com.blueoauld.server.global.time.currentYear
+import com.blueoauld.server.global.time.ageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -102,7 +102,7 @@ class AdminReportService(
                 nickname = reported.nickname,
                 phoneNumber = reported.phoneNumber,
                 gender = reported.gender,
-                age = clock.currentYear() - reported.birthYear,
+                age = clock.ageOf(reported.birthYear),
                 comment = reported.comment,
                 bio = reported.bio,
                 profilePhotoUrls = detail.profilePhotoUrls,

@@ -106,6 +106,7 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
         private const val SELECT_ROW = """
         select p.id as postId,
                p.member_id as memberId,
+               m.nickname as nickname,
                p.slot_at as slotAt,
                p.caption as caption,
                p.object_key as objectKey,

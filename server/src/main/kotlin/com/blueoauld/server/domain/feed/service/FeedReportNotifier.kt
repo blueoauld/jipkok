@@ -32,7 +32,7 @@ class FeedReportNotifier(
 
         val body = listOf(
             DiscordEmbeds.field("ID", "`${event.postId}`"),
-            DiscordEmbeds.field("회원", "$nickname(`${event.memberId}`)"),
+            DiscordEmbeds.field("회원", DiscordEmbeds.member(nickname, event.memberId)),
             DiscordEmbeds.field("신고", "${event.reportCount}회"),
             DiscordEmbeds.field("시간", DiscordEmbeds.format(event.slotAt)),
             DiscordEmbeds.field("문구", event.caption ?: NONE),

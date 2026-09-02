@@ -40,7 +40,7 @@ class FeedReminder(
                 DATA,
                 COLLAPSE_KEY,
                 CHANNEL_ID,
-                HIGH_PRIORITY,
+                PushService.PRIORITY_HIGH,
             )
         }
 
@@ -54,8 +54,6 @@ class FeedReminder(
         const val COLLAPSE_KEY = "feed"
 
         const val CHANNEL_ID = "feed"
-
-        const val HIGH_PRIORITY = "high"
 
         val DATA = mapOf("screen" to "feed")
 

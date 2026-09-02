@@ -101,12 +101,12 @@ class ChatMessageController(
         @PathVariable messageId: Long,
     ): ChatVideoUrlResponse = chatMessageService.findVideoUrl(memberId, roomId, messageId)
 
-    @Operation(operationId = "createChatPhotoUploadUrl", summary = "채팅 사진 업로드 URL 발급")
+    @Operation(operationId = "createChatMediaUploadUrl", summary = "채팅 사진, 동영상 업로드 URL 발급")
     @PostMapping("/photos/upload-url")
-    fun createPhotoUploadUrl(
+    fun createMediaUploadUrl(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: CreatePhotoUploadUrlRequest,
-    ): PhotoUploadUrlResponse = chatMessageService.createPhotoUploadUrl(memberId, request)
+    ): PhotoUploadUrlResponse = chatMessageService.createMediaUploadUrl(memberId, request)
 
     companion object {
 

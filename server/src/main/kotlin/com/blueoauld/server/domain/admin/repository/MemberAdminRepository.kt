@@ -1,10 +1,11 @@
 package com.blueoauld.server.domain.admin.repository
 
-import com.blueoauld.server.domain.admin.dto.AdminMemberListRow
-import com.blueoauld.server.domain.admin.dto.AdminMemberRow
-import com.blueoauld.server.domain.admin.dto.DailyCount
-import com.blueoauld.server.domain.admin.dto.GenderBirthYearCount
+import com.blueoauld.server.domain.admin.dto.projection.AdminMemberListRow
+import com.blueoauld.server.domain.admin.dto.projection.AdminMemberRow
+import com.blueoauld.server.domain.admin.dto.projection.DailyCount
+import com.blueoauld.server.domain.admin.dto.projection.GenderBirthYearCount
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.global.time.KOREA_ID
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -23,7 +24,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
                  as publicPhotoCount,
                (select count(*) from member_photo p where p.member_id = m.id and p.visibility = 'SECRET')
                  as secretPhotoCount,
-               $SUSPENDED as suspended,
+               $ACTIVE_SUSPENSION as suspended,
                m.deleted_at as withdrawnAt,
                m.created_at as joinedAt
         from member m
@@ -98,7 +99,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
 
     @Query(
         value = """
-        select cast(created_at at time zone 'Asia/Seoul' as date) as day, count(*) as count
+        select cast(created_at at time zone '$KOREA_ID' as date) as day, count(*) as count
         from member
         where created_at >= :start
         group by day
@@ -109,7 +110,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
 
     @Query(
         value = """
-        select cast(deleted_at at time zone 'Asia/Seoul' as date) as day, count(*) as count
+        select cast(deleted_at at time zone '$KOREA_ID' as date) as day, count(*) as count
         from member
         where deleted_at >= :start
         group by day
@@ -136,8 +137,6 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
             where s.phone_number = m.phone_number
               and s.released_at is null
               and (s.expires_at is null or s.expires_at > :now))"""
-
-        private const val SUSPENDED = ACTIVE_SUSPENSION
 
         private const val STATUS = """(cast(:status as varchar) is null
             or (:status = 'WITHDRAWN' and m.deleted_at is not null)

@@ -65,7 +65,11 @@ class MemberController(
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@Valid @RequestBody request: SignupRequest): TokenResponse = memberSignupService.signup(request)
 
-    @Operation(summary = "회원 목록 조회", description = "거리순은 내 위치가 없으면 최근순으로 준다.")
+    @Operation(
+        operationId = "findMembers",
+        summary = "회원 목록 조회",
+        description = "거리순은 내 위치가 없으면 최근순으로 준다.",
+    )
     @GetMapping
     fun findMembers(
         @AuthenticationPrincipal memberId: Long,
@@ -96,7 +100,7 @@ class MemberController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): ScrollResponse<MemberSummaryResponse> = memberSearchService.searchByNickname(memberId, keyword, cursor, size)
 
-    @Operation(summary = "회원 조회")
+    @Operation(operationId = "findMemberDetail", summary = "회원 조회")
     @GetMapping("/{targetId}")
     fun findDetail(
         @AuthenticationPrincipal memberId: Long,
@@ -113,7 +117,11 @@ class MemberController(
         memberService.setupProfile(memberId, request)
     }
 
-    @Operation(summary = "회원 탈퇴", description = "대화와 피드가 함께 사라지며 되돌릴 수 없다.")
+    @Operation(
+        operationId = "withdrawMe",
+        summary = "회원 탈퇴",
+        description = "대화와 피드가 함께 사라지며 되돌릴 수 없다.",
+    )
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun withdraw(@AuthenticationPrincipal memberId: Long) {
@@ -170,7 +178,7 @@ class MemberController(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: UpdateLocaleRequest,
     ) {
-        memberService.updateLocale(memberId, request)
+        memberService.updateLocale(memberId, request.locale)
     }
 
     @Operation(summary = "코멘트 저장")

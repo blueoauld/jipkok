@@ -12,7 +12,7 @@ object MemberListCursor {
         return (orderValue.toDoubleOrNull() ?: return null) to (memberId.toLongOrNull() ?: return null)
     }
 
-    fun encodeRanking(likeCount: Int, locatedAt: Long, memberId: Long) =
+    fun encodeRanking(likeCount: Long, locatedAt: Long, memberId: Long) =
         listOf(likeCount, locatedAt, memberId).joinToString(SEPARATOR)
 
     fun decodeRanking(cursor: String?): Triple<Long, Long, Long>? {
