@@ -88,8 +88,6 @@ class DeviceTokenServiceTest {
 
     @Test
     fun `만료된 토큰이 없으면 지우지 않는다`() {
-        // given
-
         // when
         deviceTokenService.removeExpired(emptyList())
 

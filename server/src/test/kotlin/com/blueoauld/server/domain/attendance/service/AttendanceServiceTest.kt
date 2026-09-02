@@ -112,14 +112,6 @@ class AttendanceServiceTest {
         verify(exactly = 0) { attendanceRepository.saveAndFlush(any()) }
     }
 
-    private fun member() = Member(
-        phoneNumber = PHONE_NUMBER,
-        password = "encoded-password",
-        gender = Gender.MALE,
-        nickname = "닉네임",
-        birthYear = 1998,
-    ).apply { pointBalance = POINT_BALANCE }
-
     @Test
     fun `최근 91일의 출석 날짜를 오늘 기준과 함께 준다`() {
         // given
@@ -138,6 +130,14 @@ class AttendanceServiceTest {
         // then
         assertThat(response).isEqualTo(AttendanceDaysResponse(today = today, days = listOf(from, today)))
     }
+
+    private fun member() = Member(
+        phoneNumber = PHONE_NUMBER,
+        password = "encoded-password",
+        gender = Gender.MALE,
+        nickname = "닉네임",
+        birthYear = 1998,
+    ).apply { pointBalance = POINT_BALANCE }
 
     companion object {
 

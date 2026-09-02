@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.repository.PointHistoryRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.response.CursorResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -15,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Limit
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
@@ -117,6 +119,77 @@ class PointServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+    }
+
+    @Test
+    fun `내역은 커서 순서대로 주고 페이지가 차면 다음 커서를 준다`() {
+        // given
+        every {
+            pointHistoryRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, Long.MAX_VALUE, any())
+        } returns listOf(history(20L), history(10L))
+
+        // when
+        val response = pointService.findHistories(MEMBER_ID, null, 2)
+
+        // then
+        assertThat(response.items.map { it.amount }).hasSize(2)
+        assertThat(response.nextCursor).isEqualTo(10L)
+    }
+
+    @Test
+    fun `마지막 쪽이면 다음 커서를 주지 않는다`() {
+        // given
+        every {
+            pointHistoryRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, any(), any())
+        } returns listOf(history(20L))
+
+        // when
+        val response = pointService.findHistories(MEMBER_ID, null, 20)
+
+        // then
+        assertThat(response.nextCursor).isNull()
+    }
+
+    @Test
+    fun `커서를 주면 그보다 오래된 내역을 조회한다`() {
+        // given
+        every {
+            pointHistoryRepository.findByMemberIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns emptyList()
+
+        // when
+        pointService.findHistories(MEMBER_ID, 30L, 20)
+
+        // then
+        verify { pointHistoryRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, 30L, any()) }
+    }
+
+    @Test
+    fun `요청한 크기가 상한을 넘으면 상한으로 자른다`() {
+        // given
+        val limit = slot<Limit>()
+        every {
+            pointHistoryRepository.findByMemberIdAndIdLessThanOrderByIdDesc(any(), any(), capture(limit))
+        } returns emptyList()
+
+        // when
+        pointService.findHistories(MEMBER_ID, null, 1000)
+
+        // then
+        assertThat(limit.captured.max()).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
+    }
+
+    private fun history(id: Long) = PointHistory(
+        memberId = MEMBER_ID,
+        type = PointType.ATTENDANCE_REWARD,
+        amount = PointType.ATTENDANCE_REWARD.amount,
+        balanceAfter = 100,
+        recordedAt = NOW,
+    ).also { entity ->
+        PointHistory::class.java.getDeclaredField("id").apply {
+            isAccessible = true
+            set(entity, id)
+        }
     }
 
     companion object {

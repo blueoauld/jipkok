@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @Import(TestcontainersConfiguration::class)
-@SpringBootTest(properties = ["spring.jpa.hibernate.ddl-auto=none"])
+@SpringBootTest
 @AutoConfigureMockMvc
 class MemberControllerTest {
 

@@ -18,10 +18,7 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 @Import(TestcontainersConfiguration::class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["spring.jpa.hibernate.ddl-auto=none"],
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketConnectionTest {
 
     @LocalServerPort

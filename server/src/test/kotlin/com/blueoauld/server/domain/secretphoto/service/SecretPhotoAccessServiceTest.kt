@@ -156,8 +156,6 @@ class SecretPhotoAccessServiceTest {
 
     @Test
     fun `자기 자신에게는 비밀 사진을 공개할 수 없다`() {
-        // given
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             secretPhotoAccessService.grant(OWNER_ID, OWNER_ID)
@@ -185,8 +183,6 @@ class SecretPhotoAccessServiceTest {
 
     @Test
     fun `공개를 해제하면 권한을 지운다`() {
-        // given
-
         // when
         secretPhotoAccessService.revoke(OWNER_ID, VIEWER_ID)
 

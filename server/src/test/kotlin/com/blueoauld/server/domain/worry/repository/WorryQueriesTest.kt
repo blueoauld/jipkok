@@ -23,7 +23,7 @@ import java.time.Instant
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
 @Transactional
-class WorryPostRepositoryTest {
+class WorryQueriesTest {
 
     @Autowired
     private lateinit var worryPostRepository: WorryPostRepository

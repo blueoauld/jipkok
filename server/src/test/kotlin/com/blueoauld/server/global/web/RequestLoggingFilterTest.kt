@@ -64,6 +64,35 @@ class RequestLoggingFilterTest {
     }
 
     @Test
+    fun `검색어는 가리고 나머지 파라미터는 남긴다`() {
+        // given
+        val request = MockHttpServletRequest("GET", "/api/members/search")
+        request.queryString = "keyword=홍길동&size=3"
+
+        // when
+        filter.doFilter(request, MockHttpServletResponse(), mockk<FilterChain>(relaxed = true))
+
+        // then
+        assertThat(message()).contains("keyword=***")
+        assertThat(message()).doesNotContain("홍길동")
+        assertThat(message()).contains("size=3")
+    }
+
+    @Test
+    fun `신고 조회의 전화번호도 가린다`() {
+        // given
+        val request = MockHttpServletRequest("GET", "/api/admin/reports")
+        request.queryString = "reportedPhoneNumber=%2B821012345678"
+
+        // when
+        filter.doFilter(request, MockHttpServletResponse(), mockk<FilterChain>(relaxed = true))
+
+        // then
+        assertThat(message()).contains("reportedPhoneNumber=***")
+        assertThat(message()).doesNotContain("821012345678")
+    }
+
+    @Test
     fun `뒤따르는 필터가 담은 회원 id를 함께 남긴다`() {
         // given
         val chain = FilterChain { _, _ -> MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, MEMBER_ID.toString()) }

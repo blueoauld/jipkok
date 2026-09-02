@@ -95,8 +95,6 @@ class MemberBlockServiceTest {
 
     @Test
     fun `자기 자신은 차단할 수 없다`() {
-        // given
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             memberBlockService.block(BLOCKER_ID, BLOCKER_ID)
@@ -124,8 +122,6 @@ class MemberBlockServiceTest {
 
     @Test
     fun `차단을 해제하면 기록을 지운다`() {
-        // given
-
         // when
         memberBlockService.unblock(BLOCKER_ID, BLOCKED_MEMBER_ID)
 

@@ -378,29 +378,6 @@ class ChatRoomServiceTest {
         verify(exactly = 0) { chatRoomMemberRepository.markRead(any(), any(), any()) }
     }
 
-    private fun row(pinned: Boolean = false, lastMessageId: Long = LAST_MESSAGE_ID) = mockk<ChatRoomRow> {
-        every { getRoomId() } returns ROOM_ID
-        every { getPartnerId() } returns PARTNER_ID
-        every { getUnreadCount() } returns 3
-        every { getNotificationEnabled() } returns true
-        every { getPinned() } returns pinned
-        every { getLastMessageId() } returns lastMessageId
-        every { getLastMessageType() } returns ChatMessageType.TEXT
-        every { getLastMessageContent() } returns "안녕하세요."
-        every { getLastMessageAt() } returns NOW
-    }
-
-    private fun summary() = MemberSummaryResponse(
-        memberId = PARTNER_ID,
-        nickname = "상대",
-        gender = Gender.FEMALE,
-        age = 28,
-        receivedLikeCount = 0,
-        comment = null,
-        profileImageUrl = null,
-        memo = null,
-    )
-
     @Test
     fun `채팅방 알림을 끈다`() {
         // given
@@ -561,6 +538,29 @@ class ChatRoomServiceTest {
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
     }
+
+    private fun row(pinned: Boolean = false, lastMessageId: Long = LAST_MESSAGE_ID) = mockk<ChatRoomRow> {
+        every { getRoomId() } returns ROOM_ID
+        every { getPartnerId() } returns PARTNER_ID
+        every { getUnreadCount() } returns 3
+        every { getNotificationEnabled() } returns true
+        every { getPinned() } returns pinned
+        every { getLastMessageId() } returns lastMessageId
+        every { getLastMessageType() } returns ChatMessageType.TEXT
+        every { getLastMessageContent() } returns "안녕하세요."
+        every { getLastMessageAt() } returns NOW
+    }
+
+    private fun summary() = MemberSummaryResponse(
+        memberId = PARTNER_ID,
+        nickname = "상대",
+        gender = Gender.FEMALE,
+        age = 28,
+        receivedLikeCount = 0,
+        comment = null,
+        profileImageUrl = null,
+        memo = null,
+    )
 
     companion object {
 

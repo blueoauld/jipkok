@@ -139,8 +139,6 @@ class MemberSuspensionServiceTest {
 
     @Test
     fun `해제할 정지가 없으면 실패한다`() {
-        // given
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE)

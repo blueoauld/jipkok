@@ -1,6 +1,9 @@
 package com.blueoauld.server.domain.suspension.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -19,6 +22,9 @@ class MemberSuspensionRepositoryTest {
 
     @Autowired
     private lateinit var memberSuspensionRepository: MemberSuspensionRepository
+
+    @Autowired
+    private lateinit var memberRepository: MemberRepository
 
     @Test
     fun `정지 중인 번호를 찾는다`() {
@@ -80,6 +86,74 @@ class MemberSuspensionRepositoryTest {
         // then
         assertThat(exists).isFalse()
     }
+
+    @Test
+    fun `번호가 같으면 다시 가입한 계정도 정지로 본다`() {
+        // given
+        val rejoined = saveMember(PHONE_NUMBER)
+        save(expiresAt = null)
+
+        // when
+        val active = memberSuspensionRepository.findActive(rejoined.id, NOW)
+
+        // then
+        assertThat(active).hasSize(1)
+        assertThat(memberSuspensionRepository.existsActive(rejoined.id, SuspensionType.SERVICE, NOW)).isTrue()
+    }
+
+    @Test
+    fun `해제됐거나 만료된 정지는 활성 목록에서 뺀다`() {
+        // given
+        val member = saveMember(PHONE_NUMBER)
+        save(expiresAt = null, type = SuspensionType.SERVICE)
+        save(expiresAt = NOW.minusSeconds(60), type = SuspensionType.PROFILE_EDIT)
+        save(expiresAt = null, type = SuspensionType.SECRET_PHOTO, released = true)
+
+        // when
+        val active = memberSuspensionRepository.findActive(member.id, NOW)
+
+        // then
+        assertThat(active.map { it.type }).containsExactly(SuspensionType.SERVICE)
+    }
+
+    @Test
+    fun `번호가 다르면 활성 목록에 담지 않는다`() {
+        // given
+        val other = saveMember("+821033334444")
+        save(expiresAt = null)
+
+        // when
+        val active = memberSuspensionRepository.findActive(other.id, NOW)
+
+        // then
+        assertThat(active).isEmpty()
+    }
+
+    @Test
+    fun `보관 기간이 지난 해제, 만료 정지만 정리 대상으로 준다`() {
+        // given
+        save(expiresAt = null, type = SuspensionType.SERVICE, released = true)
+        save(expiresAt = NOW.minusSeconds(120), type = SuspensionType.PROFILE_EDIT)
+        save(expiresAt = null, type = SuspensionType.SECRET_PHOTO)
+
+        // when
+        val ids = memberSuspensionRepository.findIdsExpiredBefore(NOW)
+
+        // then
+        val all = memberSuspensionRepository.findAll().associateBy { it.id }
+        assertThat(ids.map { all.getValue(it).type })
+            .containsExactlyInAnyOrder(SuspensionType.SERVICE, SuspensionType.PROFILE_EDIT)
+    }
+
+    private fun saveMember(phoneNumber: String) = memberRepository.saveAndFlush(
+        Member(
+            phoneNumber = phoneNumber,
+            password = "encoded-password",
+            gender = Gender.MALE,
+            nickname = phoneNumber.takeLast(10),
+            birthYear = 1998,
+        ),
+    )
 
     private fun existsActive(type: SuspensionType) =
         memberSuspensionRepository.existsActiveByPhoneNumber(PHONE_NUMBER, type, NOW)

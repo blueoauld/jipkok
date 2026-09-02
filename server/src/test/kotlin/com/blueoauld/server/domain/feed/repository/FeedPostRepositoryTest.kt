@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.feed.entity.FeedPostReport
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.global.time.KOREA
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +21,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
@@ -189,6 +189,20 @@ class FeedPostRepositoryTest {
         assertThat(countRows(post.id)).isOne()
     }
 
+    @Test
+    fun `사진 키는 지운 글까지 준다`() {
+        // given
+        val post = savePost(meId, slot(1))
+        val deleted = savePost(meId, slot(2))
+        feedPostRepository.delete(deleted)
+
+        // when
+        val keys = feedPostRepository.findObjectKeysByIdIn(listOf(post.id, deleted.id))
+
+        // then
+        assertThat(keys).containsExactlyInAnyOrder(post.objectKey, deleted.objectKey)
+    }
+
     private fun countRows(postId: Long) = entityManager
         .createNativeQuery("select count(*) from feed_post where id = :id and deleted_at is not null")
         .setParameter("id", postId)
@@ -212,20 +226,6 @@ class FeedPostRepositoryTest {
         size = PAGE_SIZE,
     )
 
-    @Test
-    fun `사진 키는 지운 글까지 준다`() {
-        // given
-        val post = savePost(meId, slot(1))
-        val deleted = savePost(meId, slot(2))
-        feedPostRepository.delete(deleted)
-
-        // when
-        val keys = feedPostRepository.findObjectKeysByIdIn(listOf(post.id, deleted.id))
-
-        // then
-        assertThat(keys).containsExactlyInAnyOrder(post.objectKey, deleted.objectKey)
-    }
-
     private fun savePost(memberId: Long, slotAt: Instant) = feedPostRepository.saveAndFlush(
         FeedPost(memberId = memberId, slotAt = slotAt, objectKey = "feeds/$memberId/$slotAt.jpg"),
     )
@@ -248,7 +248,5 @@ class FeedPostRepositoryTest {
 
         private const val PAGE_SIZE = 20
         private const val DAY_SECONDS = 86_400L
-
-        private val KOREA: ZoneId = ZoneId.of("Asia/Seoul")
     }
 }

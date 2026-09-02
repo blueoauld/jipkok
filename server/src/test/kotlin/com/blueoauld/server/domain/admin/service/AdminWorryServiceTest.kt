@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.admin.service
 
+import com.blueoauld.server.domain.admin.dto.AdminWorryStatus
 import com.blueoauld.server.domain.admin.dto.projection.AdminWorryCommentRow
 import com.blueoauld.server.domain.admin.dto.projection.AdminWorryPostRow
 import com.blueoauld.server.domain.admin.dto.projection.AdminWorryReporterRow
@@ -76,7 +77,7 @@ class AdminWorryServiceTest {
 
         // when
         val response = adminWorryService.findCommentReports(
-            com.blueoauld.server.domain.admin.dto.AdminWorryStatus.DELETED,
+            AdminWorryStatus.DELETED,
             null,
             1,
             20,

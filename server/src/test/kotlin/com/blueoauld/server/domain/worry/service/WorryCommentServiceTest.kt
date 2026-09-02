@@ -242,6 +242,25 @@ class WorryCommentServiceTest {
     }
 
     @Test
+    fun `글쓴이가 단 댓글은 작성자 표시가 붙는다`() {
+        // given
+        every { worryPostRepository.findById(POST_ID) } returns Optional.of(post(AUTHOR_ID))
+        every {
+            worryCommentRepository.findByPostIdOldestFirst(POST_ID, null, null, 20)
+        } returns listOf(
+            row(commentId = 1, memberId = AUTHOR_ID),
+            row(commentId = 2, memberId = MEMBER_ID),
+        )
+
+        // when
+        val response = worryCommentService.find(MEMBER_ID, POST_ID, null, 20)
+
+        // then
+        assertThat(response.items.map { it.byAuthor }).containsExactly(true, false)
+        assertThat(response.items.map { it.mine }).containsExactly(false, true)
+    }
+
+    @Test
     fun `없는 글의 댓글 목록을 보면 실패한다`() {
         // given
         every { worryPostRepository.findById(POST_ID) } returns Optional.empty()
@@ -276,11 +295,12 @@ class WorryCommentServiceTest {
         parentId: Long? = null,
         deleted: Boolean = false,
         deletedByReport: Boolean = false,
+        memberId: Long = MEMBER_ID,
     ) = object : WorryCommentRow {
 
         override fun getCommentId() = commentId
 
-        override fun getMemberId() = MEMBER_ID
+        override fun getMemberId() = memberId
 
         override fun getContent() = "댓글 내용"
 

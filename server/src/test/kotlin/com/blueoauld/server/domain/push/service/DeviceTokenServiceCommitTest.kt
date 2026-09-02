@@ -18,22 +18,22 @@ import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import org.springframework.transaction.support.TransactionTemplate
 
-data class ExpiredTokenEvent(val token: String)
-
-class ExpiredTokenListener(
-
-    private val deviceTokenService: DeviceTokenService,
-) {
-
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    fun onEvent(event: ExpiredTokenEvent) {
-        deviceTokenService.removeExpired(listOf(event.token))
-    }
-}
-
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
 class DeviceTokenServiceCommitTest {
+
+    data class ExpiredTokenEvent(val token: String)
+
+    class ExpiredTokenListener(
+
+        private val deviceTokenService: DeviceTokenService,
+    ) {
+
+        @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+        fun onEvent(event: ExpiredTokenEvent) {
+            deviceTokenService.removeExpired(listOf(event.token))
+        }
+    }
 
     @TestConfiguration
     class ListenerConfig {

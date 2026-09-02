@@ -14,6 +14,10 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
 import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.photo.service.PhotoUploadService
+import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
+import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
+import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
+import com.blueoauld.server.domain.report.dto.ReporterSnapshot
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
 import com.blueoauld.server.domain.report.entity.Report
 import com.blueoauld.server.domain.report.entity.ReportPhoto
@@ -183,8 +187,6 @@ class ReportServiceTest {
 
     @Test
     fun `자기 자신은 신고할 수 없다`() {
-        // given
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             reportService.report(REPORTER_ID, createReportRequest(reportedMemberId = REPORTER_ID))
@@ -277,8 +279,6 @@ class ReportServiceTest {
 
     @Test
     fun `남의 증거 사진 키를 보내면 신고에 실패한다`() {
-        // given
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             reportService.report(REPORTER_ID, createReportRequest(photoKeys = listOf("reports/evidence/999/other.jpg")))
@@ -305,27 +305,6 @@ class ReportServiceTest {
         // then
         assertThat(prefix.captured).isEqualTo("reports/evidence/$REPORTER_ID/")
         assertThat(response.objectKey).isEqualTo("reports/evidence/$REPORTER_ID/key.jpg")
-    }
-
-    private fun createReportRequest(
-        reportedMemberId: Long = REPORTED_MEMBER_ID,
-        photoKeys: List<String> = emptyList(),
-        roomId: Long? = null,
-    ) = CreateReportRequest(
-        reportedMemberId = reportedMemberId,
-        roomId = roomId,
-        reason = ReportReason.ABUSE,
-        photoKeys = photoKeys,
-    )
-
-    private fun photoKey(name: String) = "reports/evidence/$REPORTER_ID/$name.jpg"
-
-    private fun member(id: Long, nickname: String) = mockk<Member>(relaxed = true) {
-        every { this@mockk.id } returns id
-        every { this@mockk.nickname } returns nickname
-        every { phoneNumber } returns "+82101234567$id"
-        every { gender } returns Gender.MALE
-        every { birthYear } returns 1998
     }
 
     @Test
@@ -379,6 +358,100 @@ class ReportServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.REPORT_NOT_FOUND)
+    }
+
+    private fun createReportRequest(
+        reportedMemberId: Long = REPORTED_MEMBER_ID,
+        photoKeys: List<String> = emptyList(),
+        roomId: Long? = null,
+    ) = CreateReportRequest(
+        reportedMemberId = reportedMemberId,
+        roomId = roomId,
+        reason = ReportReason.ABUSE,
+        photoKeys = photoKeys,
+    )
+
+    private fun photoKey(name: String) = "reports/evidence/$REPORTER_ID/$name.jpg"
+
+    @Test
+    fun `상세는 스냅샷을 풀고 사진마다 서명 URL을 만든다`() {
+        // given
+        val report = Report(
+            reporterId = REPORTER_ID,
+            reportedMemberId = REPORTED_MEMBER_ID,
+            type = ReportType.CHAT,
+            roomId = ROOM_ID,
+            reason = ReportReason.ABUSE,
+        )
+        every { reportRepository.findById(REPORT_ID) } returns Optional.of(report)
+        every { reportSnapshotRepository.findByReportId(REPORT_ID) } returns
+            ReportSnapshot(REPORT_ID, JsonMapper.builder().build().writeValueAsString(snapshotContent()))
+        every { reportPhotoRepository.findByReportIdOrderByDisplayOrder(REPORT_ID) } returns
+            listOf(ReportPhoto(REPORT_ID, 0, "reports/evidence/1/e.jpg"))
+        every { photoStorage.createSignedViewUrl(any()) } answers { "https://signed/${firstArg<String>()}" }
+
+        // when
+        val detail = reportService.findDetail(REPORT_ID)
+
+        // then
+        assertThat(detail.snapshot.reported.nickname).isEqualTo("피신고자")
+        assertThat(detail.messagePhotoUrls).containsEntry(7L, "https://signed/reports/snapshot/1/m.jpg")
+        assertThat(detail.evidencePhotoUrls).containsExactly("https://signed/reports/evidence/1/e.jpg")
+        assertThat(detail.profilePhotoUrls).containsExactly("https://signed/reports/snapshot/1/p.jpg")
+    }
+
+    @Test
+    fun `스냅샷이 없으면 상세를 볼 수 없다`() {
+        // given
+        every { reportRepository.findById(REPORT_ID) } returns Optional.of(
+            Report(
+                reporterId = REPORTER_ID,
+                reportedMemberId = REPORTED_MEMBER_ID,
+                type = ReportType.PROFILE,
+                reason = ReportReason.ABUSE,
+            ),
+        )
+        every { reportSnapshotRepository.findByReportId(REPORT_ID) } returns null
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            reportService.findDetail(REPORT_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.REPORT_NOT_FOUND)
+    }
+
+    private fun snapshotContent() = ReportSnapshotContent(
+        reporter = ReporterSnapshot(REPORTER_ID, "신고자"),
+        reported = ReportedMemberSnapshot(
+            memberId = REPORTED_MEMBER_ID,
+            phoneNumber = "+821011112222",
+            nickname = "피신고자",
+            gender = Gender.FEMALE,
+            birthYear = 1998,
+            comment = null,
+            bio = null,
+            photoKeys = listOf("reports/snapshot/1/p.jpg"),
+        ),
+        messages = listOf(
+            ChatMessageSnapshot(
+                messageId = 7L,
+                senderId = REPORTED_MEMBER_ID,
+                type = ChatMessageType.PHOTO,
+                content = null,
+                photoKey = "reports/snapshot/1/m.jpg",
+                createdAt = NOW,
+            ),
+        ),
+    )
+
+    private fun member(id: Long, nickname: String) = mockk<Member>(relaxed = true) {
+        every { this@mockk.id } returns id
+        every { this@mockk.nickname } returns nickname
+        every { phoneNumber } returns "+82101234567$id"
+        every { gender } returns Gender.MALE
+        every { birthYear } returns 1998
     }
 
     companion object {

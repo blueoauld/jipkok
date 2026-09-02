@@ -116,6 +116,7 @@ class MemberWithdrawServiceTest {
         verify { memberLikeRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberMemoRepository.deleteAllByMember(MEMBER_ID) }
         verify { secretPhotoAccessRepository.deleteAllByMember(MEMBER_ID) }
+        verify { profileViewRepository.deleteAllByMember(MEMBER_ID) }
         verify { pointHistoryRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { deviceTokenRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberRepository.delete(member) }

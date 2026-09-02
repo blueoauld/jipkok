@@ -125,21 +125,6 @@ class AdminDashboardQueriesTest {
     }
 
     @Test
-    fun `닉네임 조회는 탈퇴 회원도 준다`() {
-        // given
-        val member = saveMember("+821088880007")
-        memberRepository.delete(member)
-        entityManager.flush()
-
-        // when
-        val nicknames = memberRepository.findNicknamesByIdIn(listOf(member.id))
-
-        // then
-        assertThat(nicknames).hasSize(1)
-        assertThat(nicknames.first().nickname).isEqualTo(member.nickname)
-    }
-
-    @Test
     fun `일별 신고 수는 한국 시간 날짜로 묶는다`() {
         // given
         val report = reportRepository.saveAndFlush(

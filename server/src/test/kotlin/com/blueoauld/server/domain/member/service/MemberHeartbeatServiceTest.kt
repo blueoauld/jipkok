@@ -123,7 +123,6 @@ class MemberHeartbeatServiceTest {
 
     private fun stubMember(member: Member) {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
-        every { memberRepository.existsByNicknameIgnoreCase(any()) } returns false
     }
 
     companion object {

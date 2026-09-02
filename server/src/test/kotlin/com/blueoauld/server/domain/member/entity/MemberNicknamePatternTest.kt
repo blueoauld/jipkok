@@ -1,11 +1,10 @@
-package com.blueoauld.server.domain.member.dto.request
+package com.blueoauld.server.domain.member.entity
 
-import com.blueoauld.server.domain.member.entity.Member
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-class SetupProfileRequestTest {
+class MemberNicknamePatternTest {
 
     @ParameterizedTest
     @ValueSource(

@@ -48,7 +48,6 @@ class MemberServiceTest {
 
     @BeforeEach
     fun setUp() {
-        every { memberRepository.save(any()) } answers { firstArg() }
         every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
     }
 

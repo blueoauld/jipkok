@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.domain.profileview.entity.ProfileView
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.time.KOREA
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Limit
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
 import java.util.*
 
 class ProfileViewServiceTest {
@@ -27,7 +27,7 @@ class ProfileViewServiceTest {
 
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
-    private val clock = Clock.fixed(NOW, ZoneId.of("Asia/Seoul"))
+    private val clock = Clock.fixed(NOW, KOREA)
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 

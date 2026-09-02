@@ -130,7 +130,7 @@ class AdminReportServiceTest {
         adminReportService.handle(ACTOR_ID, REPORT_ID)
 
         // then
-        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any()) }
+        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any(), any()) }
     }
 
     private fun report() = Report(

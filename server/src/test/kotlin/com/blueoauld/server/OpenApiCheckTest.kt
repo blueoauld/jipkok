@@ -16,7 +16,7 @@ import tools.jackson.databind.node.ObjectNode
 import java.io.File
 
 @Import(TestcontainersConfiguration::class)
-@SpringBootTest(properties = ["spring.jpa.hibernate.ddl-auto=none"])
+@SpringBootTest
 @AutoConfigureMockMvc
 class OpenApiCheckTest {
 
@@ -40,15 +40,6 @@ class OpenApiCheckTest {
         // then
         assertThat(admin).isEqualTo(served)
         assertThat(app).isEqualTo(withoutAdminPaths(served))
-    }
-
-    private fun withoutAdminPaths(spec: JsonNode): JsonNode {
-        val copy = spec.deepCopy() as ObjectNode
-        val paths = copy.get("paths") as ObjectNode
-        paths.properties().map { it.key }.filter { it.startsWith(ADMIN_PREFIX) }
-            .forEach { paths.remove(it) }
-
-        return copy
     }
 
     @Test
@@ -75,6 +66,15 @@ class OpenApiCheckTest {
         result.andExpect(jsonPath("$.paths['/api/auth/login'].post.responses['200'].content['*/*']").doesNotExist())
         result.andExpect(jsonPath("$.components.schemas.ErrorResponse").exists())
         result.andExpect(jsonPath("$.info.description").value(org.hamcrest.Matchers.containsString("COMMON_001")))
+    }
+
+    private fun withoutAdminPaths(spec: JsonNode): JsonNode {
+        val copy = spec.deepCopy() as ObjectNode
+        val paths = copy.get("paths") as ObjectNode
+        paths.properties().map { it.key }.filter { it.startsWith(ADMIN_PREFIX) }
+            .forEach { paths.remove(it) }
+
+        return copy
     }
 
     companion object {
