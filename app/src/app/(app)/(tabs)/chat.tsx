@@ -89,6 +89,7 @@ export default function ChatScreen() {
             setFilter(next);
             clearSelected();
             listRef.current?.scrollToOffset({ offset: 0, animated: false });
+            scrollTop.reset();
           }}
         />
       </YStack>

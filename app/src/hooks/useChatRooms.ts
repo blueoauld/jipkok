@@ -1,4 +1,8 @@
-import { type QueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  type QueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { api, type ChatRoomPage } from "@/lib/api";
@@ -18,6 +22,7 @@ export function useChatRooms(unreadOnly: boolean) {
       api.chats.list({ cursor: pageParam, unreadOnly }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (page: ChatRoomPage) => page.nextCursor,
+    placeholderData: keepPreviousData,
   });
 
   const rooms = useFlatItems(query.data);

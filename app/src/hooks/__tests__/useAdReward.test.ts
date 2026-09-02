@@ -43,6 +43,7 @@ describe("waitForReward", () => {
     const promise = waitForReward(null, fetchBalance, signal(), 10, 2);
 
     await expect(run(promise, 2)).resolves.toBe("unknown");
+    expect(fetchBalance).not.toHaveBeenCalled();
   });
 
   it("조회 실패는 건너뛰고 다음 시도에서 잡는다", async () => {

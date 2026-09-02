@@ -180,7 +180,7 @@ export default function MemberEditScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(() => ({ title: t("profileEdit.title") }), [t]);
 
-  const { data, isError, refetch } = useMyProfile();
+  const { data, error, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -190,7 +190,7 @@ export default function MemberEditScreen() {
         <EditForm profile={data} />
       ) : (
         <ScreenState
-          error={isError}
+          error={error}
           message={profileErrorMessage()}
           onRetry={refetch}
         />

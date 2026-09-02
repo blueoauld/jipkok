@@ -198,8 +198,8 @@ export const ja: typeof ko = {
   component: {
     messagePlaceholder: "メッセージを入力",
     replyTo: "{{name}}への返信",
-    compressing: "圧縮中 ",
-    uploading: "アップロード中 ",
+    compressProgress: "圧縮中 {{percent}}",
+    uploadProgress: "アップロード中 {{percent}}",
     sendFailed: "送信失敗",
     resend: "再送信",
     cancel: "キャンセル",

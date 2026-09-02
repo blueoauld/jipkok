@@ -322,6 +322,7 @@ export default function SettingScreen() {
       await releaseDevice();
       await api.auth.logout();
     },
+    onError: showApiError,
   });
   const adReward = useAdReward();
   const gate = useInterstitialGate();

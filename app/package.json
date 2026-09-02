@@ -89,6 +89,7 @@
   "private": true,
   "jest": {
     "preset": "jest-expo",
+    "restoreMocks": true,
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
       "^expo-modules-core$": "<rootDir>/node_modules/expo/node_modules/expo-modules-core",

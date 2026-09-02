@@ -169,7 +169,10 @@ export function useSendMessage(
       refreshRooms();
     };
     const retry = () => {
-      void sendMedia(temp, initialPhase, work);
+      setMediaBatches((count) => count + 1);
+      void sendMedia(temp, initialPhase, work).finally(() =>
+        setMediaBatches((count) => count - 1),
+      );
     };
 
     uploads().set(id, { phase: initialPhase, progress: 0, cancel, retry });

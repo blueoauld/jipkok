@@ -140,7 +140,7 @@ export default function MyProfileScreen() {
     [t],
   );
 
-  const { data, isError, refetch } = useMyProfile();
+  const { data, error, refetch } = useMyProfile();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -150,7 +150,7 @@ export default function MyProfileScreen() {
         <Profile profile={data} />
       ) : (
         <ScreenState
-          error={isError}
+          error={error}
           message={profileErrorMessage()}
           onRetry={refetch}
         />

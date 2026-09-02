@@ -194,8 +194,8 @@ export const ko = {
   component: {
     messagePlaceholder: "메시지 입력",
     replyTo: "{{name}}에게 답장",
-    compressing: "압축 중 ",
-    uploading: "업로드 중 ",
+    compressProgress: "압축 중 {{percent}}",
+    uploadProgress: "업로드 중 {{percent}}",
     sendFailed: "전송 실패",
     resend: "재전송",
     cancel: "취소",

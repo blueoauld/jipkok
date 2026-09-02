@@ -85,6 +85,18 @@ describe("keepUploadingMessages", () => {
     expect(merged.pages[0].items.map((item) => item.messageId)).toEqual([101]);
   });
 
+  it("내용이 같으면 이전 데이터의 참조를 유지한다", () => {
+    // given
+    const previous = feed([message(101, "real-1")]);
+    const next = feed([message(101, "real-1")]);
+
+    // when
+    const merged = keepUploadingMessages(previous, next);
+
+    // then
+    expect(merged).toBe(previous);
+  });
+
   it("이전 데이터가 없으면 새 데이터를 그대로 쓴다", () => {
     // given
     const next = feed([message(101, "real-1")]);

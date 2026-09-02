@@ -112,6 +112,33 @@ describe("uploadFile", () => {
     expect(mockTask.cancel).toHaveBeenCalledTimes(1);
   });
 
+  it("발급을 기다리는 동안 중단하면 업로드를 시작하지 않는다", async () => {
+    const controller = new AbortController();
+    issue.mockImplementation(async () => {
+      controller.abort();
+
+      return { uploadUrl: "https://r2/put", objectKey: "key" };
+    });
+
+    const error = await upload(controller.signal).catch((cause) => cause);
+
+    expect(isUploadCancelled(error)).toBe(true);
+    expect(mockTarget).toBeNull();
+  });
+
+  it("업로드가 끝난 뒤 중단돼 있으면 성공으로 돌려주지 않는다", async () => {
+    const controller = new AbortController();
+    mockTask.uploadAsync.mockImplementation(async () => {
+      controller.abort();
+
+      return { status: 200 };
+    });
+
+    const error = await upload(controller.signal).catch((cause) => cause);
+
+    expect(isUploadCancelled(error)).toBe(true);
+  });
+
   it("중단된 뒤에 온 실패도 취소로 본다", async () => {
     const controller = new AbortController();
     mockTask.uploadAsync.mockImplementation(async () => {

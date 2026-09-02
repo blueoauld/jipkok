@@ -1,4 +1,8 @@
-import { type InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  replaceEqualDeep,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { api, type ChatMessagePage } from "@/lib/api";
 import { useUploadStore } from "@/lib/chat/upload-store";
@@ -14,6 +18,11 @@ export function chatMessagesKey(roomId: number) {
 export function keepUploadingMessages(oldData: unknown, newData: unknown) {
   const previous = oldData as Feed | undefined;
   const next = newData as Feed;
+
+  return replaceEqualDeep(previous, withPendingUploads(previous, next));
+}
+
+function withPendingUploads(previous: Feed | undefined, next: Feed): Feed {
   const nextFirst = next.pages[0]?.items;
 
   if (!previous || !nextFirst) {

@@ -187,8 +187,8 @@ export const zh: typeof ko = {
   component: {
     messagePlaceholder: "輸入訊息",
     replyTo: "回覆 {{name}}",
-    compressing: "壓縮中 ",
-    uploading: "上傳中 ",
+    compressProgress: "壓縮中 {{percent}}",
+    uploadProgress: "上傳中 {{percent}}",
     sendFailed: "傳送失敗",
     resend: "重新傳送",
     cancel: "取消",

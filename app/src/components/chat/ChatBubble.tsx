@@ -168,10 +168,14 @@ function UploadOverlay({
   showPhase?: boolean;
 }) {
   const percent = `${Math.round(upload.progress * 100)}%`;
-  const phase =
-    upload.phase === "compressing"
-      ? i18n.t("component.compressing")
-      : i18n.t("component.uploading");
+  const label = showPhase
+    ? i18n.t(
+        upload.phase === "compressing"
+          ? "component.compressProgress"
+          : "component.uploadProgress",
+        { percent },
+      )
+    : percent;
 
   return (
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
@@ -195,7 +199,7 @@ function UploadOverlay({
       ) : (
         <>
           <Text fontSize="$3" color="white" fontWeight="600">
-            {showPhase ? phase + percent : percent}
+            {label}
           </Text>
 
           <OverlayAction

@@ -45,7 +45,16 @@ export async function uploadFile(
   onProgress: UploadProgress,
   signal: AbortSignal,
 ) {
+  if (signal.aborted) {
+    throw uploadCancelled();
+  }
+
   const { uploadUrl, objectKey } = await issue(contentType);
+
+  if (signal.aborted) {
+    throw uploadCancelled();
+  }
+
   const task = new File(uri).createUploadTask(uploadUrl, {
     httpMethod: "PUT",
     headers: { "Content-Type": contentType },
@@ -58,6 +67,10 @@ export async function uploadFile(
 
   try {
     const result = await task.uploadAsync();
+
+    if (signal.aborted) {
+      throw uploadCancelled();
+    }
 
     if (result.status < 200 || result.status >= 300) {
       throw new ApiError(result.status, FAILED_CODE, FAILED_MESSAGE);

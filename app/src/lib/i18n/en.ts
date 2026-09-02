@@ -194,8 +194,8 @@ export const en: typeof ko = {
   component: {
     messagePlaceholder: "Message",
     replyTo: "Reply to {{name}}",
-    compressing: "Compressing ",
-    uploading: "Uploading ",
+    compressProgress: "Compressing {{percent}}",
+    uploadProgress: "Uploading {{percent}}",
     sendFailed: "Failed to send",
     resend: "Resend",
     cancel: "Cancel",
@@ -214,7 +214,7 @@ export const en: typeof ko = {
     confirm: "OK",
     all: "All",
     ageAll: "All",
-    ageFrom: "{{min}}+",
+    ageFrom: "{{min}}",
     ageRange: "{{min}} - {{max}}",
     leaveRoomNotice:
       "If you leave, the conversation disappears for both of you.",

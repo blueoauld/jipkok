@@ -45,6 +45,10 @@ export async function waitForReward(
   interval = REWARD_POLL_INTERVAL,
   attempts = REWARD_POLL_COUNT,
 ): Promise<RewardOutcome> {
+  if (before === null) {
+    return "unknown";
+  }
+
   for (let attempt = 1; attempt <= attempts; attempt++) {
     await delay(interval, signal);
 
@@ -55,7 +59,7 @@ export async function waitForReward(
     }
   }
 
-  return before === null ? "unknown" : "pending";
+  return "pending";
 }
 
 export function useAdReward() {
@@ -108,14 +112,18 @@ export function useAdReward() {
 
   return {
     ready: isLoaded,
-    watch: () => {
+    watch: async () => {
       if (!isLoaded) {
         showToast("warning", NOT_READY_MESSAGE);
         return;
       }
 
-      balanceBefore.current =
-        queryClient.getQueryData<number>(POINT_BALANCE_KEY) ?? null;
+      balanceBefore.current = await queryClient
+        .ensureQueryData({
+          queryKey: POINT_BALANCE_KEY,
+          queryFn: api.points.balance,
+        })
+        .catch(() => null);
       showAd();
     },
   };
