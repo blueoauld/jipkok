@@ -8,13 +8,9 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { COUNTRY_BUTTON_MIN_WIDTH } from "@/lib/design";
-import {
-  maxLengthOf,
-  type PhoneCountry,
-  SUPPORTED_COUNTRIES,
-  usePhoneCountry,
-  usePhoneCountryStore,
-} from "@/lib/phone";
+import { maxLengthOf } from "@/lib/phone";
+import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
+import { usePhoneCountry, usePhoneCountryStore } from "@/lib/phone/store";
 import { phoneNumberRules } from "@/lib/validation";
 
 const COUNTRY_LABEL_KEYS = {

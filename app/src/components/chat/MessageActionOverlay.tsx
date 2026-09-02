@@ -5,11 +5,11 @@ import { Text, XStack, YStack } from "tamagui";
 import { ChatBubbleContent } from "@/components/chat/ChatBubble";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse, ChatReactionType } from "@/lib/api";
-import { REACTION_EMOJI, REACTION_TYPES } from "@/lib/chat";
 import {
   layoutActionOverlay,
   type MessageFrame,
 } from "@/lib/chat/overlay-layout";
+import { REACTION_EMOJI, REACTION_TYPES } from "@/lib/chat/reactions";
 import { MIN_TAP_SIZE, OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 

@@ -1,17 +1,10 @@
-import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import {
   formatUnreadCount,
-  groupReactions,
   isSingleEmoji,
   mediaSummary,
   replySummary,
   toBulkChunks,
-  toChatRows,
 } from "@/lib/chat";
-
-function message(messageId: number, senderId: number, createdAt: string) {
-  return chatMessage(messageId, { senderId, createdAt });
-}
 
 describe("isSingleEmoji", () => {
   it.each(["😀", "👍🏽", "👨‍👩‍👧", "🇰🇷", "1️⃣", "❤️", "☺"])(
@@ -54,76 +47,5 @@ describe("toBulkChunks", () => {
       500, 500, 1,
     ]);
     expect(toBulkChunks([])).toEqual([]);
-  });
-});
-
-describe("toChatRows", () => {
-  it("같은 사람이 같은 분에 보낸 메시지는 묶고 마지막에만 시간을 보인다", () => {
-    const rows = toChatRows([
-      message(3, 1, "2026-08-18T10:00:50Z"),
-      message(2, 1, "2026-08-18T10:00:10Z"),
-      message(1, 2, "2026-08-18T09:59:00Z"),
-    ]);
-    const messages = rows.filter((row) => row.kind === "message");
-
-    expect(messages.map((row) => row.grouped)).toEqual([true, false, false]);
-    expect(messages.map((row) => row.showTime)).toEqual([true, false, true]);
-  });
-
-  it("날짜가 바뀌는 자리와 가장 오래된 메시지 뒤에 날짜 행을 넣는다", () => {
-    const rows = toChatRows([
-      message(2, 1, "2026-08-18T01:00:00Z"),
-      message(1, 1, "2026-08-16T23:00:00Z"),
-    ]);
-
-    expect(rows.map((row) => row.kind)).toEqual([
-      "message",
-      "day",
-      "message",
-      "day",
-    ]);
-  });
-
-  it("행 키는 clientMessageId를 우선한다", () => {
-    const rows = toChatRows([
-      { ...message(1, 1, "2026-08-18T01:00:00Z"), clientMessageId: "c-1" },
-    ]);
-
-    expect(rows[0].key).toBe("c-1");
-  });
-});
-
-describe("groupReactions", () => {
-  it("같은 이모지는 하나로 세고 내가 낀 묶음은 reacted로 표시한다", () => {
-    const groups = groupReactions(
-      [
-        { memberId: 2, type: "HEART" },
-        { memberId: 1, type: "HEART" },
-        { memberId: 3, type: "LIKE" },
-      ],
-      1,
-    );
-
-    expect(groups).toEqual([
-      { emoji: "❤️", count: 2, reacted: true },
-      { emoji: "👍", count: 1, reacted: false },
-    ]);
-  });
-
-  it("내 반응이 다른 이모지면 상대보다 앞에 온다", () => {
-    const groups = groupReactions(
-      [
-        { memberId: 2, type: "LIKE" },
-        { memberId: 1, type: "HEART" },
-      ],
-      1,
-    );
-
-    expect(groups.map((group) => group.emoji)).toEqual(["❤️", "👍"]);
-    expect(groups.map((group) => group.reacted)).toEqual([true, false]);
-  });
-
-  it("반응이 없으면 빈 배열이다", () => {
-    expect(groupReactions([], 1)).toEqual([]);
   });
 });

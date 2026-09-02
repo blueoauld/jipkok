@@ -1,4 +1,4 @@
-import type { WorryCategory } from "@/lib/api";
+import type { WorryCategory, WorryCommentResponse } from "@/lib/api";
 import i18n from "@/lib/i18n";
 
 export const WORRY_CATEGORIES: WorryCategory[] = [
@@ -16,4 +16,16 @@ export function worryCategoryLabel(category: WorryCategory) {
   const known = WORRY_CATEGORIES.includes(category) ? category : "ETC";
 
   return i18n.t(`worryCategory.${known}`);
+}
+
+export function commentLabel(comment: WorryCommentResponse) {
+  return comment.byAuthor
+    ? i18n.t("worry.detail.author")
+    : i18n.t("worry.detail.anonymousNo", { no: comment.anonymousNo });
+}
+
+export function deletedCommentLabel(comment: WorryCommentResponse) {
+  return comment.status === "REPORT_DELETED"
+    ? i18n.t("worry.detail.reportDeletedComment")
+    : i18n.t("worry.detail.deletedComment");
 }

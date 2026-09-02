@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
-import { CheckSquareIcon } from "phosphor-react-native/src/icons/CheckSquare";
 import { FireIcon } from "phosphor-react-native/src/icons/Fire";
 import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
@@ -10,15 +9,16 @@ import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, useTheme, XStack } from "tamagui";
+import { useTheme } from "tamagui";
 
-import { BellToggleButton } from "@/components/BellToggleButton";
+import {
+  ChatHeaderRight,
+  SelectAllButton,
+  SelectionCancelButton,
+} from "@/components/chat/ChatTabHeader";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
-import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { Glass } from "@/components/ui/Glass";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
-import { useMyProfile } from "@/hooks/useMyProfile";
-import { api } from "@/lib/api";
 import { formatUnreadCount } from "@/lib/chat";
 import { useChatSelectionStore } from "@/lib/chat/store";
 import {
@@ -27,8 +27,6 @@ import {
   FLOATING_BAR_HEIGHT,
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
-  HEADER_GLASS_SIZE,
-  PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
@@ -41,9 +39,6 @@ const TAB_ITEM_PADDING = 5;
 const TAB_ITEM_MAX_WIDTH = 500;
 // 유리일 때는 네이티브 스택 헤더가 버튼을 앉히는 자리와 같아야 화면을 오갈 때 안 튄다.
 const HEADER_EDGE_PADDING = GLASS_ENABLED ? 16 : 4;
-
-// 유리 캡슐 안에서 글자가 벽에 붙지 않을 만큼이다.
-const HEADER_TEXT_PADDING = 14;
 
 const BADGE_FONT_SIZE = 11;
 const BAR_HEIGHT = GLASS_ENABLED ? FLOATING_BAR_HEIGHT : BOTTOM_BAR_HEIGHT;
@@ -80,65 +75,6 @@ const TABS: Tab[] = [
   { name: "setting", titleKey: "tabs.setting", icon: GearIcon },
 ];
 
-function NoteReceiveButton() {
-  const { t } = useTranslation();
-  const { data: profile } = useMyProfile();
-
-  return (
-    <BellToggleButton
-      label={t("a11y.noteReceive")}
-      enabled={profile?.noteReceiveEnabled ?? true}
-      field="noteReceiveEnabled"
-      update={api.members.updateNoteReceive}
-      onMessage={t("tabs.noteReceiveOn")}
-      offMessage={t("tabs.noteReceiveOff")}
-    />
-  );
-}
-
-function HeaderTextButton({
-  label,
-  onPress,
-}: {
-  label: string;
-  onPress: () => void;
-}) {
-  const text = (
-    <Text fontSize="$4" fontWeight="600">
-      {label}
-    </Text>
-  );
-
-  return (
-    <XStack
-      items="center"
-      justify="center"
-      px={GLASS_ENABLED ? 0 : "$3"}
-      py={GLASS_ENABLED ? 0 : "$2"}
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      accessibilityRole="button"
-      onPress={onPress}
-    >
-      {GLASS_ENABLED ? (
-        <Glass
-          style={{
-            height: HEADER_GLASS_SIZE,
-            borderRadius: HEADER_GLASS_SIZE / 2,
-            paddingHorizontal: HEADER_TEXT_PADDING,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          isInteractive
-        >
-          {text}
-        </Glass>
-      ) : (
-        text
-      )}
-    </XStack>
-  );
-}
-
 // 레트로 테두리는 유리와 같이 못 쓴다. 유리가 자기 경계를 그리는데 그 위에 검은 2px을
 // 얹으면 둘 다 죽는다.
 function TabBarBackground() {
@@ -162,46 +98,6 @@ function TabBarBackground() {
           borderColor: theme.gray12.val,
         },
       ]}
-    />
-  );
-}
-
-function ChatHeaderRight() {
-  const { t } = useTranslation();
-  const startSelection = useChatSelectionStore((state) => state.start);
-
-  return (
-    <HeaderIconGroup>
-      <HeaderIconButton
-        icon={CheckSquareIcon}
-        label={t("a11y.selectRooms")}
-        onPress={startSelection}
-      />
-      <NoteReceiveButton />
-    </HeaderIconGroup>
-  );
-}
-
-function SelectionCancelButton() {
-  const { t } = useTranslation();
-  const endSelection = useChatSelectionStore((state) => state.end);
-
-  return <HeaderTextButton label={t("tabs.cancel")} onPress={endSelection} />;
-}
-
-function SelectAllButton() {
-  const { t } = useTranslation();
-  const selectedCount = useChatSelectionStore((state) => state.selected.size);
-  const roomCount = useChatSelectionStore((state) => state.roomIds.length);
-  const selectAll = useChatSelectionStore((state) => state.selectAll);
-  const clear = useChatSelectionStore((state) => state.clear);
-
-  const all = roomCount > 0 && selectedCount >= roomCount;
-
-  return (
-    <HeaderTextButton
-      label={all ? t("tabs.deselectAll") : t("tabs.selectAll")}
-      onPress={all ? clear : selectAll}
     />
   );
 }

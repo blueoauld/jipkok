@@ -36,13 +36,8 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
-import {
-  type ChatRow,
-  isPending,
-  isRoomNotFound,
-  toChatRows,
-  toReply,
-} from "@/lib/chat";
+import { isPending, isRoomNotFound, toReply } from "@/lib/chat";
+import { type ChatRow, toChatRows } from "@/lib/chat/rows";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";

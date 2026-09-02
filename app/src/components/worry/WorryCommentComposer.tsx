@@ -1,0 +1,71 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getTokens, Spinner, XStack, YStack } from "tamagui";
+
+import { RetroButton } from "@/components/ui/RetroButton";
+import { RetroInput } from "@/components/ui/RetroInput";
+import type { WorryCommentResponse } from "@/lib/api";
+import { KEYBOARD_OVERLAP } from "@/lib/design";
+import { useThemeBackground } from "@/lib/theme/accent";
+import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
+
+const SUBMIT_BUTTON_WIDTH = 80;
+
+export function WorryCommentComposer({
+  replyTo,
+  pending,
+  onSubmit,
+}: {
+  replyTo: WorryCommentResponse | null;
+  pending: boolean;
+  onSubmit: (content: string) => Promise<unknown>;
+}) {
+  const { t } = useTranslation();
+  const background = useThemeBackground();
+  const [content, setContent] = useState("");
+
+  const trimmed = content.trim();
+
+  return (
+    <XStack
+      px="$4"
+      pt="$3"
+      pb={getTokens().space.$3.val + KEYBOARD_OVERLAP}
+      mb={-KEYBOARD_OVERLAP}
+      gap="$3"
+      items="center"
+      bg={background}
+    >
+      <YStack flex={1}>
+        {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
+        <RetroInput
+          key={replyTo?.commentId ?? "comment"}
+          shadow="$gray12"
+          value={content}
+          onChangeText={setContent}
+          autoFocusNative={replyTo !== null}
+          placeholder={
+            replyTo
+              ? t("worry.detail.replyPlaceholder")
+              : t("worry.detail.commentPlaceholder")
+          }
+          maxLength={WORRY_COMMENT_MAX_LENGTH}
+        />
+      </YStack>
+      <RetroButton
+        width={SUBMIT_BUTTON_WIDTH}
+        disabled={!trimmed || pending}
+        onPress={() => {
+          setContent("");
+          onSubmit(trimmed).catch(() => setContent(trimmed));
+        }}
+      >
+        {pending ? (
+          <Spinner size="small" color="white" />
+        ) : (
+          t("worry.detail.submit")
+        )}
+      </RetroButton>
+    </XStack>
+  );
+}

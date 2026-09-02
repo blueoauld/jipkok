@@ -1,5 +1,6 @@
 import i18n from "@/lib/i18n";
-import { patternOf, type PhoneCountry } from "@/lib/phone";
+import { patternOf } from "@/lib/phone";
+import type { PhoneCountry } from "@/lib/phone/country";
 
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣぁ-ゖァ-ヺー々一-龯a-zA-Z0-9 ]+$/;
 

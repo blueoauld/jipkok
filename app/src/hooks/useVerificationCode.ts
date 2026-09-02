@@ -3,7 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useCountdown } from "@/hooks/useCountdown";
 import { api, type VerificationPurpose } from "@/lib/api";
 import { codeSentMessage } from "@/lib/message";
-import { patternOf, usePhoneCountry } from "@/lib/phone";
+import { patternOf } from "@/lib/phone";
+import { usePhoneCountry } from "@/lib/phone/store";
 import { showToast } from "@/lib/toast/store";
 
 // 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.

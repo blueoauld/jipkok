@@ -1,10 +1,6 @@
-import {
-  patternOf,
-  type PhoneCountry,
-  SUPPORTED_COUNTRIES,
-  toE164,
-  usePhoneCountryStore,
-} from "@/lib/phone";
+import { patternOf, toE164 } from "@/lib/phone";
+import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
+import { usePhoneCountryStore } from "@/lib/phone/store";
 
 import spec from "../../../openapi.json";
 
