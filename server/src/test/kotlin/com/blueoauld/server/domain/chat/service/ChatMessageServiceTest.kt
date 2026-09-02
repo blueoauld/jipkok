@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.chat.service
 
-import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatMessageReaction
@@ -8,16 +7,15 @@ import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.entity.type.ChatReactionType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
-import com.blueoauld.server.domain.chat.event.ChatReactionChangedEvent
 import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -51,7 +49,7 @@ class ChatMessageServiceTest {
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageRepository,
-        chatMessageReactionRepository,
+        ChatReactionService(chatRoomRepository, chatMessageRepository, chatMessageReactionRepository, eventPublisher),
         photoUploadService,
         photoStorage,
         eventPublisher,
@@ -417,131 +415,6 @@ class ChatMessageServiceTest {
         // when
         val exception = assertThrows(BusinessException::class.java) {
             chatMessageService.findMessages(STRANGER_ID, ROOM_ID, cursor = null, size = 30)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
-    }
-
-    @Test
-    fun `읽음 처리하면 안읽음 수가 다시 계산된다`() {
-        // when
-        chatMessageService.markRead(ME_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
-
-        // then
-        verify { chatRoomMemberRepository.markRead(ROOM_ID, ME_ID, LAST_READ_MESSAGE_ID) }
-    }
-
-    @Test
-    fun `여러 방을 한 번에 읽음 처리한다`() {
-        // when
-        chatMessageService.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
-
-        // then
-        verify { chatRoomMemberRepository.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID)) }
-    }
-
-    @Test
-    fun `읽음 처리할 방이 없으면 조회하지 않는다`() {
-        // when
-        chatMessageService.markAllRead(ME_ID, emptyList())
-
-        // then
-        verify(exactly = 0) { chatRoomMemberRepository.markAllRead(any(), any()) }
-    }
-
-    @Test
-    fun `참여자가 아니면 읽음 처리할 수 없다`() {
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            chatMessageService.markRead(STRANGER_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
-        verify(exactly = 0) { chatRoomMemberRepository.markRead(any(), any(), any()) }
-    }
-
-    @Test
-    fun `메시지에 처음 반응하면 저장되고 상대에게 이벤트가 간다`() {
-        // given
-        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original())
-        every { chatMessageReactionRepository.findByMessageIdAndMemberId(REPLY_ID, ME_ID) } returns null
-        every { chatMessageReactionRepository.save(any()) } answers { firstArg() }
-        every { chatMessageReactionRepository.findByMessageId(REPLY_ID) } returns
-            listOf(reaction(ME_ID, ChatReactionType.HEART))
-        val event = slot<ChatReactionChangedEvent>()
-
-        // when
-        val response = chatMessageService.react(ME_ID, ROOM_ID, REPLY_ID, ReactMessageRequest(ChatReactionType.HEART))
-
-        // then
-        val saved = slot<ChatMessageReaction>()
-        verify { chatMessageReactionRepository.save(capture(saved)) }
-        assertThat(saved.captured.roomId).isEqualTo(ROOM_ID)
-        assertThat(saved.captured.type).isEqualTo(ChatReactionType.HEART)
-        assertThat(response.messageId).isEqualTo(REPLY_ID)
-        assertThat(response.reactions).extracting("memberId", "type")
-            .containsExactly(tuple(ME_ID, ChatReactionType.HEART))
-        verify { eventPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.receiverId).isEqualTo(PARTNER_ID)
-        assertThat(event.captured.roomId).isEqualTo(ROOM_ID)
-        assertThat(event.captured.reactions).isEqualTo(response)
-    }
-
-    @Test
-    fun `이미 반응한 메시지에 다시 반응하면 종류만 바뀐다`() {
-        // given
-        val existing = reaction(ME_ID, ChatReactionType.HEART)
-        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original())
-        every { chatMessageReactionRepository.findByMessageIdAndMemberId(REPLY_ID, ME_ID) } returns existing
-
-        // when
-        chatMessageService.react(ME_ID, ROOM_ID, REPLY_ID, ReactMessageRequest(ChatReactionType.LAUGH))
-
-        // then
-        assertThat(existing.type).isEqualTo(ChatReactionType.LAUGH)
-        verify(exactly = 0) { chatMessageReactionRepository.save(any()) }
-    }
-
-    @Test
-    fun `반응을 취소하면 지워지고 남은 반응을 준다`() {
-        // given
-        val mine = reaction(ME_ID, ChatReactionType.HEART)
-        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original())
-        every { chatMessageReactionRepository.findByMessageIdAndMemberId(REPLY_ID, ME_ID) } returns mine
-        every { chatMessageReactionRepository.findByMessageId(REPLY_ID) } returns
-            listOf(reaction(PARTNER_ID, ChatReactionType.LIKE))
-
-        // when
-        val response = chatMessageService.unreact(ME_ID, ROOM_ID, REPLY_ID)
-
-        // then
-        verify { chatMessageReactionRepository.delete(mine) }
-        assertThat(response.reactions).extracting("memberId").containsExactly(PARTNER_ID)
-        verify { eventPublisher.publishEvent(any<ChatReactionChangedEvent>()) }
-    }
-
-    @Test
-    fun `다른 방의 메시지에는 반응할 수 없다`() {
-        // given
-        every { chatMessageRepository.findById(REPLY_ID) } returns Optional.of(original(roomId = ANOTHER_ROOM_ID))
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            chatMessageService.react(ME_ID, ROOM_ID, REPLY_ID, ReactMessageRequest(ChatReactionType.HEART))
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_MESSAGE_NOT_FOUND)
-        verify(exactly = 0) { chatMessageReactionRepository.save(any()) }
-    }
-
-    @Test
-    fun `참여자가 아니면 반응할 수 없다`() {
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            chatMessageService.react(STRANGER_ID, ROOM_ID, REPLY_ID, ReactMessageRequest(ChatReactionType.HEART))
         }
 
         // then

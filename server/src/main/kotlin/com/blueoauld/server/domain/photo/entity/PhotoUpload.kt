@@ -1,4 +1,4 @@
-package com.blueoauld.server.global.storage.entity
+package com.blueoauld.server.domain.photo.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

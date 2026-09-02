@@ -1,10 +1,11 @@
-package com.blueoauld.server.global.storage.service
+package com.blueoauld.server.domain.photo.service
 
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.domain.photo.entity.PhotoUpload
+import com.blueoauld.server.domain.photo.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
-import com.blueoauld.server.global.storage.entity.PhotoUpload
-import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock

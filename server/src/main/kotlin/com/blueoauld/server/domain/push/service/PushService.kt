@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.push.service
 
-import com.blueoauld.server.global.push.ExpoPushClient
-import com.blueoauld.server.global.push.ExpoPushMessage
+import com.blueoauld.server.domain.push.dto.ExpoPushMessage
 import org.springframework.messaging.simp.user.SimpUserRegistry
 import org.springframework.stereotype.Service
 

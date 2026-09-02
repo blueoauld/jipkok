@@ -3,7 +3,7 @@ package com.blueoauld.server.domain.member.service
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher

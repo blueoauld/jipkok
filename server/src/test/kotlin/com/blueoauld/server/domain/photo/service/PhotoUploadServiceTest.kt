@@ -1,10 +1,11 @@
-package com.blueoauld.server.global.storage.service
+package com.blueoauld.server.domain.photo.service
 
+import com.blueoauld.server.domain.photo.entity.PhotoUpload
+import com.blueoauld.server.domain.photo.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.dto.StoredObject
-import com.blueoauld.server.global.storage.entity.PhotoUpload
-import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

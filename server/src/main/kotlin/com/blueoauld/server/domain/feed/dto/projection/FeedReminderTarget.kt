@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.member.dto.projection
+package com.blueoauld.server.domain.feed.dto.projection
 
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 

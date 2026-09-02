@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.Table
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
@@ -19,7 +20,12 @@ import java.util.*
 
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 @Entity
-@Table(name = "member")
+@Table(
+    name = "member",
+    indexes = [
+        Index(name = "idx_member_created_at", columnList = "created_at"),
+    ],
+)
 class Member(
 
     @Column(name = "phone_number", nullable = false, length = PHONE_NUMBER_LENGTH)

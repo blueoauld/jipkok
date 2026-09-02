@@ -5,12 +5,12 @@ import com.blueoauld.server.domain.feed.dto.request.CreateFeedPostRequest
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.type.FeedSort
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
+import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

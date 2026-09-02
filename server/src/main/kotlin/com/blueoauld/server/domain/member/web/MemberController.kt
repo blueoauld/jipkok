@@ -22,10 +22,10 @@ import com.blueoauld.server.domain.member.service.MemberSearchService
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberSignupService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.point.dto.response.PointRewardResponse
 import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.response.ScrollResponse
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.web.RequestLoggingFilter
 import com.blueoauld.server.global.web.clientIp
 import io.swagger.v3.oas.annotations.Operation

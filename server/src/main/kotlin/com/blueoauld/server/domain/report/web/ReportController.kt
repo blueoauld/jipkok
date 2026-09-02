@@ -1,9 +1,9 @@
 package com.blueoauld.server.domain.report.web
 
+import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.report.dto.request.CreateReportRequest
 import com.blueoauld.server.domain.report.service.ReportService
-import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus

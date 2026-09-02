@@ -1,6 +1,6 @@
-package com.blueoauld.server.global.storage.repository
+package com.blueoauld.server.domain.photo.repository
 
-import com.blueoauld.server.global.storage.entity.PhotoUpload
+import com.blueoauld.server.domain.photo.entity.PhotoUpload
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.Instant
 

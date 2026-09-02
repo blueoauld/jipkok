@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.feed.service
 
-import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.feed.repository.FeedReminderRepository
 import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
 import com.blueoauld.server.global.time.KOREA
@@ -17,7 +17,7 @@ private val log = KotlinLogging.logger {}
 @Component
 class FeedReminder(
 
-    private val memberRepository: MemberRepository,
+    private val feedReminderRepository: FeedReminderRepository,
     private val pushService: PushService,
     private val pushMessages: PushMessages,
     private val clock: Clock,
@@ -26,7 +26,7 @@ class FeedReminder(
     @Scheduled(cron = REMIND_CRON, zone = KOREA_ID)
     fun remind() {
         val now = clock.instant()
-        val targets = memberRepository.findFeedReminderTargets(now.truncatedTo(ChronoUnit.HOURS), now)
+        val targets = feedReminderRepository.findFeedReminderTargets(now.truncatedTo(ChronoUnit.HOURS), now)
 
         if (targets.isEmpty()) {
             return

@@ -4,7 +4,7 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher

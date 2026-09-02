@@ -1,4 +1,4 @@
-package com.blueoauld.server.global.storage.dto
+package com.blueoauld.server.domain.photo.dto.response
 
 data class PhotoUploadUrlResponse(
 

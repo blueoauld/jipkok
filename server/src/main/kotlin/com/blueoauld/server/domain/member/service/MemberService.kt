@@ -5,28 +5,21 @@ import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.dto.response.MyProfileResponse
-import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
-import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.NicknameHistory
-import com.blueoauld.server.domain.member.entity.displayOrdered
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
-import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.domain.member.repository.getMember
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.request.EnabledRequest
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
-import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.storage.service.PhotoUploadService
 import com.blueoauld.server.global.time.ageOf
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -37,10 +30,8 @@ import java.time.Clock
 class MemberService(
 
     private val memberRepository: MemberRepository,
-    private val memberPhotoRepository: MemberPhotoRepository,
     private val nicknameHistoryRepository: NicknameHistoryRepository,
-    private val photoUploadService: PhotoUploadService,
-    private val photoStorage: PhotoStorage,
+    private val memberPhotoService: MemberPhotoService,
     private val memberSuspensionService: MemberSuspensionService,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
@@ -64,7 +55,7 @@ class MemberService(
     @Transactional(readOnly = true)
     fun findMyProfile(memberId: Long): MyProfileResponse {
         val member = memberRepository.getMember(memberId)
-        val photos = memberPhotoRepository.findAllByMemberId(memberId)
+        val photos = memberPhotoService.findProfilePhotos(memberId)
 
         return MyProfileResponse(
             memberId = member.id,
@@ -75,8 +66,8 @@ class MemberService(
             receivedLikeCount = member.receivedLikeCount,
             comment = member.comment,
             bio = member.bio,
-            publicPhotos = profilePhotos(photos, PhotoVisibility.PUBLIC, photoStorage::toPublicUrl),
-            secretPhotos = profilePhotos(photos, PhotoVisibility.SECRET, photoStorage::createSignedViewUrl),
+            publicPhotos = photos[PhotoVisibility.PUBLIC].orEmpty(),
+            secretPhotos = photos[PhotoVisibility.SECRET].orEmpty(),
             noteReceiveEnabled = member.noteReceiveEnabled,
             feedNotificationEnabled = member.feedNotificationEnabled,
             suspensions = memberSuspensionService.findActive(memberId).map(SuspensionResponse::from),
@@ -92,7 +83,6 @@ class MemberService(
         val nickname = request.nickname.trim()
         validateNickname(member, nickname)
         validateBirthYear(request.birthYear)
-        validatePhotoKeys(memberId, request)
 
         changeNickname(member, nickname)
         member.birthYear = request.birthYear
@@ -100,29 +90,13 @@ class MemberService(
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
 
-        val keptKeys = request.publicPhotoKeys + request.secretPhotoKeys
-        val removedKeys = memberPhotoRepository.findAllByMemberId(memberId)
-            .map { it.objectKey }
-            .filterNot { it in keptKeys }
-
-        memberPhotoRepository.deleteAllByMemberId(memberId)
-        memberPhotoRepository.flush()
-        memberPhotoRepository.saveAll(
-            toPhotos(memberId, request.publicPhotoKeys, PhotoVisibility.PUBLIC) +
-                toPhotos(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET),
-        )
-        photoUploadService.confirm(keptKeys)
-
-        if (removedKeys.isNotEmpty()) {
-            eventPublisher.publishEvent(PhotosDeletedEvent(removedKeys))
-        }
+        memberPhotoService.replace(memberId, request.publicPhotoKeys, request.secretPhotoKeys)
     }
 
     fun createPhotoUploadUrl(memberId: Long, request: CreateProfilePhotoUploadUrlRequest): PhotoUploadUrlResponse {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        val prefix = photoKeyPrefix(memberId, request.visibility)
-        return photoUploadService.createUploadUrl(memberId, prefix, request.contentType)
+        return memberPhotoService.createUploadUrl(memberId, request.visibility, request.contentType)
     }
 
     @Transactional
@@ -170,42 +144,5 @@ class MemberService(
         if (clock.ageOf(birthYear) !in Member.MIN_AGE..Member.MAX_AGE) {
             throw BusinessException(ErrorCode.INVALID_BIRTH_YEAR)
         }
-    }
-
-    private fun validatePhotoKeys(memberId: Long, request: EditProfileRequest) {
-        val objectKeys = request.publicPhotoKeys + request.secretPhotoKeys
-
-        if (objectKeys.size != objectKeys.toSet().size) {
-            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
-        }
-
-        validatePhotoKeyPrefix(memberId, request.publicPhotoKeys, PhotoVisibility.PUBLIC)
-        validatePhotoKeyPrefix(memberId, request.secretPhotoKeys, PhotoVisibility.SECRET)
-    }
-
-    private fun validatePhotoKeyPrefix(memberId: Long, objectKeys: List<String>, visibility: PhotoVisibility) {
-        val prefix = photoKeyPrefix(memberId, visibility)
-
-        if (objectKeys.any { !it.startsWith(prefix) }) {
-            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
-        }
-    }
-
-    private fun toPhotos(memberId: Long, objectKeys: List<String>, visibility: PhotoVisibility) =
-        objectKeys.mapIndexed { index, objectKey -> MemberPhoto(memberId, visibility, index, objectKey) }
-
-    private fun profilePhotos(
-        photos: List<MemberPhoto>,
-        visibility: PhotoVisibility,
-        toUrl: (String) -> String,
-    ) = photos.displayOrdered(visibility)
-        .map { ProfilePhotoResponse(it.objectKey, toUrl(it.objectKey)) }
-
-    private fun photoKeyPrefix(memberId: Long, visibility: PhotoVisibility) =
-        "$PHOTO_KEY_ROOT/$memberId/${visibility.name.lowercase()}/"
-
-    companion object {
-
-        private const val PHOTO_KEY_ROOT = "members"
     }
 }

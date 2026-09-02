@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.feed.entity
 
+import com.blueoauld.server.domain.photo.entity.PhotoUpload
 import com.blueoauld.server.global.entity.BaseEntity
-import com.blueoauld.server.global.storage.entity.PhotoUpload
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

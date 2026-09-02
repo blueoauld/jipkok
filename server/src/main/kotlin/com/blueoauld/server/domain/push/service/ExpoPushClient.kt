@@ -1,6 +1,6 @@
-package com.blueoauld.server.global.push
+package com.blueoauld.server.domain.push.service
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.blueoauld.server.domain.push.dto.ExpoPushMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
@@ -9,27 +9,6 @@ import org.springframework.web.client.body
 import java.time.Duration
 
 private val log = KotlinLogging.logger {}
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ExpoPushMessage(
-
-    val to: String,
-    val title: String,
-    val body: String,
-    val data: Map<String, String> = emptyMap(),
-    val collapseId: String? = null,
-    val tag: String? = null,
-    val badge: Int? = null,
-    val channelId: String? = null,
-    val priority: String? = null,
-    val sound: String = SOUND,
-) {
-
-    companion object {
-
-        private const val SOUND = "default"
-    }
-}
 
 @Component
 class ExpoPushClient {

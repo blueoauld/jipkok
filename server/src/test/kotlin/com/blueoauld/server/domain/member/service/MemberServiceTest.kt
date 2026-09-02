@@ -1,31 +1,21 @@
 package com.blueoauld.server.domain.member.service
 
-import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.dto.request.EditProfileRequest
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
 import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
-import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
-import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
-import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
-import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.storage.service.PhotoUploadService
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,13 +29,9 @@ class MemberServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
-    private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
-
     private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
 
-    private val photoUploadService = mockk<PhotoUploadService>(relaxed = true)
-
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
+    private val memberPhotoService = mockk<MemberPhotoService>(relaxed = true)
 
     private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
 
@@ -53,10 +39,8 @@ class MemberServiceTest {
 
     private val memberService = MemberService(
         memberRepository,
-        memberPhotoRepository,
         nicknameHistoryRepository,
-        photoUploadService,
-        photoStorage,
+        memberPhotoService,
         memberSuspensionService,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -66,11 +50,6 @@ class MemberServiceTest {
     fun setUp() {
         every { memberRepository.save(any()) } answers { firstArg() }
         every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
-        every { photoUploadService.createUploadUrl(any(), any(), any()) } answers {
-            PhotoUploadUrlResponse("https://upload.test/key", secondArg<String>() + "key.jpg")
-        }
-        every { photoStorage.createUploadUrl(any(), any()) } answers { "https://upload.test/${firstArg<String>()}" }
     }
 
     @Test
@@ -236,40 +215,6 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `내 프로필은 공개 사진을 고정 URL로, 비밀 사진을 서명 URL로 준다`() {
-        // given
-        val member = member()
-        member.comment = "코멘트"
-        member.bio = "자기소개"
-        stubMember(member)
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, photoKey("s", PhotoVisibility.SECRET)),
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 1, photoKey("b")),
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
-        )
-        every { photoStorage.toPublicUrl(any()) } answers { "https://cdn.test/${firstArg<String>()}" }
-        every { photoStorage.createSignedViewUrl(any()) } answers { "https://signed.test/${firstArg<String>()}" }
-
-        // when
-        val response = memberService.findMyProfile(MEMBER_ID)
-
-        // then
-        assertThat(response.publicPhotos).containsExactly(
-            ProfilePhotoResponse(photoKey("a"), "https://cdn.test/${photoKey("a")}"),
-            ProfilePhotoResponse(photoKey("b"), "https://cdn.test/${photoKey("b")}"),
-        )
-        assertThat(response.secretPhotos).containsExactly(
-            ProfilePhotoResponse(
-                photoKey("s", PhotoVisibility.SECRET),
-                "https://signed.test/${photoKey("s", PhotoVisibility.SECRET)}",
-            ),
-        )
-        assertThat(response.nickname).isEqualTo(member.nickname)
-        assertThat(response.comment).isEqualTo("코멘트")
-        assertThat(response.bio).isEqualTo("자기소개")
-    }
-
-    @Test
     fun `내 프로필의 나이는 출생연도로 계산한다`() {
         // given
         val member = member()
@@ -312,192 +257,7 @@ class MemberServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.PROFILE_EDIT_SUSPENDED)
-        verify(exactly = 0) { memberPhotoRepository.deleteAllByMemberId(any()) }
-    }
-
-    @Test
-    fun `프로필을 편집하면 공개 사진과 비밀 사진을 보낸 순서대로 저장한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-        val saved = slot<List<MemberPhoto>>()
-
-        // when
-        memberService.editProfile(
-            MEMBER_ID,
-            EditProfileRequest(
-                nickname = NICKNAME,
-                birthYear = 1998,
-                publicPhotoKeys = listOf(photoKey("a"), photoKey("b")),
-                secretPhotoKeys = listOf(photoKey("c", PhotoVisibility.SECRET)),
-            ),
-        )
-
-        // then
-        verify { memberPhotoRepository.deleteAllByMemberId(MEMBER_ID) }
-        verify { memberPhotoRepository.saveAll(capture(saved)) }
-        assertThat(saved.captured).extracting("visibility", "displayOrder", "objectKey")
-            .containsExactly(
-                tuple(PhotoVisibility.PUBLIC, 0, photoKey("a")),
-                tuple(PhotoVisibility.PUBLIC, 1, photoKey("b")),
-                tuple(PhotoVisibility.SECRET, 0, photoKey("c", PhotoVisibility.SECRET)),
-            )
-    }
-
-    @Test
-    fun `사진을 비우면 기존 사진만 지운다`() {
-        // given
-        val member = member()
-        stubMember(member)
-        val saved = slot<List<MemberPhoto>>()
-
-        // when
-        memberService.editProfile(MEMBER_ID, EditProfileRequest(NICKNAME, 1998))
-
-        // then
-        verify { memberPhotoRepository.deleteAllByMemberId(MEMBER_ID) }
-        verify { memberPhotoRepository.saveAll(capture(saved)) }
-        assertThat(saved.captured).isEmpty()
-    }
-
-    @Test
-    fun `남의 사진 키를 보내면 편집에 실패한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.editProfile(
-                MEMBER_ID,
-                EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf("members/999/public/other.jpg")),
-            )
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
-        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
-    }
-
-    @Test
-    fun `같은 사진 키를 두 번 보내면 편집에 실패한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.editProfile(
-                MEMBER_ID,
-                EditProfileRequest(
-                    nickname = NICKNAME,
-                    birthYear = 1998,
-                    publicPhotoKeys = listOf(photoKey("a"), photoKey("a")),
-                ),
-            )
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
-        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
-    }
-
-    @Test
-    fun `비밀 사진 키를 공개 사진으로 보내면 편집에 실패한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        val exception = assertThrows(BusinessException::class.java) {
-            memberService.editProfile(
-                MEMBER_ID,
-                EditProfileRequest(
-                    nickname = NICKNAME,
-                    birthYear = 1998,
-                    publicPhotoKeys = listOf(photoKey("a", PhotoVisibility.SECRET)),
-                ),
-            )
-        }
-
-        // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
-        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
-    }
-
-    @Test
-    fun `업로드 URL은 공개 여부에 따라 다른 폴더로 발급한다`() {
-        // given
-        val prefix = slot<String>()
-        every { photoUploadService.createUploadUrl(any(), capture(prefix), any()) } returns
-            PhotoUploadUrlResponse("https://upload.test/key", "members/$MEMBER_ID/secret/key.jpg")
-
-        // when
-        val response = memberService.createPhotoUploadUrl(
-            MEMBER_ID,
-            CreateProfilePhotoUploadUrlRequest("image/jpeg", PhotoVisibility.SECRET),
-        )
-
-        // then
-        assertThat(prefix.captured).isEqualTo("members/$MEMBER_ID/secret/")
-        assertThat(response.objectKey).isEqualTo("members/$MEMBER_ID/secret/key.jpg")
-    }
-
-    @Test
-    fun `편집으로 빠진 사진은 삭제 이벤트를 발행한다`() {
-        // given
-        val member = member()
-        stubMember(member)
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 1, photoKey("b")),
-        )
-        val event = slot<PhotosDeletedEvent>()
-
-        // when
-        memberService.editProfile(
-            MEMBER_ID,
-            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
-        )
-
-        // then
-        verify { eventPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.objectKeys).containsExactly(photoKey("b"))
-    }
-
-    @Test
-    fun `그대로 둔 사진은 삭제 이벤트에 담지 않는다`() {
-        // given
-        val member = member()
-        stubMember(member)
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
-        )
-
-        // when
-        memberService.editProfile(
-            MEMBER_ID,
-            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
-        )
-
-        // then
-        verify(exactly = 0) { eventPublisher.publishEvent(ofType<PhotosDeletedEvent>()) }
-    }
-
-    @Test
-    fun `확정된 사진은 발급 기록에서 지운다`() {
-        // given
-        val member = member()
-        stubMember(member)
-
-        // when
-        memberService.editProfile(
-            MEMBER_ID,
-            EditProfileRequest(NICKNAME, 1998, publicPhotoKeys = listOf(photoKey("a"))),
-        )
-
-        // then
-        verify { photoUploadService.confirm(listOf(photoKey("a"))) }
+        verify(exactly = 0) { memberPhotoService.replace(any(), any(), any()) }
     }
 
     @Test

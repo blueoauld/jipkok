@@ -1,36 +1,25 @@
-package com.blueoauld.server.global.storage.service
+package com.blueoauld.server.domain.photo.service
 
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
-import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.repository.PhotoUploadRepository
 import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.event.TransactionPhase
-import org.springframework.transaction.event.TransactionalEventListener
 import java.time.Clock
 import java.time.Duration
 
 private val log = KotlinLogging.logger {}
 
 @Component
-class PhotoCleaner(
+class PhotoUploadCleaner(
 
     private val photoUploadRepository: PhotoUploadRepository,
-    private val photoStorage: PhotoStorage,
     private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    fun deletePhotos(event: PhotosDeletedEvent) {
-        runCatching { photoStorage.delete(event.objectKeys) }
-            .onFailure { log.error(it) { "사진을 지우지 못했다. objectKeys=${event.objectKeys}" } }
-    }
 
     @Scheduled(cron = CLEAN_UP_CRON, zone = KOREA_ID)
     @Transactional

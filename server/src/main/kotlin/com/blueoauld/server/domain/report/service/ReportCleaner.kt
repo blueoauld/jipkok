@@ -1,11 +1,11 @@
 package com.blueoauld.server.domain.report.service
 
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher

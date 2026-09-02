@@ -1,8 +1,8 @@
 package com.blueoauld.server.domain.feed.service
 
-import com.blueoauld.server.domain.member.dto.projection.FeedReminderTarget
+import com.blueoauld.server.domain.feed.dto.projection.FeedReminderTarget
+import com.blueoauld.server.domain.feed.repository.FeedReminderRepository
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
-import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.PushMessages
 import com.blueoauld.server.domain.push.service.PushService
 import io.mockk.every
@@ -17,14 +17,14 @@ import java.time.temporal.ChronoUnit
 
 class FeedReminderTest {
 
-    private val memberRepository = mockk<MemberRepository>(relaxed = true)
+    private val feedReminderRepository = mockk<FeedReminderRepository>(relaxed = true)
 
     private val pushService = mockk<PushService>(relaxed = true)
 
     private val pushMessages = mockk<PushMessages>()
 
     private val feedReminder = FeedReminder(
-        memberRepository,
+        feedReminderRepository,
         pushService,
         pushMessages,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -33,7 +33,8 @@ class FeedReminderTest {
     @Test
     fun `이번 시간에 올리지 않은 회원에게 보낸다`() {
         // given
-        every { memberRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(target(1L, MemberLocale.KO))
+        every { feedReminderRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns
+            listOf(target(1L, MemberLocale.KO))
         every { pushMessages.get(MemberLocale.KO, any()) } returns "문구"
 
         // when
@@ -56,7 +57,7 @@ class FeedReminderTest {
     @Test
     fun `언어가 다르면 나눠 보낸다`() {
         // given
-        every { memberRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(
+        every { feedReminderRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(
             target(1L, MemberLocale.KO),
             target(2L, MemberLocale.JA),
             target(3L, MemberLocale.KO),
@@ -87,7 +88,7 @@ class FeedReminderTest {
     @Test
     fun `보낼 회원이 없으면 아무것도 하지 않는다`() {
         // given
-        every { memberRepository.findFeedReminderTargets(any(), any()) } returns emptyList()
+        every { feedReminderRepository.findFeedReminderTargets(any(), any()) } returns emptyList()
 
         // when
         feedReminder.remind()

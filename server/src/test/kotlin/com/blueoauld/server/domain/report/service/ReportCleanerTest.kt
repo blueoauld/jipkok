@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.report.service
 
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.domain.report.dto.ChatMessageSnapshot
 import com.blueoauld.server.domain.report.dto.ReportSnapshotContent
 import com.blueoauld.server.domain.report.dto.ReportedMemberSnapshot
@@ -11,7 +12,6 @@ import com.blueoauld.server.domain.report.entity.ReportSnapshot
 import com.blueoauld.server.domain.report.repository.ReportPhotoRepository
 import com.blueoauld.server.domain.report.repository.ReportRepository
 import com.blueoauld.server.domain.report.repository.ReportSnapshotRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

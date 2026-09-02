@@ -1,4 +1,4 @@
-package com.blueoauld.server.global.storage.event
+package com.blueoauld.server.domain.photo.event
 
 data class PhotosDeletedEvent(
 

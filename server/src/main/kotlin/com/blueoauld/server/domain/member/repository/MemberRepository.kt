@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.member.repository
 
-import com.blueoauld.server.domain.member.dto.projection.FeedReminderTarget
 import com.blueoauld.server.domain.member.dto.projection.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
@@ -30,29 +29,6 @@ interface MemberRepository : JpaRepository<Member, Long> {
 
     @Query("select m.nickname from Member m where m.id = :memberId")
     fun findNicknameById(@Param("memberId") memberId: Long): String?
-
-    @Query(
-        """
-        select m.id as memberId, m.locale as locale
-        from Member m
-        where m.feedNotificationEnabled = true
-          and not exists (
-            select 1 from FeedPost p
-            where p.memberId = m.id and p.slotAt = :slotAt
-          )
-          and not exists (
-            select 1 from MemberSuspension s
-            where s.phoneNumber = m.phoneNumber
-              and s.type = com.blueoauld.server.domain.suspension.entity.type.SuspensionType.SERVICE
-              and s.releasedAt is null
-              and (s.expiresAt is null or s.expiresAt > :now)
-          )
-        """,
-    )
-    fun findFeedReminderTargets(
-        @Param("slotAt") slotAt: Instant,
-        @Param("now") now: Instant,
-    ): List<FeedReminderTarget>
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(

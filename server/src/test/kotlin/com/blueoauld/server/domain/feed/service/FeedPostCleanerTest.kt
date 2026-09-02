@@ -3,7 +3,7 @@ package com.blueoauld.server.domain.feed.service
 import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostReportRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

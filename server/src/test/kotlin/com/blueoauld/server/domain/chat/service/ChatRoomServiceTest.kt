@@ -339,6 +339,45 @@ class ChatRoomServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
     }
 
+    @Test
+    fun `읽음 처리하면 안읽음 수가 다시 계산된다`() {
+        // when
+        chatRoomService.markRead(ME_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
+
+        // then
+        verify { chatRoomMemberRepository.markRead(ROOM_ID, ME_ID, LAST_READ_MESSAGE_ID) }
+    }
+
+    @Test
+    fun `여러 방을 한 번에 읽음 처리한다`() {
+        // when
+        chatRoomService.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID))
+
+        // then
+        verify { chatRoomMemberRepository.markAllRead(ME_ID, listOf(ROOM_ID, ANOTHER_ROOM_ID)) }
+    }
+
+    @Test
+    fun `읽음 처리할 방이 없으면 조회하지 않는다`() {
+        // when
+        chatRoomService.markAllRead(ME_ID, emptyList())
+
+        // then
+        verify(exactly = 0) { chatRoomMemberRepository.markAllRead(any(), any()) }
+    }
+
+    @Test
+    fun `참여자가 아니면 읽음 처리할 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatRoomService.markRead(STRANGER_ID, ROOM_ID, LAST_READ_MESSAGE_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        verify(exactly = 0) { chatRoomMemberRepository.markRead(any(), any(), any()) }
+    }
+
     private fun row(pinned: Boolean = false, lastMessageId: Long = LAST_MESSAGE_ID) = mockk<ChatRoomRow> {
         every { getRoomId() } returns ROOM_ID
         every { getPartnerId() } returns PARTNER_ID
@@ -529,6 +568,7 @@ class ChatRoomServiceTest {
         private const val ANOTHER_ROOM_ID = 11L
         private const val GONE_ROOM_ID = 12L
         private const val LAST_MESSAGE_ID = 99L
+        private const val LAST_READ_MESSAGE_ID = 90L
         private const val CURSOR = 50L
         private const val ME_ID = 1L
         private const val PARTNER_ID = 2L

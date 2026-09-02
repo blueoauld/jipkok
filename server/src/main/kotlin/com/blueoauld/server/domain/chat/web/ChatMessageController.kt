@@ -8,9 +8,11 @@ import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatVideoUrlResponse
 import com.blueoauld.server.domain.chat.service.ChatMessageService
+import com.blueoauld.server.domain.chat.service.ChatReactionService
+import com.blueoauld.server.domain.chat.service.ChatRoomService
+import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.global.response.CursorResponse
-import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -31,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController
 class ChatMessageController(
 
     private val chatMessageService: ChatMessageService,
+    private val chatReactionService: ChatReactionService,
+    private val chatRoomService: ChatRoomService,
 ) {
 
     @Operation(summary = "메시지 목록 조회", description = "최근 메시지부터 준다.")
@@ -58,7 +62,7 @@ class ChatMessageController(
         @PathVariable roomId: Long,
         @PathVariable messageId: Long,
         @Valid @RequestBody request: ReactMessageRequest,
-    ): ChatReactionsResponse = chatMessageService.react(memberId, roomId, messageId, request)
+    ): ChatReactionsResponse = chatReactionService.react(memberId, roomId, messageId, request)
 
     @Operation(operationId = "unreactChatMessage", summary = "메시지 반응 취소")
     @DeleteMapping("/{roomId}/messages/{messageId}/reaction")
@@ -66,7 +70,7 @@ class ChatMessageController(
         @AuthenticationPrincipal memberId: Long,
         @PathVariable roomId: Long,
         @PathVariable messageId: Long,
-    ): ChatReactionsResponse = chatMessageService.unreact(memberId, roomId, messageId)
+    ): ChatReactionsResponse = chatReactionService.unreact(memberId, roomId, messageId)
 
     @Operation(summary = "읽음 처리")
     @PostMapping("/{roomId}/read")
@@ -76,7 +80,7 @@ class ChatMessageController(
         @PathVariable roomId: Long,
         @Valid @RequestBody request: MarkReadRequest,
     ) {
-        chatMessageService.markRead(memberId, roomId, request.lastReadMessageId)
+        chatRoomService.markRead(memberId, roomId, request.lastReadMessageId)
     }
 
     @Operation(summary = "여러 방 읽음 처리", description = "각 방의 마지막 메시지까지 읽은 것으로 본다. 없는 방은 건너뛴다.")
@@ -86,7 +90,7 @@ class ChatMessageController(
         @AuthenticationPrincipal memberId: Long,
         @Valid @RequestBody request: MarkRoomsReadRequest,
     ) {
-        chatMessageService.markAllRead(memberId, request.roomIds)
+        chatRoomService.markAllRead(memberId, request.roomIds)
     }
 
     @Operation(

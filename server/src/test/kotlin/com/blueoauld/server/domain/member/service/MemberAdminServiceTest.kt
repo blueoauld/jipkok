@@ -2,16 +2,12 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.projection.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
-import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
-import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
-import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -19,32 +15,24 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.context.ApplicationEventPublisher
 import java.util.*
 
 class MemberAdminServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
-    private val memberPhotoRepository = mockk<MemberPhotoRepository>(relaxed = true)
-
     private val nicknameHistoryRepository = mockk<NicknameHistoryRepository>(relaxed = true)
 
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
-
-    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+    private val memberPhotoService = mockk<MemberPhotoService>(relaxed = true)
 
     private val memberAdminService = MemberAdminService(
         memberRepository,
-        memberPhotoRepository,
         nicknameHistoryRepository,
-        photoStorage,
-        eventPublisher,
+        memberPhotoService,
     )
 
     @BeforeEach
     fun setUp() {
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns emptyList()
         every { nicknameHistoryRepository.save(any()) } answers { firstArg() }
     }
 
@@ -104,22 +92,15 @@ class MemberAdminServiceTest {
     }
 
     @Test
-    fun `공개 사진을 초기화하면 사진과 파일을 지운다`() {
+    fun `공개 사진을 초기화하면 사진 서비스에 맡긴다`() {
         // given
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
-        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
-            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, "public.jpg"),
-            MemberPhoto(MEMBER_ID, PhotoVisibility.SECRET, 0, "secret.jpg"),
-        )
-        val event = slot<PhotosDeletedEvent>()
 
         // when
         memberAdminService.resetProfile(MEMBER_ID, ProfileTarget.PUBLIC_PHOTO)
 
         // then
-        verify { memberPhotoRepository.deleteAll(any<List<MemberPhoto>>()) }
-        verify { eventPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.objectKeys).containsExactly("public.jpg")
+        verify { memberPhotoService.deleteByVisibility(MEMBER_ID, PhotoVisibility.PUBLIC) }
     }
 
     private fun memberNickname(id: Long, nickname: String) = object : MemberNickname {

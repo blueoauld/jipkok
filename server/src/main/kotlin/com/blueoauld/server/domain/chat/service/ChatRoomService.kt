@@ -96,6 +96,21 @@ class ChatRoomService(
     }
 
     @Transactional
+    fun markRead(memberId: Long, roomId: Long, lastReadMessageId: Long) {
+        chatRoomRepository.getRoomOf(memberId, roomId)
+        chatRoomMemberRepository.markRead(roomId, memberId, lastReadMessageId)
+    }
+
+    @Transactional
+    fun markAllRead(memberId: Long, roomIds: List<Long>) {
+        if (roomIds.isEmpty()) {
+            return
+        }
+
+        chatRoomMemberRepository.markAllRead(memberId, roomIds)
+    }
+
+    @Transactional
     fun leave(memberId: Long, roomId: Long) {
         val room = chatRoomRepository.getRoomOf(memberId, roomId)
 

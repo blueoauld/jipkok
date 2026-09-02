@@ -5,7 +5,7 @@ import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

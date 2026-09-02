@@ -1,29 +1,24 @@
 package com.blueoauld.server.domain.chat.service
 
-import com.blueoauld.server.domain.chat.dto.request.ReactMessageRequest
 import com.blueoauld.server.domain.chat.dto.request.SendMessageRequest
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
-import com.blueoauld.server.domain.chat.dto.response.ChatReactionResponse
-import com.blueoauld.server.domain.chat.dto.response.ChatReactionsResponse
 import com.blueoauld.server.domain.chat.dto.response.ChatVideoUrlResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
-import com.blueoauld.server.domain.chat.entity.ChatMessageReaction
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
-import com.blueoauld.server.domain.chat.event.ChatReactionChangedEvent
-import com.blueoauld.server.domain.chat.repository.ChatMessageReactionRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.chat.repository.getMessageOf
 import com.blueoauld.server.domain.chat.repository.getRoomOf
+import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
-import com.blueoauld.server.global.storage.dto.CreatePhotoUploadUrlRequest
-import com.blueoauld.server.global.storage.dto.PhotoUploadUrlResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import com.blueoauld.server.global.storage.service.PhotoUploadService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
@@ -35,7 +30,7 @@ class ChatMessageService(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
-    private val chatMessageReactionRepository: ChatMessageReactionRepository,
+    private val chatReactionService: ChatReactionService,
     private val photoUploadService: PhotoUploadService,
     private val photoStorage: PhotoStorage,
     private val eventPublisher: ApplicationEventPublisher,
@@ -63,10 +58,7 @@ class ChatMessageService(
             ?.associateBy { it.id }
             .orEmpty()
 
-        val reactions = messages.ifEmpty { null }
-            ?.let { chatMessageReactionRepository.findByMessageIdIn(it.map(ChatMessage::id)) }
-            .orEmpty()
-            .groupBy({ it.messageId }, ChatReactionResponse::from)
+        val reactions = chatReactionService.findByMessageIds(messages.map(ChatMessage::id))
 
         return CursorResponse(
             items = messages.map { message ->
@@ -90,58 +82,6 @@ class ChatMessageService(
         val replyTarget = findReplyTarget(roomId, request.replyToMessageId)
 
         return append(room, memberId, toMessage(memberId, roomId, request, replyTarget), replyTarget)
-    }
-
-    @Transactional
-    fun react(memberId: Long, roomId: Long, messageId: Long, request: ReactMessageRequest): ChatReactionsResponse {
-        val room = chatRoomRepository.getRoomOf(memberId, roomId)
-        val message = findMessage(roomId, messageId)
-
-        val existing = chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)
-
-        if (existing == null) {
-            chatMessageReactionRepository.save(
-                ChatMessageReaction(
-                    roomId = roomId,
-                    messageId = message.id,
-                    memberId = memberId,
-                    type = request.type,
-                ),
-            )
-        } else {
-            existing.type = request.type
-        }
-        chatMessageReactionRepository.flush()
-
-        return publishReactions(room, memberId, message)
-    }
-
-    @Transactional
-    fun unreact(memberId: Long, roomId: Long, messageId: Long): ChatReactionsResponse {
-        val room = chatRoomRepository.getRoomOf(memberId, roomId)
-        val message = findMessage(roomId, messageId)
-
-        chatMessageReactionRepository.findByMessageIdAndMemberId(message.id, memberId)?.let {
-            chatMessageReactionRepository.delete(it)
-            chatMessageReactionRepository.flush()
-        }
-
-        return publishReactions(room, memberId, message)
-    }
-
-    @Transactional
-    fun markRead(memberId: Long, roomId: Long, lastReadMessageId: Long) {
-        chatRoomRepository.getRoomOf(memberId, roomId)
-        chatRoomMemberRepository.markRead(roomId, memberId, lastReadMessageId)
-    }
-
-    @Transactional
-    fun markAllRead(memberId: Long, roomIds: List<Long>) {
-        if (roomIds.isEmpty()) {
-            return
-        }
-
-        chatRoomMemberRepository.markAllRead(memberId, roomIds)
     }
 
     @Transactional
@@ -171,7 +111,7 @@ class ChatMessageService(
     @Transactional(readOnly = true)
     fun findVideoUrl(memberId: Long, roomId: Long, messageId: Long): ChatVideoUrlResponse {
         chatRoomRepository.getRoomOf(memberId, roomId)
-        val message = findMessage(roomId, messageId)
+        val message = chatMessageRepository.getMessageOf(roomId, messageId)
         val objectKey = message.objectKey?.takeIf { message.type == ChatMessageType.VIDEO }
             ?: throw BusinessException(ErrorCode.NOT_VIDEO_MESSAGE)
 
@@ -188,21 +128,6 @@ class ChatMessageService(
             videoUrl = message.objectKey?.let(photoStorage::createSignedViewUrl),
             thumbnailUrl = message.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
         )
-    }
-
-    private fun findMessage(roomId: Long, messageId: Long) = chatMessageRepository.findById(messageId)
-        .filter { it.roomId == roomId }
-        .orElseThrow { BusinessException(ErrorCode.CHAT_MESSAGE_NOT_FOUND) }
-
-    private fun publishReactions(room: ChatRoom, memberId: Long, message: ChatMessage): ChatReactionsResponse {
-        val response = ChatReactionsResponse(
-            messageId = message.id,
-            reactions = chatMessageReactionRepository.findByMessageId(message.id).map(ChatReactionResponse::from),
-        )
-
-        eventPublisher.publishEvent(ChatReactionChangedEvent(room.partnerIdOf(memberId), message.roomId, response))
-
-        return response
     }
 
     private fun findAlreadySent(roomId: Long, clientMessageId: String?): ChatMessageResponse? {

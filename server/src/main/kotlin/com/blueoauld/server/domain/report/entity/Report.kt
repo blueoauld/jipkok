@@ -21,6 +21,7 @@ import java.time.Instant
     indexes = [
         Index(name = "idx_report_reported_member_id", columnList = "reported_member_id"),
         Index(name = "idx_report_handled_at", columnList = "handled_at"),
+        Index(name = "idx_report_reported_phone_number", columnList = "reported_phone_number"),
     ],
 )
 class Report(

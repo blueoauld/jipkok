@@ -1,8 +1,8 @@
-package com.blueoauld.server.global.storage.service
+package com.blueoauld.server.domain.photo.service
 
-import com.blueoauld.server.global.storage.entity.PhotoUpload
-import com.blueoauld.server.global.storage.event.PhotosDeletedEvent
-import com.blueoauld.server.global.storage.repository.PhotoUploadRepository
+import com.blueoauld.server.domain.photo.entity.PhotoUpload
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.repository.PhotoUploadRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -14,57 +14,30 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 
-class PhotoCleanerTest {
+class PhotoUploadCleanerTest {
 
     private val photoUploadRepository = mockk<PhotoUploadRepository>(relaxed = true)
 
-    private val photoStorage = mockk<PhotoStorage>(relaxed = true)
-
     private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
-    private val photoCleaner = PhotoCleaner(
+    private val photoUploadCleaner = PhotoUploadCleaner(
         photoUploadRepository,
-        photoStorage,
         eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @Test
-    fun `삭제 이벤트를 받으면 저장소에서 지운다`() {
-        // given
-        val objectKeys = listOf("members/1/a.jpg", "members/1/b.jpg")
-
-        // when
-        photoCleaner.deletePhotos(PhotosDeletedEvent(objectKeys))
-
-        // then
-        verify { photoStorage.delete(objectKeys) }
-    }
-
-    @Test
-    fun `저장소 삭제가 실패해도 예외를 밖으로 던지지 않는다`() {
-        // given
-        every { photoStorage.delete(any()) } throws IllegalStateException("R2 오류")
-
-        // when
-        photoCleaner.deletePhotos(PhotosDeletedEvent(listOf("members/1/a.jpg")))
-
-        // then
-        verify { photoStorage.delete(any()) }
-    }
-
-    @Test
     fun `보관 기간이 지난 발급 기록은 기록을 지우고 삭제 이벤트를 낸다`() {
         // given
         val abandoned = listOf(
-            PhotoUpload(1L, "members/1/a.jpg", NOW.minus(PhotoCleaner.RETENTION)),
-            PhotoUpload(1L, "members/1/b.jpg", NOW.minus(PhotoCleaner.RETENTION)),
+            PhotoUpload(1L, "members/1/a.jpg", NOW.minus(PhotoUploadCleaner.RETENTION)),
+            PhotoUpload(1L, "members/1/b.jpg", NOW.minus(PhotoUploadCleaner.RETENTION)),
         )
         every { photoUploadRepository.findAllByIssuedAtLessThan(any()) } returns abandoned
         val deleted = slot<PhotosDeletedEvent>()
 
         // when
-        photoCleaner.cleanUpAbandonedUploads()
+        photoUploadCleaner.cleanUpAbandonedUploads()
 
         // then
         verify { photoUploadRepository.deleteAll(abandoned) }
@@ -78,7 +51,7 @@ class PhotoCleanerTest {
         every { photoUploadRepository.findAllByIssuedAtLessThan(any()) } returns emptyList()
 
         // when
-        photoCleaner.cleanUpAbandonedUploads()
+        photoUploadCleaner.cleanUpAbandonedUploads()
 
         // then
         verify(exactly = 0) { eventPublisher.publishEvent(any()) }

@@ -1,4 +1,4 @@
-package com.blueoauld.server.global.storage.dto
+package com.blueoauld.server.domain.photo.dto.request
 
 import jakarta.validation.constraints.NotBlank
 
