@@ -1,8 +1,8 @@
-import { Image } from "expo-image";
+import { Image, type ImageLoadEventData } from "expo-image";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { StyleProp, ViewStyle } from "react-native";
+import type { ScaledSize, StyleProp, ViewStyle } from "react-native";
 import {
   Modal,
   StatusBar,
@@ -31,7 +31,12 @@ import { XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
-import { IMAGE_TRANSITION, MIN_TAP_SIZE, PRESS_OPACITY } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  MIN_TAP_SIZE,
+  OVERLAY_BG,
+  PRESS_OPACITY,
+} from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { photoCacheKey } from "@/lib/photo";
 
@@ -203,6 +208,7 @@ function ViewerContent({
                 <XStack
                   width={CLOSE_BUTTON_SIZE}
                   height={CLOSE_BUTTON_SIZE}
+                  bg={OVERLAY_BG}
                   items="center"
                   justify="center"
                   pressStyle={{ opacity: PRESS_OPACITY }}
@@ -221,8 +227,12 @@ function ViewerContent({
             pointerEvents={chromePointerEvents}
           >
             <SafeAreaView edges={["bottom"]}>
-              <YStack pb="$6">
-                <PhotoDots count={photos.length} index={index} />
+              <YStack pb="$6" items="center">
+                {photos.length > 1 && (
+                  <XStack px="$3" py="$2" bg={OVERLAY_BG}>
+                    <PhotoDots count={photos.length} index={index} />
+                  </XStack>
+                )}
               </YStack>
             </SafeAreaView>
           </Animated.View>
@@ -248,6 +258,7 @@ function ZoomablePhoto({
   onTap: () => void;
 }) {
   const screen = useWindowDimensions();
+  const [size, setSize] = useState<{ width: number; height: number }>();
   const {
     zoomGesture,
     contentContainerAnimatedStyle,
@@ -297,12 +308,22 @@ function ZoomablePhoto({
             cachePolicy={secret ? "memory" : "disk"}
             contentFit="contain"
             transition={IMAGE_TRANSITION}
-            style={{ width: screen.width, height: screen.height }}
+            style={size ?? { width: screen.width, height: screen.height }}
+            onLoad={(event) => setSize(fitToScreen(event, screen))}
           />
         </Animated.View>
       </View>
     </GestureDetector>
   );
+}
+
+// 뷰를 화면 크기로 두면 줌 라이브러리가 검은 여백까지 콘텐츠로 계산해서
+// 확대한 사진을 화면 밖으로 밀어낼 수 있다. 실제 표시 크기에 맞춘다.
+function fitToScreen(event: ImageLoadEventData, screen: ScaledSize) {
+  const { width, height } = event.source;
+  const scale = Math.min(screen.width / width, screen.height / height);
+
+  return { width: width * scale, height: height * scale };
 }
 
 const styles = StyleSheet.create({
