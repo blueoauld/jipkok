@@ -1,11 +1,14 @@
 import { Image } from "expo-image";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { useMemo, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { StyleProp, ViewStyle } from "react-native";
 import {
   Modal,
   StatusBar,
   StyleSheet,
   useWindowDimensions,
+  View,
 } from "react-native";
 import {
   FlatList,
@@ -15,6 +18,7 @@ import {
 } from "react-native-gesture-handler";
 import Animated, {
   interpolate,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -22,7 +26,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
-import Zoom from "react-native-zoom-reanimated";
+import { useZoomGesture } from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
@@ -40,6 +44,8 @@ const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 800;
 
 const DISMISS_DURATION = 200;
+
+const CHROME_DURATION = 200;
 
 const GESTURE_SLOP = 20;
 
@@ -90,9 +96,15 @@ function ViewerContent({
   const listRef = useRef<FlatList<string>>(null);
   const [index, setIndex] = useState(initialIndex);
   const [zoomed, setZoomed] = useState(false);
+  const [chromeVisible, setChromeVisible] = useState(true);
   const translateY = useSharedValue(0);
 
   useSecretPhotoCapture(secret);
+
+  const toggleChrome = useCallback(
+    () => setChromeVisible((visible) => !visible),
+    [],
+  );
 
   const dismissGesture = useMemo(
     () =>
@@ -141,6 +153,17 @@ function ViewerContent({
     ),
   }));
 
+  const chromeStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(chromeVisible ? 1 : 0, {
+        duration: CHROME_DURATION,
+      }),
+    }),
+    [chromeVisible],
+  );
+
+  const chromePointerEvents = chromeVisible ? "auto" : "none";
+
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.root}>
@@ -149,23 +172,6 @@ function ViewerContent({
         <Animated.View style={[styles.backdrop, backdropStyle]} />
 
         <YStack flex={1}>
-          <SafeAreaView edges={["top"]}>
-            <XStack p="$2">
-              <XStack
-                width={CLOSE_BUTTON_SIZE}
-                height={CLOSE_BUTTON_SIZE}
-                items="center"
-                justify="center"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                accessibilityRole="button"
-                accessibilityLabel={i18n.t("a11y.close")}
-                onPress={onClose}
-              >
-                <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
-              </XStack>
-            </XStack>
-          </SafeAreaView>
-
           <GestureDetector gesture={dismissGesture}>
             <Animated.View style={[styles.content, contentStyle]}>
               <PagedPhotos
@@ -175,41 +181,127 @@ function ViewerContent({
                 listRef={listRef}
                 onIndexChange={setIndex}
                 renderPhoto={(photo, photoIndex) => (
-                  <YStack
-                    width={screen.width}
-                    height="100%"
-                    items="center"
-                    justify="center"
-                  >
-                    <Zoom
-                      enableGallerySwipe
-                      parentScrollRef={listRef}
-                      currentIndex={photoIndex}
-                      itemWidth={screen.width}
-                      onZoomStateChange={setZoomed}
-                    >
-                      <Image
-                        source={{ uri: photo, cacheKey: photoCacheKey(photo) }}
-                        cachePolicy={secret ? "memory" : "disk"}
-                        contentFit="contain"
-                        transition={IMAGE_TRANSITION}
-                        style={{ width: screen.width, height: screen.height }}
-                      />
-                    </Zoom>
-                  </YStack>
+                  <ZoomablePhoto
+                    photo={photo}
+                    photoIndex={photoIndex}
+                    secret={secret}
+                    listRef={listRef}
+                    onZoomStateChange={setZoomed}
+                    onTap={toggleChrome}
+                  />
                 )}
               />
             </Animated.View>
           </GestureDetector>
 
-          <SafeAreaView edges={["bottom"]} style={styles.dots}>
-            <YStack pb="$6">
-              <PhotoDots count={photos.length} index={index} />
-            </YStack>
-          </SafeAreaView>
+          <Animated.View
+            style={[styles.header, chromeStyle]}
+            pointerEvents={chromePointerEvents}
+          >
+            <SafeAreaView edges={["top"]}>
+              <XStack p="$2">
+                <XStack
+                  width={CLOSE_BUTTON_SIZE}
+                  height={CLOSE_BUTTON_SIZE}
+                  items="center"
+                  justify="center"
+                  pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessibilityRole="button"
+                  accessibilityLabel={i18n.t("a11y.close")}
+                  onPress={onClose}
+                >
+                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                </XStack>
+              </XStack>
+            </SafeAreaView>
+          </Animated.View>
+
+          <Animated.View
+            style={[styles.dots, chromeStyle]}
+            pointerEvents={chromePointerEvents}
+          >
+            <SafeAreaView edges={["bottom"]}>
+              <YStack pb="$6">
+                <PhotoDots count={photos.length} index={index} />
+              </YStack>
+            </SafeAreaView>
+          </Animated.View>
         </YStack>
       </GestureHandlerRootView>
     </SafeAreaProvider>
+  );
+}
+
+function ZoomablePhoto({
+  photo,
+  photoIndex,
+  secret,
+  listRef,
+  onZoomStateChange,
+  onTap,
+}: {
+  photo: string;
+  photoIndex: number;
+  secret: boolean;
+  listRef: RefObject<FlatList<string> | null>;
+  onZoomStateChange: (zoomed: boolean) => void;
+  onTap: () => void;
+}) {
+  const screen = useWindowDimensions();
+  const {
+    zoomGesture,
+    contentContainerAnimatedStyle,
+    onLayout,
+    onLayoutContent,
+    isZoomedIn,
+  } = useZoomGesture({
+    enableGallerySwipe: true,
+    parentScrollRef: listRef,
+    currentIndex: photoIndex,
+    itemWidth: screen.width,
+  });
+
+  useAnimatedReaction(
+    () => isZoomedIn.value,
+    (current, previous) => {
+      if (current !== previous) {
+        scheduleOnRN(onZoomStateChange, current);
+      }
+    },
+    [onZoomStateChange],
+  );
+
+  // 라이브러리의 더블탭이 실패해야 단일 탭으로 인정되므로 Exclusive로 묶는다.
+  const gesture = useMemo(
+    () =>
+      Gesture.Exclusive(
+        zoomGesture,
+        Gesture.Tap().runOnJS(true).onStart(onTap),
+      ),
+    [onTap, zoomGesture],
+  );
+
+  return (
+    <GestureDetector gesture={gesture}>
+      <View
+        style={[styles.zoomContainer, { width: screen.width }]}
+        onLayout={onLayout}
+        collapsable={false}
+      >
+        <Animated.View
+          style={contentContainerAnimatedStyle as StyleProp<ViewStyle>}
+          onLayout={onLayoutContent}
+        >
+          <Image
+            source={{ uri: photo, cacheKey: photoCacheKey(photo) }}
+            cachePolicy={secret ? "memory" : "disk"}
+            contentFit="contain"
+            transition={IMAGE_TRANSITION}
+            style={{ width: screen.width, height: screen.height }}
+          />
+        </Animated.View>
+      </View>
+    </GestureDetector>
   );
 }
 
@@ -227,6 +319,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  zoomContainer: {
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  header: {
+    position: "absolute",
+    top: 0,
+    left: 0,
   },
   dots: {
     position: "absolute",
