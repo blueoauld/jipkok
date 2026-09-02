@@ -198,6 +198,9 @@ export const en: typeof ko = {
     close: "Close",
     play: "Play",
     pause: "Pause",
+    seekBar: "Playback position",
+    seekBackward: "Back {{seconds}} seconds",
+    seekForward: "Forward {{seconds}} seconds",
   },
   component: {
     messagePlaceholder: "Message",

@@ -198,6 +198,9 @@ export const ko = {
     close: "닫기",
     play: "재생",
     pause: "일시정지",
+    seekBar: "재생 위치",
+    seekBackward: "{{seconds}}초 뒤로",
+    seekForward: "{{seconds}}초 앞으로",
   },
   component: {
     messagePlaceholder: "메시지 입력",

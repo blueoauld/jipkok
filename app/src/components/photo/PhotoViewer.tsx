@@ -17,11 +17,8 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  interpolate,
   useAnimatedReaction,
   useAnimatedStyle,
-  useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -30,6 +27,7 @@ import { useZoomGesture } from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
+import { useDismissGesture } from "@/hooks/useDismissGesture";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
 import {
   IMAGE_TRANSITION,
@@ -44,15 +42,7 @@ const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
 
 const CLOSE_ICON_SIZE = 24;
 
-const DISMISS_DISTANCE = 120;
-
-const DISMISS_VELOCITY = 800;
-
-const DISMISS_DURATION = 200;
-
 const CHROME_DURATION = 200;
-
-const GESTURE_SLOP = 20;
 
 export function PhotoViewer({
   photos,
@@ -102,61 +92,16 @@ function ViewerContent({
   const [index, setIndex] = useState(initialIndex);
   const [zoomed, setZoomed] = useState(false);
   const [chromeVisible, setChromeVisible] = useState(true);
-  const translateY = useSharedValue(0);
 
   useSecretPhotoCapture(secret);
+
+  // 확대 중에는 손가락이 사진을 끄는 것이므로 닫기가 끼어들면 안 된다.
+  const dismiss = useDismissGesture({ enabled: !zoomed, onClose });
 
   const toggleChrome = useCallback(
     () => setChromeVisible((visible) => !visible),
     [],
   );
-
-  const dismissGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        // 확대 중에는 손가락이 사진을 끄는 것이므로 닫기가 끼어들면 안 된다.
-        .enabled(!zoomed)
-        .activeOffsetY([-GESTURE_SLOP, GESTURE_SLOP])
-        .failOffsetX([-GESTURE_SLOP, GESTURE_SLOP])
-        .onUpdate((event) => {
-          translateY.value = event.translationY;
-        })
-        .onEnd((event) => {
-          const dragged = Math.abs(event.translationY) > DISMISS_DISTANCE;
-          const flicked = Math.abs(event.velocityY) > DISMISS_VELOCITY;
-
-          if (!dragged && !flicked) {
-            translateY.value = withSpring(0);
-            return;
-          }
-
-          const direction = event.translationY > 0 ? 1 : -1;
-
-          translateY.value = withTiming(
-            direction * screen.height,
-            { duration: DISMISS_DURATION },
-            (finished) => {
-              if (finished) {
-                scheduleOnRN(onClose);
-              }
-            },
-          );
-        }),
-    [onClose, screen.height, translateY, zoomed],
-  );
-
-  const contentStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
-
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      Math.abs(translateY.value),
-      [0, screen.height / 2],
-      [1, 0],
-      "clamp",
-    ),
-  }));
 
   const chromeStyle = useAnimatedStyle(
     () => ({
@@ -174,11 +119,11 @@ function ViewerContent({
       <GestureHandlerRootView style={styles.root}>
         <StatusBar barStyle="light-content" />
 
-        <Animated.View style={[styles.backdrop, backdropStyle]} />
+        <Animated.View style={[styles.backdrop, dismiss.backdropStyle]} />
 
         <YStack flex={1}>
-          <GestureDetector gesture={dismissGesture}>
-            <Animated.View style={[styles.content, contentStyle]}>
+          <GestureDetector gesture={dismiss.gesture}>
+            <Animated.View style={[styles.content, dismiss.contentStyle]}>
               <PagedPhotos
                 photos={photos}
                 itemWidth={screen.width}

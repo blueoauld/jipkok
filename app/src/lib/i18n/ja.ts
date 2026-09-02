@@ -202,6 +202,9 @@ export const ja: typeof ko = {
     close: "閉じる",
     play: "再生",
     pause: "一時停止",
+    seekBar: "再生位置",
+    seekBackward: "{{seconds}}秒戻る",
+    seekForward: "{{seconds}}秒進む",
   },
   component: {
     messagePlaceholder: "メッセージを入力",

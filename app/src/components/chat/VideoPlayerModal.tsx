@@ -1,9 +1,12 @@
 import { useEvent, useEventListener } from "expo";
 import { useKeepAwake } from "expo-keep-awake";
 import { useVideoPlayer, VideoView } from "expo-video";
+import { FastForwardIcon } from "phosphor-react-native/src/icons/FastForward";
 import { PauseIcon } from "phosphor-react-native/src/icons/Pause";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
+import { RewindIcon } from "phosphor-react-native/src/icons/Rewind";
 import { XIcon } from "phosphor-react-native/src/icons/X";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type LayoutChangeEvent,
@@ -24,6 +27,7 @@ import Animated, {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
 
+import { useDismissGesture } from "@/hooks/useDismissGesture";
 import {
   MIN_TAP_SIZE,
   OVERLAY_BG,
@@ -37,6 +41,8 @@ const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
 const CLOSE_ICON_SIZE = 24;
 const PLAY_BUTTON_SIZE = 64;
 const PLAY_ICON_SIZE = 30;
+const SKIP_BUTTON_SIZE = 48;
+const SKIP_ICON_SIZE = 22;
 
 const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 16;
@@ -46,6 +52,7 @@ const TIME_UPDATE_INTERVAL = 0.25;
 const CONTROLS_FADE_MILLIS = 150;
 const SETTLE_TOLERANCE = 1;
 const AUTO_HIDE_MILLIS = 3000;
+const SEEK_STEP_SECONDS = 10;
 
 function clamp(value: number) {
   return Math.min(1, Math.max(0, value));
@@ -99,6 +106,23 @@ function SeekBar({
           py={TRACK_HIT_SLOP}
           justify="center"
           onLayout={onLayout}
+          accessibilityRole="adjustable"
+          accessibilityLabel={i18n.t("a11y.seekBar")}
+          accessibilityValue={{
+            min: 0,
+            max: Math.floor(duration),
+            now: Math.floor(shown),
+            text: formatDuration(Math.floor(shown)),
+          }}
+          accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
+          onAccessibilityAction={(event) => {
+            const step =
+              event.nativeEvent.actionName === "increment"
+                ? SEEK_STEP_SECONDS
+                : -SEEK_STEP_SECONDS;
+
+            onSeek(Math.min(duration, Math.max(0, position + step)));
+          }}
         >
           <YStack height={TRACK_HEIGHT} bg="rgba(255, 255, 255, 0.35)">
             <YStack height={TRACK_HEIGHT} width={width * ratio} bg="white" />
@@ -123,6 +147,34 @@ function SeekBar({
   );
 }
 
+function SkipButton({
+  label,
+  onPress,
+  children,
+}: {
+  label: string;
+  onPress: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <XStack
+      width={SKIP_BUTTON_SIZE}
+      height={SKIP_BUTTON_SIZE}
+      items="center"
+      justify="center"
+      bg={OVERLAY_BG}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="white"
+      pressStyle={{ opacity: PRESS_OPACITY }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+    >
+      {children}
+    </XStack>
+  );
+}
+
 function Player({ url, onClose }: { url: string; onClose: () => void }) {
   useKeepAwake();
 
@@ -141,6 +193,8 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
   const [ended, setEnded] = useState(false);
   const [visible, setVisible] = useState(true);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resumeAfterSeek = useRef(false);
+  const dismiss = useDismissGesture({ onClose });
 
   const clearHide = useCallback(() => {
     if (hideTimer.current) {
@@ -193,6 +247,15 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     setVisible(true);
   };
 
+  const beginScrub = () => {
+    holdControls();
+
+    if (isPlaying) {
+      resumeAfterSeek.current = true;
+      player.pause();
+    }
+  };
+
   const togglePlay = () => {
     if (ended) {
       player.currentTime = 0;
@@ -208,7 +271,8 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
   };
 
   const loading = status === "loading";
-  const controlsShown = visible && !loading;
+  const failed = status === "error";
+  const controlsShown = (visible || failed) && !loading;
   const controlsStyle = useAnimatedStyle(() => ({
     opacity: withTiming(controlsShown ? 1 : 0, {
       duration: CONTROLS_FADE_MILLIS,
@@ -219,126 +283,214 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
     player.currentTime = seconds;
     setSeekTarget(seconds);
     setEnded(false);
+
+    if (resumeAfterSeek.current) {
+      resumeAfterSeek.current = false;
+      player.play();
+    }
+
     showControls();
+  };
+
+  const skip = (step: number) => {
+    seek(
+      Math.min(
+        player.duration,
+        Math.max(0, (seekTarget ?? currentTime) + step),
+      ),
+    );
   };
 
   // 안드로이드 Modal은 별도 루트라 제스처가 먹으려면 여기서 다시 감싸야 한다.
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <YStack flex={1} bg="black">
-          <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" />
 
-          <VideoView
-            player={player}
-            style={{ flex: 1 }}
-            contentFit="contain"
-            nativeControls={false}
-            allowsPictureInPicture={false}
-          />
+        <Animated.View style={[styles.backdrop, dismiss.backdropStyle]} />
 
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            onPress={() => (visible ? setVisible(false) : showControls())}
-          />
+        <GestureDetector gesture={dismiss.gesture}>
+          <Animated.View style={[{ flex: 1 }, dismiss.contentStyle]}>
+            <VideoView
+              player={player}
+              style={{ flex: 1 }}
+              contentFit="contain"
+              nativeControls={false}
+              allowsPictureInPicture={false}
+            />
 
-          {loading && (
-            <YStack
-              position="absolute"
-              t={0}
-              r={0}
-              b={0}
-              l={0}
-              items="center"
-              justify="center"
-              pointerEvents="none"
-            >
-              <Spinner size="small" color="white" />
-            </YStack>
-          )}
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => (visible ? setVisible(false) : showControls())}
+            />
 
-          <Animated.View
-            style={[StyleSheet.absoluteFill, controlsStyle]}
-            pointerEvents={controlsShown ? "box-none" : "none"}
-          >
-            <SafeAreaView
-              edges={["top"]}
-              style={{ position: "absolute", top: 0, left: 0, right: 0 }}
-            >
-              <XStack p="$2">
-                <XStack
-                  width={CLOSE_BUTTON_SIZE}
-                  height={CLOSE_BUTTON_SIZE}
-                  items="center"
-                  justify="center"
-                  pressStyle={{ opacity: PRESS_OPACITY }}
-                  accessibilityRole="button"
-                  accessibilityLabel={i18n.t("a11y.close")}
-                  onPress={onClose}
-                >
-                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
-                </XStack>
-              </XStack>
-            </SafeAreaView>
-
-            <YStack
-              position="absolute"
-              t={0}
-              r={0}
-              b={0}
-              l={0}
-              items="center"
-              justify="center"
-              pointerEvents="box-none"
-            >
-              <XStack
-                width={PLAY_BUTTON_SIZE}
-                height={PLAY_BUTTON_SIZE}
+            {loading && (
+              <YStack
+                position="absolute"
+                t={0}
+                r={0}
+                b={0}
+                l={0}
                 items="center"
                 justify="center"
-                bg={OVERLAY_BG}
-                borderWidth={RETRO_BORDER_WIDTH}
-                borderColor="white"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                accessibilityRole="button"
-                accessibilityLabel={
-                  isPlaying && !ended
-                    ? i18n.t("a11y.pause")
-                    : i18n.t("a11y.play")
-                }
-                onPress={togglePlay}
+                pointerEvents="none"
               >
-                {isPlaying && !ended ? (
-                  <PauseIcon
-                    size={PLAY_ICON_SIZE}
-                    weight="fill"
-                    color="white"
-                  />
-                ) : (
-                  <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color="white" />
-                )}
-              </XStack>
-            </YStack>
-
-            <SafeAreaView
-              edges={["bottom"]}
-              style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
-            >
-              <YStack px="$4" py="$3" bg={OVERLAY_BG}>
-                <SeekBar
-                  position={seekTarget ?? currentTime}
-                  duration={player.duration}
-                  onSeek={seek}
-                  onScrubStart={holdControls}
-                />
+                <Spinner size="small" color="white" />
               </YStack>
-            </SafeAreaView>
+            )}
+
+            {failed && (
+              <YStack
+                position="absolute"
+                t={0}
+                r={0}
+                b={0}
+                l={0}
+                items="center"
+                justify="center"
+                pointerEvents="none"
+              >
+                <Text fontSize="$4" color="white" fontWeight="600">
+                  {i18n.t("hook.videoUrlFailed")}
+                </Text>
+              </YStack>
+            )}
+
+            <Animated.View
+              style={[StyleSheet.absoluteFill, controlsStyle]}
+              pointerEvents={controlsShown ? "box-none" : "none"}
+            >
+              <SafeAreaView
+                edges={["top"]}
+                style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+              >
+                <XStack p="$2">
+                  <XStack
+                    width={CLOSE_BUTTON_SIZE}
+                    height={CLOSE_BUTTON_SIZE}
+                    bg={OVERLAY_BG}
+                    items="center"
+                    justify="center"
+                    pressStyle={{ opacity: PRESS_OPACITY }}
+                    accessibilityRole="button"
+                    accessibilityLabel={i18n.t("a11y.close")}
+                    onPress={onClose}
+                  >
+                    <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                  </XStack>
+                </XStack>
+              </SafeAreaView>
+
+              {!failed && (
+                <>
+                  <XStack
+                    position="absolute"
+                    t={0}
+                    r={0}
+                    b={0}
+                    l={0}
+                    items="center"
+                    justify="center"
+                    gap="$6"
+                    pointerEvents="box-none"
+                  >
+                    <SkipButton
+                      label={i18n.t("a11y.seekBackward", {
+                        seconds: SEEK_STEP_SECONDS,
+                      })}
+                      onPress={() => skip(-SEEK_STEP_SECONDS)}
+                    >
+                      <RewindIcon
+                        size={SKIP_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
+                    </SkipButton>
+
+                    <XStack
+                      width={PLAY_BUTTON_SIZE}
+                      height={PLAY_BUTTON_SIZE}
+                      items="center"
+                      justify="center"
+                      bg={OVERLAY_BG}
+                      borderWidth={RETRO_BORDER_WIDTH}
+                      borderColor="white"
+                      pressStyle={{ opacity: PRESS_OPACITY }}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        isPlaying && !ended
+                          ? i18n.t("a11y.pause")
+                          : i18n.t("a11y.play")
+                      }
+                      onPress={togglePlay}
+                    >
+                      {isPlaying && !ended ? (
+                        <PauseIcon
+                          size={PLAY_ICON_SIZE}
+                          weight="fill"
+                          color="white"
+                        />
+                      ) : (
+                        <PlayIcon
+                          size={PLAY_ICON_SIZE}
+                          weight="fill"
+                          color="white"
+                        />
+                      )}
+                    </XStack>
+
+                    <SkipButton
+                      label={i18n.t("a11y.seekForward", {
+                        seconds: SEEK_STEP_SECONDS,
+                      })}
+                      onPress={() => skip(SEEK_STEP_SECONDS)}
+                    >
+                      <FastForwardIcon
+                        size={SKIP_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
+                    </SkipButton>
+                  </XStack>
+
+                  <SafeAreaView
+                    edges={["bottom"]}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                    }}
+                  >
+                    <YStack px="$4" py="$3" bg={OVERLAY_BG}>
+                      <SeekBar
+                        position={seekTarget ?? currentTime}
+                        duration={player.duration}
+                        onSeek={seek}
+                        onScrubStart={beginScrub}
+                      />
+                    </YStack>
+                  </SafeAreaView>
+                </>
+              )}
+            </Animated.View>
           </Animated.View>
-        </YStack>
+        </GestureDetector>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: "black",
+  },
+});
 
 export function VideoPlayerModal({
   url,
@@ -350,8 +502,8 @@ export function VideoPlayerModal({
   return (
     <Modal
       visible={url !== null}
+      transparent
       animationType="fade"
-      supportedOrientations={["portrait", "landscape"]}
       onRequestClose={onClose}
     >
       {url && <Player url={url} onClose={onClose} />}

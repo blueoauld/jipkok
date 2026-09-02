@@ -191,6 +191,9 @@ export const zh: typeof ko = {
     close: "關閉",
     play: "播放",
     pause: "暫停",
+    seekBar: "播放位置",
+    seekBackward: "後退 {{seconds}} 秒",
+    seekForward: "前進 {{seconds}} 秒",
   },
   component: {
     messagePlaceholder: "輸入訊息",
