@@ -3,6 +3,8 @@ import Link from "next/link";
 
 const CONTACT_EMAIL = "hello@jipkok.app";
 
+const APP_STORE_URL = "https://apps.apple.com/app/id6795136181";
+
 const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=com.blueoauld.jipkok";
 
@@ -38,14 +40,15 @@ export default function Home() {
         />
 
         <div className="flex flex-wrap items-center justify-center gap-2.5">
-          {/* 앱스토어는 아직 미출시라 배지를 흐리게만 보여준다. */}
-          <Image
-            src="/app-store-badge.svg"
-            alt="Coming soon to the App Store"
-            width={120}
-            height={40}
-            className="h-12 w-40 opacity-40 grayscale"
-          />
+          <a href={APP_STORE_URL}>
+            <Image
+              src="/app-store-badge.svg"
+              alt="Download on the App Store"
+              width={120}
+              height={40}
+              className="h-12 w-40"
+            />
+          </a>
           <a href={PLAY_STORE_URL}>
             <Image
               src="/google-play-badge.png"
