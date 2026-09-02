@@ -190,6 +190,12 @@ export const ko = {
     report: "신고",
     noteReceive: "쪽지 받기",
     feedNotification: "피드 알림",
+    attach: "첨부",
+    send: "전송",
+    cancelReply: "답장 취소",
+    close: "닫기",
+    play: "재생",
+    pause: "일시정지",
   },
   component: {
     messagePlaceholder: "메시지 입력",
@@ -499,6 +505,7 @@ export const ko = {
     ATTENDANCE_REWARD: "출석 보상",
     AD_REWARD: "광고 보상",
     NOTE_SEND: "쪽지 전송",
+    ETC: "기타",
   },
   suspensionReason: {
     SCREEN_CAPTURE: "화면 캡처",

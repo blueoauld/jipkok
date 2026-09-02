@@ -48,6 +48,7 @@ async function resolveCachedCoords() {
 export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
   const queryClient = useQueryClient();
   const updating = useRef(false);
+  const refreshing = useRef(false);
   const { mutateAsync: heartbeat } = useMutation({
     mutationFn: api.members.heartbeat,
     onSuccess: async (reward) => {
@@ -117,6 +118,12 @@ export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
   }, [enableServices, heartbeat, show, showApiError]);
 
   const refresh = useCallback(async () => {
+    if (refreshing.current) {
+      return;
+    }
+
+    refreshing.current = true;
+
     try {
       const permission = await Location.getForegroundPermissionsAsync();
 
@@ -132,10 +139,12 @@ export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
           ? { latitude: coords.latitude, longitude: coords.longitude }
           : {},
       );
-    } catch (error) {
-      showApiError(error);
+    } catch {
+      return;
+    } finally {
+      refreshing.current = false;
     }
-  }, [heartbeat, showApiError]);
+  }, [heartbeat]);
 
   return { update, refresh };
 }

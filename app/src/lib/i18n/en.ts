@@ -190,6 +190,12 @@ export const en: typeof ko = {
     report: "Report",
     noteReceive: "Receive notes",
     feedNotification: "Feed notifications",
+    attach: "Attach",
+    send: "Send",
+    cancelReply: "Cancel reply",
+    close: "Close",
+    play: "Play",
+    pause: "Pause",
   },
   component: {
     messagePlaceholder: "Message",
@@ -499,6 +505,7 @@ export const en: typeof ko = {
     ATTENDANCE_REWARD: "Daily check-in",
     AD_REWARD: "Ad reward",
     NOTE_SEND: "Note sent",
+    ETC: "Other",
   },
   suspensionReason: {
     SCREEN_CAPTURE: "Screenshot",

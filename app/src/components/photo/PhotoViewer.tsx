@@ -28,6 +28,7 @@ import { XStack, YStack } from "tamagui";
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
 import { IMAGE_TRANSITION, MIN_TAP_SIZE, PRESS_OPACITY } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { photoCacheKey } from "@/lib/photo";
 
 const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
@@ -156,6 +157,8 @@ function ViewerContent({
                 items="center"
                 justify="center"
                 pressStyle={{ opacity: PRESS_OPACITY }}
+                accessibilityRole="button"
+                accessibilityLabel={i18n.t("a11y.close")}
                 onPress={onClose}
               >
                 <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />

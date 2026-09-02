@@ -125,6 +125,8 @@ export function ChatInputBar({
             <XStack
               p="$2"
               pressStyle={{ opacity: PRESS_OPACITY }}
+              accessibilityRole="button"
+              accessibilityLabel={t("a11y.cancelReply")}
               onPress={onCancelReply}
             >
               <XIcon size={CANCEL_ICON_SIZE} color={theme.color12.val} />
@@ -149,6 +151,8 @@ export function ChatInputBar({
           pressBg="$yellow10"
           items="center"
           justify="center"
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.attach")}
           onPress={uploading ? undefined : onAttach}
         >
           {uploading ? (
@@ -187,6 +191,8 @@ export function ChatInputBar({
           pressBg="$color11"
           items="center"
           justify="center"
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.send")}
           onPress={sendable ? send : undefined}
         >
           <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />

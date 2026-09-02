@@ -30,6 +30,7 @@ import {
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
 
 const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
@@ -271,6 +272,8 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                   items="center"
                   justify="center"
                   pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessibilityRole="button"
+                  accessibilityLabel={i18n.t("a11y.close")}
                   onPress={onClose}
                 >
                   <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
@@ -297,6 +300,12 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                 borderWidth={RETRO_BORDER_WIDTH}
                 borderColor="white"
                 pressStyle={{ opacity: PRESS_OPACITY }}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  isPlaying && !ended
+                    ? i18n.t("a11y.pause")
+                    : i18n.t("a11y.play")
+                }
                 onPress={togglePlay}
               >
                 {isPlaying && !ended ? (

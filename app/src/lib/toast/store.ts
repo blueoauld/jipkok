@@ -14,12 +14,12 @@ type ToastState = {
   hide: () => void;
 };
 
+let nextToastId = 0;
+
 export const useToastStore = create<ToastState>((set) => ({
   toast: null,
   show: (variant, message) =>
-    set((state) => ({
-      toast: { id: (state.toast?.id ?? 0) + 1, variant, message },
-    })),
+    set({ toast: { id: ++nextToastId, variant, message } }),
   hide: () => set({ toast: null }),
 }));
 

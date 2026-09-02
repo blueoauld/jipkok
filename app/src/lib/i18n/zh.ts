@@ -183,6 +183,12 @@ export const zh: typeof ko = {
     report: "檢舉",
     noteReceive: "接收私訊",
     feedNotification: "動態通知",
+    attach: "附加",
+    send: "傳送",
+    cancelReply: "取消回覆",
+    close: "關閉",
+    play: "播放",
+    pause: "暫停",
   },
   component: {
     messagePlaceholder: "輸入訊息",
@@ -485,6 +491,7 @@ export const zh: typeof ko = {
     ATTENDANCE_REWARD: "簽到獎勵",
     AD_REWARD: "廣告獎勵",
     NOTE_SEND: "傳送私訊",
+    ETC: "其他",
   },
   suspensionReason: {
     SCREEN_CAPTURE: "螢幕截圖",

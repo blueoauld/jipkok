@@ -194,6 +194,12 @@ export const ja: typeof ko = {
     report: "通報",
     noteReceive: "レターを受け取る",
     feedNotification: "フィード通知",
+    attach: "添付",
+    send: "送信",
+    cancelReply: "返信を取り消す",
+    close: "閉じる",
+    play: "再生",
+    pause: "一時停止",
   },
   component: {
     messagePlaceholder: "メッセージを入力",
@@ -502,6 +508,7 @@ export const ja: typeof ko = {
     ATTENDANCE_REWARD: "デイリーボーナス",
     AD_REWARD: "広告ボーナス",
     NOTE_SEND: "レター送信",
+    ETC: "その他",
   },
   suspensionReason: {
     SCREEN_CAPTURE: "スクリーンショット",

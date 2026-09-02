@@ -6,7 +6,9 @@ import type {
 import i18n from "@/lib/i18n";
 
 export function reasonLabel(reason: SuspensionReason) {
-  return i18n.t(`suspensionReason.${reason}`);
+  return i18n.t(`suspensionReason.${reason}`, {
+    defaultValue: i18n.t("suspensionReason.ETC"),
+  });
 }
 
 export function findServiceSuspension(profile?: MyProfileResponse) {
