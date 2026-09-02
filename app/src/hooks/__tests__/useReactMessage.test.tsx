@@ -3,10 +3,10 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { setMessageReactions, useReactMessage } from "@/hooks/useReactMessage";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import {
   api,
   type ChatMessagePage,
-  type ChatMessageResponse,
   type ChatReactionResponse,
 } from "@/lib/api";
 
@@ -22,20 +22,8 @@ const chats = api.chats as unknown as {
   unreact: jest.Mock;
 };
 
-function message(
-  messageId: number,
-  reactions: ChatReactionResponse[] = [],
-): ChatMessageResponse {
-  return {
-    messageId,
-    roomId: 1,
-    senderId: 1,
-    type: "TEXT",
-    content: "hi",
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions,
-  };
+function message(messageId: number, reactions: ChatReactionResponse[] = []) {
+  return chatMessage(messageId, { reactions });
 }
 
 function reactionsOf(

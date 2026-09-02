@@ -10,7 +10,7 @@ import { serverLocale } from "@/lib/locale-sync";
 const ANDROID_CHANNELS = [
   { id: "default", name: i18n.t("push.channelDefault"), importance: "DEFAULT" },
   { id: "chat", name: i18n.t("push.channelChat"), importance: "HIGH" },
-  { id: "feed", name: i18n.t("component.channelFeed"), importance: "HIGH" },
+  { id: "feed", name: i18n.t("push.channelFeed"), importance: "HIGH" },
 ] as const;
 
 let registeredToken: string | null = null;

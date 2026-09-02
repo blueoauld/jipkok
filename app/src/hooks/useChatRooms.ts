@@ -6,9 +6,10 @@ import {
 
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { api, type ChatRoomPage } from "@/lib/api";
+import { CHATS_KEY } from "@/lib/chat";
 import { useFlatItems } from "@/lib/paging";
 
-export const CHAT_ROOMS_KEY = ["chats", "rooms"];
+export const CHAT_ROOMS_KEY = [...CHATS_KEY, "rooms"];
 
 export function invalidateChatLists(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });

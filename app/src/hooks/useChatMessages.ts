@@ -5,13 +5,14 @@ import {
 } from "@tanstack/react-query";
 
 import { api, type ChatMessagePage } from "@/lib/api";
+import { CHATS_KEY } from "@/lib/chat";
 import { useUploadStore } from "@/lib/chat/upload-store";
 import { useFlatItems } from "@/lib/paging";
 
 type Feed = InfiniteData<ChatMessagePage>;
 
 export function chatMessagesKey(roomId: number) {
-  return ["chats", "messages", roomId];
+  return [...CHATS_KEY, "messages", roomId];
 }
 
 // 새 데이터로 갈아끼울 때 업로드가 진행 중인 낙관적 메시지를 지우지 않는다.

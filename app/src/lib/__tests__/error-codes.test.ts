@@ -1,6 +1,7 @@
 import { en } from "@/lib/i18n/en";
 import { ja } from "@/lib/i18n/ja";
 import { ko } from "@/lib/i18n/ko";
+import { zh } from "@/lib/i18n/zh";
 
 import spec from "../../../openapi.json";
 
@@ -14,6 +15,7 @@ const TABLES = {
   ko: ko.error,
   ja: ja.error,
   en: en.error,
+  zh: zh.error,
 };
 
 describe("오류 문구", () => {

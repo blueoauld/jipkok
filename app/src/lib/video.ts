@@ -22,7 +22,9 @@ const TOO_LARGE_CODE = "VIDEO_TOO_LARGE";
 export const VIDEO_TOO_LONG_MESSAGE = i18n.t("media.videoTooLong", {
   minutes: VIDEO_MAX_SECONDS / 60,
 });
-const TOO_LARGE_MESSAGE = i18n.t("media.videoTooLarge");
+const TOO_LARGE_MESSAGE = i18n.t("media.videoTooLarge", {
+  megabytes: VIDEO_MAX_BYTES / 1024 / 1024,
+});
 
 export type VideoKeys = { objectKey: string; thumbnailKey: string };
 

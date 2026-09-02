@@ -9,6 +9,10 @@ export const MIN_TAP_SIZE = 44;
 
 export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
 
+export const SCROLL_TO_TOP_BOTTOM_GAP = 18;
+
+export const SCROLL_TO_TOP_SIDE_GAP = 16;
+
 // iOS가 직접 그리는 네이티브 뒤로가기 버튼과 같은 지름이라야 화면을 옮겨 다녀도 안 튄다.
 export const HEADER_GLASS_SIZE = 44;
 

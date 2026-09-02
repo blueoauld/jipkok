@@ -62,7 +62,7 @@ async function toApiError(response: Response) {
   const fallback = new ApiError(
     response.status,
     "UNKNOWN",
-    i18n.t("media.requestFailed"),
+    i18n.t("common.requestFailed"),
   );
 
   try {

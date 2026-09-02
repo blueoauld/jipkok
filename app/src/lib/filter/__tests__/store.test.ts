@@ -5,12 +5,6 @@ import {
   useMemberFilterStore,
 } from "@/lib/filter/store";
 
-jest.mock("@/lib/storage", () => ({
-  storage: jest
-    .requireActual("../../__tests__/memory-storage")
-    .createMemoryStorage(),
-}));
-
 describe("useFeedFilterStore.setDate", () => {
   it("오늘을 고르면 null로 두어 자정이 지나도 오늘을 따라간다", () => {
     useFeedFilterStore.getState().setDate(new Date());

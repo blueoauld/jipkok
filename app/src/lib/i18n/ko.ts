@@ -1,5 +1,7 @@
 export const ko = {
   common: {
+    requestFailed: "요청을 처리하지 못했습니다.",
+    retryLater: "잠시 후 다시 시도해주시길 바랍니다.",
     reloadFailed:
       "앱을 다시 시작하지 못했습니다. 앱을 완전히 닫았다 열면 적용됩니다.",
     profileLoadFailed: "프로필을 불러오지 못했습니다.",
@@ -226,7 +228,6 @@ export const ko = {
     leaveRoomsNotice:
       "선택한 채팅방에서 나갑니다. 주고받은 대화 내역이 서로에게서 모두 사라집니다.",
     monthFormat: "yyyy년 M월",
-    channelFeed: "피드",
   },
   connectFailed: "연결에 실패했습니다.",
   auth: {
@@ -368,15 +369,14 @@ export const ko = {
     cancelled: "전송을 취소했습니다.",
     offline:
       "연결이 없어 보내지 못했습니다. 연결된 뒤에 다시 시도해주시길 바랍니다.",
-    requestFailed: "요청을 처리하지 못했습니다.",
-    retryLater: "잠시 후 다시 시도해주시길 바랍니다.",
     copied: "메시지를 복사했습니다.",
     photoSaved: "사진을 저장했습니다.",
     videoSaved: "동영상을 저장했습니다.",
     photoSaveFailed: "사진을 저장하지 못했습니다.",
     videoSaveFailed: "동영상을 저장하지 못했습니다.",
     videoTooLong: "동영상은 {{minutes}}분까지 보낼 수 있습니다.",
-    videoTooLarge: "동영상이 너무 큽니다. 150MB까지 보낼 수 있습니다.",
+    videoTooLarge:
+      "동영상이 너무 큽니다. {{megabytes}}MB까지 보낼 수 있습니다.",
     photoSummary: "사진",
     videoSummary: "동영상",
   },
@@ -425,6 +425,7 @@ export const ko = {
   push: {
     channelDefault: "알림",
     channelChat: "채팅",
+    channelFeed: "피드",
   },
   point: {
     history: {

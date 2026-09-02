@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 import { PencilSimpleIcon } from "phosphor-react-native/src/icons/PencilSimple";
-import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
@@ -9,18 +8,13 @@ import { Text, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MemberMeta } from "@/components/MemberMeta";
-import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
-import { PhotoGrid } from "@/components/PhotoGrid";
+import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
 import { ProfileSection } from "@/components/ProfileSection";
-import {
-  SCROLL_TO_TOP_BOTTOM_GAP,
-  SCROLL_TO_TOP_SIDE_GAP,
-} from "@/components/ScrollToTopButton";
-import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
+import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/lib/design";
 import {
   bioCopiedMessage,
   commentCopiedMessage,
@@ -55,18 +49,13 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
   return (
     <YStack flex={1}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {photoGridOpen ? (
-          <YStack px="$4" pt="$4">
-            <PhotoGrid
-              photos={photoUrls}
-              showPlaceholders
-              secretFrom={publicPhotos.length}
-              onPressPhoto={setGridPhotoIndex}
-            />
-          </YStack>
-        ) : (
-          <PhotoPager photos={photoUrls} secretFrom={publicPhotos.length} />
-        )}
+        <ProfilePhotos
+          photos={photoUrls}
+          secretFrom={publicPhotos.length}
+          gridOpen={photoGridOpen}
+          onPressPhoto={setGridPhotoIndex}
+          pt="$4"
+        />
 
         <YStack gap="$4" p="$4">
           <YStack gap="$1">
@@ -97,22 +86,11 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
         </YStack>
       </ScrollView>
 
-      <YStack
-        position="absolute"
-        r={SCROLL_TO_TOP_SIDE_GAP}
-        b={SCROLL_TO_TOP_BOTTOM_GAP}
-      >
-        <RetroFloatingButton
-          label={t("a11y.photoGrid")}
-          onPress={togglePhotoGrid}
-        >
-          <SquaresFourIcon
-            size={20}
-            weight={photoGridOpen ? "fill" : "regular"}
-            color="white"
-          />
-        </RetroFloatingButton>
-      </YStack>
+      <PhotoGridToggle
+        open={photoGridOpen}
+        bottom={SCROLL_TO_TOP_BOTTOM_GAP}
+        onPress={togglePhotoGrid}
+      />
 
       <PhotoViewer
         photos={photoUrls}

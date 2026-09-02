@@ -234,10 +234,11 @@ export default function ChatRoomScreen() {
     },
   ];
 
+  const nameOf = (senderId?: number) =>
+    senderId === myMemberId ? t("chatRoom.me") : (room?.nickname ?? "");
+
   const replyNameOf = (message: ChatMessageResponse) =>
-    message.replyMessage?.senderId === myMemberId
-      ? t("chatRoom.me")
-      : (room?.nickname ?? "");
+    nameOf(message.replyMessage?.senderId);
 
   const handlePressAvatar = useCallback(
     () => pushOnce(`/member/${partnerId}`),
@@ -291,7 +292,7 @@ export default function ChatRoomScreen() {
             ) : (
               <ChatMessageRow
                 message={item.message}
-                mine={item.message.senderId === profile.memberId}
+                mine={item.message.senderId === myMemberId}
                 grouped={item.grouped}
                 showTime={item.showTime}
                 replyName={replyNameOf(item.message)}
@@ -350,11 +351,7 @@ export default function ChatRoomScreen() {
           sending={sending}
           uploading={uploading}
           reply={replyTarget}
-          replyName={
-            replyTarget && replyTarget.senderId !== profile?.memberId
-              ? (room?.nickname ?? "")
-              : t("chatRoom.me")
-          }
+          replyName={nameOf(replyTarget?.senderId)}
           onSend={(content) => {
             sendText(content, replyTarget && toReply(replyTarget));
             setReplyTarget(null);

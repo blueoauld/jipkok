@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
+import { CHATS_KEY } from "@/lib/chat";
 
 export function chatRoomKey(roomId: number) {
-  return ["chats", "room", roomId];
+  return [...CHATS_KEY, "room", roomId];
 }
 
 export function useChatRoom(roomId: number, enabled = true) {

@@ -54,7 +54,7 @@ function DialogForm({
 
         <Dialog.Close asChild>
           <RetroButton flex={1} onPress={() => onSubmit(valueRef.current)}>
-            {submitLabel ?? t("component.submit")}
+            {submitLabel}
           </RetroButton>
         </Dialog.Close>
       </XStack>

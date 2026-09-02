@@ -7,7 +7,6 @@ import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
-import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,19 +17,13 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MemberMeta } from "@/components/MemberMeta";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
-import { PhotoGrid } from "@/components/PhotoGrid";
+import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
 import { ProfileSection } from "@/components/ProfileSection";
-import {
-  SCROLL_TO_TOP_BOTTOM_GAP,
-  SCROLL_TO_TOP_SIDE_GAP,
-} from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
 import { Glass } from "@/components/ui/Glass";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
@@ -39,7 +32,7 @@ import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { memberDetailKey, useMemberDetail } from "@/hooks/useMemberDetail";
 import { relationKey } from "@/hooks/useMemberList";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import { PROFILE_VIEWS_KEY } from "@/hooks/useProfileViews";
+import { PROFILE_VIEW_LIST_KEY } from "@/hooks/useProfileViews";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
@@ -51,6 +44,7 @@ import {
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
   RETRO_BORDER_WIDTH,
+  SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 import { formatDistance } from "@/lib/member";
@@ -76,8 +70,6 @@ const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;
 const BADGE_OPACITY = 0.9;
 
-const GRID_ICON_SIZE = 20;
-
 const LIKES_KEY = relationKey("likes");
 const FAVORITES_KEY = relationKey("favorites");
 const SECRET_PHOTOS_KEY = relationKey("secretPhotos");
@@ -97,7 +89,7 @@ const MEMO_AFFECTED_KEYS = [
   SECRET_PHOTOS_KEY,
   BLOCKS_KEY,
   CHAT_ROOMS_KEY,
-  PROFILE_VIEWS_KEY,
+  PROFILE_VIEW_LIST_KEY,
 ];
 
 type Relation = {
@@ -459,7 +451,7 @@ export default function MemberProfileScreen() {
     {
       label: t("action.reportSubmit"),
       destructive: true,
-      onPress: () => pushOnce(`/report/${id}?type=member`),
+      onPress: () => pushOnce(`/report/${id}`),
     },
   ];
 
@@ -477,17 +469,11 @@ export default function MemberProfileScreen() {
             }}
           >
             <YStack>
-              {photoGridOpen ? (
-                <YStack px="$4">
-                  <PhotoGrid
-                    photos={member.publicPhotoUrls}
-                    showPlaceholders
-                    onPressPhoto={setGridPhotoIndex}
-                  />
-                </YStack>
-              ) : (
-                <PhotoPager photos={member.publicPhotoUrls} />
-              )}
+              <ProfilePhotos
+                photos={member.publicPhotoUrls}
+                gridOpen={photoGridOpen}
+                onPressPhoto={setGridPhotoIndex}
+              />
             </YStack>
 
             <YStack gap="$4" p="$4">
@@ -516,17 +502,16 @@ export default function MemberProfileScreen() {
                     />
                   </XStack>
 
-                  {member.distance !== undefined &&
-                    member.distance !== null && (
-                      <Text
-                        theme="gray"
-                        shrink={0}
-                        fontSize="$2"
-                        color="$color11"
-                      >
-                        {formatDistance(member.distance)}
-                      </Text>
-                    )}
+                  {member.distance != null && (
+                    <Text
+                      theme="gray"
+                      shrink={0}
+                      fontSize="$2"
+                      color="$color11"
+                    >
+                      {formatDistance(member.distance)}
+                    </Text>
+                  )}
                 </XStack>
               </YStack>
 
@@ -571,22 +556,11 @@ export default function MemberProfileScreen() {
             onPress={handleAction}
           />
 
-          <YStack
-            position="absolute"
-            r={SCROLL_TO_TOP_SIDE_GAP}
-            b={barHeight + SCROLL_TO_TOP_BOTTOM_GAP}
-          >
-            <RetroFloatingButton
-              label={t("a11y.photoGrid")}
-              onPress={togglePhotoGrid}
-            >
-              <SquaresFourIcon
-                size={GRID_ICON_SIZE}
-                weight={photoGridOpen ? "fill" : "regular"}
-                color="white"
-              />
-            </RetroFloatingButton>
-          </YStack>
+          <PhotoGridToggle
+            open={photoGridOpen}
+            bottom={barHeight + SCROLL_TO_TOP_BOTTOM_GAP}
+            onPress={togglePhotoGrid}
+          />
         </>
       ) : (
         <ScreenState

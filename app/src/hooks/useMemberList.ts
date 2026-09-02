@@ -24,7 +24,9 @@ export function relationListKey(
   return [...relationKey(kind), scope];
 }
 
-type Fetcher = (params: { cursor?: number }) => Promise<MemberSummaryPage>;
+export type MemberListFetcher = (params: {
+  cursor?: number;
+}) => Promise<MemberSummaryPage>;
 
 export type MemberListQuery = {
   members?: MemberSummaryResponse[];
@@ -35,7 +37,7 @@ export type MemberListQuery = {
   refetch: () => unknown;
 };
 
-export function useMemberList(queryKey: string[], fetcher: Fetcher) {
+export function useMemberList(queryKey: string[], fetcher: MemberListFetcher) {
   const query = useInfiniteQuery({
     queryKey,
     queryFn: ({ pageParam }) => fetcher({ cursor: pageParam }),

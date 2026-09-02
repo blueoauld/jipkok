@@ -1,38 +1,20 @@
-import { Stack } from "expo-router";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ActivityList } from "@/components/activity/ActivityList";
-import {
-  relationListKey,
-  useMemberList,
-  useRemoveFromMemberList,
-} from "@/hooks/useMemberList";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { RelationListScreen } from "@/components/activity/RelationListScreen";
+import { relationListKey } from "@/hooks/useMemberList";
 import { api } from "@/lib/api";
 
 const LIKES_KEY = relationListKey("likes", "mine");
 
 export default function LikeListScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("list.likes") }), [t]);
-
-  const query = useMemberList(LIKES_KEY, api.likes.mine);
-  const { alertElement, showApiError } = useRetroAlert();
-  const remove = useRemoveFromMemberList(
-    LIKES_KEY,
-    api.likes.remove,
-    showApiError,
-  );
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={screenOptions} />
-
-      <ActivityList query={query} onDelete={remove.mutate} />
-
-      {alertElement}
-    </SafeAreaView>
+    <RelationListScreen
+      title={t("list.likes")}
+      listKey={LIKES_KEY}
+      fetch={api.likes.mine}
+      remove={api.likes.remove}
+    />
   );
 }

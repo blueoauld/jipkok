@@ -380,10 +380,11 @@ export default function WorryDetailScreen() {
     [queryClient],
   );
 
+  const { refetch: refetchDetail } = detail;
   const { refreshing, onRefresh } = usePullRefresh(
     useCallback(
-      () => Promise.all([detail.refetch(), refetchComments()]),
-      [detail, refetchComments],
+      () => Promise.all([refetchDetail(), refetchComments()]),
+      [refetchDetail, refetchComments],
     ),
   );
 
@@ -511,15 +512,18 @@ export default function WorryDetailScreen() {
     }
   }, [detailKey, queryClient, toggleLikeMutate]);
 
+  const { mutate: removePostMutate } = removePost;
+  const { mutate: reportPostMutate } = reportPost;
+
   const confirmRemovePost = useCallback(
     () =>
       confirm({
         message: t("worry.detail.deletePostConfirm"),
         confirmLabel: t("action.delete"),
         destructive: true,
-        onConfirm: () => removePost.mutate(),
+        onConfirm: () => removePostMutate(),
       }),
-    [confirm, removePost, t],
+    [confirm, removePostMutate, t],
   );
 
   const confirmReportPost = useCallback(
@@ -528,9 +532,9 @@ export default function WorryDetailScreen() {
         message: t("worry.detail.reportPostConfirm"),
         confirmLabel: t("action.report"),
         destructive: true,
-        onConfirm: () => reportPost.mutate(),
+        onConfirm: () => reportPostMutate(),
       }),
-    [confirm, reportPost, t],
+    [confirm, reportPostMutate, t],
   );
 
   const screenOptions = useMemo(

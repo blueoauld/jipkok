@@ -18,13 +18,11 @@ export function UserAvatar({
   id,
   url,
   size = SIZE,
-  circular,
   gender,
 }: {
   id: string;
   url?: string | null;
   size?: number;
-  circular?: boolean;
   gender?: Gender;
 }) {
   const theme = useTheme();
@@ -36,7 +34,7 @@ export function UserAvatar({
       shrink={0}
       width={size}
       height={size}
-      rounded={circular ? 9999 : 0}
+      rounded={0}
       overflow="hidden"
       bg={gender ? GENDER_BG[gender] : "$gray6"}
       items="center"
@@ -57,7 +55,7 @@ export function UserAvatar({
 
       <YStack
         fullscreen
-        rounded={circular ? 9999 : 0}
+        rounded={0}
         borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         pointerEvents="none"

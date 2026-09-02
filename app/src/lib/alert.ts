@@ -18,5 +18,5 @@ export function apiErrorMessage(error: unknown, fallback?: string): string {
     return localized(error.code, error.message);
   }
 
-  return fallback ?? i18n.t("media.retryLater");
+  return fallback ?? i18n.t("common.retryLater");
 }

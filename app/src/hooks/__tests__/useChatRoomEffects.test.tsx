@@ -4,6 +4,7 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import { useChatRoomEffects } from "@/hooks/useChatRoomEffects";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
+import { chatMessage, chatRoom } from "@/lib/__tests__/chat-fixtures";
 import {
   api,
   type ChatMessageResponse,
@@ -32,35 +33,12 @@ const PARTNER_ID = 2;
 
 const roomsKey = [...CHAT_ROOMS_KEY, false];
 
-function message(messageId: number): ChatMessageResponse {
-  return {
-    messageId,
-    roomId: ROOM_ID,
-    senderId: PARTNER_ID,
-    type: "TEXT",
-    content: "hi",
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions: [],
-  };
+function message(messageId: number) {
+  return chatMessage(messageId, { roomId: ROOM_ID, senderId: PARTNER_ID });
 }
 
-function chatRoom(
-  roomId: number,
-  extra: Partial<ChatRoomResponse> = {},
-): ChatRoomResponse {
-  return {
-    roomId,
-    memberId: PARTNER_ID,
-    nickname: "상대",
-    lastMessageType: "TEXT",
-    lastMessageContent: "hi",
-    lastMessageAt: "2026-08-18T00:00:00Z",
-    unreadCount: 3,
-    notificationEnabled: true,
-    pinned: false,
-    ...extra,
-  };
+function room(roomId: number, extra: Partial<ChatRoomResponse> = {}) {
+  return chatRoom(roomId, { memberId: PARTNER_ID, unreadCount: 3, ...extra });
 }
 
 function seed(
@@ -114,7 +92,7 @@ afterEach(async () => {
 describe("useChatRoomEffects 읽음 처리", () => {
   it("들어가면 서버 응답 전에 방 배지와 전체 안읽음 수를 지운다", async () => {
     const client = createTestQueryClient();
-    seed(client, [chatRoom(ROOM_ID), chatRoom(9, { unreadCount: 2 })], 5);
+    seed(client, [room(ROOM_ID), room(9, { unreadCount: 2 })], 5);
     markRead.mockReturnValue(new Promise(() => undefined));
 
     await setup(client, [message(10)]);
@@ -127,7 +105,7 @@ describe("useChatRoomEffects 읽음 처리", () => {
 
   it("배지가 이미 없으면 전체 안읽음 수를 건드리지 않는다", async () => {
     const client = createTestQueryClient();
-    seed(client, [chatRoom(ROOM_ID, { unreadCount: 0 })], 5);
+    seed(client, [room(ROOM_ID, { unreadCount: 0 })], 5);
     markRead.mockReturnValue(new Promise(() => undefined));
 
     await setup(client, [message(10)]);
@@ -138,7 +116,7 @@ describe("useChatRoomEffects 읽음 처리", () => {
 
   it("성공하면 목록을 다시 받게 한다", async () => {
     const client = createTestQueryClient();
-    seed(client, [chatRoom(ROOM_ID)], 3);
+    seed(client, [room(ROOM_ID)], 3);
     const invalidate = jest.spyOn(client, "invalidateQueries");
     markRead.mockResolvedValue(undefined);
 
@@ -154,7 +132,7 @@ describe("useChatRoomEffects 읽음 처리", () => {
 
   it("메시지가 없으면 읽음 처리를 하지 않는다", async () => {
     const client = createTestQueryClient();
-    seed(client, [chatRoom(ROOM_ID)], 3);
+    seed(client, [room(ROOM_ID)], 3);
 
     await setup(client, []);
 

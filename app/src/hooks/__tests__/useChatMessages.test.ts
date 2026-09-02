@@ -1,27 +1,18 @@
 import type { InfiniteData } from "@tanstack/react-query";
 
 import { keepUploadingMessages } from "@/hooks/useChatMessages";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useUploadStore } from "@/lib/chat/upload-store";
 
 type Feed = InfiniteData<ChatMessagePage>;
 
-function message(
-  messageId: number,
-  clientMessageId: string | null,
-): ChatMessageResponse {
-  return {
-    messageId,
-    roomId: 1,
+function message(messageId: number, clientMessageId: string | null) {
+  return chatMessage(messageId, {
     senderId: 10,
-    type: "TEXT",
     content: "안녕",
-    imageUrl: null,
-    replyMessage: null,
-    createdAt: "2026-08-20T00:00:00Z",
     clientMessageId,
-    reactions: [],
-  };
+  });
 }
 
 function feed(items: ChatMessageResponse[]): Feed {

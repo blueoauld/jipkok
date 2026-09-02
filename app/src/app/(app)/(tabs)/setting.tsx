@@ -40,6 +40,7 @@ import {
 } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
+import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useProfileViewNewCount } from "@/hooks/useProfileViews";
@@ -47,8 +48,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { APP_VERSION } from "@/lib/device";
-import i18n from "@/lib/i18n";
-import {
+import i18n, {
   currentLocale,
   SUPPORTED_LOCALES,
   type SupportedLocale,
@@ -56,7 +56,6 @@ import {
 import { ko } from "@/lib/i18n/ko";
 import { useLocaleStore } from "@/lib/i18n/store";
 import { useLoadingOverlay } from "@/lib/overlay/store";
-import { releaseDevice } from "@/lib/push/notifications";
 import { reloadApp } from "@/lib/reload";
 import { pushOnce } from "@/lib/router";
 import {
@@ -102,94 +101,120 @@ type SettingItem = {
   gated?: boolean;
 };
 
+type SettingGroup = {
+  key: string;
+  items: SettingItem[];
+  attendance?: boolean;
+};
+
 const PROFILE_VIEW_HREF = "/activity/profile-view";
 
-const SECTIONS: SettingItem[][] = [
-  [{ labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" }],
-  [
-    { labelKey: "list.likes", icon: HeartIcon, href: "/activity/like" },
-    {
-      labelKey: "list.favorites",
-      icon: StarIcon,
-      href: "/activity/favorite",
-    },
-    {
-      labelKey: "list.secretPhotos",
-      icon: ImagesIcon,
-      href: "/activity/secret-photo",
-    },
-    {
-      labelKey: "list.blocks",
-      icon: ProhibitIcon,
-      href: "/activity/block",
-    },
-    {
-      labelKey: "list.worries",
-      icon: ChatCircleTextIcon,
-      href: "/activity/worry",
-    },
-  ],
-  [
-    {
-      labelKey: "list.likesReceived",
-      icon: HandHeartIcon,
-      href: "/activity/like-received",
-      gated: true,
-    },
-    {
-      labelKey: "list.favoritesReceived",
-      icon: TrayArrowDownIcon,
-      href: "/activity/favorite-received",
-      gated: true,
-    },
-    {
-      labelKey: "list.secretPhotosOpened",
-      icon: EyeIcon,
-      href: "/activity/secret-photo-opened",
-      gated: true,
-    },
-    {
-      labelKey: "list.profileViews",
-      icon: FootprintsIcon,
-      href: PROFILE_VIEW_HREF,
-      gated: true,
-    },
-  ],
-  [
-    {
-      labelKey: "list.pointHistory",
-      icon: CoinsIcon,
-      href: "/point/history",
-    },
-    {
-      labelKey: "setting.menu.adReward",
-      icon: MonitorPlayIcon,
-      action: "adReward",
-    },
-    {
-      labelKey: "setting.menu.attendanceReward",
-      icon: CalendarCheckIcon,
-      action: "attendanceReward",
-    },
-  ],
-  [
-    { labelKey: "setting.menu.contact", icon: HeadsetIcon, action: "contact" },
-    {
-      labelKey: "setting.menu.suggest",
-      icon: LightbulbIcon,
-      action: "suggest",
-    },
-    { labelKey: "legal.terms", icon: FileTextIcon, url: TERMS_URL },
-    {
-      labelKey: "legal.privacy",
-      icon: ShieldCheckIcon,
-      url: PRIVACY_URL,
-    },
-    { labelKey: "setting.menu.version", icon: InfoIcon, action: "version" },
-  ],
+const SECTIONS: SettingGroup[] = [
+  {
+    key: "profile",
+    items: [{ labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" }],
+  },
+  {
+    key: "mine",
+    items: [
+      { labelKey: "list.likes", icon: HeartIcon, href: "/activity/like" },
+      {
+        labelKey: "list.favorites",
+        icon: StarIcon,
+        href: "/activity/favorite",
+      },
+      {
+        labelKey: "list.secretPhotos",
+        icon: ImagesIcon,
+        href: "/activity/secret-photo",
+      },
+      {
+        labelKey: "list.blocks",
+        icon: ProhibitIcon,
+        href: "/activity/block",
+      },
+      {
+        labelKey: "list.worries",
+        icon: ChatCircleTextIcon,
+        href: "/activity/worry",
+      },
+    ],
+  },
+  {
+    key: "received",
+    items: [
+      {
+        labelKey: "list.likesReceived",
+        icon: HandHeartIcon,
+        href: "/activity/like-received",
+        gated: true,
+      },
+      {
+        labelKey: "list.favoritesReceived",
+        icon: TrayArrowDownIcon,
+        href: "/activity/favorite-received",
+        gated: true,
+      },
+      {
+        labelKey: "list.secretPhotosOpened",
+        icon: EyeIcon,
+        href: "/activity/secret-photo-opened",
+        gated: true,
+      },
+      {
+        labelKey: "list.profileViews",
+        icon: FootprintsIcon,
+        href: PROFILE_VIEW_HREF,
+        gated: true,
+      },
+    ],
+  },
+  {
+    key: "point",
+    attendance: true,
+    items: [
+      {
+        labelKey: "list.pointHistory",
+        icon: CoinsIcon,
+        href: "/point/history",
+      },
+      {
+        labelKey: "setting.menu.adReward",
+        icon: MonitorPlayIcon,
+        action: "adReward",
+      },
+      {
+        labelKey: "setting.menu.attendanceReward",
+        icon: CalendarCheckIcon,
+        action: "attendanceReward",
+      },
+    ],
+  },
+  {
+    key: "support",
+    items: [
+      {
+        labelKey: "setting.menu.contact",
+        icon: HeadsetIcon,
+        action: "contact",
+      },
+      {
+        labelKey: "setting.menu.suggest",
+        icon: LightbulbIcon,
+        action: "suggest",
+      },
+      { labelKey: "legal.terms", icon: FileTextIcon, url: TERMS_URL },
+      {
+        labelKey: "legal.privacy",
+        icon: ShieldCheckIcon,
+        url: PRIVACY_URL,
+      },
+      { labelKey: "setting.menu.version", icon: InfoIcon, action: "version" },
+    ],
+  },
 ];
 
-function versionText(latest: string, current: string) {
+function versionText(current: string, latest: string) {
   return i18n.t("setting.versionText", { latest, current });
 }
 
@@ -317,17 +342,11 @@ export default function SettingScreen() {
     });
   };
 
-  const logout = useMutation({
-    mutationFn: async () => {
-      await releaseDevice();
-      await api.auth.logout();
-    },
-    onError: showApiError,
-  });
+  const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
   const adReward = useAdReward();
   const gate = useInterstitialGate();
 
-  useLoadingOverlay(logout.isPending);
+  useLoadingOverlay(loggingOut);
 
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
@@ -351,7 +370,7 @@ export default function SettingScreen() {
   const checkVersion = useMutation({
     mutationFn: api.app.latestVersion,
     onSuccess: ({ latestVersion, storeUrl }) => {
-      const detail = versionText(latestVersion, APP_VERSION);
+      const detail = versionText(APP_VERSION, latestVersion);
 
       if (!isOutdated(APP_VERSION, latestVersion)) {
         show("info", detail);
@@ -447,7 +466,7 @@ export default function SettingScreen() {
         confirm({
           message: t("setting.logoutNotice"),
           confirmLabel: t("setting.confirm"),
-          onConfirm: () => logout.mutate(),
+          onConfirm: () => logout(),
         }),
     },
     {
@@ -487,6 +506,8 @@ export default function SettingScreen() {
 
   return (
     <YStack flex={1}>
+      <Tabs.Screen options={screenOptions} />
+
       <YStack px="$4" pt="$4" pb="$3">
         <RetroSegmentedControl
           items={THEME_ITEMS}
@@ -504,38 +525,34 @@ export default function SettingScreen() {
         }}
       >
         <YStack gap="$5">
-          {SECTIONS.map((items) => (
-            <YStack key={items[0].labelKey} gap="$5">
+          {SECTIONS.map((group) => (
+            <YStack key={group.key} gap="$5">
               <SettingSection
-                items={items}
+                items={group.items}
                 pendingAction={pendingAction}
                 profileViewCount={profileViewCount}
                 onItemPress={handlePress}
               />
 
-              {items.some((item) => item.action === "adReward") && (
-                <AttendanceCard />
-              )}
+              {group.attendance && <AttendanceCard />}
             </YStack>
           ))}
         </YStack>
-
-        <Tabs.Screen options={screenOptions} />
-
-        <MenuSheet
-          open={languageOpen}
-          onOpenChange={setLanguageOpen}
-          items={languageItems}
-        />
-
-        <MenuSheet
-          open={menuOpen}
-          onOpenChange={setMenuOpen}
-          items={accountMenu}
-        />
-
-        {alertElement}
       </ScrollView>
+
+      <MenuSheet
+        open={languageOpen}
+        onOpenChange={setLanguageOpen}
+        items={languageItems}
+      />
+
+      <MenuSheet
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        items={accountMenu}
+      />
+
+      {alertElement}
     </YStack>
   );
 }

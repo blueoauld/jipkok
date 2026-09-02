@@ -2,11 +2,6 @@ import * as StoreReview from "expo-store-review";
 
 import { maybeRequestReview, useReviewStore } from "@/lib/review/store";
 
-jest.mock("@/lib/storage", () => ({
-  storage: jest
-    .requireActual("../../__tests__/memory-storage")
-    .createMemoryStorage(),
-}));
 jest.mock("expo-store-review", () => ({
   hasAction: jest.fn(),
   requestReview: jest.fn(),

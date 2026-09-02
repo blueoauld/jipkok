@@ -20,6 +20,8 @@ export function mediaSummary(type: ChatMessageType) {
   return type === "VIDEO" ? VIDEO_SUMMARY : PHOTO_SUMMARY;
 }
 
+export const CHATS_KEY = ["chats"];
+
 const CHAT_ROOM_NOT_FOUND_CODE = "CHAT_004";
 
 // 상대가 나갔거나 차단으로 지워진 방이다. 소켓 이벤트를 놓쳤을 때 이 코드로 알게 된다.

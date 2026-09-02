@@ -30,7 +30,7 @@ describe("apiErrorMessage", () => {
 
   it("서버 오류가 아니면 기본 문구를 쓴다", () => {
     expect(apiErrorMessage(new Error("네트워크"))).toBe(
-      i18n.t("media.retryLater"),
+      i18n.t("common.retryLater"),
     );
   });
 });

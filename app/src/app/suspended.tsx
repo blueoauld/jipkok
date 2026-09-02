@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
@@ -7,12 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, useTheme, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
+import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
-import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
-import { releaseDevice } from "@/lib/push/notifications";
 import { openSupportMail } from "@/lib/support";
 import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
 
@@ -28,13 +26,7 @@ export default function SuspendedScreen() {
   const { data: profile } = useMyProfile();
   const suspension = findServiceSuspension(profile);
 
-  const logout = useMutation({
-    mutationFn: async () => {
-      await releaseDevice();
-      await api.auth.logout();
-    },
-    onError: showApiError,
-  });
+  const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
 
   useEffect(() => {
     if (profile && !suspension) {
@@ -80,14 +72,10 @@ export default function SuspendedScreen() {
 
           <RetroButton
             theme="gray"
-            disabled={logout.isPending}
-            onPress={() => logout.mutate()}
+            disabled={loggingOut}
+            onPress={() => logout()}
           >
-            {logout.isPending ? (
-              <Spinner color="white" />
-            ) : (
-              t("setting.menu.logout")
-            )}
+            {loggingOut ? <Spinner color="white" /> : t("setting.menu.logout")}
           </RetroButton>
 
           <RetroButton theme="red" onPress={confirmWithdraw}>

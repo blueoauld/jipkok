@@ -5,6 +5,7 @@ import type { ImagePickerAsset } from "expo-image-picker";
 import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useSendMessage } from "@/hooks/useSendMessage";
+import { chatMessage, chatRoom } from "@/lib/__tests__/chat-fixtures";
 import {
   api,
   ApiError,
@@ -56,18 +57,13 @@ const asset = { uri: "file:///a.jpg", duration: 7000 } as ImagePickerAsset;
 function serverMessage(
   messageId: number,
   extra: Partial<ChatMessageResponse> = {},
-): ChatMessageResponse {
-  return {
-    messageId,
+) {
+  return chatMessage(messageId, {
     roomId: ROOM_ID,
     senderId: ME,
-    type: "TEXT",
     content: "old",
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions: [],
     ...extra,
-  };
+  });
 }
 
 function seed(client: ReturnType<typeof createTestQueryClient>) {
@@ -87,6 +83,30 @@ function items(client: ReturnType<typeof createTestQueryClient>) {
 
 function uploads() {
   return Object.values(useUploadStore.getState().uploads);
+}
+
+const roomsKey = [...CHAT_ROOMS_KEY, false];
+
+function room(roomId: number, extra: Partial<ChatRoomResponse> = {}) {
+  return chatRoom(roomId, { lastMessageContent: "old", ...extra });
+}
+
+function seedRooms(
+  client: ReturnType<typeof createTestQueryClient>,
+  rooms: ChatRoomResponse[] = [room(ROOM_ID)],
+) {
+  const data: InfiniteData<ChatRoomPage> = {
+    pages: [{ items: rooms, nextCursor: null }],
+    pageParams: [undefined],
+  };
+  client.setQueryData(roomsKey, data);
+}
+
+function seededRooms(client: ReturnType<typeof createTestQueryClient>) {
+  return (
+    client.getQueryData<InfiniteData<ChatRoomPage>>(roomsKey)?.pages[0].items ??
+    []
+  );
 }
 
 type Setup = Awaited<
@@ -138,44 +158,6 @@ beforeEach(() => {
   uploadVideo.mockResolvedValue({ objectKey: "v", thumbnailKey: "t" });
 });
 
-const roomsKey = [...CHAT_ROOMS_KEY, false];
-
-function chatRoom(
-  roomId: number,
-  extra: Partial<ChatRoomResponse> = {},
-): ChatRoomResponse {
-  return {
-    roomId,
-    memberId: 2,
-    nickname: "상대",
-    lastMessageType: "TEXT",
-    lastMessageContent: "old",
-    lastMessageAt: "2026-08-18T00:00:00Z",
-    unreadCount: 0,
-    notificationEnabled: true,
-    pinned: false,
-    ...extra,
-  };
-}
-
-function seedRooms(
-  client: ReturnType<typeof createTestQueryClient>,
-  rooms: ChatRoomResponse[] = [chatRoom(ROOM_ID)],
-) {
-  const data: InfiniteData<ChatRoomPage> = {
-    pages: [{ items: rooms, nextCursor: null }],
-    pageParams: [undefined],
-  };
-  client.setQueryData(roomsKey, data);
-}
-
-function seededRooms(client: ReturnType<typeof createTestQueryClient>) {
-  return (
-    client.getQueryData<InfiniteData<ChatRoomPage>>(roomsKey)?.pages[0].items ??
-    []
-  );
-}
-
 describe("useSendMessage 텍스트", () => {
   it("서버 응답 전에 방 목록 미리보기를 바꾼다", async () => {
     const hook = await setup();
@@ -189,11 +171,7 @@ describe("useSendMessage 텍스트", () => {
 
   it("보낸 방을 1페이지의 고정 섹션 아래 맨 위로 올린다", async () => {
     const hook = await setup();
-    seedRooms(hook.client, [
-      chatRoom(9, { pinned: true }),
-      chatRoom(8),
-      chatRoom(ROOM_ID),
-    ]);
+    seedRooms(hook.client, [room(9, { pinned: true }), room(8), room(ROOM_ID)]);
     send.mockReturnValue(new Promise(() => undefined));
 
     await act(async () => hook.result.current.sendText("hi"));
@@ -208,9 +186,9 @@ describe("useSendMessage 텍스트", () => {
   it("고정한 방에서 보내면 맨 위로 올린다", async () => {
     const hook = await setup();
     seedRooms(hook.client, [
-      chatRoom(9, { pinned: true }),
-      chatRoom(ROOM_ID, { pinned: true }),
-      chatRoom(8),
+      room(9, { pinned: true }),
+      room(ROOM_ID, { pinned: true }),
+      room(8),
     ]);
     send.mockReturnValue(new Promise(() => undefined));
 

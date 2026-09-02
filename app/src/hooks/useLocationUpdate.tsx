@@ -14,7 +14,7 @@ const FAILED_MESSAGE = i18n.t("hook.locationFailed");
 
 const LOCATION_TIMEOUT = 10_000;
 
-async function resolveCoords() {
+async function resolveCurrentCoords() {
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const current = await Promise.race([
@@ -30,19 +30,21 @@ async function resolveCoords() {
       }
     });
 
-  if (current) {
-    return current.coords;
-  }
+  return current?.coords ?? null;
+}
 
-  const last = await Location.getLastKnownPositionAsync();
+async function resolveLastKnownCoords() {
+  const last = await Location.getLastKnownPositionAsync().catch(() => null);
 
   return last?.coords ?? null;
 }
 
-async function resolveCachedCoords() {
-  const last = await Location.getLastKnownPositionAsync().catch(() => null);
+async function resolveCoords() {
+  return (await resolveCurrentCoords()) ?? (await resolveLastKnownCoords());
+}
 
-  return last?.coords ?? (await resolveCoords());
+async function resolveCachedCoords() {
+  return (await resolveLastKnownCoords()) ?? (await resolveCurrentCoords());
 }
 
 export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {

@@ -1,4 +1,4 @@
-import type { ChatMessageResponse } from "@/lib/api";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import {
   formatUnreadCount,
   groupReactions,
@@ -9,21 +9,8 @@ import {
   toChatRows,
 } from "@/lib/chat";
 
-function message(
-  messageId: number,
-  senderId: number,
-  createdAt: string,
-): ChatMessageResponse {
-  return {
-    messageId,
-    roomId: 1,
-    senderId,
-    type: "TEXT",
-    content: "hi",
-    createdAt,
-    replyMessage: null,
-    reactions: [],
-  };
+function message(messageId: number, senderId: number, createdAt: string) {
+  return chatMessage(messageId, { senderId, createdAt });
 }
 
 describe("isSingleEmoji", () => {

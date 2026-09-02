@@ -2,6 +2,8 @@ import type { ko } from "@/lib/i18n/ko";
 
 export const zh: typeof ko = {
   common: {
+    requestFailed: "無法處理請求。",
+    retryLater: "請稍後再試。",
     reloadFailed: "無法重新啟動 App。完全關閉後再開啟即可套用。",
     profileLoadFailed: "無法載入個人檔案。",
     listLoadFailed: "無法載入列表。",
@@ -218,7 +220,6 @@ export const zh: typeof ko = {
     leaveRoomNotice: "離開後，雙方的對話紀錄將全部消失。",
     leaveRoomsNotice: "將離開所選的聊天室。雙方的對話紀錄將全部消失。",
     monthFormat: "yyyy年M月",
-    channelFeed: "動態",
   },
   connectFailed: "連線失敗。",
   auth: {
@@ -355,15 +356,13 @@ export const zh: typeof ko = {
     sendFailed: "無法傳送。",
     cancelled: "已取消傳送。",
     offline: "沒有網路連線，無法傳送。請連線後再試一次。",
-    requestFailed: "無法處理請求。",
-    retryLater: "請稍後再試。",
     copied: "已複製訊息。",
     photoSaved: "已儲存照片。",
     videoSaved: "已儲存影片。",
     photoSaveFailed: "無法儲存照片。",
     videoSaveFailed: "無法儲存影片。",
     videoTooLong: "影片最長可傳送 {{minutes}} 分鐘。",
-    videoTooLarge: "影片太大。最多可傳送 150MB。",
+    videoTooLarge: "影片太大。最多可傳送 {{megabytes}}MB。",
     photoSummary: "照片",
     videoSummary: "影片",
   },
@@ -412,6 +411,7 @@ export const zh: typeof ko = {
   push: {
     channelDefault: "通知",
     channelChat: "聊天",
+    channelFeed: "動態",
   },
   point: {
     history: {

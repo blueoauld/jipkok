@@ -13,11 +13,10 @@ import { invalidateChatLists } from "@/hooks/useChatRooms";
 import { setMessageReactions } from "@/hooks/useReactMessage";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
+import { CHATS_KEY } from "@/lib/chat";
 import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { mapPages } from "@/lib/paging";
-
-const CHAT_KEY = ["chats"];
 
 export function forgetRoom(queryClient: QueryClient, roomId: number) {
   useDeletedRoomStore.getState().markDeleted(roomId);
@@ -73,7 +72,7 @@ export function useChatSocket() {
     };
 
     const client = createChatSocket(handle, () =>
-      queryClient.invalidateQueries({ queryKey: CHAT_KEY }),
+      queryClient.invalidateQueries({ queryKey: CHATS_KEY }),
     );
 
     let foreground = true;
@@ -95,7 +94,7 @@ export function useChatSocket() {
 
       if (next) {
         client.activate();
-        queryClient.invalidateQueries({ queryKey: CHAT_KEY });
+        queryClient.invalidateQueries({ queryKey: CHATS_KEY });
       } else {
         client.deactivate();
       }

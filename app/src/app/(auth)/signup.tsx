@@ -9,30 +9,20 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
+import { SendCodeButton } from "@/components/SendCodeButton";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
-import { formatCountdown } from "@/lib/date";
-import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
-import { codeSentMessage } from "@/lib/message";
-import { patternOf, usePhoneCountry } from "@/lib/phone";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
-import { showToast } from "@/lib/toast/store";
 import {
   PASSWORD_CONFIRM_RULES,
   PASSWORD_RULES,
   VERIFICATION_CODE_RULES,
 } from "@/lib/validation";
-
-// 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
-const RESEND_COOLDOWN_SECONDS = 30;
-
-// 서버 VerificationCodeService.CODE_TIME_TO_LIVE와 같다.
-const CODE_TIME_TO_LIVE_SECONDS = 180;
 
 const SIGN_UP_METHOD = "phone";
 
@@ -58,18 +48,9 @@ export default function SignupScreen() {
 
   const openLegal = (url: string) => openWebPage(url, show);
 
-  const cooldown = useCountdown();
-  const expiry = useCountdown();
-
-  const sendCode = useMutation({
-    mutationFn: (phoneNumber: string) =>
-      api.auth.sendVerificationCode(phoneNumber, "SIGNUP"),
-    onSuccess: () => {
-      logAppEvent(APP_EVENT.verificationCodeSent);
-      cooldown.start(RESEND_COOLDOWN_SECONDS);
-      expiry.start(CODE_TIME_TO_LIVE_SECONDS);
-      showToast("info", codeSentMessage());
-    },
+  const code = useVerificationCode({
+    purpose: "SIGNUP",
+    onSent: () => logAppEvent(APP_EVENT.verificationCodeSent),
     onError: (error) => {
       logAppEvent(APP_EVENT.verificationCodeFailed, {
         reason: apiErrorCode(error),
@@ -90,13 +71,7 @@ export default function SignupScreen() {
     },
   });
 
-  const country = usePhoneCountry();
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
-
-  const canSendCode =
-    patternOf(country).test(phoneNumber) &&
-    !sendCode.isPending &&
-    cooldown.remaining === 0;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -143,19 +118,12 @@ export default function SignupScreen() {
           control={control}
           name="phoneNumber"
           right={
-            <RetroButton
-              minW={SEND_CODE_BUTTON_MIN_WIDTH}
-              disabled={!canSendCode}
-              onPress={() => sendCode.mutate(phoneNumber)}
-            >
-              {sendCode.isPending ? (
-                <Spinner color="white" />
-              ) : expiry.remaining > 0 ? (
-                formatCountdown(expiry.remaining)
-              ) : (
-                t("auth.sendCode")
-              )}
-            </RetroButton>
+            <SendCodeButton
+              sending={code.sending}
+              remaining={code.expiryRemaining}
+              disabled={!code.canSend(phoneNumber)}
+              onPress={() => code.send(phoneNumber)}
+            />
           }
         />
 

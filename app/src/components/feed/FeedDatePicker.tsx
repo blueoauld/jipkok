@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Calendar, type DateData, LocaleConfig } from "react-native-calendars";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/components/ScrollToTopButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
@@ -10,6 +9,7 @@ import {
   FLOATING_BUTTON_SIZE,
   OVERLAY_BG,
   RETRO_BORDER_WIDTH,
+  SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
 import i18n, { currentLocale } from "@/lib/i18n";
 import {
@@ -33,7 +33,7 @@ const KO_MONTHS = [
   "12월",
 ];
 
-const JA_MONTHS = [
+const CJK_MONTHS = [
   "1月",
   "2月",
   "3月",
@@ -93,21 +93,6 @@ const EN_DAYS = [
   "Saturday",
 ];
 
-const ZH_MONTHS = [
-  "1月",
-  "2月",
-  "3月",
-  "4月",
-  "5月",
-  "6月",
-  "7月",
-  "8月",
-  "9月",
-  "10月",
-  "11月",
-  "12月",
-];
-
 const ZH_DAYS = [
   "星期日",
   "星期一",
@@ -128,8 +113,8 @@ LocaleConfig.locales.ko = {
 };
 
 LocaleConfig.locales.ja = {
-  monthNames: JA_MONTHS,
-  monthNamesShort: JA_MONTHS,
+  monthNames: CJK_MONTHS,
+  monthNamesShort: CJK_MONTHS,
   dayNames: JA_DAYS,
   dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
   today: "今日",
@@ -144,8 +129,8 @@ LocaleConfig.locales.en = {
 };
 
 LocaleConfig.locales.zh = {
-  monthNames: ZH_MONTHS,
-  monthNamesShort: ZH_MONTHS,
+  monthNames: CJK_MONTHS,
+  monthNamesShort: CJK_MONTHS,
   dayNames: ZH_DAYS,
   dayNamesShort: ["日", "一", "二", "三", "四", "五", "六"],
   today: "今天",

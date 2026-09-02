@@ -1,5 +1,6 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
+import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { api, type ChatRoomPage } from "@/lib/api";
 import { useFlatItems } from "@/lib/paging";
 
@@ -8,7 +9,7 @@ export function useChatRoomSearch(keyword: string) {
 
   const query = useInfiniteQuery({
     enabled,
-    queryKey: ["chats", "rooms", "search", keyword],
+    queryKey: [...CHAT_ROOMS_KEY, "search", keyword],
     queryFn: ({ pageParam }) =>
       api.chats.search({ keyword, cursor: pageParam }),
     initialPageParam: undefined as number | undefined,

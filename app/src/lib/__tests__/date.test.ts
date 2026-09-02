@@ -19,7 +19,9 @@ describe("date params", () => {
     expect(toDateParam(date)).toBe("2026-08-05");
     expect(fromDateParam("2026-08-05").getTime()).toBe(date.getTime());
   });
+});
 
+describe("date labels", () => {
   it("오늘 판정과 라벨", () => {
     const today = new Date();
 

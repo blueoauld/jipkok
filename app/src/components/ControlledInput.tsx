@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   type Control,
   Controller,
@@ -6,7 +6,6 @@ import {
   type FieldValues,
   type RegisterOptions,
 } from "react-hook-form";
-import type { InputProps } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { RetroInput, type RetroInputProps } from "@/components/ui/RetroInput";
@@ -16,7 +15,6 @@ type ControlledInputProps<T extends FieldValues> = RetroInputProps & {
   name: FieldPath<T>;
   rules?: RegisterOptions<T, FieldPath<T>>;
   renderRight?: (value: string) => ReactNode;
-  input?: ComponentType<InputProps>;
 };
 
 export function ControlledInput<T extends FieldValues>({
@@ -24,7 +22,6 @@ export function ControlledInput<T extends FieldValues>({
   name,
   rules,
   renderRight,
-  input: InputComponent = RetroInput,
   ...inputProps
 }: ControlledInputProps<T>) {
   return (
@@ -37,7 +34,7 @@ export function ControlledInput<T extends FieldValues>({
           error={fieldState.error?.message}
           right={renderRight?.(field.value ?? "")}
         >
-          <InputComponent
+          <RetroInput
             value={field.value ?? ""}
             onChangeText={field.onChange}
             onBlur={field.onBlur}

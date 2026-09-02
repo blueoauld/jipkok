@@ -19,13 +19,15 @@ export function ActivityList({
   timeOf?: (member: MemberSummaryResponse) => string | undefined;
   onDelete?: (memberId: number) => void;
 }) {
-  const contentStyle = useMemo(() => {
-    const space = getTokens().space;
-
-    return { padding: space.$4.val, gap: space.$4.val };
-  }, []);
   const { members, error } = query;
   const paged = usePagedList(query);
+  const contentStyle = useMemo(
+    () => ({
+      ...paged.contentContainerStyle,
+      paddingTop: getTokens().space.$4.val,
+    }),
+    [paged.contentContainerStyle],
+  );
 
   if (!members) {
     return (

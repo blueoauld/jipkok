@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroCard } from "@/components/ui/RetroCard";
@@ -71,8 +71,6 @@ export default function PointHistoryScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(() => ({ title: t("list.pointHistory") }), [t]);
 
-  const space = getTokens().space;
-
   const query = usePointHistories();
   const { histories, error } = query;
   const paged = usePagedList(query);
@@ -92,9 +90,8 @@ export default function PointHistoryScreen() {
             renderItem={({ item }) => <HistoryRow history={item} />}
             showsVerticalScrollIndicator={true}
             contentContainerStyle={{
-              paddingHorizontal: space.$4.val,
-              paddingBottom: space.$4.val,
-              gap: space.$4.val,
+              ...paged.contentContainerStyle,
+              paddingTop: 0,
             }}
             ListEmptyComponent={
               <ListEmpty>{t("point.history.emptyMessage")}</ListEmpty>

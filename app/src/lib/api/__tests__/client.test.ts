@@ -1,4 +1,5 @@
-import { ApiError, request, restoreSession } from "@/lib/api";
+import { ApiError, restoreSession } from "@/lib/api";
+import { request } from "@/lib/api/client";
 import {
   clearTokens,
   getAccessToken,

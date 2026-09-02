@@ -2,6 +2,8 @@ import type { ko } from "@/lib/i18n/ko";
 
 export const en: typeof ko = {
   common: {
+    requestFailed: "Couldn't process the request.",
+    retryLater: "Please try again in a moment.",
     reloadFailed:
       "Couldn't restart the app. Fully close and reopen it to apply the change.",
     profileLoadFailed: "Couldn't load the profile.",
@@ -227,7 +229,6 @@ export const en: typeof ko = {
     leaveRoomsNotice:
       "You'll leave the selected chats. Those conversations disappear for both of you.",
     monthFormat: "MMMM yyyy",
-    channelFeed: "Feed",
   },
   connectFailed: "Connection failed.",
   auth: {
@@ -367,15 +368,14 @@ export const en: typeof ko = {
     cancelled: "Upload cancelled.",
     offline:
       "No connection, so this wasn't sent. Please try again once you're back online.",
-    requestFailed: "Couldn't process the request.",
-    retryLater: "Please try again in a moment.",
     copied: "Message copied.",
     photoSaved: "Photo saved.",
     videoSaved: "Video saved.",
     photoSaveFailed: "Couldn't save the photo.",
     videoSaveFailed: "Couldn't save the video.",
     videoTooLong: "Videos can be up to {{minutes}} minutes.",
-    videoTooLarge: "That video is too large. You can send up to 150MB.",
+    videoTooLarge:
+      "That video is too large. You can send up to {{megabytes}}MB.",
     photoSummary: "Photo",
     videoSummary: "Video",
   },
@@ -424,6 +424,7 @@ export const en: typeof ko = {
   push: {
     channelDefault: "Notifications",
     channelChat: "Chat",
+    channelFeed: "Feed",
   },
   point: {
     history: {

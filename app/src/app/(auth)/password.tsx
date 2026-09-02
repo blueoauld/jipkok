@@ -8,28 +8,17 @@ import { Spinner } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
+import { SendCodeButton } from "@/components/SendCodeButton";
 import { RetroButton } from "@/components/ui/RetroButton";
-import { useCountdown } from "@/hooks/useCountdown";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { api, type ResetPasswordRequest } from "@/lib/api";
-import { formatCountdown } from "@/lib/date";
-import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
-import { codeSentMessage } from "@/lib/message";
-import { patternOf, usePhoneCountry } from "@/lib/phone";
 import { showToast } from "@/lib/toast/store";
 import {
   PASSWORD_CONFIRM_RULES,
   PASSWORD_RULES,
   VERIFICATION_CODE_RULES,
 } from "@/lib/validation";
-
-// 서버 VerificationCodeService.RESEND_COOLDOWN과 같다.
-const RESEND_COOLDOWN_SECONDS = 30;
-
-// 서버 VerificationCodeService.CODE_TIME_TO_LIVE와 같다.
-const CODE_TIME_TO_LIVE_SECONDS = 180;
-
-const PURPOSE = "PASSWORD_RESET";
 
 export default function PasswordScreen() {
   const { t } = useTranslation();
@@ -44,17 +33,8 @@ export default function PasswordScreen() {
 
   const { alertElement, showApiError } = useRetroAlert();
 
-  const cooldown = useCountdown();
-  const expiry = useCountdown();
-
-  const sendCode = useMutation({
-    mutationFn: (phoneNumber: string) =>
-      api.auth.sendVerificationCode(phoneNumber, PURPOSE),
-    onSuccess: () => {
-      cooldown.start(RESEND_COOLDOWN_SECONDS);
-      expiry.start(CODE_TIME_TO_LIVE_SECONDS);
-      showToast("info", codeSentMessage());
-    },
+  const code = useVerificationCode({
+    purpose: "PASSWORD_RESET",
     onError: showApiError,
   });
 
@@ -67,13 +47,7 @@ export default function PasswordScreen() {
     onError: showApiError,
   });
 
-  const country = usePhoneCountry();
   const phoneNumber = useWatch({ control, name: "phoneNumber" });
-
-  const canSendCode =
-    patternOf(country).test(phoneNumber) &&
-    !sendCode.isPending &&
-    cooldown.remaining === 0;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -96,19 +70,12 @@ export default function PasswordScreen() {
           control={control}
           name="phoneNumber"
           right={
-            <RetroButton
-              minW={SEND_CODE_BUTTON_MIN_WIDTH}
-              disabled={!canSendCode}
-              onPress={() => sendCode.mutate(phoneNumber)}
-            >
-              {sendCode.isPending ? (
-                <Spinner color="white" />
-              ) : expiry.remaining > 0 ? (
-                formatCountdown(expiry.remaining)
-              ) : (
-                t("auth.sendCode")
-              )}
-            </RetroButton>
+            <SendCodeButton
+              sending={code.sending}
+              remaining={code.expiryRemaining}
+              disabled={!code.canSend(phoneNumber)}
+              onPress={() => code.send(phoneNumber)}
+            />
           }
         />
 

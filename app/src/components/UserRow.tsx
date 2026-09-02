@@ -120,7 +120,7 @@ function Row({
               {comment || EMPTY_COMMENT}
             </Text>
 
-            {distance !== undefined && distance !== null && (
+            {distance != null && (
               <Text theme="gray" shrink={0} fontSize="$2" color="$color11">
                 {formatDistance(distance)}
               </Text>

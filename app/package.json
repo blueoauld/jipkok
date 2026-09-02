@@ -98,7 +98,8 @@
     },
     "setupFiles": [
       "<rootDir>/src/lib/__tests__/localization-mock.ts",
-      "<rootDir>/src/lib/__tests__/crashlytics-mock.ts"
+      "<rootDir>/src/lib/__tests__/crashlytics-mock.ts",
+      "<rootDir>/src/lib/__tests__/haptics-mock.ts"
     ],
     "testMatch": [
       "<rootDir>/src/**/*.test.ts",

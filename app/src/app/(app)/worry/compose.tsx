@@ -10,7 +10,7 @@ import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { WORRIES_KEY } from "@/hooks/useWorryPosts";
+import { WORRY_LIST_KEY } from "@/hooks/useWorryPosts";
 import { api, type WorryCategory } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
@@ -41,7 +41,7 @@ export default function WorryComposeScreen() {
       content: string;
     }) => api.worries.create(picked, content),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: WORRIES_KEY });
+      await queryClient.invalidateQueries({ queryKey: WORRY_LIST_KEY });
       showToast("info", t("worry.compose.posted"));
       router.back();
     },

@@ -3,6 +3,7 @@ import type { ImagePickerAsset } from "expo-image-picker";
 
 import { useChatMedia } from "@/hooks/useChatMedia";
 import { forgetRoom } from "@/hooks/useChatSocket";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import { logAppEvent } from "@/lib/analytics";
 import { api, ApiError, type ChatMessageResponse } from "@/lib/api";
 import i18n from "@/lib/i18n";
@@ -44,21 +45,13 @@ function video(durationMillis: number | null) {
   } as ImagePickerAsset;
 }
 
-function message(
-  messageId: number,
-  extra: Partial<ChatMessageResponse> = {},
-): ChatMessageResponse {
-  return {
-    messageId,
+function message(messageId: number, extra: Partial<ChatMessageResponse> = {}) {
+  return chatMessage(messageId, {
     roomId: ROOM_ID,
-    senderId: 1,
     type: "VIDEO",
     content: null,
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions: [],
     ...extra,
-  };
+  });
 }
 
 type Setup = Awaited<

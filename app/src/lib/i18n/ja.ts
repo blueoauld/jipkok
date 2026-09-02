@@ -2,6 +2,8 @@ import type { ko } from "@/lib/i18n/ko";
 
 export const ja: typeof ko = {
   common: {
+    requestFailed: "リクエストを処理できませんでした。",
+    retryLater: "しばらくしてからもう一度お試しください。",
     reloadFailed:
       "アプリを再起動できませんでした。アプリを完全に閉じて開き直すと反映されます。",
     profileLoadFailed: "プロフィールを読み込めませんでした。",
@@ -230,7 +232,6 @@ export const ja: typeof ko = {
     leaveRoomsNotice:
       "選択したチャットルームから退出します。やり取りした会話が互いにすべて消えます。",
     monthFormat: "yyyy年M月",
-    channelFeed: "フィード",
   },
   connectFailed: "接続に失敗しました。",
   auth: {
@@ -371,15 +372,13 @@ export const ja: typeof ko = {
     cancelled: "送信を取り消しました。",
     offline:
       "接続がないため送信できませんでした。接続後にもう一度お試しください。",
-    requestFailed: "リクエストを処理できませんでした。",
-    retryLater: "しばらくしてからもう一度お試しください。",
     copied: "メッセージをコピーしました。",
     photoSaved: "写真を保存しました。",
     videoSaved: "動画を保存しました。",
     photoSaveFailed: "写真を保存できませんでした。",
     videoSaveFailed: "動画を保存できませんでした。",
     videoTooLong: "動画は{{minutes}}分まで送信できます。",
-    videoTooLarge: "動画が大きすぎます。150MBまで送信できます。",
+    videoTooLarge: "動画が大きすぎます。{{megabytes}}MBまで送信できます。",
     photoSummary: "写真",
     videoSummary: "動画",
   },
@@ -428,6 +427,7 @@ export const ja: typeof ko = {
   push: {
     channelDefault: "通知",
     channelChat: "チャット",
+    channelFeed: "フィード",
   },
   point: {
     history: {

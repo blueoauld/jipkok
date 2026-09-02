@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { useMessageActions } from "@/hooks/useMessageActions";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import { api, type ChatMessageResponse } from "@/lib/api";
 import { copyMessage, saveMedia } from "@/lib/chat/media";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
@@ -18,10 +19,6 @@ jest.mock("@/lib/chat/media", () => ({
   saveMedia: jest.fn(),
 }));
 jest.mock("@/lib/toast/store", () => ({ showToast: jest.fn() }));
-jest.mock("expo-haptics", () => ({
-  impactAsync: jest.fn(),
-  ImpactFeedbackStyle: { Light: "light" },
-}));
 
 const chats = api.chats as unknown as {
   react: jest.Mock;
@@ -35,21 +32,12 @@ const PARTNER = 20;
 
 const frame: MessageFrame = { x: 0, y: 0, width: 100, height: 40 };
 
-function message(
-  messageId: number,
-  extra: Partial<ChatMessageResponse> = {},
-): ChatMessageResponse {
-  return {
-    messageId,
+function message(messageId: number, extra: Partial<ChatMessageResponse> = {}) {
+  return chatMessage(messageId, {
     roomId: ROOM_ID,
     senderId: PARTNER,
-    type: "TEXT",
-    content: "hi",
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions: [],
     ...extra,
-  };
+  });
 }
 
 type Setup = Awaited<

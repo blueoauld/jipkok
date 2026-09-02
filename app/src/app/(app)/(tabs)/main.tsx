@@ -63,7 +63,7 @@ export default function MainScreen() {
     () => ({ gender, minAge, maxAge }),
     [gender, minAge, maxAge],
   );
-  const feed = useMembers(sort, filter);
+  const memberList = useMembers(sort, filter);
   const { data: profile } = useMyProfile();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
   const location = useLocationUpdate({ show, showApiError, confirm });
@@ -76,20 +76,20 @@ export default function MainScreen() {
     },
     onError: showApiError,
   });
-  const { members, error, refetch: refetchFeed } = feed;
+  const { members, error, refetch: refetchMembers } = memberList;
   const tabBarOverlay = useTabBarOverlay();
-  const paged = usePagedList(feed, tabBarOverlay);
+  const paged = usePagedList(memberList, tabBarOverlay);
 
   useLoadingOverlay(updateComment.isPending);
   const { update: updateLocation, refresh: refreshLocation } = location;
 
-  // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
     [],
   );
 
-  const changeFilter = useCallback(
+  // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
+  const changeSort = useCallback(
     async (next: MemberSort) => {
       setSort(next);
       scrollToTop();
@@ -107,8 +107,8 @@ export default function MainScreen() {
 
   const { refreshing, onRefresh } = usePullRefresh(
     useCallback(
-      () => Promise.all([refreshLocation(), refetchFeed()]),
-      [refetchFeed, refreshLocation],
+      () => Promise.all([refreshLocation(), refetchMembers()]),
+      [refetchMembers, refreshLocation],
     ),
   );
 
@@ -157,7 +157,7 @@ export default function MainScreen() {
         <RetroSegmentedControl
           items={SORT_ITEMS}
           value={sort}
-          onChange={changeFilter}
+          onChange={changeSort}
         />
       </YStack>
 
@@ -180,7 +180,7 @@ export default function MainScreen() {
         <ScreenState
           error={error}
           message={listErrorMessage()}
-          onRetry={refetchFeed}
+          onRetry={refetchMembers}
         />
       )}
 

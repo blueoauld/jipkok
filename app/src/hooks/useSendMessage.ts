@@ -121,10 +121,10 @@ export function useSendMessage(
         }),
     );
 
-  const prepend = async (messages: ChatMessageResponse[]) => {
+  const prepend = async (message: ChatMessageResponse) => {
     await queryClient.cancelQueries({ queryKey: chatMessagesKey(roomId) });
-    updateFeed(queryClient, roomId, (items) => [...messages, ...items]);
-    previewRooms(messages[messages.length - 1]);
+    updateFeed(queryClient, roomId, (items) => [message, ...items]);
+    previewRooms(message);
   };
 
   const replace = (temp: ChatMessageResponse, message: ChatMessageResponse) =>
@@ -277,7 +277,7 @@ export function useSendMessage(
           replyMessage: null,
         });
 
-        await prepend([temp]);
+        await prepend(temp);
         await sendPhoto(asset, temp);
       }
     } finally {
@@ -310,7 +310,7 @@ export function useSendMessage(
           replyMessage: null,
         });
 
-        await prepend([temp]);
+        await prepend(temp);
         await sendVideo(asset, temp, thumbnailUri);
       }
     } finally {
@@ -334,7 +334,7 @@ export function useSendMessage(
         replyToMessageId,
         clientMessageId: temp.clientMessageId,
       }),
-    onMutate: ({ temp }) => prepend([temp]),
+    onMutate: ({ temp }) => prepend(temp),
     onSuccess: (message, { temp }) => replace(temp, message),
     onError: (error, { content, temp }) => {
       if (temp.clientMessageId) {

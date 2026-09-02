@@ -4,13 +4,14 @@ import { XStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import { FLOATING_BUTTON_SIZE } from "@/lib/design";
+import {
+  FLOATING_BUTTON_SIZE,
+  SCROLL_TO_TOP_BOTTOM_GAP,
+  SCROLL_TO_TOP_SIDE_GAP,
+} from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
 const ICON_SIZE = 20;
-
-export const SCROLL_TO_TOP_BOTTOM_GAP = 18;
-export const SCROLL_TO_TOP_SIDE_GAP = 16;
 
 export function ScrollToTopButton({
   visible,

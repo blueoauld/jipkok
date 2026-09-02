@@ -6,7 +6,8 @@ import { chatRoomKey } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
-import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
+import { chatMessage } from "@/lib/__tests__/chat-fixtures";
+import type { ChatMessagePage } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
 import { useDeletedRoomStore } from "@/lib/chat/store";
@@ -19,17 +20,8 @@ const socket = { activate: jest.fn(), deactivate: jest.fn() };
 let handle: (event: ChatEvent) => void = () => undefined;
 let reconnect: () => void = () => undefined;
 
-function message(messageId: number, roomId = 1): ChatMessageResponse {
-  return {
-    messageId,
-    roomId,
-    senderId: 2,
-    type: "TEXT",
-    content: "hi",
-    createdAt: "2026-08-18T00:00:00Z",
-    replyMessage: null,
-    reactions: [],
-  };
+function message(messageId: number, roomId = 1) {
+  return chatMessage(messageId, { roomId, senderId: 2 });
 }
 
 function seedRoom(

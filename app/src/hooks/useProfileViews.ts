@@ -9,12 +9,13 @@ import { useEffect } from "react";
 import { api, type ProfileViewPage } from "@/lib/api";
 import { useFlatItems } from "@/lib/paging";
 
-export const PROFILE_VIEWS_KEY = ["profileViews"];
-const PROFILE_VIEW_NEW_COUNT_KEY = ["profileViews", "newCount"];
+const PROFILE_VIEWS_KEY = ["profileViews"];
+export const PROFILE_VIEW_LIST_KEY = [...PROFILE_VIEWS_KEY, "list"];
+const PROFILE_VIEW_NEW_COUNT_KEY = [...PROFILE_VIEWS_KEY, "newCount"];
 
 export function useProfileViews() {
   const query = useInfiniteQuery({
-    queryKey: PROFILE_VIEWS_KEY,
+    queryKey: PROFILE_VIEW_LIST_KEY,
     queryFn: ({ pageParam }) =>
       api.profileViews.received({ cursor: pageParam }),
     initialPageParam: undefined as string | undefined,

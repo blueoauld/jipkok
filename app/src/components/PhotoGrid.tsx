@@ -74,7 +74,7 @@ function OverlayButton({
 }: {
   children: React.ReactNode;
   bg: XStackProps["bg"];
-  onPress: () => void;
+  onPress?: () => void;
 } & XStackProps) {
   return (
     <YStack position="absolute" {...position}>
@@ -206,23 +206,13 @@ function Grid({
                   )}
 
                   {showPrimaryBadge && cell.index === 0 && (
-                    <YStack position="absolute" t="$2" l="$2">
-                      <RetroPressable
-                        offset={RETRO_SHADOW_OFFSET_SM}
-                        width={BADGE_SIZE}
-                        height={BADGE_SIZE}
-                        rounded={0}
-                        bg={accent}
-                        items="center"
-                        justify="center"
-                      >
-                        <CrownSimpleIcon
-                          size={BADGE_ICON_SIZE}
-                          weight="fill"
-                          color="white"
-                        />
-                      </RetroPressable>
-                    </YStack>
+                    <OverlayButton t="$2" l="$2" bg={accent}>
+                      <CrownSimpleIcon
+                        size={BADGE_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
+                    </OverlayButton>
                   )}
 
                   {onRemove && (

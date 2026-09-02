@@ -5,6 +5,7 @@ import { chatMessagesKey } from "@/hooks/useChatMessages";
 import { chatRoomKey } from "@/hooks/useChatRoom";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
+import { chatRoom } from "@/lib/__tests__/chat-fixtures";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import { LEAVE_DESCRIPTION, LEAVE_SELECTED_DESCRIPTION } from "@/lib/chat";
 
@@ -22,10 +23,6 @@ jest.mock("@/lib/api", () => ({
     },
   },
 }));
-jest.mock("expo-haptics", () => ({
-  impactAsync: jest.fn(),
-  ImpactFeedbackStyle: { Light: "light" },
-}));
 // useChatRooms가 거쳐 부르는 expo-notifications의 임포트 부작용을 막는다.
 jest.mock("@/lib/push/notifications", () => ({ setBadgeCount: jest.fn() }));
 
@@ -37,22 +34,8 @@ const chats = api.chats as unknown as {
   markAllRead: jest.Mock;
 };
 
-function room(
-  roomId: number,
-  extra: Partial<ChatRoomResponse> = {},
-): ChatRoomResponse {
-  return {
-    roomId,
-    memberId: 2,
-    nickname: "상대",
-    lastMessageType: "TEXT",
-    lastMessageContent: "hi",
-    lastMessageAt: "2026-08-18T00:00:00Z",
-    unreadCount: 3,
-    notificationEnabled: true,
-    pinned: false,
-    ...extra,
-  };
+function room(roomId: number, extra: Partial<ChatRoomResponse> = {}) {
+  return chatRoom(roomId, { unreadCount: 3, ...extra });
 }
 
 function items(client: ReturnType<typeof createTestQueryClient>) {
