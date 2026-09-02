@@ -1,3 +1,4 @@
+import { animations } from "@tamagui/config/v5-reanimated";
 import { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
@@ -9,6 +10,11 @@ import {
   withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+
+import { TRANSITION } from "@/lib/design";
+
+// 시트, 다이얼로그와 같은 스프링으로 되돌아간다.
+const SPRING = animations.animations[TRANSITION];
 
 const DISMISS_DISTANCE = 120;
 
@@ -42,7 +48,7 @@ export function useDismissGesture({
           const flicked = Math.abs(event.velocityY) > DISMISS_VELOCITY;
 
           if (!dragged && !flicked) {
-            translateY.value = withSpring(0);
+            translateY.value = withSpring(0, SPRING);
             return;
           }
 

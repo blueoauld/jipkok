@@ -4,7 +4,7 @@ import { Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
-import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 
 export type MenuSheetItem = {
   label: string;
@@ -39,8 +39,14 @@ export function MenuSheet({
       onOpenChange={onOpenChange}
       snapPointsMode="fit"
       dismissOnSnapToBottom
+      transition={TRANSITION}
     >
-      <Sheet.Overlay bg={OVERLAY_BG} />
+      <Sheet.Overlay
+        bg={OVERLAY_BG}
+        transition={TRANSITION}
+        enterStyle={{ opacity: 0 }}
+        exitStyle={{ opacity: 0 }}
+      />
 
       <Sheet.Frame
         bg="$color1"

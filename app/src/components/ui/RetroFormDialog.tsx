@@ -1,9 +1,14 @@
-import { Fragment, type ReactNode } from "react";
+import { Fragment, type ReactNode, useState } from "react";
 import { Dialog, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
-import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import {
+  DIALOG_ENTER_SCALE,
+  OVERLAY_BG,
+  RETRO_BORDER_WIDTH,
+  TRANSITION,
+} from "@/lib/design";
 
 export function RetroFormDialog({
   open,
@@ -15,11 +20,23 @@ export function RetroFormDialog({
   children: ReactNode;
 }) {
   const keyboardOffset = useDialogKeyboardOffset();
+  // 열 때마다 새로 만들어 지난번 입력이 남지 않게 한다. 닫힐 때는 나가는 전환 동안
+  // 그대로 둬야 새 입력칸이 다시 포커스를 잡아 키보드를 망가뜨리지 않는다.
+  const [session, setSession] = useState({ open, id: 0 });
+
+  if (session.open !== open) {
+    setSession({ open, id: open ? session.id + 1 : session.id });
+  }
 
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay bg={OVERLAY_BG} />
+        <Dialog.Overlay
+          bg={OVERLAY_BG}
+          transition={TRANSITION}
+          enterStyle={{ opacity: 0 }}
+          exitStyle={{ opacity: 0 }}
+        />
 
         <Dialog.Content
           width="85%"
@@ -31,6 +48,9 @@ export function RetroFormDialog({
           elevation={0}
           shadowOpacity={0}
           y={keyboardOffset}
+          transition={TRANSITION}
+          enterStyle={{ opacity: 0, scale: DIALOG_ENTER_SCALE }}
+          exitStyle={{ opacity: 0, scale: DIALOG_ENTER_SCALE }}
         >
           <YStack>
             <RetroShadow color="$gray12" />
@@ -41,8 +61,7 @@ export function RetroFormDialog({
               p="$4"
               gap="$4"
             >
-              {/* 열 때마다 새로 만들어 지난번 입력이 남지 않게 한다. */}
-              <Fragment key={String(open)}>{children}</Fragment>
+              <Fragment key={session.id}>{children}</Fragment>
             </YStack>
           </YStack>
         </Dialog.Content>

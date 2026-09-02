@@ -27,11 +27,18 @@ export type RetroAlertApi = Pick<
 
 export function useRetroAlert(initial?: AlertState) {
   const [alert, setAlert] = useState<AlertState | null>(initial ?? null);
+  // 닫힌 뒤에도 마지막 알림을 남겨 두어야 나가는 전환을 그릴 수 있다.
+  const [open, setOpen] = useState(initial != null);
+
+  const present = useCallback((next: AlertState) => {
+    setAlert(next);
+    setOpen(true);
+  }, []);
 
   const show = useCallback(
     (variant: RetroAlertVariant, message: string, onDismiss?: () => void) =>
-      setAlert({ variant, message, onDismiss }),
-    [],
+      present({ variant, message, onDismiss }),
+    [present],
   );
 
   const showApiError = useCallback(
@@ -46,13 +53,13 @@ export function useRetroAlert(initial?: AlertState) {
       destructive?: boolean;
       onConfirm: () => void;
       variant?: RetroAlertVariant;
-    }) => setAlert({ variant: "warning", ...options }),
-    [],
+    }) => present({ variant: "warning", ...options }),
+    [present],
   );
 
   const alertElement = alert && (
     <RetroAlert
-      visible
+      visible={open}
       variant={alert.variant}
       title={TITLES[alert.variant]}
       message={alert.message}
@@ -60,7 +67,7 @@ export function useRetroAlert(initial?: AlertState) {
       destructive={alert.destructive}
       onConfirm={alert.onConfirm}
       onClose={() => {
-        setAlert(null);
+        setOpen(false);
         alert.onDismiss?.();
       }}
     />

@@ -6,7 +6,7 @@ import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
-import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
@@ -99,8 +99,14 @@ export function MemberFilterSheet({
       onOpenChange={changeOpen}
       snapPointsMode="fit"
       dismissOnSnapToBottom
+      transition={TRANSITION}
     >
-      <Sheet.Overlay bg={OVERLAY_BG} />
+      <Sheet.Overlay
+        bg={OVERLAY_BG}
+        transition={TRANSITION}
+        enterStyle={{ opacity: 0 }}
+        exitStyle={{ opacity: 0 }}
+      />
 
       <Sheet.Frame
         bg="$color1"

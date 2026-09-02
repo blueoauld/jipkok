@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal, Platform, Text as NativeText } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { AnimatePresence, Text, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroShadow } from "@/components/ui/RetroShadow";
-import { OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import {
+  DIALOG_ENTER_SCALE,
+  OVERLAY_BG,
+  RETRO_BORDER_WIDTH,
+  TRANSITION,
+} from "@/lib/design";
 
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
@@ -36,79 +42,105 @@ export function RetroAlert({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  // 나가는 전환이 끝날 때까지 Modal을 붙들어 둔다.
+  const [mounted, setMounted] = useState(visible);
+
+  if (visible && !mounted) {
+    setMounted(true);
+  }
+
   return (
     <Modal
       transparent
-      visible={visible}
+      visible={mounted}
       animationType="none"
       onRequestClose={onClose}
     >
-      <YStack flex={1} bg={OVERLAY_BG} justify="center" p="$4">
-        <YStack>
-          <RetroShadow color="$gray12" />
-
-          <YStack borderWidth={RETRO_BORDER_WIDTH} borderColor="$gray12">
-            <XStack
-              bg={VARIANTS[variant].barColor}
-              px="$3"
-              py="$2.5"
-              items="center"
-              borderBottomWidth={RETRO_BORDER_WIDTH}
-              borderColor="$gray12"
+      <AnimatePresence onExitComplete={() => setMounted(false)}>
+        {visible && (
+          <YStack
+            key="alert"
+            flex={1}
+            bg={OVERLAY_BG}
+            justify="center"
+            p="$4"
+            opacity={1}
+            transition={TRANSITION}
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+          >
+            <YStack
+              scale={1}
+              transition={TRANSITION}
+              enterStyle={{ scale: DIALOG_ENTER_SCALE }}
+              exitStyle={{ scale: DIALOG_ENTER_SCALE }}
             >
-              <NativeText
-                style={{
-                  flex: 1,
-                  fontFamily: MONO_FONT,
-                  fontWeight: "700",
-                  fontSize: 18,
-                  color: VARIANTS[variant].labelColor,
-                }}
-              >
-                {VARIANTS[variant].label}
-              </NativeText>
-            </XStack>
+              <RetroShadow color="$gray12" />
 
-            <YStack bg="$color1">
-              <YStack p="$4" gap="$2">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
-                  {title}
-                </Text>
-                <Text color="$color12" fontSize="$3">
-                  {message}
-                </Text>
-              </YStack>
-
-              <YStack mx="$4" borderWidth={1} borderColor="$color8" />
-
-              {confirmLabel ? (
-                <XStack p="$4" gap="$3">
-                  <RetroButton flex={1} theme="gray" onPress={onClose}>
-                    {t("component.close")}
-                  </RetroButton>
-
-                  <RetroButton
-                    flex={1}
-                    theme={destructive ? "red" : undefined}
-                    onPress={() => {
-                      onClose();
-                      onConfirm?.();
+              <YStack borderWidth={RETRO_BORDER_WIDTH} borderColor="$gray12">
+                <XStack
+                  bg={VARIANTS[variant].barColor}
+                  px="$3"
+                  py="$2.5"
+                  items="center"
+                  borderBottomWidth={RETRO_BORDER_WIDTH}
+                  borderColor="$gray12"
+                >
+                  <NativeText
+                    style={{
+                      flex: 1,
+                      fontFamily: MONO_FONT,
+                      fontWeight: "700",
+                      fontSize: 18,
+                      color: VARIANTS[variant].labelColor,
                     }}
                   >
-                    {confirmLabel}
-                  </RetroButton>
+                    {VARIANTS[variant].label}
+                  </NativeText>
                 </XStack>
-              ) : (
-                <XStack justify="flex-end" p="$4">
-                  <RetroButton onPress={onClose}>
-                    {t("component.confirm")}
-                  </RetroButton>
-                </XStack>
-              )}
+
+                <YStack bg="$color1">
+                  <YStack p="$4" gap="$2">
+                    <Text fontSize="$6" fontWeight="700" color="$color12">
+                      {title}
+                    </Text>
+                    <Text color="$color12" fontSize="$3">
+                      {message}
+                    </Text>
+                  </YStack>
+
+                  <YStack mx="$4" borderWidth={1} borderColor="$color8" />
+
+                  {confirmLabel ? (
+                    <XStack p="$4" gap="$3">
+                      <RetroButton flex={1} theme="gray" onPress={onClose}>
+                        {t("component.close")}
+                      </RetroButton>
+
+                      <RetroButton
+                        flex={1}
+                        theme={destructive ? "red" : undefined}
+                        onPress={() => {
+                          onClose();
+                          onConfirm?.();
+                        }}
+                      >
+                        {confirmLabel}
+                      </RetroButton>
+                    </XStack>
+                  ) : (
+                    <XStack justify="flex-end" p="$4">
+                      <RetroButton onPress={onClose}>
+                        {t("component.confirm")}
+                      </RetroButton>
+                    </XStack>
+                  )}
+                </YStack>
+              </YStack>
             </YStack>
           </YStack>
-        </YStack>
-      </YStack>
+        )}
+      </AnimatePresence>
     </Modal>
   );
 }

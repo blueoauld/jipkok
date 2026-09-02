@@ -4,7 +4,11 @@ import { AnimatePresence, getTokens, Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
-import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
+import {
+  RETRO_BORDER_WIDTH,
+  RETRO_SHADOW_OFFSET,
+  TRANSITION,
+} from "@/lib/design";
 import { useToastStore } from "@/lib/toast/store";
 
 const VISIBLE_DURATION = 2500;
@@ -51,7 +55,7 @@ export function ToastHost() {
               key={toast.id}
               opacity={1}
               y={0}
-              transition="quick"
+              transition={TRANSITION}
               enterStyle={{ opacity: 0, y: SLIDE_OFFSET }}
               exitStyle={{ opacity: 0, y: SLIDE_OFFSET }}
             >

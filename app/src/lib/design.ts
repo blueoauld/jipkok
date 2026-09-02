@@ -32,6 +32,12 @@ export const RETRO_SHADOW_OFFSET_SM = 2;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
+// 시트, 다이얼로그, 토스트가 같은 스프링으로 움직이게 하는 프리셋 이름이다.
+export const TRANSITION = "quickLessBouncy";
+
+// 다이얼로그가 나타나고 사라질 때 시작하는 크기다.
+export const DIALOG_ENTER_SCALE = 0.95;
+
 // 폼 화면 아래 고정 버튼이 스크롤 내용을 가리지 않게 띄우는 높이다.
 export const FORM_FOOTER_HEIGHT = 80;
 
