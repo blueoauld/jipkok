@@ -2,11 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, XStack, YStack } from "tamagui";
+import { Spinner, Text, XStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
+import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -31,57 +31,9 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="padding"
-        automaticOffset
-      >
-        <YStack flex={1} justify="space-between" p="$4">
-          <YStack gap="$4">
-            <PhoneNumberField control={control} name="phoneNumber" />
-
-            <ControlledInput
-              control={control}
-              name="password"
-              rules={{ required: t("validation.passwordRequired") }}
-              placeholder={t("auth.passwordPlaceholder")}
-              secureTextEntry
-              textContentType="password"
-              autoComplete="current-password"
-              autoCapitalize="none"
-            />
-
-            <XStack justify="center" items="center" gap="$3" mt="$2">
-              <Link href="/signup" asChild>
-                <Text
-                  theme={accent}
-                  color="$color10"
-                  fontSize="$4"
-                  textDecorationLine="underline"
-                  pressStyle={{ opacity: PRESS_OPACITY }}
-                >
-                  {t("auth.login.signup")}
-                </Text>
-              </Link>
-
-              <Text theme="gray" color="$color8" fontSize="$4">
-                |
-              </Text>
-
-              <Link href="/password" asChild>
-                <Text
-                  theme={accent}
-                  color="$color10"
-                  fontSize="$4"
-                  textDecorationLine="underline"
-                  pressStyle={{ opacity: PRESS_OPACITY }}
-                >
-                  {t("auth.login.findPassword")}
-                </Text>
-              </Link>
-            </XStack>
-          </YStack>
-
+      <FormScreen
+        scrollMode="layout"
+        footer={
           <RetroButton
             disabled={login.isPending}
             onPress={handleSubmit((values) => login.mutate(values))}
@@ -92,8 +44,51 @@ export default function LoginScreen() {
               t("auth.login.submit")
             )}
           </RetroButton>
-        </YStack>
-      </KeyboardAvoidingView>
+        }
+      >
+        <PhoneNumberField control={control} name="phoneNumber" />
+
+        <ControlledInput
+          control={control}
+          name="password"
+          rules={{ required: t("validation.passwordRequired") }}
+          placeholder={t("auth.passwordPlaceholder")}
+          secureTextEntry
+          textContentType="password"
+          autoComplete="current-password"
+          autoCapitalize="none"
+        />
+
+        <XStack justify="center" items="center" gap="$3" mt="$2">
+          <Link href="/signup" asChild>
+            <Text
+              theme={accent}
+              color="$color10"
+              fontSize="$4"
+              textDecorationLine="underline"
+              pressStyle={{ opacity: PRESS_OPACITY }}
+            >
+              {t("auth.login.signup")}
+            </Text>
+          </Link>
+
+          <Text theme="gray" color="$color8" fontSize="$4">
+            |
+          </Text>
+
+          <Link href="/password" asChild>
+            <Text
+              theme={accent}
+              color="$color10"
+              fontSize="$4"
+              textDecorationLine="underline"
+              pressStyle={{ opacity: PRESS_OPACITY }}
+            >
+              {t("auth.login.findPassword")}
+            </Text>
+          </Link>
+        </XStack>
+      </FormScreen>
 
       {alertElement}
     </SafeAreaView>
