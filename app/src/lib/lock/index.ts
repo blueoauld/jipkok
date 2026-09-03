@@ -9,6 +9,15 @@ export function shouldRelock(backgroundAt: number | null, now: number) {
   return backgroundAt !== null && now - backgroundAt >= RELOCK_AFTER_MILLIS;
 }
 
+// 인증 프롬프트 자체가 앱을 백그라운드로 보내기도 하므로, 프롬프트가 끝난 뒤에
+// 나갔다 돌아온 경우에만 다시 띄운다. 안 그러면 취소할 때마다 프롬프트가 되살아난다.
+export function shouldRetryUnlock(
+  backgroundAt: number | null,
+  promptEndedAt: number,
+) {
+  return backgroundAt !== null && backgroundAt > promptEndedAt;
+}
+
 // 생체 인증이 없어도 기기 암호가 있으면 OS가 그것으로 대신 받는다.
 export async function isDeviceLockAvailable() {
   const level = await LocalAuthentication.getEnrolledLevelAsync();

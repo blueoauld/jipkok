@@ -199,7 +199,7 @@ class AuthServiceTest {
     }
 
     @Test
-    fun `이미 회전된 토큰이 다시 들어오면 저장된 토큰까지 지운다`() {
+    fun `다른 기기가 새로 로그인한 뒤 옛 토큰이 들어오면 그 기기만 거부하고 저장된 토큰은 남긴다`() {
         // given
         stubStoredToken("another-refresh-token")
 
@@ -210,7 +210,7 @@ class AuthServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN)
-        verify { refreshTokenRepository.delete(MEMBER_ID) }
+        verify(exactly = 0) { refreshTokenRepository.delete(any()) }
         verify(exactly = 0) { refreshTokenRepository.save(any(), any()) }
     }
 

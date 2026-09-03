@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { Link, router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,9 +17,17 @@ import { useAccent } from "@/lib/theme/accent";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
-  const { control, handleSubmit } = useForm<LoginRequest>({
+  const { control, handleSubmit, setValue } = useForm<LoginRequest>({
     defaultValues: { phoneNumber: "", password: "" },
   });
+  // 비밀번호를 바꾸고 돌아오면 방금 인증한 번호를 채워 둔다.
+  const { phoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
+
+  useEffect(() => {
+    if (phoneNumber) {
+      setValue("phoneNumber", phoneNumber);
+    }
+  }, [phoneNumber, setValue]);
 
   const { alertElement, showApiError } = useRetroAlert();
   const accent = useAccent();

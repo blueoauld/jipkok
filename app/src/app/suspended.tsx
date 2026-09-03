@@ -3,18 +3,18 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, useTheme, YStack } from "tamagui";
+import { Spinner, useTheme, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
+import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { formatDateTime } from "@/lib/date";
+import { STATUS_ICON_SIZE } from "@/lib/design";
 import { openSupportMail } from "@/lib/support";
 import { findServiceSuspension, reasonLabel } from "@/lib/suspension";
-
-const ICON_SIZE = 56;
 
 export default function SuspendedScreen() {
   const { t } = useTranslation();
@@ -36,31 +36,27 @@ export default function SuspendedScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <YStack flex={1} justify="center" items="center" gap="$5" p="$6">
-        <ProhibitIcon size={ICON_SIZE} color={theme.red10.val} />
-
-        <YStack gap="$2" items="center">
-          <Text fontSize="$6" fontWeight="700" text="center">
-            {t("suspended.title")}
-          </Text>
-
-          {suspension && (
+      <StatusScreen
+        icon={<ProhibitIcon size={STATUS_ICON_SIZE} color={theme.red10.val} />}
+        title={t("suspended.title")}
+        description={
+          suspension && (
             <>
-              <Text theme="gray" color="$color10" fontSize="$4">
+              <StatusDescription>
                 {reasonLabel(suspension.reason)}
-              </Text>
+              </StatusDescription>
 
-              <Text theme="gray" color="$color10" fontSize="$4">
+              <StatusDescription>
                 {suspension.expiresAt
                   ? t("suspended.releaseAt", {
                       at: formatDateTime(suspension.expiresAt),
                     })
                   : t("suspended.forever")}
-              </Text>
+              </StatusDescription>
             </>
-          )}
-        </YStack>
-
+          )
+        }
+      >
         <YStack width="100%" gap="$4">
           <RetroButton
             onPress={() =>
@@ -82,7 +78,7 @@ export default function SuspendedScreen() {
             {t("setting.menu.withdraw")}
           </RetroButton>
         </YStack>
-      </YStack>
+      </StatusScreen>
 
       {alertElement}
     </SafeAreaView>

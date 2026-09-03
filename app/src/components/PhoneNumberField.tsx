@@ -11,7 +11,7 @@ import { COUNTRY_BUTTON_MIN_WIDTH } from "@/lib/design";
 import { maxLengthOf } from "@/lib/phone";
 import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
 import { usePhoneCountry, usePhoneCountryStore } from "@/lib/phone/store";
-import { phoneNumberRules } from "@/lib/validation";
+import { PHONE_NUMBER_RULES } from "@/lib/validation";
 
 const COUNTRY_LABEL_KEYS = {
   KR: "auth.countryKR",
@@ -55,7 +55,7 @@ export function PhoneNumberField<T extends FieldValues>({
           <ControlledInput
             control={control}
             name={name}
-            rules={phoneNumberRules(country)}
+            rules={PHONE_NUMBER_RULES}
             placeholder={t("auth.phoneNumberPlaceholder")}
             keyboardType="number-pad"
             textContentType="telephoneNumber"

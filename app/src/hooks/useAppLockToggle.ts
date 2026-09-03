@@ -11,7 +11,7 @@ const ENABLED_MESSAGE = i18n.t("lock.enabled");
 const DISABLED_MESSAGE = i18n.t("lock.disabled");
 
 // 끌 때도 인증을 받아야 남이 잠금을 풀어 두지 못한다.
-export function useAppLockToggle({ show }: Pick<RetroAlertApi, "show">) {
+export function useAppLockToggle({ show }: RetroAlertApi) {
   const enabled = useAppLockStore((state) => state.enabled);
   const setEnabled = useAppLockStore((state) => state.setEnabled);
   const [pending, setPending] = useState(false);

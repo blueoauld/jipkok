@@ -29,6 +29,7 @@ import { XStack, YStack } from "tamagui";
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { useDismissGesture } from "@/hooks/useDismissGesture";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
@@ -47,7 +48,7 @@ const CHROME_DURATION = 200;
 export function PhotoViewer({
   photos,
   initialIndex,
-  open,
+  open: requested,
   secret = false,
   onClose,
 }: {
@@ -57,6 +58,8 @@ export function PhotoViewer({
   secret?: boolean;
   onClose: () => void;
 }) {
+  const open = useVisibleWhenUnlocked(requested);
+
   return (
     <Modal
       visible={open}

@@ -363,6 +363,8 @@ export const en: typeof ko = {
     enabled: "App lock turned on.",
     disabled: "App lock turned off.",
     unavailable: "Set up a screen lock on your device first.",
+    turnedOff:
+      "Your device screen lock was removed, so app lock has been turned off.",
   },
   rank: {
     errorMessage: "Couldn't load the ranking.",

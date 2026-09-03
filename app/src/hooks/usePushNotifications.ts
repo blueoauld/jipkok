@@ -24,14 +24,15 @@ export function usePushNotifications() {
   const handledId = useRef<string | null>(null);
   const [group] = useSegments();
 
+  // 가입 직후에는 프로필 설정 화면 위로 권한 다이얼로그가 겹치므로 (app)에 들어온 뒤 등록한다.
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (group !== "(app)" || status !== "authenticated") {
       return;
     }
 
     syncLocale().catch((error) => reportError("locale-sync", error));
     registerPushToken().catch((error) => reportError("push-token", error));
-  }, [status]);
+  }, [group, status]);
 
   useEffect(() => {
     if (group !== "(app)" || status !== "authenticated" || !response) {

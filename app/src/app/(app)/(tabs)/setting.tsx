@@ -99,7 +99,7 @@ export default function SettingScreen() {
 
   const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
   const adReward = useAdReward();
-  const appLock = useAppLockToggle({ show });
+  const appLock = useAppLockToggle({ show, showApiError, confirm });
   const gate = useInterstitialGate();
 
   useLoadingOverlay(loggingOut);

@@ -364,6 +364,7 @@ export const ko = {
     enabled: "앱 잠금을 켰습니다.",
     disabled: "앱 잠금을 껐습니다.",
     unavailable: "기기에 화면 잠금을 먼저 설정해주시길 바랍니다.",
+    turnedOff: "기기의 화면 잠금이 해제되어 앱 잠금을 껐습니다.",
   },
   rank: {
     errorMessage: "랭킹을 불러오지 못했습니다.",

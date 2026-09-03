@@ -1,6 +1,6 @@
 import i18n from "@/lib/i18n";
 import { patternOf } from "@/lib/phone";
-import type { PhoneCountry } from "@/lib/phone/country";
+import { currentCountry } from "@/lib/phone/store";
 
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣぁ-ゖァ-ヺー々一-龯a-zA-Z0-9 ]+$/;
 
@@ -21,16 +21,14 @@ export const MAX_AGE = 90;
 
 const BIRTH_YEAR_PATTERN = /^\d{4}$/;
 
-// 나라는 실행 중에 바뀌므로 규칙을 상수로 둘 수 없다.
-export function phoneNumberRules(country: PhoneCountry) {
-  return {
-    required: i18n.t("validation.phoneNumberRequired"),
-    pattern: {
-      value: patternOf(country),
-      message: i18n.t("validation.phoneNumberInvalid"),
-    },
-  };
-}
+// react-hook-form은 rules를 마운트 때만 등록하므로 나라는 검증 시점에 읽어야 한다.
+export const PHONE_NUMBER_RULES = {
+  required: i18n.t("validation.phoneNumberRequired"),
+  // 어느 폼에서든 쓰도록 필드 값 타입을 좁히지 않는다.
+  validate: (value: unknown) =>
+    patternOf(currentCountry()).test(String(value)) ||
+    i18n.t("validation.phoneNumberInvalid"),
+};
 
 const VERIFICATION_CODE_PATTERN = /^\d{6}$/;
 

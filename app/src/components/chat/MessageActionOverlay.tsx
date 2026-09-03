@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import type { ChatMessageResponse, ChatReactionType } from "@/lib/api";
 import {
   layoutActionOverlay,
@@ -42,15 +43,19 @@ type Props = {
 };
 
 export function MessageActionOverlay({ target, onClose, ...props }: Props) {
+  const visible = useVisibleWhenUnlocked(target !== null);
+
   return (
     <Modal
       transparent
       statusBarTranslucent
       animationType="none"
-      visible={target !== null}
+      visible={visible}
       onRequestClose={onClose}
     >
-      {target && <Content target={target} onClose={onClose} {...props} />}
+      {visible && target && (
+        <Content target={target} onClose={onClose} {...props} />
+      )}
     </Modal>
   );
 }

@@ -12,7 +12,6 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.security.JwtProvider
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AuthService(
@@ -24,7 +23,6 @@ class AuthService(
     private val jwtProvider: JwtProvider,
 ) {
 
-    @Transactional(readOnly = true)
     fun login(request: LoginRequest, ipAddress: String): TokenResponse {
         checkAttempts(request.phoneNumber, ipAddress)
 
@@ -48,7 +46,6 @@ class AuthService(
         }
     }
 
-    @Transactional(readOnly = true)
     fun reissue(request: RefreshTokenRequest): TokenResponse {
         val memberId = jwtProvider.parseRefreshTokenMemberId(request.refreshToken)
             ?: throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
@@ -57,7 +54,6 @@ class AuthService(
             ?: throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
 
         if (storedToken != request.refreshToken) {
-            refreshTokenRepository.delete(memberId)
             throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
         }
 

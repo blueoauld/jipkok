@@ -1,7 +1,9 @@
+import { usePhoneCountryStore } from "@/lib/phone/store";
 import {
   BIRTH_YEAR_RULES,
   NICKNAME_RULES,
   PASSWORD_CONFIRM_RULES,
+  PHONE_NUMBER_RULES,
 } from "@/lib/validation";
 
 describe("NICKNAME_RULES", () => {
@@ -62,5 +64,25 @@ describe("PASSWORD_CONFIRM_RULES", () => {
     expect(
       PASSWORD_CONFIRM_RULES.validate("abcd1234", { password: "abcd1235" }),
     ).toBe("비밀번호가 일치하지 않습니다.");
+  });
+});
+
+describe("PHONE_NUMBER_RULES", () => {
+  afterEach(() => {
+    usePhoneCountryStore.setState({ country: null });
+  });
+
+  it("검증 시점의 나라 규칙으로 검사한다", () => {
+    usePhoneCountryStore.setState({ country: "KR" });
+    expect(PHONE_NUMBER_RULES.validate("01012345678")).toBe(true);
+    expect(PHONE_NUMBER_RULES.validate("09012345678")).toBe(
+      "휴대폰 번호가 올바르지 않습니다.",
+    );
+
+    usePhoneCountryStore.setState({ country: "JP" });
+    expect(PHONE_NUMBER_RULES.validate("09012345678")).toBe(true);
+    expect(PHONE_NUMBER_RULES.validate("01012345678")).toBe(
+      "휴대폰 번호가 올바르지 않습니다.",
+    );
   });
 });

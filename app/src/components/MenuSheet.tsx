@@ -4,6 +4,7 @@ import { Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 
 export type MenuSheetItem = {
@@ -14,7 +15,7 @@ export type MenuSheetItem = {
 };
 
 export function MenuSheet({
-  open,
+  open: requested,
   onOpenChange,
   items,
 }: {
@@ -24,6 +25,7 @@ export function MenuSheet({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const open = useVisibleWhenUnlocked(requested);
 
   // 키보드가 올라와 있으면 시트를 덮는다. 둘은 같이 떠 있을 수 없다.
   useEffect(() => {

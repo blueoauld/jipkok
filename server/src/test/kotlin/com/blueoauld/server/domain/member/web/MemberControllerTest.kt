@@ -2,6 +2,8 @@ package com.blueoauld.server.domain.member.web
 
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.member.dto.request.SetupProfileRequest
+import com.blueoauld.server.domain.member.dto.request.UpdateLocaleRequest
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.service.MemberService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -22,6 +24,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
@@ -120,6 +123,26 @@ class MemberControllerTest {
         // then
         result.andExpect(status().isNoContent)
         verify(memberWithdrawService).withdraw(MEMBER_ID)
+    }
+
+    @Test
+    fun `서비스 정지 중이어도 언어를 바꿀 수 있다`() {
+        // given
+        val accessToken = jwtProvider.createAccessToken(MEMBER_ID, "MEMBER")
+        doThrow(BusinessException(ErrorCode.SERVICE_SUSPENDED))
+            .`when`(memberSuspensionService).check(MEMBER_ID, SuspensionType.SERVICE)
+
+        // when
+        val result = mockMvc.perform(
+            put("/api/members/me/locale")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(UpdateLocaleRequest(MemberLocale.EN))),
+        )
+
+        // then
+        result.andExpect(status().isNoContent)
+        verify(memberService).updateLocale(MEMBER_ID, MemberLocale.EN)
     }
 
     companion object {

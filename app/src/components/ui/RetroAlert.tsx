@@ -5,6 +5,7 @@ import { AnimatePresence, Text, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
   DIALOG_ENTER_SCALE,
   OVERLAY_BG,
@@ -23,7 +24,7 @@ const VARIANTS = {
 export type RetroAlertVariant = keyof typeof VARIANTS;
 
 export function RetroAlert({
-  visible,
+  visible: requested,
   variant = "error",
   title,
   message,
@@ -42,6 +43,7 @@ export function RetroAlert({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const visible = useVisibleWhenUnlocked(requested);
   // 나가는 전환이 끝날 때까지 Modal을 붙들어 둔다.
   const [mounted, setMounted] = useState(visible);
 

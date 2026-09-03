@@ -28,6 +28,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Spinner, Text, XStack, YStack } from "tamagui";
 
 import { useDismissGesture } from "@/hooks/useDismissGesture";
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
   MIN_TAP_SIZE,
   OVERLAY_BG,
@@ -504,14 +505,16 @@ export function VideoPlayerModal({
   url: string | null;
   onClose: () => void;
 }) {
+  const visible = useVisibleWhenUnlocked(url !== null);
+
   return (
     <Modal
-      visible={url !== null}
+      visible={visible}
       transparent
       animationType="fade"
       onRequestClose={onClose}
     >
-      {url && <Player url={url} onClose={onClose} />}
+      {visible && url && <Player url={url} onClose={onClose} />}
     </Modal>
   );
 }

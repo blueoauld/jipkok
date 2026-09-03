@@ -352,6 +352,7 @@ export const zh: typeof ko = {
     enabled: "已開啟應用程式鎖定。",
     disabled: "已關閉應用程式鎖定。",
     unavailable: "請先在裝置上設定螢幕鎖定。",
+    turnedOff: "裝置的螢幕鎖定已解除，因此已關閉應用程式鎖定。",
   },
   rank: {
     errorMessage: "無法載入排行榜。",

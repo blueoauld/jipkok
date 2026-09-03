@@ -367,6 +367,8 @@ export const ja: typeof ko = {
     enabled: "アプリロックをオンにしました。",
     disabled: "アプリロックをオフにしました。",
     unavailable: "先に端末の画面ロックを設定してください。",
+    turnedOff:
+      "端末の画面ロックが解除されたため、アプリロックをオフにしました。",
   },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",

@@ -40,8 +40,8 @@ export default function PasswordScreen() {
 
   const reset = useMutation({
     mutationFn: api.auth.resetPassword,
-    onSuccess: () => {
-      router.back();
+    onSuccess: (_data, { phoneNumber }) => {
+      router.dismissTo({ pathname: "/login", params: { phoneNumber } });
       showToast("info", t("auth.password.resetMessage"));
     },
     onError: showApiError,

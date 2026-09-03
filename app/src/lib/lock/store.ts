@@ -36,3 +36,7 @@ export const useAppLockStore = create<LockState>()(
     },
   ),
 );
+
+export function useAppLocked() {
+  return useAppLockStore((state) => state.enabled && state.locked);
+}

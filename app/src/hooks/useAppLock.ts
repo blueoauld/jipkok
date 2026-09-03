@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { AppState } from "react-native";
+import { AppState, Keyboard } from "react-native";
 
 import { shouldRelock } from "@/lib/lock";
 import { useAppLockStore } from "@/lib/lock/store";
@@ -24,6 +24,7 @@ export function useAppLock() {
 
       if (next === "active") {
         if (shouldRelock(backgroundAt, Date.now())) {
+          Keyboard.dismiss();
           lock();
         }
 

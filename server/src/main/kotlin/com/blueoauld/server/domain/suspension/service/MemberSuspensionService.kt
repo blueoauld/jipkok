@@ -90,7 +90,6 @@ class MemberSuspensionService(
         }
     }
 
-    @Transactional(readOnly = true)
     fun check(memberId: Long, type: SuspensionType) {
         if (isSuspended(memberId, type)) {
             throw BusinessException(errorCodeOf(type))

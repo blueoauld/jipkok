@@ -6,6 +6,7 @@ import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 import {
   DEFAULT_MEMBER_FILTER,
@@ -48,7 +49,7 @@ function Label({ children }: { children: string }) {
 }
 
 export function MemberFilterSheet({
-  open,
+  open: requested,
   onOpenChange,
   filter,
   onApply,
@@ -60,6 +61,7 @@ export function MemberFilterSheet({
 }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const open = useVisibleWhenUnlocked(requested);
   const [gender, setGender] = useState(genderFilterOf(filter.gender));
   const [ages, setAges] = useState<[number, number]>([
     filter.minAge,

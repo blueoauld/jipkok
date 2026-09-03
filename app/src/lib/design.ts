@@ -18,6 +18,9 @@ export const HEADER_GLASS_SIZE = 44;
 
 export const HEADER_GLASS_GAP = 8;
 
+// 잠금, 정지, 오류처럼 화면 전체를 차지하는 안내의 아이콘 크기.
+export const STATUS_ICON_SIZE = 56;
+
 // 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다. 고정 폭이 아니라
 // 최소 폭인 이유는 글씨 크기를 키운 사용자에게 글자가 잘리면 안 되기 때문이다.
 export const SEND_CODE_BUTTON_MIN_WIDTH = 80;

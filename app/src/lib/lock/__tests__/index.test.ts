@@ -5,6 +5,7 @@ import {
   isDeviceLockAvailable,
   RELOCK_AFTER_MILLIS,
   shouldRelock,
+  shouldRetryUnlock,
 } from "@/lib/lock";
 
 jest.mock("expo-local-authentication", () => ({
@@ -59,5 +60,19 @@ describe("authenticateDevice", () => {
     authenticate.mockRejectedValue(new Error("boom"));
 
     await expect(authenticateDevice()).resolves.toBe(false);
+  });
+});
+
+describe("shouldRetryUnlock", () => {
+  it("백그라운드로 간 적이 없으면 다시 띄우지 않는다", () => {
+    expect(shouldRetryUnlock(null, NOW)).toBe(false);
+  });
+
+  it("프롬프트가 만든 백그라운드면 다시 띄우지 않는다", () => {
+    expect(shouldRetryUnlock(NOW - 1, NOW)).toBe(false);
+  });
+
+  it("프롬프트가 끝난 뒤 나갔다 돌아왔으면 다시 띄운다", () => {
+    expect(shouldRetryUnlock(NOW + 1, NOW)).toBe(true);
   });
 });
