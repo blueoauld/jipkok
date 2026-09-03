@@ -3,7 +3,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, type ScrollViewProps } from "react-native";
+import { FlatList, type ScrollViewProps, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import {
   SafeAreaView,
@@ -61,6 +61,8 @@ export default function ChatRoomScreen() {
   );
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [inputBarHeight, setInputBarHeight] = useState(0);
+  const [contentTop, setContentTop] = useState(0);
+  const contentRef = useRef<View>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
   const inputBarRef = useRef<ChatInputBarHandle>(null);
@@ -273,7 +275,15 @@ export default function ChatRoomScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+    <SafeAreaView
+      ref={contentRef}
+      style={{ flex: 1 }}
+      edges={["bottom"]}
+      // 헤더가 투명하지 않으므로 화면의 시작이 곧 헤더 아래다. 메뉴 오버레이가 그 위로 안 올라가게 알려준다.
+      onLayout={() =>
+        contentRef.current?.measureInWindow((_x, y) => setContentTop(y))
+      }
+    >
       <Stack.Screen options={screenOptions} />
 
       {room && profile && messages ? (
@@ -384,6 +394,7 @@ export default function ChatRoomScreen() {
 
       <MessageActionOverlay
         target={actions.target}
+        contentTop={contentTop}
         reservedBottom={inputBarHeight}
         myReaction={actions.myReaction}
         actions={actions.actions}

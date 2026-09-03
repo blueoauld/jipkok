@@ -15,7 +15,7 @@ const bottomLimit = window.height - insets.bottom - EDGE;
 function layout(
   frame: { x: number; y: number; width: number; height: number },
   mine = false,
-  reservedBottom = 0,
+  reserved: { top?: number; bottom?: number } = {},
 ) {
   return layoutActionOverlay({
     frame,
@@ -24,7 +24,8 @@ function layout(
     menuHeight,
     window,
     insets,
-    reservedBottom,
+    reservedTop: reserved.top,
+    reservedBottom: reserved.bottom,
   });
 }
 
@@ -61,6 +62,37 @@ describe("layoutActionOverlay", () => {
     expect(result.menuTop).toBe(result.barTop - GAP - menuHeight);
   });
 
+  it("헤더 높이만큼 위 한계선을 내려 반응 바가 헤더에 닿지 않게 한다", () => {
+    const frame = {
+      x: 20,
+      y: topLimit + GAP + barHeight,
+      width: 200,
+      height: 40,
+    };
+
+    const result = layout(frame, false, { top: 44 });
+
+    expect(result.barTop).toBe(frame.y + frame.height + GAP);
+  });
+
+  it("말풍선이 화면 절반보다 크면 위에 자리가 있어도 보이는 부분 가운데에 얹는다", () => {
+    const available = bottomLimit - topLimit;
+    const frame = {
+      x: 20,
+      y: topLimit + GAP + barHeight + 20,
+      width: 200,
+      height: Math.floor(available / 2) + 1,
+    };
+
+    const result = layout(frame);
+
+    const blockHeight = barHeight + GAP + menuHeight;
+    expect(result.barTop).toBe(
+      Math.round((frame.y + frame.y + frame.height - blockHeight) / 2),
+    );
+    expect(result.menuTop).toBe(result.barTop + barHeight + GAP);
+  });
+
   it("위에는 반응 바만 들어가고 아래에는 메뉴가 안 들어가면 보이는 부분 가운데에 얹는다", () => {
     const frame = {
       x: 20,
@@ -95,7 +127,7 @@ describe("layoutActionOverlay", () => {
   it("입력창 높이만큼 아래 한계선을 올린다", () => {
     const frame = { x: 20, y: 600, width: 200, height: 40 };
 
-    const result = layout(frame, false, 100);
+    const result = layout(frame, false, { bottom: 100 });
 
     expect(result.menuTop).toBe(result.barTop - GAP - menuHeight);
   });

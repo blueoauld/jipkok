@@ -33,6 +33,7 @@ export type MessageActionTarget = {
 
 type Props = {
   target: MessageActionTarget | null;
+  contentTop: number;
   reservedBottom: number;
   myReaction: ChatReactionType | null;
   actions: MessageAction[];
@@ -56,6 +57,7 @@ export function MessageActionOverlay({ target, onClose, ...props }: Props) {
 
 function Content({
   target,
+  contentTop,
   reservedBottom,
   myReaction,
   actions,
@@ -74,6 +76,7 @@ function Content({
     menuHeight: actions.length * MENU_ITEM_HEIGHT + RETRO_BORDER_WIDTH * 2,
     window,
     insets,
+    reservedTop: Math.max(0, contentTop - insets.top),
     reservedBottom,
   });
 
