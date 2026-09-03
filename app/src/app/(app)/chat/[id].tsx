@@ -347,6 +347,7 @@ export default function ChatRoomScreen() {
       <KeyboardStickyView offset={{ opened: keyboardOffset }}>
         <ChatInputBar
           ref={inputBarRef}
+          roomId={roomId}
           sending={sending}
           uploading={uploading}
           reply={replyTarget}

@@ -1,13 +1,7 @@
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import {
-  type Ref,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
@@ -17,6 +11,7 @@ import { RetroPressable } from "@/components/ui/RetroPressable";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
 import { replySummary } from "@/lib/chat";
+import { useChatDraftStore } from "@/lib/chat/draft-store";
 import {
   FLOATING_BUTTON_SIZE,
   PRESS_OPACITY,
@@ -47,6 +42,7 @@ export type ChatInputBarHandle = {
 
 export function ChatInputBar({
   ref,
+  roomId,
   sending,
   uploading,
   reply,
@@ -56,6 +52,7 @@ export function ChatInputBar({
   onCancelReply,
 }: {
   ref?: Ref<ChatInputBarHandle>;
+  roomId: number;
   sending: boolean;
   uploading: boolean;
   reply: ChatMessageResponse | null;
@@ -72,7 +69,10 @@ export function ChatInputBar({
   const barPadding = space.$3.val;
   const barHPadding = space.$4.val;
   const inputRef = useRef<TextInput>(null);
-  const [text, setText] = useState("");
+  // 쓰던 글은 방별로 남겨 두어 나갔다 돌아와도 이어서 쓴다.
+  const text = useChatDraftStore((state) => state.drafts[roomId] ?? "");
+  const setDraft = useChatDraftStore((state) => state.set);
+  const setText = (value: string) => setDraft(roomId, value);
   const trimmed = text.trim();
   const sendable = trimmed.length > 0 && !sending;
 

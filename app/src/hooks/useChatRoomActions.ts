@@ -16,6 +16,7 @@ import {
   LEAVE_SELECTED_DESCRIPTION,
   toBulkChunks,
 } from "@/lib/chat";
+import { clearChatDraft } from "@/lib/chat/draft-store";
 import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
 import { showToast } from "@/lib/toast/store";
@@ -89,6 +90,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     onSuccess: (_data, roomId) => {
       queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
       queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+      clearChatDraft(roomId);
       invalidateChatLists(queryClient);
     },
     onError: (error, _roomId, context) => {
@@ -105,6 +107,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       roomIds.forEach((roomId) => {
         queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
         queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+        clearChatDraft(roomId);
       });
       invalidateChatLists(queryClient);
     },

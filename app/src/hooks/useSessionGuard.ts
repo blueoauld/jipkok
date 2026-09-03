@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 
 import { useAuthStore } from "@/lib/auth/store";
+import { useChatDraftStore } from "@/lib/chat/draft-store";
 import { useUploadStore } from "@/lib/chat/upload-store";
 
 export function useSessionGuard() {
@@ -16,6 +17,7 @@ export function useSessionGuard() {
       );
       queryClient.clear();
       useUploadStore.getState().clear();
+      useChatDraftStore.getState().clearAll();
       router.replace("/login");
     }
   }, [queryClient, status]);

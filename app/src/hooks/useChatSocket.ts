@@ -14,6 +14,7 @@ import { setMessageReactions } from "@/hooks/useReactMessage";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { CHATS_KEY } from "@/lib/chat";
+import { clearChatDraft } from "@/lib/chat/draft-store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { mapPages } from "@/lib/paging";
@@ -22,6 +23,7 @@ export function forgetRoom(queryClient: QueryClient, roomId: number) {
   useDeletedRoomStore.getState().markDeleted(roomId);
   queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
   queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
+  clearChatDraft(roomId);
   invalidateChatLists(queryClient);
 }
 
