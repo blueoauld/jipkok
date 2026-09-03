@@ -52,6 +52,11 @@ export const ko = {
     attachCamera: "사진 촬영",
     attachVideo: "동영상 촬영",
   },
+  chatMedia: {
+    title: "미디어 모아보기",
+    emptyMessage: "주고받은 사진과 동영상이 없습니다.",
+    errorMessage: "사진과 동영상을 불러오지 못했습니다.",
+  },
   profileEdit: {
     title: "프로필 편집",
     saved: "프로필을 저장했습니다.",

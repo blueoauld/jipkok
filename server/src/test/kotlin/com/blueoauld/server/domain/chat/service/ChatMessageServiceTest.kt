@@ -440,6 +440,62 @@ class ChatMessageServiceTest {
     }
 
     @Test
+    fun `모아보기는 사진과 영상만 최근 것부터 준다`() {
+        // given
+        every {
+            chatMessageRepository.findByRoomIdAndTypeInAndIdLessThanOrderByIdDesc(any(), any(), any(), any())
+        } returns listOf(videoMessage(), message(ChatMessageType.PHOTO, objectKey = OBJECT_KEY))
+
+        // when
+        val response = chatMessageService.findMedia(ME_ID, ROOM_ID, cursor = null, size = 30)
+
+        // then
+        verify {
+            chatMessageRepository.findByRoomIdAndTypeInAndIdLessThanOrderByIdDesc(
+                ROOM_ID,
+                listOf(ChatMessageType.PHOTO, ChatMessageType.VIDEO),
+                Long.MAX_VALUE,
+                Limit.of(30),
+            )
+        }
+        assertThat(response.items).extracting("type", "imageUrl", "thumbnailUrl")
+            .containsExactly(
+                tuple(ChatMessageType.VIDEO, null, SIGNED_URL),
+                tuple(ChatMessageType.PHOTO, SIGNED_URL, null),
+            )
+        assertThat(response.nextCursor).isNull()
+    }
+
+    @Test
+    fun `모아보기는 페이지가 차면 마지막 메시지를 커서로 준다`() {
+        // given
+        val last = original(id = 5L)
+        every {
+            chatMessageRepository.findByRoomIdAndTypeInAndIdLessThanOrderByIdDesc(any(), any(), any(), any())
+        } returns listOf(original(id = 6L), last)
+
+        // when
+        val response = chatMessageService.findMedia(ME_ID, ROOM_ID, cursor = 7L, size = 2)
+
+        // then
+        verify {
+            chatMessageRepository.findByRoomIdAndTypeInAndIdLessThanOrderByIdDesc(ROOM_ID, any(), 7L, Limit.of(2))
+        }
+        assertThat(response.nextCursor).isEqualTo(last.id)
+    }
+
+    @Test
+    fun `참여자가 아니면 모아보기를 볼 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.findMedia(STRANGER_ID, ROOM_ID, cursor = null, size = 30)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+    }
+
+    @Test
     fun `참여자가 아니면 보낼 수 없다`() {
         // when
         val exception = assertThrows(BusinessException::class.java) {

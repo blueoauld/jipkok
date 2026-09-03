@@ -52,6 +52,11 @@ export const zh: typeof ko = {
     attachCamera: "拍照",
     attachVideo: "錄影",
   },
+  chatMedia: {
+    title: "媒體總覽",
+    emptyMessage: "尚無分享的照片與影片。",
+    errorMessage: "無法載入照片與影片。",
+  },
   profileEdit: {
     title: "編輯個人檔案",
     saved: "已儲存個人檔案。",

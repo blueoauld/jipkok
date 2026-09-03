@@ -353,6 +353,11 @@ export const chats = {
       query: params,
     }),
 
+  media: (roomId: number, params: CursorParams = {}) =>
+    request<ChatMessagePage>(`/api/chats/${roomId}/media`, {
+      query: params,
+    }),
+
   send: (roomId: number, body: SendMessageRequest) =>
     request<ChatMessageResponse>(`/api/chats/${roomId}/messages`, {
       method: "POST",

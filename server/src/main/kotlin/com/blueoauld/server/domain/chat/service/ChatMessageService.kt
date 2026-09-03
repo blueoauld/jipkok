@@ -73,6 +73,29 @@ class ChatMessageService(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun findMedia(
+        memberId: Long,
+        roomId: Long,
+        cursor: Long?,
+        size: Int,
+    ): CursorResponse<ChatMessageResponse> {
+        chatRoomRepository.getRoomOf(memberId, roomId)
+
+        val pageSize = CursorResponse.pageSize(size)
+        val messages = chatMessageRepository.findByRoomIdAndTypeInAndIdLessThanOrderByIdDesc(
+            roomId,
+            MEDIA_TYPES,
+            cursor ?: Long.MAX_VALUE,
+            Limit.of(pageSize),
+        )
+
+        return CursorResponse(
+            items = messages.map { ChatMessageResponse.of(it, toMediaUrls(it)) },
+            nextCursor = messages.lastOrNull()?.id.takeIf { messages.size == pageSize },
+        )
+    }
+
     @Transactional
     fun send(memberId: Long, roomId: Long, request: SendMessageRequest): ChatMessageResponse {
         val room = chatRoomRepository.getRoomOf(memberId, roomId)
@@ -243,5 +266,6 @@ class ChatMessageService(
 
         private const val PHOTO_KEY_ROOT = "chats"
         private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
+        private val MEDIA_TYPES = listOf(ChatMessageType.PHOTO, ChatMessageType.VIDEO)
     }
 }

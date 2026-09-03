@@ -53,6 +53,11 @@ export const ja: typeof ko = {
     attachCamera: "写真を撮る",
     attachVideo: "動画を撮る",
   },
+  chatMedia: {
+    title: "メディア一覧",
+    emptyMessage: "やり取りした写真と動画がありません。",
+    errorMessage: "写真と動画を読み込めませんでした。",
+  },
   profileEdit: {
     title: "プロフィール編集",
     saved: "プロフィールを保存しました。",

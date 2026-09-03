@@ -46,6 +46,19 @@ class ChatMessageController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<ChatMessageResponse> = chatMessageService.findMessages(memberId, roomId, cursor, size)
 
+    @Operation(
+        operationId = "findChatMedia",
+        summary = "사진, 동영상 모아보기",
+        description = "방의 사진과 동영상 메시지만 최근 것부터 준다. 답글 원문과 반응은 담지 않는다.",
+    )
+    @GetMapping("/{roomId}/media")
+    fun findMedia(
+        @AuthenticationPrincipal memberId: Long,
+        @PathVariable roomId: Long,
+        @RequestParam(required = false) cursor: Long?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): CursorResponse<ChatMessageResponse> = chatMessageService.findMedia(memberId, roomId, cursor, size)
+
     @Operation(operationId = "sendChatMessage", summary = "메시지 전송", description = "사진은 한 장에 메시지 하나다.")
     @PostMapping("/{roomId}/messages")
     @ResponseStatus(HttpStatus.CREATED)

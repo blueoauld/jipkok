@@ -211,6 +211,10 @@ export default function ChatRoomScreen() {
       },
     },
     {
+      label: t("chatMedia.title"),
+      onPress: () => pushOnce(`/chat/media?roomId=${roomId}`),
+    },
+    {
       label: t("chatRoom.leave"),
       onPress: () => {
         if (room) {

@@ -53,6 +53,11 @@ export const en: typeof ko = {
     attachCamera: "Take photo",
     attachVideo: "Record video",
   },
+  chatMedia: {
+    title: "Media gallery",
+    emptyMessage: "No photos or videos shared yet.",
+    errorMessage: "Couldn't load photos and videos.",
+  },
   profileEdit: {
     title: "Edit profile",
     saved: "Profile saved.",
