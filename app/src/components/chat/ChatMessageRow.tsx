@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { ArrowBendUpLeftIcon } from "phosphor-react-native/src/icons/ArrowBendUpLeft";
 import { memo, type ReactNode, useEffect, useRef } from "react";
+import { useWindowDimensions } from "react-native";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -23,7 +24,9 @@ const AVATAR_SIZE = 36;
 const GROUP_GAP_TOP = 8;
 const MESSAGE_GAP_BOTTOM = 2;
 
-const BUBBLE_MAX_WIDTH = "88%" as const;
+// 안드로이드는 비율 너비로는 텍스트를 가정 너비로 먼저 재서 긴 글의 말풍선 아래가 빈다.
+// 픽셀로 확정해 주면 최종 너비로 한 번에 잰다.
+const BUBBLE_MAX_WIDTH_RATIO = 0.88;
 
 const REPLY_ACTION_SIZE = 32;
 const REPLY_ICON_SIZE = 18;
@@ -109,6 +112,8 @@ function Row({
   highlighted: boolean;
 }) {
   const swipeable = useRef<SwipeableMethods>(null);
+  const { width } = useWindowDimensions();
+  const bubbleMaxWidth = Math.floor(width * BUBBLE_MAX_WIDTH_RATIO);
 
   return (
     <YStack mt={grouped ? 0 : GROUP_GAP_TOP} mb={MESSAGE_GAP_BOTTOM}>
@@ -141,7 +146,7 @@ function Row({
               </YStack>
             ))}
 
-          <XStack shrink={1} maxW={BUBBLE_MAX_WIDTH}>
+          <XStack shrink={1} maxW={bubbleMaxWidth}>
             <Blink active={highlighted}>
               <ChatBubble
                 message={message}
