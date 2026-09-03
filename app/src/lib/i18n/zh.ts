@@ -301,6 +301,7 @@ export const zh: typeof ko = {
   action: {
     save: "儲存",
     copy: "複製",
+    reply: "回覆",
     leave: "離開",
     withdraw: "刪除帳號",
     delete: "刪除",

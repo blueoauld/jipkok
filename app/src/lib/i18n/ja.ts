@@ -316,6 +316,7 @@ export const ja: typeof ko = {
   action: {
     save: "保存",
     copy: "コピー",
+    reply: "返信",
     leave: "退出",
     withdraw: "退会",
     delete: "削除",

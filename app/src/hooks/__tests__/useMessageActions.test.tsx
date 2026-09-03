@@ -45,6 +45,7 @@ type Setup = Awaited<
 > & {
   client: ReturnType<typeof createTestQueryClient>;
   onError: jest.Mock;
+  onReply: jest.Mock;
 };
 
 let mounted: Setup | null = null;
@@ -52,11 +53,13 @@ let mounted: Setup | null = null;
 async function setup(): Promise<Setup> {
   const client = createTestQueryClient();
   const onError = jest.fn();
-  const hook = await renderHook(() => useMessageActions(ROOM_ID, ME, onError), {
-    wrapper: withQueryClient(client),
-  });
+  const onReply = jest.fn();
+  const hook = await renderHook(
+    () => useMessageActions(ROOM_ID, ME, onError, onReply),
+    { wrapper: withQueryClient(client) },
+  );
 
-  mounted = { client, onError, ...hook };
+  mounted = { client, onError, onReply, ...hook };
 
   return mounted;
 }
@@ -130,6 +133,20 @@ describe("selectReaction", () => {
 });
 
 describe("actions", () => {
+  it("어떤 메시지든 마지막 항목은 답장이고 누르면 닫히며 넘겨준다", async () => {
+    const hook = await setup();
+    const target = message(5, { content: "안녕" });
+    await open(hook, target);
+
+    const reply = hook.result.current.actions.at(-1);
+    expect(reply?.label).toBe(i18n.t("action.reply"));
+
+    await act(async () => reply?.onPress());
+
+    expect(hook.onReply).toHaveBeenCalledWith(target);
+    expect(hook.result.current.target).toBeNull();
+  });
+
   it("영상 메시지는 재생 URL을 받아 저장한다", async () => {
     const hook = await setup();
     chats.videoUrl.mockResolvedValue({ url: "https://cdn/v.mp4" });

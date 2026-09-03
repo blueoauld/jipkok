@@ -2,7 +2,6 @@ import { Modal, Pressable, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 
-import { ChatBubbleContent } from "@/components/chat/ChatBubble";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse, ChatReactionType } from "@/lib/api";
 import {
@@ -34,7 +33,7 @@ export type MessageActionTarget = {
 
 type Props = {
   target: MessageActionTarget | null;
-  replyName: string;
+  reservedBottom: number;
   myReaction: ChatReactionType | null;
   actions: MessageAction[];
   onSelectReaction: (type: ChatReactionType) => void;
@@ -57,7 +56,7 @@ export function MessageActionOverlay({ target, onClose, ...props }: Props) {
 
 function Content({
   target,
-  replyName,
+  reservedBottom,
   myReaction,
   actions,
   onSelectReaction,
@@ -67,7 +66,7 @@ function Content({
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const { message, mine, frame } = target;
+  const { mine, frame } = target;
   const { barTop, menuTop, side } = layoutActionOverlay({
     frame,
     mine,
@@ -75,6 +74,7 @@ function Content({
     menuHeight: actions.length * MENU_ITEM_HEIGHT + RETRO_BORDER_WIDTH * 2,
     window,
     insets,
+    reservedBottom,
   });
 
   return (
@@ -83,24 +83,6 @@ function Content({
         style={{ flex: 1, backgroundColor: OVERLAY_BG }}
         onPress={onClose}
       />
-
-      <YStack
-        position="absolute"
-        t={frame.y}
-        l={frame.x}
-        width={frame.width}
-        pointerEvents="none"
-      >
-        <ChatBubbleContent
-          message={message}
-          mine={mine}
-          replyName={replyName}
-          onPressPhoto={() => undefined}
-          onPressVideo={() => undefined}
-          onPressReply={() => undefined}
-          onLongPress={() => undefined}
-        />
-      </YStack>
 
       <YStack position="absolute" t={barTop} {...side}>
         <RetroShadow color="$gray12" />

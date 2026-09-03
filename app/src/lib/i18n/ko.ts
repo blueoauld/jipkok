@@ -313,6 +313,7 @@ export const ko = {
   action: {
     save: "저장",
     copy: "복사",
+    reply: "답장",
     leave: "나가기",
     withdraw: "탈퇴",
     delete: "삭제",

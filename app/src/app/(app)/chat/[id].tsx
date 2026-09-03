@@ -60,6 +60,7 @@ export default function ChatRoomScreen() {
     null,
   );
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
+  const [inputBarHeight, setInputBarHeight] = useState(0);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
   const inputBarRef = useRef<ChatInputBarHandle>(null);
@@ -119,7 +120,18 @@ export default function ChatRoomScreen() {
     onPicked: scrollToBottom,
     onError: showApiError,
   });
-  const actions = useMessageActions(roomId, myMemberId, handleRoomError);
+  const handleReply = useCallback((message: ChatMessageResponse) => {
+    if (!isPending(message)) {
+      setReplyTarget(message);
+    }
+  }, []);
+
+  const actions = useMessageActions(
+    roomId,
+    myMemberId,
+    handleRoomError,
+    handleReply,
+  );
   const chatMessages = useChatMessages(roomId, validRoom && !partnerLeft);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
@@ -244,12 +256,6 @@ export default function ChatRoomScreen() {
     [partnerId],
   );
 
-  const handleReply = useCallback((message: ChatMessageResponse) => {
-    if (!isPending(message)) {
-      setReplyTarget(message);
-    }
-  }, []);
-
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const screenOptions = useMemo(
     () => ({
@@ -345,21 +351,27 @@ export default function ChatRoomScreen() {
       )}
 
       <KeyboardStickyView offset={{ opened: keyboardOffset }}>
-        <ChatInputBar
-          ref={inputBarRef}
-          roomId={roomId}
-          sending={sending}
-          uploading={uploading}
-          reply={replyTarget}
-          replyName={nameOf(replyTarget?.senderId)}
-          onSend={(content) => {
-            sendText(content, replyTarget && toReply(replyTarget));
-            setReplyTarget(null);
-            scrollToBottom();
-          }}
-          onAttach={() => setAttachOpen(true)}
-          onCancelReply={() => setReplyTarget(null)}
-        />
+        <YStack
+          onLayout={(event) =>
+            setInputBarHeight(event.nativeEvent.layout.height)
+          }
+        >
+          <ChatInputBar
+            ref={inputBarRef}
+            roomId={roomId}
+            sending={sending}
+            uploading={uploading}
+            reply={replyTarget}
+            replyName={nameOf(replyTarget?.senderId)}
+            onSend={(content) => {
+              sendText(content, replyTarget && toReply(replyTarget));
+              setReplyTarget(null);
+              scrollToBottom();
+            }}
+            onAttach={() => setAttachOpen(true)}
+            onCancelReply={() => setReplyTarget(null)}
+          />
+        </YStack>
       </KeyboardStickyView>
 
       <MenuSheet open={menuOpen} onOpenChange={setMenuOpen} items={menuItems} />
@@ -372,7 +384,7 @@ export default function ChatRoomScreen() {
 
       <MessageActionOverlay
         target={actions.target}
-        replyName={actions.message ? replyNameOf(actions.message) : ""}
+        reservedBottom={inputBarHeight}
         myReaction={actions.myReaction}
         actions={actions.actions}
         onSelectReaction={actions.selectReaction}

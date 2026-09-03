@@ -312,6 +312,7 @@ export const en: typeof ko = {
   action: {
     save: "Save",
     copy: "Copy",
+    reply: "Reply",
     leave: "Leave",
     withdraw: "Delete account",
     delete: "Delete",

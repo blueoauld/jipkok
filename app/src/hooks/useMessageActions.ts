@@ -23,6 +23,7 @@ export function useMessageActions(
   roomId: number,
   myMemberId: number,
   onError: (error: unknown) => void,
+  onReply: (message: ChatMessageResponse) => void,
 ) {
   const [target, setTarget] = useState<MessageActionTarget | null>(null);
   const { mutate: react } = useReactMessage(roomId, myMemberId, onError);
@@ -74,15 +75,16 @@ export function useMessageActions(
   const imageUrl = message?.imageUrl;
   const actions: MessageAction[] = !message
     ? []
-    : message.type === "VIDEO"
-      ? [action(i18n.t("action.save"), () => saveVideo(message.messageId))]
-      : imageUrl
-        ? [action(i18n.t("action.save"), () => saveMedia(imageUrl, "photo"))]
-        : [
-            action(i18n.t("action.copy"), () =>
-              copyMessage(message.content ?? ""),
-            ),
-          ];
+    : [
+        message.type === "VIDEO"
+          ? action(i18n.t("action.save"), () => saveVideo(message.messageId))
+          : imageUrl
+            ? action(i18n.t("action.save"), () => saveMedia(imageUrl, "photo"))
+            : action(i18n.t("action.copy"), () =>
+                copyMessage(message.content ?? ""),
+              ),
+        action(i18n.t("action.reply"), () => onReply(message)),
+      ];
 
-  return { target, message, open, close, myReaction, selectReaction, actions };
+  return { target, open, close, myReaction, selectReaction, actions };
 }
