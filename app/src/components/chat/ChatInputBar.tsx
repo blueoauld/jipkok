@@ -19,11 +19,10 @@ import {
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
 import { useAccent, useThemeBackground } from "@/lib/theme/accent";
+import { CHAT_MESSAGE_MAX_LENGTH } from "@/lib/validation";
 
 const ICON_SIZE = 20;
 const CANCEL_ICON_SIZE = 18;
-
-const MAX_LENGTH = 1000;
 
 // iOS 26 키보드는 프레임 위쪽에 투명한 여백이 있어 그 틈으로 메시지가 비친다.
 // 입력창 배경을 그만큼 아래로 더 깔아 가린다.
@@ -181,7 +180,7 @@ export function ChatInputBar({
               onChangeText={setText}
               placeholder={t("component.messagePlaceholder")}
               placeholderTextColor={theme.color11.val}
-              maxLength={MAX_LENGTH}
+              maxLength={CHAT_MESSAGE_MAX_LENGTH}
               multiline
               style={[styles.input, { color: theme.color12.val }]}
             />
