@@ -1,6 +1,6 @@
 import { type ReactNode, useRef } from "react";
 import { View } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { Text, type TextProps, XStack, YStack } from "tamagui";
 
 import { PhotoMessage, VideoMessage } from "@/components/chat/ChatMediaMessage";
 import { ReactionChips } from "@/components/chat/ChatReactionChips";
@@ -57,17 +57,21 @@ const openLink = (url: string) =>
   openWebPage(url, (_variant, message) => showToast("error", message));
 
 // 링크 위에서 길게 눌러도 말풍선 메뉴가 떠야 하므로 onLongPress를 같이 받는다.
+// Tamagui Text는 중첩돼도 부모 색을 물려받지 않아 색을 따로 준다.
 function LinkText({
   url,
+  color,
   children,
   onLongPress,
 }: {
   url: string;
+  color: TextProps["color"];
   children: string;
   onLongPress: () => void;
 }) {
   return (
     <Text
+      color={color}
       textDecorationLine="underline"
       accessibilityRole="link"
       onPress={() => openLink(url)}
@@ -89,14 +93,18 @@ function BodyText({
   large?: boolean;
   onLongPress: () => void;
 }) {
+  const color = mine ? "white" : "$color12";
+
   return (
-    <Text
-      fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE}
-      color={mine ? "white" : "$color12"}
-    >
+    <Text fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE} color={color}>
       {splitLinks(content).map((segment, index) =>
         segment.url ? (
-          <LinkText key={index} url={segment.url} onLongPress={onLongPress}>
+          <LinkText
+            key={index}
+            url={segment.url}
+            color={color}
+            onLongPress={onLongPress}
+          >
             {segment.text}
           </LinkText>
         ) : (
