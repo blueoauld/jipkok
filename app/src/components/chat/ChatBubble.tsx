@@ -7,11 +7,14 @@ import { ReactionChips } from "@/components/chat/ChatReactionChips";
 import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isSingleEmoji, replySummary } from "@/lib/chat";
+import { splitLinks } from "@/lib/chat/links";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { formatClockTime } from "@/lib/date";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 import i18n from "@/lib/i18n";
+import { openWebPage } from "@/lib/support";
 import { useAccentToken } from "@/lib/theme/accent";
+import { showToast } from "@/lib/toast/store";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
@@ -50,21 +53,56 @@ function BubbleFrame({
   );
 }
 
+const openLink = (url: string) =>
+  openWebPage(url, (_variant, message) => showToast("error", message));
+
+// 링크 위에서 길게 눌러도 말풍선 메뉴가 떠야 하므로 onLongPress를 같이 받는다.
+function LinkText({
+  url,
+  children,
+  onLongPress,
+}: {
+  url: string;
+  children: string;
+  onLongPress: () => void;
+}) {
+  return (
+    <Text
+      textDecorationLine="underline"
+      accessibilityRole="link"
+      onPress={() => openLink(url)}
+      onLongPress={onLongPress}
+    >
+      {children}
+    </Text>
+  );
+}
+
 function BodyText({
   mine,
   content,
   large = false,
+  onLongPress,
 }: {
   mine: boolean;
   content: string;
   large?: boolean;
+  onLongPress: () => void;
 }) {
   return (
     <Text
       fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE}
       color={mine ? "white" : "$color12"}
     >
-      {content}
+      {splitLinks(content).map((segment, index) =>
+        segment.url ? (
+          <LinkText key={index} url={segment.url} onLongPress={onLongPress}>
+            {segment.text}
+          </LinkText>
+        ) : (
+          segment.text
+        ),
+      )}
     </Text>
   );
 }
@@ -85,6 +123,7 @@ function TextMessage({
           mine={mine}
           content={content}
           large={isSingleEmoji(content)}
+          onLongPress={onLongPress}
         />
       </YStack>
     </BubbleFrame>
@@ -139,7 +178,7 @@ function ReplyMessage({
 
         <YStack height={1} bg={mine ? QUOTE_LINE_ON_BLUE : "$color8"} />
 
-        <BodyText mine={mine} content={content} />
+        <BodyText mine={mine} content={content} onLongPress={onLongPress} />
       </YStack>
     </BubbleFrame>
   );
