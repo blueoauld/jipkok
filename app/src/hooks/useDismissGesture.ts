@@ -80,5 +80,15 @@ export function useDismissGesture({
     ),
   }));
 
-  return { gesture, contentStyle, backdropStyle };
+  // 버튼은 배경보다 빨리 사라져서 손가락이 움직이는 게 콘텐츠뿐임을 보여준다.
+  const chromeStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      Math.abs(translateY.value),
+      [0, DISMISS_DISTANCE],
+      [1, 0],
+      "clamp",
+    ),
+  }));
+
+  return { gesture, contentStyle, backdropStyle, chromeStyle };
 }

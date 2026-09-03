@@ -355,127 +355,132 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                 </Text>
               </YStack>
             )}
-
-            <Animated.View
-              style={[StyleSheet.absoluteFill, controlsStyle]}
-              pointerEvents={controlsShown ? "box-none" : "none"}
-            >
-              <SafeAreaView
-                edges={["top"]}
-                style={{ position: "absolute", top: 0, left: 0, right: 0 }}
-              >
-                <XStack p="$2">
-                  <XStack
-                    width={CLOSE_BUTTON_SIZE}
-                    height={CLOSE_BUTTON_SIZE}
-                    bg={OVERLAY_BG}
-                    items="center"
-                    justify="center"
-                    pressStyle={{ opacity: PRESS_OPACITY }}
-                    accessibilityRole="button"
-                    accessibilityLabel={i18n.t("a11y.close")}
-                    onPress={onClose}
-                  >
-                    <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
-                  </XStack>
-                </XStack>
-              </SafeAreaView>
-
-              {!failed && (
-                <>
-                  <XStack
-                    position="absolute"
-                    t={0}
-                    r={0}
-                    b={0}
-                    l={0}
-                    items="center"
-                    justify="center"
-                    gap="$6"
-                    pointerEvents="box-none"
-                  >
-                    <SkipButton
-                      label={i18n.t("a11y.seekBackward", {
-                        seconds: SEEK_STEP_SECONDS,
-                      })}
-                      onPress={() => skip(-SEEK_STEP_SECONDS)}
-                    >
-                      <RewindIcon
-                        size={SKIP_ICON_SIZE}
-                        weight="fill"
-                        color="white"
-                      />
-                    </SkipButton>
-
-                    <XStack
-                      width={PLAY_BUTTON_SIZE}
-                      height={PLAY_BUTTON_SIZE}
-                      items="center"
-                      justify="center"
-                      bg={OVERLAY_BG}
-                      borderWidth={RETRO_BORDER_WIDTH}
-                      borderColor="white"
-                      pressStyle={{ opacity: PRESS_OPACITY }}
-                      accessibilityRole="button"
-                      accessibilityLabel={
-                        isPlaying && !ended
-                          ? i18n.t("a11y.pause")
-                          : i18n.t("a11y.play")
-                      }
-                      onPress={togglePlay}
-                    >
-                      {isPlaying && !ended ? (
-                        <PauseIcon
-                          size={PLAY_ICON_SIZE}
-                          weight="fill"
-                          color="white"
-                        />
-                      ) : (
-                        <PlayIcon
-                          size={PLAY_ICON_SIZE}
-                          weight="fill"
-                          color="white"
-                        />
-                      )}
-                    </XStack>
-
-                    <SkipButton
-                      label={i18n.t("a11y.seekForward", {
-                        seconds: SEEK_STEP_SECONDS,
-                      })}
-                      onPress={() => skip(SEEK_STEP_SECONDS)}
-                    >
-                      <FastForwardIcon
-                        size={SKIP_ICON_SIZE}
-                        weight="fill"
-                        color="white"
-                      />
-                    </SkipButton>
-                  </XStack>
-
-                  <SafeAreaView
-                    edges={["bottom"]}
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                    }}
-                  >
-                    <YStack px="$4" py="$3" bg={OVERLAY_BG}>
-                      <SeekBar
-                        position={seekTarget ?? currentTime}
-                        duration={player.duration}
-                        onSeek={seek}
-                        onScrubStart={beginScrub}
-                      />
-                    </YStack>
-                  </SafeAreaView>
-                </>
-              )}
-            </Animated.View>
           </Animated.View>
         </GestureDetector>
+
+        <Animated.View
+          style={[StyleSheet.absoluteFill, dismiss.chromeStyle]}
+          pointerEvents="box-none"
+        >
+          <Animated.View
+            style={[StyleSheet.absoluteFill, controlsStyle]}
+            pointerEvents={controlsShown ? "box-none" : "none"}
+          >
+            <SafeAreaView
+              edges={["top"]}
+              style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+            >
+              <XStack p="$2">
+                <XStack
+                  width={CLOSE_BUTTON_SIZE}
+                  height={CLOSE_BUTTON_SIZE}
+                  bg={OVERLAY_BG}
+                  items="center"
+                  justify="center"
+                  pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessibilityRole="button"
+                  accessibilityLabel={i18n.t("a11y.close")}
+                  onPress={onClose}
+                >
+                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                </XStack>
+              </XStack>
+            </SafeAreaView>
+
+            {!failed && (
+              <>
+                <XStack
+                  position="absolute"
+                  t={0}
+                  r={0}
+                  b={0}
+                  l={0}
+                  items="center"
+                  justify="center"
+                  gap="$6"
+                  pointerEvents="box-none"
+                >
+                  <SkipButton
+                    label={i18n.t("a11y.seekBackward", {
+                      seconds: SEEK_STEP_SECONDS,
+                    })}
+                    onPress={() => skip(-SEEK_STEP_SECONDS)}
+                  >
+                    <RewindIcon
+                      size={SKIP_ICON_SIZE}
+                      weight="fill"
+                      color="white"
+                    />
+                  </SkipButton>
+
+                  <XStack
+                    width={PLAY_BUTTON_SIZE}
+                    height={PLAY_BUTTON_SIZE}
+                    items="center"
+                    justify="center"
+                    bg={OVERLAY_BG}
+                    borderWidth={RETRO_BORDER_WIDTH}
+                    borderColor="white"
+                    pressStyle={{ opacity: PRESS_OPACITY }}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      isPlaying && !ended
+                        ? i18n.t("a11y.pause")
+                        : i18n.t("a11y.play")
+                    }
+                    onPress={togglePlay}
+                  >
+                    {isPlaying && !ended ? (
+                      <PauseIcon
+                        size={PLAY_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
+                    ) : (
+                      <PlayIcon
+                        size={PLAY_ICON_SIZE}
+                        weight="fill"
+                        color="white"
+                      />
+                    )}
+                  </XStack>
+
+                  <SkipButton
+                    label={i18n.t("a11y.seekForward", {
+                      seconds: SEEK_STEP_SECONDS,
+                    })}
+                    onPress={() => skip(SEEK_STEP_SECONDS)}
+                  >
+                    <FastForwardIcon
+                      size={SKIP_ICON_SIZE}
+                      weight="fill"
+                      color="white"
+                    />
+                  </SkipButton>
+                </XStack>
+
+                <SafeAreaView
+                  edges={["bottom"]}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                  }}
+                >
+                  <YStack px="$4" py="$3" bg={OVERLAY_BG}>
+                    <SeekBar
+                      position={seekTarget ?? currentTime}
+                      duration={player.duration}
+                      onSeek={seek}
+                      onScrubStart={beginScrub}
+                    />
+                  </YStack>
+                </SafeAreaView>
+              </>
+            )}
+          </Animated.View>
+        </Animated.View>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );

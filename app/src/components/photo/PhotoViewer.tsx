@@ -145,41 +145,46 @@ function ViewerContent({
           </GestureDetector>
 
           <Animated.View
-            style={[styles.header, chromeStyle]}
-            pointerEvents={chromePointerEvents}
+            style={[StyleSheet.absoluteFill, dismiss.chromeStyle]}
+            pointerEvents="box-none"
           >
-            <SafeAreaView edges={["top"]}>
-              <XStack p="$2">
-                <XStack
-                  width={CLOSE_BUTTON_SIZE}
-                  height={CLOSE_BUTTON_SIZE}
-                  bg={OVERLAY_BG}
-                  items="center"
-                  justify="center"
-                  pressStyle={{ opacity: PRESS_OPACITY }}
-                  accessibilityRole="button"
-                  accessibilityLabel={i18n.t("a11y.close")}
-                  onPress={onClose}
-                >
-                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
-                </XStack>
-              </XStack>
-            </SafeAreaView>
-          </Animated.View>
-
-          <Animated.View
-            style={[styles.dots, chromeStyle]}
-            pointerEvents={chromePointerEvents}
-          >
-            <SafeAreaView edges={["bottom"]}>
-              <YStack pb="$6" items="center">
-                {photos.length > 1 && (
-                  <XStack px="$3" py="$2" bg={OVERLAY_BG}>
-                    <PhotoDots count={photos.length} index={index} />
+            <Animated.View
+              style={[styles.header, chromeStyle]}
+              pointerEvents={chromePointerEvents}
+            >
+              <SafeAreaView edges={["top"]}>
+                <XStack p="$2">
+                  <XStack
+                    width={CLOSE_BUTTON_SIZE}
+                    height={CLOSE_BUTTON_SIZE}
+                    bg={OVERLAY_BG}
+                    items="center"
+                    justify="center"
+                    pressStyle={{ opacity: PRESS_OPACITY }}
+                    accessibilityRole="button"
+                    accessibilityLabel={i18n.t("a11y.close")}
+                    onPress={onClose}
+                  >
+                    <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
                   </XStack>
-                )}
-              </YStack>
-            </SafeAreaView>
+                </XStack>
+              </SafeAreaView>
+            </Animated.View>
+
+            <Animated.View
+              style={[styles.dots, chromeStyle]}
+              pointerEvents={chromePointerEvents}
+            >
+              <SafeAreaView edges={["bottom"]}>
+                <YStack pb="$6" items="center">
+                  {photos.length > 1 && (
+                    <XStack px="$3" py="$2" bg={OVERLAY_BG}>
+                      <PhotoDots count={photos.length} index={index} />
+                    </XStack>
+                  )}
+                </YStack>
+              </SafeAreaView>
+            </Animated.View>
           </Animated.View>
         </YStack>
       </GestureHandlerRootView>
