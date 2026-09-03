@@ -19,8 +19,8 @@ import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
 import { reasonLabel } from "@/lib/suspension";
+import { REPORT_DETAIL_MAX_LENGTH } from "@/lib/validation";
 
-const DETAIL_MAX_LENGTH = 1000;
 const REASONS: ReportReason[] = [
   "OBSCENITY",
   "MINOR",
@@ -65,7 +65,7 @@ function DetailField({ valueRef }: { valueRef: RefObject<string> }) {
       rows={7}
       textAlignVertical="top"
       placeholder={t("report.detailPlaceholder")}
-      maxLength={DETAIL_MAX_LENGTH}
+      maxLength={REPORT_DETAIL_MAX_LENGTH}
     />
   );
 }

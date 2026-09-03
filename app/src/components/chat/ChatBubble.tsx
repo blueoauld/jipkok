@@ -231,8 +231,17 @@ export function ChatBubble({
     bubbleRef.current?.measureInWindow((x, y, width, height) =>
       onOpenActions(message, { x, y, width, height }),
     );
-  const time = showTime && (
-    <Text shrink={0} fontSize="$1" color="$color11" mb={2}>
+  // 시간이 없는 메시지에도 같은 자리를 비워 두어야 묶음 안의 말풍선 너비가 같다.
+  const time = (
+    <Text
+      shrink={0}
+      fontSize="$1"
+      color="$color11"
+      mb={2}
+      opacity={showTime ? 1 : 0}
+      accessibilityElementsHidden={!showTime}
+      importantForAccessibility={showTime ? "auto" : "no-hide-descendants"}
+    >
       {formatClockTime(new Date(message.createdAt))}
     </Text>
   );

@@ -13,6 +13,7 @@ export const BIO_MAX_LENGTH = 1000;
 export const WORRY_CONTENT_MAX_LENGTH = 1000;
 export const WORRY_COMMENT_MAX_LENGTH = 300;
 export const CHAT_MESSAGE_MAX_LENGTH = 1000;
+export const REPORT_DETAIL_MAX_LENGTH = 1000;
 export const MIN_KEYWORD_LENGTH = 2;
 
 export const MIN_AGE = 19;
