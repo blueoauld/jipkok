@@ -30,6 +30,7 @@ const markRead = api.chats.markRead as unknown as jest.Mock;
 
 const ROOM_ID = 1;
 const PARTNER_ID = 2;
+const MY_ID = 99;
 
 const roomsKey = [...CHAT_ROOMS_KEY, false];
 
@@ -128,6 +129,41 @@ describe("useChatRoomEffects 읽음 처리", () => {
     expect(invalidate).toHaveBeenCalledWith({
       queryKey: CHAT_UNREAD_COUNT_KEY,
     });
+  });
+
+  it("내가 보낸 메시지가 가장 새로워도 상대의 마지막 메시지 기준으로 읽음 처리한다", async () => {
+    const client = createTestQueryClient();
+    seed(client, [room(ROOM_ID)], 3);
+    markRead.mockResolvedValue(undefined);
+    const mine = chatMessage(11, { roomId: ROOM_ID, senderId: MY_ID });
+
+    await setup(client, [mine, message(10)]);
+
+    await waitFor(() => expect(markRead).toHaveBeenCalledTimes(1));
+    expect(markRead).toHaveBeenCalledWith(ROOM_ID, 10);
+  });
+
+  it("내 메시지만 새로 생기면 읽음 처리를 다시 하지 않는다", async () => {
+    const client = createTestQueryClient();
+    seed(client, [room(ROOM_ID)], 3);
+    markRead.mockResolvedValue(undefined);
+    const first = [message(10)];
+    const hook = await renderHook(
+      ({ messages }: { messages: ChatMessageResponse[] }) =>
+        useChatRoomEffects(ROOM_ID, messages, PARTNER_ID),
+      { wrapper: withQueryClient(client), initialProps: { messages: first } },
+    );
+    mounted = hook;
+    await waitFor(() => expect(markRead).toHaveBeenCalledTimes(1));
+
+    await hook.rerender({
+      messages: [
+        chatMessage(11, { roomId: ROOM_ID, senderId: MY_ID }),
+        ...first,
+      ],
+    });
+
+    expect(markRead).toHaveBeenCalledTimes(1);
   });
 
   it("메시지가 없으면 읽음 처리를 하지 않는다", async () => {

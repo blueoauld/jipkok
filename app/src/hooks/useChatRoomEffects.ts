@@ -55,24 +55,25 @@ export function useChatRoomEffects(
     onSettled: () => invalidateChatLists(queryClient),
   });
 
-  const newestMessageId = messages?.[0]?.messageId ?? 0;
-  const markedMessageId = useRef(0);
-
-  useEffect(() => {
-    if (newestMessageId > markedMessageId.current) {
-      markedMessageId.current = newestMessageId;
-      markRead(newestMessageId);
-    }
-  }, [markRead, newestMessageId]);
-
-  // 알림은 상대 메시지로만 생기므로 내가 보낼 때는 정리할 것이 없다.
+  // 안읽음은 상대 메시지만 세므로 읽음 처리도 상대의 가장 새로운 메시지 기준으로 한다.
+  // 내가 보낼 때마다 요청이 나가지 않고, 끊긴 사이 온 상대 메시지가 내 것보다 오래된
+  // 채로 뒤늦게 나타나도 놓치지 않는다.
   const newestPartnerMessageId = useMemo(
     () =>
       messages?.find((message) => message.senderId === partnerId)?.messageId ??
       0,
     [messages, partnerId],
   );
+  const markedMessageId = useRef(0);
 
+  useEffect(() => {
+    if (newestPartnerMessageId > markedMessageId.current) {
+      markedMessageId.current = newestPartnerMessageId;
+      markRead(newestPartnerMessageId);
+    }
+  }, [markRead, newestPartnerMessageId]);
+
+  // 알림은 상대 메시지로만 생기므로 내가 보낼 때는 정리할 것이 없다.
   useEffect(() => {
     dismissRoomNotifications(roomId).catch(() => undefined);
   }, [newestPartnerMessageId, roomId]);
