@@ -12,6 +12,7 @@ import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
 import { InfoIcon } from "phosphor-react-native/src/icons/Info";
 import { LightbulbIcon } from "phosphor-react-native/src/icons/Lightbulb";
+import { LockKeyIcon } from "phosphor-react-native/src/icons/LockKey";
 import { MonitorPlayIcon } from "phosphor-react-native/src/icons/MonitorPlay";
 import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { ShieldCheckIcon } from "phosphor-react-native/src/icons/ShieldCheck";
@@ -23,7 +24,12 @@ import { ko } from "@/lib/i18n/ko";
 import { PRIVACY_URL, TERMS_URL } from "@/lib/support";
 
 export type SettingAction =
-  "attendanceReward" | "adReward" | "contact" | "suggest" | "version";
+  | "attendanceReward"
+  | "adReward"
+  | "appLock"
+  | "contact"
+  | "suggest"
+  | "version";
 
 type SettingLabelKey =
   | `setting.menu.${keyof (typeof ko)["setting"]["menu"]}`
@@ -50,7 +56,14 @@ export const PROFILE_VIEW_HREF = "/activity/profile-view";
 export const SECTIONS: SettingGroup[] = [
   {
     key: "profile",
-    items: [{ labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" }],
+    items: [
+      { labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" },
+      {
+        labelKey: "setting.menu.appLock",
+        icon: LockKeyIcon,
+        action: "appLock",
+      },
+    ],
   },
   {
     key: "mine",

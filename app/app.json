@@ -111,7 +111,13 @@
       ],
       "expo-image",
       "expo-video",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "앱 잠금을 풀기 위해 Face ID 사용 권한이 필요합니다."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

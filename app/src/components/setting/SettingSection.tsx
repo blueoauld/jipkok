@@ -16,12 +16,14 @@ function SettingRow({
   pending,
   divider,
   hasNew,
+  status,
   onPress,
 }: {
   item: SettingItem;
   pending: boolean;
   divider: boolean;
   hasNew: boolean;
+  status?: string;
   onPress?: () => void;
 }) {
   const { t } = useTranslation();
@@ -35,6 +37,11 @@ function SettingRow({
         {t(labelKey)}
       </Text>
       {hasNew && <RetroBadge>N</RetroBadge>}
+      {status && !pending && (
+        <Text theme="gray" color="$color10" fontSize="$3">
+          {status}
+        </Text>
+      )}
       {pending && <Spinner size="small" />}
     </RetroListRow>
   );
@@ -44,13 +51,17 @@ export function SettingSection({
   items,
   pendingAction,
   profileViewCount,
+  appLockEnabled,
   onItemPress,
 }: {
   items: SettingItem[];
   pendingAction: SettingAction | null;
   profileViewCount: number;
+  appLockEnabled: boolean;
   onItemPress: (item: SettingItem) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <YStack mx="$4">
       <RetroListPanel>
@@ -61,6 +72,11 @@ export function SettingSection({
             pending={item.action === pendingAction}
             divider={index < items.length - 1}
             hasNew={item.href === PROFILE_VIEW_HREF && profileViewCount > 0}
+            status={
+              item.action === "appLock"
+                ? t(appLockEnabled ? "setting.on" : "setting.off")
+                : undefined
+            }
             onPress={
               item.href || item.url || item.action
                 ? () => onItemPress(item)

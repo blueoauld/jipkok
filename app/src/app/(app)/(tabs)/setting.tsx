@@ -13,6 +13,7 @@ import { AttendanceCard } from "@/components/setting/AttendanceCard";
 import { SettingSection } from "@/components/setting/SettingSection";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
+import { useAppLockToggle } from "@/hooks/useAppLockToggle";
 import { ATTENDANCE_DAYS_KEY } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
@@ -98,6 +99,7 @@ export default function SettingScreen() {
 
   const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
   const adReward = useAdReward();
+  const appLock = useAppLockToggle({ show });
   const gate = useInterstitialGate();
 
   useLoadingOverlay(loggingOut);
@@ -148,9 +150,11 @@ export default function SettingScreen() {
     ? "attendanceReward"
     : checkVersion.isPending
       ? "version"
-      : !adReward.ready
-        ? "adReward"
-        : null;
+      : appLock.pending
+        ? "appLock"
+        : !adReward.ready
+          ? "adReward"
+          : null;
 
   const handleAction = useCallback(
     (action: SettingAction) => {
@@ -170,6 +174,11 @@ export default function SettingScreen() {
         return;
       }
 
+      if (action === "appLock") {
+        appLock.toggle();
+        return;
+      }
+
       if (action === "version") {
         if (!checkVersion.isPending) {
           checkVersion.mutate();
@@ -182,7 +191,15 @@ export default function SettingScreen() {
         earnAttendanceReward.mutate();
       }
     },
-    [adReward, checkVersion, earnAttendanceReward, profile?.memberId, show, t],
+    [
+      adReward,
+      appLock,
+      checkVersion,
+      earnAttendanceReward,
+      profile?.memberId,
+      show,
+      t,
+    ],
   );
 
   const handlePress = useCallback(
@@ -285,6 +302,7 @@ export default function SettingScreen() {
                 items={group.items}
                 pendingAction={pendingAction}
                 profileViewCount={profileViewCount}
+                appLockEnabled={appLock.enabled}
                 onItemPress={handlePress}
               />
 

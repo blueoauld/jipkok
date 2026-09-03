@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
+import { AppLockOverlay } from "@/components/AppLockOverlay";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { ToastHost } from "@/components/ToastHost";
 import { useChatSocket } from "@/hooks/useChatSocket";
@@ -56,6 +57,7 @@ export default function RootLayout() {
                   <Stack screenOptions={{ headerShown: false }} />
                   <LoadingOverlay />
                   <ToastHost />
+                  <AppLockOverlay />
                 </YStack>
               </NavigationTheme>
             </Theme>
