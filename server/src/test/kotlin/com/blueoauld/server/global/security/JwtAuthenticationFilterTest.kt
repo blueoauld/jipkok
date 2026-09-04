@@ -4,6 +4,11 @@ import com.blueoauld.server.global.web.RequestLoggingFilter
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import jakarta.servlet.Filter
+import jakarta.servlet.FilterChain
+import jakarta.servlet.Servlet
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -31,7 +36,11 @@ class JwtAuthenticationFilterTest {
         // given
         every { jwtProvider.parseAccessToken(TOKEN) } returns JwtPayload(MEMBER_ID, ROLE)
         val request = requestWith("Bearer $TOKEN")
-        val chain = MockFilterChain()
+        var memberIdInChain: String? = null
+        val chain = MockFilterChain(
+            mockk<Servlet>(relaxed = true),
+            ProbeFilter { memberIdInChain = MDC.get(RequestLoggingFilter.MEMBER_ID_KEY) },
+        )
 
         // when
         filter.doFilter(request, MockHttpServletResponse(), chain)
@@ -41,7 +50,8 @@ class JwtAuthenticationFilterTest {
 
         assertThat(authentication?.principal).isEqualTo(MEMBER_ID)
         assertThat(authentication?.authorities?.map { it.authority }).containsExactly("ROLE_$ROLE")
-        assertThat(MDC.get(RequestLoggingFilter.MEMBER_ID_KEY)).isEqualTo(MEMBER_ID.toString())
+        assertThat(memberIdInChain).isEqualTo(MEMBER_ID.toString())
+        assertThat(MDC.get(RequestLoggingFilter.MEMBER_ID_KEY)).isNull()
         assertThat(chain.request).isSameAs(request)
     }
 
@@ -96,5 +106,16 @@ class JwtAuthenticationFilterTest {
         private const val TOKEN = "token"
         private const val MEMBER_ID = 7L
         private const val ROLE = "MEMBER"
+    }
+
+    private class ProbeFilter(
+
+        private val onFilter: () -> Unit,
+    ) : Filter {
+
+        override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+            onFilter()
+            chain.doFilter(request, response)
+        }
     }
 }

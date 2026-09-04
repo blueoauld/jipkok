@@ -55,6 +55,7 @@ enum class ErrorCode(
         "AUTH_013",
         "이미 사용한 인증번호입니다. 다시 요청해주시길 바랍니다.",
     ),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 없습니다."),
 
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "MEMBER_001", "이미 가입된 휴대폰 번호입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호가 일치하지 않습니다."),

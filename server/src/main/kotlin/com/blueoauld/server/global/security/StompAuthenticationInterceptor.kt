@@ -20,9 +20,14 @@ class StompAuthenticationInterceptor(
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
         val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)
 
-        if (accessor?.command == StompCommand.CONNECT) {
-            accessor.user = jwtProvider.authenticateBearer(accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION))
-                ?: throw BusinessException(ErrorCode.UNAUTHORIZED)
+        when (accessor?.command) {
+            StompCommand.CONNECT ->
+                accessor.user = jwtProvider.authenticateBearer(accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION))
+                    ?: throw BusinessException(ErrorCode.UNAUTHORIZED)
+
+            StompCommand.SEND -> throw BusinessException(ErrorCode.FORBIDDEN)
+
+            else -> Unit
         }
 
         return message

@@ -24,6 +24,10 @@ class JwtAuthenticationFilter(
             MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, it.principal.toString())
         }
 
-        filterChain.doFilter(request, response)
+        try {
+            filterChain.doFilter(request, response)
+        } finally {
+            MDC.remove(RequestLoggingFilter.MEMBER_ID_KEY)
+        }
     }
 }

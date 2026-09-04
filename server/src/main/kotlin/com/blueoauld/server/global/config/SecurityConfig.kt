@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.config
 
 import com.blueoauld.server.global.properties.CorsProperties
+import com.blueoauld.server.global.security.JwtAccessDeniedHandler
 import com.blueoauld.server.global.security.JwtAuthenticationEntryPoint
 import com.blueoauld.server.global.security.JwtAuthenticationFilter
 import com.blueoauld.server.global.security.JwtProvider
@@ -23,6 +24,7 @@ class SecurityConfig(
 
     private val jwtProvider: JwtProvider,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
 ) {
 
     @Bean
@@ -60,7 +62,10 @@ class SecurityConfig(
                     .requestMatchers(ADMIN_PATH).hasRole(ADMIN_ROLE)
                     .anyRequest().authenticated()
             }
-            .exceptionHandling { it.authenticationEntryPoint(jwtAuthenticationEntryPoint) }
+            .exceptionHandling {
+                it.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .accessDeniedHandler(jwtAccessDeniedHandler)
+            }
             .addFilterBefore(JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter::class.java)
             .build()
 

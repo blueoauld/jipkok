@@ -60,9 +60,20 @@ class StompAuthenticationInterceptorTest {
     }
 
     @Test
-    fun `CONNECT가 아닌 명령은 토큰을 보지 않고 그대로 통과시킨다`() {
+    fun `클라이언트가 보내는 SEND는 막는다`() {
         // given
-        val accessor = StompHeaderAccessor.create(StompCommand.SEND).apply {
+        val message = StompHeaderAccessor.create(StompCommand.SEND).toMessage()
+
+        // when, then
+        assertThatThrownBy { interceptor.preSend(message, channel) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FORBIDDEN)
+    }
+
+    @Test
+    fun `CONNECT와 SEND가 아닌 명령은 토큰을 보지 않고 그대로 통과시킨다`() {
+        // given
+        val accessor = StompHeaderAccessor.create(StompCommand.SUBSCRIBE).apply {
             setNativeHeader(HttpHeaders.AUTHORIZATION, "Bearer $TOKEN")
         }
         val message = accessor.toMessage()

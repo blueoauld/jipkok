@@ -10,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @Import(TestcontainersConfiguration::class)
@@ -32,6 +33,7 @@ class AdminAuthorizationTest {
 
         // then
         result.andExpect(status().isUnauthorized)
+        result.andExpect(jsonPath("$.code").value("AUTH_010"))
     }
 
     @Test
@@ -44,6 +46,7 @@ class AdminAuthorizationTest {
 
         // then
         result.andExpect(status().isForbidden)
+        result.andExpect(jsonPath("$.code").value("AUTH_014"))
     }
 
     @Test
