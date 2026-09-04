@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-export type UploadPhase = "compressing" | "uploading" | "failed";
+// 텍스트도 재조회에 지워지지 않도록 보내는 동안 여기 올린다. 화면은 실패만 그린다.
+export type UploadPhase = "sending" | "compressing" | "uploading" | "failed";
 
 export type UploadState = {
   phase: UploadPhase;

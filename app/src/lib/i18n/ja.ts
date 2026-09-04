@@ -210,6 +210,11 @@ export const ja: typeof ko = {
     seekBar: "再生位置",
     seekBackward: "{{seconds}}秒戻る",
     seekForward: "{{seconds}}秒進む",
+    reactionLIKE: "いいねリアクション",
+    reactionHEART: "ハートリアクション",
+    reactionLAUGH: "笑いリアクション",
+    reactionWOW: "驚きリアクション",
+    reactionSAD: "悲しいリアクション",
   },
   component: {
     messagePlaceholder: "メッセージを入力",

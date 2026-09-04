@@ -53,8 +53,9 @@ export function useChatFeedCache(roomId: number) {
         }),
     );
 
-  const prepend = async (message: ChatMessageResponse) => {
-    await queryClient.cancelQueries({ queryKey: chatMessagesKey(roomId) });
+  // 진행 중인 재조회를 취소하지 않는다. 취소하면 끊긴 사이 온 메시지를 놓치고,
+  // 임시 메시지는 업로드 저장소에 있어 재조회가 지우지 못한다.
+  const prepend = (message: ChatMessageResponse) => {
     updateFeed(queryClient, roomId, (items) => [message, ...items]);
     previewRooms(message);
   };

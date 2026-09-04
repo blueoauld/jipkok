@@ -6,8 +6,7 @@ import {
 import * as Haptics from "expo-haptics";
 import { useCallback } from "react";
 
-import { chatMessagesKey } from "@/hooks/useChatMessages";
-import { chatRoomKey } from "@/hooks/useChatRoom";
+import { chatRoomKey, removeRoomQueries } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY, invalidateChatLists } from "@/hooks/useChatRooms";
 import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
@@ -16,7 +15,6 @@ import {
   LEAVE_SELECTED_DESCRIPTION,
   toBulkChunks,
 } from "@/lib/chat";
-import { clearChatDraft } from "@/lib/chat/draft-store";
 import i18n from "@/lib/i18n";
 import { mapPages } from "@/lib/paging";
 import { showToast } from "@/lib/toast/store";
@@ -88,9 +86,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
       return { previous };
     },
     onSuccess: (_data, roomId) => {
-      queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
-      queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
-      clearChatDraft(roomId);
+      removeRoomQueries(queryClient, roomId);
       invalidateChatLists(queryClient);
     },
     onError: (error, _roomId, context) => {
@@ -104,11 +100,7 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
   const { mutate: leaveAll, isPending: leavingRooms } = useMutation({
     mutationFn: (roomIds: number[]) => runInChunks(roomIds, api.chats.leaveAll),
     onSuccess: (_data, roomIds) => {
-      roomIds.forEach((roomId) => {
-        queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
-        queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
-        clearChatDraft(roomId);
-      });
+      roomIds.forEach((roomId) => removeRoomQueries(queryClient, roomId));
       invalidateChatLists(queryClient);
     },
     onError: showApiError,

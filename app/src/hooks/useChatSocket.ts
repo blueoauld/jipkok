@@ -8,22 +8,19 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 
 import { chatMessagesKey } from "@/hooks/useChatMessages";
-import { chatRoomKey } from "@/hooks/useChatRoom";
+import { removeRoomQueries } from "@/hooks/useChatRoom";
 import { invalidateChatLists } from "@/hooks/useChatRooms";
 import { setMessageReactions } from "@/hooks/useReactMessage";
 import type { ChatMessagePage, ChatMessageResponse } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth/store";
 import { CHATS_KEY } from "@/lib/chat";
-import { clearChatDraft } from "@/lib/chat/draft-store";
 import { type ChatEvent, createChatSocket } from "@/lib/chat/socket";
 import { useDeletedRoomStore } from "@/lib/chat/store";
 import { mapPages } from "@/lib/paging";
 
 export function forgetRoom(queryClient: QueryClient, roomId: number) {
   useDeletedRoomStore.getState().markDeleted(roomId);
-  queryClient.removeQueries({ queryKey: chatRoomKey(roomId) });
-  queryClient.removeQueries({ queryKey: chatMessagesKey(roomId) });
-  clearChatDraft(roomId);
+  removeRoomQueries(queryClient, roomId);
   invalidateChatLists(queryClient);
 }
 
@@ -45,7 +42,7 @@ export function useChatSocket() {
         return;
       }
 
-      await queryClient.cancelQueries({ queryKey });
+      // 재조회를 취소하면 끊긴 사이 온 메시지를 놓친다. 중복은 messageId로 거른다.
       queryClient.setQueryData<InfiniteData<ChatMessagePage>>(
         queryKey,
         (current) =>

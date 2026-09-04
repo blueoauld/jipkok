@@ -82,7 +82,8 @@ export function useChatRoomEffects(
   const seenPartnerMessageId = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!messages) {
+    // 방 정보보다 메시지가 먼저 오면 상대 id가 없어 기준이 0으로 잡히므로 기다린다.
+    if (!messages || partnerId === 0) {
       return;
     }
 
@@ -94,5 +95,5 @@ export function useChatRoomEffects(
     }
 
     seenPartnerMessageId.current = newestPartnerMessageId;
-  }, [messages, newestPartnerMessageId]);
+  }, [messages, newestPartnerMessageId, partnerId]);
 }

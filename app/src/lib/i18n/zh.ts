@@ -199,6 +199,11 @@ export const zh: typeof ko = {
     seekBar: "播放位置",
     seekBackward: "後退 {{seconds}} 秒",
     seekForward: "前進 {{seconds}} 秒",
+    reactionLIKE: "讚反應",
+    reactionHEART: "愛心反應",
+    reactionLAUGH: "大笑反應",
+    reactionWOW: "驚訝反應",
+    reactionSAD: "難過反應",
   },
   component: {
     messagePlaceholder: "輸入訊息",

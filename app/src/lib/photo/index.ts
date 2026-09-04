@@ -102,11 +102,19 @@ export async function saveChatMedia(url: string) {
     return false;
   }
 
-  const local = url.startsWith(LOCAL_URI_PREFIX)
-    ? url
-    : (await File.downloadFileAsync(url, Paths.cache)).uri;
+  if (url.startsWith(LOCAL_URI_PREFIX)) {
+    await MediaLibrary.Asset.create(url);
 
-  await MediaLibrary.Asset.create(local);
+    return true;
+  }
+
+  const downloaded = await File.downloadFileAsync(url, Paths.cache);
+
+  try {
+    await MediaLibrary.Asset.create(downloaded.uri);
+  } finally {
+    downloaded.delete();
+  }
 
   return true;
 }

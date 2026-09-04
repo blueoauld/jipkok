@@ -9,6 +9,7 @@ import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isSingleEmoji, replySummary } from "@/lib/chat";
 import { splitLinks } from "@/lib/chat/links";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
+import { useUploadState } from "@/lib/chat/upload-store";
 import { formatClockTime } from "@/lib/date";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 import i18n from "@/lib/i18n";
@@ -274,6 +275,9 @@ export function ChatBubble({
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
 }) {
   const bubbleRef = useRef<View>(null);
+  const upload = useUploadState(message.clientMessageId);
+  // 사진과 동영상은 자기 오버레이에 실패를 그리므로 글만 여기서 다룬다.
+  const failed = upload?.phase === "failed" && message.type === "TEXT";
   const openActions = () =>
     bubbleRef.current?.measureInWindow((x, y, width, height) =>
       onOpenActions(message, { x, y, width, height }),
@@ -295,7 +299,13 @@ export function ChatBubble({
 
   return (
     <YStack shrink={1}>
-      <XStack shrink={1} items="flex-end" gap="$1.5">
+      {/* 실패 줄이 말풍선보다 넓으면 컨테이너가 그 폭이 되므로 말풍선 줄도 제자리에 붙인다. */}
+      <XStack
+        shrink={1}
+        self={mine ? "flex-end" : "flex-start"}
+        items="flex-end"
+        gap="$1.5"
+      >
         {mine && time}
 
         <View ref={bubbleRef} collapsable={false} style={{ flexShrink: 1 }}>
@@ -321,6 +331,51 @@ export function ChatBubble({
           onPress={openActions}
         />
       )}
+
+      {failed && upload && (
+        <XStack
+          self={mine ? "flex-end" : "flex-start"}
+          items="center"
+          gap="$2"
+          mt="$1"
+        >
+          <Text fontSize="$2" color="$red10" fontWeight="600">
+            {i18n.t("component.sendFailed")}
+          </Text>
+          <FailedAction
+            label={i18n.t("component.resend")}
+            onPress={upload.retry}
+          />
+          <FailedAction
+            label={i18n.t("action.delete")}
+            onPress={upload.cancel}
+          />
+        </XStack>
+      )}
     </YStack>
+  );
+}
+
+function FailedAction({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <XStack
+      px="$2"
+      py={2}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      pressStyle={{ opacity: PRESS_OPACITY }}
+      accessibilityRole="button"
+      onPress={onPress}
+    >
+      <Text fontSize="$2" fontWeight="600" color="$color12">
+        {label}
+      </Text>
+    </XStack>
   );
 }

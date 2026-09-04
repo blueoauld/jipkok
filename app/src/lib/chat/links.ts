@@ -10,13 +10,33 @@ function toHref(url: string) {
   return url.startsWith("www.") ? `https://${url}` : url;
 }
 
+function count(text: string, char: string) {
+  return text.split(char).length - 1;
+}
+
+// 위키처럼 경로에 괄호가 든 링크는 닫는 괄호를 짝이 맞는 만큼 돌려준다.
+function restoreClosingParens(raw: string, trailing: string) {
+  let url = raw;
+
+  for (const char of trailing) {
+    if (char !== ")" || count(url, "(") <= count(url, ")")) {
+      break;
+    }
+
+    url += ")";
+  }
+
+  return url;
+}
+
 export function splitLinks(text: string): TextSegment[] {
   const segments: TextSegment[] = [];
   let last = 0;
 
   for (const match of text.matchAll(URL_PATTERN)) {
     const start = match.index;
-    const raw = match[0].replace(TRAILING_PUNCTUATION, "");
+    const stripped = match[0].replace(TRAILING_PUNCTUATION, "");
+    const raw = restoreClosingParens(stripped, match[0].slice(stripped.length));
 
     if (raw.length === 0) {
       continue;

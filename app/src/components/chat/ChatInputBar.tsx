@@ -1,7 +1,7 @@
 import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
-import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TextInput } from "react-native";
 import { getTokens, Spinner, Text, useTheme, XStack, YStack } from "tamagui";
@@ -35,14 +35,8 @@ const MAX_LINES = 7;
 const VERTICAL_PADDING =
   (FLOATING_BUTTON_SIZE - RETRO_BORDER_WIDTH * 2 - LINE_HEIGHT) / 2;
 
-export type ChatInputBarHandle = {
-  restore: (text: string) => void;
-};
-
 export function ChatInputBar({
-  ref,
   roomId,
-  sending,
   uploading,
   reply,
   replyName,
@@ -50,9 +44,7 @@ export function ChatInputBar({
   onAttach,
   onCancelReply,
 }: {
-  ref?: Ref<ChatInputBarHandle>;
   roomId: number;
-  sending: boolean;
   uploading: boolean;
   reply: ChatMessageResponse | null;
   replyName: string;
@@ -73,20 +65,14 @@ export function ChatInputBar({
   const setDraft = useChatDraftStore((state) => state.set);
   const setText = (value: string) => setDraft(roomId, value);
   const trimmed = text.trim();
-  const sendable = trimmed.length > 0 && !sending;
+  // 응답을 기다리지 않고 연달아 보낸다. 순서는 서버 id가 정하고 실패는 말풍선에 남는다.
+  const sendable = trimmed.length > 0;
 
   useEffect(() => {
     if (reply) {
       inputRef.current?.focus();
     }
   }, [reply]);
-
-  useImperativeHandle(ref, () => ({
-    restore: (value) => {
-      setText(value);
-      inputRef.current?.focus();
-    },
-  }));
 
   const send = () => {
     onSend(trimmed);

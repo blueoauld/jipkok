@@ -12,10 +12,7 @@ import {
 import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ChatDay } from "@/components/chat/ChatDay";
-import {
-  ChatInputBar,
-  type ChatInputBarHandle,
-} from "@/components/chat/ChatInputBar";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
 import { ChatMessageRow } from "@/components/chat/ChatMessageRow";
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { MessageActionOverlay } from "@/components/chat/MessageActionOverlay";
@@ -35,7 +32,7 @@ import { useMessageActions } from "@/hooks/useMessageActions";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
-import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
+import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound, toReply } from "@/lib/chat";
 import { type ChatRow, toChatRows } from "@/lib/chat/rows";
 import { useDeletedRoomStore } from "@/lib/chat/store";
@@ -65,7 +62,6 @@ export default function ChatRoomScreen() {
   const contentRef = useRef<View>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<FlatList<ChatRow>>(null);
-  const inputBarRef = useRef<ChatInputBarHandle>(null);
 
   const insetTop = useRef(0);
 
@@ -100,21 +96,11 @@ export default function ChatRoomScreen() {
     error: roomError,
     refetch,
   } = useChatRoom(roomId, validRoom && !partnerLeft);
-  const restoreDraft = useCallback(
-    (content: string, replyTo: ReplyMessageResponse | null) => {
-      inputBarRef.current?.restore(content);
-
-      if (replyTo) {
-        const original = messagesRef.current?.find(
-          (message) => message.messageId === replyTo.messageId,
-        );
-        setReplyTarget(original ?? null);
-      }
-    },
-    [],
+  const { sendText, sendPhotos, sendVideos, uploading } = useSendMessage(
+    roomId,
+    myMemberId,
+    handleRoomError,
   );
-  const { sendText, sendPhotos, sendVideos, sending, uploading } =
-    useSendMessage(roomId, myMemberId, handleRoomError, restoreDraft);
   const media = useChatMedia({
     roomId,
     sendPhotos,
@@ -152,12 +138,22 @@ export default function ChatRoomScreen() {
   );
 
   const rowsRef = useRef(rows);
-  const messagesRef = useRef(messages);
 
   useEffect(() => {
     rowsRef.current = rows;
-    messagesRef.current = messages;
-  }, [messages, rows]);
+  }, [rows]);
+
+  // 뷰어는 방의 사진을 시간순으로 넘겨 본다. 목록은 최신순이라 뒤집는다.
+  const photoUrls = useMemo(
+    () =>
+      (messages ?? [])
+        .filter((message) => message.type === "PHOTO")
+        .map((message) => message.imageUrl)
+        .filter((url): url is string => url != null)
+        .reverse(),
+    [messages],
+  );
+  const viewerIndex = media.viewerUrl ? photoUrls.indexOf(media.viewerUrl) : -1;
 
   useEffect(() => {
     if (partnerLeft) {
@@ -374,9 +370,7 @@ export default function ChatRoomScreen() {
           }
         >
           <ChatInputBar
-            ref={inputBarRef}
             roomId={roomId}
-            sending={sending}
             uploading={uploading}
             reply={replyTarget}
             replyName={nameOf(replyTarget?.senderId)}
@@ -412,8 +406,14 @@ export default function ChatRoomScreen() {
       {alertElement}
 
       <PhotoViewer
-        photos={media.viewerUrl ? [media.viewerUrl] : []}
-        initialIndex={0}
+        photos={
+          viewerIndex >= 0
+            ? photoUrls
+            : media.viewerUrl
+              ? [media.viewerUrl]
+              : []
+        }
+        initialIndex={Math.max(0, viewerIndex)}
         open={media.viewerUrl !== null}
         onClose={media.closeViewer}
       />

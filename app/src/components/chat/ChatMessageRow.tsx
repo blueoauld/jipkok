@@ -16,6 +16,7 @@ import { useTheme, XStack, YStack } from "tamagui";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
+import { isPending } from "@/lib/chat";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 
@@ -119,6 +120,7 @@ function Row({
     <YStack mt={grouped ? 0 : GROUP_GAP_TOP} mb={MESSAGE_GAP_BOTTOM}>
       <ReanimatedSwipeable
         ref={swipeable}
+        enabled={!isPending(message)}
         friction={REPLY_FRICTION}
         overshootRight={false}
         dragOffsetFromLeftEdge={DISABLE_RIGHTWARD_DRAG}

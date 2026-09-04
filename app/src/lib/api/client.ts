@@ -4,6 +4,7 @@ import i18n from "@/lib/i18n";
 import { API_BASE_URL } from "./config";
 import { ApiError } from "./errors";
 import { rememberFailedRequestId } from "./request-id";
+import { rememberServerTime } from "./server-clock";
 import {
   clearTokens,
   getAccessToken,
@@ -49,11 +50,15 @@ async function send(path: string, options: RequestOptions) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  return fetch(buildUrl(path, options.query), {
+  const response = await fetch(buildUrl(path, options.query), {
     method: options.method ?? "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
+
+  rememberServerTime(response);
+
+  return response;
 }
 
 async function toApiError(response: Response) {

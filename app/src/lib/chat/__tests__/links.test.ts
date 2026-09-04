@@ -27,6 +27,20 @@ describe("splitLinks", () => {
     ]);
   });
 
+  it("경로의 괄호는 짝이 맞는 만큼 닫는 괄호를 남긴다", () => {
+    expect(splitLinks("https://ko.wikipedia.org/wiki/Foo_(bar)")).toEqual([
+      {
+        text: "https://ko.wikipedia.org/wiki/Foo_(bar)",
+        url: "https://ko.wikipedia.org/wiki/Foo_(bar)",
+      },
+    ]);
+    expect(splitLinks("(https://a.com/x_(y)).")).toEqual([
+      { text: "(" },
+      { text: "https://a.com/x_(y)", url: "https://a.com/x_(y)" },
+      { text: ")." },
+    ]);
+  });
+
   it("링크가 여러 개면 순서대로 준다", () => {
     expect(
       splitLinks("https://a.com https://b.com").map((segment) => segment.url),

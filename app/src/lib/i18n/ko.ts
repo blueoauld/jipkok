@@ -206,6 +206,11 @@ export const ko = {
     seekBar: "재생 위치",
     seekBackward: "{{seconds}}초 뒤로",
     seekForward: "{{seconds}}초 앞으로",
+    reactionLIKE: "좋아요 반응",
+    reactionHEART: "하트 반응",
+    reactionLAUGH: "웃음 반응",
+    reactionWOW: "놀람 반응",
+    reactionSAD: "슬픔 반응",
   },
   component: {
     messagePlaceholder: "메시지 입력",

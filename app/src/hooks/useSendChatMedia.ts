@@ -159,7 +159,7 @@ export function useSendChatMedia(
           replyMessage: null,
         });
 
-        await prepend(temp);
+        prepend(temp);
         await sendPhoto(asset, temp);
       }
     } finally {
@@ -192,7 +192,7 @@ export function useSendChatMedia(
           replyMessage: null,
         });
 
-        await prepend(temp);
+        prepend(temp);
         await sendVideo(asset, temp, thumbnailUri);
       }
     } finally {

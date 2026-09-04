@@ -1,4 +1,5 @@
 import type { ChatMessageResponse, ChatRoomResponse } from "@/lib/api";
+import { serverNow } from "@/lib/api/server-clock";
 
 let lastTempId = 0;
 
@@ -21,7 +22,7 @@ export function createTemp(
     messageId: --lastTempId,
     roomId: 0,
     senderId,
-    createdAt: new Date().toISOString(),
+    createdAt: serverNow().toISOString(),
     clientMessageId,
     reactions: [],
     ...message,

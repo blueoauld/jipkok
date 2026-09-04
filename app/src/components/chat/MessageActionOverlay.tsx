@@ -11,6 +11,7 @@ import {
 } from "@/lib/chat/overlay-layout";
 import { REACTION_EMOJI, REACTION_TYPES } from "@/lib/chat/reactions";
 import { MIN_TAP_SIZE, OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import i18n from "@/lib/i18n";
 import { useAccent } from "@/lib/theme/accent";
 
 const EMOJI_ITEM_SIZE = MIN_TAP_SIZE;
@@ -89,6 +90,8 @@ function Content({
     <>
       <Pressable
         style={{ flex: 1, backgroundColor: OVERLAY_BG }}
+        accessibilityRole="button"
+        accessibilityLabel={i18n.t("a11y.close")}
         onPress={onClose}
       />
 
@@ -111,6 +114,9 @@ function Content({
               justify="center"
               bg={type === myReaction ? "$color10" : "transparent"}
               pressStyle={{ bg: type === myReaction ? "$color11" : "$color3" }}
+              accessibilityRole="button"
+              accessibilityLabel={i18n.t(`a11y.reaction${type}`)}
+              accessibilityState={{ selected: type === myReaction }}
               onPress={() => onSelectReaction(type)}
             >
               <Text fontSize={EMOJI_FONT_SIZE} lineHeight={EMOJI_FONT_SIZE + 6}>
@@ -136,6 +142,7 @@ function Content({
                 px="$3"
                 items="center"
                 pressStyle={{ bg: "$color3" }}
+                accessibilityRole="button"
                 onPress={onPress}
               >
                 <Text fontSize="$4" color="$color12">

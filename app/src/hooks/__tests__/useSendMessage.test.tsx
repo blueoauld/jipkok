@@ -115,7 +115,6 @@ type Setup = Awaited<
   client: ReturnType<typeof createTestQueryClient>;
   invalidate: jest.SpyInstance;
   onError: jest.Mock;
-  onTextFailed: jest.Mock;
 };
 
 let mounted: Setup | null = null;
@@ -125,13 +124,11 @@ async function setup(): Promise<Setup> {
   seed(client);
   const invalidate = jest.spyOn(client, "invalidateQueries");
   const onError = jest.fn();
-  const onTextFailed = jest.fn();
-  const hook = await renderHook(
-    () => useSendMessage(ROOM_ID, ME, onError, onTextFailed),
-    { wrapper: withQueryClient(client) },
-  );
+  const hook = await renderHook(() => useSendMessage(ROOM_ID, ME, onError), {
+    wrapper: withQueryClient(client),
+  });
 
-  mounted = { client, invalidate, onError, onTextFailed, ...hook };
+  mounted = { client, invalidate, onError, ...hook };
 
   return mounted;
 }
@@ -216,28 +213,59 @@ describe("useSendMessage 텍스트", () => {
     );
   });
 
-  it("실패하면 임시 메시지를 지우고 초안을 되돌려 준다", async () => {
+  it("보내는 동안 임시 메시지를 업로드 저장소에 올려 재조회가 지우지 못하게 한다", async () => {
     const hook = await setup();
-    const error = new ApiError(500, "X", "boom");
-    send.mockRejectedValue(error);
-
-    await act(async () =>
-      hook.result.current.sendText("hi", {
-        messageId: 1,
-        senderId: 5,
-        type: "TEXT",
-        content: "old",
-        previewUrl: null,
+    let resolve: (message: ChatMessageResponse) => void = () => undefined;
+    send.mockReturnValue(
+      new Promise<ChatMessageResponse>((next) => {
+        resolve = next;
       }),
     );
 
-    await settle(() => hook.onTextFailed.mock.calls.length > 0);
-    expect(items(hook.client).map((item) => item.messageId)).toEqual([1]);
-    expect(hook.onTextFailed).toHaveBeenCalledWith(
-      "hi",
-      expect.objectContaining({ messageId: 1 }),
-    );
+    await act(async () => hook.result.current.sendText("hi"));
+
+    expect(uploads().map((upload) => upload.phase)).toEqual(["sending"]);
+
+    await act(async () => resolve(serverMessage(2, { content: "hi" })));
+    await settle(() => items(hook.client)[0]?.messageId === 2);
+    expect(uploads()).toEqual([]);
+  });
+
+  it("실패하면 임시 메시지를 남기고 failed 상태로 두며, 재전송은 같은 clientMessageId를 쓴다", async () => {
+    const hook = await setup();
+    const error = new ApiError(500, "X", "boom");
+    send.mockRejectedValueOnce(error);
+
+    await act(async () => hook.result.current.sendText("hi"));
+
+    await settle(() => uploads()[0]?.phase === "failed");
+    const temp = items(hook.client)[0];
+    expect(temp.messageId).toBeLessThan(0);
     expect(hook.onError).toHaveBeenCalledWith(error);
+
+    send.mockResolvedValue(serverMessage(2, { content: "hi" }));
+    await act(async () => uploads()[0].retry());
+
+    await settle(() => items(hook.client)[0]?.messageId === 2);
+    expect(items(hook.client).map((item) => item.messageId)).toEqual([2, 1]);
+    expect(send).toHaveBeenLastCalledWith(
+      ROOM_ID,
+      expect.objectContaining({ clientMessageId: temp.clientMessageId }),
+    );
+    expect(uploads()).toEqual([]);
+  });
+
+  it("실패한 메시지를 지우면 임시 메시지와 저장소 항목이 없어진다", async () => {
+    const hook = await setup();
+    send.mockRejectedValue(new ApiError(500, "X", "boom"));
+
+    await act(async () => hook.result.current.sendText("hi"));
+
+    await settle(() => uploads()[0]?.phase === "failed");
+    await act(async () => uploads()[0].cancel());
+
+    expect(items(hook.client).map((item) => item.messageId)).toEqual([1]);
+    expect(uploads()).toEqual([]);
   });
 });
 

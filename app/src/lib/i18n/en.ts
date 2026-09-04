@@ -206,6 +206,11 @@ export const en: typeof ko = {
     seekBar: "Playback position",
     seekBackward: "Back {{seconds}} seconds",
     seekForward: "Forward {{seconds}} seconds",
+    reactionLIKE: "Like reaction",
+    reactionHEART: "Heart reaction",
+    reactionLAUGH: "Laugh reaction",
+    reactionWOW: "Wow reaction",
+    reactionSAD: "Sad reaction",
   },
   component: {
     messagePlaceholder: "Message",
