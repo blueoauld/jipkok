@@ -1,7 +1,7 @@
 {
   "name": "app",
   "main": "expo-router/entry",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
     "@bacons/text-decoder": "^0.0.0",
     "@react-native-firebase/analytics": "^26.2.0",
