@@ -354,7 +354,7 @@
       "type": "log",
       "x": 0,
       "y": 27,
-      "width": 12,
+      "width": 8,
       "height": 6,
       "properties": {
         "title": "5xx 추이 (5분)",
@@ -365,9 +365,22 @@
     },
     {
       "type": "log",
-      "x": 12,
+      "x": 8,
       "y": 27,
-      "width": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "4xx 추이 (상태별, 5분)",
+        "region": "ap-northeast-2",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| parse message /^(?<method>[A-Z]+) (?<path>[^?\\s]+)\\S* (?<status>\\d{3}) (?<ms>\\d+)ms$/\n| filter status >= 400 and status < 500\n| stats count() by status, bin(5m)",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "log",
+      "x": 16,
+      "y": 27,
+      "width": 8,
       "height": 6,
       "properties": {
         "title": "429 추이 (5분)",
@@ -471,20 +484,33 @@
         "title": "오류 종류",
         "region": "ap-northeast-2",
         "view": "table",
-        "query": "SOURCE '/jipkok/server' | fields @timestamp, error.type\n| filter log.level = \"ERROR\"\n| stats count() as cnt by error.type\n| sort cnt desc\n| limit 20"
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, log.logger as logger, error.type\n| filter log.level = \"ERROR\"\n| stats count() as cnt by logger, error.type\n| sort cnt desc\n| limit 20"
       }
     },
     {
       "type": "log",
       "x": 0,
       "y": 53,
-      "width": 24,
+      "width": 12,
       "height": 4,
       "properties": {
         "title": "기동 횟수 (배포 외에 오르면 재시작)",
         "region": "ap-northeast-2",
         "view": "timeSeries",
         "query": "SOURCE '/jipkok/server' | fields @timestamp, message\n| filter message like /^Started .+ in .+ seconds/\n| stats count() as starts by bin(1h)"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 53,
+      "width": 12,
+      "height": 4,
+      "properties": {
+        "title": "OOM 종료 (기동이 늘었을 때 원인)",
+        "region": "ap-northeast-2",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, @message\n| filter @message like /OutOfMemoryError/\n| stats count() as exits by bin(1h)",
+        "view": "timeSeries"
       }
     },
     {
@@ -507,13 +533,36 @@
       "width": 24,
       "height": 1,
       "properties": {
-        "markdown": "## 프록시"
+        "markdown": "## 작업"
       }
     },
     {
       "type": "log",
       "x": 0,
       "y": 66,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "title": "정리, 알림 작업 실행 기록",
+        "region": "ap-northeast-2",
+        "query": "SOURCE '/jipkok/server' | fields @timestamp, log.logger as logger, message\n| filter log.level = \"INFO\" and logger like /Cleaner$|FeedReminder$/\n| sort @timestamp desc\n| limit 30",
+        "view": "table"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 72,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "## 프록시"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 73,
       "width": 12,
       "height": 6,
       "properties": {
@@ -526,7 +575,7 @@
     {
       "type": "log",
       "x": 12,
-      "y": 66,
+      "y": 73,
       "width": 12,
       "height": 6,
       "properties": {
