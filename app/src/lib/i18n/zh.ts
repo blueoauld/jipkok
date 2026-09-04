@@ -63,6 +63,7 @@ export const zh: typeof ko = {
     save: "儲存",
     publicPhotos: "公開照片",
     secretPhotos: "私密照片",
+    discardConfirm: "要捨棄修改的內容嗎？",
   },
   validation: {
     phoneNumberRequired: "請輸入手機號碼。",
@@ -159,8 +160,6 @@ export const zh: typeof ko = {
     composeTitle: "動態",
     composeClose: "關閉",
     composeSubmit: "發布",
-    commentSaved: "已儲存留言。",
-    commentTitle: "留言",
   },
   gender: {
     MALE: "男",
@@ -204,6 +203,8 @@ export const zh: typeof ko = {
     reactionLAUGH: "大笑反應",
     reactionWOW: "驚訝反應",
     reactionSAD: "難過反應",
+    minAge: "最小年齡",
+    maxAge: "最大年齡",
   },
   component: {
     messagePlaceholder: "輸入訊息",
@@ -287,6 +288,8 @@ export const zh: typeof ko = {
   },
   main: {
     sort: { RECENT: "最近", DISTANCE: "距離" },
+    filterEmpty: "沒有符合篩選條件的會員。",
+    resetFilter: "重設篩選",
   },
   hook: {
     videoUrlFailed: "無法載入影片。",
@@ -420,6 +423,8 @@ export const zh: typeof ko = {
     memoSaved: "已儲存備註。",
   },
   profile: {
+    commentSaved: "已儲存留言。",
+    commentTitle: "留言",
     comment: "留言",
     bio: "自我介紹",
   },

@@ -57,7 +57,7 @@ class MemberDetailService(
         return MemberDetailResponse(
             memberId = target.id,
             publicPhotoUrls = if (blockedByThem) emptyList() else publicPhotoUrls(photos),
-            secretPhotoCount = photos.count { it.visibility == PhotoVisibility.SECRET },
+            secretPhotoCount = if (blockedByThem) 0 else photos.count { it.visibility == PhotoVisibility.SECRET },
             nickname = target.nickname,
             gender = target.gender,
             age = clock.ageOf(target.birthYear),

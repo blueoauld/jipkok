@@ -64,6 +64,7 @@ export const en: typeof ko = {
     save: "Save",
     publicPhotos: "Public photos",
     secretPhotos: "Private photos",
+    discardConfirm: "Discard your changes?",
   },
   validation: {
     phoneNumberRequired: "Enter your phone number.",
@@ -166,8 +167,6 @@ export const en: typeof ko = {
     composeTitle: "Feed",
     composeClose: "Close",
     composeSubmit: "Post",
-    commentSaved: "Comment saved.",
-    commentTitle: "Comment",
   },
   gender: {
     MALE: "Male",
@@ -211,6 +210,8 @@ export const en: typeof ko = {
     reactionLAUGH: "Laugh reaction",
     reactionWOW: "Wow reaction",
     reactionSAD: "Sad reaction",
+    minAge: "Minimum age",
+    maxAge: "Maximum age",
   },
   component: {
     messagePlaceholder: "Message",
@@ -297,6 +298,8 @@ export const en: typeof ko = {
   },
   main: {
     sort: { RECENT: "Recent", DISTANCE: "Distance" },
+    filterEmpty: "No members match the filter.",
+    resetFilter: "Reset filter",
   },
   hook: {
     videoUrlFailed: "Couldn't load the video.",
@@ -434,6 +437,8 @@ export const en: typeof ko = {
     memoSaved: "Memo saved.",
   },
   profile: {
+    commentSaved: "Comment saved.",
+    commentTitle: "Comment",
     comment: "Comment",
     bio: "About",
   },

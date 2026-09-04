@@ -9,6 +9,9 @@ import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { memberDetailKey } from "@/hooks/useMemberDetail";
 import { relationKey } from "@/hooks/useMemberList";
+import { MEMBER_RANKING_KEY } from "@/hooks/useMemberRanking";
+import { MEMBERS_KEY } from "@/hooks/useMembers";
+import { MEMBER_SEARCH_KEY } from "@/hooks/useMemberSearch";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { PROFILE_VIEW_LIST_KEY } from "@/hooks/useProfileViews";
 import type { RetroAlertApi } from "@/hooks/useRetroAlert";
@@ -28,9 +31,11 @@ const BLOCK_AFFECTED_KEYS = [
   CHAT_UNREAD_COUNT_KEY,
   FEEDS_KEY,
 ];
-// 메모는 회원 요약을 쓰는 모든 목록에 실려 나온다.
+// 메모는 회원 요약을 쓰는 모든 목록에 실려 나온다. 상세는 직접 고치므로 목록만 고른다.
 const MEMO_AFFECTED_KEYS = [
-  ["members"],
+  MEMBERS_KEY,
+  MEMBER_RANKING_KEY,
+  MEMBER_SEARCH_KEY,
   LIKES_KEY,
   FAVORITES_KEY,
   SECRET_PHOTOS_KEY,

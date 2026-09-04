@@ -260,7 +260,7 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `코멘트를 앞뒤 공백까지 그대로 저장한다`() {
+    fun `코멘트는 앞뒤 공백을 떼고 저장한다`() {
         // given
         val member = member()
         stubMember(member)
@@ -269,7 +269,7 @@ class MemberServiceTest {
         memberService.updateComment(MEMBER_ID, UpdateCommentRequest("  오늘 한잔  "))
 
         // then
-        assertThat(member.comment).isEqualTo("  오늘 한잔  ")
+        assertThat(member.comment).isEqualTo("오늘 한잔")
     }
 
     @Test
@@ -287,16 +287,17 @@ class MemberServiceTest {
     }
 
     @Test
-    fun `공백만 있는 코멘트도 그대로 저장한다`() {
+    fun `공백만 있는 코멘트는 지운다`() {
         // given
         val member = member()
+        member.comment = "원래 코멘트"
         stubMember(member)
 
         // when
         memberService.updateComment(MEMBER_ID, UpdateCommentRequest("   "))
 
         // then
-        assertThat(member.comment).isEqualTo("   ")
+        assertThat(member.comment).isNull()
     }
 
     @Test

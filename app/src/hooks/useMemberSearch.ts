@@ -4,6 +4,8 @@ import { api, type MemberSearchPage } from "@/lib/api";
 import { useFlatItems } from "@/lib/paging";
 import { MIN_KEYWORD_LENGTH } from "@/lib/validation";
 
+export const MEMBER_SEARCH_KEY = ["members", "search"];
+
 // 서버가 앞뒤 공백을 지우고 찾으므로 길이도 지운 뒤로 센다.
 export function useMemberSearch(rawKeyword: string) {
   const keyword = rawKeyword.trim();
@@ -11,7 +13,7 @@ export function useMemberSearch(rawKeyword: string) {
 
   const query = useInfiniteQuery({
     enabled,
-    queryKey: ["members", "search", keyword],
+    queryKey: [...MEMBER_SEARCH_KEY, keyword],
     queryFn: ({ pageParam }) =>
       api.members.search({ keyword, cursor: pageParam }),
     initialPageParam: undefined as string | undefined,

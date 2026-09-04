@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { router, Stack } from "expo-router";
-import { type RefObject, useMemo, useRef } from "react";
+import { router, Stack, useNavigation } from "expo-router";
+// expo-router가 usePreventRemove를 공개 export하지 않아 내장된 react-navigation에서 가져온다.
+import { usePreventRemove } from "expo-router/build/react-navigation";
+import { type RefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,9 +41,11 @@ type EditValues = { nickname: string; birthYear: string };
 function BioField({
   valueRef,
   initialValue,
+  onChangeText,
 }: {
   valueRef: RefObject<string>;
   initialValue: string;
+  onChangeText: (text: string) => void;
 }) {
   const { t } = useTranslation();
 
@@ -54,7 +58,14 @@ function BioField({
       defaultValue={initialValue}
       placeholder={t("auth.setup.bioPlaceholder")}
       maxLength={BIO_MAX_LENGTH}
+      onChangeText={onChangeText}
     />
+  );
+}
+
+function sameKeys(left: string[], right: string[]) {
+  return (
+    left.length === right.length && left.every((key, i) => key === right[i])
   );
 }
 
@@ -62,7 +73,10 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   const { t } = useTranslation();
 
   const queryClient = useQueryClient();
-  const { alertElement, show, showApiError } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const navigation = useNavigation();
+  const [bioDirty, setBioDirty] = useState(false);
+  const [saved, setSaved] = useState(false);
   const publicPhotos = useUploadPhotos(
     uploadPublicPhoto,
     showApiError,
@@ -74,13 +88,18 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     profile.secretPhotos,
   );
 
-  const { control, handleSubmit } = useForm<EditValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<EditValues>({
     defaultValues: {
       nickname: profile.nickname,
       birthYear: String(profile.birthYear),
     },
   });
-  const bioRef = useRef(profile.bio ?? "");
+  const initialBio = profile.bio ?? "";
+  const bioRef = useRef(initialBio);
 
   const save = useMutation({
     mutationFn: (values: { nickname: string; birthYear: number }) =>
@@ -92,6 +111,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         secretPhotoKeys: secretPhotos.objectKeys,
       }),
     onSuccess: async () => {
+      setSaved(true);
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
       queryClient.invalidateQueries({ queryKey: FEEDS_KEY });
       show("info", t("profileEdit.saved"), () => router.back());
@@ -106,6 +126,28 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
   useLoadingOverlay(uploading, progress.done, progress.total);
   const busy = save.isPending || uploading;
+
+  // 사진은 고르는 즉시 올라가므로 저장 없이 나가면 그 변경까지 조용히 버려진다. 한 번 묻는다.
+  const dirty =
+    isDirty ||
+    bioDirty ||
+    !sameKeys(
+      publicPhotos.objectKeys,
+      profile.publicPhotos.map((photo) => photo.objectKey),
+    ) ||
+    !sameKeys(
+      secretPhotos.objectKeys,
+      profile.secretPhotos.map((photo) => photo.objectKey),
+    );
+
+  usePreventRemove(dirty && !saved && !busy, ({ data }) =>
+    confirm({
+      message: t("profileEdit.discardConfirm"),
+      confirmLabel: t("action.discard"),
+      destructive: true,
+      onConfirm: () => navigation.dispatch(data.action),
+    }),
+  );
 
   const submit = handleSubmit((values) =>
     save.mutate({
@@ -168,7 +210,11 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           maxLength={BIRTH_YEAR_LENGTH}
         />
 
-        <BioField valueRef={bioRef} initialValue={profile.bio ?? ""} />
+        <BioField
+          valueRef={bioRef}
+          initialValue={initialBio}
+          onChangeText={(text) => setBioDirty(text !== initialBio)}
+        />
       </FormScreen>
 
       {alertElement}
@@ -178,7 +224,14 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
 export default function MemberEditScreen() {
   const { t } = useTranslation();
-  const screenOptions = useMemo(() => ({ title: t("profileEdit.title") }), [t]);
+  // 네이티브 스택은 이탈 확인 중에 뒤로가기 메뉴로 여러 화면을 건너뛰면 상태가 어긋난다.
+  const screenOptions = useMemo(
+    () => ({
+      title: t("profileEdit.title"),
+      headerBackButtonMenuEnabled: false,
+    }),
+    [t],
+  );
 
   const { data, error, refetch } = useMyProfile();
 

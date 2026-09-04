@@ -13,7 +13,9 @@ import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MemberFilterSheet } from "@/components/MemberFilterSheet";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
+import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
@@ -29,7 +31,12 @@ import {
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
 import { api, type MemberSort } from "@/lib/api";
-import { type MemberFilter, useMemberFilterStore } from "@/lib/filter/store";
+import {
+  DEFAULT_MEMBER_FILTER,
+  isDefaultMemberFilter,
+  type MemberFilter,
+  useMemberFilterStore,
+} from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
 import { listErrorMessage, memberEmptyMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -63,6 +70,7 @@ export default function MainScreen() {
     () => ({ gender, minAge, maxAge }),
     [gender, minAge, maxAge],
   );
+  const filtered = !isDefaultMemberFilter(filter);
   const memberList = useMembers(sort, filter);
   const { data: profile } = useMyProfile();
   const { alertElement, show, showApiError, confirm } = useRetroAlert();
@@ -72,7 +80,7 @@ export default function MainScreen() {
     mutationFn: api.members.updateComment,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
-      showToast("info", t("feed.commentSaved"));
+      showToast("info", t("profile.commentSaved"));
     },
     onError: showApiError,
   });
@@ -174,7 +182,18 @@ export default function MainScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
+          ListEmptyComponent={
+            filtered ? (
+              <YStack items="center" gap="$4" py="$8">
+                <EmptyMessage>{t("main.filterEmpty")}</EmptyMessage>
+                <RetroButton onPress={() => applyFilter(DEFAULT_MEMBER_FILTER)}>
+                  {t("main.resetFilter")}
+                </RetroButton>
+              </YStack>
+            ) : (
+              <ListEmpty>{memberEmptyMessage()}</ListEmpty>
+            )
+          }
         />
       ) : (
         <ScreenState
@@ -192,7 +211,7 @@ export default function MainScreen() {
       <TextInputDialog
         open={commentOpen}
         onOpenChange={setCommentOpen}
-        title={t("feed.commentTitle")}
+        title={t("profile.commentTitle")}
         placeholder={t("common.contentPlaceholder")}
         maxLength={COMMENT_MAX_LENGTH}
         defaultValue={profile?.comment ?? ""}

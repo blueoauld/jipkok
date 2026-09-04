@@ -132,6 +132,7 @@ class MemberDetailServiceTest {
 
         // then
         assertThat(response.publicPhotoUrls).isEmpty()
+        assertThat(response.secretPhotoCount).isZero()
         assertThat(response.comment).isNull()
         assertThat(response.bio).isNull()
         assertThat(response.nickname).isEqualTo("상대")

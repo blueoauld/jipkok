@@ -64,6 +64,7 @@ export const ja: typeof ko = {
     save: "保存",
     publicPhotos: "公開写真",
     secretPhotos: "シークレット写真",
+    discardConfirm: "変更した内容を破棄しますか？",
   },
   validation: {
     phoneNumberRequired: "携帯電話番号を入力してください。",
@@ -170,8 +171,6 @@ export const ja: typeof ko = {
     composeTitle: "フィード",
     composeClose: "閉じる",
     composeSubmit: "投稿",
-    commentSaved: "コメントを保存しました。",
-    commentTitle: "コメント",
   },
   gender: {
     MALE: "男性",
@@ -215,6 +214,8 @@ export const ja: typeof ko = {
     reactionLAUGH: "笑いリアクション",
     reactionWOW: "驚きリアクション",
     reactionSAD: "悲しいリアクション",
+    minAge: "最低年齢",
+    maxAge: "最高年齢",
   },
   component: {
     messagePlaceholder: "メッセージを入力",
@@ -300,6 +301,8 @@ export const ja: typeof ko = {
   },
   main: {
     sort: { RECENT: "最近", DISTANCE: "距離" },
+    filterEmpty: "条件に合う会員がいません。",
+    resetFilter: "フィルターをリセット",
   },
   hook: {
     videoUrlFailed: "動画を読み込めませんでした。",
@@ -437,6 +440,8 @@ export const ja: typeof ko = {
     memoSaved: "メモを保存しました。",
   },
   profile: {
+    commentSaved: "コメントを保存しました。",
+    commentTitle: "コメント",
     comment: "コメント",
     bio: "自己紹介",
   },

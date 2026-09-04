@@ -47,7 +47,7 @@ class MemberService(
 
         changeNickname(member, nickname)
         member.birthYear = request.birthYear
-        member.bio = request.bio
+        member.bio = request.bio?.trim()?.ifEmpty { null }
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
     }
@@ -86,7 +86,7 @@ class MemberService(
 
         changeNickname(member, nickname)
         member.birthYear = request.birthYear
-        member.bio = request.bio
+        member.bio = request.bio?.trim()?.ifEmpty { null }
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
 
@@ -118,7 +118,7 @@ class MemberService(
     fun updateComment(memberId: Long, request: UpdateCommentRequest) {
         memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
 
-        memberRepository.getMember(memberId).comment = request.comment?.ifEmpty { null }
+        memberRepository.getMember(memberId).comment = request.comment?.trim()?.ifEmpty { null }
 
         eventPublisher.publishEvent(MemberTextChangedEvent(memberId))
     }

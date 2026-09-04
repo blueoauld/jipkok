@@ -17,20 +17,32 @@ const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 24;
 const THUMB_HIT_SLOP = 12;
 
+const ADJUST_ACTIONS = [{ name: "increment" }, { name: "decrement" }];
+
 function Thumb({
   position,
   otherPosition,
   isLower,
   width,
   borderColor,
+  label,
+  value,
+  min,
+  max,
   onMove,
+  onStep,
 }: {
   position: SharedValue<number>;
   otherPosition: SharedValue<number>;
   isLower: boolean;
   width: number;
   borderColor: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
   onMove: (ratio: number) => void;
+  onStep: (delta: number) => void;
 }) {
   const start = useSharedValue(0);
 
@@ -56,6 +68,14 @@ function Thumb({
   return (
     <GestureDetector gesture={pan}>
       <Animated.View
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel={label}
+        accessibilityValue={{ min, max, now: value, text: String(value) }}
+        accessibilityActions={ADJUST_ACTIONS}
+        onAccessibilityAction={(event) =>
+          onStep(event.nativeEvent.actionName === "increment" ? 1 : -1)
+        }
         style={[
           styles.thumb,
           { borderColor, borderWidth: RETRO_BORDER_WIDTH },
@@ -71,11 +91,15 @@ export function RetroRangeSlider({
   min,
   max,
   values,
+  lowerLabel,
+  upperLabel,
   onChange,
 }: {
   min: number;
   max: number;
   values: [number, number];
+  lowerLabel: string;
+  upperLabel: string;
   onChange: (values: [number, number]) => void;
 }) {
   const theme = useTheme();
@@ -130,6 +154,13 @@ export function RetroRangeSlider({
     }
   };
 
+  // 스크린 리더의 올리기, 내리기는 한 칸씩 움직인다. 손잡이 위치는 값이 바뀌면 효과가 맞춘다.
+  const stepLower = (delta: number) =>
+    moveLower(toRatio(Math.max(min, values[0] + delta)));
+
+  const stepUpper = (delta: number) =>
+    moveUpper(toRatio(Math.min(max, values[1] + delta)));
+
   // 트랙을 탭하면 가까운 손잡이가 그 자리로 온다. 두 손잡이가 겹쳐 있으면 탭한 쪽이 움직인다.
   const tap = Gesture.Tap()
     .runOnJS(true)
@@ -176,7 +207,12 @@ export function RetroRangeSlider({
               isLower
               width={width}
               borderColor={theme.gray12.val}
+              label={lowerLabel}
+              value={values[0]}
+              min={min}
+              max={max}
               onMove={moveLower}
+              onStep={stepLower}
             />
             <Thumb
               position={upper}
@@ -184,7 +220,12 @@ export function RetroRangeSlider({
               isLower={false}
               width={width}
               borderColor={theme.gray12.val}
+              label={upperLabel}
+              value={values[1]}
+              min={min}
+              max={max}
               onMove={moveUpper}
+              onStep={stepUpper}
             />
           </>
         )}

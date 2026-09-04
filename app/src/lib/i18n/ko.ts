@@ -63,6 +63,7 @@ export const ko = {
     save: "저장",
     publicPhotos: "공개 사진",
     secretPhotos: "비밀 사진",
+    discardConfirm: "고치던 내용을 버릴까요?",
   },
   validation: {
     phoneNumberRequired: "휴대폰 번호를 입력해주시길 바랍니다.",
@@ -166,8 +167,6 @@ export const ko = {
     composeTitle: "피드",
     composeClose: "닫기",
     composeSubmit: "작성",
-    commentSaved: "코멘트를 저장했습니다.",
-    commentTitle: "코멘트",
   },
   gender: {
     MALE: "남자",
@@ -211,6 +210,8 @@ export const ko = {
     reactionLAUGH: "웃음 반응",
     reactionWOW: "놀람 반응",
     reactionSAD: "슬픔 반응",
+    minAge: "최소 나이",
+    maxAge: "최대 나이",
   },
   component: {
     messagePlaceholder: "메시지 입력",
@@ -296,6 +297,8 @@ export const ko = {
   },
   main: {
     sort: { RECENT: "최근", DISTANCE: "거리" },
+    filterEmpty: "필터에 맞는 회원이 없습니다.",
+    resetFilter: "필터 초기화",
   },
   hook: {
     videoUrlFailed: "동영상을 불러오지 못했습니다.",
@@ -434,6 +437,8 @@ export const ko = {
     memoSaved: "메모를 저장했습니다.",
   },
   profile: {
+    commentSaved: "코멘트를 저장했습니다.",
+    commentTitle: "코멘트",
     comment: "코멘트",
     bio: "자기소개",
   },

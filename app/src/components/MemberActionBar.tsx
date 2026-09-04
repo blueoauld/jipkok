@@ -92,7 +92,8 @@ export function MemberActionBar({
     like: false,
     favorite: false,
     note: !member.noteReceiveEnabled || member.blockedByMe,
-    secretPhoto: false,
+    // 서버가 차단 관계면 비밀사진을 거절하므로 쪽지처럼 미리 막는다.
+    secretPhoto: member.blockedByMe,
     block: false,
   };
 

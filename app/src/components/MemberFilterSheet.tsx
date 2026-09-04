@@ -140,6 +140,8 @@ export function MemberFilterSheet({
             min={MIN_AGE}
             max={MAX_AGE}
             values={ages}
+            lowerLabel={t("a11y.minAge")}
+            upperLabel={t("a11y.maxAge")}
             onChange={setAges}
           />
         </YStack>
