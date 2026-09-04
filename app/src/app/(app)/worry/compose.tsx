@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router, Stack } from "expo-router";
+import { router, Stack, useNavigation } from "expo-router";
+// expo-router가 usePreventRemove를 공개 export하지 않아 내장된 react-navigation에서 가져온다.
+import { usePreventRemove } from "expo-router/build/react-navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,8 +19,12 @@ import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
 export default function WorryComposeScreen() {
   const { t } = useTranslation();
+  // 네이티브 스택은 이탈 확인 중에 뒤로가기 메뉴로 여러 화면을 건너뛰면 상태가 어긋난다.
   const screenOptions = useMemo(
-    () => ({ title: t("worry.compose.title") }),
+    () => ({
+      title: t("worry.compose.title"),
+      headerBackButtonMenuEnabled: false,
+    }),
     [t],
   );
 
@@ -26,7 +32,8 @@ export default function WorryComposeScreen() {
   const contentRef = useRef("");
   const [empty, setEmpty] = useState(true);
   const [category, setCategory] = useState<WorryCategory | null>(null);
-  const { alertElement, show, showApiError } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const navigation = useNavigation();
 
   useEffect(() => {
     show("info", t("worry.compose.notice"));
@@ -47,6 +54,17 @@ export default function WorryComposeScreen() {
     },
     onError: showApiError,
   });
+
+  // 1000자까지 쓰는 화면이라 쓰던 글이 있으면 뒤로 가기와 스와이프에 한 번 묻는다.
+  // 등록 중에는 막지 않아야 성공 직후의 뒤로 가기가 통과한다.
+  usePreventRemove(!empty && !compose.isPending, ({ data }) =>
+    confirm({
+      message: t("worry.compose.discardConfirm"),
+      confirmLabel: t("action.discard"),
+      destructive: true,
+      onConfirm: () => navigation.dispatch(data.action),
+    }),
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>

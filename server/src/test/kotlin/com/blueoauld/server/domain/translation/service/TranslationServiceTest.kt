@@ -14,6 +14,7 @@ import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -50,6 +51,7 @@ class TranslationServiceTest {
     fun setUp() {
         every { memberRepository.findLocaleById(MEMBER_ID) } returns MemberLocale.JA
         every { translationLimitCache.increaseAndCount(MEMBER_ID) } returns 1
+        justRun { translationLimitCache.decrease(MEMBER_ID) }
         every { translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(any(), any(), any()) } returns null
         every { worryPostRepository.findById(POST_ID) } returns Optional.of(post())
         every { translator.translate(any(), any()) } returns TRANSLATED
@@ -140,6 +142,20 @@ class TranslationServiceTest {
         assertThatThrownBy { translationService.translate(MEMBER_ID, request()) }
             .isInstanceOf(BusinessException::class.java)
             .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORRY_POST_NOT_FOUND)
+        verify(exactly = 0) { translationLimitCache.increaseAndCount(any()) }
+    }
+
+    @Test
+    fun `번역기가 실패하면 쓴 한도를 되돌린다`() {
+        // given
+        every { translator.translate(any(), any()) } throws BusinessException(ErrorCode.TRANSLATE_FAILED)
+
+        // when, then
+        assertThatThrownBy { translationService.translate(MEMBER_ID, request()) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.TRANSLATE_FAILED)
+        verify { translationLimitCache.decrease(MEMBER_ID) }
+        verify(exactly = 0) { translationRepository.save(any<Translation>()) }
     }
 
     @Test

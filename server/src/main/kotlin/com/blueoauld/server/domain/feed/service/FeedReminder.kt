@@ -9,8 +9,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 private val log = KotlinLogging.logger {}
 
@@ -26,7 +26,7 @@ class FeedReminder(
     @Scheduled(cron = REMIND_CRON, zone = KOREA_ID)
     fun remind() {
         val now = clock.instant()
-        val targets = feedReminderRepository.findFeedReminderTargets(now.truncatedTo(ChronoUnit.HOURS), now)
+        val targets = feedReminderRepository.findFeedReminderTargets(now.minus(REMIND_INTERVAL), now)
 
         if (targets.isEmpty()) {
             return
@@ -62,5 +62,7 @@ class FeedReminder(
         fun bodyCodeOf(now: Instant) = "push.feed.body.${now.atZone(KOREA).hour % BODY_COUNT}"
 
         private const val REMIND_CRON = "0 0 9-21/3 * * *"
+
+        val REMIND_INTERVAL: Duration = Duration.ofHours(3)
     }
 }

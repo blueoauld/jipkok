@@ -1,34 +1,15 @@
-import type { Icon } from "phosphor-react-native";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { memo } from "react";
-import { useTranslation } from "react-i18next";
-import { Text, useTheme, XStack } from "tamagui";
+import { Text, XStack } from "tamagui";
 
-import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
+import { WorryCount } from "@/components/worry/WorryCount";
+import { WorryPostHeader } from "@/components/worry/WorryPostHeader";
 import type { WorryPostResponse } from "@/lib/api";
 
 const CONTENT_MAX_LINES = 3;
 const COUNT_ICON_SIZE = 16;
-
-function CardCount({ icon: CountIcon, value }: { icon: Icon; value: number }) {
-  const theme = useTheme();
-
-  return (
-    <XStack items="center" gap="$1.5">
-      <CountIcon
-        size={COUNT_ICON_SIZE}
-        weight="bold"
-        color={theme.gray11.val}
-      />
-      <Text theme="gray" color="$color11" fontSize="$3">
-        {value}
-      </Text>
-    </XStack>
-  );
-}
 
 function Card({
   worry,
@@ -37,26 +18,25 @@ function Card({
   worry: WorryPostResponse;
   onPress: (worryId: number) => void;
 }) {
-  const { t } = useTranslation();
   return (
     <RetroCard gap="$2.5" onPress={() => onPress(worry.worryId)}>
-      <XStack items="center" justify="space-between">
-        <XStack items="center" gap="$2">
-          <WorryCategoryTag category={worry.category} />
-          <Text fontSize="$3" fontWeight="700">
-            {worry.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
-          </Text>
-        </XStack>
-        <RelativeTime at={worry.createdAt} />
-      </XStack>
+      <WorryPostHeader post={worry} />
 
       <Text fontSize="$4" numberOfLines={CONTENT_MAX_LINES}>
         {worry.content}
       </Text>
 
       <XStack gap="$4">
-        <CardCount icon={HeartIcon} value={worry.likeCount} />
-        <CardCount icon={ChatCircleIcon} value={worry.commentCount} />
+        <WorryCount
+          icon={HeartIcon}
+          value={worry.likeCount}
+          size={COUNT_ICON_SIZE}
+        />
+        <WorryCount
+          icon={ChatCircleIcon}
+          value={worry.commentCount}
+          size={COUNT_ICON_SIZE}
+        />
       </XStack>
     </RetroCard>
   );

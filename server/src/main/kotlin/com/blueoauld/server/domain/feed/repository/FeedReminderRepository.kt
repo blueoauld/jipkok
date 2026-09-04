@@ -16,7 +16,7 @@ interface FeedReminderRepository : JpaRepository<Member, Long> {
         where m.feedNotificationEnabled = true
           and not exists (
             select 1 from FeedPost p
-            where p.memberId = m.id and p.slotAt = :slotAt
+            where p.memberId = m.id and p.slotAt >= :since
           )
           and not exists (
             select 1 from MemberSuspension s
@@ -28,7 +28,7 @@ interface FeedReminderRepository : JpaRepository<Member, Long> {
         """,
     )
     fun findFeedReminderTargets(
-        @Param("slotAt") slotAt: Instant,
+        @Param("since") since: Instant,
         @Param("now") now: Instant,
     ): List<FeedReminderTarget>
 }

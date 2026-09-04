@@ -8,7 +8,8 @@ import {
   formatRelativeTime,
   formatSlotTime,
   fromDateParam,
-  isToday,
+  isKoreaToday,
+  koreaDateParam,
   toDateParam,
 } from "@/lib/date";
 
@@ -22,12 +23,13 @@ describe("date params", () => {
 });
 
 describe("date labels", () => {
-  it("오늘 판정과 라벨", () => {
-    const today = new Date();
+  it("오늘 판정과 라벨은 한국 날짜를 기준으로 한다", () => {
+    const todayParam = koreaDateParam(Date.now());
+    const today = fromDateParam(todayParam);
 
-    expect(isToday(today)).toBe(true);
-    expect(formatDateLabel(today)).toBe("오늘");
-    expect(formatDateLabel(new Date(2026, 0, 9))).toBe("1월 9일");
+    expect(isKoreaToday(today)).toBe(true);
+    expect(formatDateLabel(today, todayParam)).toBe("오늘");
+    expect(formatDateLabel(new Date(2026, 0, 9), todayParam)).toBe("1월 9일");
     expect(formatFullDate(new Date(2026, 0, 9))).toBe("2026년 1월 9일");
   });
 });
@@ -92,5 +94,16 @@ describe("formatCountdown", () => {
     expect(formatCountdown(65)).toBe("1:05");
     expect(formatCountdown(9)).toBe("0:09");
     expect(formatCountdown(0)).toBe("0:00");
+  });
+});
+
+describe("koreaDateParam", () => {
+  it("기기 시간대와 상관없이 한국 날짜를 준다", () => {
+    expect(koreaDateParam(Date.parse("2026-09-03T15:30:00Z"))).toBe(
+      "2026-09-04",
+    );
+    expect(koreaDateParam(Date.parse("2026-09-03T14:59:59Z"))).toBe(
+      "2026-09-03",
+    );
   });
 });

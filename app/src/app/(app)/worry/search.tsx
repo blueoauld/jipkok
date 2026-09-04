@@ -7,7 +7,10 @@ import { SearchList } from "@/components/SearchList";
 import { WorryCard } from "@/components/worry/WorryCard";
 import { useWorrySearch } from "@/hooks/useWorrySearch";
 import { pushOnce } from "@/lib/router";
-import { MIN_KEYWORD_LENGTH, WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
+import {
+  MIN_KEYWORD_LENGTH,
+  SEARCH_KEYWORD_MAX_LENGTH,
+} from "@/lib/validation";
 
 export default function WorrySearchScreen() {
   const { t } = useTranslation();
@@ -31,7 +34,7 @@ export default function WorrySearchScreen() {
       <SearchList
         hint={t("worry.search.hint", { count: MIN_KEYWORD_LENGTH })}
         placeholder={t("worry.search.placeholder")}
-        maxLength={WORRY_CONTENT_MAX_LENGTH}
+        maxLength={SEARCH_KEYWORD_MAX_LENGTH}
         query={search}
         submitted={submitted}
         items={search.posts}

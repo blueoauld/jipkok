@@ -41,6 +41,15 @@ export function toDateParam(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+// 피드 날짜는 서버가 한국 하루로 자르므로 기기 시간대와 상관없이 한국 날짜를 쓴다.
+const KOREA_OFFSET_MILLIS = 9 * HOUR;
+
+export function koreaDateParam(now: number) {
+  const shifted = new Date(now + KOREA_OFFSET_MILLIS);
+
+  return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())}`;
+}
+
 export function fromDateParam(value: string) {
   const [year, month, day] = value.split("-").map(Number);
 
@@ -51,12 +60,12 @@ export function isSameDay(left: Date, right: Date) {
   return toDateParam(left) === toDateParam(right);
 }
 
-export function isToday(date: Date) {
-  return isSameDay(date, new Date());
+export function isKoreaToday(date: Date, now = Date.now()) {
+  return toDateParam(date) === koreaDateParam(now);
 }
 
-export function formatDateLabel(date: Date) {
-  if (isToday(date)) {
+export function formatDateLabel(date: Date, today: string) {
+  if (toDateParam(date) === today) {
     return i18n.t("date.today");
   }
 

@@ -31,9 +31,9 @@ class FeedReminderTest {
     )
 
     @Test
-    fun `이번 시간에 올리지 않은 회원에게 보낸다`() {
+    fun `직전 알림 뒤로 올리지 않은 회원에게 보낸다`() {
         // given
-        every { feedReminderRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns
+        every { feedReminderRepository.findFeedReminderTargets(SINCE, NOW) } returns
             listOf(target(1L, MemberLocale.KO))
         every { pushMessages.get(MemberLocale.KO, any()) } returns "문구"
 
@@ -57,7 +57,7 @@ class FeedReminderTest {
     @Test
     fun `언어가 다르면 나눠 보낸다`() {
         // given
-        every { feedReminderRepository.findFeedReminderTargets(SLOT_AT, NOW) } returns listOf(
+        every { feedReminderRepository.findFeedReminderTargets(SINCE, NOW) } returns listOf(
             target(1L, MemberLocale.KO),
             target(2L, MemberLocale.JA),
             target(3L, MemberLocale.KO),
@@ -106,6 +106,6 @@ class FeedReminderTest {
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:30Z")
-        private val SLOT_AT: Instant = Instant.parse("2026-08-03T05:00:00Z")
+        private val SINCE: Instant = NOW.minus(FeedReminder.REMIND_INTERVAL)
     }
 }

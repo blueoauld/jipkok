@@ -94,7 +94,7 @@ class FeedPostService(
                 memberId = memberId,
                 slotAt = slotAt,
                 objectKey = request.objectKey,
-                caption = request.caption?.ifEmpty { null },
+                caption = request.caption?.trim()?.ifEmpty { null },
             ),
         )
         photoUploadService.confirm(listOf(request.objectKey))

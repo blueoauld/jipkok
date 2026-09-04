@@ -327,6 +327,7 @@ export const ja: typeof ko = {
     delete: "削除",
     report: "通報",
     reportSubmit: "通報する",
+    discard: "破棄",
   },
   alert: {
     error: "エラー",
@@ -504,6 +505,7 @@ export const ja: typeof ko = {
       posted: "悩みを投稿しました。",
       categoryLabel: "分類",
       submit: "投稿",
+      discardConfirm: "書きかけの内容を破棄しますか？",
     },
     loadFailed: "悩みを読み込めませんでした。",
     list: {

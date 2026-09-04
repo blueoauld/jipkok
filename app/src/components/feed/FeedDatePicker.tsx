@@ -22,7 +22,15 @@ import {
 
 const DAY_SIZE = 36;
 
-function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
+function DateButton({
+  date,
+  today,
+  onPress,
+}: {
+  date: Date;
+  today: string;
+  onPress: () => void;
+}) {
   const accent = useAccent();
 
   return (
@@ -38,7 +46,7 @@ function DateButton({ date, onPress }: { date: Date; onPress: () => void }) {
       onPress={onPress}
     >
       <Text fontSize="$4" fontWeight="700" color="white">
-        {formatDateLabel(date)}
+        {formatDateLabel(date, today)}
       </Text>
     </RetroCard>
   );
@@ -91,9 +99,11 @@ function CalendarDay({
 
 export function FeedDatePicker({
   date,
+  today,
   onChange,
 }: {
   date: Date;
+  today: string;
   onChange: (date: Date) => void;
 }) {
   const theme = useTheme();
@@ -111,7 +121,7 @@ export function FeedDatePicker({
         r={0}
         justify="center"
       >
-        <DateButton date={date} onPress={() => setOpen(true)} />
+        <DateButton date={date} today={today} onPress={() => setOpen(true)} />
       </XStack>
 
       {open && (
@@ -132,7 +142,7 @@ export function FeedDatePicker({
           >
             <Calendar
               initialDate={selected}
-              maxDate={toDateParam(new Date())}
+              maxDate={today}
               markedDates={{ [selected]: { selected: true } }}
               monthFormat={i18n.t("component.monthFormat")}
               showSixWeeks

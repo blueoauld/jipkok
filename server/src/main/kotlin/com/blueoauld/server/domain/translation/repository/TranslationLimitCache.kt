@@ -14,6 +14,10 @@ class TranslationLimitCache(
     fun increaseAndCount(memberId: Long): Long =
         stringRedisTemplate.increaseWithWindow(key(memberId), WINDOW)
 
+    fun decrease(memberId: Long) {
+        stringRedisTemplate.opsForValue().decrement(key(memberId))
+    }
+
     private fun key(memberId: Long) = "$KEY_PREFIX$memberId"
 
     companion object {

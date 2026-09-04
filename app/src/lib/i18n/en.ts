@@ -323,6 +323,7 @@ export const en: typeof ko = {
     delete: "Delete",
     report: "Report",
     reportSubmit: "Submit report",
+    discard: "Discard",
   },
   alert: {
     error: "Error",
@@ -502,6 +503,7 @@ export const en: typeof ko = {
       posted: "Posted.",
       categoryLabel: "Category",
       submit: "Post",
+      discardConfirm: "Discard what you've written?",
     },
     loadFailed: "Couldn't load the worries.",
     list: {

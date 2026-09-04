@@ -324,6 +324,7 @@ export const ko = {
     delete: "삭제",
     report: "신고",
     reportSubmit: "신고하기",
+    discard: "버리기",
   },
   alert: {
     error: "에러",
@@ -501,6 +502,7 @@ export const ko = {
       posted: "고민을 올렸습니다.",
       categoryLabel: "분류",
       submit: "등록",
+      discardConfirm: "작성 중인 글을 버릴까요?",
     },
     loadFailed: "고민을 불러오지 못했습니다.",
     list: {

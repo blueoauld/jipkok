@@ -127,6 +127,19 @@ class FeedPostServiceTest {
     }
 
     @Test
+    fun `문구가 공백뿐이면 저장하지 않는다`() {
+        // given
+        val saved = slot<FeedPost>()
+
+        // when
+        feedPostService.create(MEMBER_ID, CreateFeedPostRequest(photoKey(), "   "))
+
+        // then
+        verify { feedPostRepository.saveAndFlush(capture(saved)) }
+        assertThat(saved.captured.caption).isNull()
+    }
+
+    @Test
     fun `문구가 비어 있으면 저장하지 않는다`() {
         // given
         val saved = slot<FeedPost>()

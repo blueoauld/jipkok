@@ -8,7 +8,7 @@ import type {
   WorryCategory,
   WorrySort,
 } from "@/lib/api";
-import { isToday, toDateParam } from "@/lib/date";
+import { isKoreaToday, toDateParam } from "@/lib/date";
 import { storage } from "@/lib/storage";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
@@ -94,7 +94,7 @@ export const useFeedFilterStore = create<FeedFilterState>()(
       setWorrySort: (worrySort) => set({ worrySort }),
       setWorryCategory: (worryCategory) => set({ worryCategory }),
       setDate: (date) =>
-        set({ date: isToday(date) ? null : toDateParam(date) }),
+        set({ date: isKoreaToday(date) ? null : toDateParam(date) }),
     }),
     {
       name: FEED_STORAGE_KEY,

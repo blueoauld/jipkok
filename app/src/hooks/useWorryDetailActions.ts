@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -10,10 +14,12 @@ import { WORRY_LIST_KEY, worryDetailKey } from "@/hooks/useWorryPosts";
 import {
   api,
   type WorryCommentResponse,
+  type WorryPostPage,
   type WorryPostResponse,
 } from "@/lib/api";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
+import { mapPages } from "@/lib/paging";
 import { showToast } from "@/lib/toast/store";
 
 export function useWorryDetailActions(
@@ -29,6 +35,32 @@ export function useWorryDetailActions(
     () => queryClient.invalidateQueries({ queryKey: WORRY_LIST_KEY }),
     [queryClient],
   );
+
+  // 공감과 댓글 수는 아래 깔린 목록을 통째로 다시 받지 않고 이 글의 칸만 맞춘다.
+  const syncListFromDetail = useCallback(() => {
+    const detail = queryClient.getQueryData<WorryPostResponse>(detailKey);
+
+    if (!detail) {
+      return;
+    }
+
+    queryClient.setQueriesData<InfiniteData<WorryPostPage>>(
+      { queryKey: WORRY_LIST_KEY },
+      (current) =>
+        mapPages(current, (items) =>
+          items.map((item) =>
+            item.worryId === postId
+              ? {
+                  ...item,
+                  likeCount: detail.likeCount,
+                  likedByMe: detail.likedByMe,
+                  commentCount: detail.commentCount,
+                }
+              : item,
+          ),
+        ),
+    );
+  }, [detailKey, postId, queryClient]);
 
   const toggleLike = useMutation({
     mutationFn: (current: WorryPostResponse) =>
@@ -47,7 +79,7 @@ export function useWorryDetailActions(
 
       return { previous };
     },
-    onSuccess: () => invalidateList(),
+    onSuccess: syncListFromDetail,
     onError: (mutationError, _current, context) => {
       queryClient.setQueryData(detailKey, context?.previous);
       showApiError(mutationError);
@@ -73,15 +105,13 @@ export function useWorryDetailActions(
     onError: showApiError,
   });
 
-  const invalidateComments = useCallback(
-    () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: worryCommentsKey(postId) }),
-        queryClient.invalidateQueries({ queryKey: detailKey }),
-        invalidateList(),
-      ]),
-    [detailKey, invalidateList, postId, queryClient],
-  );
+  const invalidateComments = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: worryCommentsKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: detailKey }),
+    ]);
+    syncListFromDetail();
+  }, [detailKey, postId, queryClient, syncListFromDetail]);
 
   const createComment = useMutation({
     mutationFn: (text: string) =>

@@ -38,12 +38,15 @@ class TranslationService(
             return TranslationResponse(cached.content)
         }
 
+        val source = sourceContentOf(request)
+
         if (translationLimitCache.increaseAndCount(memberId) > TranslationLimitCache.DAILY_LIMIT) {
             throw BusinessException(ErrorCode.TRANSLATE_LIMIT_EXCEEDED)
         }
 
-        val source = sourceContentOf(request)
-        val translated = translator.translate(source, targetLocale)
+        val translated = runCatching { translator.translate(source, targetLocale) }
+            .onFailure { translationLimitCache.decrease(memberId) }
+            .getOrThrow()
 
         runCatching {
             translationRepository.save(

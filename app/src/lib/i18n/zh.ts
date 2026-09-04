@@ -312,6 +312,7 @@ export const zh: typeof ko = {
     delete: "刪除",
     report: "檢舉",
     reportSubmit: "提交檢舉",
+    discard: "捨棄",
   },
   alert: {
     error: "錯誤",
@@ -486,6 +487,7 @@ export const zh: typeof ko = {
       posted: "已發布煩惱。",
       categoryLabel: "分類",
       submit: "發布",
+      discardConfirm: "要捨棄正在撰寫的內容嗎？",
     },
     loadFailed: "無法載入煩惱。",
     list: {

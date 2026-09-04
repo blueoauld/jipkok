@@ -13,6 +13,7 @@ import {
 import { getTokens, Text, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroListPanel } from "@/components/ui/RetroListPanel";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -151,12 +152,13 @@ export default function WorryDetailScreen() {
                 </YStack>
               }
               ListEmptyComponent={
-                commentsQuery.isPending ? null : (
-                  <ListEmpty>
-                    {commentsError
-                      ? t("worry.detail.commentError")
-                      : t("worry.detail.commentEmpty")}
-                  </ListEmpty>
+                commentsQuery.isPending ? null : commentsError ? (
+                  <ErrorState
+                    message={t("worry.detail.commentError")}
+                    onRetry={() => refetchComments()}
+                  />
+                ) : (
+                  <ListEmpty>{t("worry.detail.commentEmpty")}</ListEmpty>
                 )
               }
               refreshControl={

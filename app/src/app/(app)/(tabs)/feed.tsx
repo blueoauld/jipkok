@@ -51,7 +51,7 @@ import {
   type WorryPostResponse,
   type WorrySort,
 } from "@/lib/api";
-import { fromDateParam, toDateParam } from "@/lib/date";
+import { fromDateParam, koreaDateParam } from "@/lib/date";
 import { type LoungeBoard, useFeedFilterStore } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
 import { reportedMessage } from "@/lib/message";
@@ -120,7 +120,7 @@ export default function FeedScreen() {
   );
   const storedDate = useFeedFilterStore((state) => state.date);
   const setDate = useFeedFilterStore((state) => state.setDate);
-  const today = toDateParam(new Date(useNow()));
+  const today = koreaDateParam(useNow());
   const date = useMemo(
     () => fromDateParam(storedDate ?? today),
     [storedDate, today],
@@ -264,7 +264,7 @@ export default function FeedScreen() {
     }) => {
       const objectKey = await uploadFeedPhoto(photo);
 
-      await api.feeds.create({ objectKey, caption: caption || null });
+      await api.feeds.create({ objectKey, caption: caption.trim() || null });
     },
     onSuccess: async () => {
       logAppEvent(APP_EVENT.feedPostCreated);
@@ -412,6 +412,7 @@ export default function FeedScreen() {
       {board === "FEED" && (
         <FeedDatePicker
           date={date}
+          today={today}
           onChange={(selected) => {
             setDate(selected);
             scrollToTop();
