@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { XStack, YStack } from "tamagui";
 
 import { useAccentToken } from "@/lib/theme/accent";
@@ -34,6 +35,7 @@ export function AttendanceGrass({
   today: string;
   days: string[];
 }) {
+  const { t } = useTranslation();
   const accent = useAccentToken();
 
   const attended = new Set(days);
@@ -42,9 +44,23 @@ export function AttendanceGrass({
     todayDate,
     -(todayDate.getDay() + (WEEKS - 1) * DAYS_PER_WEEK),
   );
+  // 이번 주에서 오늘 뒤의 칸은 비어 보이므로 세지 않는다.
+  const visibleDays =
+    WEEKS * DAYS_PER_WEEK - (DAYS_PER_WEEK - 1 - todayDate.getDay());
+  const startKey = toKey(start);
+  const attendedCount = days.filter(
+    (day) => day >= startKey && day <= today,
+  ).length;
 
   return (
-    <YStack gap={CELL_GAP}>
+    <YStack
+      gap={CELL_GAP}
+      accessible
+      accessibilityLabel={t("setting.attendanceGrass", {
+        count: attendedCount,
+        total: visibleDays,
+      })}
+    >
       {Array.from({ length: DAYS_PER_WEEK }, (_, day) => (
         <XStack key={day} gap={CELL_GAP}>
           {Array.from({ length: WEEKS }, (_, week) => {

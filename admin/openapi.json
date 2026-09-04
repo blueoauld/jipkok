@@ -13809,6 +13809,10 @@
                         "type": "integer",
                         "format": "int32"
                     },
+                    "balanceAfter": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "recordedAt": {
                         "type": "string",
                         "format": "date-time"
@@ -13816,6 +13820,7 @@
                 },
                 "required": [
                     "amount",
+                    "balanceAfter",
                     "historyId",
                     "recordedAt",
                     "type"

@@ -346,6 +346,8 @@ export const en: typeof ko = {
     languageChange: "Change",
     logoutNotice: "You'll need to log in again.",
     alreadyEarned: "You've already claimed today's check-in.",
+    attendanceGrass: "Attended {{count}} of the last {{total}} days",
+    attendanceError: "Couldn't load attendance.",
     rewarded: "You received {{amount}} points.",
     versionText: "Latest: {{latest}}\nInstalled: {{current}}",
     update: "Update",
@@ -455,6 +457,7 @@ export const en: typeof ko = {
       balance: "Points",
       errorMessage: "Couldn't load your history.",
       emptyMessage: "No history yet.",
+      balanceAfter: "Balance {{balance}}",
     },
   },
   worry: {

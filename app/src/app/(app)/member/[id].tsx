@@ -100,7 +100,11 @@ export default function MemberProfileScreen() {
     {
       label: t("action.reportSubmit"),
       destructive: true,
-      onPress: () => pushOnce(`/report/${id}`),
+      onPress: () =>
+        pushOnce({
+          pathname: "/report/[id]",
+          params: member ? { id, nickname: member.nickname } : { id },
+        }),
     },
   ];
 

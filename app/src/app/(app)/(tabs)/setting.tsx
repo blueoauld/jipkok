@@ -106,15 +106,15 @@ export default function SettingScreen() {
 
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
-    onSuccess: async (reward) => {
+    onSuccess: (reward) => {
       if (!reward.earned) {
         showToast("warning", t("setting.alreadyEarned"));
         return;
       }
 
       queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
-      await queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      await queryClient.invalidateQueries({ queryKey: ATTENDANCE_DAYS_KEY });
+      queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: ATTENDANCE_DAYS_KEY });
       showToast(
         "info",
         t("setting.rewarded", { amount: reward.amount.toLocaleString() }),
@@ -152,7 +152,7 @@ export default function SettingScreen() {
       ? "version"
       : appLock.pending
         ? "appLock"
-        : !adReward.ready
+        : !adReward.ready && !adReward.unavailable
           ? "adReward"
           : null;
 
@@ -187,7 +187,7 @@ export default function SettingScreen() {
         return;
       }
 
-      if (!earnAttendanceReward.isPending) {
+      if (action === "attendanceReward" && !earnAttendanceReward.isPending) {
         earnAttendanceReward.mutate();
       }
     },

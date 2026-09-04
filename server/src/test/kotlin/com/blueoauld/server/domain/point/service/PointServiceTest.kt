@@ -133,6 +133,7 @@ class PointServiceTest {
 
         // then
         assertThat(response.items.map { it.amount }).hasSize(2)
+        assertThat(response.items.map { it.balanceAfter }).containsOnly(100)
         assertThat(response.nextCursor).isEqualTo(10L)
     }
 

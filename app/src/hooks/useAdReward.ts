@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useRewardedAd } from "react-native-google-mobile-ads";
 
+import { useAdReload } from "@/hooks/useAdReload";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
@@ -54,7 +55,7 @@ export async function waitForReward(
 
     const balance = await fetchBalance().catch(() => null);
 
-    if (balance !== null && before !== null && balance > before) {
+    if (balance !== null && balance > before) {
       return "rewarded";
     }
   }
@@ -71,32 +72,42 @@ export function useAdReward() {
     isLoaded,
     isClosed,
     isEarnedReward,
+    error,
     load,
     show: showAd,
   } = useRewardedAd(memberId === undefined ? null : REWARDED_AD_UNIT_ID, {
     serverSideVerificationOptions: { userId: String(memberId) },
   });
+  const { reload, givenUp } = useAdReload(error, load);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    reload();
+  }, [reload]);
 
   useEffect(() => {
     if (isClosed) {
-      load();
+      reload();
     }
-  }, [isClosed, load]);
+  }, [isClosed, reload]);
 
   const balanceBefore = useRef<number | null>(null);
+  const polling = useRef<AbortController | null>(null);
 
+  // 광고를 닫으면 라이브러리가 상태를 초기화해 isEarnedReward가 꺼진다. 폴링을 그 효과의
+  // cleanup에서 멈추면 보상이 들어오기 전에 끊기므로 언마운트에서만 멈춘다.
   useEffect(() => {
     if (!isEarnedReward) {
       return;
     }
 
-    const controller = new AbortController();
+    polling.current?.abort();
+    polling.current = new AbortController();
 
-    waitForReward(balanceBefore.current, api.points.balance, controller.signal)
+    waitForReward(
+      balanceBefore.current,
+      api.points.balance,
+      polling.current.signal,
+    )
       .then((outcome) => {
         queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
         queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
@@ -106,14 +117,19 @@ export function useAdReward() {
         );
       })
       .catch(() => undefined);
-
-    return () => controller.abort();
   }, [isEarnedReward, queryClient]);
+
+  useEffect(() => () => polling.current?.abort(), []);
 
   return {
     ready: isLoaded,
+    unavailable: givenUp,
     watch: async () => {
       if (!isLoaded) {
+        if (givenUp) {
+          reload();
+        }
+
         showToast("warning", NOT_READY_MESSAGE);
         return;
       }

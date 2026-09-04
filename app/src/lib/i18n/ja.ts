@@ -350,6 +350,8 @@ export const ja: typeof ko = {
     languageChange: "変更",
     logoutNotice: "ログアウトすると、もう一度ログインが必要になります。",
     alreadyEarned: "本日のデイリーボーナスはすでに受け取っています。",
+    attendanceGrass: "直近{{total}}日のうち{{count}}日出席",
+    attendanceError: "出席記録を読み込めませんでした。",
     rewarded: "{{amount}}ポイントを受け取りました。",
     versionText: "最新バージョン: {{latest}}\nインストール済み: {{current}}",
     update: "アップデート",
@@ -458,6 +460,7 @@ export const ja: typeof ko = {
       balance: "保有ポイント",
       errorMessage: "履歴を読み込めませんでした。",
       emptyMessage: "履歴がありません。",
+      balanceAfter: "残高 {{balance}}",
     },
   },
   worry: {

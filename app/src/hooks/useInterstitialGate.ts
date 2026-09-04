@@ -2,6 +2,7 @@ import type { Href } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 import { useInterstitialAd } from "react-native-google-mobile-ads";
 
+import { useAdReload } from "@/hooks/useAdReload";
 import { INTERSTITIAL_AD_UNIT_ID } from "@/lib/ads";
 import { pushOnce } from "@/lib/router";
 
@@ -10,6 +11,7 @@ export function useInterstitialGate() {
     INTERSTITIAL_AD_UNIT_ID,
   );
   const pendingHref = useRef<Href | null>(null);
+  const { reload } = useAdReload(error, load);
 
   const enter = useCallback(() => {
     const href = pendingHref.current;
@@ -21,15 +23,15 @@ export function useInterstitialGate() {
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    reload();
+  }, [reload]);
 
   useEffect(() => {
     if (isClosed) {
       enter();
-      load();
+      reload();
     }
-  }, [isClosed, enter, load]);
+  }, [isClosed, enter, reload]);
 
   useEffect(() => {
     if (error) {

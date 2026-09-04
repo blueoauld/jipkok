@@ -11,7 +11,6 @@ import { PhotoGrid } from "@/components/PhotoGrid";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
-import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
@@ -72,9 +71,10 @@ function DetailField({ valueRef }: { valueRef: RefObject<string> }) {
 
 export default function ReportScreen() {
   const { t } = useTranslation();
-  const { id, roomId } = useLocalSearchParams<{
+  const { id, roomId, nickname } = useLocalSearchParams<{
     id: string;
     roomId?: string;
+    nickname?: string;
   }>();
   const memberId = Number(id);
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -82,7 +82,6 @@ export default function ReportScreen() {
   const { alertElement, show, showApiError } = useRetroAlert();
   const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
-  const { data: member } = useMemberDetail(memberId);
   const title = roomId ? t("report.chatTitle") : t("report.title");
 
   const report = useMutation({
@@ -102,9 +101,10 @@ export default function ReportScreen() {
 
   useLoadingOverlay(busy, photos.progress.done, photos.progress.total);
 
+  // 회원 상세를 조회하면 피신고자에게 발자국이 남으므로 닉네임은 진입한 화면이 넘겨 준다.
   const screenOptions = useMemo(
-    () => ({ title: member ? `${title} (${member.nickname})` : title }),
-    [member, title],
+    () => ({ title: nickname ? `${title} (${nickname})` : title }),
+    [nickname, title],
   );
 
   return (

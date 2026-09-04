@@ -238,6 +238,40 @@ class ReportServiceTest {
     }
 
     @Test
+    fun `채팅 신고의 동영상은 원본 대신 썸네일을 남긴다`() {
+        // given
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(ChatRoom.of(REPORTER_ID, REPORTED_MEMBER_ID))
+        every {
+            chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any())
+        } returns listOf(
+            ChatMessage(
+                ROOM_ID,
+                REPORTED_MEMBER_ID,
+                ChatMessageType.VIDEO,
+                objectKey = "chats/1/v.mp4",
+                thumbnailObjectKey = "chats/1/v.jpg",
+            ),
+            ChatMessage(ROOM_ID, REPORTED_MEMBER_ID, ChatMessageType.PHOTO, objectKey = "chats/1/p.jpg"),
+        )
+        val snapshot = slot<ReportSnapshot>()
+        val events = mutableListOf<Any>()
+
+        // when
+        reportService.report(REPORTER_ID, createReportRequest(roomId = ROOM_ID))
+
+        // then
+        verify { reportSnapshotRepository.save(capture(snapshot)) }
+        verify { eventPublisher.publishEvent(capture(events)) }
+        assertThat(snapshot.captured.content).contains("reports/snapshot/0/v.jpg", "reports/snapshot/0/p.jpg")
+        assertThat(snapshot.captured.content).doesNotContain("v.mp4")
+        assertThat(events.filterIsInstance<ReportPhotosCopiedEvent>().single().copies)
+            .containsExactlyInAnyOrder(
+                PhotoCopy("chats/1/v.jpg", "reports/snapshot/0/v.jpg"),
+                PhotoCopy("chats/1/p.jpg", "reports/snapshot/0/p.jpg"),
+            )
+    }
+
+    @Test
     fun `참여자가 아닌 방은 신고할 수 없다`() {
         // given
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(ChatRoom.of(REPORTED_MEMBER_ID, 999L))

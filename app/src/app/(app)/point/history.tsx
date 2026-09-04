@@ -37,7 +37,8 @@ function Balance() {
 }
 
 function HistoryRow({ history }: { history: PointHistoryResponse }) {
-  const { type, amount, recordedAt } = history;
+  const { t } = useTranslation();
+  const { type, amount, balanceAfter, recordedAt } = history;
   const earned = amount > 0;
   const accent = useAccentToken();
 
@@ -54,14 +55,21 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
           </Text>
         </YStack>
 
-        <Text
-          shrink={0}
-          fontSize="$4"
-          fontWeight="700"
-          color={earned ? "$red10" : accent}
-        >
-          {formatAmount(amount)}
-        </Text>
+        <YStack shrink={0} items="flex-end" gap="$1">
+          <Text
+            fontSize="$4"
+            fontWeight="700"
+            color={earned ? "$red10" : accent}
+          >
+            {formatAmount(amount)}
+          </Text>
+
+          <Text theme="gray" color="$color11" fontSize="$2">
+            {t("point.history.balanceAfter", {
+              balance: balanceAfter.toLocaleString(),
+            })}
+          </Text>
+        </YStack>
       </XStack>
     </RetroCard>
   );
@@ -74,6 +82,7 @@ export default function PointHistoryScreen() {
   const query = usePointHistories();
   const { histories, error } = query;
   const paged = usePagedList(query);
+  const balance = usePointBalance();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -101,7 +110,10 @@ export default function PointHistoryScreen() {
           <ScreenState
             error={error}
             message={t("point.history.errorMessage")}
-            onRetry={() => query.refetch()}
+            onRetry={() => {
+              query.refetch();
+              balance.refetch();
+            }}
           />
         )}
       </YStack>

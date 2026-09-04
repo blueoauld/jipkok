@@ -347,6 +347,8 @@ export const ko = {
     languageChange: "바꾸기",
     logoutNotice: "로그아웃하면 다시 로그인해야 이용할 수 있습니다.",
     alreadyEarned: "오늘 출석 보상은 이미 받았습니다.",
+    attendanceGrass: "최근 {{total}}일 중 {{count}}일 출석",
+    attendanceError: "출석 기록을 불러오지 못했습니다.",
     rewarded: "{{amount}} 포인트를 받았습니다.",
     versionText: "최신 버전: {{latest}}\n설치 버전: {{current}}",
     update: "업데이트",
@@ -455,6 +457,7 @@ export const ko = {
       balance: "보유 포인트",
       errorMessage: "내역을 불러오지 못했습니다.",
       emptyMessage: "내역이 없습니다.",
+      balanceAfter: "잔액 {{balance}}",
     },
   },
   worry: {

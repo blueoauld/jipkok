@@ -241,7 +241,14 @@ export default function ChatRoomScreen() {
       destructive: true,
       onPress: () => {
         if (room) {
-          pushOnce(`/report/${room.memberId}?roomId=${roomId}`);
+          pushOnce({
+            pathname: "/report/[id]",
+            params: {
+              id: String(room.memberId),
+              roomId: String(roomId),
+              nickname: room.nickname,
+            },
+          });
         }
       },
     },

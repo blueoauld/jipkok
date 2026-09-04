@@ -1622,6 +1622,8 @@ export interface components {
             type: "ACCESS_REWARD" | "ATTENDANCE_REWARD" | "AD_REWARD" | "NOTE_SEND";
             /** Format: int32 */
             amount: number;
+            /** Format: int32 */
+            balanceAfter: number;
             /** Format: date-time */
             recordedAt: string;
         };

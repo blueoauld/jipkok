@@ -335,6 +335,8 @@ export const zh: typeof ko = {
     languageChange: "變更",
     logoutNotice: "登出後需要重新登入才能使用。",
     alreadyEarned: "今天已領取簽到獎勵。",
+    attendanceGrass: "最近 {{total}} 天中出席 {{count}} 天",
+    attendanceError: "無法載入出席記錄。",
     rewarded: "獲得了 {{amount}} 點。",
     versionText: "最新版本：{{latest}}\n安裝版本：{{current}}",
     update: "更新",
@@ -441,6 +443,7 @@ export const zh: typeof ko = {
       balance: "持有點數",
       errorMessage: "無法載入紀錄。",
       emptyMessage: "尚無紀錄。",
+      balanceAfter: "餘額 {{balance}}",
     },
   },
   worry: {

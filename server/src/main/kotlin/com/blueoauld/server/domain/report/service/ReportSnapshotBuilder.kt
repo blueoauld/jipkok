@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.report.service
 
 import com.blueoauld.server.domain.chat.entity.ChatMessage
+import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.displayOrdered
@@ -65,7 +66,7 @@ class ReportSnapshotBuilder(
                 senderId = message.senderId,
                 type = message.type,
                 content = message.content,
-                photoKey = message.objectKey?.let { snapshotKeyOf(reportId, it) },
+                photoKey = evidenceKeyOf(message)?.let { snapshotKeyOf(reportId, it) },
                 createdAt = message.createdAt,
             )
         },
@@ -77,9 +78,14 @@ class ReportSnapshotBuilder(
         messages: List<ChatMessage>,
     ) = ReportPhotosCopiedEvent(
         reportId = reportId,
-        copies = (profilePhotoKeys + messages.mapNotNull { it.objectKey })
+        copies = (profilePhotoKeys + messages.mapNotNull(::evidenceKeyOf))
             .map { PhotoCopy(it, snapshotKeyOf(reportId, it)) },
     )
+
+    private fun evidenceKeyOf(message: ChatMessage) = when (message.type) {
+        ChatMessageType.VIDEO -> message.thumbnailObjectKey
+        else -> message.objectKey
+    }
 
     private fun snapshotKeyOf(reportId: Long, objectKey: String) =
         "$SNAPSHOT_KEY_ROOT/$reportId/${objectKey.substringAfterLast('/')}"
