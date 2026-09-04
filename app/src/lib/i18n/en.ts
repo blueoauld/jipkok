@@ -103,6 +103,7 @@ export const en: typeof ko = {
     AUTH_012: "Too many login attempts. Please try again in a moment.",
     AUTH_013:
       "That verification code was already used. Please request a new one.",
+    AUTH_014: "You don't have permission.",
     MEMBER_001: "That phone number is already registered.",
     MEMBER_002: "The passwords don't match.",
     MEMBER_003: "Member not found.",
