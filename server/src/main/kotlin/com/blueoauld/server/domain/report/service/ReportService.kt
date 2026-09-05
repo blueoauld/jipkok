@@ -81,8 +81,6 @@ class ReportService(
                 reportId = report.id,
                 type = report.type,
                 reason = report.reason,
-                detail = report.detail,
-                evidencePhotoCount = request.photoKeys.size,
                 snapshot = built.content,
             ),
         )

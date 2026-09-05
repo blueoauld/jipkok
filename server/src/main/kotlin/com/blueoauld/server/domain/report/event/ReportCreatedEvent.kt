@@ -9,7 +9,5 @@ data class ReportCreatedEvent(
     val reportId: Long,
     val type: ReportType,
     val reason: ReportReason,
-    val detail: String?,
-    val evidencePhotoCount: Int,
     val snapshot: ReportSnapshotContent,
 )
