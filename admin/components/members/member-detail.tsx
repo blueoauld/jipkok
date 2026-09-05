@@ -43,6 +43,8 @@ import type { ProfileTarget } from "@/lib/types";
 
 const none = <span className="text-muted-foreground">없음</span>;
 
+const MAP_ZOOM = 15;
+
 export function MemberDetail() {
   const id = Number(useSearchParams().get("id"));
 
@@ -189,15 +191,10 @@ function Loaded({ member }: { member: MemberDetailData }) {
                   label: "좌표",
                   value:
                     member.latitude != null && member.longitude != null ? (
-                      <a
-                        href={`https://map.kakao.com/link/map/${member.latitude},${member.longitude}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="tabular-nums underline underline-offset-4"
-                      >
-                        {member.latitude.toFixed(5)},{" "}
-                        {member.longitude.toFixed(5)}
-                      </a>
+                      <Coordinates
+                        latitude={member.latitude}
+                        longitude={member.longitude}
+                      />
                     ) : (
                       none
                     ),
@@ -271,6 +268,44 @@ function Loaded({ member }: { member: MemberDetailData }) {
 
       <ReceivedReports phoneNumber={member.phoneNumber} />
     </>
+  );
+}
+
+function Coordinates({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) {
+  const links = [
+    {
+      label: "카카오",
+      href: `https://map.kakao.com/link/map/${latitude},${longitude}`,
+    },
+    {
+      label: "네이버",
+      href: `https://map.naver.com/p?c=${longitude},${latitude},${MAP_ZOOM},0,0,0,dh`,
+    },
+  ];
+
+  return (
+    <span className="flex flex-wrap items-center gap-x-3">
+      <span className="tabular-nums">
+        {latitude.toFixed(5)}, {longitude.toFixed(5)}
+      </span>
+      {links.map((link) => (
+        <a
+          key={link.label}
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          className="text-muted-foreground underline underline-offset-4"
+        >
+          {link.label}
+        </a>
+      ))}
+    </span>
   );
 }
 
