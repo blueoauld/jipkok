@@ -30,8 +30,7 @@ export type CreateSuspensionBody = {
 export const createSuspension = (body: CreateSuspensionBody) =>
   api<Suspension>("/api/admin/suspensions", { method: "POST", body });
 
-export const releaseSuspension = (memberId: number, type: SuspensionType) =>
-  api<void>("/api/admin/suspensions/release", {
+export const releaseSuspension = (suspensionId: number) =>
+  api<void>(`/api/admin/suspensions/${suspensionId}/release`, {
     method: "POST",
-    body: { memberId, type },
   });

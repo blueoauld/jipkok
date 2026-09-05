@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { FeedReportTable } from "@/components/feeds/feed-report-table";
 import {
   defaultPostReportFilter,
   PostReportFilters,
-  type PostReportFilter,
 } from "@/components/post-report-filters";
 import { QuerySection } from "@/components/query-section";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useListState } from "@/hooks/use-list-state";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -21,8 +20,9 @@ import {
 import { fetchFeedReports } from "@/lib/api/feed-reports";
 
 export function FeedReportList() {
-  const [filter, setFilter] = useState(defaultPostReportFilter);
-  const [page, setPage] = useState(1);
+  const { filter, changeFilter, page, setPage } = useListState(
+    defaultPostReportFilter,
+  );
   const authorId = useDebouncedValue(filter.authorId.trim());
   const queryFilter = { ...filter, authorId };
 
@@ -33,11 +33,6 @@ export function FeedReportList() {
   });
 
   usePageGuard(page, setPage, data);
-
-  const changeFilter = (next: PostReportFilter) => {
-    setFilter(next);
-    setPage(1);
-  };
 
   return (
     <QuerySection

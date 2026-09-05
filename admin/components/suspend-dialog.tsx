@@ -48,6 +48,7 @@ export function SuspendDialog({ memberId, nickname, disabled }: Props) {
       queryClient.invalidateQueries({ queryKey: ["suspensions"] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
       setOpen(false);
     },
     onError: (caught) => {

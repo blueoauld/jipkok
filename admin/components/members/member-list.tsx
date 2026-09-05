@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   defaultMemberFilter,
   MemberFilters,
-  type MemberFilter,
 } from "@/components/members/member-filters";
 import { MemberTable } from "@/components/members/member-table";
 import { QuerySection } from "@/components/query-section";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useListState } from "@/hooks/use-list-state";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -21,8 +20,8 @@ import {
 import { fetchMembers } from "@/lib/api/members";
 
 export function MemberList() {
-  const [filter, setFilter] = useState(defaultMemberFilter);
-  const [page, setPage] = useState(1);
+  const { filter, changeFilter, page, setPage } =
+    useListState(defaultMemberFilter);
   const keyword = useDebouncedValue(filter.keyword.trim());
   const queryFilter = { ...filter, keyword };
 
@@ -33,11 +32,6 @@ export function MemberList() {
   });
 
   usePageGuard(page, setPage, data);
-
-  const changeFilter = (next: MemberFilter) => {
-    setFilter(next);
-    setPage(1);
-  };
 
   return (
     <QuerySection

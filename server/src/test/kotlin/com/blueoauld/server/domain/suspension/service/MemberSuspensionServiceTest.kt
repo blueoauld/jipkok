@@ -127,25 +127,67 @@ class MemberSuspensionServiceTest {
     fun `해제하면 해제 시각을 남기고 캐시를 비운다`() {
         // given
         val target = suspension(SuspensionType.SERVICE)
-        every { memberSuspensionRepository.findActive(MEMBER_ID, NOW) } returns listOf(target)
+        every { memberSuspensionRepository.findById(SUSPENSION_ID) } returns Optional.of(target)
+        every {
+            memberSuspensionRepository.findActiveByPhoneNumber(PHONE_NUMBER, SuspensionType.SERVICE, NOW)
+        } returns listOf(target)
 
         // when
-        memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE)
+        val released = memberSuspensionService.release(SUSPENSION_ID)
 
         // then
+        assertThat(released).isSameAs(target)
         assertThat(target.releasedAt).isEqualTo(NOW)
         verify { suspendedMemberCache.evict(MEMBER_ID) }
     }
 
     @Test
+    fun `같은 번호에 걸린 같은 유형의 정지를 함께 해제한다`() {
+        // given
+        val target = suspension(SuspensionType.SERVICE)
+        val rejoined = suspension(SuspensionType.SERVICE)
+        every { memberSuspensionRepository.findById(SUSPENSION_ID) } returns Optional.of(target)
+        every {
+            memberSuspensionRepository.findActiveByPhoneNumber(PHONE_NUMBER, SuspensionType.SERVICE, NOW)
+        } returns listOf(target, rejoined)
+        every { memberRepository.findByPhoneNumber(PHONE_NUMBER) } returns member(OTHER_MEMBER_ID)
+
+        // when
+        memberSuspensionService.release(SUSPENSION_ID)
+
+        // then
+        assertThat(rejoined.releasedAt).isEqualTo(NOW)
+        verify { suspendedMemberCache.evict(OTHER_MEMBER_ID) }
+    }
+
+    @Test
     fun `해제할 정지가 없으면 실패한다`() {
+        // given
+        every { memberSuspensionRepository.findById(SUSPENSION_ID) } returns Optional.empty()
+
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE)
+            memberSuspensionService.release(SUSPENSION_ID)
         }
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.SUSPENSION_NOT_FOUND)
+    }
+
+    @Test
+    fun `이미 해제됐거나 만료된 정지는 다시 해제할 수 없다`() {
+        // given
+        val released = suspension(SuspensionType.SERVICE).apply { releasedAt = NOW.minusSeconds(60) }
+        every { memberSuspensionRepository.findById(SUSPENSION_ID) } returns Optional.of(released)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberSuspensionService.release(SUSPENSION_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SUSPENSION_NOT_FOUND)
+        verify(exactly = 0) { memberSuspensionRepository.findActiveByPhoneNumber(any(), any(), any()) }
     }
 
     @Test
@@ -294,6 +336,7 @@ class MemberSuspensionServiceTest {
 
         private const val MEMBER_ID = 1L
         private const val OTHER_MEMBER_ID = 2L
+        private const val SUSPENSION_ID = 10L
         private const val PHONE_NUMBER = "+821011112222"
 
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:00Z")

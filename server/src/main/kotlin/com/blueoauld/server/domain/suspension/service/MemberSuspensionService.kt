@@ -54,19 +54,22 @@ class MemberSuspensionService(
     }
 
     @Transactional
-    fun release(memberId: Long, type: SuspensionType) {
-        val member = memberRepository.getMember(memberId)
+    fun release(suspensionId: Long): MemberSuspension {
+        val suspension = memberSuspensionRepository.findById(suspensionId).orElseThrow {
+            BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
+        }
         val now = clock.instant()
-        val suspensions = findActiveOf(memberId, type, now)
 
-        if (suspensions.isEmpty()) {
+        if (!suspension.isActive(now)) {
             throw BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
         }
 
-        suspensions.forEach {
+        memberSuspensionRepository.findActiveByPhoneNumber(suspension.phoneNumber, suspension.type, now).forEach {
             it.releasedAt = now
             evict(it)
         }
+
+        return suspension
     }
 
     private fun findActiveOf(memberId: Long, type: SuspensionType, now: Instant) =

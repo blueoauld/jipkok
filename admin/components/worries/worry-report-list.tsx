@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { QuerySection } from "@/components/query-section";
 import { TablePagination } from "@/components/table-pagination";
@@ -13,11 +13,11 @@ import {
 import {
   defaultPostReportFilter,
   PostReportFilters,
-  type PostReportFilter,
 } from "@/components/post-report-filters";
 import { WorryCommentReportTable } from "@/components/worries/worry-comment-report-table";
 import { WorryReportTable } from "@/components/worries/worry-report-table";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useListState } from "@/hooks/use-list-state";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import {
   fetchWorryCommentReports,
@@ -39,8 +39,9 @@ type Props<T> = {
 };
 
 function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
-  const [filter, setFilter] = useState(defaultPostReportFilter);
-  const [page, setPage] = useState(1);
+  const { filter, changeFilter, page, setPage } = useListState(
+    defaultPostReportFilter,
+  );
   const authorId = useDebouncedValue(filter.authorId.trim());
   const queryFilter = { ...filter, authorId };
 
@@ -51,11 +52,6 @@ function ReportList<T>({ queryKey, fetchPage, renderTable }: Props<T>) {
   });
 
   usePageGuard(page, setPage, data);
-
-  const changeFilter = (next: PostReportFilter) => {
-    setFilter(next);
-    setPage(1);
-  };
 
   return (
     <QuerySection

@@ -5,22 +5,21 @@ import { toast } from "sonner";
 import { PendingButton } from "@/components/pending-button";
 import { ApiError } from "@/lib/api/client";
 import { releaseSuspension } from "@/lib/api/suspensions";
-import type { SuspensionType } from "@/lib/types";
 
 type Props = {
-  memberId: number;
-  type: SuspensionType;
+  suspensionId: number;
 };
 
-export function ReleaseButton({ memberId, type }: Props) {
+export function ReleaseButton({ suspensionId }: Props) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => releaseSuspension(memberId, type),
+    mutationFn: () => releaseSuspension(suspensionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suspensions"] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
     },
     onError: (caught) => {
       toast.error(

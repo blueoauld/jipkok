@@ -1553,12 +1553,7 @@ export interface components {
             expiresAt?: string | null;
             /** Format: date-time */
             releasedAt?: string | null;
-        };
-        ReleaseSuspensionRequest: {
-            /** Format: int64 */
-            memberId: number | null;
-            /** @enum {string|null} */
-            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+            detail?: string | null;
         };
         ResetProfileRequest: {
             /** @enum {string|null} */
@@ -2122,6 +2117,29 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
+        };
+        AdminActionPageResponse: {
+            items: components["schemas"]["AdminActionResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminActionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            actorId: number;
+            actorNickname: string;
+            /** @enum {string} */
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT";
+            /** Format: int64 */
+            targetId: number;
+            detail?: string | null;
+            /** Format: date-time */
+            createdAt: string;
         };
         LeaveRoomsRequest: {
             roomIds: number[];

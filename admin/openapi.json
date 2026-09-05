@@ -6315,24 +6315,25 @@
                 }
             }
         },
-        "/api/admin/suspensions/release": {
+        "/api/admin/suspensions/{suspensionId}/release": {
             "post": {
                 "tags": [
                     "admin-suspension-controller"
                 ],
                 "summary": "\uc815\uc9c0 \ud574\uc81c",
-                "description": "\ud574\ub2f9 \uc720\ud615\uc758 \uc720\ud6a8\ud55c \uc815\uc9c0\ub97c \ubaa8\ub450 \ud574\uc81c\ud55c\ub2e4.",
+                "description": "\uac19\uc740 \uc804\ud654\ubc88\ud638\uc5d0 \uac78\ub9b0 \uac19\uc740 \uc720\ud615\uc758 \uc720\ud6a8\ud55c \uc815\uc9c0\ub97c \ubaa8\ub450 \ud574\uc81c\ud55c\ub2e4. \ud0c8\ud1f4\ud55c \uacc4\uc815\uc758 \uc815\uc9c0\ub3c4 \ud574\uc81c\ud560 \uc218 \uc788\ub2e4.",
                 "operationId": "release",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ReleaseSuspensionRequest"
-                            }
+                "parameters": [
+                    {
+                        "name": "suspensionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
                         }
-                    },
-                    "required": true
-                },
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -12089,6 +12090,130 @@
                 }
             }
         },
+        "/api/admin/actions": {
+            "get": {
+                "tags": [
+                    "admin-action-controller"
+                ],
+                "summary": "\uad00\ub9ac\uc790 \uc870\uce58 \uc774\ub825",
+                "description": "\uc815\uc9c0, \ud574\uc81c, \ucd08\uae30\ud654, \ud0c8\ud1f4, \uc0ad\uc81c, \uc2e0\uace0 \ucc98\ub9ac \uae30\ub85d\uc744 \ucd5c\uc2e0\uc21c\uc73c\ub85c \uc900\ub2e4.",
+                "operationId": "findActions",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminActionPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/worries/comments/{commentId}": {
             "delete": {
                 "tags": [
@@ -13535,6 +13660,12 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "detail": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 },
                 "required": [
@@ -13544,33 +13675,6 @@
                     "reason",
                     "startedAt",
                     "status",
-                    "type"
-                ]
-            },
-            "ReleaseSuspensionRequest": {
-                "type": "object",
-                "properties": {
-                    "memberId": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64"
-                    },
-                    "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "enum": [
-                            "SECRET_PHOTO",
-                            "PROFILE_EDIT",
-                            "SERVICE"
-                        ]
-                    }
-                },
-                "required": [
-                    "memberId",
                     "type"
                 ]
             },
@@ -15599,6 +15703,86 @@
                     "count",
                     "platform",
                     "version"
+                ]
+            },
+            "AdminActionPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminActionResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminActionResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "actorId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "actorNickname": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": [
+                            "SUSPEND",
+                            "RELEASE_SUSPENSION",
+                            "RESET_PROFILE",
+                            "WITHDRAW_MEMBER",
+                            "DELETE_FEED_POST",
+                            "DELETE_WORRY_POST",
+                            "DELETE_WORRY_COMMENT",
+                            "HANDLE_REPORT"
+                        ]
+                    },
+                    "targetId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "detail": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "action",
+                    "actorId",
+                    "actorNickname",
+                    "createdAt",
+                    "id",
+                    "targetId"
                 ]
             },
             "LeaveRoomsRequest": {

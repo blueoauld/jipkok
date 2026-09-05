@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardAction,
@@ -23,6 +26,8 @@ type Props = {
 };
 
 export function RecentSuspensions({ suspensions }: Props) {
+  const router = useRouter();
+
   return (
     <Card>
       <CardHeader>
@@ -59,7 +64,13 @@ export function RecentSuspensions({ suspensions }: Props) {
               </TableRow>
             )}
             {suspensions.map((suspension) => (
-              <TableRow key={suspension.id}>
+              <TableRow
+                key={suspension.id}
+                className="cursor-pointer"
+                onClick={() =>
+                  router.push(`/members/detail?id=${suspension.memberId}`)
+                }
+              >
                 <TableCell className="tabular-nums text-muted-foreground">
                   {suspension.id}
                 </TableCell>

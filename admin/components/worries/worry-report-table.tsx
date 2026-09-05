@@ -94,7 +94,7 @@ export function WorryReportTable({ reports }: Props) {
                 <DeleteDialogButton
                   title="고민 삭제"
                   description={`${report.authorNickname}의 고민 #${report.postId}을 삭제합니다. 되돌릴 수 없습니다.`}
-                  invalidateKeys={[["worry-reports"]]}
+                  invalidateKeys={[["worry-reports"], ["actions"]]}
                   action={() => deleteWorryPost(report.postId)}
                   disabled={report.postDeletedAt != null}
                 />

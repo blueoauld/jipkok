@@ -2,7 +2,6 @@ package com.blueoauld.server.domain.admin.web
 
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
-import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.service.AdminSuspensionService
@@ -12,6 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -50,13 +50,16 @@ class AdminSuspensionController(
         @Valid @RequestBody request: CreateSuspensionRequest,
     ): AdminSuspensionResponse = adminSuspensionService.suspend(actorId, request)
 
-    @Operation(summary = "정지 해제", description = "해당 유형의 유효한 정지를 모두 해제한다.")
-    @PostMapping("/release")
+    @Operation(
+        summary = "정지 해제",
+        description = "같은 전화번호에 걸린 같은 유형의 유효한 정지를 모두 해제한다. 탈퇴한 계정의 정지도 해제할 수 있다.",
+    )
+    @PostMapping("/{suspensionId}/release")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun release(
         @AuthenticationPrincipal actorId: Long,
-        @Valid @RequestBody request: ReleaseSuspensionRequest,
+        @PathVariable suspensionId: Long,
     ) {
-        adminSuspensionService.release(actorId, request)
+        adminSuspensionService.release(actorId, suspensionId)
     }
 }

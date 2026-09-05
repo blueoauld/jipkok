@@ -66,9 +66,7 @@ export function MemberTable({ members }: Props) {
             <TableCell className="text-right tabular-nums">
               {member.age}
             </TableCell>
-            <TableCell className="tabular-nums">
-              {member.phoneNumber}
-            </TableCell>
+            <TableCell className="tabular-nums">{member.phoneNumber}</TableCell>
             <TableCell className="text-right tabular-nums">
               {member.publicPhotoCount}
             </TableCell>

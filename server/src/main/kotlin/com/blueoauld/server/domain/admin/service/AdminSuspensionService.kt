@@ -2,7 +2,6 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
-import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
@@ -77,13 +76,13 @@ class AdminSuspensionService(
     }
 
     @Transactional
-    fun release(actorId: Long, request: ReleaseSuspensionRequest) {
-        memberSuspensionService.release(request.memberId!!, request.type!!)
+    fun release(actorId: Long, suspensionId: Long) {
+        val suspension = memberSuspensionService.release(suspensionId)
         adminActionRecorder.record(
             actorId = actorId,
             action = AdminActionType.RELEASE_SUSPENSION,
-            targetId = request.memberId,
-            detail = request.type.name,
+            targetId = suspension.memberId,
+            detail = suspension.type.name,
         )
     }
 }

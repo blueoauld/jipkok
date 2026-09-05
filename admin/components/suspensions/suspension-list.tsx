@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   defaultSuspensionFilter,
   SuspensionFilters,
-  type SuspensionFilter,
 } from "@/components/suspensions/suspension-filters";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
 import { QuerySection } from "@/components/query-section";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useListState } from "@/hooks/use-list-state";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { TablePagination } from "@/components/table-pagination";
 import {
@@ -21,8 +20,9 @@ import {
 import { fetchSuspensions } from "@/lib/api/suspensions";
 
 export function SuspensionList() {
-  const [filter, setFilter] = useState(defaultSuspensionFilter);
-  const [page, setPage] = useState(1);
+  const { filter, changeFilter, page, setPage } = useListState(
+    defaultSuspensionFilter,
+  );
   const memberId = useDebouncedValue(filter.memberId.trim());
   const queryFilter = { ...filter, memberId };
 
@@ -33,11 +33,6 @@ export function SuspensionList() {
   });
 
   usePageGuard(page, setPage, data);
-
-  const changeFilter = (next: SuspensionFilter) => {
-    setFilter(next);
-    setPage(1);
-  };
 
   return (
     <QuerySection

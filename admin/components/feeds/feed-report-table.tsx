@@ -101,7 +101,7 @@ export function FeedReportTable({ reports }: Props) {
                 <DeleteDialogButton
                   title="피드 삭제"
                   description={`${report.authorNickname}의 피드 #${report.postId}을 삭제합니다. 되돌릴 수 없습니다.`}
-                  invalidateKeys={[["feed-reports"]]}
+                  invalidateKeys={[["feed-reports"], ["actions"]]}
                   action={() => deleteFeedPost(report.postId)}
                   disabled={report.postDeletedAt != null}
                 />

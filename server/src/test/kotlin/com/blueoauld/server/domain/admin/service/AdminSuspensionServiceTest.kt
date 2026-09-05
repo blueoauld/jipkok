@@ -2,7 +2,6 @@ package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.AdminSuspensionStatus
 import com.blueoauld.server.domain.admin.dto.request.CreateSuspensionRequest
-import com.blueoauld.server.domain.admin.dto.request.ReleaseSuspensionRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
@@ -10,7 +9,6 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -84,24 +82,42 @@ class AdminSuspensionServiceTest {
     }
 
     @Test
-    fun `해제는 기존 서비스에 위임한다`() {
+    fun `해제는 기존 서비스에 위임하고 정지 당시 회원을 대상으로 기록한다`() {
         // given
-        justRun { memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE) }
+        every { memberSuspensionService.release(SUSPENSION_ID) } returns suspension(expiresAt = null)
 
         // when
-        adminSuspensionService.release(
-            ACTOR_ID,
-            ReleaseSuspensionRequest(memberId = MEMBER_ID, type = SuspensionType.SERVICE),
-        )
+        adminSuspensionService.release(ACTOR_ID, SUSPENSION_ID)
 
         // then
-        verify { memberSuspensionService.release(MEMBER_ID, SuspensionType.SERVICE) }
         verify {
             adminActionRecorder.record(ACTOR_ID, AdminActionType.RELEASE_SUSPENSION, MEMBER_ID, "SERVICE")
         }
     }
 
-    private fun suspension(expiresAt: Instant?) = MemberSuspension(
+    @Test
+    fun `응답에 상세 사유를 담는다`() {
+        // given
+        every {
+            memberSuspensionService.suspend(MEMBER_ID, SuspensionType.SERVICE, SuspensionReason.ABUSE, null, "상세")
+        } returns suspension(expiresAt = null, detail = "상세")
+
+        // when
+        val response = adminSuspensionService.suspend(
+            ACTOR_ID,
+            CreateSuspensionRequest(
+                memberId = MEMBER_ID,
+                type = SuspensionType.SERVICE,
+                reason = SuspensionReason.ABUSE,
+                detail = "상세",
+            ),
+        )
+
+        // then
+        assertThat(response.detail).isEqualTo("상세")
+    }
+
+    private fun suspension(expiresAt: Instant?, detail: String? = null) = MemberSuspension(
         phoneNumber = "+821011112222",
         memberId = MEMBER_ID,
         nickname = "밤산책",
@@ -109,12 +125,14 @@ class AdminSuspensionServiceTest {
         reason = SuspensionReason.ABUSE,
         startedAt = NOW.minusSeconds(7200),
         expiresAt = expiresAt,
+        detail = detail,
     )
 
     companion object {
 
         private const val MEMBER_ID = 1000L
         private const val ACTOR_ID = 7L
+        private const val SUSPENSION_ID = 10L
 
         private val NOW: Instant = Instant.parse("2026-08-20T06:00:00Z")
     }

@@ -1,5 +1,6 @@
 import {
   Flag,
+  History,
   LayoutDashboard,
   ShieldBan,
   Users,
@@ -28,6 +29,7 @@ export const navItems: NavItem[] = [
   },
   { title: "회원", href: "/members", icon: Users },
   { title: "정지", href: "/suspensions", icon: ShieldBan },
+  { title: "조치 이력", href: "/actions", icon: History },
 ];
 
 export type Breadcrumb = { title: string; href?: string };

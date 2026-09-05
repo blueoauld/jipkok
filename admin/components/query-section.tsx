@@ -21,11 +21,7 @@ export function QuerySection({
 
   if (error) {
     const message =
-      error instanceof ApiError && error.status === 401
-        ? "인증이 필요합니다. 로그인 토큰을 확인해 주세요."
-        : error instanceof ApiError
-          ? error.message
-          : "불러오지 못했습니다.";
+      error instanceof ApiError ? error.message : "불러오지 못했습니다.";
 
     return (
       <div className="flex h-32 items-center justify-center border border-dashed text-sm text-muted-foreground">

@@ -45,6 +45,7 @@ export function MemberReportDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
     },
     onError: (caught) => {
       toast.error(

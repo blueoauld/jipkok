@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardAction,
@@ -23,6 +26,8 @@ type Props = {
 };
 
 export function RecentReports({ reports }: Props) {
+  const router = useRouter();
+
   return (
     <Card>
       <CardHeader>
@@ -59,7 +64,13 @@ export function RecentReports({ reports }: Props) {
               </TableRow>
             )}
             {reports.map((report) => (
-              <TableRow key={report.id}>
+              <TableRow
+                key={report.id}
+                className="cursor-pointer"
+                onClick={() =>
+                  router.push(`/reports/members/detail?id=${report.id}`)
+                }
+              >
                 <TableCell className="tabular-nums text-muted-foreground">
                   {report.id}
                 </TableCell>

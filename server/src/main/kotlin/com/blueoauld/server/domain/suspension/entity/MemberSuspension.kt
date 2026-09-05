@@ -57,6 +57,8 @@ class MemberSuspension(
     @Column(name = "id")
     val id: Long = 0
 
+    fun isActive(now: Instant) = releasedAt == null && expiresAt?.isAfter(now) != false
+
     companion object {
 
         const val DETAIL_MAX_LENGTH = 500

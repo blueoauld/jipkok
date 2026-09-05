@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import { useSearchParams } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
@@ -10,7 +9,6 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { ReleaseButton } from "@/components/release-button";
 import { SuspendDialog } from "@/components/suspend-dialog";
 import { MemberReportTable } from "@/components/reports/member-report-table";
 import { SuspensionTable } from "@/components/suspensions/suspension-table";
@@ -23,26 +21,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatCount, formatDateTime } from "@/lib/format";
-import {
-  genderLabels,
-  profileTargetLabels,
-  suspensionReasonLabels,
-  suspensionTypeLabels,
-} from "@/lib/labels";
+import { genderLabels, profileTargetLabels } from "@/lib/labels";
 import {
   fetchMemberDetail,
   resetMemberProfile,
@@ -94,17 +79,19 @@ export function MemberDetail() {
 function Loaded({ member }: { member: MemberDetailData }) {
   const [resetTarget, setResetTarget] = useState<ProfileTarget | null>(null);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const activeSuspensions = member.suspensions.filter(
+  const activeCount = member.suspensions.filter(
     (s) => s.status === "ACTIVE",
-  );
-  const suspended = activeSuspensions.length > 0;
+  ).length;
 
   return (
     <>
       <PageHeader title={`${member.nickname} #${member.id}`}>
         <div className="flex items-center gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" />}>
+            <DropdownMenuTrigger
+              render={<Button variant="outline" />}
+              disabled={member.withdrawnAt != null}
+            >
               초기화
               <ChevronDown data-icon="inline-end" />
             </DropdownMenuTrigger>
@@ -149,7 +136,7 @@ function Loaded({ member }: { member: MemberDetailData }) {
         }
         confirmLabel="초기화"
         errorFallback="초기화하지 못했습니다."
-        invalidateKeys={[["members"]]}
+        invalidateKeys={[["members"], ["actions"]]}
         action={() => resetMemberProfile(member.id, resetTarget!)}
       />
 
@@ -166,60 +153,10 @@ function Loaded({ member }: { member: MemberDetailData }) {
           ["feed-reports"],
           ["worry-reports"],
           ["worry-comment-reports"],
+          ["actions"],
         ]}
         action={() => withdrawMember(member.id)}
       />
-
-      {suspended && (
-        <Card>
-          <CardHeader>
-            <CardTitle>현재 정지 {activeSuspensions.length}건</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16">ID</TableHead>
-                  <TableHead className="w-24">유형</TableHead>
-                  <TableHead>사유</TableHead>
-                  <TableHead className="text-right">시작일</TableHead>
-                  <TableHead className="text-right">종료일</TableHead>
-                  <TableHead className="w-20" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {activeSuspensions.map((suspension) => (
-                  <TableRow key={suspension.id}>
-                    <TableCell className="tabular-nums text-muted-foreground">
-                      {suspension.id}
-                    </TableCell>
-                    <TableCell>
-                      {suspensionTypeLabels[suspension.type]}
-                    </TableCell>
-                    <TableCell>
-                      {suspensionReasonLabels[suspension.reason]}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {formatDateTime(suspension.startedAt)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {suspension.expiresAt
-                        ? formatDateTime(suspension.expiresAt)
-                        : "영구"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <ReleaseButton
-                        memberId={suspension.memberId}
-                        type={suspension.type}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
 
       <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
         <Card className="col-span-1">
@@ -310,7 +247,10 @@ function Loaded({ member }: { member: MemberDetailData }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>정지 이력 {member.suspensions.length}건</CardTitle>
+          <CardTitle>
+            정지 이력 {member.suspensions.length}건
+            {activeCount > 0 && `, 정지 중 ${activeCount}건`}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <SuspensionTable

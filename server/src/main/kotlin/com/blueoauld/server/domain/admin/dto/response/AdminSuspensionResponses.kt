@@ -25,6 +25,7 @@ data class AdminSuspensionResponse(
     val startedAt: Instant,
     val expiresAt: Instant?,
     val releasedAt: Instant?,
+    val detail: String?,
 ) {
 
     companion object {
@@ -39,6 +40,7 @@ data class AdminSuspensionResponse(
             startedAt = suspension.startedAt,
             expiresAt = suspension.expiresAt,
             releasedAt = suspension.releasedAt,
+            detail = suspension.detail,
         )
 
         private fun statusOf(suspension: MemberSuspension, now: Instant) = when {

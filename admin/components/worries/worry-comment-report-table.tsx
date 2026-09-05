@@ -98,7 +98,7 @@ export function WorryCommentReportTable({ reports }: Props) {
                 <DeleteDialogButton
                   title="고민 댓글 삭제"
                   description={`${report.authorNickname}의 댓글 #${report.commentId}을 삭제합니다. 되돌릴 수 없습니다.`}
-                  invalidateKeys={[["worry-comment-reports"]]}
+                  invalidateKeys={[["worry-comment-reports"], ["actions"]]}
                   action={() => deleteWorryComment(report.commentId)}
                   disabled={report.commentDeletedAt != null}
                 />

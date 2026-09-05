@@ -28,23 +28,15 @@ export type WorryReportPage = Schemas["AdminWorryPostReportPageResponse"];
 export type WorryCommentReport = Schemas["AdminWorryCommentReportResponse"];
 export type WorryCommentReportPage =
   Schemas["AdminWorryCommentReportPageResponse"];
-export type ReportType = "PROFILE" | "CHAT";
-
-export type ReportReason =
-  | "OBSCENITY"
-  | "MINOR"
-  | "MONEY_TRANSACTION"
-  | "ABUSE"
-  | "IMPERSONATION"
-  | "ETC";
-
-export type SuspensionType = "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE";
-
-export type SuspensionReason = "SCREEN_CAPTURE" | ReportReason;
-
-export type Gender = "MALE" | "FEMALE";
-
-export type ProfileTarget =
-  "NICKNAME" | "COMMENT" | "BIO" | "PUBLIC_PHOTO" | "SECRET_PHOTO";
-
-export type DevicePlatform = "IOS" | "ANDROID";
+export type AdminAction = Schemas["AdminActionResponse"];
+export type AdminActionPage = Schemas["AdminActionPageResponse"];
+export type ReportType = MemberReport["type"];
+export type ReportReason = MemberReport["reason"];
+export type SuspensionType = Suspension["type"];
+export type SuspensionReason = Suspension["reason"];
+export type Gender = MemberSummary["gender"];
+export type ProfileTarget = NonNullable<
+  Schemas["ResetProfileRequest"]["target"]
+>;
+export type DevicePlatform = Schemas["VersionCountResponse"]["platform"];
+export type AdminActionType = AdminAction["action"];

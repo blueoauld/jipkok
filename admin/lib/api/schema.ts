@@ -801,7 +801,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/suspensions/release": {
+    "/api/admin/suspensions/{suspensionId}/release": {
         parameters: {
             query?: never;
             header?: never;
@@ -812,7 +812,7 @@ export interface paths {
         put?: never;
         /**
          * 정지 해제
-         * @description 해당 유형의 유효한 정지를 모두 해제한다.
+         * @description 같은 전화번호에 걸린 같은 유형의 유효한 정지를 모두 해제한다. 탈퇴한 계정의 정지도 해제할 수 있다.
          */
         post: operations["release"];
         delete?: never;
@@ -1611,6 +1611,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 관리자 조치 이력
+         * @description 정지, 해제, 초기화, 탈퇴, 삭제, 신고 처리 기록을 최신순으로 준다.
+         */
+        get: operations["findActions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/worries/comments/{commentId}": {
         parameters: {
             query?: never;
@@ -1919,12 +1939,7 @@ export interface components {
             expiresAt?: string | null;
             /** Format: date-time */
             releasedAt?: string | null;
-        };
-        ReleaseSuspensionRequest: {
-            /** Format: int64 */
-            memberId: number | null;
-            /** @enum {string|null} */
-            type: "SECRET_PHOTO" | "PROFILE_EDIT" | "SERVICE" | null;
+            detail?: string | null;
         };
         ResetProfileRequest: {
             /** @enum {string|null} */
@@ -2488,6 +2503,29 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
+        };
+        AdminActionPageResponse: {
+            items: components["schemas"]["AdminActionResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminActionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            actorId: number;
+            actorNickname: string;
+            /** @enum {string} */
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT";
+            /** Format: int64 */
+            targetId: number;
+            detail?: string | null;
+            /** Format: date-time */
+            createdAt: string;
         };
         LeaveRoomsRequest: {
             roomIds: number[];
@@ -7803,14 +7841,12 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                suspensionId: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReleaseSuspensionRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description No Content */
             204: {
@@ -12341,6 +12377,101 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccessEnvironmentResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findActions: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminActionPageResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

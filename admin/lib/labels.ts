@@ -1,4 +1,5 @@
 import type {
+  AdminActionType,
   DevicePlatform,
   Gender,
   ProfileTarget,
@@ -56,4 +57,15 @@ export const profileTargetLabels: Record<ProfileTarget, string> = {
 export const devicePlatformLabels: Record<DevicePlatform, string> = {
   IOS: "iOS",
   ANDROID: "Android",
+};
+
+export const adminActionLabels: Record<AdminActionType, string> = {
+  SUSPEND: "정지",
+  RELEASE_SUSPENSION: "정지 해제",
+  RESET_PROFILE: "프로필 초기화",
+  WITHDRAW_MEMBER: "회원 탈퇴",
+  DELETE_FEED_POST: "피드 삭제",
+  DELETE_WORRY_POST: "고민 삭제",
+  DELETE_WORRY_COMMENT: "고민 댓글 삭제",
+  HANDLE_REPORT: "신고 처리",
 };

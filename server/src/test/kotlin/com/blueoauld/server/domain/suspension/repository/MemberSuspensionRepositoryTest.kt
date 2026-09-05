@@ -130,6 +130,24 @@ class MemberSuspensionRepositoryTest {
     }
 
     @Test
+    fun `번호와 유형으로 유효한 정지만 찾는다`() {
+        // given
+        save(expiresAt = null, type = SuspensionType.SERVICE)
+        save(expiresAt = NOW.minusSeconds(60), type = SuspensionType.SERVICE)
+        save(expiresAt = null, type = SuspensionType.SERVICE, released = true)
+        save(expiresAt = null, type = SuspensionType.PROFILE_EDIT)
+        save(expiresAt = null, type = SuspensionType.SERVICE, phoneNumber = "+821033334444")
+
+        // when
+        val active = memberSuspensionRepository.findActiveByPhoneNumber(PHONE_NUMBER, SuspensionType.SERVICE, NOW)
+
+        // then
+        assertThat(active).hasSize(1)
+        assertThat(active.single().expiresAt).isNull()
+        assertThat(active.single().releasedAt).isNull()
+    }
+
+    @Test
     fun `보관 기간이 지난 해제, 만료 정지만 정리 대상으로 준다`() {
         // given
         save(expiresAt = null, type = SuspensionType.SERVICE, released = true)
