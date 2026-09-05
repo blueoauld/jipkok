@@ -45,4 +45,11 @@ data class AdminMemberDetailResponse(
     val publicPhotoUrls: List<String>,
     val secretPhotoUrls: List<String>,
     val suspensions: List<AdminSuspensionResponse>,
+    val nicknameHistories: List<AdminNicknameHistoryResponse>,
+)
+
+data class AdminNicknameHistoryResponse(
+
+    val nickname: String,
+    val changedAt: Instant,
 )

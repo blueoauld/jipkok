@@ -10720,6 +10720,15 @@
                         }
                     },
                     {
+                        "name": "reporterId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
                         "name": "reportedMemberId",
                         "in": "query",
                         "required": false,
@@ -11126,7 +11135,7 @@
                     "admin-member-controller"
                 ],
                 "summary": "\ud68c\uc6d0 \uc0c1\uc138",
-                "description": "\ud0c8\ud1f4\ud55c \ud68c\uc6d0\ub3c4 \uc870\ud68c\ud558\uace0, \uc815\uc9c0 \uc774\ub825\uc740 \uc804\ud654\ubc88\ud638 \uae30\uc900\uc73c\ub85c \uc900\ub2e4.",
+                "description": "\ud0c8\ud1f4\ud55c \ud68c\uc6d0\ub3c4 \uc870\ud68c\ud558\uace0, \uc815\uc9c0 \uc774\ub825\uc740 \uc804\ud654\ubc88\ud638 \uae30\uc900\uc73c\ub85c \uc900\ub2e4. \ub2c9\ub124\uc784 \uc774\ub825\uc740 \ucd5c\uc2e0\uc21c\uc774\ub2e4.",
                 "operationId": "findAdminMemberDetail",
                 "parameters": [
                     {
@@ -15270,6 +15279,12 @@
                         "items": {
                             "$ref": "#/components/schemas/AdminSuspensionResponse"
                         }
+                    },
+                    "nicknameHistories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminNicknameHistoryResponse"
+                        }
                     }
                 },
                 "required": [
@@ -15278,6 +15293,7 @@
                     "id",
                     "joinedAt",
                     "nickname",
+                    "nicknameHistories",
                     "noteReceiveEnabled",
                     "phoneNumber",
                     "pointBalance",
@@ -15285,6 +15301,22 @@
                     "receivedLikeCount",
                     "secretPhotoUrls",
                     "suspensions"
+                ]
+            },
+            "AdminNicknameHistoryResponse": {
+                "type": "object",
+                "properties": {
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "changedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "changedAt",
+                    "nickname"
                 ]
             },
             "AdminFeedReportPageResponse": {

@@ -13,6 +13,7 @@ export const fetchMemberReports = (params: MemberReportListParams) =>
       status: params.status === "ALL" ? undefined : params.status,
       type: params.type === "ALL" ? undefined : params.type,
       reason: params.reason === "ALL" ? undefined : params.reason,
+      reporterId: params.reporterId || undefined,
       reportedMemberId: params.reportedMemberId || undefined,
       reportedPhoneNumber: params.reportedPhoneNumber,
       page: params.page,

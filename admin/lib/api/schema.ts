@@ -1477,7 +1477,7 @@ export interface paths {
         };
         /**
          * 회원 상세
-         * @description 탈퇴한 회원도 조회하고, 정지 이력은 전화번호 기준으로 준다.
+         * @description 탈퇴한 회원도 조회하고, 정지 이력은 전화번호 기준으로 준다. 닉네임 이력은 최신순이다.
          */
         get: operations["findAdminMemberDetail"];
         put?: never;
@@ -2377,6 +2377,12 @@ export interface components {
             publicPhotoUrls: string[];
             secretPhotoUrls: string[];
             suspensions: components["schemas"]["AdminSuspensionResponse"][];
+            nicknameHistories: components["schemas"]["AdminNicknameHistoryResponse"][];
+        };
+        AdminNicknameHistoryResponse: {
+            nickname: string;
+            /** Format: date-time */
+            changedAt: string;
         };
         AdminFeedReportPageResponse: {
             items: components["schemas"]["AdminFeedReportResponse"][];
@@ -11332,6 +11338,7 @@ export interface operations {
                 status?: "PENDING" | "HANDLED";
                 type?: "PROFILE" | "CHAT";
                 reason?: "OBSCENITY" | "MINOR" | "MONEY_TRANSACTION" | "ABUSE" | "IMPERSONATION" | "ETC";
+                reporterId?: number;
                 reportedMemberId?: number;
                 reportedPhoneNumber?: string;
                 page?: number;

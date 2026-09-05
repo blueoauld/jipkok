@@ -46,9 +46,9 @@ class AdminReportServiceTest {
     fun `목록은 상태를 처리 여부로 바꾸고 닉네임을 채운다`() {
         // given
         every {
-            reportAdminRepository.findAllForAdmin(false, null, null, null, null, 20, 0)
+            reportAdminRepository.findAllForAdmin(false, null, null, null, null, null, 20, 0)
         } returns listOf(report())
-        every { reportAdminRepository.countForAdmin(false, null, null, null, null) } returns 1
+        every { reportAdminRepository.countForAdmin(false, null, null, null, null, null) } returns 1
         every { memberAdminService.findNicknames(listOf(REPORTER_ID, REPORTED_MEMBER_ID)) } returns
             mapOf(REPORTER_ID to "밤산책", REPORTED_MEMBER_ID to "알 수 없음")
 
@@ -57,6 +57,7 @@ class AdminReportServiceTest {
             status = AdminReportStatus.PENDING,
             type = null,
             reason = null,
+            reporterId = null,
             reportedMemberId = null,
             reportedPhoneNumber = null,
             page = 1,
@@ -72,8 +73,8 @@ class AdminReportServiceTest {
     @Test
     fun `페이지와 크기를 안전한 범위로 맞춘다`() {
         // given
-        every { reportAdminRepository.findAllForAdmin(null, null, null, null, null, 100, 0) } returns emptyList()
-        every { reportAdminRepository.countForAdmin(null, null, null, null, null) } returns 0
+        every { reportAdminRepository.findAllForAdmin(null, null, null, null, null, null, 100, 0) } returns emptyList()
+        every { reportAdminRepository.countForAdmin(null, null, null, null, null, null) } returns 0
         every { memberAdminService.findNicknames(emptyList()) } returns emptyMap()
 
         // when
@@ -81,6 +82,7 @@ class AdminReportServiceTest {
             status = null,
             type = null,
             reason = null,
+            reporterId = null,
             reportedMemberId = null,
             reportedPhoneNumber = null,
             page = 0,

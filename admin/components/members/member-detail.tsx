@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
@@ -247,6 +247,15 @@ function Loaded({ member }: { member: MemberDetailData }) {
 
       <Card>
         <CardHeader>
+          <CardTitle>닉네임 이력 {member.nicknameHistories.length}건</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NicknameHistoryList histories={member.nicknameHistories} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>
             정지 이력 {member.suspensions.length}건
             {activeCount > 0 && `, 정지 중 ${activeCount}건`}
@@ -262,6 +271,33 @@ function Loaded({ member }: { member: MemberDetailData }) {
 
       <ReceivedReports phoneNumber={member.phoneNumber} />
     </>
+  );
+}
+
+function NicknameHistoryList({
+  histories,
+}: {
+  histories: MemberDetailData["nicknameHistories"];
+}) {
+  if (histories.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">닉네임 이력이 없습니다.</p>
+    );
+  }
+
+  return (
+    <div className="grid w-fit grid-cols-[12rem_auto] gap-x-8 gap-y-1.5 text-sm">
+      <span className="text-muted-foreground">닉네임</span>
+      <span className="text-muted-foreground">변경일</span>
+      {histories.map((history, index) => (
+        <Fragment key={index}>
+          <span>{history.nickname}</span>
+          <span className="tabular-nums">
+            {formatDateTime(history.changedAt)}
+          </span>
+        </Fragment>
+      ))}
+    </div>
   );
 }
 

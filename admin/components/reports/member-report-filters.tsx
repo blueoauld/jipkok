@@ -12,6 +12,7 @@ export type MemberReportFilter = {
   status: MemberReportStatus;
   type: ReportType | "ALL";
   reason: ReportReason | "ALL";
+  reporterId: string;
   reportedMemberId: string;
 };
 
@@ -19,6 +20,7 @@ export const defaultMemberReportFilter: MemberReportFilter = {
   status: "ALL",
   type: "ALL",
   reason: "ALL",
+  reporterId: "",
   reportedMemberId: "",
 };
 
@@ -61,6 +63,12 @@ export function MemberReportFilters({ value, onChange }: Props) {
         items={reasonItems}
         value={value.reason}
         onChange={(reason) => onChange({ ...value, reason })}
+      />
+      <SearchInput
+        numeric
+        placeholder="신고자 ID"
+        value={value.reporterId}
+        onChange={(reporterId) => onChange({ ...value, reporterId })}
       />
       <SearchInput
         numeric

@@ -6,7 +6,9 @@ import com.blueoauld.server.domain.admin.dto.projection.AdminMemberRow
 import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.NicknameHistoryAdminRepository
 import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
+import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.entity.type.ProfileTarget
 import com.blueoauld.server.domain.member.service.MemberAdminService
@@ -33,6 +35,8 @@ class AdminMemberServiceTest {
 
     private val suspensionAdminRepository = mockk<SuspensionAdminRepository>()
 
+    private val nicknameHistoryAdminRepository = mockk<NicknameHistoryAdminRepository>()
+
     private val memberAdminService = mockk<MemberAdminService>()
 
     private val memberWithdrawService = mockk<MemberWithdrawService>()
@@ -42,6 +46,7 @@ class AdminMemberServiceTest {
     private val adminMemberService = AdminMemberService(
         memberAdminRepository,
         suspensionAdminRepository,
+        nicknameHistoryAdminRepository,
         memberAdminService,
         memberWithdrawService,
         adminActionRecorder,
@@ -123,7 +128,7 @@ class AdminMemberServiceTest {
     }
 
     @Test
-    fun `상세는 사진 URL과 전화번호 기준 정지 이력을 합친다`() {
+    fun `상세는 사진 URL, 전화번호 기준 정지 이력, 닉네임 이력을 합친다`() {
         // given
         every { memberAdminRepository.findRowById(MEMBER_ID) } returns row()
         every { memberAdminService.findPhotoUrls(MEMBER_ID) } returns mapOf(
@@ -134,6 +139,10 @@ class AdminMemberServiceTest {
             suspension(expiresAt = NOW.plusSeconds(3600)),
             suspension(expiresAt = NOW.minusSeconds(3600)),
             suspension(expiresAt = null, releasedAt = NOW.minusSeconds(60)),
+        )
+        every { nicknameHistoryAdminRepository.findAllByMemberIdOrderByIdDesc(MEMBER_ID) } returns listOf(
+            NicknameHistory(MEMBER_ID, "밤산책"),
+            NicknameHistory(MEMBER_ID, "새벽별"),
         )
 
         // when
@@ -148,6 +157,7 @@ class AdminMemberServiceTest {
             AdminSuspensionStatus.EXPIRED,
             AdminSuspensionStatus.RELEASED,
         )
+        assertThat(detail.nicknameHistories.map { it.nickname }).containsExactly("밤산책", "새벽별")
     }
 
     @Test

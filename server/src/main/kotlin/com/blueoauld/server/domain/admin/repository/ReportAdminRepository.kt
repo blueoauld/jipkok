@@ -28,7 +28,7 @@ interface ReportAdminRepository : JpaRepository<Report, Long> {
     @Query(
         value = """
         select r.* from report r
-        where $HANDLED $TYPE $REASON $REPORTED
+        where $HANDLED $TYPE $REASON $REPORTER $REPORTED
         order by r.id desc
         limit :size offset :offset
         """,
@@ -38,6 +38,7 @@ interface ReportAdminRepository : JpaRepository<Report, Long> {
         @Param("handled") handled: Boolean?,
         @Param("type") type: String?,
         @Param("reason") reason: String?,
+        @Param("reporterId") reporterId: Long?,
         @Param("reportedMemberId") reportedMemberId: Long?,
         @Param("reportedPhoneNumber") reportedPhoneNumber: String?,
         @Param("size") size: Int,
@@ -47,7 +48,7 @@ interface ReportAdminRepository : JpaRepository<Report, Long> {
     @Query(
         value = """
         select count(*) from report r
-        where $HANDLED $TYPE $REASON $REPORTED
+        where $HANDLED $TYPE $REASON $REPORTER $REPORTED
         """,
         nativeQuery = true,
     )
@@ -55,6 +56,7 @@ interface ReportAdminRepository : JpaRepository<Report, Long> {
         @Param("handled") handled: Boolean?,
         @Param("type") type: String?,
         @Param("reason") reason: String?,
+        @Param("reporterId") reporterId: Long?,
         @Param("reportedMemberId") reportedMemberId: Long?,
         @Param("reportedPhoneNumber") reportedPhoneNumber: String?,
     ): Long
@@ -67,6 +69,9 @@ interface ReportAdminRepository : JpaRepository<Report, Long> {
         private const val TYPE = """and (cast(:type as varchar) is null or r.type = cast(:type as varchar))"""
 
         private const val REASON = """and (cast(:reason as varchar) is null or r.reason = cast(:reason as varchar))"""
+
+        private const val REPORTER =
+            """and (cast(:reporterId as bigint) is null or r.reporter_id = cast(:reporterId as bigint))"""
 
         private const val REPORTED =
             """and (cast(:reportedMemberId as bigint) is null

@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.admin.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.NicknameHistory
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
@@ -28,6 +29,9 @@ class AdminMemberQueriesTest {
 
     @Autowired
     private lateinit var memberSuspensionRepository: MemberSuspensionRepository
+
+    @Autowired
+    private lateinit var nicknameHistoryAdminRepository: NicknameHistoryAdminRepository
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
@@ -146,6 +150,24 @@ class AdminMemberQueriesTest {
         assertThat(row!!.nickname).isEqualTo("초록불")
         assertThat(row.withdrawnAt).isNotNull()
         assertThat(row.joinedAt).isNotNull()
+    }
+
+    @Test
+    fun `닉네임 이력은 회원 것만 최신순으로 준다`() {
+        // given
+        nicknameHistoryAdminRepository.saveAllAndFlush(
+            listOf(
+                NicknameHistory(normalId, "밤산책"),
+                NicknameHistory(normalId, "새벽별"),
+                NicknameHistory(suspendedId, "구름빵"),
+            ),
+        )
+
+        // when
+        val histories = nicknameHistoryAdminRepository.findAllByMemberIdOrderByIdDesc(normalId)
+
+        // then
+        assertThat(histories.map { it.nickname }).containsExactly("새벽별", "밤산책")
     }
 
     private fun saveMember(phoneNumber: String, nickname: String, gender: Gender) =

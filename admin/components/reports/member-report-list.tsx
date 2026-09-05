@@ -23,8 +23,9 @@ export function MemberReportList() {
   const { filter, changeFilter, page, setPage } = useListState(
     defaultMemberReportFilter,
   );
+  const reporterId = useDebouncedValue(filter.reporterId.trim());
   const reportedMemberId = useDebouncedValue(filter.reportedMemberId.trim());
-  const queryFilter = { ...filter, reportedMemberId };
+  const queryFilter = { ...filter, reporterId, reportedMemberId };
 
   const { data, isPending, error } = useQuery({
     queryKey: ["reports", queryFilter, page],

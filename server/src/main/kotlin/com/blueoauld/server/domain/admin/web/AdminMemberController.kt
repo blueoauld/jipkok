@@ -50,7 +50,7 @@ class AdminMemberController(
     @Operation(
         operationId = "findAdminMemberDetail",
         summary = "회원 상세",
-        description = "탈퇴한 회원도 조회하고, 정지 이력은 전화번호 기준으로 준다.",
+        description = "탈퇴한 회원도 조회하고, 정지 이력은 전화번호 기준으로 준다. 닉네임 이력은 최신순이다.",
     )
     @GetMapping("/{memberId}")
     fun findDetail(@PathVariable memberId: Long): AdminMemberDetailResponse =

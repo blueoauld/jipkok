@@ -33,6 +33,7 @@ class AdminReportService(
         status: AdminReportStatus?,
         type: ReportType?,
         reason: ReportReason?,
+        reporterId: Long?,
         reportedMemberId: Long?,
         reportedPhoneNumber: String?,
         page: Int,
@@ -45,6 +46,7 @@ class AdminReportService(
             handled = status?.handled,
             type = type?.name,
             reason = reason?.name,
+            reporterId = reporterId,
             reportedMemberId = reportedMemberId,
             reportedPhoneNumber = reportedPhoneNumber,
             size = safeSize,
@@ -54,6 +56,7 @@ class AdminReportService(
             handled = status?.handled,
             type = type?.name,
             reason = reason?.name,
+            reporterId = reporterId,
             reportedMemberId = reportedMemberId,
             reportedPhoneNumber = reportedPhoneNumber,
         )

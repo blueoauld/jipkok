@@ -1991,6 +1991,12 @@ export interface components {
             publicPhotoUrls: string[];
             secretPhotoUrls: string[];
             suspensions: components["schemas"]["AdminSuspensionResponse"][];
+            nicknameHistories: components["schemas"]["AdminNicknameHistoryResponse"][];
+        };
+        AdminNicknameHistoryResponse: {
+            nickname: string;
+            /** Format: date-time */
+            changedAt: string;
         };
         AdminFeedReportPageResponse: {
             items: components["schemas"]["AdminFeedReportResponse"][];

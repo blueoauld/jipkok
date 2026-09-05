@@ -5,9 +5,11 @@ import com.blueoauld.server.domain.admin.dto.request.ResetProfileRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminMemberResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminNicknameHistoryResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminSuspensionResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.NicknameHistoryAdminRepository
 import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
@@ -29,6 +31,7 @@ class AdminMemberService(
 
     private val memberAdminRepository: MemberAdminRepository,
     private val suspensionAdminRepository: SuspensionAdminRepository,
+    private val nicknameHistoryAdminRepository: NicknameHistoryAdminRepository,
     private val memberAdminService: MemberAdminService,
     private val memberWithdrawService: MemberWithdrawService,
     private val adminActionRecorder: AdminActionRecorder,
@@ -141,6 +144,8 @@ class AdminMemberService(
             secretPhotoUrls = photoUrls[PhotoVisibility.SECRET].orEmpty(),
             suspensions = suspensionAdminRepository.findByPhoneNumberOrderByIdDesc(row.phoneNumber)
                 .map { AdminSuspensionResponse.of(it, now) },
+            nicknameHistories = nicknameHistoryAdminRepository.findAllByMemberIdOrderByIdDesc(memberId)
+                .map { AdminNicknameHistoryResponse(nickname = it.nickname, changedAt = it.createdAt) },
         )
     }
 
