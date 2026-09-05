@@ -1934,6 +1934,24 @@ export interface components {
             id: number;
             nickname: string;
         };
+        AdminMessagePageResponse: {
+            items: components["schemas"]["AdminMessageResponse"][];
+            nextKey?: string | null;
+        };
+        AdminMessageResponse: {
+            messageId: string;
+            to: string;
+            from?: string | null;
+            text?: string | null;
+            type?: string | null;
+            /** @enum {string|null} */
+            status?: "PENDING" | "SENDING" | "COMPLETE" | "FAILED" | null;
+            statusCode?: string | null;
+            /** Format: date-time */
+            createdAt?: string | null;
+            /** Format: date-time */
+            receivedAt?: string | null;
+        };
         AdminMemberPageResponse: {
             items: components["schemas"]["AdminMemberResponse"][];
             /** Format: int32 */

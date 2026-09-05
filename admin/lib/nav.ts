@@ -2,6 +2,7 @@ import {
   Flag,
   History,
   LayoutDashboard,
+  MessageSquare,
   ShieldBan,
   Users,
   type LucideIcon,
@@ -29,6 +30,7 @@ export const navItems: NavItem[] = [
   },
   { title: "회원", href: "/members", icon: Users },
   { title: "정지", href: "/suspensions", icon: ShieldBan },
+  { title: "문자 발송", href: "/messages", icon: MessageSquare },
   { title: "조치 이력", href: "/actions", icon: History },
 ];
 

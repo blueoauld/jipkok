@@ -28,6 +28,9 @@ export type WorryReportPage = Schemas["AdminWorryPostReportPageResponse"];
 export type WorryCommentReport = Schemas["AdminWorryCommentReportResponse"];
 export type WorryCommentReportPage =
   Schemas["AdminWorryCommentReportPageResponse"];
+export type SmsMessage = Schemas["AdminMessageResponse"];
+export type SmsMessagePage = Schemas["AdminMessagePageResponse"];
+export type SmsMessageStatus = NonNullable<SmsMessage["status"]>;
 export type AdminAction = Schemas["AdminActionResponse"];
 export type AdminActionPage = Schemas["AdminActionPageResponse"];
 export type ReportType = MemberReport["type"];

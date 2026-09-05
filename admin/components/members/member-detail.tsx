@@ -8,6 +8,8 @@ import { DescriptionList } from "@/components/description-list";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PhotoGrid } from "@/components/photo-grid";
+import { CursorPagination } from "@/components/cursor-pagination";
+import { MessageTable } from "@/components/messages/message-table";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SuspendDialog } from "@/components/suspend-dialog";
 import { MemberReportTable } from "@/components/reports/member-report-table";
@@ -33,10 +35,12 @@ import {
   resetMemberProfile,
   withdrawMember,
 } from "@/lib/api/members";
+import { fetchMessages } from "@/lib/api/messages";
 import { fetchMemberReports } from "@/lib/api/reports";
 import { defaultMemberReportFilter } from "@/components/reports/member-report-filters";
 import { QuerySection } from "@/components/query-section";
 import { TablePagination } from "@/components/table-pagination";
+import { useCursorPages } from "@/hooks/use-cursor-pages";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import type { MemberDetail as MemberDetailData } from "@/lib/types";
 import type { ProfileTarget } from "@/lib/types";
@@ -266,6 +270,8 @@ function Loaded({ member }: { member: MemberDetailData }) {
       </Card>
 
       <ReceivedReports phoneNumber={member.phoneNumber} />
+
+      <SentMessages phoneNumber={member.phoneNumber} />
     </>
   );
 }
@@ -375,6 +381,44 @@ function ReceivedReports({ phoneNumber }: { phoneNumber: string }) {
             size={data.size}
             totalCount={data.totalCount}
             onPageChange={setPage}
+          />
+        </CardFooter>
+      )}
+    </Card>
+  );
+}
+
+function SentMessages({ phoneNumber }: { phoneNumber: string }) {
+  const pages = useCursorPages();
+
+  const { data, isPending, error } = useQuery({
+    queryKey: ["messages", "by-phone", phoneNumber, pages.startKey],
+    queryFn: () => fetchMessages({ to: phoneNumber, startKey: pages.startKey }),
+    placeholderData: keepPreviousData,
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>문자 발송</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <QuerySection isPending={isPending} error={error}>
+          {data && (
+            <MessageTable
+              messages={data.items}
+              emptyMessage="보낸 문자가 없습니다."
+            />
+          )}
+        </QuerySection>
+      </CardContent>
+      {data && (pages.hasPrevious || data.nextKey != null) && (
+        <CardFooter className="bg-transparent">
+          <CursorPagination
+            hasPrevious={pages.hasPrevious}
+            hasNext={data.nextKey != null}
+            onPrevious={pages.previous}
+            onNext={() => data.nextKey && pages.next(data.nextKey)}
           />
         </CardFooter>
       )}

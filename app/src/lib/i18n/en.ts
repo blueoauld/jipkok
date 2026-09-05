@@ -104,6 +104,8 @@ export const en: typeof ko = {
     AUTH_013:
       "That verification code was already used. Please request a new one.",
     AUTH_014: "You don't have permission.",
+    AUTH_015:
+      "Couldn't load the message history. Please try again in a moment.",
     MEMBER_001: "That phone number is already registered.",
     MEMBER_002: "The passwords don't match.",
     MEMBER_003: "Member not found.",

@@ -1448,6 +1448,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 문자 발송 내역
+         * @description 솔라피에서 최신순으로 가져온다. 수신번호는 국제 표기(+82)든 국내 표기(010)든 받고, 다음 페이지는 nextKey를 startKey로 넘긴다.
+         */
+        get: operations["findMessages_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/members": {
         parameters: {
             query?: never;
@@ -2319,6 +2339,24 @@ export interface components {
             /** Format: int64 */
             id: number;
             nickname: string;
+        };
+        AdminMessagePageResponse: {
+            items: components["schemas"]["AdminMessageResponse"][];
+            nextKey?: string | null;
+        };
+        AdminMessageResponse: {
+            messageId: string;
+            to: string;
+            from?: string | null;
+            text?: string | null;
+            type?: string | null;
+            /** @enum {string|null} */
+            status?: "PENDING" | "SENDING" | "COMPLETE" | "FAILED" | null;
+            statusCode?: string | null;
+            /** Format: date-time */
+            createdAt?: string | null;
+            /** Format: date-time */
+            receivedAt?: string | null;
         };
         AdminMemberPageResponse: {
             items: components["schemas"]["AdminMemberResponse"][];
@@ -11451,6 +11489,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminReportDetailResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findMessages_1: {
+        parameters: {
+            query?: {
+                to?: string;
+                status?: "PENDING" | "SENDING" | "COMPLETE" | "FAILED";
+                startKey?: string;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMessagePageResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

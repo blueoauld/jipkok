@@ -5,6 +5,7 @@ import type {
   ProfileTarget,
   ReportReason,
   ReportType,
+  SmsMessageStatus,
   SuspensionReason,
   SuspensionStatus,
   SuspensionType,
@@ -68,4 +69,11 @@ export const adminActionLabels: Record<AdminActionType, string> = {
   DELETE_WORRY_POST: "고민 삭제",
   DELETE_WORRY_COMMENT: "고민 댓글 삭제",
   HANDLE_REPORT: "신고 처리",
+};
+
+export const smsStatusLabels: Record<SmsMessageStatus, string> = {
+  PENDING: "대기",
+  SENDING: "발송 중",
+  COMPLETE: "완료",
+  FAILED: "실패",
 };
