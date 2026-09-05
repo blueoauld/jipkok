@@ -43,8 +43,6 @@ import type { ProfileTarget } from "@/lib/types";
 
 const none = <span className="text-muted-foreground">없음</span>;
 
-const MAP_ZOOM = 15;
-
 export function MemberDetail() {
   const id = Number(useSearchParams().get("id"));
 
@@ -192,6 +190,7 @@ function Loaded({ member }: { member: MemberDetailData }) {
                   value:
                     member.latitude != null && member.longitude != null ? (
                       <Coordinates
+                        label={`${member.nickname} #${member.id}`}
                         latitude={member.latitude}
                         longitude={member.longitude}
                       />
@@ -272,20 +271,22 @@ function Loaded({ member }: { member: MemberDetailData }) {
 }
 
 function Coordinates({
+  label,
   latitude,
   longitude,
 }: {
+  label: string;
   latitude: number;
   longitude: number;
 }) {
   const links = [
     {
       label: "카카오",
-      href: `https://map.kakao.com/link/map/${latitude},${longitude}`,
+      href: `https://map.kakao.com/link/map/${encodeURIComponent(label)},${latitude},${longitude}`,
     },
     {
       label: "네이버",
-      href: `https://map.naver.com/p?c=${longitude},${latitude},${MAP_ZOOM},0,0,0,dh`,
+      href: `https://map.naver.com/p/search/${latitude},${longitude}`,
     },
   ];
 
