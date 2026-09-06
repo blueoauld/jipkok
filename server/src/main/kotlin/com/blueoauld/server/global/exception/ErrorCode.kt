@@ -137,4 +137,9 @@ enum class ErrorCode(
         "APPLE_ADS_002",
         "애플 광고 API에 연결하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     ),
+    INVALID_APPLE_ADS_REPORT_RANGE(
+        HttpStatus.BAD_REQUEST,
+        "APPLE_ADS_003",
+        "리포트 기간은 90일까지이고, 시작일은 오늘부터 90일 전까지여야 합니다.",
+    ),
 }

@@ -1559,6 +1559,14 @@ export interface components {
             /** @enum {string|null} */
             target: "NICKNAME" | "COMMENT" | "BIO" | "PUBLIC_PHOTO" | "SECRET_PHOTO" | null;
         };
+        AdminAppleAdsSyncResponse: {
+            /** Format: int32 */
+            campaigns: number;
+            /** Format: int32 */
+            keywordRows: number;
+            /** Format: int32 */
+            searchTermRows: number;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
