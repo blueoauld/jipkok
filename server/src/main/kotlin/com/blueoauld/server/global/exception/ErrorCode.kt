@@ -130,4 +130,11 @@ enum class ErrorCode(
 
     TRANSLATE_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "TRANSLATION_001", "번역하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
     TRANSLATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "TRANSLATION_002", "번역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
+
+    APPLE_ADS_NOT_CONFIGURED(HttpStatus.SERVICE_UNAVAILABLE, "APPLE_ADS_001", "애플 광고 API가 설정되어 있지 않습니다."),
+    APPLE_ADS_UNAVAILABLE(
+        HttpStatus.SERVICE_UNAVAILABLE,
+        "APPLE_ADS_002",
+        "애플 광고 API에 연결하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+    ),
 }

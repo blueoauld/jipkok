@@ -90,6 +90,14 @@ admob:
 google-translate:
     api-key: ${GOOGLE_TRANSLATE_API_KEY:}
 
+apple-ads:
+    client-id: ${APPLE_ADS_CLIENT_ID:}
+    team-id: ${APPLE_ADS_TEAM_ID:}
+    key-id: ${APPLE_ADS_KEY_ID:}
+    private-key: ${APPLE_ADS_PRIVATE_KEY:}
+    token-url: ${APPLE_ADS_TOKEN_URL:https://appleid.apple.com/auth/oauth2/token}
+    api-url: ${APPLE_ADS_API_URL:https://api.searchads.apple.com/api/v5}
+
 r2:
     upload-url-validity: 10m
     view-url-validity: 10m

@@ -1631,6 +1631,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/apple-ads/orgs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 조직 목록
+         * @description API 사용자가 접근할 수 있는 조직을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 orgId를 얻는 데 쓴다.
+         */
+        get: operations["findOrgs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/actions": {
         parameters: {
             query?: never;
@@ -2547,6 +2567,14 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
+        };
+        AdminAppleAdsOrgResponse: {
+            /** Format: int64 */
+            orgId: number;
+            orgName: string;
+            currency?: string | null;
+            timeZone?: string | null;
+            roleNames: string[];
         };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];
@@ -12519,6 +12547,98 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccessEnvironmentResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findOrgs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsOrgResponse"][];
                 };
             };
             /** @description 요청이 올바르지 않다 */

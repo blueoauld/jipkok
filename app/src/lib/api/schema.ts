@@ -2142,6 +2142,14 @@ export interface components {
             /** Format: int64 */
             count: number;
         };
+        AdminAppleAdsOrgResponse: {
+            /** Format: int64 */
+            orgId: number;
+            orgName: string;
+            currency?: string | null;
+            timeZone?: string | null;
+            roleNames: string[];
+        };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];
             /** Format: int32 */
