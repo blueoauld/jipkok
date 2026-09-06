@@ -148,6 +148,11 @@ export const zh: typeof ko = {
     WORRY_008: "回覆無法再回覆。",
     TRANSLATION_001: "翻譯失敗。請稍後再試。",
     TRANSLATION_002: "已超過翻譯請求上限。請稍後再試。",
+    APPLE_ADS_001: "尚未設定 Apple Ads API。",
+    APPLE_ADS_002: "無法連線至 Apple Ads API。請稍後再試。",
+    APPLE_ADS_003: "報表期間最多 90 天，開始日須在今天起 90 天內。",
+    APPLE_ADS_004: "找不到 Apple Ads 操作。",
+    APPLE_ADS_005: "此操作已還原。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "最舊" },

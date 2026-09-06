@@ -160,6 +160,12 @@ export const ja: typeof ko = {
       "翻訳できませんでした。しばらくしてからもう一度お試しください。",
     TRANSLATION_002:
       "翻訳のリクエスト上限を超えました。しばらくしてからもう一度お試しください。",
+    APPLE_ADS_001: "Apple Ads APIが設定されていません。",
+    APPLE_ADS_002:
+      "Apple Ads APIに接続できませんでした。しばらくしてからもう一度お試しください。",
+    APPLE_ADS_003: "レポート期間は90日まで、開始日は今日から90日前までです。",
+    APPLE_ADS_004: "Apple Adsの操作が見つかりません。",
+    APPLE_ADS_005: "すでに元に戻した操作です。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "過去" },

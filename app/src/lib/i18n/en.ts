@@ -156,6 +156,13 @@ export const en: typeof ko = {
     TRANSLATION_001: "Couldn't translate. Please try again in a moment.",
     TRANSLATION_002:
       "You've reached the translation limit. Please try again in a moment.",
+    APPLE_ADS_001: "Apple Ads API is not configured.",
+    APPLE_ADS_002:
+      "Couldn't connect to the Apple Ads API. Please try again later.",
+    APPLE_ADS_003:
+      "The report range can be up to 90 days, and the start date must be within the last 90 days.",
+    APPLE_ADS_004: "Apple Ads action not found.",
+    APPLE_ADS_005: "This action has already been reverted.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },
