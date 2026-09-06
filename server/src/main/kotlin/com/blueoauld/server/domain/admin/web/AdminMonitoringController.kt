@@ -18,8 +18,8 @@ class AdminMonitoringController(
 
     @Operation(
         summary = "서버 모니터링 위젯",
-        description = "CloudWatch 대시보드의 지표 위젯을 PNG(base64)로 그려 준다. 60초 동안 같은 이미지를 준다. " +
-            "대시보드 이름이 설정돼 있지 않으면 configured=false에 빈 목록이다.",
+        description = "CloudWatch 대시보드의 위젯 구성과 기간의 지표 값을 준다. 60초 동안 같은 값을 준다. " +
+            "기간이 길수록 집계 주기를 올려 점 수를 줄인다. 대시보드 이름이 설정돼 있지 않으면 configured=false에 빈 목록이다.",
     )
     @GetMapping("/widgets")
     fun findWidgets(@RequestParam(defaultValue = "H3") range: MonitoringRange): AdminMonitoringResponse =

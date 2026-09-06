@@ -11761,7 +11761,7 @@
                     "admin-monitoring-controller"
                 ],
                 "summary": "\uc11c\ubc84 \ubaa8\ub2c8\ud130\ub9c1 \uc704\uc82f",
-                "description": "CloudWatch \ub300\uc2dc\ubcf4\ub4dc\uc758 \uc9c0\ud45c \uc704\uc82f\uc744 PNG(base64)\ub85c \uadf8\ub824 \uc900\ub2e4. 60\ucd08 \ub3d9\uc548 \uac19\uc740 \uc774\ubbf8\uc9c0\ub97c \uc900\ub2e4. \ub300\uc2dc\ubcf4\ub4dc \uc774\ub984\uc774 \uc124\uc815\ub3fc \uc788\uc9c0 \uc54a\uc73c\uba74 configured=false\uc5d0 \ube48 \ubaa9\ub85d\uc774\ub2e4.",
+                "description": "CloudWatch \ub300\uc2dc\ubcf4\ub4dc\uc758 \uc704\uc82f \uad6c\uc131\uacfc \uae30\uac04\uc758 \uc9c0\ud45c \uac12\uc744 \uc900\ub2e4. 60\ucd08 \ub3d9\uc548 \uac19\uc740 \uac12\uc744 \uc900\ub2e4. \uae30\uac04\uc774 \uae38\uc218\ub85d \uc9d1\uacc4 \uc8fc\uae30\ub97c \uc62c\ub824 \uc810 \uc218\ub97c \uc904\uc778\ub2e4. \ub300\uc2dc\ubcf4\ub4dc \uc774\ub984\uc774 \uc124\uc815\ub3fc \uc788\uc9c0 \uc54a\uc73c\uba74 configured=false\uc5d0 \ube48 \ubaa9\ub85d\uc774\ub2e4.",
                 "operationId": "findWidgets",
                 "parameters": [
                     {
@@ -17167,11 +17167,60 @@
                     "nickname"
                 ]
             },
+            "AdminMonitoringAnnotationResponse": {
+                "type": "object",
+                "properties": {
+                    "label": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "color": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            },
+            "AdminMonitoringPointResponse": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "time",
+                    "value"
+                ]
+            },
             "AdminMonitoringResponse": {
                 "type": "object",
                 "properties": {
                     "configured": {
                         "type": "boolean"
+                    },
+                    "start": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "refreshedAt": {
                         "type": "string",
@@ -17186,18 +17235,113 @@
                 },
                 "required": [
                     "configured",
+                    "end",
                     "refreshedAt",
+                    "start",
                     "widgets"
+                ]
+            },
+            "AdminMonitoringSeriesResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "points": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminMonitoringPointResponse"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "label",
+                    "points"
                 ]
             },
             "AdminMonitoringWidgetResponse": {
                 "type": "object",
                 "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "METRIC",
+                            "TEXT",
+                            "UNSUPPORTED"
+                        ]
+                    },
                     "title": {
                         "type": [
                             "string",
                             "null"
                         ]
+                    },
+                    "text": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "view": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "stacked": {
+                        "type": "boolean"
+                    },
+                    "period": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "yAxisMin": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "writeOnly": true
+                    },
+                    "yAxisMax": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "writeOnly": true
+                    },
+                    "yAxisLabel": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "writeOnly": true
+                    },
+                    "annotations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminMonitoringAnnotationResponse"
+                        }
+                    },
+                    "series": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminMonitoringSeriesResponse"
+                        }
                     },
                     "width": {
                         "type": "integer",
@@ -17207,14 +17351,28 @@
                         "type": "integer",
                         "format": "int32"
                     },
-                    "image": {
+                    "yaxisLabel": {
                         "type": "string"
+                    },
+                    "yaxisMin": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "yaxisMax": {
+                        "type": "number",
+                        "format": "double"
                     }
                 },
                 "required": [
+                    "annotations",
                     "height",
-                    "image",
-                    "width"
+                    "kind",
+                    "series",
+                    "stacked",
+                    "width",
+                    "yaxisLabel",
+                    "yaxisMax",
+                    "yaxisMin"
                 ]
             },
             "AdminMessagePageResponse": {

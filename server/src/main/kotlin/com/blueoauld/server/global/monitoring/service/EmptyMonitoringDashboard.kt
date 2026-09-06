@@ -15,8 +15,14 @@ class EmptyMonitoringDashboard(
 
     override val configured = false
 
-    override fun snapshot(range: MonitoringRange) = MonitoringSnapshot(
-        widgets = emptyList(),
-        refreshedAt = clock.instant(),
-    )
+    override fun snapshot(range: MonitoringRange): MonitoringSnapshot {
+        val now = clock.instant()
+
+        return MonitoringSnapshot(
+            widgets = emptyList(),
+            start = now.minus(range.duration),
+            end = now,
+            refreshedAt = now,
+        )
+    }
 }

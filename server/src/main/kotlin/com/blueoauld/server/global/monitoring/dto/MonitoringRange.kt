@@ -1,10 +1,12 @@
 package com.blueoauld.server.global.monitoring.dto
 
-enum class MonitoringRange(val start: String) {
+import java.time.Duration
 
-    H3("-PT3H"),
-    H12("-PT12H"),
-    D1("-P1D"),
-    D3("-P3D"),
-    W1("-P7D"),
+enum class MonitoringRange(val duration: Duration, val minPeriodSeconds: Int) {
+
+    H3(Duration.ofHours(3), 60),
+    H12(Duration.ofHours(12), 60),
+    D1(Duration.ofDays(1), 300),
+    D3(Duration.ofDays(3), 900),
+    W1(Duration.ofDays(7), 3600),
 }

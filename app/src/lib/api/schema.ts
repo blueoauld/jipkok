@@ -2029,19 +2029,59 @@ export interface components {
             id: number;
             nickname: string;
         };
+        AdminMonitoringAnnotationResponse: {
+            label?: string | null;
+            /** Format: double */
+            value: number;
+            color?: string | null;
+        };
+        AdminMonitoringPointResponse: {
+            /** Format: date-time */
+            time: string;
+            /** Format: double */
+            value: number;
+        };
         AdminMonitoringResponse: {
             configured: boolean;
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
             /** Format: date-time */
             refreshedAt: string;
             widgets: components["schemas"]["AdminMonitoringWidgetResponse"][];
         };
+        AdminMonitoringSeriesResponse: {
+            id: string;
+            label: string;
+            color?: string | null;
+            points: components["schemas"]["AdminMonitoringPointResponse"][];
+        };
         AdminMonitoringWidgetResponse: {
+            /** @enum {string} */
+            kind: "METRIC" | "TEXT" | "UNSUPPORTED";
             title?: string | null;
+            text?: string | null;
+            view?: string | null;
+            stacked: boolean;
+            /** Format: int32 */
+            period?: number | null;
+            /** Format: double */
+            yAxisMin?: number | null;
+            /** Format: double */
+            yAxisMax?: number | null;
+            yAxisLabel?: string | null;
+            annotations: components["schemas"]["AdminMonitoringAnnotationResponse"][];
+            series: components["schemas"]["AdminMonitoringSeriesResponse"][];
             /** Format: int32 */
             width: number;
             /** Format: int32 */
             height: number;
-            image: string;
+            yaxisLabel: string;
+            /** Format: double */
+            yaxisMin: number;
+            /** Format: double */
+            yaxisMax: number;
         };
         AdminMessagePageResponse: {
             items: components["schemas"]["AdminMessageResponse"][];

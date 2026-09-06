@@ -56,6 +56,7 @@ export type UpdateAppleAdsAutomationBody =
   Schemas["UpdateAppleAdsAutomationRequest"];
 export type Monitoring = Schemas["AdminMonitoringResponse"];
 export type MonitoringWidget = Schemas["AdminMonitoringWidgetResponse"];
+export type MonitoringSeries = Schemas["AdminMonitoringSeriesResponse"];
 export type MonitoringRange = NonNullable<
   NonNullable<operations["findWidgets"]["parameters"]["query"]>["range"]
 >;
