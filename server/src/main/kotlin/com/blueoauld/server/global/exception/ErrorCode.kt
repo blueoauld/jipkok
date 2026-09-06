@@ -144,4 +144,10 @@ enum class ErrorCode(
     ),
     APPLE_ADS_ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLE_ADS_004", "애플 광고 조치를 찾을 수 없습니다."),
     APPLE_ADS_ACTION_ALREADY_REVERTED(HttpStatus.CONFLICT, "APPLE_ADS_005", "이미 되돌린 조치입니다."),
+
+    MONITORING_UNAVAILABLE(
+        HttpStatus.SERVICE_UNAVAILABLE,
+        "MONITORING_001",
+        "모니터링 지표를 불러오지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
+    ),
 }

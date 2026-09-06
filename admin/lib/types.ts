@@ -1,4 +1,4 @@
-import type { components } from "@/lib/api/schema";
+import type { components, operations } from "@/lib/api/schema";
 
 type Schemas = components["schemas"];
 
@@ -54,6 +54,11 @@ export type AppleAdsAutomationRun =
   Schemas["AdminAppleAdsAutomationRunResponse"];
 export type UpdateAppleAdsAutomationBody =
   Schemas["UpdateAppleAdsAutomationRequest"];
+export type Monitoring = Schemas["AdminMonitoringResponse"];
+export type MonitoringWidget = Schemas["AdminMonitoringWidgetResponse"];
+export type MonitoringRange = NonNullable<
+  NonNullable<operations["findWidgets"]["parameters"]["query"]>["range"]
+>;
 export type AdminActionPage = Schemas["AdminActionPageResponse"];
 export type ReportType = MemberReport["type"];
 export type ReportReason = MemberReport["reason"];

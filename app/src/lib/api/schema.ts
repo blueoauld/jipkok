@@ -2029,6 +2029,20 @@ export interface components {
             id: number;
             nickname: string;
         };
+        AdminMonitoringResponse: {
+            configured: boolean;
+            /** Format: date-time */
+            refreshedAt: string;
+            widgets: components["schemas"]["AdminMonitoringWidgetResponse"][];
+        };
+        AdminMonitoringWidgetResponse: {
+            title?: string | null;
+            /** Format: int32 */
+            width: number;
+            /** Format: int32 */
+            height: number;
+            image: string;
+        };
         AdminMessagePageResponse: {
             items: components["schemas"]["AdminMessageResponse"][];
             nextKey?: string | null;

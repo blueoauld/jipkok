@@ -1556,6 +1556,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/monitoring/widgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 서버 모니터링 위젯
+         * @description CloudWatch 대시보드의 지표 위젯을 PNG(base64)로 그려 준다. 60초 동안 같은 이미지를 준다. 대시보드 이름이 설정돼 있지 않으면 configured=false에 빈 목록이다.
+         */
+        get: operations["findWidgets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/messages": {
         parameters: {
             query?: never;
@@ -2642,6 +2662,20 @@ export interface components {
             /** Format: int64 */
             id: number;
             nickname: string;
+        };
+        AdminMonitoringResponse: {
+            configured: boolean;
+            /** Format: date-time */
+            refreshedAt: string;
+            widgets: components["schemas"]["AdminMonitoringWidgetResponse"][];
+        };
+        AdminMonitoringWidgetResponse: {
+            title?: string | null;
+            /** Format: int32 */
+            width: number;
+            /** Format: int32 */
+            height: number;
+            image: string;
         };
         AdminMessagePageResponse: {
             items: components["schemas"]["AdminMessageResponse"][];
@@ -12571,6 +12605,100 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminReportDetailResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findWidgets: {
+        parameters: {
+            query?: {
+                range?: "H3" | "H12" | "D1" | "D3" | "W1";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMonitoringResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

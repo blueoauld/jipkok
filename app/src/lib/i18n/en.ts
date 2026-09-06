@@ -163,6 +163,7 @@ export const en: typeof ko = {
       "The report range can be up to 90 days, and the start date must be within the last 90 days.",
     APPLE_ADS_004: "Apple Ads action not found.",
     APPLE_ADS_005: "This action has already been reverted.",
+    MONITORING_001: "Couldn't load monitoring metrics. Please try again later.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },

@@ -1,4 +1,5 @@
 import {
+  Activity,
   Flag,
   History,
   LayoutDashboard,
@@ -44,6 +45,7 @@ export const navItems: NavItem[] = [
       { title: "자동 실행", href: "/apple-ads/automation" },
     ],
   },
+  { title: "모니터링", href: "/monitoring", icon: Activity },
 ];
 
 export type Breadcrumb = { title: string; href?: string };

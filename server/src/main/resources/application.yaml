@@ -99,6 +99,10 @@ apple-ads:
     token-url: ${APPLE_ADS_TOKEN_URL:https://appleid.apple.com/auth/oauth2/token}
     api-url: ${APPLE_ADS_API_URL:https://api.searchads.apple.com/api/v5}
 
+cloudwatch:
+    dashboard-name: ${CLOUDWATCH_DASHBOARD_NAME:}
+    region: ${AWS_REGION:ap-northeast-2}
+
 r2:
     upload-url-validity: 10m
     view-url-validity: 10m

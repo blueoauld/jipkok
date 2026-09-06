@@ -35,6 +35,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     implementation(platform("software.amazon.awssdk:bom:2.35.10"))
     implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:cloudwatch")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
