@@ -166,8 +166,6 @@ export const ja: typeof ko = {
     APPLE_ADS_003: "レポート期間は90日まで、開始日は今日から90日前までです。",
     APPLE_ADS_004: "Apple Adsの操作が見つかりません。",
     APPLE_ADS_005: "すでに元に戻した操作です。",
-    MONITORING_001:
-      "モニタリング指標を読み込めませんでした。しばらくしてからもう一度お試しください。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "過去" },

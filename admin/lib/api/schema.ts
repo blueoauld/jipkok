@@ -1556,26 +1556,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/monitoring/widgets": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 서버 모니터링 위젯
-         * @description CloudWatch 대시보드의 위젯 구성과 기간의 지표 값을 준다. 60초 동안 같은 값을 준다. 기간이 길수록 집계 주기를 올려 점 수를 줄인다. 대시보드 이름이 설정돼 있지 않으면 configured=false에 빈 목록이다.
-         */
-        get: operations["findWidgets"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/messages": {
         parameters: {
             query?: never;
@@ -2662,60 +2642,6 @@ export interface components {
             /** Format: int64 */
             id: number;
             nickname: string;
-        };
-        AdminMonitoringAnnotationResponse: {
-            label?: string | null;
-            /** Format: double */
-            value: number;
-            color?: string | null;
-        };
-        AdminMonitoringPointResponse: {
-            /** Format: date-time */
-            time: string;
-            /** Format: double */
-            value: number;
-        };
-        AdminMonitoringResponse: {
-            configured: boolean;
-            /** Format: date-time */
-            start: string;
-            /** Format: date-time */
-            end: string;
-            /** Format: date-time */
-            refreshedAt: string;
-            widgets: components["schemas"]["AdminMonitoringWidgetResponse"][];
-        };
-        AdminMonitoringSeriesResponse: {
-            id: string;
-            label: string;
-            color?: string | null;
-            points: components["schemas"]["AdminMonitoringPointResponse"][];
-        };
-        AdminMonitoringWidgetResponse: {
-            /** @enum {string} */
-            kind: "METRIC" | "TEXT" | "UNSUPPORTED";
-            title?: string | null;
-            text?: string | null;
-            view?: string | null;
-            stacked: boolean;
-            /** Format: int32 */
-            period?: number | null;
-            /** Format: double */
-            yAxisMin?: number | null;
-            /** Format: double */
-            yAxisMax?: number | null;
-            yAxisLabel?: string | null;
-            annotations: components["schemas"]["AdminMonitoringAnnotationResponse"][];
-            series: components["schemas"]["AdminMonitoringSeriesResponse"][];
-            /** Format: int32 */
-            width: number;
-            /** Format: int32 */
-            height: number;
-            yaxisLabel: string;
-            /** Format: double */
-            yaxisMin: number;
-            /** Format: double */
-            yaxisMax: number;
         };
         AdminMessagePageResponse: {
             items: components["schemas"]["AdminMessageResponse"][];
@@ -12645,100 +12571,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminReportDetailResponse"];
-                };
-            };
-            /** @description 요청이 올바르지 않다 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 인증이 필요하다 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 이용이 정지되었거나 권한이 없다 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 찾을 수 없다 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 요청이 중복되었다 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 요청 한도를 초과했다 */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 서버에 문제가 발생했다 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 일시적으로 처리할 수 없다 */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    findWidgets: {
-        parameters: {
-            query?: {
-                range?: "H3" | "H12" | "D1" | "D3" | "W1";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminMonitoringResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
