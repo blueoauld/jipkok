@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { ApplyButton } from "@/components/apple-ads/apply-button";
 import { StatusText, type StatusTone } from "@/components/status-text";
 import {
   Table,
@@ -43,13 +44,14 @@ export function RecommendationTable({ items }: Props) {
           <TableHead className="text-right">설치</TableHead>
           <TableHead className="text-right">지출</TableHead>
           <TableHead className="text-right">CPA</TableHead>
+          <TableHead className="w-20 text-right">적용</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {items.length === 0 && (
           <TableRow>
             <TableCell
-              colSpan={9}
+              colSpan={10}
               className="h-24 text-center text-muted-foreground"
             >
               기준을 채운 추천이 없습니다.
@@ -116,6 +118,9 @@ export function RecommendationTable({ items }: Props) {
               {item.costPerInstall == null
                 ? dash
                 : formatMoney(item.costPerInstall, item.currency)}
+            </TableCell>
+            <TableCell className="text-right">
+              <ApplyButton item={item} />
             </TableCell>
           </TableRow>
         ))}

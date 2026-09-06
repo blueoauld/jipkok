@@ -20,6 +20,7 @@ type Props = {
   title: string;
   description: string;
   confirmLabel: string;
+  confirmVariant?: "destructive" | "default";
   errorFallback: string;
   invalidateKeys: string[][];
   action: () => Promise<unknown>;
@@ -32,6 +33,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  confirmVariant = "destructive",
   errorFallback,
   invalidateKeys,
   action,
@@ -80,7 +82,7 @@ export function ConfirmDialog({
             취소
           </Button>
           <PendingButton
-            variant="destructive"
+            variant={confirmVariant}
             pending={mutation.isPending}
             onClick={() => mutation.mutate()}
           >

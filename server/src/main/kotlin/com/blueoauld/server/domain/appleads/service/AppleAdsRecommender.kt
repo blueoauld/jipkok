@@ -5,17 +5,22 @@ import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendation
 import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendationResult
 import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendationType
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
+import com.blueoauld.server.domain.appleads.repository.AppleAdsActionRepository
 import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.Clock
+import java.time.Duration
 import java.time.LocalDate
 
 @Service
 class AppleAdsRecommender(
 
     private val summaryRepository: AppleAdsSummaryRepository,
+    private val actionRepository: AppleAdsActionRepository,
+    private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
@@ -27,10 +32,22 @@ class AppleAdsRecommender(
         val spend = keywords.fold(BigDecimal.ZERO) { acc, it -> acc + it.spend }
         val currency = keywords.firstNotNullOfOrNull { it.currency }
         val baseline = perUnit(spend, installs)
-        val existingKeywords = keywords.map { it.keyword.trim().lowercase() }.toSet()
+        val existingKeywords = keywords.map { normalize(it.keyword) }.toSet()
+        val recentActions = actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(clock.instant().minus(COOLDOWN))
+        val actedKeywordIds = recentActions.mapNotNull { it.keywordId }.toSet()
+        val actedSearchTerms = recentActions.mapNotNull { action ->
+            action.searchTerm?.let {
+                action.adGroupId to
+            normalize(it)
+            }
+        }.toSet()
 
-        val items = keywords.mapNotNull { keywordRecommendation(it, baseline) } +
-            searchTerms.mapNotNull { searchTermRecommendation(it, existingKeywords, keywords) }
+        val items = keywords
+            .filterNot { it.keywordId in actedKeywordIds }
+            .mapNotNull { keywordRecommendation(it, baseline) } +
+            searchTerms
+                .filterNot { (it.adGroupId to normalize(it.searchTerm)) in actedSearchTerms }
+                .mapNotNull { searchTermRecommendation(it, existingKeywords, keywords) }
 
         return AppleAdsRecommendationResult(
             baselineCostPerInstall = baseline,
@@ -96,7 +113,7 @@ class AppleAdsRecommender(
         existingKeywords: Set<String>,
         keywords: List<AppleAdsKeywordSummaryRow>,
     ): AppleAdsRecommendation? {
-        if (row.searchTerm.trim().lowercase() in existingKeywords) {
+        if (normalize(row.searchTerm) in existingKeywords) {
             return null
         }
 
@@ -186,6 +203,8 @@ class AppleAdsRecommender(
         const val NEGATIVE_MIN_TAPS = 10L
         const val ADD_KEYWORD_MIN_INSTALLS = 2L
 
+        val COOLDOWN: Duration = Duration.ofDays(14)
+
         val LOWER_BID_RATIO: BigDecimal = BigDecimal("1.5")
         val RAISE_BID_RATIO: BigDecimal = BigDecimal("0.7")
         val LOWER_BID_STEP: BigDecimal = BigDecimal("0.85")
@@ -196,6 +215,8 @@ class AppleAdsRecommender(
         private const val MONEY_SCALE = 2
 
         private val MIN_BID = BigDecimal("0.01")
+
+        private fun normalize(text: String) = text.trim().lowercase()
 
         private fun perUnit(amount: BigDecimal, count: Long): BigDecimal? =
             if (count == 0L) null else amount.divide(BigDecimal.valueOf(count), MONEY_SCALE, RoundingMode.HALF_UP)

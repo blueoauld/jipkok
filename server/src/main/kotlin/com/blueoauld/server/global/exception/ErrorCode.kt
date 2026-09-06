@@ -142,4 +142,6 @@ enum class ErrorCode(
         "APPLE_ADS_003",
         "리포트 기간은 90일까지이고, 시작일은 오늘부터 90일 전까지여야 합니다.",
     ),
+    APPLE_ADS_ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLE_ADS_004", "애플 광고 조치를 찾을 수 없습니다."),
+    APPLE_ADS_ACTION_ALREADY_REVERTED(HttpStatus.CONFLICT, "APPLE_ADS_005", "이미 되돌린 조치입니다."),
 }

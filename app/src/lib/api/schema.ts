@@ -1567,6 +1567,58 @@ export interface components {
             /** Format: int32 */
             searchTermRows: number;
         };
+        ApplyAppleAdsActionRequest: {
+            /** @enum {string|null} */
+            type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD" | null;
+            /** Format: int64 */
+            campaignId: number | null;
+            /** Format: int64 */
+            adGroupId: number | null;
+            adGroupName?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            searchTerm?: string | null;
+            currentBid?: number | null;
+            suggestedBid?: number | null;
+            currency?: string | null;
+            reason?: string | null;
+        };
+        AdminAppleAdsActionResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            actorId: number;
+            actorNickname: string;
+            /** @enum {string} */
+            type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD";
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            searchTerm?: string | null;
+            /** Format: int64 */
+            negativeKeywordId?: number | null;
+            previousBid?: number | null;
+            newBid?: number | null;
+            currency?: string | null;
+            previousStatus?: string | null;
+            newStatus?: string | null;
+            reason?: string | null;
+            /** Format: date-time */
+            revertedAt?: string | null;
+            /** Format: int64 */
+            revertedById?: number | null;
+            revertedByNickname?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
@@ -2259,6 +2311,15 @@ export interface components {
             name: string;
             status?: string | null;
             deleted: boolean;
+        };
+        AdminAppleAdsActionPageResponse: {
+            items: components["schemas"]["AdminAppleAdsActionResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
         };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];

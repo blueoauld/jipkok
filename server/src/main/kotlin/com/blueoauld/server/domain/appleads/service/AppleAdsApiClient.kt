@@ -3,11 +3,14 @@ package com.blueoauld.server.domain.appleads.service
 import com.blueoauld.server.domain.appleads.dto.AppleAdsCampaignInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsDailyMetrics
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordDailyRow
+import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordInfo
+import com.blueoauld.server.domain.appleads.dto.AppleAdsNegativeKeywordInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsOrg
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermDailyRow
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.properties.AppleAdsProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.http.HttpHeaders
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Duration
 import java.time.LocalDate
 
@@ -143,6 +147,134 @@ class AppleAdsApiClient(
                 }
             }
         }
+
+    override fun updateKeyword(
+        campaignId: Long,
+        adGroupId: Long,
+        keywordId: Long,
+        status: String?,
+        bid: BigDecimal?,
+        currency: String?,
+    ): AppleAdsKeywordInfo {
+        val headers = orgHeaders()
+        val body =
+            listOf(KeywordUpdateRequest(id = keywordId.toString(), status = status, bidAmount = money(bid, currency)))
+
+        val response = call("애플 광고 키워드를 수정하지 못했다. keywordId=$keywordId") {
+            restClient.put()
+                .uri("${keywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .headers { it.addAll(headers) }
+                .body(body)
+                .retrieve()
+                .body<KeywordListResponse>()
+        }
+
+        return response.data.orEmpty().firstOrNull()?.let(::toKeywordInfo)
+            ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+    }
+
+    override fun createKeyword(
+        campaignId: Long,
+        adGroupId: Long,
+        text: String,
+        matchType: String,
+        bid: BigDecimal,
+        currency: String,
+    ): AppleAdsKeywordInfo {
+        val headers = orgHeaders()
+        val body = listOf(KeywordCreateRequest(text = text, matchType = matchType, bidAmount = money(bid, currency)))
+
+        val response = call("애플 광고 키워드를 만들지 못했다. text=$text") {
+            restClient.post()
+                .uri("${keywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .headers { it.addAll(headers) }
+                .body(body)
+                .retrieve()
+                .body<KeywordListResponse>()
+        }
+
+        return response.data.orEmpty().firstOrNull()?.let(::toKeywordInfo)
+            ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+    }
+
+    override fun deleteKeyword(campaignId: Long, adGroupId: Long, keywordId: Long) {
+        val headers = orgHeaders()
+
+        call("애플 광고 키워드를 지우지 못했다. keywordId=$keywordId") {
+            restClient.post()
+                .uri("${keywordsPath(campaignId, adGroupId)}$DELETE_SUFFIX")
+                .headers { it.addAll(headers) }
+                .body(listOf(keywordId))
+                .retrieve()
+                .body<CountResponse>()
+        }
+    }
+
+    override fun createNegativeKeyword(
+        campaignId: Long,
+        adGroupId: Long,
+        text: String,
+        matchType: String,
+    ): AppleAdsNegativeKeywordInfo {
+        val headers = orgHeaders()
+        val body = listOf(NegativeKeywordCreateRequest(text = text, matchType = matchType))
+
+        val response = call("애플 광고 제외 키워드를 만들지 못했다. text=$text") {
+            restClient.post()
+                .uri("${negativeKeywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .headers { it.addAll(headers) }
+                .body(body)
+                .retrieve()
+                .body<NegativeKeywordListResponse>()
+        }
+
+        val created = response.data.orEmpty().firstOrNull() ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+
+        return AppleAdsNegativeKeywordInfo(
+            id = created.id,
+            adGroupId = created.adGroupId ?: adGroupId,
+            text = created.text.orEmpty(),
+            matchType = created.matchType,
+            status = created.status,
+        )
+    }
+
+    override fun deleteNegativeKeyword(campaignId: Long, adGroupId: Long, negativeKeywordId: Long) {
+        val headers = orgHeaders()
+
+        call("애플 광고 제외 키워드를 지우지 못했다. negativeKeywordId=$negativeKeywordId") {
+            restClient.post()
+                .uri("${negativeKeywordsPath(campaignId, adGroupId)}$DELETE_SUFFIX")
+                .headers { it.addAll(headers) }
+                .body(listOf(negativeKeywordId))
+                .retrieve()
+                .body<CountResponse>()
+        }
+    }
+
+    private fun toKeywordInfo(keyword: Keyword) = AppleAdsKeywordInfo(
+        id = keyword.id,
+        adGroupId = keyword.adGroupId ?: 0,
+        text = keyword.text.orEmpty(),
+        matchType = keyword.matchType,
+        status = keyword.status,
+        bidAmount = keyword.bidAmount?.amount?.toBigDecimalOrNull(),
+        currency = keyword.bidAmount?.currency,
+    )
+
+    private fun money(amount: BigDecimal?, currency: String?): Money? {
+        if (amount == null || currency == null) {
+            return null
+        }
+
+        return Money(amount = amount.setScale(MONEY_SCALE, RoundingMode.HALF_UP).toPlainString(), currency = currency)
+    }
+
+    private fun keywordsPath(campaignId: Long, adGroupId: Long) =
+        "$CAMPAIGNS_PATH/$campaignId/adgroups/$adGroupId/targetingkeywords"
+
+    private fun negativeKeywordsPath(campaignId: Long, adGroupId: Long) =
+        "$CAMPAIGNS_PATH/$campaignId/adgroups/$adGroupId/negativekeywords"
 
     private fun reportRows(path: String, startDate: LocalDate, endDate: LocalDate): List<ReportRow> {
         val headers = orgHeaders()
@@ -296,6 +428,37 @@ class AppleAdsApiClient(
 
     private data class Money(val amount: String?, val currency: String?)
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private data class KeywordUpdateRequest(val id: String, val status: String?, val bidAmount: Money?)
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private data class KeywordCreateRequest(val text: String, val matchType: String, val bidAmount: Money?)
+
+    private data class NegativeKeywordCreateRequest(val text: String, val matchType: String)
+
+    private data class KeywordListResponse(val data: List<Keyword>?)
+
+    private data class Keyword(
+        val id: Long,
+        val adGroupId: Long?,
+        val text: String?,
+        val status: String?,
+        val matchType: String?,
+        val bidAmount: Money?,
+    )
+
+    private data class NegativeKeywordListResponse(val data: List<NegativeKeyword>?)
+
+    private data class NegativeKeyword(
+        val id: Long,
+        val adGroupId: Long?,
+        val text: String?,
+        val status: String?,
+        val matchType: String?,
+    )
+
+    private data class CountResponse(val data: Int?)
+
     companion object {
 
         const val PAGE_SIZE = 1000
@@ -309,6 +472,9 @@ class AppleAdsApiClient(
         private const val TIME_ZONE_ORG = "ORTZ"
         private const val ORDER_FIELD = "impressions"
         private const val ORDER_DESCENDING = "DESCENDING"
+        private const val BULK_SUFFIX = "/bulk"
+        private const val DELETE_SUFFIX = "/delete/bulk"
+        private const val MONEY_SCALE = 2
 
         private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(2)
         private val READ_TIMEOUT: Duration = Duration.ofSeconds(30)

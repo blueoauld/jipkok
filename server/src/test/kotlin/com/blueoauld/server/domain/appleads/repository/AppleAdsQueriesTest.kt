@@ -1,6 +1,8 @@
 package com.blueoauld.server.domain.appleads.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.appleads.entity.AppleAdsAction
+import com.blueoauld.server.domain.appleads.entity.type.AppleAdsActionType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +29,9 @@ class AppleAdsQueriesTest {
 
     @Autowired
     private lateinit var summaryRepository: AppleAdsSummaryRepository
+
+    @Autowired
+    private lateinit var actionRepository: AppleAdsActionRepository
 
     @Test
     fun `같은 캠페인을 다시 받으면 이름과 상태만 갱신한다`() {
@@ -129,6 +134,39 @@ class AppleAdsQueriesTest {
         assertThat(auto).hasSize(1)
         assertThat(auto.single().searchTermSource).isEqualTo("AUTO")
     }
+
+    @Test
+    fun `되돌리지 않은 최근 조치만 찾는다`() {
+        // given
+        val kept = actionRepository.save(action(keywordId = KEYWORD_ID))
+        val reverted = actionRepository.save(action(keywordId = OTHER_KEYWORD_ID)).also { it.revert(2L, NOW) }
+        actionRepository.save(reverted)
+
+        // when
+        val recent = actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(kept.createdAt.minusSeconds(1))
+
+        // then
+        assertThat(recent.map { it.id }).contains(kept.id).doesNotContain(reverted.id)
+    }
+
+    private fun action(keywordId: Long) = AppleAdsAction(
+        actorId = 1L,
+        type = AppleAdsActionType.PAUSE_KEYWORD,
+        campaignId = CAMPAIGN_ID,
+        adGroupId = AD_GROUP_ID,
+        adGroupName = "Ad Group 1",
+        keywordId = keywordId,
+        keyword = "dating app",
+        matchType = "EXACT",
+        searchTerm = null,
+        negativeKeywordId = null,
+        previousBid = null,
+        newBid = null,
+        currency = "USD",
+        previousStatus = "ACTIVE",
+        newStatus = "PAUSED",
+        reason = null,
+    )
 
     private fun upsertKeyword(
         impressions: Long,

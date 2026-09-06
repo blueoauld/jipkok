@@ -9,6 +9,7 @@ import type {
   SuspensionReason,
   SuspensionStatus,
   SuspensionType,
+  AppleAdsActionType,
   AppleAdsRecommendationType,
 } from "@/lib/types";
 
@@ -104,3 +105,6 @@ export const recommendationTypeLabels: Record<
   RAISE_BID: "입찰가 올리기",
   ADD_KEYWORD: "키워드 추가",
 };
+
+export const appleAdsActionTypeLabels: Record<AppleAdsActionType, string> =
+  recommendationTypeLabels;

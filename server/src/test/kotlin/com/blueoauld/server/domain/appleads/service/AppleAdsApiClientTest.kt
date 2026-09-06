@@ -28,6 +28,8 @@ class AppleAdsApiClientTest {
 
     private val requestBodies = mutableListOf<JsonNode>()
 
+    private val requests = mutableListOf<Pair<String, String>>()
+
     private var responseStatus = 200
 
     private var keywordPages = listOf(KEYWORD_ROW)
@@ -44,6 +46,10 @@ class AppleAdsApiClientTest {
             val page = keywordPages.getOrElse(pageIndex) { "" }
             respond(exchange, """{"data":{"reportingDataResponse":{"row":[$page]}}}""")
         }
+        server.createContext("$KEYWORDS_PATH/bulk") { record(it, KEYWORD_LIST_BODY) }
+        server.createContext("$KEYWORDS_PATH/delete/bulk") { record(it, COUNT_BODY) }
+        server.createContext("$NEGATIVE_KEYWORDS_PATH/bulk") { record(it, NEGATIVE_KEYWORD_LIST_BODY) }
+        server.createContext("$NEGATIVE_KEYWORDS_PATH/delete/bulk") { record(it, COUNT_BODY) }
         server.createContext("/reports/campaigns/$CAMPAIGN_ID/searchterms") { exchange ->
             requestBodies.add(objectMapper.readTree(exchange.requestBody.readAllBytes()))
             respond(exchange, """{"data":{"reportingDataResponse":{"row":[$SEARCH_TERM_ROWS]}}}""")
@@ -196,6 +202,84 @@ class AppleAdsApiClientTest {
         assertThat(rows[0].metrics.impressions).isEqualTo(30)
     }
 
+    @Test
+    fun `키워드 수정은 ID를 문자열로, 입찰가를 문자열 금액으로 보낸다`() {
+        // given
+        val client = client()
+
+        // when
+        val updated = client.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, null, BigDecimal("1.234"), "USD")
+
+        // then
+        assertThat(requests.single()).isEqualTo(
+            "PUT" to "/campaigns/$CAMPAIGN_ID/adgroups/$AD_GROUP_ID/targetingkeywords/bulk",
+        )
+        val body = requestBodies.single()
+        assertThat(body.isArray).isTrue()
+        assertThat(body[0]["id"].asText()).isEqualTo(KEYWORD_ID.toString())
+        assertThat(body[0].has("status")).isFalse()
+        assertThat(body[0]["bidAmount"]["amount"].asText()).isEqualTo("1.23")
+        assertThat(body[0]["bidAmount"]["currency"].asText()).isEqualTo("USD")
+        assertThat(updated.id).isEqualTo(KEYWORD_ID)
+        assertThat(updated.status).isEqualTo("PAUSED")
+        assertThat(updated.bidAmount).isEqualByComparingTo(BigDecimal("1.23"))
+    }
+
+    @Test
+    fun `키워드 일시정지는 상태만 보낸다`() {
+        // given
+        val client = client()
+
+        // when
+        client.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, "PAUSED", null, null)
+
+        // then
+        val body = requestBodies.single()[0]
+        assertThat(body["status"].asText()).isEqualTo("PAUSED")
+        assertThat(body.has("bidAmount")).isFalse()
+    }
+
+    @Test
+    fun `키워드를 만들고 지운다`() {
+        // given
+        val client = client()
+
+        // when
+        val created = client.createKeyword(CAMPAIGN_ID, AD_GROUP_ID, "소개팅 앱", "EXACT", BigDecimal("1.45"), "USD")
+        client.deleteKeyword(CAMPAIGN_ID, AD_GROUP_ID, created.id)
+
+        // then
+        assertThat(requests[0]).isEqualTo(
+            "POST" to "/campaigns/$CAMPAIGN_ID/adgroups/$AD_GROUP_ID/targetingkeywords/bulk",
+        )
+        assertThat(requestBodies[0][0]["text"].asText()).isEqualTo("소개팅 앱")
+        assertThat(requestBodies[0][0]["matchType"].asText()).isEqualTo("EXACT")
+        assertThat(requestBodies[0][0]["bidAmount"]["amount"].asText()).isEqualTo("1.45")
+        assertThat(created.id).isEqualTo(KEYWORD_ID)
+        assertThat(requests[1]).isEqualTo("POST" to "$KEYWORDS_PATH/delete/bulk")
+        assertThat(requestBodies[1].toString()).isEqualTo("[$KEYWORD_ID]")
+    }
+
+    @Test
+    fun `제외 키워드를 만들고 지운다`() {
+        // given
+        val client = client()
+
+        // when
+        val created = client.createNegativeKeyword(CAMPAIGN_ID, AD_GROUP_ID, "디스코드", "EXACT")
+        client.deleteNegativeKeyword(CAMPAIGN_ID, AD_GROUP_ID, created.id)
+
+        // then
+        assertThat(requests[0]).isEqualTo(
+            "POST" to "/campaigns/$CAMPAIGN_ID/adgroups/$AD_GROUP_ID/negativekeywords/bulk",
+        )
+        assertThat(requestBodies[0][0]["text"].asText()).isEqualTo("디스코드")
+        assertThat(created.id).isEqualTo(NEGATIVE_KEYWORD_ID)
+        assertThat(created.matchType).isEqualTo("EXACT")
+        assertThat(requests[1]).isEqualTo("POST" to "$NEGATIVE_KEYWORDS_PATH/delete/bulk")
+        assertThat(requestBodies[1].toString()).isEqualTo("[$NEGATIVE_KEYWORD_ID]")
+    }
+
     private fun client(orgId: String = ORG_ID): AppleAdsApiClient {
         val tokenProvider = mockk<AppleAdsTokenProvider>()
         every { tokenProvider.accessToken() } returns TOKEN
@@ -204,6 +288,12 @@ class AppleAdsApiClientTest {
             AppleAdsProperties(orgId = orgId, apiUrl = "http://localhost:${server.address.port}"),
             tokenProvider,
         )
+    }
+
+    private fun record(exchange: HttpExchange, body: String) {
+        requests.add(exchange.requestMethod to exchange.requestURI.path)
+        requestBodies.add(objectMapper.readTree(exchange.requestBody.readAllBytes()))
+        respond(exchange, body)
     }
 
     private fun respond(exchange: HttpExchange, body: String) {
@@ -220,6 +310,11 @@ class AppleAdsApiClientTest {
         private const val TOKEN = "access-token"
         private const val ORG_ID = "22327140"
         private const val CAMPAIGN_ID = 1000L
+        private const val AD_GROUP_ID = 542317095L
+        private const val KEYWORD_ID = 87675432L
+        private const val NEGATIVE_KEYWORD_ID = 99001L
+        private const val KEYWORDS_PATH = "/campaigns/$CAMPAIGN_ID/adgroups/$AD_GROUP_ID/targetingkeywords"
+        private const val NEGATIVE_KEYWORDS_PATH = "/campaigns/$CAMPAIGN_ID/adgroups/$AD_GROUP_ID/negativekeywords"
 
         private val START: LocalDate = LocalDate.of(2026, 9, 1)
         private val END: LocalDate = LocalDate.of(2026, 9, 2)
@@ -232,6 +327,16 @@ class AppleAdsApiClientTest {
             """{"id":$CAMPAIGN_ID,"orgId":22327140,"name":"Jipkok KR","status":"ENABLED","deleted":false},""" +
             """{"id":1001,"orgId":22327140,"name":"Old","status":"PAUSED","deleted":true}""" +
             """],"pagination":{"totalResults":2,"startIndex":0,"itemsPerPage":1000}}"""
+
+        private const val KEYWORD_LIST_BODY = """{"data":[{"id":$KEYWORD_ID,"adGroupId":$AD_GROUP_ID,""" +
+            """"text":"소개팅 앱","status":"PAUSED","matchType":"EXACT",""" +
+            """"bidAmount":{"amount":"1.23","currency":"USD"},"deleted":false}]}"""
+
+        private const val NEGATIVE_KEYWORD_LIST_BODY = """{"data":[{"id":$NEGATIVE_KEYWORD_ID,""" +
+            """"campaignId":$CAMPAIGN_ID,"adGroupId":$AD_GROUP_ID,"text":"디스코드","status":"ACTIVE",""" +
+            """"matchType":"EXACT","deleted":false}]}"""
+
+        private const val COUNT_BODY = """{"data":1,"pagination":null,"error":null}"""
 
         private const val KEYWORD_ROW = """{"other":false,"metadata":{"keywordId":87675432,"keyword":"dating app",""" +
             """"keywordStatus":"ACTIVE","matchType":"EXACT","bidAmount":{"amount":"1.50","currency":"USD"},""" +

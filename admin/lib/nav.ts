@@ -40,6 +40,7 @@ export const navItems: NavItem[] = [
     children: [
       { title: "성과", href: "/apple-ads/performance" },
       { title: "조치 추천", href: "/apple-ads/recommendations" },
+      { title: "조치 이력", href: "/apple-ads/actions" },
     ],
   },
 ];

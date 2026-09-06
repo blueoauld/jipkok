@@ -95,8 +95,8 @@ export function RecommendationList() {
         <CardHeader>
           <CardTitle>규칙</CardTitle>
           <CardDescription>
-            아직 적용은 하지 않습니다. 추천이 맞는지 지켜본 뒤 버튼 적용을
-            붙입니다.
+            적용한 대상은 14일 동안 다시 추천하지 않습니다. 적용과 되돌리기는
+            조치 이력에 남습니다.
           </CardDescription>
         </CardHeader>
         <CardContent>

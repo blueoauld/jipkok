@@ -1,17 +1,25 @@
 package com.blueoauld.server.domain.admin.web
 
+import com.blueoauld.server.domain.admin.dto.request.ApplyAppleAdsActionRequest
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionPageResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsCampaignResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsOrgResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSyncResponse
+import com.blueoauld.server.domain.admin.service.AdminAppleAdsActionService
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsReportService
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsService
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -23,6 +31,7 @@ class AdminAppleAdsController(
 
     private val adminAppleAdsService: AdminAppleAdsService,
     private val adminAppleAdsReportService: AdminAppleAdsReportService,
+    private val adminAppleAdsActionService: AdminAppleAdsActionService,
 ) {
 
     @Operation(
@@ -83,4 +92,32 @@ class AdminAppleAdsController(
         @RequestParam(required = false) campaignId: Long?,
     ): AdminAppleAdsRecommendationListResponse =
         adminAppleAdsReportService.findRecommendations(startDate, endDate, campaignId)
+
+    @Operation(
+        summary = "애플 광고 조치 적용",
+        description = "추천을 애플 광고에 실제로 적용하고 이력을 남긴다. 일시정지와 입찰가 변경은 keywordId, " +
+            "제외 키워드와 키워드 추가는 searchTerm이 필요하고, 입찰가 변경과 키워드 추가는 suggestedBid와 currency도 필요하다.",
+    )
+    @PostMapping("/actions")
+    fun applyAppleAdsAction(
+        @AuthenticationPrincipal actorId: Long,
+        @Valid @RequestBody request: ApplyAppleAdsActionRequest,
+    ): AdminAppleAdsActionResponse = adminAppleAdsActionService.apply(actorId, request)
+
+    @Operation(
+        summary = "애플 광고 조치 되돌리기",
+        description = "입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있다.",
+    )
+    @PostMapping("/actions/{actionId}/revert")
+    fun revertAppleAdsAction(
+        @AuthenticationPrincipal actorId: Long,
+        @PathVariable actionId: Long,
+    ): AdminAppleAdsActionResponse = adminAppleAdsActionService.revert(actorId, actionId)
+
+    @Operation(summary = "애플 광고 조치 이력", description = "적용한 조치를 최신순으로 준다.")
+    @GetMapping("/actions")
+    fun findAppleAdsActions(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): AdminAppleAdsActionPageResponse = adminAppleAdsActionService.findActions(page, size)
 }

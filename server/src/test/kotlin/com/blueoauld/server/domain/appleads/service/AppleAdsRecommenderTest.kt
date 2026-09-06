@@ -3,19 +3,28 @@ package com.blueoauld.server.domain.appleads.service
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordSummaryRow
 import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendationType
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
+import com.blueoauld.server.domain.appleads.entity.AppleAdsAction
+import com.blueoauld.server.domain.appleads.entity.type.AppleAdsActionType
+import com.blueoauld.server.domain.appleads.repository.AppleAdsActionRepository
 import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 class AppleAdsRecommenderTest {
 
     private val summaryRepository = mockk<AppleAdsSummaryRepository>()
 
-    private val recommender = AppleAdsRecommender(summaryRepository)
+    private val actionRepository = mockk<AppleAdsActionRepository>()
+
+    private val recommender = AppleAdsRecommender(summaryRepository, actionRepository, Clock.fixed(NOW, ZoneOffset.UTC))
 
     @Test
     fun `탭이 많은데 설치가 없는 키워드는 일시정지를 추천한다`() {
@@ -172,13 +181,60 @@ class AppleAdsRecommenderTest {
         assertThat(result.items[0].keywordId).isEqualTo(3L)
     }
 
+    @Test
+    fun `최근에 조치한 키워드와 검색어는 다시 추천하지 않는다`() {
+        // given
+        given(
+            keywords = listOf(
+                keyword(id = 1L, taps = 20, installs = 0, spend = "9.00"),
+                keyword(id = 2L, taps = 20, installs = 0, spend = "9.00"),
+            ),
+            searchTerms = listOf(
+                searchTerm("디스코드", taps = 10, installs = 0, spend = "6.00"),
+                searchTerm("라인", taps = 10, installs = 0, spend = "6.00"),
+            ),
+            recentActions = listOf(
+                action(type = AppleAdsActionType.PAUSE_KEYWORD, keywordId = 1L),
+                action(type = AppleAdsActionType.ADD_NEGATIVE_KEYWORD, searchTerm = " 디스코드 "),
+            ),
+        )
+
+        // when
+        val result = recommender.recommend(START, END, null)
+
+        // then
+        assertThat(result.items.map { it.keywordId ?: it.searchTerm }).containsExactly(2L, "라인")
+        verify { actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(NOW.minus(AppleAdsRecommender.COOLDOWN)) }
+    }
+
     private fun given(
         keywords: List<AppleAdsKeywordSummaryRow>,
         searchTerms: List<AppleAdsSearchTermSummaryRow> = emptyList(),
+        recentActions: List<AppleAdsAction> = emptyList(),
     ) {
         every { summaryRepository.summarizeKeywords(START, END, null) } returns keywords
         every { summaryRepository.summarizeSearchTerms(START, END, null, "AUTO") } returns searchTerms
+        every { actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(any()) } returns recentActions
     }
+
+    private fun action(type: AppleAdsActionType, keywordId: Long? = null, searchTerm: String? = null) = AppleAdsAction(
+        actorId = 1L,
+        type = type,
+        campaignId = CAMPAIGN_ID,
+        adGroupId = AD_GROUP_ID,
+        adGroupName = "Ad Group 1",
+        keywordId = keywordId,
+        keyword = null,
+        matchType = null,
+        searchTerm = searchTerm,
+        negativeKeywordId = null,
+        previousBid = null,
+        newBid = null,
+        currency = "USD",
+        previousStatus = null,
+        newStatus = null,
+        reason = null,
+    )
 
     private fun keyword(
         id: Long,
@@ -241,6 +297,7 @@ class AppleAdsRecommenderTest {
         private const val AD_GROUP_ID = 10L
         private const val OTHER_AD_GROUP_ID = 11L
 
+        private val NOW: Instant = Instant.parse("2026-09-06T12:00:00Z")
         private val START: LocalDate = LocalDate.of(2026, 8, 5)
         private val END: LocalDate = LocalDate.of(2026, 9, 3)
     }
