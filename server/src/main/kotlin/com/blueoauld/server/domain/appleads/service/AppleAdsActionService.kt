@@ -18,12 +18,14 @@ class AppleAdsActionService(
     private val clock: Clock,
 ) {
 
-    fun apply(actorId: Long, command: AppleAdsActionCommand): AppleAdsAction {
+    fun apply(actorId: Long?, command: AppleAdsActionCommand, automatic: Boolean = false): AppleAdsAction {
+        val actor = Actor(actorId, automatic)
+
         val action = when (command.type) {
-            AppleAdsActionType.PAUSE_KEYWORD -> pauseKeyword(actorId, command)
-            AppleAdsActionType.LOWER_BID, AppleAdsActionType.RAISE_BID -> changeBid(actorId, command)
-            AppleAdsActionType.ADD_NEGATIVE_KEYWORD -> addNegativeKeyword(actorId, command)
-            AppleAdsActionType.ADD_KEYWORD -> addKeyword(actorId, command)
+            AppleAdsActionType.PAUSE_KEYWORD -> pauseKeyword(actor, command)
+            AppleAdsActionType.LOWER_BID, AppleAdsActionType.RAISE_BID -> changeBid(actor, command)
+            AppleAdsActionType.ADD_NEGATIVE_KEYWORD -> addNegativeKeyword(actor, command)
+            AppleAdsActionType.ADD_KEYWORD -> addKeyword(actor, command)
         }
 
         return actionRepository.save(action)
@@ -74,7 +76,7 @@ class AppleAdsActionService(
         return actionRepository.save(action)
     }
 
-    private fun pauseKeyword(actorId: Long, command: AppleAdsActionCommand): AppleAdsAction {
+    private fun pauseKeyword(actor: Actor, command: AppleAdsActionCommand): AppleAdsAction {
         val keywordId = requireField(command.keywordId)
 
         val updated = appleAdsClient.updateKeyword(
@@ -87,7 +89,7 @@ class AppleAdsActionService(
         )
 
         return action(
-            actorId = actorId,
+            actor = actor,
             command = command,
             keywordId = keywordId,
             keyword = command.keyword ?: updated.text,
@@ -97,7 +99,7 @@ class AppleAdsActionService(
         )
     }
 
-    private fun changeBid(actorId: Long, command: AppleAdsActionCommand): AppleAdsAction {
+    private fun changeBid(actor: Actor, command: AppleAdsActionCommand): AppleAdsAction {
         val keywordId = requireField(command.keywordId)
         val bid = requireField(command.suggestedBid)
         val currency = requireField(command.currency)
@@ -112,7 +114,7 @@ class AppleAdsActionService(
         )
 
         return action(
-            actorId = actorId,
+            actor = actor,
             command = command,
             keywordId = keywordId,
             keyword = command.keyword ?: updated.text,
@@ -122,7 +124,7 @@ class AppleAdsActionService(
         )
     }
 
-    private fun addNegativeKeyword(actorId: Long, command: AppleAdsActionCommand): AppleAdsAction {
+    private fun addNegativeKeyword(actor: Actor, command: AppleAdsActionCommand): AppleAdsAction {
         val searchTerm = requireSearchTerm(command)
 
         val created = appleAdsClient.createNegativeKeyword(
@@ -133,7 +135,7 @@ class AppleAdsActionService(
         )
 
         return action(
-            actorId = actorId,
+            actor = actor,
             command = command,
             searchTerm = searchTerm,
             matchType = created.matchType ?: EXACT,
@@ -141,7 +143,7 @@ class AppleAdsActionService(
         )
     }
 
-    private fun addKeyword(actorId: Long, command: AppleAdsActionCommand): AppleAdsAction {
+    private fun addKeyword(actor: Actor, command: AppleAdsActionCommand): AppleAdsAction {
         val searchTerm = requireSearchTerm(command)
         val bid = requireField(command.suggestedBid)
         val currency = requireField(command.currency)
@@ -156,7 +158,7 @@ class AppleAdsActionService(
         )
 
         return action(
-            actorId = actorId,
+            actor = actor,
             command = command,
             keywordId = created.id,
             keyword = created.text,
@@ -168,7 +170,7 @@ class AppleAdsActionService(
     }
 
     private fun action(
-        actorId: Long,
+        actor: Actor,
         command: AppleAdsActionCommand,
         keywordId: Long? = null,
         keyword: String? = null,
@@ -180,7 +182,8 @@ class AppleAdsActionService(
         previousStatus: String? = null,
         newStatus: String? = null,
     ) = AppleAdsAction(
-        actorId = actorId,
+        actorId = actor.id,
+        automatic = actor.automatic,
         type = command.type,
         campaignId = command.campaignId,
         adGroupId = command.adGroupId,
@@ -197,6 +200,8 @@ class AppleAdsActionService(
         newStatus = newStatus,
         reason = command.reason?.take(AppleAdsAction.REASON_MAX_LENGTH),
     )
+
+    private data class Actor(val id: Long?, val automatic: Boolean)
 
     private fun requireSearchTerm(command: AppleAdsActionCommand): String =
         requireField(command.searchTerm?.trim()?.takeIf { it.isNotEmpty() })

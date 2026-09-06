@@ -15,8 +15,9 @@ data class AdminAppleAdsActionPageResponse(
 data class AdminAppleAdsActionResponse(
 
     val id: Long,
-    val actorId: Long,
-    val actorNickname: String,
+    val actorId: Long?,
+    val actorNickname: String?,
+    val automatic: Boolean,
     val type: AppleAdsActionType,
     val campaignId: Long,
     val adGroupId: Long,

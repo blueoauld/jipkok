@@ -13,24 +13,33 @@ private val log = KotlinLogging.logger {}
 
 @Component
 @ConditionalOnExpression("!'\${apple-ads.client-id:}'.isEmpty()")
-class AppleAdsReportScheduler(
+class AppleAdsScheduler(
 
     private val reportSyncer: AppleAdsReportSyncer,
+    private val automationService: AppleAdsAutomationService,
     private val clock: Clock,
 ) {
 
-    @Scheduled(cron = SYNC_CRON, zone = KOREA_ID)
-    fun syncRecent() {
+    @Scheduled(cron = DAILY_CRON, zone = KOREA_ID)
+    fun runDaily() {
         val today = clock.today()
 
-        runCatching { reportSyncer.sync(today.minus(SYNC_WINDOW), today) }
-            .onFailure { log.error(it) { "애플 광고 리포트를 적재하지 못했다." } }
+        val synced = runCatching { reportSyncer.sync(today.minus(SYNC_WINDOW), today) }
+            .onFailure { log.error(it) { "애플 광고 리포트를 적재하지 못했다. 자동 조치는 건너뛴다." } }
+            .isSuccess
+
+        if (!synced) {
+            return
+        }
+
+        runCatching { automationService.run() }
+            .onFailure { log.error(it) { "애플 광고 자동 조치를 돌리지 못했다." } }
     }
 
     companion object {
 
         val SYNC_WINDOW: Period = Period.ofDays(7)
 
-        private const val SYNC_CRON = "0 0 6 * * *"
+        private const val DAILY_CRON = "0 0 6 * * *"
     }
 }

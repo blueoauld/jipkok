@@ -243,6 +243,7 @@ class AppleAdsActionServiceTest {
         previousStatus: String? = null,
     ) = AppleAdsAction(
         actorId = ACTOR_ID,
+        automatic = false,
         type = type,
         campaignId = CAMPAIGN_ID,
         adGroupId = AD_GROUP_ID,

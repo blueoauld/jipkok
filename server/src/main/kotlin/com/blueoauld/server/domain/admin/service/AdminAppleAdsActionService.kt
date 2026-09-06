@@ -70,7 +70,8 @@ class AdminAppleAdsActionService(
     private fun toResponse(action: AppleAdsAction, nicknames: Map<Long, String>) = AdminAppleAdsActionResponse(
         id = action.id,
         actorId = action.actorId,
-        actorNickname = nicknames.getValue(action.actorId),
+        actorNickname = action.actorId?.let { nicknames[it] },
+        automatic = action.automatic,
         type = action.type,
         campaignId = action.campaignId,
         adGroupId = action.adGroupId,

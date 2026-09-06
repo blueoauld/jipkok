@@ -2,12 +2,15 @@ import { api } from "@/lib/api/client";
 import type {
   AppleAdsAction,
   AppleAdsActionPage,
+  AppleAdsAutomation,
+  AppleAdsAutomationRun,
   AppleAdsCampaign,
   AppleAdsKeywordList,
   AppleAdsRecommendationList,
   AppleAdsSearchTermList,
   AppleAdsSyncResult,
   ApplyAppleAdsActionBody,
+  UpdateAppleAdsAutomationBody,
 } from "@/lib/types";
 
 export type AppleAdsReportParams = {
@@ -65,6 +68,20 @@ export const revertAppleAdsAction = (actionId: number) =>
 export const fetchAppleAdsActions = (page: number) =>
   api<AppleAdsActionPage>("/api/admin/apple-ads/actions", {
     query: { page },
+  });
+
+export const fetchAppleAdsAutomation = () =>
+  api<AppleAdsAutomation>("/api/admin/apple-ads/automation");
+
+export const updateAppleAdsAutomation = (body: UpdateAppleAdsAutomationBody) =>
+  api<AppleAdsAutomation>("/api/admin/apple-ads/automation", {
+    method: "PUT",
+    body,
+  });
+
+export const runAppleAdsAutomation = () =>
+  api<AppleAdsAutomationRun>("/api/admin/apple-ads/automation/run", {
+    method: "POST",
   });
 
 export const syncAppleAdsReports = (startDate: string, endDate: string) =>

@@ -1373,6 +1373,31 @@ export interface components {
             messageId: number;
             reactions: components["schemas"]["ChatReactionResponse"][];
         };
+        UpdateAppleAdsAutomationRequest: {
+            enabled: boolean | null;
+            /** Format: int32 */
+            dailyLimit: number | null;
+            pauseKeyword: boolean | null;
+            addNegativeKeyword: boolean | null;
+            lowerBid: boolean | null;
+            raiseBid: boolean | null;
+            addKeyword: boolean | null;
+        };
+        AdminAppleAdsAutomationResponse: {
+            enabled: boolean;
+            /** Format: int32 */
+            dailyLimit: number;
+            pauseKeyword: boolean;
+            addNegativeKeyword: boolean;
+            lowerBid: boolean;
+            raiseBid: boolean;
+            addKeyword: boolean;
+            /** Format: int64 */
+            updatedById?: number | null;
+            updatedByNickname?: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         CreateWorryPostRequest: {
             /** @enum {string} */
             category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
@@ -1567,6 +1592,15 @@ export interface components {
             /** Format: int32 */
             searchTermRows: number;
         };
+        AdminAppleAdsAutomationRunResponse: {
+            enabled: boolean;
+            /** Format: int32 */
+            candidates: number;
+            /** Format: int32 */
+            applied: number;
+            /** Format: int32 */
+            failed: number;
+        };
         ApplyAppleAdsActionRequest: {
             /** @enum {string|null} */
             type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD" | null;
@@ -1589,8 +1623,9 @@ export interface components {
             /** Format: int64 */
             id: number;
             /** Format: int64 */
-            actorId: number;
-            actorNickname: string;
+            actorId?: number | null;
+            actorNickname?: string | null;
+            automatic: boolean;
             /** @enum {string} */
             type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD";
             /** Format: int64 */

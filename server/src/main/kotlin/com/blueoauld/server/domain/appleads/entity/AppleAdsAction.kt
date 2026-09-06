@@ -26,8 +26,11 @@ import java.time.Instant
 )
 class AppleAdsAction(
 
-    @Column(name = "actor_id", nullable = false, updatable = false)
-    val actorId: Long,
+    @Column(name = "actor_id", updatable = false)
+    val actorId: Long?,
+
+    @Column(name = "automatic", nullable = false, updatable = false)
+    val automatic: Boolean,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, updatable = false, length = TYPE_MAX_LENGTH)

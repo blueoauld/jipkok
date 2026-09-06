@@ -49,6 +49,11 @@ export type AppleAdsAction = Schemas["AdminAppleAdsActionResponse"];
 export type AppleAdsActionPage = Schemas["AdminAppleAdsActionPageResponse"];
 export type AppleAdsActionType = AppleAdsAction["type"];
 export type ApplyAppleAdsActionBody = Schemas["ApplyAppleAdsActionRequest"];
+export type AppleAdsAutomation = Schemas["AdminAppleAdsAutomationResponse"];
+export type AppleAdsAutomationRun =
+  Schemas["AdminAppleAdsAutomationRunResponse"];
+export type UpdateAppleAdsAutomationBody =
+  Schemas["UpdateAppleAdsAutomationRequest"];
 export type AdminActionPage = Schemas["AdminActionPageResponse"];
 export type ReportType = MemberReport["type"];
 export type ReportReason = MemberReport["reason"];

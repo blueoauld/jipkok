@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.admin.web
 
 import com.blueoauld.server.domain.admin.dto.request.ApplyAppleAdsActionRequest
+import com.blueoauld.server.domain.admin.dto.request.UpdateAppleAdsAutomationRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAutomationResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAutomationRunResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsCampaignResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsOrgResponse
@@ -10,6 +13,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendatio
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSyncResponse
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsActionService
+import com.blueoauld.server.domain.admin.service.AdminAppleAdsAutomationService
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsReportService
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsService
 import io.swagger.v3.oas.annotations.Operation
@@ -19,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -32,6 +37,7 @@ class AdminAppleAdsController(
     private val adminAppleAdsService: AdminAppleAdsService,
     private val adminAppleAdsReportService: AdminAppleAdsReportService,
     private val adminAppleAdsActionService: AdminAppleAdsActionService,
+    private val adminAppleAdsAutomationService: AdminAppleAdsAutomationService,
 ) {
 
     @Operation(
@@ -120,4 +126,25 @@ class AdminAppleAdsController(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
     ): AdminAppleAdsActionPageResponse = adminAppleAdsActionService.findActions(page, size)
+
+    @Operation(summary = "애플 광고 자동 실행 설정", description = "켜짐 여부, 하루 한도, 유형별 허용 여부다.")
+    @GetMapping("/automation")
+    fun findAutomation(): AdminAppleAdsAutomationResponse = adminAppleAdsAutomationService.findSettings()
+
+    @Operation(
+        summary = "애플 광고 자동 실행 설정 변경",
+        description = "매일 06시 리포트 적재 뒤에 켜져 있으면 추천을 허용된 유형만 하루 한도까지 자동 적용한다.",
+    )
+    @PutMapping("/automation")
+    fun updateAutomation(
+        @AuthenticationPrincipal actorId: Long,
+        @Valid @RequestBody request: UpdateAppleAdsAutomationRequest,
+    ): AdminAppleAdsAutomationResponse = adminAppleAdsAutomationService.updateSettings(actorId, request)
+
+    @Operation(
+        summary = "애플 광고 자동 실행 지금 돌리기",
+        description = "스케줄과 같은 규칙으로 바로 한 번 돌린다. 꺼져 있으면 아무것도 하지 않고 enabled=false를 준다.",
+    )
+    @PostMapping("/automation/run")
+    fun runAutomation(): AdminAppleAdsAutomationRunResponse = adminAppleAdsAutomationService.run()
 }

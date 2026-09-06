@@ -151,6 +151,7 @@ class AppleAdsQueriesTest {
 
     private fun action(keywordId: Long) = AppleAdsAction(
         actorId = 1L,
+        automatic = false,
         type = AppleAdsActionType.PAUSE_KEYWORD,
         campaignId = CAMPAIGN_ID,
         adGroupId = AD_GROUP_ID,

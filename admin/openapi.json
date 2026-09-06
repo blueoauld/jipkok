@@ -1239,6 +1239,218 @@
                 }
             }
         },
+        "/api/admin/apple-ads/automation": {
+            "get": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \uc790\ub3d9 \uc2e4\ud589 \uc124\uc815",
+                "description": "\ucf1c\uc9d0 \uc5ec\ubd80, \ud558\ub8e8 \ud55c\ub3c4, \uc720\ud615\ubcc4 \ud5c8\uc6a9 \uc5ec\ubd80\ub2e4.",
+                "operationId": "findAutomation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAppleAdsAutomationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \uc790\ub3d9 \uc2e4\ud589 \uc124\uc815 \ubcc0\uacbd",
+                "description": "\ub9e4\uc77c 06\uc2dc \ub9ac\ud3ec\ud2b8 \uc801\uc7ac \ub4a4\uc5d0 \ucf1c\uc838 \uc788\uc73c\uba74 \ucd94\ucc9c\uc744 \ud5c8\uc6a9\ub41c \uc720\ud615\ub9cc \ud558\ub8e8 \ud55c\ub3c4\uae4c\uc9c0 \uc790\ub3d9 \uc801\uc6a9\ud55c\ub2e4.",
+                "operationId": "updateAutomation",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAppleAdsAutomationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAppleAdsAutomationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/worries": {
             "get": {
                 "tags": [
@@ -6677,6 +6889,108 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AdminAppleAdsSyncResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/apple-ads/automation/run": {
+            "post": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \uc790\ub3d9 \uc2e4\ud589 \uc9c0\uae08 \ub3cc\ub9ac\uae30",
+                "description": "\uc2a4\ucf00\uc904\uacfc \uac19\uc740 \uaddc\uce59\uc73c\ub85c \ubc14\ub85c \ud55c \ubc88 \ub3cc\ub9b0\ub2e4. \uaebc\uc838 \uc788\uc73c\uba74 \uc544\ubb34\uac83\ub3c4 \ud558\uc9c0 \uc54a\uace0 enabled=false\ub97c \uc900\ub2e4.",
+                "operationId": "runAutomation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAppleAdsAutomationRunResponse"
                                 }
                             }
                         }
@@ -14134,6 +14448,119 @@
                     "reactions"
                 ]
             },
+            "UpdateAppleAdsAutomationRequest": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "dailyLimit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "maximum": 50,
+                        "minimum": 0
+                    },
+                    "pauseKeyword": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "addNegativeKeyword": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "lowerBid": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "raiseBid": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "addKeyword": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "addKeyword",
+                    "addNegativeKeyword",
+                    "dailyLimit",
+                    "enabled",
+                    "lowerBid",
+                    "pauseKeyword",
+                    "raiseBid"
+                ]
+            },
+            "AdminAppleAdsAutomationResponse": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "dailyLimit": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "pauseKeyword": {
+                        "type": "boolean"
+                    },
+                    "addNegativeKeyword": {
+                        "type": "boolean"
+                    },
+                    "lowerBid": {
+                        "type": "boolean"
+                    },
+                    "raiseBid": {
+                        "type": "boolean"
+                    },
+                    "addKeyword": {
+                        "type": "boolean"
+                    },
+                    "updatedById": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "updatedByNickname": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "addKeyword",
+                    "addNegativeKeyword",
+                    "dailyLimit",
+                    "enabled",
+                    "lowerBid",
+                    "pauseKeyword",
+                    "raiseBid",
+                    "updatedAt"
+                ]
+            },
             "CreateWorryPostRequest": {
                 "type": "object",
                 "properties": {
@@ -14954,6 +15381,32 @@
                     "searchTermRows"
                 ]
             },
+            "AdminAppleAdsAutomationRunResponse": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "candidates": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "applied": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "failed": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "required": [
+                    "applied",
+                    "candidates",
+                    "enabled",
+                    "failed"
+                ]
+            },
             "ApplyAppleAdsActionRequest": {
                 "type": "object",
                 "properties": {
@@ -15066,11 +15519,20 @@
                         "format": "int64"
                     },
                     "actorId": {
-                        "type": "integer",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "format": "int64"
                     },
                     "actorNickname": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "automatic": {
+                        "type": "boolean"
                     },
                     "type": {
                         "type": "string",
@@ -15190,9 +15652,8 @@
                     }
                 },
                 "required": [
-                    "actorId",
-                    "actorNickname",
                     "adGroupId",
+                    "automatic",
                     "campaignId",
                     "createdAt",
                     "id",

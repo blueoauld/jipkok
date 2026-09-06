@@ -11,4 +11,6 @@ interface AppleAdsActionRepository : JpaRepository<AppleAdsAction, Long> {
     fun findAllByOrderByIdDesc(pageable: Pageable): Page<AppleAdsAction>
 
     fun findAllByCreatedAtAfterAndRevertedAtIsNull(threshold: Instant): List<AppleAdsAction>
+
+    fun countByAutomaticTrueAndCreatedAtAfter(threshold: Instant): Long
 }

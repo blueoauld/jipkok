@@ -94,7 +94,14 @@ export function ActionTable({ actions }: Props) {
               {action.id}
             </TableCell>
             <TableCell>
-              <MemberCell id={action.actorId} nickname={action.actorNickname} />
+              {action.automatic || action.actorId == null ? (
+                <StatusText tone="muted">자동</StatusText>
+              ) : (
+                <MemberCell
+                  id={action.actorId}
+                  nickname={action.actorNickname ?? String(action.actorId)}
+                />
+              )}
             </TableCell>
             <TableCell>
               <StatusText tone={action.revertedAt ? "muted" : "default"}>

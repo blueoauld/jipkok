@@ -30,6 +30,7 @@ class AdminAppleAdsActionServiceTest {
         // given
         val action = AppleAdsAction(
             actorId = ACTOR_ID,
+            automatic = false,
             type = AppleAdsActionType.LOWER_BID,
             campaignId = CAMPAIGN_ID,
             adGroupId = AD_GROUP_ID,
@@ -70,6 +71,7 @@ class AdminAppleAdsActionServiceTest {
         assertThat(command.captured.type).isEqualTo(AppleAdsActionType.LOWER_BID)
         assertThat(command.captured.suggestedBid).isEqualByComparingTo(BigDecimal("1.23"))
         assertThat(response.actorNickname).isEqualTo("관리자")
+        assertThat(response.automatic).isFalse()
         assertThat(response.revertedByNickname).isEqualTo("다른 관리자")
         assertThat(response.newBid).isEqualByComparingTo(BigDecimal("1.23"))
     }

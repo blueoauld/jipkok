@@ -219,6 +219,7 @@ class AppleAdsRecommenderTest {
 
     private fun action(type: AppleAdsActionType, keywordId: Long? = null, searchTerm: String? = null) = AppleAdsAction(
         actorId = 1L,
+        automatic = false,
         type = type,
         campaignId = CAMPAIGN_ID,
         adGroupId = AD_GROUP_ID,
