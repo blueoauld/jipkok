@@ -9,6 +9,7 @@ import type {
   SuspensionReason,
   SuspensionStatus,
   SuspensionType,
+  AppleAdsRecommendationType,
 } from "@/lib/types";
 
 export const reportTypeLabels: Record<ReportType, string> = {
@@ -91,4 +92,15 @@ export const keywordStatusLabels: Record<string, string> = {
 export const searchTermSourceLabels: Record<string, string> = {
   AUTO: "Search Match",
   TARGETED: "키워드",
+};
+
+export const recommendationTypeLabels: Record<
+  AppleAdsRecommendationType,
+  string
+> = {
+  PAUSE_KEYWORD: "일시정지",
+  ADD_NEGATIVE_KEYWORD: "제외 키워드",
+  LOWER_BID: "입찰가 낮추기",
+  RAISE_BID: "입찰가 올리기",
+  ADD_KEYWORD: "키워드 추가",
 };

@@ -2193,6 +2193,40 @@ export interface components {
             adGroupName?: string | null;
             metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
         };
+        AdminAppleAdsRecommendationListResponse: {
+            baselineCostPerInstall?: number | null;
+            /** Format: int64 */
+            baselineInstalls: number;
+            baselineSpend: number;
+            currency?: string | null;
+            items: components["schemas"]["AdminAppleAdsRecommendationResponse"][];
+        };
+        AdminAppleAdsRecommendationResponse: {
+            /** @enum {string} */
+            type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD";
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            searchTerm?: string | null;
+            currentBid?: number | null;
+            suggestedBid?: number | null;
+            currency?: string | null;
+            /** Format: int64 */
+            impressions: number;
+            /** Format: int64 */
+            taps: number;
+            /** Format: int64 */
+            totalInstalls: number;
+            spend: number;
+            costPerInstall?: number | null;
+            reason: string;
+        };
         AdminAppleAdsOrgResponse: {
             /** Format: int64 */
             orgId: number;

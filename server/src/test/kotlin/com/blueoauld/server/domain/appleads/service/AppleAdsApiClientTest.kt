@@ -142,6 +142,9 @@ class AppleAdsApiClientTest {
         assertThat(rows[0].matchType).isEqualTo("EXACT")
         assertThat(rows[0].keywordStatus).isEqualTo("ACTIVE")
         assertThat(rows[0].bidAmount).isEqualByComparingTo(BigDecimal("1.50"))
+        assertThat(rows[0].suggestedBidAmount).isEqualByComparingTo(BigDecimal("2.40"))
+        assertThat(rows[0].bidMin).isNull()
+        assertThat(rows[0].bidMax).isNull()
         assertThat(rows[0].adGroupId).isEqualTo(542317095L)
         assertThat(rows[0].adGroupName).isEqualTo("Ad Group 1")
         assertThat(rows[0].metrics.date).isEqualTo(START)
@@ -233,6 +236,9 @@ class AppleAdsApiClientTest {
         private const val KEYWORD_ROW = """{"other":false,"metadata":{"keywordId":87675432,"keyword":"dating app",""" +
             """"keywordStatus":"ACTIVE","matchType":"EXACT","bidAmount":{"amount":"1.50","currency":"USD"},""" +
             """"deleted":false,"adGroupId":542317095,"adGroupName":"Ad Group 1","adGroupDeleted":false},""" +
+            """"insights":{"bidRecommendation":{"bidMin":{"amount":"null","currency":"null"},""" +
+            """"bidMax":{"amount":"null","currency":"null"},""" +
+            """"suggestedBidAmount":{"amount":"2.40","currency":"USD"}}},""" +
             """"granularity":[""" +
             """{"date":"2026-09-01","impressions":76,"taps":45,"totalInstalls":16,"tapInstalls":10,""" +
             """"viewInstalls":6,"totalNewDownloads":12,"totalRedownloads":4,""" +

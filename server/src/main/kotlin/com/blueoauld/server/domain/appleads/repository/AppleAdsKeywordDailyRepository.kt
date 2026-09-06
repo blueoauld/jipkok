@@ -16,13 +16,13 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
         value = """
         insert into apple_ads_keyword_daily (
             report_date, campaign_id, ad_group_id, ad_group_name, keyword_id, keyword, match_type, keyword_status,
-            bid_amount, currency, impressions, taps, total_installs, tap_installs, view_installs,
-            total_new_downloads, total_redownloads, spend, created_at, updated_at
+            bid_amount, suggested_bid_amount, bid_min, bid_max, currency, impressions, taps, total_installs,
+            tap_installs, view_installs, total_new_downloads, total_redownloads, spend, created_at, updated_at
         )
         values (
             :reportDate, :campaignId, :adGroupId, :adGroupName, :keywordId, :keyword, :matchType, :keywordStatus,
-            :bidAmount, :currency, :impressions, :taps, :totalInstalls, :tapInstalls, :viewInstalls,
-            :totalNewDownloads, :totalRedownloads, :spend, :now, :now
+            :bidAmount, :suggestedBidAmount, :bidMin, :bidMax, :currency, :impressions, :taps, :totalInstalls,
+            :tapInstalls, :viewInstalls, :totalNewDownloads, :totalRedownloads, :spend, :now, :now
         )
         on conflict (keyword_id, report_date) do update
         set ad_group_id = excluded.ad_group_id,
@@ -31,6 +31,9 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
             match_type = excluded.match_type,
             keyword_status = excluded.keyword_status,
             bid_amount = excluded.bid_amount,
+            suggested_bid_amount = excluded.suggested_bid_amount,
+            bid_min = excluded.bid_min,
+            bid_max = excluded.bid_max,
             currency = excluded.currency,
             impressions = excluded.impressions,
             taps = excluded.taps,
@@ -54,6 +57,9 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
         @Param("matchType") matchType: String?,
         @Param("keywordStatus") keywordStatus: String?,
         @Param("bidAmount") bidAmount: BigDecimal?,
+        @Param("suggestedBidAmount") suggestedBidAmount: BigDecimal?,
+        @Param("bidMin") bidMin: BigDecimal?,
+        @Param("bidMax") bidMax: BigDecimal?,
         @Param("currency") currency: String?,
         @Param("impressions") impressions: Long,
         @Param("taps") taps: Long,

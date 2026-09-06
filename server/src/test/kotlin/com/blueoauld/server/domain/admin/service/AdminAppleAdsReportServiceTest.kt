@@ -1,9 +1,10 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.projection.AppleAdsKeywordSummaryRow
-import com.blueoauld.server.domain.admin.dto.projection.AppleAdsSearchTermSummaryRow
-import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
+import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordSummaryRow
+import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
 import com.blueoauld.server.domain.appleads.repository.AppleAdsCampaignRepository
+import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
+import com.blueoauld.server.domain.appleads.service.AppleAdsRecommender
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -18,14 +19,16 @@ class AdminAppleAdsReportServiceTest {
 
     private val campaignRepository = mockk<AppleAdsCampaignRepository>()
 
-    private val appleAdsAdminRepository = mockk<AppleAdsAdminRepository>()
+    private val summaryRepository = mockk<AppleAdsSummaryRepository>()
 
-    private val service = AdminAppleAdsReportService(campaignRepository, appleAdsAdminRepository)
+    private val recommender = mockk<AppleAdsRecommender>()
+
+    private val service = AdminAppleAdsReportService(campaignRepository, summaryRepository, recommender)
 
     @Test
     fun `키워드 성과에 파생 지표와 합계를 붙인다`() {
         // given
-        every { appleAdsAdminRepository.summarizeKeywords(START, END, null) } returns listOf(
+        every { summaryRepository.summarizeKeywords(START, END, null) } returns listOf(
             keywordRow(keywordId = 1L, impressions = 200, taps = 10, installs = 4, spend = "12.345"),
             keywordRow(keywordId = 2L, impressions = 50, taps = 0, installs = 0, spend = "0.004"),
         )
@@ -59,7 +62,7 @@ class AdminAppleAdsReportServiceTest {
     @Test
     fun `검색어 성과는 출처 필터를 그대로 넘긴다`() {
         // given
-        every { appleAdsAdminRepository.summarizeSearchTerms(START, END, CAMPAIGN_ID, "AUTO") } returns listOf(
+        every { summaryRepository.summarizeSearchTerms(START, END, CAMPAIGN_ID, "AUTO") } returns listOf(
             searchTermRow(searchTerm = "소개팅 앱", impressions = 30, taps = 3, installs = 1, spend = "2.00"),
         )
 
@@ -92,6 +95,9 @@ class AdminAppleAdsReportServiceTest {
             every { matchType } returns "EXACT"
             every { keywordStatus } returns "ACTIVE"
             every { bidAmount } returns BigDecimal("1.45")
+            every { suggestedBidAmount } returns null
+            every { bidMin } returns null
+            every { bidMax } returns null
             every { campaignId } returns CAMPAIGN_ID
             every { adGroupId } returns AD_GROUP_ID
             every { adGroupName } returns "Ad Group 1"

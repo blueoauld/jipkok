@@ -1,4 +1,4 @@
-package com.blueoauld.server.domain.admin.dto.projection
+package com.blueoauld.server.domain.appleads.dto
 
 import java.math.BigDecimal
 

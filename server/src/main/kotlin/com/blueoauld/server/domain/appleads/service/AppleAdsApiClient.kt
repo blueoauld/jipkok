@@ -92,6 +92,8 @@ class AppleAdsApiClient(
             val keywordId = metadata.keywordId ?: return@flatMap emptyList()
             val adGroupId = metadata.adGroupId ?: return@flatMap emptyList()
 
+            val recommendation = row.insights?.bidRecommendation
+
             row.granularity.orEmpty().mapNotNull { metrics ->
                 toMetrics(metrics)?.let {
                     AppleAdsKeywordDailyRow(
@@ -100,6 +102,9 @@ class AppleAdsApiClient(
                         matchType = metadata.matchType,
                         keywordStatus = metadata.keywordStatus,
                         bidAmount = metadata.bidAmount?.amount?.toBigDecimalOrNull(),
+                        suggestedBidAmount = recommendation?.suggestedBidAmount?.amount?.toBigDecimalOrNull(),
+                        bidMin = recommendation?.bidMin?.amount?.toBigDecimalOrNull(),
+                        bidMax = recommendation?.bidMax?.amount?.toBigDecimalOrNull(),
                         adGroupId = adGroupId,
                         adGroupName = metadata.adGroupName,
                         metrics = it,
@@ -253,6 +258,15 @@ class AppleAdsApiClient(
         val other: Boolean?,
         val metadata: ReportMetadata?,
         val granularity: List<ReportMetrics>?,
+        val insights: ReportInsights?,
+    )
+
+    private data class ReportInsights(val bidRecommendation: BidRecommendation?)
+
+    private data class BidRecommendation(
+        val suggestedBidAmount: Money?,
+        val bidMin: Money?,
+        val bidMax: Money?,
     )
 
     private data class ReportMetadata(

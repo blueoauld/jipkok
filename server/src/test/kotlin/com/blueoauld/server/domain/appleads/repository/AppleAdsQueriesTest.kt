@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.appleads.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
-import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +26,7 @@ class AppleAdsQueriesTest {
     private lateinit var searchTermDailyRepository: AppleAdsSearchTermDailyRepository
 
     @Autowired
-    private lateinit var appleAdsAdminRepository: AppleAdsAdminRepository
+    private lateinit var summaryRepository: AppleAdsSummaryRepository
 
     @Test
     fun `같은 캠페인을 다시 받으면 이름과 상태만 갱신한다`() {
@@ -97,14 +96,16 @@ class AppleAdsQueriesTest {
         )
 
         // when
-        val rows = appleAdsAdminRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, null)
-        val filtered = appleAdsAdminRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, OTHER_CAMPAIGN_ID)
+        val rows = summaryRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, null)
+        val filtered = summaryRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, OTHER_CAMPAIGN_ID)
 
         // then
         val row = rows.single { it.keywordId == KEYWORD_ID }
         assertThat(row.impressions).isEqualTo(30)
         assertThat(row.spend).isEqualByComparingTo(BigDecimal("3.00"))
         assertThat(row.keywordStatus).isEqualTo("PAUSED")
+        assertThat(row.suggestedBidAmount).isEqualByComparingTo(BigDecimal("2.40"))
+        assertThat(row.bidMin).isNull()
         assertThat(rows.map { it.keywordId }).containsExactly(KEYWORD_ID, OTHER_KEYWORD_ID)
         assertThat(filtered.map { it.keywordId }).containsExactly(OTHER_KEYWORD_ID)
     }
@@ -117,8 +118,8 @@ class AppleAdsQueriesTest {
         upsertSearchTerm(keywordId = KEYWORD_ID, impressions = 5, now = NOW, source = "TARGETED")
 
         // when
-        val all = appleAdsAdminRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, null)
-        val auto = appleAdsAdminRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, "AUTO")
+        val all = summaryRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, null)
+        val auto = summaryRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, "AUTO")
 
         // then
         assertThat(all).hasSize(2)
@@ -148,6 +149,9 @@ class AppleAdsQueriesTest {
             matchType = "EXACT",
             keywordStatus = status,
             bidAmount = BigDecimal("1.50"),
+            suggestedBidAmount = BigDecimal("2.40"),
+            bidMin = null,
+            bidMax = null,
             currency = "USD",
             impressions = impressions,
             taps = 1,

@@ -1671,6 +1671,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/apple-ads/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 조치 추천
+         * @description 기간 성과를 규칙에 대어 일시정지, 제외 키워드, 입찰가 조정, 키워드 추가를 추천한다. 기준은 기간의 키워드 설치당 비용이고, 표본이 모자란 항목은 추천하지 않는다. 적용은 하지 않는다.
+         */
+        get: operations["findRecommendations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/apple-ads/orgs": {
         parameters: {
             query?: never;
@@ -2698,6 +2718,40 @@ export interface components {
             adGroupId: number;
             adGroupName?: string | null;
             metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsRecommendationListResponse: {
+            baselineCostPerInstall?: number | null;
+            /** Format: int64 */
+            baselineInstalls: number;
+            baselineSpend: number;
+            currency?: string | null;
+            items: components["schemas"]["AdminAppleAdsRecommendationResponse"][];
+        };
+        AdminAppleAdsRecommendationResponse: {
+            /** @enum {string} */
+            type: "PAUSE_KEYWORD" | "ADD_NEGATIVE_KEYWORD" | "LOWER_BID" | "RAISE_BID" | "ADD_KEYWORD";
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            searchTerm?: string | null;
+            currentBid?: number | null;
+            suggestedBid?: number | null;
+            currency?: string | null;
+            /** Format: int64 */
+            impressions: number;
+            /** Format: int64 */
+            taps: number;
+            /** Format: int64 */
+            totalInstalls: number;
+            spend: number;
+            costPerInstall?: number | null;
+            reason: string;
         };
         AdminAppleAdsOrgResponse: {
             /** Format: int64 */
@@ -12895,6 +12949,102 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminAppleAdsSearchTermListResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findRecommendations: {
+        parameters: {
+            query: {
+                startDate: string;
+                endDate: string;
+                campaignId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsRecommendationListResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

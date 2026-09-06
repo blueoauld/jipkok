@@ -33,7 +33,15 @@ export const navItems: NavItem[] = [
   { title: "정지", href: "/suspensions", icon: ShieldBan },
   { title: "문자 발송", href: "/messages", icon: MessageSquare },
   { title: "조치 이력", href: "/actions", icon: History },
-  { title: "애플 광고", href: "/apple-ads", icon: Megaphone },
+  {
+    title: "애플 광고",
+    href: "/apple-ads/performance",
+    icon: Megaphone,
+    children: [
+      { title: "성과", href: "/apple-ads/performance" },
+      { title: "조치 추천", href: "/apple-ads/recommendations" },
+    ],
+  },
 ];
 
 export type Breadcrumb = { title: string; href?: string };

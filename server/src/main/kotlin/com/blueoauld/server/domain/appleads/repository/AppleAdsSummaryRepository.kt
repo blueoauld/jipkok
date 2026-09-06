@@ -1,14 +1,14 @@
-package com.blueoauld.server.domain.admin.repository
+package com.blueoauld.server.domain.appleads.repository
 
-import com.blueoauld.server.domain.admin.dto.projection.AppleAdsKeywordSummaryRow
-import com.blueoauld.server.domain.admin.dto.projection.AppleAdsSearchTermSummaryRow
+import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordSummaryRow
+import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
 import com.blueoauld.server.domain.appleads.entity.AppleAdsKeywordDaily
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 
-interface AppleAdsAdminRepository : JpaRepository<AppleAdsKeywordDaily, Long> {
+interface AppleAdsSummaryRepository : JpaRepository<AppleAdsKeywordDaily, Long> {
 
     @Query(
         value = """
@@ -17,6 +17,9 @@ interface AppleAdsAdminRepository : JpaRepository<AppleAdsKeywordDaily, Long> {
                (array_agg(k.match_type order by k.report_date desc))[1] as matchType,
                (array_agg(k.keyword_status order by k.report_date desc))[1] as keywordStatus,
                (array_agg(k.bid_amount order by k.report_date desc))[1] as bidAmount,
+               (array_agg(k.suggested_bid_amount order by k.report_date desc))[1] as suggestedBidAmount,
+               (array_agg(k.bid_min order by k.report_date desc))[1] as bidMin,
+               (array_agg(k.bid_max order by k.report_date desc))[1] as bidMax,
                (array_agg(k.currency order by k.report_date desc))[1] as currency,
                (array_agg(k.campaign_id order by k.report_date desc))[1] as campaignId,
                (array_agg(k.ad_group_id order by k.report_date desc))[1] as adGroupId,

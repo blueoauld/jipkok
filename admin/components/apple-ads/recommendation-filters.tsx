@@ -6,36 +6,32 @@ import {
   recentDateRange,
 } from "@/components/apple-ads/date-range-inputs";
 import { FilterResetButton } from "@/components/filter-reset-button";
-import { FilterSelect } from "@/components/filter-select";
-import { searchTermSourceLabels } from "@/lib/labels";
 import type { AppleAdsCampaign } from "@/lib/types";
 
-export type AppleAdsFilter = {
+export type RecommendationFilter = {
   startDate: string;
   endDate: string;
   campaignId: string;
-  source: string;
 };
 
-const DEFAULT_DAYS = 7;
+const DEFAULT_DAYS = 30;
+const ATTRIBUTION_LAG_DAYS = 3;
 
-export function defaultAppleAdsFilter(): AppleAdsFilter {
-  return { ...recentDateRange(DEFAULT_DAYS), campaignId: "ALL", source: "ALL" };
+export function defaultRecommendationFilter(): RecommendationFilter {
+  return {
+    ...recentDateRange(DEFAULT_DAYS, ATTRIBUTION_LAG_DAYS),
+    campaignId: "ALL",
+  };
 }
 
-const sourceItems: Record<string, string> = {
-  ALL: "모든 출처",
-  ...searchTermSourceLabels,
-};
-
 type Props = {
-  value: AppleAdsFilter;
-  defaultValue: AppleAdsFilter;
+  value: RecommendationFilter;
+  defaultValue: RecommendationFilter;
   campaigns: AppleAdsCampaign[];
-  onChange: (value: AppleAdsFilter) => void;
+  onChange: (value: RecommendationFilter) => void;
 };
 
-export function ReportFilters({
+export function RecommendationFilters({
   value,
   defaultValue,
   campaigns,
@@ -48,11 +44,6 @@ export function ReportFilters({
         campaigns={campaigns}
         value={value.campaignId}
         onChange={(campaignId) => onChange({ ...value, campaignId })}
-      />
-      <FilterSelect
-        items={sourceItems}
-        value={value.source in sourceItems ? value.source : "ALL"}
-        onChange={(source) => onChange({ ...value, source })}
       />
       <FilterResetButton
         value={value}

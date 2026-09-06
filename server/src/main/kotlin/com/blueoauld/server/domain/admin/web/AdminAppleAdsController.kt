@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.admin.web
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsCampaignResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsOrgResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSyncResponse
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsReportService
@@ -69,4 +70,17 @@ class AdminAppleAdsController(
         @RequestParam(required = false) source: String?,
     ): AdminAppleAdsSearchTermListResponse =
         adminAppleAdsReportService.findSearchTerms(startDate, endDate, campaignId, source)
+
+    @Operation(
+        summary = "애플 광고 조치 추천",
+        description = "기간 성과를 규칙에 대어 일시정지, 제외 키워드, 입찰가 조정, 키워드 추가를 추천한다. " +
+            "기준은 기간의 키워드 설치당 비용이고, 표본이 모자란 항목은 추천하지 않는다. 적용은 하지 않는다.",
+    )
+    @GetMapping("/recommendations")
+    fun findRecommendations(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate,
+        @RequestParam(required = false) campaignId: Long?,
+    ): AdminAppleAdsRecommendationListResponse =
+        adminAppleAdsReportService.findRecommendations(startDate, endDate, campaignId)
 }

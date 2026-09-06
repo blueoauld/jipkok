@@ -54,6 +54,15 @@ class AppleAdsKeywordDaily(
     @Column(name = "bid_amount", precision = MONEY_PRECISION, scale = MONEY_SCALE)
     val bidAmount: BigDecimal?,
 
+    @Column(name = "suggested_bid_amount", precision = MONEY_PRECISION, scale = MONEY_SCALE)
+    val suggestedBidAmount: BigDecimal?,
+
+    @Column(name = "bid_min", precision = MONEY_PRECISION, scale = MONEY_SCALE)
+    val bidMin: BigDecimal?,
+
+    @Column(name = "bid_max", precision = MONEY_PRECISION, scale = MONEY_SCALE)
+    val bidMax: BigDecimal?,
+
     @Column(name = "currency", length = CURRENCY_LENGTH)
     val currency: String?,
 

@@ -2,6 +2,7 @@ import { api } from "@/lib/api/client";
 import type {
   AppleAdsCampaign,
   AppleAdsKeywordList,
+  AppleAdsRecommendationList,
   AppleAdsSearchTermList,
   AppleAdsSyncResult,
 } from "@/lib/types";
@@ -35,6 +36,15 @@ export const fetchAppleAdsSearchTerms = (params: AppleAdsReportParams) =>
       endDate: params.endDate,
       campaignId: campaignIdOf(params.campaignId),
       source: params.source === "ALL" ? undefined : params.source,
+    },
+  });
+
+export const fetchAppleAdsRecommendations = (params: AppleAdsReportParams) =>
+  api<AppleAdsRecommendationList>("/api/admin/apple-ads/recommendations", {
+    query: {
+      startDate: params.startDate,
+      endDate: params.endDate,
+      campaignId: campaignIdOf(params.campaignId),
     },
   });
 

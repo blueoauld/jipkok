@@ -1,14 +1,17 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.projection.AppleAdsMetricsRow
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsCampaignResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsMetricsResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationListResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermResponse
-import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
+import com.blueoauld.server.domain.appleads.dto.AppleAdsMetricsRow
 import com.blueoauld.server.domain.appleads.repository.AppleAdsCampaignRepository
+import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
+import com.blueoauld.server.domain.appleads.service.AppleAdsRecommender
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.data.domain.Sort
@@ -22,7 +25,8 @@ import java.time.LocalDate
 class AdminAppleAdsReportService(
 
     private val campaignRepository: AppleAdsCampaignRepository,
-    private val appleAdsAdminRepository: AppleAdsAdminRepository,
+    private val summaryRepository: AppleAdsSummaryRepository,
+    private val recommender: AppleAdsRecommender,
 ) {
 
     @Transactional(readOnly = true)
@@ -35,7 +39,7 @@ class AdminAppleAdsReportService(
     fun findKeywords(startDate: LocalDate, endDate: LocalDate, campaignId: Long?): AdminAppleAdsKeywordListResponse {
         validate(startDate, endDate)
 
-        val rows = appleAdsAdminRepository.summarizeKeywords(startDate, endDate, campaignId)
+        val rows = summaryRepository.summarizeKeywords(startDate, endDate, campaignId)
 
         val items = rows.map {
             AdminAppleAdsKeywordResponse(
@@ -63,7 +67,7 @@ class AdminAppleAdsReportService(
     ): AdminAppleAdsSearchTermListResponse {
         validate(startDate, endDate)
 
-        val rows = appleAdsAdminRepository.summarizeSearchTerms(startDate, endDate, campaignId, source)
+        val rows = summaryRepository.summarizeSearchTerms(startDate, endDate, campaignId, source)
 
         val items = rows.map {
             AdminAppleAdsSearchTermResponse(
@@ -81,6 +85,44 @@ class AdminAppleAdsReportService(
         }
 
         return AdminAppleAdsSearchTermListResponse(items = items, total = metrics(sum(rows)))
+    }
+
+    fun findRecommendations(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        campaignId: Long?,
+    ): AdminAppleAdsRecommendationListResponse {
+        validate(startDate, endDate)
+
+        val result = recommender.recommend(startDate, endDate, campaignId)
+
+        return AdminAppleAdsRecommendationListResponse(
+            baselineCostPerInstall = result.baselineCostPerInstall,
+            baselineInstalls = result.baselineInstalls,
+            baselineSpend = result.baselineSpend,
+            currency = result.currency,
+            items = result.items.map {
+                AdminAppleAdsRecommendationResponse(
+                    type = it.type,
+                    campaignId = it.campaignId,
+                    adGroupId = it.adGroupId,
+                    adGroupName = it.adGroupName,
+                    keywordId = it.keywordId,
+                    keyword = it.keyword,
+                    matchType = it.matchType,
+                    searchTerm = it.searchTerm,
+                    currentBid = it.currentBid,
+                    suggestedBid = it.suggestedBid,
+                    currency = it.currency,
+                    impressions = it.impressions,
+                    taps = it.taps,
+                    totalInstalls = it.totalInstalls,
+                    spend = it.spend,
+                    costPerInstall = it.costPerInstall,
+                    reason = it.reason,
+                )
+            },
+        )
     }
 
     private fun validate(startDate: LocalDate, endDate: LocalDate) {
