@@ -1651,6 +1651,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/apple-ads/search-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 검색어 성과
+         * @description 기간의 일별 리포트를 검색어별로 합산한다. source는 AUTO(Search Match) 또는 TARGETED다. 노출 내림차순이다.
+         */
+        get: operations["findSearchTerms"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/apple-ads/orgs": {
         parameters: {
             query?: never;
@@ -1663,6 +1683,46 @@ export interface paths {
          * @description API 사용자가 접근할 수 있는 조직을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 orgId를 얻는 데 쓴다.
          */
         get: operations["findOrgs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/apple-ads/keywords": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 키워드 성과
+         * @description 기간의 일별 리포트를 키워드별로 합산한다. 입찰가와 상태는 기간 안 가장 최근 값이다. 지출 내림차순이다.
+         */
+        get: operations["findKeywords"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/apple-ads/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 캠페인 목록
+         * @description 적재해 둔 캠페인 스냅샷이다. 필터에 쓴다.
+         */
+        get: operations["findCampaigns"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2596,6 +2656,49 @@ export interface components {
             /** Format: int64 */
             count: number;
         };
+        AdminAppleAdsMetricsResponse: {
+            /** Format: int64 */
+            impressions: number;
+            /** Format: int64 */
+            taps: number;
+            /** Format: int64 */
+            totalInstalls: number;
+            /** Format: int64 */
+            tapInstalls: number;
+            /** Format: int64 */
+            viewInstalls: number;
+            /** Format: int64 */
+            totalNewDownloads: number;
+            /** Format: int64 */
+            totalRedownloads: number;
+            spend: number;
+            currency?: string | null;
+            /** Format: double */
+            tapThroughRate?: number | null;
+            costPerTap?: number | null;
+            costPerInstall?: number | null;
+            /** Format: double */
+            conversionRate?: number | null;
+        };
+        AdminAppleAdsSearchTermListResponse: {
+            items: components["schemas"]["AdminAppleAdsSearchTermResponse"][];
+            total: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsSearchTermResponse: {
+            searchTerm: string;
+            searchTermSource?: string | null;
+            countryOrRegion?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
         AdminAppleAdsOrgResponse: {
             /** Format: int64 */
             orgId: number;
@@ -2603,6 +2706,31 @@ export interface components {
             currency?: string | null;
             timeZone?: string | null;
             roleNames: string[];
+        };
+        AdminAppleAdsKeywordListResponse: {
+            items: components["schemas"]["AdminAppleAdsKeywordResponse"][];
+            total: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsKeywordResponse: {
+            /** Format: int64 */
+            keywordId: number;
+            keyword: string;
+            matchType?: string | null;
+            keywordStatus?: string | null;
+            bidAmount?: number | null;
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsCampaignResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            status?: string | null;
+            deleted: boolean;
         };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];
@@ -12746,6 +12874,103 @@ export interface operations {
             };
         };
     };
+    findSearchTerms: {
+        parameters: {
+            query: {
+                startDate: string;
+                endDate: string;
+                campaignId?: number;
+                source?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsSearchTermListResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     findOrgs: {
         parameters: {
             query?: never;
@@ -12762,6 +12987,194 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminAppleAdsOrgResponse"][];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findKeywords: {
+        parameters: {
+            query: {
+                startDate: string;
+                endDate: string;
+                campaignId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsKeywordListResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findCampaigns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsCampaignResponse"][];
                 };
             };
             /** @description 요청이 올바르지 않다 */

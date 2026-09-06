@@ -2150,6 +2150,49 @@ export interface components {
             /** Format: int64 */
             count: number;
         };
+        AdminAppleAdsMetricsResponse: {
+            /** Format: int64 */
+            impressions: number;
+            /** Format: int64 */
+            taps: number;
+            /** Format: int64 */
+            totalInstalls: number;
+            /** Format: int64 */
+            tapInstalls: number;
+            /** Format: int64 */
+            viewInstalls: number;
+            /** Format: int64 */
+            totalNewDownloads: number;
+            /** Format: int64 */
+            totalRedownloads: number;
+            spend: number;
+            currency?: string | null;
+            /** Format: double */
+            tapThroughRate?: number | null;
+            costPerTap?: number | null;
+            costPerInstall?: number | null;
+            /** Format: double */
+            conversionRate?: number | null;
+        };
+        AdminAppleAdsSearchTermListResponse: {
+            items: components["schemas"]["AdminAppleAdsSearchTermResponse"][];
+            total: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsSearchTermResponse: {
+            searchTerm: string;
+            searchTermSource?: string | null;
+            countryOrRegion?: string | null;
+            /** Format: int64 */
+            keywordId?: number | null;
+            keyword?: string | null;
+            matchType?: string | null;
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
         AdminAppleAdsOrgResponse: {
             /** Format: int64 */
             orgId: number;
@@ -2157,6 +2200,31 @@ export interface components {
             currency?: string | null;
             timeZone?: string | null;
             roleNames: string[];
+        };
+        AdminAppleAdsKeywordListResponse: {
+            items: components["schemas"]["AdminAppleAdsKeywordResponse"][];
+            total: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsKeywordResponse: {
+            /** Format: int64 */
+            keywordId: number;
+            keyword: string;
+            matchType?: string | null;
+            keywordStatus?: string | null;
+            bidAmount?: number | null;
+            /** Format: int64 */
+            campaignId: number;
+            /** Format: int64 */
+            adGroupId: number;
+            adGroupName?: string | null;
+            metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
+        };
+        AdminAppleAdsCampaignResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            status?: string | null;
+            deleted: boolean;
         };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];

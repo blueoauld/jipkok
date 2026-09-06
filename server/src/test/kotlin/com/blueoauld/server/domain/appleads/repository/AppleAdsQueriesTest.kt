@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.appleads.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +25,9 @@ class AppleAdsQueriesTest {
 
     @Autowired
     private lateinit var searchTermDailyRepository: AppleAdsSearchTermDailyRepository
+
+    @Autowired
+    private lateinit var appleAdsAdminRepository: AppleAdsAdminRepository
 
     @Test
     fun `같은 캠페인을 다시 받으면 이름과 상태만 갱신한다`() {
@@ -72,16 +76,77 @@ class AppleAdsQueriesTest {
         assertThat(rows.single { it.keywordId == KEYWORD_ID }.impressions).isEqualTo(5)
     }
 
-    private fun upsertKeyword(impressions: Long, spend: BigDecimal, now: Instant) {
+    @Test
+    fun `키워드 성과는 기간을 합산하고 상태는 가장 최근 날 값을 쓴다`() {
+        // given
+        upsertKeyword(impressions = 10, spend = BigDecimal("1.00"), now = NOW)
+        upsertKeyword(
+            impressions = 20,
+            spend = BigDecimal("2.00"),
+            now = NOW,
+            reportDate = NEXT_DATE,
+            status = "PAUSED",
+        )
+        upsertKeyword(impressions = 99, spend = BigDecimal("9.00"), now = NOW, reportDate = NEXT_DATE.plusDays(1))
+        upsertKeyword(
+            impressions = 5,
+            spend = BigDecimal("0.50"),
+            now = NOW,
+            keywordId = OTHER_KEYWORD_ID,
+            campaignId = OTHER_CAMPAIGN_ID,
+        )
+
+        // when
+        val rows = appleAdsAdminRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, null)
+        val filtered = appleAdsAdminRepository.summarizeKeywords(REPORT_DATE, NEXT_DATE, OTHER_CAMPAIGN_ID)
+
+        // then
+        val row = rows.single { it.keywordId == KEYWORD_ID }
+        assertThat(row.impressions).isEqualTo(30)
+        assertThat(row.spend).isEqualByComparingTo(BigDecimal("3.00"))
+        assertThat(row.keywordStatus).isEqualTo("PAUSED")
+        assertThat(rows.map { it.keywordId }).containsExactly(KEYWORD_ID, OTHER_KEYWORD_ID)
+        assertThat(filtered.map { it.keywordId }).containsExactly(OTHER_KEYWORD_ID)
+    }
+
+    @Test
+    fun `검색어 성과는 출처로 거르고 키워드 없는 검색어도 묶는다`() {
+        // given
+        upsertSearchTerm(keywordId = null, impressions = 10, now = NOW)
+        upsertSearchTerm(keywordId = null, impressions = 20, now = NOW, reportDate = NEXT_DATE)
+        upsertSearchTerm(keywordId = KEYWORD_ID, impressions = 5, now = NOW, source = "TARGETED")
+
+        // when
+        val all = appleAdsAdminRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, null)
+        val auto = appleAdsAdminRepository.summarizeSearchTerms(REPORT_DATE, NEXT_DATE, CAMPAIGN_ID, "AUTO")
+
+        // then
+        assertThat(all).hasSize(2)
+        assertThat(all[0].keywordId).isNull()
+        assertThat(all[0].impressions).isEqualTo(30)
+        assertThat(all[1].keywordId).isEqualTo(KEYWORD_ID)
+        assertThat(auto).hasSize(1)
+        assertThat(auto.single().searchTermSource).isEqualTo("AUTO")
+    }
+
+    private fun upsertKeyword(
+        impressions: Long,
+        spend: BigDecimal,
+        now: Instant,
+        reportDate: LocalDate = REPORT_DATE,
+        status: String = "ACTIVE",
+        keywordId: Long = KEYWORD_ID,
+        campaignId: Long = CAMPAIGN_ID,
+    ) {
         keywordDailyRepository.upsert(
-            reportDate = REPORT_DATE,
-            campaignId = CAMPAIGN_ID,
+            reportDate = reportDate,
+            campaignId = campaignId,
             adGroupId = AD_GROUP_ID,
             adGroupName = "Ad Group 1",
-            keywordId = KEYWORD_ID,
+            keywordId = keywordId,
             keyword = "dating app",
             matchType = "EXACT",
-            keywordStatus = "ACTIVE",
+            keywordStatus = status,
             bidAmount = BigDecimal("1.50"),
             currency = "USD",
             impressions = impressions,
@@ -96,9 +161,15 @@ class AppleAdsQueriesTest {
         )
     }
 
-    private fun upsertSearchTerm(keywordId: Long?, impressions: Long, now: Instant) {
+    private fun upsertSearchTerm(
+        keywordId: Long?,
+        impressions: Long,
+        now: Instant,
+        reportDate: LocalDate = REPORT_DATE,
+        source: String = "AUTO",
+    ) {
         searchTermDailyRepository.upsert(
-            reportDate = REPORT_DATE,
+            reportDate = reportDate,
             campaignId = CAMPAIGN_ID,
             adGroupId = AD_GROUP_ID,
             adGroupName = "Ad Group 1",
@@ -106,7 +177,7 @@ class AppleAdsQueriesTest {
             keyword = keywordId?.let { "dating app" },
             matchType = keywordId?.let { "EXACT" },
             searchTerm = SEARCH_TERM,
-            searchTermSource = "AUTO",
+            searchTermSource = source,
             countryOrRegion = "KR",
             currency = "USD",
             impressions = impressions,
@@ -126,9 +197,12 @@ class AppleAdsQueriesTest {
         private const val CAMPAIGN_ID = 900_000_001L
         private const val AD_GROUP_ID = 900_000_002L
         private const val KEYWORD_ID = 900_000_003L
+        private const val OTHER_CAMPAIGN_ID = 900_000_004L
+        private const val OTHER_KEYWORD_ID = 900_000_005L
         private const val SEARCH_TERM = "소개팅 앱"
 
         private val REPORT_DATE: LocalDate = LocalDate.of(2026, 9, 1)
+        private val NEXT_DATE: LocalDate = LocalDate.of(2026, 9, 2)
         private val NOW: Instant = Instant.parse("2026-09-06T00:00:00Z")
         private val LATER: Instant = NOW.plusSeconds(3600)
     }

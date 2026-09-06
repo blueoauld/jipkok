@@ -32,6 +32,14 @@ export type SmsMessage = Schemas["AdminMessageResponse"];
 export type SmsMessagePage = Schemas["AdminMessagePageResponse"];
 export type SmsMessageStatus = NonNullable<SmsMessage["status"]>;
 export type AdminAction = Schemas["AdminActionResponse"];
+export type AppleAdsCampaign = Schemas["AdminAppleAdsCampaignResponse"];
+export type AppleAdsMetrics = Schemas["AdminAppleAdsMetricsResponse"];
+export type AppleAdsKeyword = Schemas["AdminAppleAdsKeywordResponse"];
+export type AppleAdsKeywordList = Schemas["AdminAppleAdsKeywordListResponse"];
+export type AppleAdsSearchTerm = Schemas["AdminAppleAdsSearchTermResponse"];
+export type AppleAdsSearchTermList =
+  Schemas["AdminAppleAdsSearchTermListResponse"];
+export type AppleAdsSyncResult = Schemas["AdminAppleAdsSyncResponse"];
 export type AdminActionPage = Schemas["AdminActionPageResponse"];
 export type ReportType = MemberReport["type"];
 export type ReportReason = MemberReport["reason"];

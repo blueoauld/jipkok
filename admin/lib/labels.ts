@@ -77,3 +77,18 @@ export const smsStatusLabels: Record<SmsMessageStatus, string> = {
   COMPLETE: "완료",
   FAILED: "실패",
 };
+
+export const matchTypeLabels: Record<string, string> = {
+  EXACT: "정확",
+  BROAD: "확장",
+};
+
+export const keywordStatusLabels: Record<string, string> = {
+  ACTIVE: "활성",
+  PAUSED: "일시정지",
+};
+
+export const searchTermSourceLabels: Record<string, string> = {
+  AUTO: "Search Match",
+  TARGETED: "키워드",
+};

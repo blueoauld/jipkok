@@ -2,6 +2,7 @@ import {
   Flag,
   History,
   LayoutDashboard,
+  Megaphone,
   MessageSquare,
   ShieldBan,
   Users,
@@ -32,6 +33,7 @@ export const navItems: NavItem[] = [
   { title: "정지", href: "/suspensions", icon: ShieldBan },
   { title: "문자 발송", href: "/messages", icon: MessageSquare },
   { title: "조치 이력", href: "/actions", icon: History },
+  { title: "애플 광고", href: "/apple-ads", icon: Megaphone },
 ];
 
 export type Breadcrumb = { title: string; href?: string };

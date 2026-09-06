@@ -12365,6 +12365,145 @@
                 }
             }
         },
+        "/api/admin/apple-ads/search-terms": {
+            "get": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \uac80\uc0c9\uc5b4 \uc131\uacfc",
+                "description": "\uae30\uac04\uc758 \uc77c\ubcc4 \ub9ac\ud3ec\ud2b8\ub97c \uac80\uc0c9\uc5b4\ubcc4\ub85c \ud569\uc0b0\ud55c\ub2e4. source\ub294 AUTO(Search Match) \ub610\ub294 TARGETED\ub2e4. \ub178\ucd9c \ub0b4\ub9bc\ucc28\uc21c\uc774\ub2e4.",
+                "operationId": "findSearchTerms",
+                "parameters": [
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "campaignId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAppleAdsSearchTermListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/apple-ads/orgs": {
             "get": {
                 "tags": [
@@ -12382,6 +12521,242 @@
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/AdminAppleAdsOrgResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/apple-ads/keywords": {
+            "get": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \ud0a4\uc6cc\ub4dc \uc131\uacfc",
+                "description": "\uae30\uac04\uc758 \uc77c\ubcc4 \ub9ac\ud3ec\ud2b8\ub97c \ud0a4\uc6cc\ub4dc\ubcc4\ub85c \ud569\uc0b0\ud55c\ub2e4. \uc785\ucc30\uac00\uc640 \uc0c1\ud0dc\ub294 \uae30\uac04 \uc548 \uac00\uc7a5 \ucd5c\uadfc \uac12\uc774\ub2e4. \uc9c0\ucd9c \ub0b4\ub9bc\ucc28\uc21c\uc774\ub2e4.",
+                "operationId": "findKeywords",
+                "parameters": [
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "campaignId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAppleAdsKeywordListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/apple-ads/campaigns": {
+            "get": {
+                "tags": [
+                    "admin-apple-ads-controller"
+                ],
+                "summary": "\uc560\ud50c \uad11\uace0 \ucea0\ud398\uc778 \ubaa9\ub85d",
+                "description": "\uc801\uc7ac\ud574 \ub454 \ucea0\ud398\uc778 \uc2a4\ub0c5\uc0f7\uc774\ub2e4. \ud544\ud130\uc5d0 \uc4f4\ub2e4.",
+                "operationId": "findCampaigns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AdminAppleAdsCampaignResponse"
                                     }
                                 }
                             }
@@ -16215,6 +16590,164 @@
                     "version"
                 ]
             },
+            "AdminAppleAdsMetricsResponse": {
+                "type": "object",
+                "properties": {
+                    "impressions": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "taps": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalInstalls": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "tapInstalls": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "viewInstalls": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalNewDownloads": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalRedownloads": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "spend": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tapThroughRate": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "costPerTap": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "costPerInstall": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "conversionRate": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "impressions",
+                    "spend",
+                    "tapInstalls",
+                    "taps",
+                    "totalInstalls",
+                    "totalNewDownloads",
+                    "totalRedownloads",
+                    "viewInstalls"
+                ]
+            },
+            "AdminAppleAdsSearchTermListResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminAppleAdsSearchTermResponse"
+                        }
+                    },
+                    "total": {
+                        "$ref": "#/components/schemas/AdminAppleAdsMetricsResponse"
+                    }
+                },
+                "required": [
+                    "items",
+                    "total"
+                ]
+            },
+            "AdminAppleAdsSearchTermResponse": {
+                "type": "object",
+                "properties": {
+                    "searchTerm": {
+                        "type": "string"
+                    },
+                    "searchTermSource": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "countryOrRegion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "keywordId": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "keyword": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "matchType": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "campaignId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "adGroupId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "adGroupName": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metrics": {
+                        "$ref": "#/components/schemas/AdminAppleAdsMetricsResponse"
+                    }
+                },
+                "required": [
+                    "adGroupId",
+                    "campaignId",
+                    "metrics",
+                    "searchTerm"
+                ]
+            },
             "AdminAppleAdsOrgResponse": {
                 "type": "object",
                 "properties": {
@@ -16248,6 +16781,104 @@
                     "orgId",
                     "orgName",
                     "roleNames"
+                ]
+            },
+            "AdminAppleAdsKeywordListResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminAppleAdsKeywordResponse"
+                        }
+                    },
+                    "total": {
+                        "$ref": "#/components/schemas/AdminAppleAdsMetricsResponse"
+                    }
+                },
+                "required": [
+                    "items",
+                    "total"
+                ]
+            },
+            "AdminAppleAdsKeywordResponse": {
+                "type": "object",
+                "properties": {
+                    "keywordId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "keyword": {
+                        "type": "string"
+                    },
+                    "matchType": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "keywordStatus": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bidAmount": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "campaignId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "adGroupId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "adGroupName": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metrics": {
+                        "$ref": "#/components/schemas/AdminAppleAdsMetricsResponse"
+                    }
+                },
+                "required": [
+                    "adGroupId",
+                    "campaignId",
+                    "keyword",
+                    "keywordId",
+                    "metrics"
+                ]
+            },
+            "AdminAppleAdsCampaignResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "deleted",
+                    "id",
+                    "name"
                 ]
             },
             "AdminActionPageResponse": {
