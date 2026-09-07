@@ -25,8 +25,8 @@ import { useAccentToken } from "@/lib/theme/accent";
 const MUTE_ICON_SIZE = 14;
 const PIN_ICON_SIZE = 14;
 
-const ACTION_SIZE = 40;
-const ACTION_ICON_SIZE = 20;
+const ACTION_SIZE = 46;
+const ACTION_ICON_SIZE = 22;
 const ACTION_FRICTION = 2;
 
 const SELECT_BOX_SIZE = 22;
