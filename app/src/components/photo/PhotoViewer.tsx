@@ -11,7 +11,6 @@ import {
   View,
 } from "react-native";
 import {
-  FlatList,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
@@ -26,7 +25,11 @@ import { scheduleOnRN } from "react-native-worklets";
 import { useZoomGesture } from "react-native-zoom-reanimated";
 import { XStack, YStack } from "tamagui";
 
-import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
+import {
+  PagedPhotos,
+  type PagedPhotosHandle,
+  PhotoDots,
+} from "@/components/photo/PagedPhotos";
 import { useDismissGesture } from "@/hooks/useDismissGesture";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
@@ -91,12 +94,14 @@ function ViewerContent({
   onClose: () => void;
 }) {
   const screen = useWindowDimensions();
-  const listRef = useRef<FlatList<string>>(null);
+  const listRef = useRef<PagedPhotosHandle>(null);
   const [index, setIndex] = useState(initialIndex);
   const [zoomed, setZoomed] = useState(false);
   const [chromeVisible, setChromeVisible] = useState(true);
 
   useSecretPhotoCapture(secret);
+
+  const settle = useCallback(() => listRef.current?.settle(), []);
 
   // 확대 중에는 손가락이 사진을 끄는 것이므로 닫기가 끼어들면 안 된다.
   const dismiss = useDismissGesture({ enabled: !zoomed, onClose });
@@ -131,7 +136,7 @@ function ViewerContent({
                 photos={photos}
                 itemWidth={screen.width}
                 index={index}
-                listRef={listRef}
+                ref={listRef}
                 onIndexChange={setIndex}
                 renderPhoto={(photo, photoIndex) => (
                   <ZoomablePhoto
@@ -141,6 +146,7 @@ function ViewerContent({
                     listRef={listRef}
                     onZoomStateChange={setZoomed}
                     onTap={toggleChrome}
+                    onRelease={settle}
                   />
                 )}
               />
@@ -202,13 +208,15 @@ function ZoomablePhoto({
   listRef,
   onZoomStateChange,
   onTap,
+  onRelease,
 }: {
   photo: string;
   photoIndex: number;
   secret: boolean;
-  listRef: RefObject<FlatList<string> | null>;
+  listRef: RefObject<PagedPhotosHandle | null>;
   onZoomStateChange: (zoomed: boolean) => void;
   onTap: () => void;
+  onRelease: () => void;
 }) {
   const screen = useWindowDimensions();
   const [size, setSize] = useState<{ width: number; height: number }>();
@@ -236,13 +244,23 @@ function ZoomablePhoto({
   );
 
   // 라이브러리의 더블탭이 실패해야 단일 탭으로 인정되므로 Exclusive로 묶는다.
+  // Manual 제스처는 손가락이 모두 떨어지면 끊긴 페이지 스크롤을 정렬한다. 네이티브 스크롤이
+  // 터치를 가져가면 같이 취소되므로 드래그 중에는 부르지 않는다.
   const gesture = useMemo(
     () =>
       Gesture.Exclusive(
-        zoomGesture,
+        Gesture.Simultaneous(
+          zoomGesture,
+          Gesture.Manual().onTouchesUp((event, state) => {
+            if (event.numberOfTouches === 0) {
+              state.fail();
+              scheduleOnRN(onRelease);
+            }
+          }),
+        ),
         Gesture.Tap().runOnJS(true).onStart(onTap),
       ),
-    [onTap, zoomGesture],
+    [onRelease, onTap, zoomGesture],
   );
 
   return (

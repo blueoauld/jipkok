@@ -1,0 +1,181 @@
+diff --git a/node_modules/react-native-zoom-reanimated/lib/commonjs/index.js b/node_modules/react-native-zoom-reanimated/lib/commonjs/index.js
+index 24d48d2..a04dea2 100644
+--- a/node_modules/react-native-zoom-reanimated/lib/commonjs/index.js
++++ b/node_modules/react-native-zoom-reanimated/lib/commonjs/index.js
+@@ -113,6 +113,8 @@ function useZoomGesture(props = {}) {
+   const isAtRightEdge = (0, _reactNativeReanimated.useSharedValue)(false);
+   const panStartX = (0, _reactNativeReanimated.useSharedValue)(0);
+   const accumulatedOverflow = (0, _reactNativeReanimated.useSharedValue)(0); // Track overflow for snap decision
++  const pinchPanTranslationX = (0, _reactNativeReanimated.useSharedValue)(0); // Pan translation seen while pinching
++  const pinchPanTranslationY = (0, _reactNativeReanimated.useSharedValue)(0);
+ 
+   // Tracking state
+   const isZoomedIn = (0, _reactNativeReanimated.useSharedValue)(false);
+@@ -482,6 +484,15 @@ function useZoomGesture(props = {}) {
+     }).onUpdate(event => {
+       'worklet';
+ 
++      // While pinching, the pinch owns translation. Applying the pan here overwrites
++      // the focal tracking and, as the scale shrinks, misreads the saved translation
++      // as an edge overflow that scrolls the parent list to the neighbouring item.
++      if (isPinching.value) {
++        pinchPanTranslationX.value = event.translationX;
++        pinchPanTranslationY.value = event.translationY;
++        return;
++      }
++
+       const bounds = getTranslateBounds(scale.value);
+ 
+       // Calculate new translation
+@@ -621,6 +632,8 @@ function useZoomGesture(props = {}) {
+       // Save initial focal point
+       pinchFocalX.value = event.focalX;
+       pinchFocalY.value = event.focalY;
++      pinchPanTranslationX.value = 0;
++      pinchPanTranslationY.value = 0;
+     }).onUpdate(event => {
+       'worklet';
+ 
+@@ -679,13 +692,20 @@ function useZoomGesture(props = {}) {
+       // Apply boundary constraints with spring animation
+       applyBoundaryConstraints(scale.value, true);
+ 
++      // A pan continuing with one finger measures translation from its own start,
++      // so rebase its saved position onto the pinch result.
++      if (isPanning.value) {
++        savedTranslateX.value -= pinchPanTranslationX.value;
++        savedTranslateY.value -= pinchPanTranslationY.value;
++      }
++
+       // Update isZoomedIn state
+       const finalScale = (0, _utils.clamp)(scale.value, minScale, maxScale);
+       const isNowZoomed = finalScale > minScale;
+       if (wasZoomed !== isNowZoomed) isZoomedIn.value = isNowZoomed;
+     });
+     return _reactNativeGestureHandler.Gesture.Simultaneous(tapGesture, panGesture, pinchGesture);
+-  }, [updateZoomGestureLastTime, onDoubleTap, scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, pinchFocalX, pinchFocalY, containerDimensions, isPinching, isPanning, getTranslateBounds, applyBoundaryConstraints, applyRubberBandTranslation, minScale, maxScale, isZoomedIn, enableGallerySwipe, isAtLeftEdge, isAtRightEdge, panStartX, hasParentScroll, currentIndex, itemWidth, scrollParent, accumulatedOverflow, resetZoomDelayed]);
++  }, [updateZoomGestureLastTime, onDoubleTap, scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, pinchFocalX, pinchFocalY, containerDimensions, isPinching, isPanning, getTranslateBounds, applyBoundaryConstraints, applyRubberBandTranslation, minScale, maxScale, isZoomedIn, enableGallerySwipe, isAtLeftEdge, isAtRightEdge, panStartX, hasParentScroll, currentIndex, itemWidth, scrollParent, accumulatedOverflow, resetZoomDelayed, pinchPanTranslationX, pinchPanTranslationY]);
+ 
+   // ============== ANIMATED STYLE ==============
+   // Transform order: translate first, then scale
+diff --git a/node_modules/react-native-zoom-reanimated/lib/module/index.js b/node_modules/react-native-zoom-reanimated/lib/module/index.js
+index 044e036..746f7e8 100644
+--- a/node_modules/react-native-zoom-reanimated/lib/module/index.js
++++ b/node_modules/react-native-zoom-reanimated/lib/module/index.js
+@@ -105,6 +105,8 @@ export function useZoomGesture(props = {}) {
+   const isAtRightEdge = useSharedValue(false);
+   const panStartX = useSharedValue(0);
+   const accumulatedOverflow = useSharedValue(0); // Track overflow for snap decision
++  const pinchPanTranslationX = useSharedValue(0); // Pan translation seen while pinching
++  const pinchPanTranslationY = useSharedValue(0);
+ 
+   // Tracking state
+   const isZoomedIn = useSharedValue(false);
+@@ -474,6 +476,15 @@ export function useZoomGesture(props = {}) {
+     }).onUpdate(event => {
+       'worklet';
+ 
++      // While pinching, the pinch owns translation. Applying the pan here overwrites
++      // the focal tracking and, as the scale shrinks, misreads the saved translation
++      // as an edge overflow that scrolls the parent list to the neighbouring item.
++      if (isPinching.value) {
++        pinchPanTranslationX.value = event.translationX;
++        pinchPanTranslationY.value = event.translationY;
++        return;
++      }
++
+       const bounds = getTranslateBounds(scale.value);
+ 
+       // Calculate new translation
+@@ -613,6 +624,8 @@ export function useZoomGesture(props = {}) {
+       // Save initial focal point
+       pinchFocalX.value = event.focalX;
+       pinchFocalY.value = event.focalY;
++      pinchPanTranslationX.value = 0;
++      pinchPanTranslationY.value = 0;
+     }).onUpdate(event => {
+       'worklet';
+ 
+@@ -671,13 +684,20 @@ export function useZoomGesture(props = {}) {
+       // Apply boundary constraints with spring animation
+       applyBoundaryConstraints(scale.value, true);
+ 
++      // A pan continuing with one finger measures translation from its own start,
++      // so rebase its saved position onto the pinch result.
++      if (isPanning.value) {
++        savedTranslateX.value -= pinchPanTranslationX.value;
++        savedTranslateY.value -= pinchPanTranslationY.value;
++      }
++
+       // Update isZoomedIn state
+       const finalScale = clamp(scale.value, minScale, maxScale);
+       const isNowZoomed = finalScale > minScale;
+       if (wasZoomed !== isNowZoomed) isZoomedIn.value = isNowZoomed;
+     });
+     return Gesture.Simultaneous(tapGesture, panGesture, pinchGesture);
+-  }, [updateZoomGestureLastTime, onDoubleTap, scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, pinchFocalX, pinchFocalY, containerDimensions, isPinching, isPanning, getTranslateBounds, applyBoundaryConstraints, applyRubberBandTranslation, minScale, maxScale, isZoomedIn, enableGallerySwipe, isAtLeftEdge, isAtRightEdge, panStartX, hasParentScroll, currentIndex, itemWidth, scrollParent, accumulatedOverflow, resetZoomDelayed]);
++  }, [updateZoomGestureLastTime, onDoubleTap, scale, translateX, translateY, savedScale, savedTranslateX, savedTranslateY, pinchFocalX, pinchFocalY, containerDimensions, isPinching, isPanning, getTranslateBounds, applyBoundaryConstraints, applyRubberBandTranslation, minScale, maxScale, isZoomedIn, enableGallerySwipe, isAtLeftEdge, isAtRightEdge, panStartX, hasParentScroll, currentIndex, itemWidth, scrollParent, accumulatedOverflow, resetZoomDelayed, pinchPanTranslationX, pinchPanTranslationY]);
+ 
+   // ============== ANIMATED STYLE ==============
+   // Transform order: translate first, then scale
+diff --git a/node_modules/react-native-zoom-reanimated/src/index.tsx b/node_modules/react-native-zoom-reanimated/src/index.tsx
+index c31f277..f70db7d 100644
+--- a/node_modules/react-native-zoom-reanimated/src/index.tsx
++++ b/node_modules/react-native-zoom-reanimated/src/index.tsx
+@@ -194,6 +194,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
+   const isAtRightEdge = useSharedValue(false)
+   const panStartX = useSharedValue(0)
+   const accumulatedOverflow = useSharedValue(0) // Track overflow for snap decision
++  const pinchPanTranslationX = useSharedValue(0) // Pan translation seen while pinching
++  const pinchPanTranslationY = useSharedValue(0)
+ 
+   // Tracking state
+   const isZoomedIn = useSharedValue(false)
+@@ -635,6 +637,15 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
+       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+         'worklet'
+ 
++        // While pinching, the pinch owns translation. Applying the pan here overwrites
++        // the focal tracking and, as the scale shrinks, misreads the saved translation
++        // as an edge overflow that scrolls the parent list to the neighbouring item.
++        if (isPinching.value) {
++          pinchPanTranslationX.value = event.translationX
++          pinchPanTranslationY.value = event.translationY
++          return
++        }
++
+         const bounds = getTranslateBounds(scale.value)
+ 
+         // Calculate new translation
+@@ -805,6 +816,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
+         // Save initial focal point
+         pinchFocalX.value = event.focalX
+         pinchFocalY.value = event.focalY
++        pinchPanTranslationX.value = 0
++        pinchPanTranslationY.value = 0
+       })
+       .onUpdate((event: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
+         'worklet'
+@@ -865,6 +878,13 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
+         // Apply boundary constraints with spring animation
+         applyBoundaryConstraints(scale.value, true)
+ 
++        // A pan continuing with one finger measures translation from its own start,
++        // so rebase its saved position onto the pinch result.
++        if (isPanning.value) {
++          savedTranslateX.value -= pinchPanTranslationX.value
++          savedTranslateY.value -= pinchPanTranslationY.value
++        }
++
+         // Update isZoomedIn state
+         const finalScale = clamp(scale.value, minScale, maxScale)
+         const isNowZoomed = finalScale > minScale
+@@ -903,6 +923,8 @@ export function useZoomGesture(props: UseZoomGestureProps = {}): UseZoomGestureR
+     scrollParent,
+     accumulatedOverflow,
+     resetZoomDelayed,
++    pinchPanTranslationX,
++    pinchPanTranslationY,
+   ])
+ 
+   // ============== ANIMATED STYLE ==============
