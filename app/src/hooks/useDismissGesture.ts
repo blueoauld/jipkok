@@ -4,6 +4,7 @@ import { useWindowDimensions } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
 import {
   interpolate,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -16,13 +17,47 @@ import { TRANSITION } from "@/lib/design";
 // 시트, 다이얼로그와 같은 스프링으로 되돌아간다.
 const SPRING = animations.animations[TRANSITION];
 
-const DISMISS_DISTANCE = 120;
+export const DISMISS_DISTANCE = 120;
 
 const DISMISS_VELOCITY = 800;
 
 const DISMISS_DURATION = 200;
 
 const GESTURE_SLOP = 20;
+
+export function shouldDismiss(translationY: number, velocityY: number) {
+  "worklet";
+
+  return (
+    Math.abs(translationY) > DISMISS_DISTANCE ||
+    Math.abs(velocityY) > DISMISS_VELOCITY
+  );
+}
+
+export function useDismissStyles(translateY: SharedValue<number>) {
+  const screen = useWindowDimensions();
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      Math.abs(translateY.value),
+      [0, screen.height / 2],
+      [1, 0],
+      "clamp",
+    ),
+  }));
+
+  // 버튼은 배경보다 빨리 사라져서 손가락이 움직이는 게 콘텐츠뿐임을 보여준다.
+  const chromeStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      Math.abs(translateY.value),
+      [0, DISMISS_DISTANCE],
+      [1, 0],
+      "clamp",
+    ),
+  }));
+
+  return { backdropStyle, chromeStyle };
+}
 
 export function useDismissGesture({
   enabled = true,
@@ -44,10 +79,7 @@ export function useDismissGesture({
           translateY.value = event.translationY;
         })
         .onEnd((event) => {
-          const dragged = Math.abs(event.translationY) > DISMISS_DISTANCE;
-          const flicked = Math.abs(event.velocityY) > DISMISS_VELOCITY;
-
-          if (!dragged && !flicked) {
+          if (!shouldDismiss(event.translationY, event.velocityY)) {
             translateY.value = withSpring(0, SPRING);
             return;
           }
@@ -71,24 +103,5 @@ export function useDismissGesture({
     transform: [{ translateY: translateY.value }],
   }));
 
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      Math.abs(translateY.value),
-      [0, screen.height / 2],
-      [1, 0],
-      "clamp",
-    ),
-  }));
-
-  // 버튼은 배경보다 빨리 사라져서 손가락이 움직이는 게 콘텐츠뿐임을 보여준다.
-  const chromeStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      Math.abs(translateY.value),
-      [0, DISMISS_DISTANCE],
-      [1, 0],
-      "clamp",
-    ),
-  }));
-
-  return { gesture, contentStyle, backdropStyle, chromeStyle };
+  return { gesture, contentStyle, ...useDismissStyles(translateY) };
 }
