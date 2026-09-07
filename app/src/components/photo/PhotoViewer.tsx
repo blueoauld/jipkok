@@ -11,6 +11,7 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
@@ -20,7 +21,11 @@ import { Gallery, type VerticalPullOptions } from "react-native-zoom-toolkit";
 import { XStack, YStack } from "tamagui";
 
 import { PhotoDots } from "@/components/photo/PagedPhotos";
-import { shouldDismiss, useDismissStyles } from "@/hooks/useDismissGesture";
+import {
+  DISMISS_DURATION,
+  shouldDismiss,
+  useDismissStyles,
+} from "@/hooks/useDismissGesture";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
@@ -86,10 +91,14 @@ function ViewerContent({
   secret: boolean;
   onClose: () => void;
 }) {
+  const screen = useWindowDimensions();
   const [index, setIndex] = useState(initialIndex);
   const [chromeVisible, setChromeVisible] = useState(true);
   const pullY = useSharedValue(0);
   const dismissed = useSharedValue(false);
+  const releaseY = useSharedValue(0);
+  const holdY = useSharedValue(0);
+  const exitY = useSharedValue(0);
 
   useSecretPhotoCapture(secret);
 
@@ -98,24 +107,39 @@ function ViewerContent({
     [],
   );
 
-  // 갤러리는 손을 떼면 사진을 제자리로 되돌리므로, 닫기로 판정되면 내용을 바로 숨기고
-  // Modal 페이드에 맡긴다.
+  // 갤러리는 손을 떼면 사진을 제자리로 되돌린다. 닫기로 판정되면 그 되돌림을 상쇄해서
+  // 손을 뗀 자리에 붙잡아 두고, 컨테이너를 화면 밖으로 보낸 뒤 닫는다.
   const onVerticalPull = useCallback(
     ({ translateY, released, velocityY }: VerticalPullOptions) => {
       "worklet";
 
       if (dismissed.value) {
+        holdY.value = releaseY.value - translateY;
         return;
       }
 
       pullY.value = translateY;
 
-      if (released && shouldDismiss(translateY, velocityY)) {
-        dismissed.value = true;
-        scheduleOnRN(onClose);
+      if (!released || !shouldDismiss(translateY, velocityY)) {
+        return;
       }
+
+      dismissed.value = true;
+      releaseY.value = translateY;
+
+      const direction = translateY > 0 ? 1 : -1;
+
+      exitY.value = withTiming(
+        direction * screen.height - translateY,
+        { duration: DISMISS_DURATION },
+        (finished) => {
+          if (finished) {
+            scheduleOnRN(onClose);
+          }
+        },
+      );
     },
-    [dismissed, onClose, pullY],
+    [dismissed, exitY, holdY, onClose, pullY, releaseY, screen.height],
   );
 
   const renderPhoto = useCallback(
@@ -123,10 +147,13 @@ function ViewerContent({
     [secret],
   );
 
-  const pull = useDismissStyles(pullY);
+  const visualY = useDerivedValue(() =>
+    dismissed.value ? releaseY.value + exitY.value : pullY.value,
+  );
+  const pull = useDismissStyles(visualY);
 
   const contentStyle = useAnimatedStyle(() => ({
-    opacity: dismissed.value ? 0 : 1,
+    transform: [{ translateY: holdY.value + exitY.value }],
   }));
 
   const chromeStyle = useAnimatedStyle(
@@ -145,69 +172,63 @@ function ViewerContent({
       <GestureHandlerRootView style={styles.root}>
         <StatusBar barStyle="light-content" />
 
+        <Animated.View style={[styles.backdrop, pull.backdropStyle]} />
+
         <Animated.View style={[styles.root, contentStyle]}>
-          <Animated.View style={[styles.backdrop, pull.backdropStyle]} />
+          <Gallery
+            data={photos}
+            keyExtractor={(photo, photoIndex) => `${photoIndex}-${photo}`}
+            initialIndex={initialIndex}
+            maxScale={MAX_SCALE}
+            tapOnEdgeToItem={false}
+            renderItem={renderPhoto}
+            onTap={toggleChrome}
+            onIndexChange={setIndex}
+            onVerticalPull={onVerticalPull}
+          />
+        </Animated.View>
 
-          <YStack flex={1}>
-            <Gallery
-              data={photos}
-              keyExtractor={(photo, photoIndex) => `${photoIndex}-${photo}`}
-              initialIndex={initialIndex}
-              maxScale={MAX_SCALE}
-              tapOnEdgeToItem={false}
-              renderItem={renderPhoto}
-              onTap={toggleChrome}
-              onIndexChange={setIndex}
-              onVerticalPull={onVerticalPull}
-            />
+        <Animated.View
+          style={[StyleSheet.absoluteFill, pull.chromeStyle]}
+          pointerEvents="box-none"
+        >
+          <Animated.View
+            style={[styles.header, chromeStyle]}
+            pointerEvents={chromePointerEvents}
+          >
+            <SafeAreaView edges={["top"]}>
+              <XStack p="$2">
+                <XStack
+                  width={CLOSE_BUTTON_SIZE}
+                  height={CLOSE_BUTTON_SIZE}
+                  bg={OVERLAY_BG}
+                  items="center"
+                  justify="center"
+                  pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessibilityRole="button"
+                  accessibilityLabel={i18n.t("a11y.close")}
+                  onPress={onClose}
+                >
+                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                </XStack>
+              </XStack>
+            </SafeAreaView>
+          </Animated.View>
 
-            <Animated.View
-              style={[StyleSheet.absoluteFill, pull.chromeStyle]}
-              pointerEvents="box-none"
-            >
-              <Animated.View
-                style={[styles.header, chromeStyle]}
-                pointerEvents={chromePointerEvents}
-              >
-                <SafeAreaView edges={["top"]}>
-                  <XStack p="$2">
-                    <XStack
-                      width={CLOSE_BUTTON_SIZE}
-                      height={CLOSE_BUTTON_SIZE}
-                      bg={OVERLAY_BG}
-                      items="center"
-                      justify="center"
-                      pressStyle={{ opacity: PRESS_OPACITY }}
-                      accessibilityRole="button"
-                      accessibilityLabel={i18n.t("a11y.close")}
-                      onPress={onClose}
-                    >
-                      <XIcon
-                        size={CLOSE_ICON_SIZE}
-                        weight="bold"
-                        color="white"
-                      />
-                    </XStack>
+          <Animated.View
+            style={[styles.dots, chromeStyle]}
+            pointerEvents={chromePointerEvents}
+          >
+            <SafeAreaView edges={["bottom"]}>
+              <YStack pb="$6" items="center">
+                {photos.length > 1 && (
+                  <XStack px="$3" py="$2" bg={OVERLAY_BG}>
+                    <PhotoDots count={photos.length} index={index} />
                   </XStack>
-                </SafeAreaView>
-              </Animated.View>
-
-              <Animated.View
-                style={[styles.dots, chromeStyle]}
-                pointerEvents={chromePointerEvents}
-              >
-                <SafeAreaView edges={["bottom"]}>
-                  <YStack pb="$6" items="center">
-                    {photos.length > 1 && (
-                      <XStack px="$3" py="$2" bg={OVERLAY_BG}>
-                        <PhotoDots count={photos.length} index={index} />
-                      </XStack>
-                    )}
-                  </YStack>
-                </SafeAreaView>
-              </Animated.View>
-            </Animated.View>
-          </YStack>
+                )}
+              </YStack>
+            </SafeAreaView>
+          </Animated.View>
         </Animated.View>
       </GestureHandlerRootView>
     </SafeAreaProvider>

@@ -21,7 +21,7 @@ export const DISMISS_DISTANCE = 120;
 
 const DISMISS_VELOCITY = 800;
 
-const DISMISS_DURATION = 200;
+export const DISMISS_DURATION = 200;
 
 const GESTURE_SLOP = 20;
 
