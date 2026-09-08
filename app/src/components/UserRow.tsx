@@ -7,11 +7,10 @@ import { Text, XStack, YStack } from "tamagui";
 import { MemberMeta } from "@/components/MemberMeta";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroPressable } from "@/components/ui/RetroPressable";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { RETRO_BORDER_WIDTH } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -30,20 +29,20 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
   };
 
   return (
-    <YStack shrink={0}>
-      <RetroPressable
-        offset={RETRO_SHADOW_OFFSET_SM}
-        width={DELETE_BUTTON_SIZE}
-        height={DELETE_BUTTON_SIZE}
-        bg="$red10"
-        pressBg="$red11"
-        items="center"
-        justify="center"
-        onPress={press}
-      >
-        <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
-      </RetroPressable>
-    </YStack>
+    <XStack
+      shrink={0}
+      width={DELETE_BUTTON_SIZE}
+      height={DELETE_BUTTON_SIZE}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg="$red10"
+      items="center"
+      justify="center"
+      pressStyle={{ bg: "$red11" }}
+      onPress={press}
+    >
+      <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
+    </XStack>
   );
 }
 
