@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import type { KeyboardTypeOptions } from "react-native";
 import { Dialog, XStack } from "tamagui";
 
 import { CountedInput } from "@/components/ui/CountedInput";
@@ -15,7 +14,6 @@ function DialogForm({
   submitLabel,
   rows,
   clearable,
-  keyboardType,
   onSubmit,
 }: {
   title: string;
@@ -25,7 +23,6 @@ function DialogForm({
   submitLabel: string;
   rows?: number;
   clearable?: boolean;
-  keyboardType?: KeyboardTypeOptions;
   onSubmit: (value: string) => void;
 }) {
   const { t } = useTranslation();
@@ -41,7 +38,6 @@ function DialogForm({
         placeholder={placeholder}
         maxLength={maxLength}
         clearable={clearable}
-        keyboardType={keyboardType}
         multiline={rows !== undefined}
         rows={rows}
         textAlignVertical={rows === undefined ? undefined : "top"}
@@ -76,7 +72,6 @@ export function TextInputDialog({
   submitLabel,
   rows,
   clearable,
-  keyboardType,
   onSubmit,
 }: {
   open: boolean;
@@ -88,7 +83,6 @@ export function TextInputDialog({
   submitLabel?: string;
   rows?: number;
   clearable?: boolean;
-  keyboardType?: KeyboardTypeOptions;
   onSubmit: (value: string) => void;
 }) {
   const { t } = useTranslation();
@@ -102,7 +96,6 @@ export function TextInputDialog({
         submitLabel={submitLabel ?? t("component.submit")}
         rows={rows}
         clearable={clearable}
-        keyboardType={keyboardType}
         onSubmit={onSubmit}
       />
     </RetroFormDialog>

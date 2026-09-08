@@ -393,7 +393,6 @@ export const ja: typeof ko = {
   },
   contactBlock: {
     addTitle: "番号をブロック",
-    placeholder: "携帯電話番号",
     submit: "ブロック",
     invalid: "携帯電話番号が正しくありません。",
     added: "番号をブロックしました。",

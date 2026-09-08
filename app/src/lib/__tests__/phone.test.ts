@@ -82,4 +82,10 @@ describe("phone", () => {
     expect(toDomestic("+886912345678")).toBe("0912345678");
     expect(toDomestic("+12125550100")).toBe("+12125550100");
   });
+
+  it("나라를 넘기면 고른 나라 대신 그 나라의 코드를 붙인다", () => {
+    usePhoneCountryStore.setState({ country: "KR" });
+
+    expect(toE164("09012345678", "JP")).toBe("+819012345678");
+  });
 });

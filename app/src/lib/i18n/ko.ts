@@ -390,7 +390,6 @@ export const ko = {
   },
   contactBlock: {
     addTitle: "번호 차단",
-    placeholder: "휴대폰 번호",
     submit: "차단",
     invalid: "휴대폰 번호가 올바르지 않습니다.",
     added: "번호를 차단했습니다.",

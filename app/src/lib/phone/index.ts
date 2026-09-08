@@ -24,8 +24,8 @@ export function patternOf(country: PhoneCountry) {
 }
 
 // 서버는 국가 코드가 붙은 형식만 받는다. 화면은 국내 표기로 입력받아 여기서 바꾼다.
-export function toE164(phoneNumber: string) {
-  return dialCodeOf(currentCountry()) + phoneNumber.slice(1);
+export function toE164(phoneNumber: string, country = currentCountry()) {
+  return dialCodeOf(country) + phoneNumber.slice(1);
 }
 
 // 서버가 준 국가 코드 형식을 화면의 국내 표기로 되돌린다. 모르는 코드면 그대로 보여 준다.

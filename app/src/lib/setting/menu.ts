@@ -60,6 +60,11 @@ export const SECTIONS: SettingGroup[] = [
     items: [
       { labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" },
       {
+        labelKey: "list.contactBlocks",
+        icon: AddressBookIcon,
+        href: "/activity/contact-block",
+      },
+      {
         labelKey: "setting.menu.appLock",
         icon: LockKeyIcon,
         action: "appLock",
@@ -84,11 +89,6 @@ export const SECTIONS: SettingGroup[] = [
         labelKey: "list.blocks",
         icon: ProhibitIcon,
         href: "/activity/block",
-      },
-      {
-        labelKey: "list.contactBlocks",
-        icon: AddressBookIcon,
-        href: "/activity/contact-block",
       },
       {
         labelKey: "list.worries",

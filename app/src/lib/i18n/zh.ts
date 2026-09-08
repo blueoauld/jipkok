@@ -375,7 +375,6 @@ export const zh: typeof ko = {
   },
   contactBlock: {
     addTitle: "封鎖號碼",
-    placeholder: "手機號碼",
     submit: "封鎖",
     invalid: "手機號碼格式不正確。",
     added: "已封鎖此號碼。",

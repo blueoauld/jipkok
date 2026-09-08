@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Text, XStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
-import { TextInputDialog } from "@/components/TextInputDialog";
+import { PhoneInputDialog } from "@/components/PhoneInputDialog";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroDeleteButton } from "@/components/ui/RetroDeleteButton";
@@ -20,8 +20,7 @@ import {
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import type { ContactBlockResponse } from "@/lib/api";
 import { listErrorMessage } from "@/lib/message";
-import { maxLengthOf, patternOf, toDomestic, toE164 } from "@/lib/phone";
-import { usePhoneCountry } from "@/lib/phone/store";
+import { toDomestic } from "@/lib/phone";
 
 function ContactBlockRow({
   block,
@@ -44,7 +43,6 @@ function ContactBlockRow({
 
 export default function ContactBlockScreen() {
   const { t } = useTranslation();
-  const country = usePhoneCountry();
   const { alertElement, show, showApiError } = useRetroAlert();
   const [addOpen, setAddOpen] = useState(false);
   const { data: blocks, error, refetch } = useContactBlocks();
@@ -75,18 +73,6 @@ export default function ContactBlockScreen() {
     };
   }, []);
 
-  // 화면은 국내 표기로 받고 서버에는 국가 코드를 붙여 보낸다. 가입 때와 같은 규칙이다.
-  const submit = (value: string) => {
-    const digits = value.replace(/\D/g, "");
-
-    if (!patternOf(country).test(digits)) {
-      show("warning", t("contactBlock.invalid"));
-      return;
-    }
-
-    add.mutate(toE164(digits));
-  };
-
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={screenOptions} />
@@ -114,15 +100,13 @@ export default function ContactBlockScreen() {
         />
       )}
 
-      <TextInputDialog
+      <PhoneInputDialog
         open={addOpen}
         onOpenChange={setAddOpen}
         title={t("contactBlock.addTitle")}
-        placeholder={t("contactBlock.placeholder")}
-        maxLength={maxLengthOf(country)}
-        keyboardType="number-pad"
         submitLabel={t("contactBlock.submit")}
-        onSubmit={submit}
+        onSubmit={add.mutate}
+        onInvalid={() => show("warning", t("contactBlock.invalid"))}
       />
 
       {alertElement}

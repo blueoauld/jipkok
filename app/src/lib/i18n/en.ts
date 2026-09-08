@@ -390,7 +390,6 @@ export const en: typeof ko = {
   },
   contactBlock: {
     addTitle: "Block a number",
-    placeholder: "Mobile number",
     submit: "Block",
     invalid: "The mobile number is not valid.",
     added: "Number blocked.",
