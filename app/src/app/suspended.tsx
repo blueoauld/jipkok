@@ -71,7 +71,11 @@ export default function SuspendedScreen() {
             disabled={loggingOut}
             onPress={() => logout()}
           >
-            {loggingOut ? <Spinner color="white" /> : t("setting.menu.logout")}
+            {loggingOut ? (
+              <Spinner color="$color12" />
+            ) : (
+              t("setting.menu.logout")
+            )}
           </RetroButton>
 
           <RetroButton theme="red" onPress={confirmWithdraw}>
