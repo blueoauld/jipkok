@@ -2461,7 +2461,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;

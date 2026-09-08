@@ -84,6 +84,7 @@ export const adminActionLabels: Record<AdminActionType, string> = {
   DELETE_WORRY_POST: "고민 삭제",
   DELETE_WORRY_COMMENT: "고민 댓글 삭제",
   HANDLE_REPORT: "신고 처리",
+  VIEW_CHAT_ROOM: "채팅 열람",
 };
 
 export const smsStatusLabels: Record<SmsMessageStatus, string> = {

@@ -1786,7 +1786,7 @@ export interface paths {
         };
         /**
          * 채팅방 상세
-         * @description 삭제된 방도 준다.
+         * @description 삭제된 방도 준다. 조회할 때마다 열람 기록을 조치 이력에 남긴다.
          */
         get: operations["findAdminChatRoom"];
         put?: never;
@@ -3135,7 +3135,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;

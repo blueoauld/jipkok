@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
@@ -91,6 +92,13 @@ function Loaded({ member }: { member: MemberDetailData }) {
     <>
       <PageHeader title={`${member.nickname} #${member.id}`}>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href={`/chat-rooms?memberId=${member.id}`} />}
+          >
+            채팅방
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={<Button variant="outline" />}

@@ -13383,7 +13383,7 @@
                     "admin-chat-controller"
                 ],
                 "summary": "\ucc44\ud305\ubc29 \uc0c1\uc138",
-                "description": "\uc0ad\uc81c\ub41c \ubc29\ub3c4 \uc900\ub2e4.",
+                "description": "\uc0ad\uc81c\ub41c \ubc29\ub3c4 \uc900\ub2e4. \uc870\ud68c\ud560 \ub54c\ub9c8\ub2e4 \uc5f4\ub78c \uae30\ub85d\uc744 \uc870\uce58 \uc774\ub825\uc5d0 \ub0a8\uae34\ub2e4.",
                 "operationId": "findAdminChatRoom",
                 "parameters": [
                     {
@@ -19190,7 +19190,8 @@
                             "DELETE_FEED_POST",
                             "DELETE_WORRY_POST",
                             "DELETE_WORRY_COMMENT",
-                            "HANDLE_REPORT"
+                            "HANDLE_REPORT",
+                            "VIEW_CHAT_ROOM"
                         ]
                     },
                     "targetId": {

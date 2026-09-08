@@ -8,6 +8,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminChatMessageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminChatRoomDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminChatRoomPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminChatRoomResponse
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.ChatRoomAdminRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
@@ -27,6 +28,7 @@ class AdminChatService(
     private val chatMessageRepository: ChatMessageRepository,
     private val memberAdminService: MemberAdminService,
     private val photoStorage: PhotoStorage,
+    private val adminActionRecorder: AdminActionRecorder,
 ) {
 
     @Transactional(readOnly = true)
@@ -65,11 +67,13 @@ class AdminChatService(
         )
     }
 
-    @Transactional(readOnly = true)
-    fun findRoom(roomId: Long): AdminChatRoomDetailResponse {
+    @Transactional
+    fun findRoom(actorId: Long, roomId: Long): AdminChatRoomDetailResponse {
         val room = getRoom(roomId)
         val memberIds = listOf(room.lowMemberId, room.highMemberId)
         val nicknames = memberAdminService.findNicknames(memberIds)
+
+        adminActionRecorder.record(actorId, AdminActionType.VIEW_CHAT_ROOM, roomId)
 
         return AdminChatRoomDetailResponse(
             id = room.id,

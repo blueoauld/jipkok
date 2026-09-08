@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.projection.AdminChatRoomRow
+import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.ChatRoomAdminRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
@@ -11,6 +12,7 @@ import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -27,11 +29,14 @@ class AdminChatServiceTest {
 
     private val photoStorage = mockk<PhotoStorage>()
 
+    private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
+
     private val adminChatService = AdminChatService(
         chatRoomAdminRepository,
         chatMessageRepository,
         memberAdminService,
         photoStorage,
+        adminActionRecorder,
     )
 
     @Test
@@ -63,19 +68,33 @@ class AdminChatServiceTest {
     }
 
     @Test
-    fun `방 상세는 두 회원을 낮은 id부터 주고 삭제 시각을 같이 준다`() {
+    fun `방 상세는 두 회원을 낮은 id부터 주고 삭제 시각을 같이 주며 열람을 기록한다`() {
         // given
         every { chatRoomAdminRepository.findRowById(ROOM_ID) } returns room(id = ROOM_ID, deletedAt = NOW)
         every { memberAdminService.findNicknames(listOf(ME_ID, PARTNER_ID)) } returns
             mapOf(ME_ID to "구름빵", PARTNER_ID to "밤산책")
 
         // when
-        val response = adminChatService.findRoom(ROOM_ID)
+        val response = adminChatService.findRoom(ACTOR_ID, ROOM_ID)
 
         // then
         assertThat(response.members.map { it.id to it.nickname })
             .containsExactly(ME_ID to "구름빵", PARTNER_ID to "밤산책")
         assertThat(response.deletedAt).isEqualTo(NOW)
+        verify { adminActionRecorder.record(ACTOR_ID, AdminActionType.VIEW_CHAT_ROOM, ROOM_ID) }
+    }
+
+    @Test
+    fun `없는 방을 열면 기록하지 않는다`() {
+        // given
+        every { chatRoomAdminRepository.findRowById(ROOM_ID) } returns null
+
+        // when
+
+        // then
+        assertThatThrownBy { adminChatService.findRoom(ACTOR_ID, ROOM_ID) }
+            .isInstanceOf(BusinessException::class.java)
+        verify(exactly = 0) { adminActionRecorder.record(any(), any(), any(), any()) }
     }
 
     @Test
@@ -201,6 +220,7 @@ class AdminChatServiceTest {
         private const val PARTNER_ID = 2L
         private const val OTHER_ID = 3L
         private const val ROOM_ID = 10L
+        private const val ACTOR_ID = 99L
         private val NOW: Instant = Instant.parse("2026-09-09T00:00:00Z")
     }
 }

@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminChatRoomDetailRespons
 import com.blueoauld.server.domain.admin.dto.response.AdminChatRoomPageResponse
 import com.blueoauld.server.domain.admin.service.AdminChatService
 import io.swagger.v3.oas.annotations.Operation
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -32,9 +33,16 @@ class AdminChatController(
         @RequestParam(defaultValue = "20") size: Int,
     ): AdminChatRoomPageResponse = adminChatService.findRooms(status, memberId, page, size)
 
-    @Operation(operationId = "findAdminChatRoom", summary = "채팅방 상세", description = "삭제된 방도 준다.")
+    @Operation(
+        operationId = "findAdminChatRoom",
+        summary = "채팅방 상세",
+        description = "삭제된 방도 준다. 조회할 때마다 열람 기록을 조치 이력에 남긴다.",
+    )
     @GetMapping("/chat-rooms/{roomId}")
-    fun findRoom(@PathVariable roomId: Long): AdminChatRoomDetailResponse = adminChatService.findRoom(roomId)
+    fun findRoom(
+        @AuthenticationPrincipal actorId: Long,
+        @PathVariable roomId: Long,
+    ): AdminChatRoomDetailResponse = adminChatService.findRoom(actorId, roomId)
 
     @Operation(
         operationId = "findAdminChatMessages",
