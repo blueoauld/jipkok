@@ -93,7 +93,7 @@ export default function SignupScreen() {
             <XStack justify="center" items="center" gap="$2" pt="$3">
               <Text
                 theme="gray"
-                color="$color10"
+                color="$color11"
                 fontSize="$2"
                 onPress={() => openLegal(PRIVACY_URL)}
               >
@@ -104,7 +104,7 @@ export default function SignupScreen() {
               </Text>
               <Text
                 theme="gray"
-                color="$color10"
+                color="$color11"
                 fontSize="$2"
                 onPress={() => openLegal(TERMS_URL)}
               >

@@ -38,7 +38,7 @@ function SettingRow({
       </Text>
       {hasNew && <RetroBadge>N</RetroBadge>}
       {status && !pending && (
-        <Text theme="gray" color="$color10" fontSize="$3">
+        <Text theme="gray" color="$color11" fontSize="$3">
           {status}
         </Text>
       )}

@@ -32,7 +32,7 @@ export function StatusScreen({
 
 export function StatusDescription({ children }: { children: ReactNode }) {
   return (
-    <Text theme="gray" color="$color10" fontSize="$4" text="center">
+    <Text theme="gray" color="$color11" fontSize="$4" text="center">
       {children}
     </Text>
   );
