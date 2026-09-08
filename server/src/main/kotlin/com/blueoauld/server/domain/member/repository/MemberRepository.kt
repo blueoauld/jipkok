@@ -3,6 +3,7 @@ package com.blueoauld.server.domain.member.repository
 import com.blueoauld.server.domain.member.dto.projection.MemberNickname
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
+import org.springframework.data.domain.Limit
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -23,6 +24,8 @@ interface MemberRepository : JpaRepository<Member, Long> {
     fun existsByNicknameIgnoreCase(@Param("nickname") nickname: String): Boolean
 
     fun findByPhoneNumber(phoneNumber: String): Member?
+
+    fun findAllByPhoneHashIsNull(limit: Limit): List<Member>
 
     @Query("select m.locale from Member m where m.id = :memberId")
     fun findLocaleById(@Param("memberId") memberId: Long): MemberLocale?

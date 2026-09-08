@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
+import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -13,6 +14,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.properties.ContactBlockProperties
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -37,6 +39,8 @@ class MemberSignupServiceTest {
 
     private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
 
+    private val phoneHasher = PhoneHasher(ContactBlockProperties("secret"))
+
     private val memberSignupService = MemberSignupService(
         memberRepository,
         nicknameHistoryRepository,
@@ -44,6 +48,7 @@ class MemberSignupServiceTest {
         authService,
         passwordEncoder,
         memberSuspensionService,
+        phoneHasher,
     )
 
     @BeforeEach
@@ -67,6 +72,7 @@ class MemberSignupServiceTest {
         verify { verificationCodeService.verify(PHONE_NUMBER, VERIFICATION_CODE, VerificationPurpose.SIGNUP) }
         verify { memberRepository.save(capture(saved)) }
         assertThat(saved.captured.phoneNumber).isEqualTo(PHONE_NUMBER)
+        assertThat(saved.captured.phoneHash).isEqualTo(phoneHasher.hash(PHONE_NUMBER))
         assertThat(saved.captured.gender).isEqualTo(Gender.MALE)
         assertThat(response.accessToken).isEqualTo(ACCESS_TOKEN)
         assertThat(response.refreshToken).isEqualTo(REFRESH_TOKEN)
