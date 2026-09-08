@@ -95,20 +95,20 @@ export default function SignupScreen() {
               <Text
                 theme={accent}
                 color="$color10"
-                fontSize="$3"
+                fontSize="$4"
                 textDecorationLine="underline"
                 pressStyle={{ opacity: PRESS_OPACITY }}
                 onPress={() => openLegal(PRIVACY_URL)}
               >
                 {t("legal.privacy")}
               </Text>
-              <Text theme="gray" color="$color8" fontSize="$3">
+              <Text theme="gray" color="$color8" fontSize="$4">
                 |
               </Text>
               <Text
                 theme={accent}
                 color="$color10"
-                fontSize="$3"
+                fontSize="$4"
                 textDecorationLine="underline"
                 pressStyle={{ opacity: PRESS_OPACITY }}
                 onPress={() => openLegal(TERMS_URL)}

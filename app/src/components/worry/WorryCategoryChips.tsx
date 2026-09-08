@@ -35,7 +35,7 @@ function Chip({
       onPress={onPress}
     >
       <Text
-        fontSize="$3"
+        fontSize="$4"
         fontWeight={selected ? "700" : "400"}
         color={selected ? "white" : "$color12"}
       >

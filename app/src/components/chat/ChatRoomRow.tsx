@@ -213,7 +213,7 @@ function Row({
                 </XStack>
 
                 <XStack items="center" justify="space-between" gap="$2">
-                  <Text flex={1} numberOfLines={2} fontSize="$3">
+                  <Text flex={1} numberOfLines={2} fontSize="$2">
                     {room.lastMessageType === "TEXT"
                       ? room.lastMessageContent
                       : mediaSummary(room.lastMessageType)}

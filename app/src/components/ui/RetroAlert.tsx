@@ -106,7 +106,7 @@ export function RetroAlert({
                     <Text fontSize="$6" fontWeight="700" color="$color12">
                       {title}
                     </Text>
-                    <Text color="$color12" fontSize="$3">
+                    <Text color="$color12" fontSize="$4">
                       {message}
                     </Text>
                   </YStack>

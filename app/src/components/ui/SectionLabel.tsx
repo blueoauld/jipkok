@@ -7,8 +7,8 @@ export function SectionLabel({ children }: { children: string }) {
     <Text
       theme="gray"
       color="$color11"
-      fontSize="$3"
-      lineHeight="$3"
+      fontSize="$2"
+      lineHeight="$2"
       fontWeight="600"
     >
       {children}

@@ -80,7 +80,7 @@ export function ToastHost() {
                     flex={1}
                     px="$3"
                     py={textPaddingY}
-                    fontSize="$3"
+                    fontSize="$4"
                     color="$color12"
                   >
                     {toast.message}

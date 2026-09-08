@@ -12,7 +12,7 @@ export function WorryPostHeader({ post }: { post: WorryPostResponse }) {
     <XStack items="center" justify="space-between">
       <XStack items="center" gap="$2">
         <WorryCategoryTag category={post.category} />
-        <Text fontSize="$3" fontWeight="700">
+        <Text fontSize="$4" fontWeight="700">
           {post.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
         </Text>
       </XStack>

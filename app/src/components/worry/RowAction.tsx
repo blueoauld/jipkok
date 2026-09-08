@@ -21,7 +21,7 @@ export function RowAction({
       <Text
         theme="gray"
         color={destructive ? "$red10" : "$color11"}
-        fontSize="$3"
+        fontSize="$2"
         fontWeight="600"
         opacity={disabled ? DISABLED_OPACITY : 1}
       >

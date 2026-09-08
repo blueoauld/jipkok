@@ -149,7 +149,7 @@ function Card({
             shrink={1}
             numberOfLines={1}
             color={GLASS_ENABLED ? photoGlass.ink : "black"}
-            fontSize="$3"
+            fontSize="$4"
             fontWeight="600"
           >
             {post.nickname}

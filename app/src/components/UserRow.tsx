@@ -115,7 +115,7 @@ function Row({
           />
 
           <XStack items="center" justify="space-between" gap="$2">
-            <Text flex={1} numberOfLines={1} fontSize="$3">
+            <Text flex={1} numberOfLines={1} fontSize="$2">
               {comment || EMPTY_COMMENT}
             </Text>
 

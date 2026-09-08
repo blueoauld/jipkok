@@ -30,7 +30,7 @@ export function WorryCount({
         weight={active ? "fill" : "bold"}
         color={active ? theme.red10.val : theme.gray11.val}
       />
-      <Text theme="gray" color="$color11" fontSize="$3">
+      <Text theme="gray" color="$color11" fontSize="$2">
         {value}
       </Text>
     </XStack>

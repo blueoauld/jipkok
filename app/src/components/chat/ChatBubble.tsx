@@ -176,7 +176,7 @@ function ReplyMessage({
             </Text>
 
             <Text
-              fontSize={14}
+              fontSize="$2"
               color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
               numberOfLines={2}
             >
@@ -286,7 +286,7 @@ export function ChatBubble({
   const time = (
     <Text
       shrink={0}
-      fontSize="$1"
+      fontSize="$2"
       color="$color11"
       mb={2}
       opacity={showTime ? 1 : 0}

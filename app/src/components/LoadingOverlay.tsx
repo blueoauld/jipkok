@@ -23,7 +23,7 @@ export function LoadingOverlay() {
       <Spinner size="small" color="white" />
 
       {progress ? (
-        <Text color="white" fontSize="$3" fontWeight="700">
+        <Text color="white" fontSize="$4" fontWeight="700">
           {progress.done} / {progress.total}
         </Text>
       ) : null}

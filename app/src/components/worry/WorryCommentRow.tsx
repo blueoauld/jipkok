@@ -63,7 +63,7 @@ export const WorryCommentRow = memo(function WorryCommentRow({
       <YStack flex={1} gap="$1.5">
         <XStack items="center" justify="space-between">
           <Text
-            fontSize="$3"
+            fontSize="$2"
             fontWeight="700"
             color={comment.byAuthor ? accentToken : "$color12"}
           >

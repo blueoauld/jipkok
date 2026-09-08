@@ -68,7 +68,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
               py={1}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$1" color="white" fontWeight="600">
+              <Text fontSize="$2" color="white" fontWeight="600">
                 {formatDuration(message.durationSeconds)}
               </Text>
             </XStack>

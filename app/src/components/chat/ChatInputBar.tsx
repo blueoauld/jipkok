@@ -107,7 +107,7 @@ export function ChatInputBar({
                 {t("component.replyTo", { name: replyName })}
               </Text>
 
-              <Text fontSize="$3" color="$color11" numberOfLines={1}>
+              <Text fontSize="$2" color="$color11" numberOfLines={1}>
                 {replySummary(reply)}
               </Text>
             </YStack>

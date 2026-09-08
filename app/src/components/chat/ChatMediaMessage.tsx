@@ -106,7 +106,7 @@ function UploadOverlay({
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
       {upload.phase === "failed" ? (
         <>
-          <Text fontSize="$3" color="white" fontWeight="600">
+          <Text fontSize="$4" color="white" fontWeight="600">
             {i18n.t("component.sendFailed")}
           </Text>
 
@@ -123,7 +123,7 @@ function UploadOverlay({
         </>
       ) : (
         <>
-          <Text fontSize="$3" color="white" fontWeight="600">
+          <Text fontSize="$4" color="white" fontWeight="600">
             {label}
           </Text>
 

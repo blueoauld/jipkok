@@ -47,7 +47,7 @@ export function WorryReplyPreview({
                 name: commentLabel(replyTo),
               })}
             </Text>
-            <Text fontSize="$3" color="$color11" numberOfLines={1}>
+            <Text fontSize="$2" color="$color11" numberOfLines={1}>
               {replyTo.content}
             </Text>
           </YStack>

@@ -119,7 +119,7 @@ export function MemberFilterSheet({
           <XStack items="center" justify="space-between">
             <SectionLabel>{t("component.ageLabel")}</SectionLabel>
             {/* ~ 글자가 대체 폰트로 그려져 줄높이를 키우므로 고정한다. */}
-            <Text fontSize="$3" lineHeight="$3" fontWeight="600">
+            <Text fontSize="$2" lineHeight="$2" fontWeight="600">
               {formatAgeRange(ages[0], ages[1])}
             </Text>
           </XStack>
