@@ -66,5 +66,6 @@ data class AdminChatMessageResponse(
     val type: ChatMessageType,
     val content: String?,
     val photoUrl: String?,
+    val videoUrl: String? = null,
     val createdAt: Instant,
 )

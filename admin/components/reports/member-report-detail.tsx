@@ -175,9 +175,9 @@ function Loaded({ report, handling, onHandle }: LoadedProps) {
               <CardContent>
                 <ChatTranscript
                   messages={report.messages}
-                  reporterId={report.reporter.id}
-                  reporterNickname={report.reporter.nickname}
-                  reportedNickname={reported.nickname}
+                  leftMemberId={report.reporter.id}
+                  leftNickname={report.reporter.nickname}
+                  rightNickname={reported.nickname}
                 />
               </CardContent>
             </Card>

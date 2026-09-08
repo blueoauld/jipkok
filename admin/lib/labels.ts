@@ -11,6 +11,8 @@ import type {
   SuspensionType,
   AppleAdsActionType,
   AppleAdsRecommendationType,
+  ChatMessageType,
+  ChatRoomStatus,
 } from "@/lib/types";
 
 export const reportTypeLabels: Record<ReportType, string> = {
@@ -36,6 +38,17 @@ export const suspensionTypeLabels: Record<SuspensionType, string> = {
 export const suspensionReasonLabels: Record<SuspensionReason, string> = {
   SCREEN_CAPTURE: "비밀 사진 캡처",
   ...reportReasonLabels,
+};
+
+export const chatRoomStatusLabels: Record<ChatRoomStatus, string> = {
+  ACTIVE: "활성",
+  DELETED: "삭제됨",
+};
+
+export const chatMessageTypeLabels: Record<ChatMessageType, string> = {
+  TEXT: "텍스트",
+  PHOTO: "사진",
+  VIDEO: "동영상",
 };
 
 export const genderLabels: Record<Gender, string> = {

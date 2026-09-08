@@ -2036,6 +2036,7 @@ export interface components {
             type: "TEXT" | "PHOTO" | "VIDEO";
             content?: string | null;
             photoUrl?: string | null;
+            videoUrl?: string | null;
             /** Format: date-time */
             createdAt: string;
         };
@@ -2281,6 +2282,49 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
+        };
+        AdminChatMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        AdminChatRoomPageResponse: {
+            items: components["schemas"]["AdminChatRoomResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminChatRoomResponse: {
+            /** Format: int64 */
+            id: number;
+            low: components["schemas"]["AdminChatMemberResponse"];
+            high: components["schemas"]["AdminChatMemberResponse"];
+            /** @enum {string|null} */
+            lastMessageType?: "TEXT" | "PHOTO" | "VIDEO" | null;
+            lastMessageContent?: string | null;
+            /** Format: date-time */
+            lastMessageAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            deletedAt?: string | null;
+        };
+        AdminChatRoomDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            members: components["schemas"]["AdminChatMemberResponse"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            deletedAt?: string | null;
+        };
+        AdminChatMessagePageResponse: {
+            items: components["schemas"]["AdminChatMessageResponse"][];
+            /** Format: int64 */
+            nextCursor?: number | null;
         };
         AdminAppleAdsMetricsResponse: {
             /** Format: int64 */
