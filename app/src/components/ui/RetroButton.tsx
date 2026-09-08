@@ -4,18 +4,20 @@ import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { useAccent } from "@/lib/theme/accent";
 
+// flat은 그림자 없이 눌러도 가라앉지 않는다. 알럿처럼 이미 떠 있는 상자 안의 버튼에 쓴다.
 export function RetroButton({
   theme,
   flex,
   disabled,
   shadow = "$gray12",
+  flat = false,
   ...buttonProps
-}: ButtonProps & { shadow?: YStackProps["bg"] }) {
+}: ButtonProps & { shadow?: YStackProps["bg"]; flat?: boolean }) {
   const accent = useAccent();
 
   return (
     <YStack theme={disabled ? "gray" : (theme ?? accent)} flex={flex}>
-      <RetroShadow color={shadow} />
+      {!flat && <RetroShadow color={shadow} />}
       <Button
         size="$4"
         bg={disabled ? "$color8" : "$color10"}
@@ -25,8 +27,8 @@ export function RetroButton({
         color="white"
         fontWeight="700"
         pressStyle={{
-          x: RETRO_SHADOW_OFFSET,
-          y: RETRO_SHADOW_OFFSET,
+          x: flat ? 0 : RETRO_SHADOW_OFFSET,
+          y: flat ? 0 : RETRO_SHADOW_OFFSET,
           bg: "$color11",
           borderColor: "$gray12",
         }}

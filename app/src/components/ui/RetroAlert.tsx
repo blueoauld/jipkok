@@ -115,13 +115,14 @@ export function RetroAlert({
 
                   {confirmLabel ? (
                     <XStack p="$4" gap="$3">
-                      <RetroButton flex={1} theme="gray" onPress={onClose}>
+                      <RetroButton flat flex={1} theme="gray" onPress={onClose}>
                         {t("component.close")}
                       </RetroButton>
 
                       <RetroButton
+                        flat
                         flex={1}
-                        theme={destructive ? "red" : undefined}
+                        theme={destructive ? "red" : "gray"}
                         onPress={() => {
                           onClose();
                           onConfirm?.();
@@ -132,7 +133,7 @@ export function RetroAlert({
                     </XStack>
                   ) : (
                     <XStack justify="flex-end" p="$4">
-                      <RetroButton onPress={onClose}>
+                      <RetroButton flat theme="gray" onPress={onClose}>
                         {t("component.confirm")}
                       </RetroButton>
                     </XStack>
