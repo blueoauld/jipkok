@@ -54,7 +54,7 @@ function DateButton({
           }}
           isInteractive
         >
-          <Text fontSize="$4" fontWeight="700" color="$color">
+          <Text fontSize="$4" fontWeight="600" color="$color">
             {formatDateLabel(date, today)}
           </Text>
         </Glass>
@@ -76,7 +76,7 @@ function DateButton({
       accessibilityRole="button"
       onPress={onPress}
     >
-      <Text fontSize="$4" fontWeight="700" color="white">
+      <Text fontSize="$4" fontWeight="600" color="white">
         {formatDateLabel(date, today)}
       </Text>
     </XStack>
