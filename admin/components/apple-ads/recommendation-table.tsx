@@ -80,7 +80,7 @@ export function RecommendationTable({ items }: Props) {
                 {item.adGroupName && ` · ${item.adGroupName}`}
               </div>
             </TableCell>
-            <TableCell className="max-w-md whitespace-normal text-muted-foreground">
+            <TableCell className="max-w-md min-w-64 whitespace-normal text-muted-foreground">
               {item.reason}
             </TableCell>
             <TableCell className="text-right tabular-nums">
