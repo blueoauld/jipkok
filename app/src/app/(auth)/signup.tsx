@@ -15,6 +15,7 @@ import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
+import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import { useAccent } from "@/lib/theme/accent";
@@ -92,20 +93,24 @@ export default function SignupScreen() {
 
             <XStack justify="center" items="center" gap="$2" pt="$3">
               <Text
-                theme="gray"
-                color="$color11"
-                fontSize="$2"
+                theme={accent}
+                color="$color10"
+                fontSize="$3"
+                textDecorationLine="underline"
+                pressStyle={{ opacity: PRESS_OPACITY }}
                 onPress={() => openLegal(PRIVACY_URL)}
               >
                 {t("legal.privacy")}
               </Text>
-              <Text theme="gray" color="$color8" fontSize="$2">
+              <Text theme="gray" color="$color8" fontSize="$3">
                 |
               </Text>
               <Text
-                theme="gray"
-                color="$color11"
-                fontSize="$2"
+                theme={accent}
+                color="$color10"
+                fontSize="$3"
+                textDecorationLine="underline"
+                pressStyle={{ opacity: PRESS_OPACITY }}
                 onPress={() => openLegal(TERMS_URL)}
               >
                 {t("legal.terms")}
