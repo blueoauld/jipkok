@@ -59,7 +59,7 @@ export default function PasswordScreen() {
             onPress={handleSubmit((values) => reset.mutate(values))}
           >
             {reset.isPending ? (
-              <Spinner color="white" />
+              <Spinner color="$color11" />
             ) : (
               t("auth.password.submit")
             )}

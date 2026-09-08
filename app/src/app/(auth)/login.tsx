@@ -48,7 +48,7 @@ export default function LoginScreen() {
             onPress={handleSubmit((values) => login.mutate(values))}
           >
             {login.isPending ? (
-              <Spinner color="white" />
+              <Spinner color="$color11" />
             ) : (
               t("auth.login.submit")
             )}

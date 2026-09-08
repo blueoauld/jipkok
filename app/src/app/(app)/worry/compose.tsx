@@ -81,7 +81,7 @@ export default function WorryComposeScreen() {
             }
           >
             {compose.isPending ? (
-              <Spinner color="white" />
+              <Spinner color="$color11" />
             ) : (
               t("worry.compose.submit")
             )}

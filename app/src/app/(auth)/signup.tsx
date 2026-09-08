@@ -85,7 +85,7 @@ export default function SignupScreen() {
               onPress={handleSubmit((values) => signup.mutate(values))}
             >
               {signup.isPending ? (
-                <Spinner color="white" />
+                <Spinner color="$color11" />
               ) : (
                 t("auth.signup.submit")
               )}

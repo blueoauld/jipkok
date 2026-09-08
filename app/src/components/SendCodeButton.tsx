@@ -25,7 +25,7 @@ export function SendCodeButton({
       onPress={onPress}
     >
       {sending ? (
-        <Spinner color="white" />
+        <Spinner color="$color11" />
       ) : remaining > 0 ? (
         formatCountdown(remaining)
       ) : (

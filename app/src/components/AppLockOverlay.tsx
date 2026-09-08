@@ -93,7 +93,7 @@ function LockScreen() {
         >
           <YStack width="100%">
             <RetroButton disabled={authenticating} onPress={attempt}>
-              {authenticating ? <Spinner color="white" /> : t("lock.unlock")}
+              {authenticating ? <Spinner color="$color11" /> : t("lock.unlock")}
             </RetroButton>
           </YStack>
         </StatusScreen>

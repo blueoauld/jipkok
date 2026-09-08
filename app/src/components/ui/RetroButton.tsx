@@ -15,18 +15,19 @@ export function RetroButton({
 }: ButtonProps & { shadow?: YStackProps["bg"]; flat?: boolean }) {
   const accent = useAccent();
   // 회색 버튼은 중간 회색 위 흰 글씨라 대비가 4:1에 못 미친다. 옅은 표면에 잉크색으로 간다.
-  const muted = theme === "gray" && !disabled;
+  // 비활성도 같은 표면에 회색 글씨다. 버튼째 투명하게 하면 밝은 배경에서 글자가 사라진다.
+  const muted = theme === "gray" || disabled;
 
   return (
     <YStack theme={disabled ? "gray" : (theme ?? accent)} flex={flex}>
-      {!flat && <RetroShadow color={shadow} />}
+      {!flat && <RetroShadow color={disabled ? "$gray8" : shadow} />}
       <Button
         size="$4"
-        bg={disabled ? "$color8" : muted ? "$color3" : "$color10"}
+        bg={muted ? "$color3" : "$color10"}
         borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         rounded={0}
-        color={muted ? "$color12" : "white"}
+        color={disabled ? "$color11" : muted ? "$color12" : "white"}
         fontWeight="700"
         pressStyle={{
           x: flat ? 0 : RETRO_SHADOW_OFFSET,

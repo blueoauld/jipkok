@@ -162,7 +162,11 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       <FormScreen
         footer={
           <RetroButton disabled={busy} onPress={submit}>
-            {save.isPending ? <Spinner color="white" /> : t("profileEdit.save")}
+            {save.isPending ? (
+              <Spinner color="$color11" />
+            ) : (
+              t("profileEdit.save")
+            )}
           </RetroButton>
         }
       >

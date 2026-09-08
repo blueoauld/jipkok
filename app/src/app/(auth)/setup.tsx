@@ -61,7 +61,7 @@ export default function SetupScreen() {
             )}
           >
             {setupProfile.isPending ? (
-              <Spinner color="white" />
+              <Spinner color="$color11" />
             ) : (
               t("auth.setup.submit")
             )}
