@@ -5,7 +5,6 @@ import { Calendar, type DateData } from "react-native-calendars";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { Glass } from "@/components/ui/Glass";
-import { RetroCard } from "@/components/ui/RetroCard";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import {
@@ -64,21 +63,23 @@ function DateButton({
   }
 
   return (
-    <RetroCard
+    <XStack
       theme={accent}
-      shadow="$gray12"
-      bg="$color10"
-      pressBg="$color11"
       height={FLOATING_BUTTON_SIZE}
       px="$4"
-      py={0}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg="$color10"
+      items="center"
       justify="center"
+      pressStyle={{ bg: "$color11" }}
+      accessibilityRole="button"
       onPress={onPress}
     >
       <Text fontSize="$4" fontWeight="700" color="white">
         {formatDateLabel(date, today)}
       </Text>
-    </RetroCard>
+    </XStack>
   );
 }
 

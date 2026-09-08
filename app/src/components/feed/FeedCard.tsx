@@ -8,7 +8,6 @@ import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { Glass } from "@/components/ui/Glass";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
 import {
@@ -16,6 +15,7 @@ import {
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
   PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { GLASS_ENABLED, PHOTO_GLASS_INK, PHOTO_GLASS_PROPS } from "@/lib/glass";
@@ -52,7 +52,7 @@ const SLOT_STYLE = {
   textShadowRadius: HARD_SHADOW_RADIUS,
 } as const;
 
-// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 레트로 상자 그대로다.
+// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 그림자 없는 레트로 상자다.
 // chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가고, 아니면 아이콘 하나짜리 정사각형이다.
 function CardButton({
   chip = false,
@@ -81,20 +81,21 @@ function CardButton({
   }
 
   return (
-    <RetroPressable
-      offset={RETRO_SHADOW_OFFSET_SM}
+    <XStack
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
       bg={chip ? "$yellow9" : "$color1"}
-      pressBg={chip ? "$yellow10" : "$color3"}
       px={chip ? "$3" : 0}
       py={chip ? "$2" : 0}
       minH={CARD_ICON_BUTTON_SIZE}
       width={chip ? undefined : CARD_ICON_BUTTON_SIZE}
       items="center"
       justify="center"
+      pressStyle={{ bg: chip ? "$yellow10" : "$color3" }}
       {...props}
     >
       {children}
-    </RetroPressable>
+    </XStack>
   );
 }
 
