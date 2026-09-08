@@ -7,7 +7,7 @@ import {
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
-import { GLASS_ENABLED, PHOTO_GLASS_PROPS } from "@/lib/glass";
+import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 import { useAccent } from "@/lib/theme/accent";
 
 // 내용 위에 떠 있는 원형 버튼이다. iOS 26에서는 유리, 그 밖에서는 그림자 없는 레트로
@@ -25,6 +25,7 @@ export function FloatingButton({
   children: ReactNode;
 }) {
   const accent = useAccent();
+  const photoGlass = usePhotoGlass();
 
   if (!GLASS_ENABLED) {
     return (
@@ -62,7 +63,7 @@ export function FloatingButton({
           alignItems: "center",
           justifyContent: "center",
         }}
-        {...(overPhoto ? PHOTO_GLASS_PROPS : null)}
+        tintColor={overPhoto ? photoGlass.tint : undefined}
         isInteractive
       >
         {children}

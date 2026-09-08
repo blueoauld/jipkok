@@ -18,7 +18,7 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
-import { GLASS_ENABLED, PHOTO_GLASS_INK, PHOTO_GLASS_PROPS } from "@/lib/glass";
+import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -59,6 +59,8 @@ function CardButton({
   children,
   ...props
 }: XStackProps & { chip?: boolean }) {
+  const photoGlass = usePhotoGlass();
+
   if (GLASS_ENABLED) {
     return (
       <XStack pressStyle={{ opacity: PRESS_OPACITY }} {...props}>
@@ -71,7 +73,7 @@ function CardButton({
             alignItems: "center",
             justifyContent: "center",
           }}
-          {...PHOTO_GLASS_PROPS}
+          tintColor={photoGlass.tint}
           isInteractive
         >
           {children}
@@ -114,7 +116,8 @@ function Card({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const iconInk = GLASS_ENABLED ? PHOTO_GLASS_INK : theme.color12.val;
+  const photoGlass = usePhotoGlass();
+  const iconInk = GLASS_ENABLED ? photoGlass.ink : theme.color12.val;
 
   return (
     <RetroCard
@@ -145,7 +148,7 @@ function Card({
           <Text
             shrink={1}
             numberOfLines={1}
-            color="black"
+            color={GLASS_ENABLED ? photoGlass.ink : "black"}
             fontSize="$3"
             fontWeight="600"
           >
