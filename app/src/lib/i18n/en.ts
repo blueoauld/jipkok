@@ -391,6 +391,7 @@ export const en: typeof ko = {
   contactBlock: {
     addTitle: "Block a number",
     submit: "Block",
+    memoPlaceholder: "Memo (optional)",
     invalid: "The mobile number is not valid.",
     added: "Number blocked.",
     removed: "Block removed.",

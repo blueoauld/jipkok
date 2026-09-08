@@ -394,6 +394,7 @@ export const ja: typeof ko = {
   contactBlock: {
     addTitle: "番号をブロック",
     submit: "ブロック",
+    memoPlaceholder: "メモ（任意）",
     invalid: "携帯電話番号が正しくありません。",
     added: "番号をブロックしました。",
     removed: "ブロックを解除しました。",

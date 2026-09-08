@@ -39,19 +39,33 @@ class ContactBlockServiceTest {
         val saved = slot<ContactBlock>()
 
         // when
-        contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER)
+        contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER, " 전 직장 ")
 
         // then
         verify { contactBlockRepository.saveAndFlush(capture(saved)) }
         assertThat(saved.captured.memberId).isEqualTo(MEMBER_ID)
         assertThat(saved.captured.phoneNumber).isEqualTo(OTHER_PHONE_NUMBER)
+        assertThat(saved.captured.memo).isEqualTo("전 직장")
+    }
+
+    @Test
+    fun `빈 메모는 남기지 않는다`() {
+        // given
+        val saved = slot<ContactBlock>()
+
+        // when
+        contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER, "  ")
+
+        // then
+        verify { contactBlockRepository.saveAndFlush(capture(saved)) }
+        assertThat(saved.captured.memo).isNull()
     }
 
     @Test
     fun `내 번호는 차단할 수 없다`() {
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            contactBlockService.add(MEMBER_ID, MY_PHONE_NUMBER)
+            contactBlockService.add(MEMBER_ID, MY_PHONE_NUMBER, null)
         }
 
         // then
@@ -64,7 +78,7 @@ class ContactBlockServiceTest {
         every { contactBlockRepository.existsByMemberIdAndPhoneNumber(MEMBER_ID, OTHER_PHONE_NUMBER) } returns true
 
         // when
-        contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER)
+        contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER, null)
 
         // then
         verify(exactly = 0) { contactBlockRepository.saveAndFlush(any()) }
@@ -77,7 +91,7 @@ class ContactBlockServiceTest {
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
-            contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER)
+            contactBlockService.add(MEMBER_ID, OTHER_PHONE_NUMBER, null)
         }
 
         // then

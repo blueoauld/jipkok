@@ -4,4 +4,5 @@ data class ContactBlockResponse(
 
     val contactBlockId: Long,
     val phoneNumber: String,
+    val memo: String?,
 )

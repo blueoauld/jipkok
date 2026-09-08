@@ -2128,6 +2128,7 @@ export interface components {
         };
         ContactBlockRequest: {
             phoneNumber: string;
+            memo?: string | null;
         };
         CreateFeedPostRequest: {
             objectKey: string;
@@ -2487,6 +2488,7 @@ export interface components {
             /** Format: int64 */
             contactBlockId: number;
             phoneNumber: string;
+            memo?: string | null;
         };
         CursorResponseFeedPostResponse: {
             items: components["schemas"]["FeedPostResponse"][];

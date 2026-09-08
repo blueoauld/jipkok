@@ -391,6 +391,7 @@ export const ko = {
   contactBlock: {
     addTitle: "번호 차단",
     submit: "차단",
+    memoPlaceholder: "메모 (선택)",
     invalid: "휴대폰 번호가 올바르지 않습니다.",
     added: "번호를 차단했습니다.",
     removed: "차단을 해제했습니다.",

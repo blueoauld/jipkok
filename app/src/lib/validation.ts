@@ -95,3 +95,5 @@ function validateBirthYear(value: string) {
 
 export const NICKNAME_RULES = { validate: validateNickname };
 export const BIRTH_YEAR_RULES = { validate: validateBirthYear };
+
+export const CONTACT_BLOCK_MEMO_MAX_LENGTH = 30;

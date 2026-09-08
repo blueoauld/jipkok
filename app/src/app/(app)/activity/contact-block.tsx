@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Text, XStack } from "tamagui";
+import { getTokens, Text, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
@@ -32,9 +32,16 @@ function ContactBlockRow({
   return (
     <RetroCard>
       <XStack items="center" justify="space-between" gap="$3">
-        <Text fontSize="$4" fontWeight="600">
-          {toDomestic(block.phoneNumber)}
-        </Text>
+        <YStack flex={1} gap="$1">
+          <Text fontSize="$4" fontWeight="600">
+            {toDomestic(block.phoneNumber)}
+          </Text>
+          {block.memo && (
+            <Text theme="gray" color="$color11" fontSize="$2" numberOfLines={1}>
+              {block.memo}
+            </Text>
+          )}
+        </YStack>
         <RetroDeleteButton onPress={() => onRemove(block.contactBlockId)} />
       </XStack>
     </RetroCard>
@@ -105,7 +112,7 @@ export default function ContactBlockScreen() {
         onOpenChange={setAddOpen}
         title={t("contactBlock.addTitle")}
         submitLabel={t("contactBlock.submit")}
-        onSubmit={add.mutate}
+        onSubmit={(phoneNumber, memo) => add.mutate({ phoneNumber, memo })}
         onInvalid={() => show("warning", t("contactBlock.invalid"))}
       />
 

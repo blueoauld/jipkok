@@ -5,6 +5,7 @@ CREATE TABLE contact_block
     updated_at   TIMESTAMP(6) WITH TIME ZONE             NOT NULL,
     member_id    BIGINT                                  NOT NULL,
     phone_number VARCHAR(16)                             NOT NULL,
+    memo         VARCHAR(30),
     CONSTRAINT pk_contact_block PRIMARY KEY (id)
 );
 

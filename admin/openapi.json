@@ -15209,6 +15209,14 @@
                     "phoneNumber": {
                         "type": "string",
                         "pattern": "^(\\+8210|\\+81[789]0|\\+8869)\\d{8}$"
+                    },
+                    "memo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 30,
+                        "minLength": 0
                     }
                 },
                 "required": [
@@ -16675,6 +16683,12 @@
                     },
                     "phoneNumber": {
                         "type": "string"
+                    },
+                    "memo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 },
                 "required": [

@@ -32,7 +32,7 @@ class ContactBlockController(
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun add(@AuthenticationPrincipal memberId: Long, @Valid @RequestBody request: ContactBlockRequest) {
-        contactBlockService.add(memberId, request.phoneNumber)
+        contactBlockService.add(memberId, request.phoneNumber, request.memo)
     }
 
     @Operation(summary = "번호 차단 해제")

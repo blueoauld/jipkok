@@ -307,11 +307,8 @@ export const blocks = {
 export const contactBlocks = {
   list: () => request<ContactBlockResponse[]>("/api/members/me/contact-blocks"),
 
-  add: (phoneNumber: string) =>
-    request<void>("/api/members/me/contact-blocks", {
-      method: "POST",
-      body: { phoneNumber } satisfies ContactBlockRequest,
-    }),
+  add: (body: ContactBlockRequest) =>
+    request<void>("/api/members/me/contact-blocks", { method: "POST", body }),
 
   remove: (contactBlockId: number) =>
     request<void>(`/api/members/me/contact-blocks/${contactBlockId}`, {

@@ -31,6 +31,9 @@ class ContactBlock(
 
     @Column(name = "phone_number", nullable = false, updatable = false, length = Member.PHONE_NUMBER_LENGTH)
     val phoneNumber: String,
+
+    @Column(name = "memo", updatable = false, length = MEMO_MAX_LENGTH)
+    val memo: String? = null,
 ) : BaseEntity() {
 
     @Id
@@ -41,5 +44,6 @@ class ContactBlock(
     companion object {
 
         const val MAX_PER_MEMBER = 100
+        const val MEMO_MAX_LENGTH = 30
     }
 }

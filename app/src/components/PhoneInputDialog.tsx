@@ -8,6 +8,7 @@ import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { maxLengthOf, patternOf, toE164 } from "@/lib/phone";
 import { usePhoneCountry } from "@/lib/phone/store";
+import { CONTACT_BLOCK_MEMO_MAX_LENGTH } from "@/lib/validation";
 
 // 나라는 이 다이얼로그 안에서만 고른다. 로그인 화면의 기본 나라를 바꾸지 않는다.
 function DialogForm({
@@ -19,7 +20,7 @@ function DialogForm({
 }: {
   title: string;
   submitLabel: string;
-  onSubmit: (phoneNumber: string) => void;
+  onSubmit: (phoneNumber: string, memo: string | undefined) => void;
   onInvalid: () => void;
   onClose: () => void;
 }) {
@@ -27,48 +28,61 @@ function DialogForm({
   const defaultCountry = usePhoneCountry();
   const [country, setCountry] = useState(defaultCountry);
   const [value, setValue] = useState("");
+  const [memo, setMemo] = useState("");
 
+  const digits = value.replace(/\D/g, "");
+  const valid = patternOf(country).test(digits);
+
+  // 버튼은 형식이 맞을 때만 눌리고, 키보드의 완료로 들어오는 길만 경고를 낸다.
   const submit = () => {
-    const digits = value.replace(/\D/g, "");
-
-    if (!patternOf(country).test(digits)) {
+    if (!valid) {
       onInvalid();
       return;
     }
 
     onClose();
-    onSubmit(toE164(digits, country));
+    onSubmit(toE164(digits, country), memo.trim() || undefined);
   };
 
   return (
     <>
       <Dialog.Title fontSize="$6">{title}</Dialog.Title>
 
-      <XStack gap="$2" items="flex-start">
-        <PhoneCountryButton country={country} onChange={setCountry} />
+      <YStack gap="$3">
+        <XStack gap="$2" items="flex-start">
+          <PhoneCountryButton country={country} onChange={setCountry} />
 
-        <YStack flex={1}>
-          <RetroInput
-            value={value}
-            onChangeText={setValue}
-            placeholder={t("auth.phoneNumberPlaceholder")}
-            keyboardType="number-pad"
-            textContentType="telephoneNumber"
-            maxLength={maxLengthOf(country)}
-            submitBehavior="submit"
-            onSubmitEditing={submit}
-            clearable
-            autoFocusNative
-          />
-        </YStack>
-      </XStack>
+          <YStack flex={1}>
+            <RetroInput
+              value={value}
+              onChangeText={setValue}
+              placeholder={t("auth.phoneNumberPlaceholder")}
+              keyboardType="number-pad"
+              textContentType="telephoneNumber"
+              maxLength={maxLengthOf(country)}
+              clearable
+              autoFocusNative
+            />
+          </YStack>
+        </XStack>
+
+        <RetroInput
+          value={memo}
+          onChangeText={setMemo}
+          placeholder={t("contactBlock.memoPlaceholder")}
+          maxLength={CONTACT_BLOCK_MEMO_MAX_LENGTH}
+          submitBehavior="submit"
+          onSubmitEditing={submit}
+          clearable
+        />
+      </YStack>
 
       <XStack gap="$3">
         <RetroButton flex={1} theme="gray" onPress={onClose}>
           {t("component.close")}
         </RetroButton>
 
-        <RetroButton flex={1} onPress={submit}>
+        <RetroButton flex={1} disabled={!valid} onPress={submit}>
           {submitLabel}
         </RetroButton>
       </XStack>
@@ -88,7 +102,7 @@ export function PhoneInputDialog({
   onOpenChange: (open: boolean) => void;
   title: string;
   submitLabel: string;
-  onSubmit: (phoneNumber: string) => void;
+  onSubmit: (phoneNumber: string, memo: string | undefined) => void;
   onInvalid: () => void;
 }) {
   return (

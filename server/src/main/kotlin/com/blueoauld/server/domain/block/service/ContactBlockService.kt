@@ -18,7 +18,7 @@ class ContactBlockService(
 ) {
 
     @Transactional
-    fun add(memberId: Long, phoneNumber: String) {
+    fun add(memberId: Long, phoneNumber: String, memo: String?) {
         if (memberRepository.getMember(memberId).phoneNumber == phoneNumber) {
             throw BusinessException(ErrorCode.SELF_BLOCK)
         }
@@ -31,7 +31,7 @@ class ContactBlockService(
             throw BusinessException(ErrorCode.CONTACT_BLOCK_LIMIT_EXCEEDED)
         }
 
-        contactBlockRepository.saveAndFlush(ContactBlock(memberId, phoneNumber))
+        contactBlockRepository.saveAndFlush(ContactBlock(memberId, phoneNumber, memo?.trim()?.ifEmpty { null }))
     }
 
     @Transactional
@@ -42,5 +42,5 @@ class ContactBlockService(
     @Transactional(readOnly = true)
     fun findAll(memberId: Long): List<ContactBlockResponse> = contactBlockRepository
         .findAllByMemberIdOrderByIdDesc(memberId)
-        .map { ContactBlockResponse(it.id, it.phoneNumber) }
+        .map { ContactBlockResponse(it.id, it.phoneNumber, it.memo) }
 }
