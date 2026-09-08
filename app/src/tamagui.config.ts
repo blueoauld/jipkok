@@ -6,8 +6,10 @@ const PINK_BACKGROUND = "#FAEAF1";
 
 const DARK_INK = "hsla(0, 0%, 84%, 1)";
 const DARK_INK_THEME = { color: DARK_INK, color12: DARK_INK };
-const DARK_SURFACE = "hsla(218, 22%, 15%, 1)";
-const DARK_SURFACE_PRESS = "hsla(218, 20%, 21%, 1)";
+// 스플래시의 다크 배경(app.json)과 같은 값이다. 표면은 배경보다 밝아야 떠 보인다.
+const DARK_BACKGROUND = "#141414";
+const DARK_SURFACE = "hsla(0, 0%, 12%, 1)";
+const DARK_SURFACE_PRESS = "hsla(0, 0%, 16%, 1)";
 const DARK_ACCENT = "hsla(212, 78%, 52%, 1)";
 const DARK_ACCENT_PRESS = "hsla(212, 74%, 62%, 1)";
 const DARK_HIGHLIGHT = "hsla(50, 82%, 52%, 1)";
@@ -29,8 +31,8 @@ export const tamaguiConfig = createTamagui({
     },
     dark: {
       ...defaultConfig.themes.dark,
-      background: "#0C1424",
-      backgroundPink: "#0C1424",
+      background: DARK_BACKGROUND,
+      backgroundPink: DARK_BACKGROUND,
       ...DARK_INK_THEME,
       gray12: DARK_INK,
       color1: DARK_SURFACE,
