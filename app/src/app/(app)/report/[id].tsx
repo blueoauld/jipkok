@@ -11,6 +11,7 @@ import { PhotoGrid } from "@/components/PhotoGrid";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
@@ -123,9 +124,7 @@ export default function ReportScreen() {
         }
       >
         <YStack gap="$2">
-          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {t("report.evidencePhotos")}
-          </Text>
+          <SectionLabel>{t("report.evidencePhotos")}</SectionLabel>
           <PhotoGrid
             photos={photos.urls}
             onAdd={photos.add}

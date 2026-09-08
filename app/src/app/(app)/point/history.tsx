@@ -8,6 +8,7 @@ import { Text, XStack, YStack } from "tamagui";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
@@ -23,9 +24,7 @@ function Balance() {
     <YStack mx="$4">
       <RetroCard p="$4">
         <XStack items="center" justify="space-between" gap="$3">
-          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {t("point.history.balance")}
-          </Text>
+          <SectionLabel>{t("point.history.balance")}</SectionLabel>
 
           <Text fontSize="$6" fontWeight="700">
             {data === undefined ? "-" : data.toLocaleString()}

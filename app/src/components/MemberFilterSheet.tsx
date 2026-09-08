@@ -6,6 +6,7 @@ import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 import {
@@ -33,20 +34,6 @@ const GENDER_FILTER_ITEMS = GENDER_FILTERS.map((value) => ({
   value,
   label: genderFilterLabel(value),
 }));
-
-function Label({ children }: { children: string }) {
-  return (
-    <Text
-      theme="gray"
-      color="$color11"
-      fontSize="$3"
-      lineHeight="$3"
-      fontWeight="600"
-    >
-      {children}
-    </Text>
-  );
-}
 
 export function MemberFilterSheet({
   open: requested,
@@ -120,7 +107,7 @@ export function MemberFilterSheet({
         gap="$4"
       >
         <YStack gap="$2">
-          <Label>{t("component.genderLabel")}</Label>
+          <SectionLabel>{t("component.genderLabel")}</SectionLabel>
           <RetroSegmentedControl
             items={GENDER_FILTER_ITEMS}
             value={gender}
@@ -130,7 +117,7 @@ export function MemberFilterSheet({
 
         <YStack gap="$3">
           <XStack items="center" justify="space-between">
-            <Label>{t("component.ageLabel")}</Label>
+            <SectionLabel>{t("component.ageLabel")}</SectionLabel>
             {/* ~ 글자가 대체 폰트로 그려져 줄높이를 키우므로 고정한다. */}
             <Text fontSize="$3" lineHeight="$3" fontWeight="600">
               {formatAgeRange(ages[0], ages[1])}

@@ -16,6 +16,7 @@ import { TextInputDialog } from "@/components/TextInputDialog";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
@@ -183,14 +184,7 @@ export default function MemberProfileScreen() {
               />
 
               <YStack gap="$2">
-                <Text
-                  theme="gray"
-                  color="$color11"
-                  fontSize="$3"
-                  fontWeight="600"
-                >
-                  {t("memberDetail.memoTitle")}
-                </Text>
+                <SectionLabel>{t("memberDetail.memoTitle")}</SectionLabel>
                 <RetroCard onPress={() => setMemoOpen(true)}>
                   <Text
                     fontSize="$4"

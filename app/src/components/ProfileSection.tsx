@@ -1,6 +1,7 @@
 import { Text, YStack } from "tamagui";
 
 import { RetroCard } from "@/components/ui/RetroCard";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { copyText } from "@/lib/clipboard";
 
 export function ProfileSection({
@@ -18,9 +19,7 @@ export function ProfileSection({
 
   return (
     <YStack gap="$2">
-      <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-        {title}
-      </Text>
+      <SectionLabel>{title}</SectionLabel>
       <RetroCard
         onLongPress={empty ? undefined : () => copyText(body, copiedMessage)}
       >

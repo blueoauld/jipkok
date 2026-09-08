@@ -7,7 +7,7 @@ import { type RefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
@@ -15,6 +15,7 @@ import { PhotoGrid } from "@/components/PhotoGrid";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -166,9 +167,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         }
       >
         <YStack gap="$2">
-          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {t("profileEdit.publicPhotos")}
-          </Text>
+          <SectionLabel>{t("profileEdit.publicPhotos")}</SectionLabel>
           <PhotoGrid
             photos={publicPhotos.urls}
             onAdd={publicPhotos.add}
@@ -179,9 +178,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         </YStack>
 
         <YStack gap="$2">
-          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {t("profileEdit.secretPhotos")}
-          </Text>
+          <SectionLabel>{t("profileEdit.secretPhotos")}</SectionLabel>
           <PhotoGrid
             photos={secretPhotos.urls}
             onAdd={secretPhotos.add}

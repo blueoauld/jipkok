@@ -5,11 +5,12 @@ import { usePreventRemove } from "expo-router/build/react-navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { FormScreen } from "@/components/FormScreen";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroButton } from "@/components/ui/RetroButton";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { WORRY_LIST_KEY } from "@/hooks/useWorryPosts";
@@ -88,9 +89,7 @@ export default function WorryComposeScreen() {
         }
       >
         <YStack gap="$2">
-          <Text theme="gray" color="$color11" fontSize="$3" fontWeight="600">
-            {t("worry.compose.categoryLabel")}
-          </Text>
+          <SectionLabel>{t("worry.compose.categoryLabel")}</SectionLabel>
           <WorryCategoryPicker value={category} onChange={setCategory} />
         </YStack>
 

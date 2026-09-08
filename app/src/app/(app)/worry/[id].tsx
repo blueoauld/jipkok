@@ -10,13 +10,14 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { getTokens, Text, YStack } from "tamagui";
+import { getTokens, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroListPanel } from "@/components/ui/RetroListPanel";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CommentScrollView } from "@/components/worry/CommentScrollView";
 import { WorryCommentComposer } from "@/components/worry/WorryCommentComposer";
 import { WorryCommentRow } from "@/components/worry/WorryCommentRow";
@@ -141,14 +142,9 @@ export default function WorryDetailScreen() {
                     post={post}
                     onToggleLike={handleToggleLike}
                   />
-                  <Text
-                    theme="gray"
-                    color="$color11"
-                    fontSize="$3"
-                    fontWeight="600"
-                  >
+                  <SectionLabel>
                     {t("worry.detail.commentSection")}
-                  </Text>
+                  </SectionLabel>
                 </YStack>
               }
               ListEmptyComponent={
