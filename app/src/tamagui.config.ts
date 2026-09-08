@@ -4,6 +4,19 @@ import { createTamagui } from "tamagui";
 
 const PINK_BACKGROUND = "#FAEAF1";
 
+// 테마 색 채움 위의 흰 글씨다. useTheme()는 현재 서브테마의 키만 보므로 모든 테마에 넣는다.
+const ON_FILL = "white";
+
+const withOnFill = <T extends Record<string, object>>(themes: T) =>
+  Object.fromEntries(
+    Object.entries(themes).map(([name, theme]) => [
+      name,
+      { ...theme, onFill: ON_FILL },
+    ]),
+  ) as { [K in keyof T]: T[K] & { onFill: string } };
+
+const baseThemes = withOnFill(defaultConfig.themes);
+
 const DARK_INK = "hsla(0, 0%, 84%, 1)";
 const DARK_INK_THEME = { color: DARK_INK, color12: DARK_INK };
 // 스플래시의 다크 배경(app.json)과 같은 값이다. 표면은 배경보다 밝아야 떠 보인다.
@@ -23,17 +36,15 @@ export const tamaguiConfig = createTamagui({
     fastSchemeChange: false,
   },
   themes: {
-    ...defaultConfig.themes,
+    ...baseThemes,
     light: {
-      ...defaultConfig.themes.light,
+      ...baseThemes.light,
       background: "#EAF1FA",
-      onFill: "white",
       backgroundPink: PINK_BACKGROUND,
     },
     dark: {
-      ...defaultConfig.themes.dark,
+      ...baseThemes.dark,
       background: DARK_BACKGROUND,
-      onFill: "white",
       backgroundPink: DARK_BACKGROUND,
       ...DARK_INK_THEME,
       gray12: DARK_INK,
@@ -44,18 +55,18 @@ export const tamaguiConfig = createTamagui({
       yellow10: DARK_HIGHLIGHT_PRESS,
     },
     dark_gray: {
-      ...defaultConfig.themes.dark_gray,
+      ...baseThemes.dark_gray,
       ...DARK_INK_THEME,
       color1: DARK_SURFACE,
       color3: DARK_SURFACE_PRESS,
     },
     dark_blue: {
-      ...defaultConfig.themes.dark_blue,
+      ...baseThemes.dark_blue,
       ...DARK_INK_THEME,
       color10: DARK_ACCENT,
       color11: DARK_ACCENT_PRESS,
     },
-    dark_red: { ...defaultConfig.themes.dark_red, ...DARK_INK_THEME },
+    dark_red: { ...baseThemes.dark_red, ...DARK_INK_THEME },
   },
 });
 

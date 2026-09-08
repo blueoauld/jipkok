@@ -60,6 +60,7 @@ function ComposeForm({
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [photo, setPhoto] = useState<ImagePickerAsset | null>(null);
   const captionRef = useRef("");
 
@@ -105,7 +106,11 @@ function ComposeForm({
               justify="center"
               onPress={() => setPhoto(null)}
             >
-              <XIcon size={REMOVE_ICON_SIZE} weight="bold" color="$onFill" />
+              <XIcon
+                size={REMOVE_ICON_SIZE}
+                weight="bold"
+                color={theme.onFill.val}
+              />
             </RetroPressable>
           </YStack>
         </YStack>

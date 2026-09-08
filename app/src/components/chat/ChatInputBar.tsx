@@ -187,7 +187,11 @@ export function ChatInputBar({
           accessibilityLabel={t("a11y.send")}
           onPress={sendable ? send : undefined}
         >
-          <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="$onFill" />
+          <PaperPlaneRightIcon
+            size={ICON_SIZE}
+            weight="fill"
+            color={theme.onFill.val}
+          />
         </RetroPressable>
       </XStack>
 
