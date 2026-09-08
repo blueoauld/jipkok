@@ -5,7 +5,6 @@ import com.blueoauld.server.domain.block.entity.ContactBlock
 import com.blueoauld.server.domain.block.entity.MemberBlock
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
-import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import com.blueoauld.server.domain.feed.entity.FeedPostLike
 import com.blueoauld.server.domain.feed.entity.FeedPostReport
@@ -47,9 +46,6 @@ class FeedPostRepositoryTest {
 
     @Autowired
     private lateinit var contactBlockRepository: ContactBlockRepository
-
-    @Autowired
-    private lateinit var phoneHasher: PhoneHasher
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
@@ -176,7 +172,7 @@ class FeedPostRepositoryTest {
     @Test
     fun `내 주소록에 있는 번호의 회원 게시물은 빠진다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash(MALE_PHONE_NUMBER)))
+        contactBlockRepository.saveAndFlush(ContactBlock(meId, MALE_PHONE_NUMBER))
 
         // when
         val rows = findByDate(gender = null, cursor = null)
@@ -259,7 +255,6 @@ class FeedPostRepositoryTest {
 
     private fun member(phoneNumber: String, gender: Gender) = Member(
         phoneNumber = phoneNumber,
-        phoneHash = phoneHasher.hash(phoneNumber),
         password = "encoded-password",
         gender = gender,
         nickname = phoneNumber.takeLast(10),

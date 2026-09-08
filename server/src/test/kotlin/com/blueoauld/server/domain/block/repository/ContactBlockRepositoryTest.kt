@@ -2,7 +2,6 @@ package com.blueoauld.server.domain.block.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.block.entity.ContactBlock
-import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -25,9 +24,6 @@ class ContactBlockRepositoryTest {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
-    @Autowired
-    private lateinit var phoneHasher: PhoneHasher
-
     private var meId: Long = 0
 
     private var otherId: Long = 0
@@ -39,18 +35,18 @@ class ContactBlockRepositoryTest {
     }
 
     @Test
-    fun `내 주소록에 상대 번호가 있으면 차단 관계로 본다`() {
+    fun `내가 상대 번호를 차단했으면 차단 관계로 본다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash(OTHER_PHONE_NUMBER)))
+        contactBlockRepository.saveAndFlush(ContactBlock(meId, OTHER_PHONE_NUMBER))
 
         // when, then
         assertThat(contactBlockRepository.existsBetween(meId, otherId)).isTrue()
     }
 
     @Test
-    fun `상대 주소록에 내 번호가 있어도 차단 관계로 본다`() {
+    fun `상대가 내 번호를 차단했어도 차단 관계로 본다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(otherId, phoneHasher.hash(MY_PHONE_NUMBER)))
+        contactBlockRepository.saveAndFlush(ContactBlock(otherId, MY_PHONE_NUMBER))
 
         // when, then
         assertThat(contactBlockRepository.existsBetween(meId, otherId)).isTrue()
@@ -59,31 +55,32 @@ class ContactBlockRepositoryTest {
     @Test
     fun `서로의 번호가 없으면 차단 관계가 아니다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash("+821077770002")))
+        contactBlockRepository.saveAndFlush(ContactBlock(meId, THIRD_PHONE_NUMBER))
 
         // when, then
         assertThat(contactBlockRepository.existsBetween(meId, otherId)).isFalse()
     }
 
     @Test
-    fun `회원의 차단 번호를 세고 전부 지운다`() {
+    fun `내 것만 최근 순으로 나열하고 id로 지운다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash("+821077770002")))
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash("+821077770003")))
+        val first = contactBlockRepository.saveAndFlush(ContactBlock(meId, OTHER_PHONE_NUMBER))
+        val second = contactBlockRepository.saveAndFlush(ContactBlock(meId, THIRD_PHONE_NUMBER))
+        contactBlockRepository.saveAndFlush(ContactBlock(otherId, MY_PHONE_NUMBER))
 
         // when
-        val count = contactBlockRepository.countByMemberId(meId)
-        contactBlockRepository.deleteAllByMemberId(meId)
+        val listed = contactBlockRepository.findAllByMemberIdOrderByIdDesc(meId)
+        val deleted = contactBlockRepository.deleteByIdAndMemberId(first.id, otherId)
 
         // then
-        assertThat(count).isEqualTo(2)
-        assertThat(contactBlockRepository.countByMemberId(meId)).isZero()
+        assertThat(listed.map { it.id }).containsExactly(second.id, first.id)
+        assertThat(deleted).isZero()
+        assertThat(contactBlockRepository.countByMemberId(meId)).isEqualTo(2)
     }
 
     private fun save(phoneNumber: String) = memberRepository.saveAndFlush(
         Member(
             phoneNumber = phoneNumber,
-            phoneHash = phoneHasher.hash(phoneNumber),
             password = "encoded-password",
             gender = Gender.MALE,
             nickname = phoneNumber.takeLast(10),
@@ -95,5 +92,6 @@ class ContactBlockRepositoryTest {
 
         private const val MY_PHONE_NUMBER = "+821077770000"
         private const val OTHER_PHONE_NUMBER = "+821077770001"
+        private const val THIRD_PHONE_NUMBER = "+821077770002"
     }
 }

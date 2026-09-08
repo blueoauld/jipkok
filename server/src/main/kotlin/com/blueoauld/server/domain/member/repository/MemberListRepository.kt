@@ -148,10 +148,10 @@ interface MemberListRepository : JpaRepository<Member, Long> {
               )
               and not exists (
                 select 1 from contact_block c
-                where (c.member_id = :memberId and c.phone_hash = m.phone_hash)
+                where (c.member_id = :memberId and c.phone_number = m.phone_number)
                    or (
                      c.member_id = m.id
-                     and c.phone_hash = (select me.phone_hash from member me where me.id = :memberId)
+                     and c.phone_number = (select me.phone_number from member me where me.id = :memberId)
                    )
               )
         """

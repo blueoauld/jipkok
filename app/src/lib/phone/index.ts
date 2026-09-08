@@ -27,3 +27,12 @@ export function patternOf(country: PhoneCountry) {
 export function toE164(phoneNumber: string) {
   return dialCodeOf(currentCountry()) + phoneNumber.slice(1);
 }
+
+// 서버가 준 국가 코드 형식을 화면의 국내 표기로 되돌린다. 모르는 코드면 그대로 보여 준다.
+export function toDomestic(e164: string) {
+  const rule = Object.values(RULES).find(({ dialCode }) =>
+    e164.startsWith(dialCode),
+  );
+
+  return rule ? `0${e164.slice(rule.dialCode.length)}` : e164;
+}

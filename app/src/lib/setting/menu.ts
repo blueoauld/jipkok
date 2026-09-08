@@ -28,7 +28,6 @@ export type SettingAction =
   | "attendanceReward"
   | "adReward"
   | "appLock"
-  | "contactBlock"
   | "contact"
   | "suggest"
   | "version";
@@ -65,11 +64,6 @@ export const SECTIONS: SettingGroup[] = [
         icon: LockKeyIcon,
         action: "appLock",
       },
-      {
-        labelKey: "setting.menu.contactBlock",
-        icon: AddressBookIcon,
-        action: "contactBlock",
-      },
     ],
   },
   {
@@ -90,6 +84,11 @@ export const SECTIONS: SettingGroup[] = [
         labelKey: "list.blocks",
         icon: ProhibitIcon,
         href: "/activity/block",
+      },
+      {
+        labelKey: "list.contactBlocks",
+        icon: AddressBookIcon,
+        href: "/activity/contact-block",
       },
       {
         labelKey: "list.worries",

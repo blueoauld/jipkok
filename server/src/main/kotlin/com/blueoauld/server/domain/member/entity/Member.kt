@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.member.entity
 
-import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.MemberRole
@@ -31,9 +30,6 @@ class Member(
 
     @Column(name = "phone_number", nullable = false, length = PHONE_NUMBER_LENGTH)
     val phoneNumber: String,
-
-    @Column(name = "phone_hash", length = PhoneHasher.HASH_LENGTH)
-    var phoneHash: String? = null,
 
     @Column(name = "password", nullable = false)
     var password: String,

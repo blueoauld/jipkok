@@ -10,7 +10,6 @@ import { AppLockOverlay } from "@/components/AppLockOverlay";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { ToastHost } from "@/components/ToastHost";
 import { useChatSocket } from "@/hooks/useChatSocket";
-import { useContactBlockSync } from "@/hooks/useContactBlockSync";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useScreenTracking } from "@/hooks/useScreenTracking";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
@@ -49,7 +48,6 @@ export default function RootLayout() {
                 <SessionGuard />
                 <ChatSocket />
                 <Push />
-                <ContactBlockSync />
                 <Ads />
                 <Analytics />
                 <CrashReporting />
@@ -84,12 +82,6 @@ function ChatSocket() {
 
 function Push() {
   usePushNotifications();
-
-  return null;
-}
-
-function ContactBlockSync() {
-  useContactBlockSync();
 
   return null;
 }

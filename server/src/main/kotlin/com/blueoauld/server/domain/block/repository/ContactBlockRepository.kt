@@ -15,15 +15,21 @@ interface ContactBlockRepository : JpaRepository<ContactBlock, Long> {
           from contact_block c
           join member me on me.id = :memberId
           join member o on o.id = :otherId
-          where (c.member_id = me.id and c.phone_hash = o.phone_hash)
-             or (c.member_id = o.id and c.phone_hash = me.phone_hash)
+          where (c.member_id = me.id and c.phone_number = o.phone_number)
+             or (c.member_id = o.id and c.phone_number = me.phone_number)
         )
         """,
         nativeQuery = true,
     )
     fun existsBetween(@Param("memberId") memberId: Long, @Param("otherId") otherId: Long): Boolean
 
+    fun existsByMemberIdAndPhoneNumber(memberId: Long, phoneNumber: String): Boolean
+
+    fun findAllByMemberIdOrderByIdDesc(memberId: Long): List<ContactBlock>
+
     fun countByMemberId(memberId: Long): Long
+
+    fun deleteByIdAndMemberId(id: Long, memberId: Long): Long
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from ContactBlock c where c.memberId = :memberId")

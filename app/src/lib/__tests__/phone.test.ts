@@ -1,4 +1,4 @@
-import { patternOf, toE164 } from "@/lib/phone";
+import { patternOf, toDomestic, toE164 } from "@/lib/phone";
 import { currentCountry, usePhoneCountryStore } from "@/lib/phone/store";
 
 let mockRegionCode: string | undefined = "KR";
@@ -74,5 +74,12 @@ describe("phone", () => {
     expect(pattern.test("0812345678")).toBe(false);
     expect(pattern.test("09123456789")).toBe(false);
     expect(pattern.test("091234567")).toBe(false);
+  });
+
+  it("국가 코드 형식을 국내 표기로 되돌린다", () => {
+    expect(toDomestic("+821012345678")).toBe("01012345678");
+    expect(toDomestic("+819012345678")).toBe("09012345678");
+    expect(toDomestic("+886912345678")).toBe("0912345678");
+    expect(toDomestic("+12125550100")).toBe("+12125550100");
   });
 });

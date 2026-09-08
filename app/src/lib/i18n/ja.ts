@@ -131,6 +131,7 @@ export const ja: typeof ko = {
     SUSPENSION_004: "停止が見つかりません。",
     SUSPENSION_005: "すでに停止中です。解除してからもう一度設定してください。",
     BLOCK_001: "自分はブロックできません。",
+    BLOCK_002: "ブロックできる番号の上限を超えました。",
     POINT_001: "ポイントが足りません。",
     AD_001: "広告ボーナスの署名が正しくありません。",
     FEED_001: "この時間にはすでに投稿しました。",
@@ -357,7 +358,6 @@ export const ja: typeof ko = {
       suggest: "ご意見",
       version: "バージョン確認",
       appLock: "アプリロック",
-      contactBlock: "知り合いをブロック",
       logout: "ログアウト",
       withdraw: "退会",
     },
@@ -392,14 +392,15 @@ export const ja: typeof ko = {
       "端末の画面ロックが解除されたため、アプリロックをオフにしました。",
   },
   contactBlock: {
+    addTitle: "番号をブロック",
+    placeholder: "携帯電話番号",
+    submit: "ブロック",
+    invalid: "携帯電話番号が正しくありません。",
+    added: "番号をブロックしました。",
+    removed: "ブロックを解除しました。",
+    empty: "ブロックした番号はありません。",
     notice:
-      "連絡先の電話番号をサーバーに送り、その番号で登録した会員と互いに表示されないようにします。番号は復元できない値としてのみ保存し、名前は送らず、オフにするとすぐに削除します。",
-    turnOn: "ブロックする",
-    permissionDenied:
-      "連絡先へのアクセス権限がないため有効にできません。設定で権限を許可してください。",
-    enabled:
-      "知り合いのブロックをオンにしました。{{count}}件の番号をブロックします。",
-    disabled: "知り合いのブロックをオフにしました。",
+      "ブロックした番号で登録した会員とは互いに表示されず、メッセージも送れません。",
   },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",
@@ -410,6 +411,7 @@ export const ja: typeof ko = {
     favorites: "お気に入りリスト",
     secretPhotos: "シークレット写真リスト",
     blocks: "ブロックリスト",
+    contactBlocks: "番号ブロック",
     worries: "悩みリスト",
     likesReceived: "受け取ったいいねリスト",
     favoritesReceived: "受け取ったお気に入りリスト",

@@ -5,7 +5,6 @@ import com.blueoauld.server.domain.block.entity.ContactBlock
 import com.blueoauld.server.domain.block.entity.MemberBlock
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
-import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import org.assertj.core.api.Assertions.assertThat
@@ -34,9 +33,6 @@ class MemberListRepositoryTest {
 
     @Autowired
     private lateinit var contactBlockRepository: ContactBlockRepository
-
-    @Autowired
-    private lateinit var phoneHasher: PhoneHasher
 
     private var meId: Long = 0
 
@@ -298,7 +294,7 @@ class MemberListRepositoryTest {
     @Test
     fun `내 주소록에 있는 번호의 회원은 빠진다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash(NEAR_PHONE_NUMBER)))
+        contactBlockRepository.saveAndFlush(ContactBlock(meId, NEAR_PHONE_NUMBER))
 
         // when
         val rows = findRecent()
@@ -311,7 +307,7 @@ class MemberListRepositoryTest {
     @Test
     fun `내 번호를 주소록에서 차단한 회원도 빠진다`() {
         // given
-        contactBlockRepository.saveAndFlush(ContactBlock(nearId, phoneHasher.hash(MY_PHONE_NUMBER)))
+        contactBlockRepository.saveAndFlush(ContactBlock(nearId, MY_PHONE_NUMBER))
 
         // when
         val rows = findRecent()
@@ -364,7 +360,6 @@ class MemberListRepositoryTest {
         locatedAt: Instant,
     ) = Member(
         phoneNumber = phoneNumber,
-        phoneHash = phoneHasher.hash(phoneNumber),
         password = "encoded-password",
         gender = gender,
         nickname = phoneNumber.takeLast(10),

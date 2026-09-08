@@ -80,9 +80,6 @@ cors:
 admin:
     base-url: ${ADMIN_BASE_URL:http://localhost:3000}
 
-contact-block:
-    secret: ${CONTACT_BLOCK_SECRET:}
-
 jwt:
     access-token-validity: 1h
     refresh-token-validity: 14d

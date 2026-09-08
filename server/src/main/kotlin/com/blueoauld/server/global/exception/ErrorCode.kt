@@ -94,6 +94,7 @@ enum class ErrorCode(
     DUPLICATE_SUSPENSION(HttpStatus.CONFLICT, "SUSPENSION_005", "이미 정지 중입니다. 해제 후 다시 걸어주시길 바랍니다."),
 
     SELF_BLOCK(HttpStatus.BAD_REQUEST, "BLOCK_001", "자기 자신은 차단할 수 없습니다."),
+    CONTACT_BLOCK_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "BLOCK_002", "차단할 수 있는 번호 수를 넘었습니다."),
 
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "POINT_001", "포인트가 부족합니다."),
 

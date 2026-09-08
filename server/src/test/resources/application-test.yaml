@@ -2,9 +2,6 @@ logging:
     level:
         com.blueoauld.server: info
 
-contact-block:
-    secret: test-only-contact-block-secret
-
 jwt:
     secret: test-only-secret-key-that-is-long-enough-for-hmac-sha-algorithms
 

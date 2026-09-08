@@ -52,14 +52,12 @@ export function SettingSection({
   pendingAction,
   profileViewCount,
   appLockEnabled,
-  contactBlockEnabled,
   onItemPress,
 }: {
   items: SettingItem[];
   pendingAction: SettingAction | null;
   profileViewCount: number;
   appLockEnabled: boolean;
-  contactBlockEnabled: boolean;
   onItemPress: (item: SettingItem) => void;
 }) {
   const { t } = useTranslation();
@@ -77,9 +75,7 @@ export function SettingSection({
             status={
               item.action === "appLock"
                 ? t(appLockEnabled ? "setting.on" : "setting.off")
-                : item.action === "contactBlock"
-                  ? t(contactBlockEnabled ? "setting.on" : "setting.off")
-                  : undefined
+                : undefined
             }
             onPress={
               item.href || item.url || item.action

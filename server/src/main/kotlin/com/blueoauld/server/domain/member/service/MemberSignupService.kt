@@ -4,7 +4,6 @@ import com.blueoauld.server.domain.auth.dto.response.TokenResponse
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.service.AuthService
 import com.blueoauld.server.domain.auth.service.VerificationCodeService
-import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.dto.request.SignupRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.NicknameHistory
@@ -29,7 +28,6 @@ class MemberSignupService(
     private val authService: AuthService,
     private val passwordEncoder: PasswordEncoder,
     private val memberSuspensionService: MemberSuspensionService,
-    private val phoneHasher: PhoneHasher,
 ) {
 
     @Transactional
@@ -51,7 +49,6 @@ class MemberSignupService(
         val member = memberRepository.save(
             Member(
                 phoneNumber = request.phoneNumber,
-                phoneHash = phoneHasher.hash(request.phoneNumber),
                 password = passwordEncoder.encodePassword(request.password),
                 gender = request.gender,
                 nickname = Member.generateNickname(),

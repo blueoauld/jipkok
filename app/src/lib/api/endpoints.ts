@@ -14,6 +14,7 @@ import type {
   ChatRoomResponse,
   ChatVideoUrlResponse,
   ContactBlockRequest,
+  ContactBlockResponse,
   CreateFeedPostRequest,
   CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -304,16 +305,18 @@ export const blocks = {
 };
 
 export const contactBlocks = {
-  replace: (phoneNumbers: ContactBlockRequest["phoneNumbers"]) =>
+  list: () => request<ContactBlockResponse[]>("/api/members/me/contact-blocks"),
+
+  add: (phoneNumber: string) =>
     request<void>("/api/members/me/contact-blocks", {
-      method: "PUT",
-      body: { phoneNumbers },
+      method: "POST",
+      body: { phoneNumber } satisfies ContactBlockRequest,
     }),
 
-  clear: () =>
-    request<void>("/api/members/me/contact-blocks", { method: "DELETE" }),
-
-  count: () => request<number>("/api/members/me/contact-blocks/count"),
+  remove: (contactBlockId: number) =>
+    request<void>(`/api/members/me/contact-blocks/${contactBlockId}`, {
+      method: "DELETE",
+    }),
 };
 
 export const points = {
