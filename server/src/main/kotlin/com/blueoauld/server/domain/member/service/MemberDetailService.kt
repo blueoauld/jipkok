@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
@@ -32,6 +33,7 @@ class MemberDetailService(
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val secretPhotoAccessRepository: SecretPhotoAccessRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val contactBlockRepository: ContactBlockRepository,
     private val memberMemoService: MemberMemoService,
     private val eventPublisher: ApplicationEventPublisher,
     private val photoStorage: PhotoStorage,
@@ -46,6 +48,11 @@ class MemberDetailService(
 
         val me = memberRepository.getMember(memberId)
         val target = memberRepository.getMember(targetId)
+
+        if (contactBlockRepository.existsBetween(memberId, targetId)) {
+            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
+
         val blockedByThem = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(targetId, memberId)
         val blockedByMe = memberBlockRepository.existsByBlockerIdAndBlockedMemberId(memberId, targetId)
         val photos = memberPhotoRepository.findAllByMemberId(targetId)

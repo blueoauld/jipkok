@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.secretphoto.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.displayOrdered
@@ -28,6 +29,7 @@ class SecretPhotoAccessService(
     private val memberSummaryService: MemberSummaryService,
     private val memberPhotoRepository: MemberPhotoRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val contactBlockRepository: ContactBlockRepository,
     private val photoStorage: PhotoStorage,
     private val memberSuspensionService: MemberSuspensionService,
 ) {
@@ -85,7 +87,8 @@ class SecretPhotoAccessService(
         memberSuspensionService.check(viewerId, SuspensionType.SECRET_PHOTO)
 
         if (!secretPhotoAccessRepository.existsByOwnerIdAndViewerId(ownerId, viewerId) ||
-            memberBlockRepository.existsBetween(viewerId, ownerId)
+            memberBlockRepository.existsBetween(viewerId, ownerId) ||
+            contactBlockRepository.existsBetween(viewerId, ownerId)
         ) {
             throw BusinessException(ErrorCode.SECRET_PHOTO_FORBIDDEN)
         }

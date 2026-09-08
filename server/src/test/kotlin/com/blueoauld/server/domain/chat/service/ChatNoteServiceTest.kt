@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
@@ -36,6 +37,8 @@ class ChatNoteServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val pointService = mockk<PointService>(relaxed = true)
 
     private val chatNoteService = ChatNoteService(
@@ -44,6 +47,7 @@ class ChatNoteServiceTest {
         chatMessageService,
         memberRepository,
         memberBlockRepository,
+        contactBlockRepository,
         pointService,
     )
 
@@ -163,6 +167,21 @@ class ChatNoteServiceTest {
 
         // then
         verify { chatMessageService.append(any(), any(), any()) }
+    }
+
+    @Test
+    fun `아는 사람 차단 관계면 쪽지를 보낼 수 없다`() {
+        // given
+        every { contactBlockRepository.existsBetween(SENDER_ID, RECEIVER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.NOTE_BLOCKED)
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -50,6 +51,8 @@ class MemberWithdrawServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val memberFavoriteRepository = mockk<MemberFavoriteRepository>(relaxed = true)
 
     private val memberLikeRepository = mockk<MemberLikeRepository>(relaxed = true)
@@ -76,6 +79,7 @@ class MemberWithdrawServiceTest {
         worryPostLikeRepository,
         worryCommentRepository,
         memberBlockRepository,
+        contactBlockRepository,
         memberFavoriteRepository,
         memberLikeRepository,
         memberMemoRepository,
@@ -112,6 +116,7 @@ class MemberWithdrawServiceTest {
         verify { worryPostLikeRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { worryCommentRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberBlockRepository.deleteAllByMember(MEMBER_ID) }
+        verify { contactBlockRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberFavoriteRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberLikeRepository.deleteAllByMember(MEMBER_ID) }
         verify { memberMemoRepository.deleteAllByMember(MEMBER_ID) }

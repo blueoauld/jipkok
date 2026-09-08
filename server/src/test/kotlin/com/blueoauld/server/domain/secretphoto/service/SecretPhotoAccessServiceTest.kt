@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.secretphoto.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.entity.MemberPhoto
@@ -36,6 +37,8 @@ class SecretPhotoAccessServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val photoStorage = mockk<PhotoStorage>(relaxed = true)
 
     private val memberSuspensionService = mockk<MemberSuspensionService>(relaxed = true)
@@ -46,6 +49,7 @@ class SecretPhotoAccessServiceTest {
         memberSummaryService,
         memberPhotoRepository,
         memberBlockRepository,
+        contactBlockRepository,
         photoStorage,
         memberSuspensionService,
     )
@@ -85,6 +89,21 @@ class SecretPhotoAccessServiceTest {
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_SUSPENDED)
         verify(exactly = 0) { photoStorage.createSignedViewUrl(any()) }
+    }
+
+    @Test
+    fun `아는 사람 차단 관계면 공개받았어도 볼 수 없다`() {
+        // given
+        allowView()
+        every { contactBlockRepository.existsBetween(VIEWER_ID, OWNER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            secretPhotoAccessService.findPhotoUrls(VIEWER_ID, OWNER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.SECRET_PHOTO_FORBIDDEN)
     }
 
     @Test

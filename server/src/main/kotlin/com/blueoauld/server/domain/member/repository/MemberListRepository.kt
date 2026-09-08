@@ -146,6 +146,14 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                 where (b.blocker_id = :memberId and b.blocked_member_id = m.id)
                    or (b.blocker_id = m.id and b.blocked_member_id = :memberId)
               )
+              and not exists (
+                select 1 from contact_block c
+                where (c.member_id = :memberId and c.phone_hash = m.phone_hash)
+                   or (
+                     c.member_id = m.id
+                     and c.phone_hash = (select me.phone_hash from member me where me.id = :memberId)
+                   )
+              )
         """
 
         private const val FAVORITED = """

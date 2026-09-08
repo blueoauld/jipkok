@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.service.ChatRoomService
@@ -33,6 +34,7 @@ class MemberWithdrawService(
     private val worryPostLikeRepository: WorryPostLikeRepository,
     private val worryCommentRepository: WorryCommentRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val contactBlockRepository: ContactBlockRepository,
     private val memberFavoriteRepository: MemberFavoriteRepository,
     private val memberLikeRepository: MemberLikeRepository,
     private val memberMemoRepository: MemberMemoRepository,
@@ -57,6 +59,7 @@ class MemberWithdrawService(
         worryPostRepository.decreaseCommentCountCommentedBy(memberId)
         worryCommentRepository.deleteAllByMemberId(memberId)
         memberBlockRepository.deleteAllByMember(memberId)
+        contactBlockRepository.deleteAllByMemberId(memberId)
         memberFavoriteRepository.deleteAllByMember(memberId)
         memberRepository.decreaseReceivedLikeCountLikedBy(memberId)
         memberLikeRepository.deleteAllByMember(memberId)

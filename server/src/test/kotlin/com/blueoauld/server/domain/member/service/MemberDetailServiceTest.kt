@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
@@ -43,6 +44,8 @@ class MemberDetailServiceTest {
 
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val memberMemoService = mockk<MemberMemoService>()
 
     private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
@@ -56,6 +59,7 @@ class MemberDetailServiceTest {
         memberFavoriteRepository,
         secretPhotoAccessRepository,
         memberBlockRepository,
+        contactBlockRepository,
         memberMemoService,
         eventPublisher,
         photoStorage,
@@ -74,6 +78,21 @@ class MemberDetailServiceTest {
         )
         every { photoStorage.toPublicUrl(any()) } answers { "https://cdn.test/${firstArg<String>()}" }
         every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(any(), any()) } returns false
+    }
+
+    @Test
+    fun `아는 사람 차단 관계면 없는 회원처럼 대한다`() {
+        // given
+        every { contactBlockRepository.existsBetween(ME_ID, TARGET_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberDetailService.findDetail(ME_ID, TARGET_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+        verify(exactly = 0) { eventPublisher.publishEvent(any()) }
     }
 
     @Test

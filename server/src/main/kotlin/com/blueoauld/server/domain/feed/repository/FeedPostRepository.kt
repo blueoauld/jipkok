@@ -126,6 +126,14 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
                or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
           )
           and not exists (
+            select 1 from contact_block c
+            where (c.member_id = :memberId and c.phone_hash = m.phone_hash)
+               or (
+                 c.member_id = m.id
+                 and c.phone_hash = (select me.phone_hash from member me where me.id = :memberId)
+               )
+          )
+          and not exists (
             select 1 from feed_post_report r
             where r.reporter_id = :memberId and r.post_id = p.id
           )"""

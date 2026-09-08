@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.member.repository
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.block.entity.ContactBlock
 import com.blueoauld.server.domain.block.entity.MemberBlock
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.block.service.PhoneHasher
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import org.assertj.core.api.Assertions.assertThat
@@ -29,6 +32,12 @@ class MemberListRepositoryTest {
     @Autowired
     private lateinit var memberBlockRepository: MemberBlockRepository
 
+    @Autowired
+    private lateinit var contactBlockRepository: ContactBlockRepository
+
+    @Autowired
+    private lateinit var phoneHasher: PhoneHasher
+
     private var meId: Long = 0
 
     private var nearId: Long = 0
@@ -41,9 +50,9 @@ class MemberListRepositoryTest {
     fun setUp() {
         val now = Instant.now()
 
-        meId = save(member("+821099990000", Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
+        meId = save(member(MY_PHONE_NUMBER, Gender.MALE, MY_LATITUDE, MY_LONGITUDE, now)).id
         nearId = save(
-            member("+821099990001", Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))
+            member(NEAR_PHONE_NUMBER, Gender.FEMALE, 37.51, 127.0, now.minusSeconds(60))
                 .apply { receivedLikeCount = 3 },
         ).id
         farId = save(member("+821099990002", Gender.MALE, 37.9, 127.0, now.minusSeconds(120))).id
@@ -286,6 +295,31 @@ class MemberListRepositoryTest {
         assertThat(rows.map { it.getMemberId() }).doesNotContain(nearId)
     }
 
+    @Test
+    fun `내 주소록에 있는 번호의 회원은 빠진다`() {
+        // given
+        contactBlockRepository.saveAndFlush(ContactBlock(meId, phoneHasher.hash(NEAR_PHONE_NUMBER)))
+
+        // when
+        val rows = findRecent()
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(nearId)
+        assertThat(rows.map { it.getMemberId() }).contains(farId)
+    }
+
+    @Test
+    fun `내 번호를 주소록에서 차단한 회원도 빠진다`() {
+        // given
+        contactBlockRepository.saveAndFlush(ContactBlock(nearId, phoneHasher.hash(MY_PHONE_NUMBER)))
+
+        // when
+        val rows = findRecent()
+
+        // then
+        assertThat(rows.map { it.getMemberId() }).doesNotContain(nearId)
+    }
+
     private fun findRecent(
         gender: String? = null,
         minBirthYear: Int? = null,
@@ -330,6 +364,7 @@ class MemberListRepositoryTest {
         locatedAt: Instant,
     ) = Member(
         phoneNumber = phoneNumber,
+        phoneHash = phoneHasher.hash(phoneNumber),
         password = "encoded-password",
         gender = gender,
         nickname = phoneNumber.takeLast(10),
@@ -343,6 +378,8 @@ class MemberListRepositoryTest {
     companion object {
 
         private const val PAGE_SIZE = 200
+        private const val MY_PHONE_NUMBER = "+821099990000"
+        private const val NEAR_PHONE_NUMBER = "+821099990001"
         private const val MY_LATITUDE = 37.5
         private const val MY_LONGITUDE = 127.0
     }

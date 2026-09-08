@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.chat.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
@@ -25,6 +26,7 @@ class ChatNoteService(
     private val chatMessageService: ChatMessageService,
     private val memberRepository: MemberRepository,
     private val memberBlockRepository: MemberBlockRepository,
+    private val contactBlockRepository: ContactBlockRepository,
     private val pointService: PointService,
 ) {
 
@@ -36,7 +38,9 @@ class ChatNoteService(
 
         val receiver = memberRepository.getMember(receiverId)
 
-        if (memberBlockRepository.existsBetween(senderId, receiverId)) {
+        if (memberBlockRepository.existsBetween(senderId, receiverId) ||
+            contactBlockRepository.existsBetween(senderId, receiverId)
+        ) {
             throw BusinessException(ErrorCode.NOTE_BLOCKED)
         }
 
