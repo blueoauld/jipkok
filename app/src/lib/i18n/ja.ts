@@ -357,6 +357,7 @@ export const ja: typeof ko = {
       suggest: "ご意見",
       version: "バージョン確認",
       appLock: "アプリロック",
+      contactBlock: "知り合いをブロック",
       logout: "ログアウト",
       withdraw: "退会",
     },
@@ -389,6 +390,16 @@ export const ja: typeof ko = {
     unavailable: "先に端末の画面ロックを設定してください。",
     turnedOff:
       "端末の画面ロックが解除されたため、アプリロックをオフにしました。",
+  },
+  contactBlock: {
+    notice:
+      "連絡先の電話番号をサーバーに送り、その番号で登録した会員と互いに表示されないようにします。番号は復元できない値としてのみ保存し、名前は送らず、オフにするとすぐに削除します。",
+    turnOn: "ブロックする",
+    permissionDenied:
+      "連絡先へのアクセス権限がないため有効にできません。設定で権限を許可してください。",
+    enabled:
+      "知り合いのブロックをオンにしました。{{count}}件の番号をブロックします。",
+    disabled: "知り合いのブロックをオフにしました。",
   },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",

@@ -1,5 +1,6 @@
 import type { Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
+import { AddressBookIcon } from "phosphor-react-native/src/icons/AddressBook";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
@@ -27,6 +28,7 @@ export type SettingAction =
   | "attendanceReward"
   | "adReward"
   | "appLock"
+  | "contactBlock"
   | "contact"
   | "suggest"
   | "version";
@@ -62,6 +64,11 @@ export const SECTIONS: SettingGroup[] = [
         labelKey: "setting.menu.appLock",
         icon: LockKeyIcon,
         action: "appLock",
+      },
+      {
+        labelKey: "setting.menu.contactBlock",
+        icon: AddressBookIcon,
+        action: "contactBlock",
       },
     ],
   },

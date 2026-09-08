@@ -340,6 +340,7 @@ export const zh: typeof ko = {
       suggest: "提供建議",
       version: "版本資訊",
       appLock: "應用程式鎖定",
+      contactBlock: "封鎖認識的人",
       logout: "登出",
       withdraw: "刪除帳號",
     },
@@ -371,6 +372,14 @@ export const zh: typeof ko = {
     disabled: "已關閉應用程式鎖定。",
     unavailable: "請先在裝置上設定螢幕鎖定。",
     turnedOff: "裝置的螢幕鎖定已解除，因此已關閉應用程式鎖定。",
+  },
+  contactBlock: {
+    notice:
+      "將通訊錄的電話號碼傳送到伺服器，使以該號碼註冊的會員與你互不可見。號碼只以無法還原的值儲存，不會傳送姓名，關閉後會立即刪除。",
+    turnOn: "封鎖",
+    permissionDenied: "沒有通訊錄存取權限，無法開啟。請在設定中允許權限。",
+    enabled: "已開啟封鎖認識的人，封鎖 {{count}} 個號碼。",
+    disabled: "已關閉封鎖認識的人。",
   },
   rank: {
     errorMessage: "無法載入排行榜。",

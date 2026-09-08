@@ -13,6 +13,7 @@ import type {
   ChatRoomPage,
   ChatRoomResponse,
   ChatVideoUrlResponse,
+  ContactBlockRequest,
   CreateFeedPostRequest,
   CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
@@ -300,6 +301,19 @@ export const blocks = {
 
   mine: (params: CursorParams = {}) =>
     request<MemberSummaryPage>("/api/members/me/blocks", { query: params }),
+};
+
+export const contactBlocks = {
+  replace: (phoneNumbers: ContactBlockRequest["phoneNumbers"]) =>
+    request<void>("/api/members/me/contact-blocks", {
+      method: "PUT",
+      body: { phoneNumbers },
+    }),
+
+  clear: () =>
+    request<void>("/api/members/me/contact-blocks", { method: "DELETE" }),
+
+  count: () => request<number>("/api/members/me/contact-blocks/count"),
 };
 
 export const points = {

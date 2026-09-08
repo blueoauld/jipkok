@@ -354,6 +354,7 @@ export const en: typeof ko = {
       suggest: "Send feedback",
       version: "Check version",
       appLock: "App lock",
+      contactBlock: "Block contacts",
       logout: "Log out",
       withdraw: "Delete account",
     },
@@ -386,6 +387,15 @@ export const en: typeof ko = {
     unavailable: "Set up a screen lock on your device first.",
     turnedOff:
       "Your device screen lock was removed, so app lock has been turned off.",
+  },
+  contactBlock: {
+    notice:
+      "Phone numbers from your contacts are sent to the server so that members who signed up with those numbers and you cannot see each other. Numbers are stored only as irreversible values, names are never sent, and everything is deleted as soon as you turn this off.",
+    turnOn: "Block",
+    permissionDenied:
+      "Contacts access is required. Please allow it in Settings.",
+    enabled: "Block contacts is on. {{count}} numbers are blocked.",
+    disabled: "Block contacts is off.",
   },
   rank: {
     errorMessage: "Couldn't load the ranking.",

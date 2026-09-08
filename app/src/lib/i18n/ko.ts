@@ -355,6 +355,7 @@ export const ko = {
       suggest: "건의하기",
       version: "버전 확인",
       appLock: "앱 잠금",
+      contactBlock: "아는 사람 차단",
       logout: "로그아웃",
       withdraw: "회원탈퇴",
     },
@@ -386,6 +387,15 @@ export const ko = {
     disabled: "앱 잠금을 껐습니다.",
     unavailable: "기기에 화면 잠금을 먼저 설정해주시길 바랍니다.",
     turnedOff: "기기의 화면 잠금이 해제되어 앱 잠금을 껐습니다.",
+  },
+  contactBlock: {
+    notice:
+      "주소록의 전화번호를 서버에 보내 그 번호로 가입한 회원과 서로 보이지 않게 합니다. 번호는 되돌릴 수 없는 값으로만 저장하고 이름은 보내지 않으며, 끄면 바로 지웁니다.",
+    turnOn: "차단하기",
+    permissionDenied:
+      "연락처 접근 권한이 없어 켤 수 없습니다. 설정에서 권한을 허용해주시길 바랍니다.",
+    enabled: "아는 사람 차단을 켰습니다. 번호 {{count}}개를 차단합니다.",
+    disabled: "아는 사람 차단을 껐습니다.",
   },
   rank: {
     errorMessage: "랭킹을 불러오지 못했습니다.",

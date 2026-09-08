@@ -20,6 +20,7 @@ export type MemberSort = NonNullable<
 export type Gender = MyProfileResponse["gender"];
 export type SetupProfileRequest = Schemas["SetupProfileRequest"];
 export type EditProfileRequest = Schemas["EditProfileRequest"];
+export type ContactBlockRequest = Schemas["ContactBlockRequest"];
 export type UpdateCommentRequest = Schemas["UpdateCommentRequest"];
 export type HeartbeatRequest = Schemas["HeartbeatRequest"];
 export type PhotoUploadUrlResponse = Schemas["PhotoUploadUrlResponse"];

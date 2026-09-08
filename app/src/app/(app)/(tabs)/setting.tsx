@@ -16,6 +16,7 @@ import { useAdReward } from "@/hooks/useAdReward";
 import { useAppLockToggle } from "@/hooks/useAppLockToggle";
 import { ATTENDANCE_DAYS_KEY } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
+import { useContactBlockToggle } from "@/hooks/useContactBlockToggle";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -100,6 +101,7 @@ export default function SettingScreen() {
   const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
   const adReward = useAdReward();
   const appLock = useAppLockToggle({ show, showApiError, confirm });
+  const contactBlock = useContactBlockToggle({ show, showApiError, confirm });
   const gate = useInterstitialGate();
 
   useLoadingOverlay(loggingOut);
@@ -152,9 +154,11 @@ export default function SettingScreen() {
       ? "version"
       : appLock.pending
         ? "appLock"
-        : !adReward.ready && !adReward.unavailable
-          ? "adReward"
-          : null;
+        : contactBlock.pending
+          ? "contactBlock"
+          : !adReward.ready && !adReward.unavailable
+            ? "adReward"
+            : null;
 
   const handleAction = useCallback(
     (action: SettingAction) => {
@@ -179,6 +183,11 @@ export default function SettingScreen() {
         return;
       }
 
+      if (action === "contactBlock") {
+        contactBlock.toggle();
+        return;
+      }
+
       if (action === "version") {
         if (!checkVersion.isPending) {
           checkVersion.mutate();
@@ -195,6 +204,7 @@ export default function SettingScreen() {
       adReward,
       appLock,
       checkVersion,
+      contactBlock,
       earnAttendanceReward,
       profile?.memberId,
       show,
@@ -303,6 +313,7 @@ export default function SettingScreen() {
                 pendingAction={pendingAction}
                 profileViewCount={profileViewCount}
                 appLockEnabled={appLock.enabled}
+                contactBlockEnabled={contactBlock.enabled}
                 onItemPress={handlePress}
               />
 

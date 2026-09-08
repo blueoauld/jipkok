@@ -41,7 +41,8 @@
         "com.google.android.gms.permission.AD_ID"
       ],
       "package": "com.blueoauld.jipkok",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "blockedPermissions": ["android.permission.WRITE_CONTACTS"]
     },
     "plugins": [
       "expo-router",
@@ -112,6 +113,12 @@
       "expo-image",
       "expo-video",
       "expo-localization",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "아는 사람 차단을 켜면 주소록의 전화번호로 가입한 회원을 서로 보이지 않게 하기 위해 연락처 접근 권한이 필요합니다."
+        }
+      ],
       [
         "expo-local-authentication",
         {
