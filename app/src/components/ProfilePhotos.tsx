@@ -8,7 +8,7 @@ import { FloatingButton } from "@/components/ui/FloatingButton";
 import { SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 
-const GRID_ICON_SIZE = 20;
+const GRID_ICON_SIZE = 22;
 
 export function ProfilePhotos({
   photos,

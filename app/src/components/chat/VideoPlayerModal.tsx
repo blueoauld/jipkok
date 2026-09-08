@@ -39,9 +39,9 @@ import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
 
 const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
-const CLOSE_ICON_SIZE = 24;
+const CLOSE_ICON_SIZE = 22;
 const PLAY_BUTTON_SIZE = 64;
-const PLAY_ICON_SIZE = 30;
+const PLAY_ICON_SIZE = 28;
 const SKIP_BUTTON_SIZE = 48;
 const SKIP_ICON_SIZE = 22;
 

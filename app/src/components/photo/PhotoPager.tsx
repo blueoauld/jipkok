@@ -16,7 +16,7 @@ import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
 
-const PLACEHOLDER_ICON_SIZE = 48;
+const PLACEHOLDER_ICON_SIZE = 40;
 
 export function PhotoPager({
   photos,

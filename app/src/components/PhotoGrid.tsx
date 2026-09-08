@@ -24,7 +24,7 @@ import { useAccentToken } from "@/lib/theme/accent";
 
 const COLUMNS = 3;
 
-const CELL_ICON_SIZE = 24;
+const CELL_ICON_SIZE = 22;
 
 const BADGE_SIZE = 24;
 const BADGE_ICON_SIZE = 14;

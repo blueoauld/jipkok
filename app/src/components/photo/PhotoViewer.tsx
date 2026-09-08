@@ -39,7 +39,7 @@ import { photoCacheKey } from "@/lib/photo";
 
 const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
 
-const CLOSE_ICON_SIZE = 24;
+const CLOSE_ICON_SIZE = 22;
 
 const CHROME_DURATION = 200;
 

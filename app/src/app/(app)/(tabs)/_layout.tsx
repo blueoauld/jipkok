@@ -34,7 +34,7 @@ import i18n from "@/lib/i18n";
 import { pushOnce } from "@/lib/router";
 import { useAccentColor } from "@/lib/theme/accent";
 
-const ICON_SIZE = 30;
+const ICON_SIZE = 28;
 const TAB_ITEM_PADDING = 5;
 const TAB_ITEM_MAX_WIDTH = 500;
 // 유리일 때는 네이티브 스택 헤더가 버튼을 앉히는 자리와 같아야 화면을 오갈 때 안 튄다.

@@ -23,7 +23,7 @@ import { pickSinglePhoto, takePhoto } from "@/lib/photo/picker";
 
 const CAPTION_MAX_LENGTH = 30;
 
-const PICKER_ICON_SIZE = 36;
+const PICKER_ICON_SIZE = 40;
 const REMOVE_BUTTON_SIZE = 24;
 const REMOVE_ICON_SIZE = 14;
 

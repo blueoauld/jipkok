@@ -7,7 +7,7 @@ import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { SCROLL_TO_TOP_BOTTOM_GAP, SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
-const ICON_SIZE = 20;
+const ICON_SIZE = 22;
 
 export function ScrollToTopButton({
   visible,

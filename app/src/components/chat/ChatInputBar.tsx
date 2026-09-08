@@ -21,7 +21,7 @@ import {
 import { useAccent, useThemeBackground } from "@/lib/theme/accent";
 import { CHAT_MESSAGE_MAX_LENGTH } from "@/lib/validation";
 
-const ICON_SIZE = 20;
+const ICON_SIZE = 22;
 const CANCEL_ICON_SIZE = 18;
 
 // iOS 26 키보드는 프레임 위쪽에 투명한 여백이 있어 그 틈으로 메시지가 비친다.

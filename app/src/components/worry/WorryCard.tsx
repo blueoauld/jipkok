@@ -9,7 +9,7 @@ import { WorryPostHeader } from "@/components/worry/WorryPostHeader";
 import type { WorryPostResponse } from "@/lib/api";
 
 const CONTENT_MAX_LINES = 3;
-const COUNT_ICON_SIZE = 16;
+const COUNT_ICON_SIZE = 18;
 
 function Card({
   worry,

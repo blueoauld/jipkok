@@ -7,6 +7,8 @@ import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 
+const CHECK_ICON_SIZE = 22;
+
 export type MenuSheetItem = {
   label: string;
   destructive?: boolean;
@@ -83,7 +85,11 @@ export function MenuSheet({
             </Text>
 
             <XStack opacity={selected ? 1 : 0}>
-              <CheckIcon size={20} weight="bold" color={theme.color.val} />
+              <CheckIcon
+                size={CHECK_ICON_SIZE}
+                weight="bold"
+                color={theme.color.val}
+              />
             </XStack>
           </XStack>
         ))}

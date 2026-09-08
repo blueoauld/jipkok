@@ -20,7 +20,7 @@ import {
 import { GLASS_ENABLED } from "@/lib/glass";
 import { useAccentColor } from "@/lib/theme/accent";
 
-const ACTION_ICON_SIZE = 30;
+const ACTION_ICON_SIZE = 28;
 
 const BADGE_SIZE = 18;
 const BADGE_FONT_SIZE = 11;

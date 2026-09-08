@@ -21,6 +21,8 @@ import { uploadReportPhoto } from "@/lib/photo";
 import { reasonLabel } from "@/lib/suspension";
 import { REPORT_DETAIL_MAX_LENGTH } from "@/lib/validation";
 
+const CHECK_ICON_SIZE = 22;
+
 const REASONS: ReportReason[] = [
   "OBSCENITY",
   "MINOR",
@@ -50,7 +52,11 @@ function ReasonRow({
       </Text>
 
       <XStack opacity={selected ? 1 : 0}>
-        <CheckIcon size={20} weight="bold" color={theme.color.val} />
+        <CheckIcon
+          size={CHECK_ICON_SIZE}
+          weight="bold"
+          color={theme.color.val}
+        />
       </XStack>
     </RetroListRow>
   );
