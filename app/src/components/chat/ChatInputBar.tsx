@@ -89,7 +89,7 @@ export function ChatInputBar({
           mr={barHPadding - RETRO_SHADOW_OFFSET}
           mt={barPadding}
         >
-          <RetroShadow color="$gray12" />
+          <RetroShadow color="$gray8" />
           <XStack
             borderWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
@@ -134,6 +134,7 @@ export function ChatInputBar({
         pb={barHPadding - RETRO_SHADOW_OFFSET}
       >
         <RetroPressable
+          shadow="$gray8"
           theme="gray"
           width={FLOATING_BUTTON_SIZE}
           height={FLOATING_BUTTON_SIZE}
@@ -153,7 +154,7 @@ export function ChatInputBar({
         </RetroPressable>
 
         <XStack flex={1} theme="gray">
-          <RetroShadow color="$gray12" />
+          <RetroShadow color="$gray8" />
           <XStack
             flex={1}
             borderWidth={RETRO_BORDER_WIDTH}
@@ -174,6 +175,7 @@ export function ChatInputBar({
         </XStack>
 
         <RetroPressable
+          shadow="$gray8"
           theme={accent}
           width={FLOATING_BUTTON_SIZE}
           height={FLOATING_BUTTON_SIZE}

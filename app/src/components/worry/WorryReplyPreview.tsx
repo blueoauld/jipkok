@@ -30,7 +30,7 @@ export function WorryReplyPreview({
     <YStack px="$4" pt="$3" bg={background}>
       {/* 그림자가 아래로 넘치므로 그만큼 띄워야 입력줄에 안 가린다. */}
       <YStack theme="gray" mb={RETRO_SHADOW_OFFSET}>
-        <RetroShadow color="$gray12" />
+        <RetroShadow color="$gray8" />
         <XStack
           borderWidth={RETRO_BORDER_WIDTH}
           borderColor="$gray12"

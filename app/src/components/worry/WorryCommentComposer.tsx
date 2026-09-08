@@ -40,7 +40,6 @@ export function WorryCommentComposer({
         {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
         <RetroInput
           key={replyTo?.commentId ?? "comment"}
-          shadow="$gray12"
           value={content}
           onChangeText={setContent}
           autoFocusNative={replyTo !== null}
@@ -53,6 +52,7 @@ export function WorryCommentComposer({
         />
       </YStack>
       <RetroButton
+        shadow="$gray8"
         width={SUBMIT_BUTTON_WIDTH}
         disabled={!trimmed || pending}
         onPress={() => {
