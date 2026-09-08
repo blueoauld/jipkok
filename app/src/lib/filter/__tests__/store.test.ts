@@ -1,3 +1,4 @@
+import { fromDateParam, koreaDateParam } from "@/lib/date";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
@@ -6,14 +7,16 @@ import {
 } from "@/lib/filter/store";
 
 describe("useFeedFilterStore.setDate", () => {
-  it("오늘을 고르면 null로 두어 자정이 지나도 오늘을 따라간다", () => {
-    useFeedFilterStore.getState().setDate(new Date());
+  const today = () => fromDateParam(koreaDateParam(Date.now()));
+
+  it("한국 오늘을 고르면 null로 두어 자정이 지나도 오늘을 따라간다", () => {
+    useFeedFilterStore.getState().setDate(today());
 
     expect(useFeedFilterStore.getState().date).toBeNull();
   });
 
   it("다른 날을 고르면 날짜 문자열로 박아 둔다", () => {
-    const yesterday = new Date();
+    const yesterday = today();
     yesterday.setDate(yesterday.getDate() - 1);
 
     useFeedFilterStore.getState().setDate(yesterday);
