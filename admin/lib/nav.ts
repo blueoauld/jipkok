@@ -19,6 +19,8 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   { title: "대시보드", href: "/", icon: LayoutDashboard },
+  { title: "회원", href: "/members", icon: Users },
+  { title: "채팅방", href: "/chat-rooms", icon: MessagesSquare },
   {
     title: "신고",
     href: "/reports/members",
@@ -30,11 +32,9 @@ export const navItems: NavItem[] = [
       { title: "고민 댓글 신고", href: "/reports/worry-comments" },
     ],
   },
-  { title: "회원", href: "/members", icon: Users },
-  { title: "채팅방", href: "/chat-rooms", icon: MessagesSquare },
   { title: "정지", href: "/suspensions", icon: ShieldBan },
-  { title: "문자 발송", href: "/messages", icon: MessageSquare },
   { title: "조치 이력", href: "/actions", icon: History },
+  { title: "문자 발송", href: "/messages", icon: MessageSquare },
   {
     title: "애플 광고",
     href: "/apple-ads/performance",
