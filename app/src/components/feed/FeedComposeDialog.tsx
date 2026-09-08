@@ -105,7 +105,7 @@ function ComposeForm({
               justify="center"
               onPress={() => setPhoto(null)}
             >
-              <XIcon size={REMOVE_ICON_SIZE} weight="bold" color="white" />
+              <XIcon size={REMOVE_ICON_SIZE} weight="bold" color="$onFill" />
             </RetroPressable>
           </YStack>
         </YStack>
@@ -140,7 +140,7 @@ function ComposeForm({
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
           {pending ? (
-            <Spinner size="small" color="white" />
+            <Spinner size="small" color="$onFill" />
           ) : (
             t("feed.composeSubmit")
           )}

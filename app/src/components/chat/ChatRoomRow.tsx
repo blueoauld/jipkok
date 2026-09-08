@@ -47,6 +47,8 @@ function SwipeAction({
   bg: XStackProps["bg"];
   onPress: () => void;
 }) {
+  const theme = useTheme();
+
   return (
     <Pressable onPress={onPress}>
       <XStack
@@ -58,7 +60,11 @@ function SwipeAction({
         items="center"
         justify="center"
       >
-        <Icon size={ACTION_ICON_SIZE} weight={weight} color="white" />
+        <Icon
+          size={ACTION_ICON_SIZE}
+          weight={weight}
+          color={theme.onFill.val}
+        />
       </XStack>
     </Pressable>
   );
@@ -66,6 +72,7 @@ function SwipeAction({
 
 function SelectBox({ selected }: { selected: boolean }) {
   const accent = useAccentToken();
+  const theme = useTheme();
 
   return (
     <XStack
@@ -79,7 +86,11 @@ function SelectBox({ selected }: { selected: boolean }) {
       justify="center"
     >
       {selected && (
-        <CheckIcon size={SELECT_ICON_SIZE} weight="bold" color="white" />
+        <CheckIcon
+          size={SELECT_ICON_SIZE}
+          weight="bold"
+          color={theme.onFill.val}
+        />
       )}
     </XStack>
   );

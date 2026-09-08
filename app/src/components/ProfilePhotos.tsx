@@ -1,6 +1,6 @@
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { useTranslation } from "react-i18next";
-import { YStack, type YStackProps } from "tamagui";
+import { useTheme, YStack, type YStackProps } from "tamagui";
 
 import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoGrid } from "@/components/PhotoGrid";
@@ -47,6 +47,7 @@ export function PhotoGridToggle({
   onPress: () => void;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const photoGlass = usePhotoGlass();
 
   return (
@@ -55,7 +56,7 @@ export function PhotoGridToggle({
         <SquaresFourIcon
           size={GRID_ICON_SIZE}
           weight={open ? "fill" : "regular"}
-          color={GLASS_ENABLED ? photoGlass.ink : "white"}
+          color={GLASS_ENABLED ? photoGlass.ink : theme.onFill.val}
         />
       </FloatingButton>
     </YStack>

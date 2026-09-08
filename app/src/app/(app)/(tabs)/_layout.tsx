@@ -166,7 +166,7 @@ export default function TabsLayout() {
               tabBarBadgeStyle: {
                 top: BADGE_TOP,
                 backgroundColor: theme.red10.val,
-                color: "white",
+                color: theme.onFill.val,
                 fontSize: BADGE_FONT_SIZE,
               },
               tabBarIcon: ({ color, focused }) => (

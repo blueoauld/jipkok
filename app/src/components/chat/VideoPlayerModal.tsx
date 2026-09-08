@@ -32,6 +32,7 @@ import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
   MIN_TAP_SIZE,
   OVERLAY_BG,
+  OVERLAY_INK,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
@@ -97,7 +98,7 @@ function SeekBar({
 
   return (
     <XStack items="center" gap="$3">
-      <Text fontSize="$2" color="white" fontWeight="600">
+      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
         {formatDuration(Math.floor(shown))}
       </Text>
 
@@ -126,7 +127,11 @@ function SeekBar({
           }}
         >
           <YStack height={TRACK_HEIGHT} bg="rgba(255, 255, 255, 0.35)">
-            <YStack height={TRACK_HEIGHT} width={width * ratio} bg="white" />
+            <YStack
+              height={TRACK_HEIGHT}
+              width={width * ratio}
+              bg={OVERLAY_INK}
+            />
           </YStack>
 
           <YStack
@@ -134,14 +139,14 @@ function SeekBar({
             l={width * ratio - THUMB_SIZE / 2}
             width={THUMB_SIZE}
             height={THUMB_SIZE}
-            bg="white"
+            bg={OVERLAY_INK}
             borderWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
           />
         </YStack>
       </GestureDetector>
 
-      <Text fontSize="$2" color="white" fontWeight="600">
+      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
         {formatDuration(Math.floor(duration))}
       </Text>
     </XStack>
@@ -165,7 +170,7 @@ function SkipButton({
       justify="center"
       bg={OVERLAY_BG}
       borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="white"
+      borderColor={OVERLAY_INK}
       pressStyle={{ opacity: PRESS_OPACITY }}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -336,7 +341,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                 justify="center"
                 pointerEvents="none"
               >
-                <Spinner size="small" color="white" />
+                <Spinner size="small" color={OVERLAY_INK} />
               </YStack>
             )}
 
@@ -351,7 +356,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                 justify="center"
                 pointerEvents="none"
               >
-                <Text fontSize="$4" color="white" fontWeight="600">
+                <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
                   {i18n.t("hook.videoUrlFailed")}
                 </Text>
               </YStack>
@@ -383,7 +388,11 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                   accessibilityLabel={i18n.t("a11y.close")}
                   onPress={onClose}
                 >
-                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                  <XIcon
+                    size={CLOSE_ICON_SIZE}
+                    weight="bold"
+                    color={OVERLAY_INK}
+                  />
                 </XStack>
               </XStack>
             </SafeAreaView>
@@ -410,7 +419,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     <RewindIcon
                       size={SKIP_ICON_SIZE}
                       weight="fill"
-                      color="white"
+                      color={OVERLAY_INK}
                     />
                   </SkipButton>
 
@@ -421,7 +430,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     justify="center"
                     bg={OVERLAY_BG}
                     borderWidth={RETRO_BORDER_WIDTH}
-                    borderColor="white"
+                    borderColor={OVERLAY_INK}
                     pressStyle={{ opacity: PRESS_OPACITY }}
                     accessibilityRole="button"
                     accessibilityLabel={
@@ -435,13 +444,13 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                       <PauseIcon
                         size={PLAY_ICON_SIZE}
                         weight="fill"
-                        color="white"
+                        color={OVERLAY_INK}
                       />
                     ) : (
                       <PlayIcon
                         size={PLAY_ICON_SIZE}
                         weight="fill"
-                        color="white"
+                        color={OVERLAY_INK}
                       />
                     )}
                   </XStack>
@@ -455,7 +464,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     <FastForwardIcon
                       size={SKIP_ICON_SIZE}
                       weight="fill"
-                      color="white"
+                      color={OVERLAY_INK}
                     />
                   </SkipButton>
                 </XStack>

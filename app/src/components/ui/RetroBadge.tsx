@@ -19,7 +19,7 @@ export function RetroBadge({ children }: { children: ReactNode }) {
       items="center"
       justify="center"
     >
-      <Text color="white" fontSize={FONT_SIZE} fontWeight="700">
+      <Text color="$onFill" fontSize={FONT_SIZE} fontWeight="700">
         {children}
       </Text>
     </XStack>

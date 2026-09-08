@@ -37,7 +37,7 @@ function Chip({
       <Text
         fontSize="$4"
         fontWeight={selected ? "700" : "400"}
-        color={selected ? "white" : "$color12"}
+        color={selected ? "$onFill" : "$color12"}
       >
         {label}
       </Text>

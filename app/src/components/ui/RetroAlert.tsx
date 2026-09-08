@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal, Platform, Text as NativeText } from "react-native";
-import { AnimatePresence, Text, XStack, YStack } from "tamagui";
+import { AnimatePresence, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroShadow } from "@/components/ui/RetroShadow";
@@ -16,9 +16,9 @@ import {
 const MONO_FONT = Platform.select({ ios: "Menlo", default: "monospace" });
 
 const VARIANTS = {
-  error: { label: "ERROR.EXE", barColor: "$red10", labelColor: "white" },
-  info: { label: "INFO.EXE", barColor: "$blue10", labelColor: "white" },
-  warning: { label: "WARNING.EXE", barColor: "$yellow10", labelColor: "black" },
+  error: { label: "ERROR.EXE", barColor: "$red10", onFill: true },
+  info: { label: "INFO.EXE", barColor: "$blue10", onFill: true },
+  warning: { label: "WARNING.EXE", barColor: "$yellow10", onFill: false },
 } as const;
 
 export type RetroAlertVariant = keyof typeof VARIANTS;
@@ -43,6 +43,7 @@ export function RetroAlert({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const visible = useVisibleWhenUnlocked(requested);
   // 나가는 전환이 끝날 때까지 Modal을 붙들어 둔다.
   const [mounted, setMounted] = useState(visible);
@@ -94,7 +95,9 @@ export function RetroAlert({
                       fontFamily: MONO_FONT,
                       fontWeight: "700",
                       fontSize: 18,
-                      color: VARIANTS[variant].labelColor,
+                      color: VARIANTS[variant].onFill
+                        ? theme.onFill.val
+                        : "black",
                     }}
                   >
                     {VARIANTS[variant].label}

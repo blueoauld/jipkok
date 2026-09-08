@@ -35,7 +35,7 @@ function ReactionChip({
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "white" : "$color12"}>
+      <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "$onFill" : "$color12"}>
         {count === 1 ? emoji : `${emoji} ${count}`}
       </Text>
     </XStack>

@@ -61,7 +61,7 @@ export function WorryCommentComposer({
         }}
       >
         {pending ? (
-          <Spinner size="small" color="white" />
+          <Spinner size="small" color="$onFill" />
         ) : (
           t("worry.detail.submit")
         )}

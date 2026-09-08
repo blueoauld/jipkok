@@ -36,6 +36,10 @@ export const RETRO_SHADOW_OFFSET_SM = 2;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
+// 사진, 영상, 어두운 오버레이 위의 글자와 아이콘 색이다. 테마를 타지 않는다.
+// 테마 색 채움 위의 흰 글씨는 이게 아니라 테마 토큰 $onFill이다.
+export const OVERLAY_INK = "white";
+
 // 시트, 다이얼로그, 토스트가 같은 스프링으로 움직이게 하는 프리셋 이름이다.
 export const TRANSITION = "quickLessBouncy";
 

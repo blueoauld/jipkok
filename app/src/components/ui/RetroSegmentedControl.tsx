@@ -44,7 +44,7 @@ export function RetroSegmentedControl<T extends string>({
             >
               <Text
                 fontWeight={selected ? "700" : "400"}
-                color={selected ? "white" : "$color12"}
+                color={selected ? "$onFill" : "$color12"}
               >
                 {item.label}
               </Text>

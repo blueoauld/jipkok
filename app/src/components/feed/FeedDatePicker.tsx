@@ -76,7 +76,7 @@ function DateButton({
       accessibilityRole="button"
       onPress={onPress}
     >
-      <Text fontSize="$4" fontWeight="600" color="white">
+      <Text fontSize="$4" fontWeight="600" color="$onFill">
         {formatDateLabel(date, today)}
       </Text>
     </XStack>
@@ -114,7 +114,7 @@ function CalendarDay({
         fontWeight={weight}
         color={
           selected
-            ? "white"
+            ? "$onFill"
             : disabled
               ? "$color8"
               : today

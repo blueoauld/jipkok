@@ -8,6 +8,7 @@ import { mediaSummary } from "@/lib/chat";
 import {
   IMAGE_TRANSITION,
   OVERLAY_BG,
+  OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
@@ -56,7 +57,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
       {video && (
         <>
           <YStack fullscreen items="center" justify="center">
-            <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color="white" />
+            <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color={OVERLAY_INK} />
           </YStack>
 
           {message.durationSeconds != null && (
@@ -68,7 +69,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
               py={1}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$2" color="white" fontWeight="600">
+              <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
                 {formatDuration(message.durationSeconds)}
               </Text>
             </XStack>

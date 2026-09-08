@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: THUMB_SIZE,
     height: THUMB_SIZE,
+    // 손잡이는 다크에서도 흰색이다. 글자색이 아니라 표면이라 토큰으로 두지 않는다.
     backgroundColor: "white",
   },
 });

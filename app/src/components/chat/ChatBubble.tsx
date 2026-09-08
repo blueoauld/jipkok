@@ -94,7 +94,7 @@ function BodyText({
   large?: boolean;
   onLongPress: () => void;
 }) {
-  const color = mine ? "white" : "$color12";
+  const color = mine ? "$onFill" : "$color12";
 
   return (
     <Text fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE} color={color}>
@@ -169,7 +169,7 @@ function ReplyMessage({
             <Text
               fontSize="$2"
               fontWeight="600"
-              color={mine ? "white" : "$color12"}
+              color={mine ? "$onFill" : "$color12"}
               numberOfLines={1}
             >
               {i18n.t("component.replyTo", { name: replyName })}

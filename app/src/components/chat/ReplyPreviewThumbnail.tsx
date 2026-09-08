@@ -3,7 +3,12 @@ import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import type { ReplyMessageResponse } from "@/lib/api";
-import { IMAGE_TRANSITION, OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  OVERLAY_BG,
+  OVERLAY_INK,
+  RETRO_BORDER_WIDTH,
+} from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const SIZE = 44;
@@ -40,7 +45,7 @@ export function ReplyPreviewThumbnail({
 
       {reply.type === "VIDEO" && (
         <XStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
-          <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color="white" />
+          <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color={OVERLAY_INK} />
         </XStack>
       )}
     </YStack>

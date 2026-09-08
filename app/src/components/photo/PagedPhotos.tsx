@@ -2,6 +2,8 @@ import type { ReactElement } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import { XStack, YStack } from "tamagui";
 
+import { OVERLAY_INK } from "@/lib/design";
+
 const DOT_SIZE = 6;
 
 const INACTIVE_DOT_OPACITY = 0.4;
@@ -59,7 +61,7 @@ export function PhotoDots({ count, index }: { count: number; index: number }) {
           width={DOT_SIZE}
           height={DOT_SIZE}
           rounded={0}
-          bg="white"
+          bg={OVERLAY_INK}
           opacity={dotIndex === index ? 1 : INACTIVE_DOT_OPACITY}
         />
       ))}

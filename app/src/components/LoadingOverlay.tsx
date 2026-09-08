@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { Spinner, Text, YStack } from "tamagui";
 
-import { OVERLAY_BG } from "@/lib/design";
+import { OVERLAY_BG, OVERLAY_INK } from "@/lib/design";
 import { useLoadingOverlayStore } from "@/lib/overlay/store";
 
 export function LoadingOverlay() {
@@ -20,10 +20,10 @@ export function LoadingOverlay() {
       justify="center"
       gap="$3"
     >
-      <Spinner size="small" color="white" />
+      <Spinner size="small" color={OVERLAY_INK} />
 
       {progress ? (
-        <Text color="white" fontSize="$4" fontWeight="700">
+        <Text color={OVERLAY_INK} fontSize="$4" fontWeight="700">
           {progress.done} / {progress.total}
         </Text>
       ) : null}

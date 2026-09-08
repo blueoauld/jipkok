@@ -51,7 +51,7 @@ function CountBadge({ count }: { count: number }) {
       items="center"
       justify="center"
     >
-      <Text color="white" fontSize={BADGE_FONT_SIZE} fontWeight="700">
+      <Text color="$onFill" fontSize={BADGE_FONT_SIZE} fontWeight="700">
         {count}
       </Text>
     </XStack>

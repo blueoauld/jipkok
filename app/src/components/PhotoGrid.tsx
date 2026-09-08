@@ -213,7 +213,7 @@ function Grid({
                       <CrownSimpleIcon
                         size={BADGE_ICON_SIZE}
                         weight="fill"
-                        color="white"
+                        color={theme.onFill.val}
                       />
                     </OverlayButton>
                   )}
@@ -228,7 +228,7 @@ function Grid({
                       <XIcon
                         size={BADGE_ICON_SIZE}
                         weight="bold"
-                        color="white"
+                        color={theme.onFill.val}
                       />
                     </OverlayButton>
                   )}

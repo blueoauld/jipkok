@@ -27,11 +27,13 @@ export const tamaguiConfig = createTamagui({
     light: {
       ...defaultConfig.themes.light,
       background: "#EAF1FA",
+      onFill: "white",
       backgroundPink: PINK_BACKGROUND,
     },
     dark: {
       ...defaultConfig.themes.dark,
       background: DARK_BACKGROUND,
+      onFill: "white",
       backgroundPink: DARK_BACKGROUND,
       ...DARK_INK_THEME,
       gray12: DARK_INK,

@@ -147,7 +147,7 @@ export function ChatInputBar({
           onPress={uploading ? undefined : onAttach}
         >
           {uploading ? (
-            <Spinner size="small" color="white" />
+            <Spinner size="small" color="$onFill" />
           ) : (
             <PlusIcon size={ICON_SIZE} weight="bold" color="black" />
           )}
@@ -187,7 +187,7 @@ export function ChatInputBar({
           accessibilityLabel={t("a11y.send")}
           onPress={sendable ? send : undefined}
         >
-          <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="white" />
+          <PaperPlaneRightIcon size={ICON_SIZE} weight="fill" color="$onFill" />
         </RetroPressable>
       </XStack>
 

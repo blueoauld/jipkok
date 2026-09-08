@@ -14,6 +14,7 @@ import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
+  OVERLAY_INK,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
@@ -46,7 +47,7 @@ const SLOT_STYLE = {
   ...SLOT_FONT,
   fontSize: 30,
   letterSpacing: 1,
-  color: "white",
+  color: OVERLAY_INK,
   textShadowColor: "black",
   textShadowOffset: HARD_SHADOW,
   textShadowRadius: HARD_SHADOW_RADIUS,
@@ -192,7 +193,7 @@ function Card({
         {post.caption && (
           <Text
             numberOfLines={1}
-            color="white"
+            color={OVERLAY_INK}
             fontSize="$5"
             fontWeight="600"
             textShadowColor="black"

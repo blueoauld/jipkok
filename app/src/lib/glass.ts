@@ -4,6 +4,7 @@ import {
 } from "expo-glass-effect";
 import { createContext } from "react";
 
+import { OVERLAY_INK } from "@/lib/design";
 import { colorScheme, useThemeStore } from "@/lib/theme/store";
 
 // 일부 iOS 26 베타에는 API가 빠져 있어 두 검사를 모두 통과해야 크래시를 피한다.
@@ -16,7 +17,7 @@ export const GlassGroupContext = createContext(false);
 // 글자 색을 바꿔 주지 않으므로 라이트는 밝은 유리에 검정, 다크는 어두운 유리에 흰색이다.
 const PHOTO_GLASS = {
   light: { tint: "rgba(255, 255, 255, 0.5)", ink: "black" },
-  dark: { tint: "rgba(0, 0, 0, 0.35)", ink: "white" },
+  dark: { tint: "rgba(0, 0, 0, 0.35)", ink: OVERLAY_INK },
 } as const;
 
 export function usePhotoGlass() {

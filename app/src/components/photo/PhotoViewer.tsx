@@ -32,6 +32,7 @@ import {
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
   OVERLAY_BG,
+  OVERLAY_INK,
   PRESS_OPACITY,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
@@ -209,7 +210,11 @@ function ViewerContent({
                   accessibilityLabel={i18n.t("a11y.close")}
                   onPress={onClose}
                 >
-                  <XIcon size={CLOSE_ICON_SIZE} weight="bold" color="white" />
+                  <XIcon
+                    size={CLOSE_ICON_SIZE}
+                    weight="bold"
+                    color={OVERLAY_INK}
+                  />
                 </XStack>
               </XStack>
             </SafeAreaView>

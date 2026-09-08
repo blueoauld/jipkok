@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
 import { memo } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
 import { RelativeTime } from "@/components/ui/RelativeTime";
@@ -23,6 +23,7 @@ const DELETE_ICON_SIZE = 22;
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
 function DeleteButton({ onPress }: { onPress: () => void }) {
+  const theme = useTheme();
   const press = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
@@ -41,7 +42,11 @@ function DeleteButton({ onPress }: { onPress: () => void }) {
       pressStyle={{ bg: "$red11" }}
       onPress={press}
     >
-      <TrashIcon size={DELETE_ICON_SIZE} weight="fill" color="white" />
+      <TrashIcon
+        size={DELETE_ICON_SIZE}
+        weight="fill"
+        color={theme.onFill.val}
+      />
     </XStack>
   );
 }

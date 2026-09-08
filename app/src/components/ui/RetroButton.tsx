@@ -27,7 +27,7 @@ export function RetroButton({
         borderWidth={RETRO_BORDER_WIDTH}
         borderColor="$gray12"
         rounded={0}
-        color={disabled ? "$color11" : muted ? "$color12" : "white"}
+        color={disabled ? "$color11" : muted ? "$color12" : "$onFill"}
         fontWeight="700"
         pressStyle={{
           x: flat ? 0 : RETRO_SHADOW_OFFSET,

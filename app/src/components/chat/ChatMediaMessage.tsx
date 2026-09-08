@@ -8,6 +8,7 @@ import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
 import {
   IMAGE_TRANSITION,
   OVERLAY_BG,
+  OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
@@ -57,12 +58,12 @@ export function VideoMessage({
         <UploadOverlay upload={upload} showPhase />
       ) : isPending(message) ? (
         <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
-          <Spinner size="small" color="white" />
+          <Spinner size="small" color={OVERLAY_INK} />
         </YStack>
       ) : (
         <>
           <YStack fullscreen items="center" justify="center">
-            <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color="white" />
+            <PlayIcon size={PLAY_ICON_SIZE} weight="fill" color={OVERLAY_INK} />
           </YStack>
 
           {message.durationSeconds != null && (
@@ -74,7 +75,7 @@ export function VideoMessage({
               py={2}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$2" color="white" fontWeight="600">
+              <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
                 {formatDuration(message.durationSeconds)}
               </Text>
             </XStack>
@@ -106,7 +107,7 @@ function UploadOverlay({
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
       {upload.phase === "failed" ? (
         <>
-          <Text fontSize="$4" color="white" fontWeight="600">
+          <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
             {i18n.t("component.sendFailed")}
           </Text>
 
@@ -123,7 +124,7 @@ function UploadOverlay({
         </>
       ) : (
         <>
-          <Text fontSize="$4" color="white" fontWeight="600">
+          <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
             {label}
           </Text>
 
@@ -149,11 +150,11 @@ function OverlayAction({
       px="$3"
       py="$1.5"
       borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="white"
+      borderColor={OVERLAY_INK}
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Text fontSize="$2" color="white" fontWeight="600">
+      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
         {label}
       </Text>
     </XStack>
@@ -201,7 +202,7 @@ export function PhotoMessage({
       ) : (
         isPending(message) && (
           <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center">
-            <Spinner size="small" color="white" />
+            <Spinner size="small" color={OVERLAY_INK} />
           </YStack>
         )
       )}
