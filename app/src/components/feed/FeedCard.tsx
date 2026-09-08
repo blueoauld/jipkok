@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Platform, Text as NativeText } from "react-native";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
+import { Glass } from "@/components/ui/Glass";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { FeedPostResponse } from "@/lib/api";
@@ -14,14 +15,22 @@ import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
+  PRESS_OPACITY,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
+import { GLASS_ENABLED } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
 
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = MIN_TAP_SIZE;
+const GLASS_CHIP_PADDING = 14;
+
+// 사진 위 유리는 앱 테마와 무관하게 늘 밝은 유리다. 사진이 밝든 어둡든 같은 모습이라야
+// 카드마다 버튼이 달라 보이지 않는다. 그래서 글자와 아이콘도 검정으로 고정한다.
+const GLASS_TINT = "rgba(255, 255, 255, 0.5)";
+const GLASS_INK = "black";
 
 // 신고 버튼이 차지하는 자리다. 닉네임이 그 아래로 물리지 않게 비운다.
 const REPORT_BUTTON_SPACE = CARD_ICON_BUTTON_SIZE + 16;
@@ -48,15 +57,44 @@ const SLOT_STYLE = {
   textShadowRadius: HARD_SHADOW_RADIUS,
 } as const;
 
+// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 레트로 상자 그대로다.
+// chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가고, 아니면 아이콘 하나짜리 정사각형이다.
 function CardButton({
+  chip = false,
   children,
   ...props
-}: XStackProps & { pressBg?: XStackProps["bg"] }) {
+}: XStackProps & { chip?: boolean }) {
+  if (GLASS_ENABLED) {
+    return (
+      <XStack pressStyle={{ opacity: PRESS_OPACITY }} {...props}>
+        <Glass
+          style={{
+            height: CARD_ICON_BUTTON_SIZE,
+            width: chip ? undefined : CARD_ICON_BUTTON_SIZE,
+            borderRadius: CARD_ICON_BUTTON_SIZE / 2,
+            paddingHorizontal: chip ? GLASS_CHIP_PADDING : 0,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          colorScheme="light"
+          tintColor={GLASS_TINT}
+          isInteractive
+        >
+          {children}
+        </Glass>
+      </XStack>
+    );
+  }
+
   return (
     <RetroPressable
       offset={RETRO_SHADOW_OFFSET_SM}
-      bg="$color1"
-      pressBg="$color3"
+      bg={chip ? "$yellow9" : "$color1"}
+      pressBg={chip ? "$yellow10" : "$color3"}
+      px={chip ? "$3" : 0}
+      py={chip ? "$2" : 0}
+      minH={CARD_ICON_BUTTON_SIZE}
+      width={chip ? undefined : CARD_ICON_BUTTON_SIZE}
       items="center"
       justify="center"
       {...props}
@@ -81,6 +119,7 @@ function Card({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const iconInk = GLASS_ENABLED ? GLASS_INK : theme.color12.val;
 
   return (
     <RetroCard
@@ -102,11 +141,8 @@ function Card({
 
       <XStack position="absolute" t="$3" l="$3" r={REPORT_BUTTON_SPACE}>
         <CardButton
-          bg="$yellow9"
-          px="$3"
-          py="$2"
-          minH={CARD_ICON_BUTTON_SIZE}
-          pressBg="$yellow10"
+          chip
+          shrink={1}
           onPress={() =>
             pushOnce(mine ? "/member/me" : `/member/${post.memberId}`)
           }
@@ -126,25 +162,17 @@ function Card({
       {!mine && (
         <YStack position="absolute" t="$3" r="$3">
           <CardButton
-            width={CARD_ICON_BUTTON_SIZE}
-            height={CARD_ICON_BUTTON_SIZE}
             accessibilityRole="button"
             accessibilityLabel={t("a11y.report")}
             onPress={() => onReport(post.postId)}
           >
-            <SirenIcon
-              size={CARD_ICON_SIZE}
-              weight="bold"
-              color={theme.color12.val}
-            />
+            <SirenIcon size={CARD_ICON_SIZE} weight="bold" color={iconInk} />
           </CardButton>
         </YStack>
       )}
 
       <YStack position="absolute" b="$3" l="$3">
         <CardButton
-          width={CARD_ICON_BUTTON_SIZE}
-          height={CARD_ICON_BUTTON_SIZE}
           accessibilityRole="button"
           accessibilityLabel={t("a11y.like")}
           accessibilityState={{ selected: post.likedByMe }}
@@ -153,7 +181,7 @@ function Card({
           <HeartIcon
             size={CARD_ICON_SIZE}
             weight={post.likedByMe ? "fill" : "bold"}
-            color={post.likedByMe ? theme.red10.val : theme.color12.val}
+            color={post.likedByMe ? theme.red10.val : iconInk}
           />
         </CardButton>
       </YStack>
