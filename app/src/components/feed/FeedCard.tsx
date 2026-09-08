@@ -18,7 +18,7 @@ import {
   PRESS_OPACITY,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
-import { GLASS_ENABLED } from "@/lib/glass";
+import { GLASS_ENABLED, PHOTO_GLASS_INK, PHOTO_GLASS_PROPS } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -26,11 +26,6 @@ export const CARD_RATIO = 2;
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = MIN_TAP_SIZE;
 const GLASS_CHIP_PADDING = 14;
-
-// 사진 위 유리는 앱 테마와 무관하게 늘 밝은 유리다. 사진이 밝든 어둡든 같은 모습이라야
-// 카드마다 버튼이 달라 보이지 않는다. 그래서 글자와 아이콘도 검정으로 고정한다.
-const GLASS_TINT = "rgba(255, 255, 255, 0.5)";
-const GLASS_INK = "black";
 
 // 신고 버튼이 차지하는 자리다. 닉네임이 그 아래로 물리지 않게 비운다.
 const REPORT_BUTTON_SPACE = CARD_ICON_BUTTON_SIZE + 16;
@@ -76,8 +71,7 @@ function CardButton({
             alignItems: "center",
             justifyContent: "center",
           }}
-          colorScheme="light"
-          tintColor={GLASS_TINT}
+          {...PHOTO_GLASS_PROPS}
           isInteractive
         >
           {children}
@@ -119,7 +113,7 @@ function Card({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const iconInk = GLASS_ENABLED ? GLASS_INK : theme.color12.val;
+  const iconInk = GLASS_ENABLED ? PHOTO_GLASS_INK : theme.color12.val;
 
   return (
     <RetroCard

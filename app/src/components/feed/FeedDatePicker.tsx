@@ -4,15 +4,18 @@ import { useState } from "react";
 import { Calendar, type DateData } from "react-native-calendars";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
+import { Glass } from "@/components/ui/Glass";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import {
   FLOATING_BUTTON_SIZE,
   OVERLAY_BG,
+  PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
   SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
+import { GLASS_ENABLED } from "@/lib/glass";
 import i18n from "@/lib/i18n";
 import {
   useAccent,
@@ -21,6 +24,7 @@ import {
 } from "@/lib/theme/accent";
 
 const DAY_SIZE = 36;
+const GLASS_TEXT_PADDING = 16;
 
 function DateButton({
   date,
@@ -32,6 +36,32 @@ function DateButton({
   onPress: () => void;
 }) {
   const accent = useAccent();
+
+  // 목록이 아래로 흐르는 자리라 iOS 26에서는 유리 캡슐로 띄운다.
+  if (GLASS_ENABLED) {
+    return (
+      <XStack
+        pressStyle={{ opacity: PRESS_OPACITY }}
+        accessibilityRole="button"
+        onPress={onPress}
+      >
+        <Glass
+          style={{
+            height: FLOATING_BUTTON_SIZE,
+            borderRadius: FLOATING_BUTTON_SIZE / 2,
+            paddingHorizontal: GLASS_TEXT_PADDING,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          isInteractive
+        >
+          <Text fontSize="$4" fontWeight="700" color="$color">
+            {formatDateLabel(date, today)}
+          </Text>
+        </Glass>
+      </XStack>
+    );
+  }
 
   return (
     <RetroCard

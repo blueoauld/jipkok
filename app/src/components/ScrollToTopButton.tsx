@@ -1,15 +1,11 @@
 import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
 import { useTranslation } from "react-i18next";
-import { XStack } from "tamagui";
+import { useTheme, XStack } from "tamagui";
 
-import { RetroCard } from "@/components/ui/RetroCard";
+import { FloatingButton } from "@/components/ui/FloatingButton";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import {
-  FLOATING_BUTTON_SIZE,
-  SCROLL_TO_TOP_BOTTOM_GAP,
-  SCROLL_TO_TOP_SIDE_GAP,
-} from "@/lib/design";
-import { useAccent } from "@/lib/theme/accent";
+import { SCROLL_TO_TOP_BOTTOM_GAP, SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
+import { GLASS_ENABLED } from "@/lib/glass";
 
 const ICON_SIZE = 20;
 
@@ -21,7 +17,7 @@ export function ScrollToTopButton({
   onPress: () => void;
 }) {
   const { t } = useTranslation();
-  const accent = useAccent();
+  const theme = useTheme();
   const tabBarOverlay = useTabBarOverlay();
 
   if (!visible) {
@@ -34,22 +30,13 @@ export function ScrollToTopButton({
       r={SCROLL_TO_TOP_SIDE_GAP}
       b={tabBarOverlay + SCROLL_TO_TOP_BOTTOM_GAP}
     >
-      <RetroCard
-        theme={accent}
-        shadow="$gray12"
-        bg="$color10"
-        pressBg="$color11"
-        p={0}
-        width={FLOATING_BUTTON_SIZE}
-        height={FLOATING_BUTTON_SIZE}
-        items="center"
-        justify="center"
-        accessibilityRole="button"
-        accessibilityLabel={t("a11y.scrollToTop")}
-        onPress={onPress}
-      >
-        <CaretUpIcon size={ICON_SIZE} weight="bold" color="white" />
-      </RetroCard>
+      <FloatingButton label={t("a11y.scrollToTop")} onPress={onPress}>
+        <CaretUpIcon
+          size={ICON_SIZE}
+          weight="bold"
+          color={GLASS_ENABLED ? theme.color.val : "white"}
+        />
+      </FloatingButton>
     </XStack>
   );
 }

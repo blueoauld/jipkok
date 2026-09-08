@@ -14,6 +14,8 @@ import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
+  PRESS_OPACITY,
+  RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
@@ -77,20 +79,21 @@ function OverlayButton({
   onPress?: () => void;
 } & XStackProps) {
   return (
-    <YStack position="absolute" {...position}>
-      <RetroPressable
-        offset={RETRO_SHADOW_OFFSET_SM}
-        width={BADGE_SIZE}
-        height={BADGE_SIZE}
-        rounded={0}
-        bg={bg}
-        items="center"
-        justify="center"
-        onPress={onPress}
-      >
-        {children}
-      </RetroPressable>
-    </YStack>
+    <XStack
+      position="absolute"
+      width={BADGE_SIZE}
+      height={BADGE_SIZE}
+      borderWidth={RETRO_BORDER_WIDTH}
+      borderColor="$gray12"
+      bg={bg}
+      items="center"
+      justify="center"
+      pressStyle={onPress ? { opacity: PRESS_OPACITY } : undefined}
+      onPress={onPress}
+      {...position}
+    >
+      {children}
+    </XStack>
   );
 }
 

@@ -4,8 +4,9 @@ import { YStack, type YStackProps } from "tamagui";
 
 import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoGrid } from "@/components/PhotoGrid";
-import { RetroFloatingButton } from "@/components/ui/RetroFloatingButton";
+import { FloatingButton } from "@/components/ui/FloatingButton";
 import { SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
+import { GLASS_ENABLED, PHOTO_GLASS_INK } from "@/lib/glass";
 
 const GRID_ICON_SIZE = 20;
 
@@ -49,13 +50,13 @@ export function PhotoGridToggle({
 
   return (
     <YStack position="absolute" r={SCROLL_TO_TOP_SIDE_GAP} b={bottom}>
-      <RetroFloatingButton label={t("a11y.photoGrid")} onPress={onPress}>
+      <FloatingButton label={t("a11y.photoGrid")} overPhoto onPress={onPress}>
         <SquaresFourIcon
           size={GRID_ICON_SIZE}
           weight={open ? "fill" : "regular"}
-          color="white"
+          color={GLASS_ENABLED ? PHOTO_GLASS_INK : "white"}
         />
-      </RetroFloatingButton>
+      </FloatingButton>
     </YStack>
   );
 }
