@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.diary.dto.response.DiaryResponse
 import com.blueoauld.server.domain.diary.service.DiaryService
 import com.blueoauld.server.domain.photo.dto.request.CreatePhotoUploadUrlRequest
 import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.global.response.CursorResponse
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
@@ -36,6 +37,18 @@ class DiaryController(
         @AuthenticationPrincipal memberId: Long,
         @RequestParam month: YearMonth,
     ): List<DiaryResponse> = diaryService.findMonth(memberId, month)
+
+    @Operation(
+        summary = "일기 검색",
+        description = "내 일기의 본문으로 찾고 두 글자 이상부터 검색한다. 최신 날짜부터 주고 커서는 날짜의 epoch day다.",
+    )
+    @GetMapping("/search")
+    fun search(
+        @AuthenticationPrincipal memberId: Long,
+        @RequestParam keyword: String,
+        @RequestParam(required = false) cursor: Long?,
+        @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
+    ): CursorResponse<DiaryResponse> = diaryService.search(memberId, keyword, cursor, size)
 
     @Operation(
         operationId = "createDiaryAttachmentUploadUrl",
@@ -71,5 +84,10 @@ class DiaryController(
         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) entryDate: LocalDate,
     ) {
         diaryService.delete(memberId, entryDate)
+    }
+
+    companion object {
+
+        private const val DEFAULT_PAGE_SIZE = 20
     }
 }

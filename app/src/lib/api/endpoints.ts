@@ -19,6 +19,7 @@ import type {
   CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
   DevicePlatform,
+  DiaryPage,
   DiaryResponse,
   EditProfileRequest,
   FeedPostPage,
@@ -92,6 +93,8 @@ type MemberSearchParams = {
   cursor?: string;
   size?: number;
 };
+
+type DiarySearchParams = CursorParams & { keyword: string };
 
 type MemberListParams = {
   sort?: MemberSort;
@@ -323,6 +326,9 @@ export const contactBlocks = {
 export const diaries = {
   list: (month: string) =>
     request<DiaryResponse[]>("/api/diaries", { query: { month } }),
+
+  search: (params: DiarySearchParams) =>
+    request<DiaryPage>("/api/diaries/search", { query: params }),
 
   createAttachmentUploadUrl: (contentType: string) =>
     request<PhotoUploadUrlResponse>("/api/diaries/attachments/upload-url", {

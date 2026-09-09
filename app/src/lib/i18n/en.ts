@@ -401,6 +401,11 @@ export const en: typeof ko = {
     notice: "You and members with a blocked number can't see each other.",
   },
   diary: {
+    search: {
+      title: "Search diary",
+      hint: "Enter at least {{count}} characters.",
+      placeholder: "Diary text",
+    },
     sort: { LATEST: "Newest first", OLDEST: "Oldest first" },
     writeToday: "Today's entry",
     notice: "Your diary is private. No one else can see it.",

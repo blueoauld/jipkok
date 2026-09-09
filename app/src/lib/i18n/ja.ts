@@ -404,6 +404,11 @@ export const ja: typeof ko = {
     notice: "ブロックした番号の会員とは互いに表示されません。",
   },
   diary: {
+    search: {
+      title: "日記検索",
+      hint: "内容を{{count}}文字以上入力してください。",
+      placeholder: "日記の内容",
+    },
     sort: { LATEST: "新しい順", OLDEST: "古い順" },
     writeToday: "今日の日記",
     notice: "日記は自分だけが見られ、誰にも公開されません。",

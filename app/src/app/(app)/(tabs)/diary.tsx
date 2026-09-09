@@ -1,37 +1,27 @@
-import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
+import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
-import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Text, YStack } from "tamagui";
 
+import { DiaryCard } from "@/components/diary/DiaryCard";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
-import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useDiaryMonth } from "@/hooks/useDiaries";
 import { useNow } from "@/hooks/useNow";
-import type { DiaryResponse } from "@/lib/api";
-import {
-  formatFullDate,
-  fromDateParam,
-  koreaDateParam,
-  toMonthParam,
-} from "@/lib/date";
-import { IMAGE_TRANSITION, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { koreaDateParam, toMonthParam } from "@/lib/date";
 import { moodEmoji } from "@/lib/diary";
 import { type DiarySort, useDiaryFilterStore } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
-import { photoCacheKey } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
-
-const THUMBNAIL_SIZE = 56;
 
 const SORTS: DiarySort[] = ["LATEST", "OLDEST"];
 
@@ -39,52 +29,6 @@ const SORT_ITEMS = SORTS.map((value) => ({
   value,
   label: i18n.t(`diary.sort.${value}`),
 }));
-
-function DiaryRow({
-  diary,
-  onPress,
-}: {
-  diary: DiaryResponse;
-  onPress: (entryDate: string) => void;
-}) {
-  const theme = useTheme();
-  const emoji = moodEmoji(diary.mood);
-  const cover = diary.attachments[0];
-  const coverUri = cover ? (cover.thumbnailUrl ?? cover.url) : null;
-
-  return (
-    <RetroCard onPress={() => onPress(diary.entryDate)}>
-      <XStack items="center" gap="$3">
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight="600">
-            {emoji ? `${emoji} ` : ""}
-            {formatFullDate(fromDateParam(diary.entryDate))}
-          </Text>
-          {diary.content != null && (
-            <Text theme="gray" color="$color11" fontSize="$3" numberOfLines={2}>
-              {diary.content}
-            </Text>
-          )}
-        </YStack>
-
-        {coverUri && (
-          <Image
-            source={{ uri: coverUri, cacheKey: photoCacheKey(coverUri) }}
-            contentFit="cover"
-            transition={IMAGE_TRANSITION}
-            style={{
-              width: THUMBNAIL_SIZE,
-              height: THUMBNAIL_SIZE,
-              borderWidth: RETRO_BORDER_WIDTH,
-              borderColor: theme.gray12.val,
-              backgroundColor: theme.gray12.val,
-            }}
-          />
-        )}
-      </XStack>
-    </RetroCard>
-  );
-}
 
 export default function DiaryScreen() {
   const { t } = useTranslation();
@@ -105,6 +49,13 @@ export default function DiaryScreen() {
 
   const screenOptions = useMemo(
     () => ({
+      headerLeft: () => (
+        <HeaderIconButton
+          icon={MagnifyingGlassIcon}
+          label={t("a11y.search")}
+          onPress={() => pushOnce("/diary/search")}
+        />
+      ),
       headerRight: () => (
         <HeaderIconGroup>
           <HeaderIconButton
@@ -158,7 +109,9 @@ export default function DiaryScreen() {
       <FlatList
         data={rows}
         keyExtractor={(diary) => diary.entryDate}
-        renderItem={({ item }) => <DiaryRow diary={item} onPress={openEntry} />}
+        renderItem={({ item }) => (
+          <DiaryCard diary={item} onPress={openEntry} />
+        )}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={

@@ -401,6 +401,11 @@ export const ko = {
     notice: "차단한 번호의 회원과는 서로 보이지 않습니다.",
   },
   diary: {
+    search: {
+      title: "일기 검색",
+      hint: "내용을 {{count}}자 이상 입력해주시길 바랍니다.",
+      placeholder: "일기 내용",
+    },
     sort: { LATEST: "최신순", OLDEST: "과거순" },
     writeToday: "오늘 일기",
     notice: "일기는 나만 볼 수 있고 아무에게도 공개되지 않습니다.",

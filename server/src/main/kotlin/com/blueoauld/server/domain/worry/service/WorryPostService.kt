@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.repository.MIN_KEYWORD_LENGTH
 import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.time.KOREA
@@ -165,6 +166,5 @@ class WorryPostService(
     companion object {
 
         const val DAILY_POST_LIMIT = 5
-        const val MIN_KEYWORD_LENGTH = 2
     }
 }

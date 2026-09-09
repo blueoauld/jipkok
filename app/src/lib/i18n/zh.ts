@@ -386,6 +386,11 @@ export const zh: typeof ko = {
     notice: "與封鎖號碼的會員互不可見。",
   },
   diary: {
+    search: {
+      title: "日記搜尋",
+      hint: "請輸入至少 {{count}} 個字。",
+      placeholder: "日記內容",
+    },
     sort: { LATEST: "由新到舊", OLDEST: "由舊到新" },
     writeToday: "今天的日記",
     notice: "日記只有自己看得到，不會公開給任何人。",

@@ -14,6 +14,9 @@ import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.repository.MIN_KEYWORD_LENGTH
+import com.blueoauld.server.global.repository.escapeLike
+import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.time.today
@@ -43,6 +46,10 @@ class DiaryService(
             month.atEndOfMonth(),
         )
 
+        return toResponses(diaries)
+    }
+
+    private fun toResponses(diaries: List<Diary>): List<DiaryResponse> {
         if (diaries.isEmpty()) {
             return emptyList()
         }
@@ -52,6 +59,28 @@ class DiaryService(
             .groupBy { it.diaryId }
 
         return diaries.map { toResponse(it, attachments[it.id].orEmpty()) }
+    }
+
+    @Transactional(readOnly = true)
+    fun search(memberId: Long, keyword: String, cursor: Long?, size: Int): CursorResponse<DiaryResponse> {
+        val trimmed = keyword.trim()
+
+        if (trimmed.length < MIN_KEYWORD_LENGTH) {
+            return CursorResponse(emptyList(), null)
+        }
+
+        val pageSize = CursorResponse.pageSize(size)
+        val diaries = diaryRepository.search(
+            memberId,
+            "%${trimmed.escapeLike()}%",
+            cursor?.let(LocalDate::ofEpochDay),
+            pageSize,
+        )
+
+        return CursorResponse(
+            items = toResponses(diaries),
+            nextCursor = diaries.lastOrNull()?.entryDate?.toEpochDay().takeIf { diaries.size == pageSize },
+        )
     }
 
     fun createUploadUrl(memberId: Long, contentType: String): PhotoUploadUrlResponse =

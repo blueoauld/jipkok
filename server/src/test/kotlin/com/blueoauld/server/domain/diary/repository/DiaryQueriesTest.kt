@@ -45,6 +45,23 @@ class DiaryQueriesTest {
     }
 
     @Test
+    fun `검색은 내 일기의 본문 일부로 대소문자 없이 찾고 최신 날짜부터 준다`() {
+        // given
+        diaryRepository.saveAndFlush(Diary(MEMBER_ID, LocalDate.of(2026, 9, 1), "Ohio 여행 첫날"))
+        diaryRepository.saveAndFlush(Diary(MEMBER_ID, LocalDate.of(2026, 9, 3), "ohio 여행 마지막"))
+        diaryRepository.saveAndFlush(Diary(MEMBER_ID, LocalDate.of(2026, 9, 2), "집에서 쉼"))
+        diaryRepository.saveAndFlush(Diary(OTHER_ID, LocalDate.of(2026, 9, 2), "ohio 남의 일기"))
+
+        // when
+        val all = diaryRepository.search(MEMBER_ID, "%ohio%", null, 10)
+        val afterCursor = diaryRepository.search(MEMBER_ID, "%ohio%", LocalDate.of(2026, 9, 3), 10)
+
+        // then
+        assertThat(all.map { it.entryDate }).containsExactly(LocalDate.of(2026, 9, 3), LocalDate.of(2026, 9, 1))
+        assertThat(afterCursor.map { it.entryDate }).containsExactly(LocalDate.of(2026, 9, 1))
+    }
+
+    @Test
     fun `내용 없는 일기도 날짜로 찾는다`() {
         // given
         val date = LocalDate.of(2026, 9, 10)

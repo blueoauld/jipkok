@@ -291,6 +291,48 @@ class DiaryServiceTest {
     }
 
     @Test
+    fun `검색어는 앞뒤 공백을 떼고 와일드카드를 이스케이프해 부분 일치로 찾는다`() {
+        // given
+        val keyword = slot<String>()
+        every { diaryRepository.search(MEMBER_ID, capture(keyword), null, 20) } returns emptyList()
+
+        // when
+        diaryService.search(MEMBER_ID, "  100%  ", null, 20)
+
+        // then
+        assertThat(keyword.captured).isEqualTo("%100\\%%")
+    }
+
+    @Test
+    fun `검색어가 한 글자면 찾지 않는다`() {
+        // when
+        val response = diaryService.search(MEMBER_ID, "집", null, 20)
+
+        // then
+        assertThat(response.items).isEmpty()
+        assertThat(response.nextCursor).isNull()
+        verify(exactly = 0) { diaryRepository.search(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `검색 커서는 날짜를 epoch day로 주고받는다`() {
+        // given
+        val first = Diary(MEMBER_ID, LocalDate.of(2026, 9, 9), "오늘은 집에서 쉬었다")
+        val second = Diary(MEMBER_ID, LocalDate.of(2026, 9, 8), "오늘은 청소")
+        every {
+            diaryRepository.search(MEMBER_ID, "%오늘%", LocalDate.of(2026, 9, 10), 2)
+        } returns listOf(first, second)
+        every { diaryAttachmentRepository.findAllByDiaryIdInOrderByPosition(any()) } returns emptyList()
+
+        // when
+        val response = diaryService.search(MEMBER_ID, "오늘", LocalDate.of(2026, 9, 10).toEpochDay(), 2)
+
+        // then
+        assertThat(response.items.map { it.entryDate }).containsExactly(first.entryDate, second.entryDate)
+        assertThat(response.nextCursor).isEqualTo(second.entryDate.toEpochDay())
+    }
+
+    @Test
     fun `일기를 지우면 첨부도 지우고 파일 삭제 이벤트를 낸다`() {
         // given
         val diary = Diary(MEMBER_ID, TODAY, "내용")

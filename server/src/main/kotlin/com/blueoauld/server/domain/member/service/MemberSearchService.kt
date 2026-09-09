@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
 import com.blueoauld.server.domain.member.repository.MemberListRepository
+import com.blueoauld.server.global.repository.MIN_KEYWORD_LENGTH
 import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
@@ -43,10 +44,5 @@ class MemberSearchService(
             items = memberSummaryService.findSummaries(memberId, rows.map { it.getMemberId() }),
             nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
         )
-    }
-
-    companion object {
-
-        const val MIN_KEYWORD_LENGTH = 2
     }
 }

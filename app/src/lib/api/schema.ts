@@ -1205,6 +1205,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/diaries/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 일기 검색
+         * @description 내 일기의 본문으로 찾고 두 글자 이상부터 검색한다. 최신 날짜부터 주고 커서는 날짜의 epoch day다.
+         */
+        get: operations["search_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chats": {
         parameters: {
             query?: never;
@@ -1990,6 +2010,11 @@ export interface components {
             attachments: components["schemas"]["DiaryAttachmentResponse"][];
             /** Format: date-time */
             updatedAt: string;
+        };
+        CursorResponseDiaryResponse: {
+            items: components["schemas"]["DiaryResponse"][];
+            /** Format: int64 */
+            nextCursor?: number | null;
         };
         ChatRoomResponse: {
             /** Format: int64 */
@@ -10150,6 +10175,102 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DiaryResponse"][];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_1: {
+        parameters: {
+            query: {
+                keyword: string;
+                cursor?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CursorResponseDiaryResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
