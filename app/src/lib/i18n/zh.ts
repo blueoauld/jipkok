@@ -149,6 +149,7 @@ export const zh: typeof ko = {
     WORRY_008: "回覆無法再回覆。",
     DIARY_001: "找不到日記。",
     DIARY_002: "還沒到的日子無法寫日記。",
+    DIARY_003: "請輸入內容或加入照片。",
     TRANSLATION_001: "翻譯失敗。請稍後再試。",
     TRANSLATION_002: "已超過翻譯請求上限。請稍後再試。",
     APPLE_ADS_001: "尚未設定 Apple Ads API。",
@@ -387,6 +388,10 @@ export const zh: typeof ko = {
   },
   diary: {
     writeToday: "今天的日記",
+    addAttachment: "新增照片、影片",
+    removeAttachment: "刪除附件",
+    moveLeft: "往前移",
+    moveRight: "往後移",
     placeholder: "寫下今天發生的事。",
     saved: "已儲存日記。",
     deleted: "已刪除日記。",

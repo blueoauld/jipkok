@@ -25,8 +25,8 @@ class Diary(
     @Column(name = "entry_date", nullable = false, updatable = false)
     val entryDate: LocalDate,
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    var content: String,
+    @Column(name = "content", columnDefinition = "TEXT")
+    var content: String?,
 ) : BaseEntity() {
 
     @Id

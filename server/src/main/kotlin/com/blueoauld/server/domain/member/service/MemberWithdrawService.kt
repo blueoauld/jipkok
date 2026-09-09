@@ -5,7 +5,7 @@ import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.service.ChatRoomService
-import com.blueoauld.server.domain.diary.repository.DiaryRepository
+import com.blueoauld.server.domain.diary.service.DiaryService
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
@@ -34,7 +34,7 @@ class MemberWithdrawService(
     private val worryPostRepository: WorryPostRepository,
     private val worryPostLikeRepository: WorryPostLikeRepository,
     private val worryCommentRepository: WorryCommentRepository,
-    private val diaryRepository: DiaryRepository,
+    private val diaryService: DiaryService,
     private val memberBlockRepository: MemberBlockRepository,
     private val contactBlockRepository: ContactBlockRepository,
     private val memberFavoriteRepository: MemberFavoriteRepository,
@@ -60,7 +60,7 @@ class MemberWithdrawService(
         worryPostLikeRepository.deleteAllByMemberId(memberId)
         worryPostRepository.decreaseCommentCountCommentedBy(memberId)
         worryCommentRepository.deleteAllByMemberId(memberId)
-        diaryRepository.deleteAllByMemberId(memberId)
+        diaryService.deleteAll(memberId)
         memberBlockRepository.deleteAllByMember(memberId)
         contactBlockRepository.deleteAllByMemberId(memberId)
         memberFavoriteRepository.deleteAllByMember(memberId)

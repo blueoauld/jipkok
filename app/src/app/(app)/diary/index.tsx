@@ -1,10 +1,11 @@
+import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Text, YStack } from "tamagui";
+import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -20,7 +21,11 @@ import {
   koreaDateParam,
   toMonthParam,
 } from "@/lib/date";
+import { IMAGE_TRANSITION, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { photoCacheKey } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
+
+const THUMBNAIL_SIZE = 56;
 
 function DiaryRow({
   diary,
@@ -29,16 +34,39 @@ function DiaryRow({
   diary: DiaryResponse;
   onPress: (entryDate: string) => void;
 }) {
+  const theme = useTheme();
+  const cover = diary.attachments[0];
+  const coverUri = cover ? (cover.thumbnailUrl ?? cover.url) : null;
+
   return (
     <RetroCard onPress={() => onPress(diary.entryDate)}>
-      <YStack gap="$1">
-        <Text fontSize="$4" fontWeight="600">
-          {formatFullDate(fromDateParam(diary.entryDate))}
-        </Text>
-        <Text theme="gray" color="$color11" fontSize="$3" numberOfLines={2}>
-          {diary.content}
-        </Text>
-      </YStack>
+      <XStack items="center" gap="$3">
+        <YStack flex={1} gap="$1">
+          <Text fontSize="$4" fontWeight="600">
+            {formatFullDate(fromDateParam(diary.entryDate))}
+          </Text>
+          {diary.content != null && (
+            <Text theme="gray" color="$color11" fontSize="$3" numberOfLines={2}>
+              {diary.content}
+            </Text>
+          )}
+        </YStack>
+
+        {coverUri && (
+          <Image
+            source={{ uri: coverUri, cacheKey: photoCacheKey(coverUri) }}
+            contentFit="cover"
+            transition={IMAGE_TRANSITION}
+            style={{
+              width: THUMBNAIL_SIZE,
+              height: THUMBNAIL_SIZE,
+              borderWidth: RETRO_BORDER_WIDTH,
+              borderColor: theme.gray12.val,
+              backgroundColor: theme.gray12.val,
+            }}
+          />
+        )}
+      </XStack>
     </RetroCard>
   );
 }

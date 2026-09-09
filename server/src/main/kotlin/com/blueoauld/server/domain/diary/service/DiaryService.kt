@@ -1,11 +1,23 @@
 package com.blueoauld.server.domain.diary.service
 
+import com.blueoauld.server.domain.diary.dto.request.DiaryAttachmentRequest
+import com.blueoauld.server.domain.diary.dto.request.WriteDiaryRequest
+import com.blueoauld.server.domain.diary.dto.response.DiaryAttachmentResponse
 import com.blueoauld.server.domain.diary.dto.response.DiaryResponse
 import com.blueoauld.server.domain.diary.entity.Diary
+import com.blueoauld.server.domain.diary.entity.DiaryAttachment
+import com.blueoauld.server.domain.diary.entity.type.DiaryAttachmentType
+import com.blueoauld.server.domain.diary.repository.DiaryAttachmentRepository
 import com.blueoauld.server.domain.diary.repository.DiaryRepository
+import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
+import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
+import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.dto.StoredObject
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import com.blueoauld.server.global.time.today
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -16,34 +28,176 @@ import java.time.YearMonth
 class DiaryService(
 
     private val diaryRepository: DiaryRepository,
+    private val diaryAttachmentRepository: DiaryAttachmentRepository,
+    private val photoUploadService: PhotoUploadService,
+    private val photoStorage: PhotoStorage,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
-    fun findMonth(memberId: Long, month: YearMonth): List<DiaryResponse> = diaryRepository
-        .findAllByMemberIdAndEntryDateBetweenOrderByEntryDate(memberId, month.atDay(1), month.atEndOfMonth())
-        .map { DiaryResponse(it.entryDate, it.content, it.updatedAt) }
+    fun findMonth(memberId: Long, month: YearMonth): List<DiaryResponse> {
+        val diaries = diaryRepository.findAllByMemberIdAndEntryDateBetweenOrderByEntryDate(
+            memberId,
+            month.atDay(1),
+            month.atEndOfMonth(),
+        )
+
+        if (diaries.isEmpty()) {
+            return emptyList()
+        }
+
+        val attachments = diaryAttachmentRepository
+            .findAllByDiaryIdInOrderByPosition(diaries.map { it.id })
+            .groupBy { it.diaryId }
+
+        return diaries.map { toResponse(it, attachments[it.id].orEmpty()) }
+    }
+
+    fun createUploadUrl(memberId: Long, contentType: String): PhotoUploadUrlResponse =
+        photoUploadService.createMediaUploadUrl(memberId, keyPrefix(memberId), contentType)
 
     @Transactional
-    fun write(memberId: Long, entryDate: LocalDate, content: String) {
+    fun write(memberId: Long, entryDate: LocalDate, request: WriteDiaryRequest) {
         if (entryDate.isAfter(clock.today())) {
             throw BusinessException(ErrorCode.FUTURE_DIARY_DATE)
         }
 
-        val diary = diaryRepository.findByMemberIdAndEntryDate(memberId, entryDate)
+        val content = request.content?.trim()?.ifEmpty { null }
 
-        if (diary == null) {
-            diaryRepository.saveAndFlush(Diary(memberId, entryDate, content))
-            return
+        if (content == null && request.attachments.isEmpty()) {
+            throw BusinessException(ErrorCode.EMPTY_DIARY)
         }
 
-        diary.content = content
+        val diary = diaryRepository.findByMemberIdAndEntryDate(memberId, entryDate)
+            ?.also { it.content = content }
+            ?: diaryRepository.saveAndFlush(Diary(memberId, entryDate, content))
+
+        syncAttachments(memberId, diary, request.attachments)
     }
 
     @Transactional
     fun delete(memberId: Long, entryDate: LocalDate) {
-        if (diaryRepository.deleteByMemberIdAndEntryDate(memberId, entryDate) == 0L) {
-            throw BusinessException(ErrorCode.DIARY_NOT_FOUND)
+        val diary = diaryRepository.findByMemberIdAndEntryDate(memberId, entryDate)
+            ?: throw BusinessException(ErrorCode.DIARY_NOT_FOUND)
+        val attachments = diaryAttachmentRepository.findAllByDiaryIdOrderByPosition(diary.id)
+
+        diaryAttachmentRepository.deleteAll(attachments)
+        diaryRepository.delete(diary)
+        publishDeleted(attachments.flatMap { it.objectKeys() })
+    }
+
+    @Transactional
+    fun deleteAll(memberId: Long) {
+        val objectKeys = diaryAttachmentRepository.findObjectKeysByMemberId(memberId)
+
+        diaryAttachmentRepository.deleteAllByMemberId(memberId)
+        diaryRepository.deleteAllByMemberId(memberId)
+        publishDeleted(objectKeys)
+    }
+
+    private fun syncAttachments(memberId: Long, diary: Diary, requested: List<DiaryAttachmentRequest>) {
+        val requestedKeys = requested.map { it.objectKey }
+
+        if (requestedKeys.toSet().size != requestedKeys.size) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
+
+        val existing = diaryAttachmentRepository.findAllByDiaryIdOrderByPosition(diary.id).associateBy { it.objectKey }
+        val removed = existing.values.filter { it.objectKey !in requestedKeys }
+        val added = requested.filter { it.objectKey !in existing }
+        val addedKeys = added.flatMap { listOfNotNull(it.objectKey, it.thumbnailObjectKey) }
+        val prefix = keyPrefix(memberId)
+
+        if (addedKeys.any { !it.startsWith(prefix) }) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        }
+
+        val stored = photoUploadService.confirm(addedKeys)
+
+        diaryAttachmentRepository.deleteAll(removed)
+        requested.forEachIndexed { index, request ->
+            val kept = existing[request.objectKey]
+
+            if (kept == null) {
+                diaryAttachmentRepository.save(newAttachment(diary.id, request, index, stored))
+            } else {
+                kept.position = index
+            }
+        }
+        publishDeleted(removed.flatMap { it.objectKeys() })
+    }
+
+    private fun newAttachment(
+        diaryId: Long,
+        request: DiaryAttachmentRequest,
+        position: Int,
+        stored: Map<String, StoredObject>,
+    ): DiaryAttachment {
+        val media = stored[request.objectKey] ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+
+        if (media.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) != true) {
+            if (request.thumbnailObjectKey != null) {
+                throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+            }
+
+            return DiaryAttachment(diaryId, DiaryAttachmentType.PHOTO, request.objectKey, position = position)
+        }
+
+        val thumbnailKey = request.thumbnailObjectKey ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        val thumbnail = stored[thumbnailKey] ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+
+        if (thumbnail.contentType?.startsWith(IMAGE_CONTENT_TYPE_PREFIX) != true) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        }
+
+        val durationSeconds = request.durationSeconds
+
+        if (durationSeconds == null || durationSeconds <= 0) {
+            throw BusinessException(ErrorCode.INVALID_REQUEST)
+        }
+
+        if (durationSeconds > DiaryAttachment.VIDEO_MAX_SECONDS) {
+            throw BusinessException(ErrorCode.VIDEO_TOO_LONG)
+        }
+
+        return DiaryAttachment(
+            diaryId = diaryId,
+            type = DiaryAttachmentType.VIDEO,
+            objectKey = request.objectKey,
+            thumbnailObjectKey = thumbnailKey,
+            durationSeconds = durationSeconds,
+            position = position,
+        )
+    }
+
+    private fun publishDeleted(objectKeys: List<String>) {
+        if (objectKeys.isNotEmpty()) {
+            eventPublisher.publishEvent(PhotosDeletedEvent(objectKeys))
+        }
+    }
+
+    private fun toResponse(diary: Diary, attachments: List<DiaryAttachment>) = DiaryResponse(
+        entryDate = diary.entryDate,
+        content = diary.content,
+        attachments = attachments.map {
+            DiaryAttachmentResponse(
+                type = it.type,
+                objectKey = it.objectKey,
+                url = photoStorage.createSignedViewUrl(it.objectKey),
+                thumbnailUrl = it.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
+                durationSeconds = it.durationSeconds,
+            )
+        },
+        updatedAt = diary.updatedAt,
+    )
+
+    private fun keyPrefix(memberId: Long) = "$KEY_ROOT/$memberId/"
+
+    companion object {
+
+        private const val KEY_ROOT = "diaries"
+        private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
+        private const val IMAGE_CONTENT_TYPE_PREFIX = "image/"
     }
 }

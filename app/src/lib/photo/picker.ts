@@ -41,7 +41,7 @@ async function requireCamera() {
 }
 
 // iOS의 HEVC/HDR 원본은 압축기가 못 다루는 경우가 있어 호환 표현(H.264)으로 받는다.
-export async function pickChatMedia(remaining: number) {
+export async function pickMedia(remaining: number) {
   await requireLibrary();
 
   const result = await ImagePicker.launchImageLibraryAsync({

@@ -159,6 +159,7 @@ export const ja: typeof ko = {
     WORRY_008: "返信には返信できません。",
     DIARY_001: "日記が見つかりません。",
     DIARY_002: "まだ来ていない日の日記は書けません。",
+    DIARY_003: "内容か写真を入れてください。",
     TRANSLATION_001:
       "翻訳できませんでした。しばらくしてからもう一度お試しください。",
     TRANSLATION_002:
@@ -406,6 +407,10 @@ export const ja: typeof ko = {
   },
   diary: {
     writeToday: "今日の日記",
+    addAttachment: "写真、動画を追加",
+    removeAttachment: "添付を削除",
+    moveLeft: "前へ移動",
+    moveRight: "後ろへ移動",
     placeholder: "今日の出来事を書きましょう。",
     saved: "日記を保存しました。",
     deleted: "日記を削除しました。",

@@ -91,6 +91,12 @@ export function uploadFeedPhoto(asset: ImagePickerAsset) {
   );
 }
 
+export function uploadDiaryPhoto(asset: ImagePickerAsset) {
+  return upload(asset, api.diaries.createAttachmentUploadUrl).then(
+    (photo) => photo.objectKey,
+  );
+}
+
 export function photoCacheKey(url: string) {
   return url.split("?")[0];
 }

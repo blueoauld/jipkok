@@ -7,7 +7,7 @@ import { chatMessage } from "@/lib/__tests__/chat-fixtures";
 import { logAppEvent } from "@/lib/analytics";
 import { api, ApiError, type ChatMessageResponse } from "@/lib/api";
 import i18n from "@/lib/i18n";
-import { pickChatMedia } from "@/lib/photo/picker";
+import { pickMedia } from "@/lib/photo/picker";
 import { showToast } from "@/lib/toast/store";
 import { VIDEO_MAX_SECONDS, VIDEO_TOO_LONG_MESSAGE } from "@/lib/video";
 
@@ -19,7 +19,7 @@ jest.mock("@/lib/api", () => ({
 }));
 jest.mock("@/lib/photo/picker", () => ({
   MAX_PHOTOS: 6,
-  pickChatMedia: jest.fn(),
+  pickMedia: jest.fn(),
 }));
 jest.mock("@/hooks/useChatSocket", () => ({ forgetRoom: jest.fn() }));
 jest.mock("@/lib/analytics", () => ({
@@ -31,7 +31,7 @@ jest.mock("react-native-compressor", () => ({ Video: {} }));
 jest.mock("expo-video-thumbnails", () => ({}));
 
 const videoUrl = api.chats.videoUrl as unknown as jest.Mock;
-const pick = jest.mocked(pickChatMedia);
+const pick = jest.mocked(pickMedia);
 
 const ROOM_ID = 1;
 

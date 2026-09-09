@@ -126,11 +126,14 @@ export interface paths {
         get?: never;
         /**
          * 일기 쓰기
-         * @description 그날 일기가 없으면 만들고 있으면 덮어쓴다. 한국 날짜로 오늘까지만 쓸 수 있다.
+         * @description 그날 일기가 없으면 만들고 있으면 덮어쓴다. 한국 날짜로 오늘까지만 쓸 수 있고, 내용이나 첨부 중 하나는 있어야 한다. 첨부는 보낸 순서대로 남고 빠진 첨부는 지운다.
          */
         put: operations["write"];
         post?: never;
-        /** 일기 삭제 */
+        /**
+         * 일기 삭제
+         * @description 첨부도 함께 지운다.
+         */
         delete: operations["delete"];
         options?: never;
         head?: never;
@@ -648,6 +651,26 @@ export interface paths {
         put?: never;
         /** 피드 사진 업로드 URL 발급 */
         post: operations["createFeedPhotoUploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/diaries/attachments/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 일기 첨부 업로드 URL 발급
+         * @description 사진과 동영상, 동영상 썸네일 모두 이 URL로 올린다.
+         */
+        post: operations["createDiaryAttachmentUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1354,7 +1377,7 @@ export interface paths {
         };
         /**
          * 월별 일기 조회
-         * @description 그 달의 일기를 날짜순으로 전부 준다. month는 yyyy-MM 형식이다.
+         * @description 그 달의 일기를 날짜순으로 전부 준다. month는 yyyy-MM 형식이고 첨부 URL은 서명되어 만료된다.
          */
         get: operations["findMonth"];
         put?: never;
@@ -2108,8 +2131,15 @@ export interface components {
         UpdateCommentRequest: {
             comment?: string | null;
         };
+        DiaryAttachmentRequest: {
+            objectKey: string;
+            thumbnailObjectKey?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
+        };
         WriteDiaryRequest: {
-            content: string;
+            content?: string | null;
+            attachments: components["schemas"]["DiaryAttachmentRequest"][];
         };
         ReactMessageRequest: {
             /** @enum {string} */
@@ -2611,10 +2641,20 @@ export interface components {
             memberId: number;
             nickname: string;
         };
+        DiaryAttachmentResponse: {
+            /** @enum {string} */
+            type: "PHOTO" | "VIDEO";
+            objectKey: string;
+            url: string;
+            thumbnailUrl?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
+        };
         DiaryResponse: {
             /** Format: date */
             entryDate: string;
-            content: string;
+            content?: string | null;
+            attachments: components["schemas"]["DiaryAttachmentResponse"][];
             /** Format: date-time */
             updatedAt: string;
         };
@@ -7729,6 +7769,102 @@ export interface operations {
         };
     };
     createFeedPhotoUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePhotoUploadUrlRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createDiaryAttachmentUploadUrl: {
         parameters: {
             query?: never;
             header?: never;

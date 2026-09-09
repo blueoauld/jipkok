@@ -156,6 +156,7 @@ export const ko = {
     WORRY_008: "답글에는 답글을 달 수 없습니다.",
     DIARY_001: "일기를 찾을 수 없습니다.",
     DIARY_002: "아직 오지 않은 날의 일기는 쓸 수 없습니다.",
+    DIARY_003: "내용이나 사진을 넣어주시길 바랍니다.",
     TRANSLATION_001: "번역하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     TRANSLATION_002:
       "번역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
@@ -403,6 +404,10 @@ export const ko = {
   },
   diary: {
     writeToday: "오늘 일기",
+    addAttachment: "사진, 동영상 추가",
+    removeAttachment: "첨부 삭제",
+    moveLeft: "앞으로 옮기기",
+    moveRight: "뒤로 옮기기",
     placeholder: "오늘 하루를 남겨보세요.",
     saved: "일기를 저장했습니다.",
     deleted: "일기를 삭제했습니다.",

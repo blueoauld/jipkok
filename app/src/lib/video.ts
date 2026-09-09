@@ -6,7 +6,12 @@ import { Video as VideoCompressor } from "react-native-compressor";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api, ApiError } from "@/lib/api";
 import i18n from "@/lib/i18n";
-import { uploadCancelled, uploadFile, type UploadProgress } from "@/lib/upload";
+import {
+  type IssueUploadUrl,
+  uploadCancelled,
+  uploadFile,
+  type UploadProgress,
+} from "@/lib/upload";
 
 // 서버 ChatMessage.VIDEO_MAX_SECONDS / VIDEO_MAX_BYTES와 같다.
 export const VIDEO_MAX_SECONDS = 300;
@@ -129,28 +134,59 @@ export async function compressVideo(
   }
 }
 
-export async function uploadChatVideo(
+async function uploadVideo(
   videoUri: string,
   thumbnailUri: string,
+  issue: IssueUploadUrl,
   onProgress: UploadProgress,
   signal: AbortSignal,
 ): Promise<VideoKeys> {
   const thumbnailKey = await uploadFile(
     thumbnailUri,
     THUMBNAIL_CONTENT_TYPE,
-    api.chats.createPhotoUploadUrl,
+    issue,
     () => undefined,
     signal,
   );
   const objectKey = await uploadFile(
     videoUri,
     VIDEO_CONTENT_TYPE,
-    api.chats.createPhotoUploadUrl,
+    issue,
     onProgress,
     signal,
   );
 
   return { objectKey, thumbnailKey };
+}
+
+export function uploadChatVideo(
+  videoUri: string,
+  thumbnailUri: string,
+  onProgress: UploadProgress,
+  signal: AbortSignal,
+) {
+  return uploadVideo(
+    videoUri,
+    thumbnailUri,
+    api.chats.createPhotoUploadUrl,
+    onProgress,
+    signal,
+  );
+}
+
+export function uploadDiaryVideo(
+  videoUri: string,
+  thumbnailUri: string,
+  onProgress: UploadProgress,
+  signal: AbortSignal,
+) {
+  return uploadVideo(
+    videoUri,
+    thumbnailUri,
+    api.diaries.createAttachmentUploadUrl,
+    onProgress,
+    signal,
+  );
 }
 
 export function formatDuration(seconds: number) {

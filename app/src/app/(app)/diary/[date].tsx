@@ -13,17 +13,27 @@ import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Spinner } from "tamagui";
 
+import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
+import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
 import { FormScreen } from "@/components/FormScreen";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { DIARIES_KEY, useDiaryMonth } from "@/hooks/useDiaries";
+import {
+  draftMediaUri,
+  isDraftVideo,
+  useDiaryAttachments,
+} from "@/hooks/useDiaryAttachments";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam, toMonthParam } from "@/lib/date";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
+import { describeUploadError } from "@/lib/upload";
+import { DIARY_ATTACHMENTS_MAX } from "@/lib/validation";
 
 const ROWS = 14;
 
@@ -40,16 +50,39 @@ function DiaryEditor({
   const { alertElement, showApiError, confirm } = useRetroAlert();
   const initial = diary?.content ?? "";
   const contentRef = useRef(initial);
-  const [empty, setEmpty] = useState(initial.trim().length === 0);
-  const [dirty, setDirty] = useState(false);
+  const [textEmpty, setTextEmpty] = useState(initial.trim().length === 0);
+  const [textDirty, setTextDirty] = useState(false);
+  const attachments = useDiaryAttachments(
+    diary?.attachments ?? [],
+    showApiError,
+  );
+  const [photoIndex, setPhotoIndex] = useState<number | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+
+  const empty = textEmpty && attachments.items.length === 0;
+  const dirty = textDirty || attachments.dirty;
 
   const invalidate = useCallback(
     () => queryClient.invalidateQueries({ queryKey: DIARIES_KEY }),
     [queryClient],
   );
 
+  const { upload } = attachments;
   const write = useMutation({
-    mutationFn: (content: string) => api.diaries.write(entryDate, content),
+    mutationFn: async () => {
+      let uploaded;
+
+      try {
+        uploaded = await upload();
+      } catch (error) {
+        throw describeUploadError(error);
+      }
+
+      await api.diaries.write(entryDate, {
+        content: contentRef.current.trim() || null,
+        attachments: uploaded,
+      });
+    },
     onSuccess: async () => {
       await invalidate();
       showToast("info", t("diary.saved"));
@@ -68,7 +101,11 @@ function DiaryEditor({
     onError: showApiError,
   });
 
-  useLoadingOverlay(remove.isPending);
+  useLoadingOverlay(
+    remove.isPending || attachments.progress.total > 0,
+    attachments.progress.done,
+    attachments.progress.total,
+  );
 
   const pending = write.isPending || remove.isPending;
   const { mutate: removeMutate } = remove;
@@ -111,6 +148,28 @@ function DiaryEditor({
     }),
   );
 
+  const photoUris = useMemo(
+    () =>
+      attachments.items
+        .filter((item) => !isDraftVideo(item))
+        .map(draftMediaUri),
+    [attachments.items],
+  );
+
+  const openAttachment = useCallback(
+    (index: number) => {
+      const item = attachments.items[index];
+
+      if (isDraftVideo(item)) {
+        setVideoUrl(draftMediaUri(item));
+        return;
+      }
+
+      setPhotoIndex(photoUris.indexOf(draftMediaUri(item)));
+    },
+    [attachments.items, photoUris],
+  );
+
   return (
     <>
       <Stack.Screen options={screenOptions} />
@@ -119,12 +178,24 @@ function DiaryEditor({
         footer={
           <RetroButton
             disabled={empty || !dirty || pending}
-            onPress={() => write.mutate(contentRef.current.trim())}
+            onPress={() => write.mutate()}
           >
             {write.isPending ? <Spinner color="$color11" /> : t("action.save")}
           </RetroButton>
         }
       >
+        <DiaryAttachmentStrip
+          items={attachments.items}
+          onAdd={
+            attachments.items.length < DIARY_ATTACHMENTS_MAX
+              ? attachments.add
+              : undefined
+          }
+          onRemove={attachments.remove}
+          onMove={attachments.move}
+          onPress={openAttachment}
+        />
+
         <RetroInput
           multiline
           rows={ROWS}
@@ -133,11 +204,20 @@ function DiaryEditor({
           defaultValue={initial}
           onChangeText={(text) => {
             contentRef.current = text;
-            setEmpty(text.trim().length === 0);
-            setDirty(text !== initial);
+            setTextEmpty(text.trim().length === 0);
+            setTextDirty(text !== initial);
           }}
         />
       </FormScreen>
+
+      <PhotoViewer
+        photos={photoUris}
+        initialIndex={photoIndex ?? 0}
+        open={photoIndex !== null}
+        onClose={() => setPhotoIndex(null)}
+      />
+
+      <VideoPlayerModal url={videoUrl} onClose={() => setVideoUrl(null)} />
 
       {alertElement}
     </>

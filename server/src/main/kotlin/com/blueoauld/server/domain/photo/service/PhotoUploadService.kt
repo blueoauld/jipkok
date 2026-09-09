@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.photo.entity.PhotoUpload
 import com.blueoauld.server.domain.photo.repository.PhotoUploadRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,18 +43,20 @@ class PhotoUploadService(
     }
 
     @Transactional
-    fun confirm(objectKeys: List<String>) {
+    fun confirm(objectKeys: List<String>): Map<String, StoredObject> {
         if (objectKeys.isEmpty()) {
-            return
+            return emptyMap()
         }
 
         val uploads = photoUploadRepository.findAllByObjectKeyIn(objectKeys)
+        val stored = uploads.associate { it.objectKey to validateUploaded(it.objectKey) }
 
-        uploads.forEach { validateUploaded(it.objectKey) }
         photoUploadRepository.deleteAll(uploads)
+
+        return stored
     }
 
-    private fun validateUploaded(objectKey: String) {
+    private fun validateUploaded(objectKey: String): StoredObject {
         val stored = photoStorage.head(objectKey) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
 
         val (maxBytes, errorCode) = if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) == true) {
@@ -66,6 +69,8 @@ class PhotoUploadService(
             photoStorage.delete(listOf(objectKey))
             throw BusinessException(errorCode)
         }
+
+        return stored
     }
 
     companion object {

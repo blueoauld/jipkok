@@ -6,6 +6,7 @@ import java.time.LocalDate
 data class DiaryResponse(
 
     val entryDate: LocalDate,
-    val content: String,
+    val content: String?,
+    val attachments: List<DiaryAttachmentResponse>,
     val updatedAt: Instant,
 )

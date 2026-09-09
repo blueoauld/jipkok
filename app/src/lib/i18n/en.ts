@@ -156,6 +156,7 @@ export const en: typeof ko = {
     WORRY_008: "You can't reply to a reply.",
     DIARY_001: "Entry not found.",
     DIARY_002: "You can't write an entry for a day that hasn't come yet.",
+    DIARY_003: "Add some text or a photo.",
     TRANSLATION_001: "Couldn't translate. Please try again in a moment.",
     TRANSLATION_002:
       "You've reached the translation limit. Please try again in a moment.",
@@ -403,6 +404,10 @@ export const en: typeof ko = {
   },
   diary: {
     writeToday: "Today's entry",
+    addAttachment: "Add photos or videos",
+    removeAttachment: "Remove attachment",
+    moveLeft: "Move earlier",
+    moveRight: "Move later",
     placeholder: "Write about your day.",
     saved: "Entry saved.",
     deleted: "Entry deleted.",

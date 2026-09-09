@@ -5,7 +5,7 @@ import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import i18n from "@/lib/i18n";
 import {
   MAX_PHOTOS,
-  pickChatMedia,
+  pickMedia,
   takePhoto,
   takeVideo,
 } from "@/lib/photo/picker";
@@ -35,7 +35,7 @@ export function useChatMedia({
 
   const pick = async () => {
     try {
-      const assets = await pickChatMedia(MAX_PHOTOS);
+      const assets = await pickMedia(MAX_PHOTOS);
       const photos = assets.filter((asset) => asset.type !== "video");
       const videos = assets.filter((asset) => asset.type === "video");
       const sendable = videos.filter(

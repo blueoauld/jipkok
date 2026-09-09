@@ -17,8 +17,6 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
         to: LocalDate,
     ): List<Diary>
 
-    fun deleteByMemberIdAndEntryDate(memberId: Long, entryDate: LocalDate): Long
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from Diary d where d.memberId = :memberId")
     fun deleteAllByMemberId(@Param("memberId") memberId: Long)

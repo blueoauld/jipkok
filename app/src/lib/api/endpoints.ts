@@ -51,6 +51,7 @@ import type {
   WorryPostPage,
   WorryPostResponse,
   WorrySort,
+  WriteDiaryRequest,
 } from "./types";
 
 type CursorParams = { cursor?: number; size?: number };
@@ -321,11 +322,14 @@ export const diaries = {
   list: (month: string) =>
     request<DiaryResponse[]>("/api/diaries", { query: { month } }),
 
-  write: (entryDate: string, content: string) =>
-    request<void>(`/api/diaries/${entryDate}`, {
-      method: "PUT",
-      body: { content },
+  createAttachmentUploadUrl: (contentType: string) =>
+    request<PhotoUploadUrlResponse>("/api/diaries/attachments/upload-url", {
+      method: "POST",
+      body: { contentType },
     }),
+
+  write: (entryDate: string, body: WriteDiaryRequest) =>
+    request<void>(`/api/diaries/${entryDate}`, { method: "PUT", body }),
 
   remove: (entryDate: string) =>
     request<void>(`/api/diaries/${entryDate}`, { method: "DELETE" }),

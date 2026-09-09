@@ -131,6 +131,7 @@ enum class ErrorCode(
 
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIARY_001", "일기를 찾을 수 없습니다."),
     FUTURE_DIARY_DATE(HttpStatus.BAD_REQUEST, "DIARY_002", "아직 오지 않은 날의 일기는 쓸 수 없습니다."),
+    EMPTY_DIARY(HttpStatus.BAD_REQUEST, "DIARY_003", "내용이나 사진을 넣어주시길 바랍니다."),
 
     TRANSLATE_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "TRANSLATION_001", "번역하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
     TRANSLATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "TRANSLATION_002", "번역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다."),
