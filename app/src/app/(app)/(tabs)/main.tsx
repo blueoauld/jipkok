@@ -30,11 +30,12 @@ import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
-import { api, type MemberSort } from "@/lib/api";
+import { api } from "@/lib/api";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
   type MemberFilter,
+  type MemberListSort,
   useMemberFilterStore,
 } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
@@ -43,7 +44,7 @@ import { useLoadingOverlay } from "@/lib/overlay/store";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
-const SORTS: MemberSort[] = ["RECENT", "DISTANCE"];
+const SORTS: MemberListSort[] = ["RECENT", "DISTANCE", "RANK"];
 
 const SORT_ITEMS = SORTS.map((value) => ({
   value,
@@ -98,7 +99,7 @@ export default function MainScreen() {
 
   // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
   const changeSort = useCallback(
-    async (next: MemberSort) => {
+    async (next: MemberListSort) => {
       setSort(next);
       scrollToTop();
 

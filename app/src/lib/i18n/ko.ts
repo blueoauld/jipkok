@@ -25,7 +25,7 @@ export const ko = {
     main: "메인",
     chat: "채팅",
     lounge: "라운지",
-    rank: "랭킹",
+    diary: "일기",
     setting: "설정",
     selectedCount: "{{count}}개 선택",
     cancel: "취소",
@@ -310,7 +310,7 @@ export const ko = {
     },
   },
   main: {
-    sort: { RECENT: "최근", DISTANCE: "거리" },
+    sort: { RECENT: "최근", DISTANCE: "거리", RANK: "랭킹" },
     filterEmpty: "필터에 맞는 회원이 없습니다.",
     resetFilter: "필터 초기화",
   },
@@ -416,12 +416,8 @@ export const ko = {
     loadFailed: "일기를 불러오지 못했습니다.",
     empty: "이 달에 쓴 일기가 없습니다.",
   },
-  rank: {
-    errorMessage: "랭킹을 불러오지 못했습니다.",
-  },
   list: {
     myProfile: "내 프로필",
-    diaries: "일기",
     likes: "좋아요 목록",
     favorites: "즐겨찾기 목록",
     secretPhotos: "비밀 사진 목록",

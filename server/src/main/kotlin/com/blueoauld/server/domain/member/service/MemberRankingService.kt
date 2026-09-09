@@ -7,26 +7,33 @@ import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
 
 @Service
 class MemberRankingService(
 
     private val memberListRepository: MemberListRepository,
     private val memberSummaryService: MemberSummaryService,
+    private val clock: Clock,
 ) {
 
     @Transactional(readOnly = true)
     fun findRanking(
         memberId: Long,
         gender: Gender?,
+        minAge: Int?,
+        maxAge: Int?,
         cursor: String?,
         size: Int,
     ): ScrollResponse<MemberListItemResponse> {
         val pageSize = CursorResponse.pageSize(size)
+        val birthYears = BirthYearRange.of(minAge, maxAge, clock)
         val decoded = MemberListCursor.decodeRanking(cursor)
         val rows = memberListRepository.findByReceivedLikeCount(
             memberId = memberId,
             gender = gender?.name,
+            minBirthYear = birthYears.min,
+            maxBirthYear = birthYears.max,
             cursorLikeCount = decoded?.first,
             cursorLocatedAt = decoded?.second,
             cursorId = decoded?.third,

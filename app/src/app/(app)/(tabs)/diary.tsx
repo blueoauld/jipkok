@@ -1,17 +1,14 @@
 import { Image } from "expo-image";
-import { Stack } from "expo-router";
-import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useDiaryMonth } from "@/hooks/useDiaries";
 import { useNow } from "@/hooks/useNow";
 import type { DiaryResponse } from "@/lib/api";
@@ -74,7 +71,7 @@ function DiaryRow({
   );
 }
 
-export default function DiaryCalendarScreen() {
+export default function DiaryScreen() {
   const { t } = useTranslation();
   const today = koreaDateParam(useNow());
   const [month, setMonth] = useState(() => toMonthParam(today));
@@ -84,22 +81,6 @@ export default function DiaryCalendarScreen() {
     (entryDate: string) => pushOnce(`/diary/${entryDate}`),
     [],
   );
-  const openToday = useCallback(() => openEntry(today), [openEntry, today]);
-
-  const screenOptions = useMemo(
-    () => ({
-      title: t("list.diaries"),
-      headerRight: () => (
-        <HeaderSoloIconButton
-          icon={NotePencilIcon}
-          label={t("diary.writeToday")}
-          onPress={openToday}
-        />
-      ),
-    }),
-    [openToday, t],
-  );
-
   const markedDates = useMemo(
     () =>
       Object.fromEntries(
@@ -114,16 +95,19 @@ export default function DiaryCalendarScreen() {
     () => (diaries ? [...diaries].reverse() : []),
     [diaries],
   );
+  const tabBarOverlay = useTabBarOverlay();
   const contentStyle = useMemo(() => {
     const space = getTokens().space;
 
-    return { padding: space.$4.val, gap: space.$4.val };
-  }, []);
+    return {
+      padding: space.$4.val,
+      paddingBottom: space.$4.val + tabBarOverlay,
+      gap: space.$4.val,
+    };
+  }, [tabBarOverlay]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <Stack.Screen options={screenOptions} />
-
+    <YStack flex={1}>
       <FlatList
         data={rows}
         keyExtractor={(diary) => diary.entryDate}
@@ -151,6 +135,6 @@ export default function DiaryCalendarScreen() {
           )
         }
       />
-    </SafeAreaView>
+    </YStack>
   );
 }

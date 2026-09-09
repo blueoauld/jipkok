@@ -26,7 +26,7 @@ export const en: typeof ko = {
     main: "Home",
     chat: "Chat",
     lounge: "Lounge",
-    rank: "Ranking",
+    diary: "Diary",
     setting: "Settings",
     selectedCount: "{{count}} selected",
     cancel: "Cancel",
@@ -311,7 +311,7 @@ export const en: typeof ko = {
     },
   },
   main: {
-    sort: { RECENT: "Recent", DISTANCE: "Distance" },
+    sort: { RECENT: "Recent", DISTANCE: "Distance", RANK: "Ranking" },
     filterEmpty: "No members match the filter.",
     resetFilter: "Reset filter",
   },
@@ -416,12 +416,8 @@ export const en: typeof ko = {
     loadFailed: "Couldn't load your diary.",
     empty: "No entries this month.",
   },
-  rank: {
-    errorMessage: "Couldn't load the ranking.",
-  },
   list: {
     myProfile: "My profile",
-    diaries: "Diary",
     likes: "Likes",
     favorites: "Favorites",
     secretPhotos: "Private photos",

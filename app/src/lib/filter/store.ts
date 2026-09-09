@@ -37,9 +37,12 @@ export function isDefaultMemberFilter(filter: MemberFilter) {
   );
 }
 
+// 랭킹은 서버 정렬값이 아니라 다른 API를 타지만 화면에서는 같은 세그먼트에 놓인다.
+export type MemberListSort = MemberSort | "RANK";
+
 type MemberFilterState = MemberFilter & {
-  sort: MemberSort;
-  setSort: (sort: MemberSort) => void;
+  sort: MemberListSort;
+  setSort: (sort: MemberListSort) => void;
   setFilter: (filter: MemberFilter) => void;
 };
 

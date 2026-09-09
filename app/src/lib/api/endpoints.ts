@@ -81,6 +81,8 @@ type WorrySearchParams = CursorParams & { keyword: string };
 
 type MemberRankingParams = {
   gender?: Gender;
+  minAge?: number;
+  maxAge?: number;
   cursor?: string;
   size?: number;
 };

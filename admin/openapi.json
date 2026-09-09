@@ -9019,6 +9019,7 @@
                     "member-controller"
                 ],
                 "summary": "\uc88b\uc544\uc694 \ub7ad\ud0b9",
+                "description": "\ud68c\uc6d0 \ubaa9\ub85d\uacfc \uac19\uc740 \uc131\ubcc4, \ub098\uc774 \uc870\uac74\uc744 \ubc1b\ub294\ub2e4.",
                 "operationId": "findRanking",
                 "parameters": [
                     {
@@ -9031,6 +9032,24 @@
                                 "MALE",
                                 "FEMALE"
                             ]
+                        }
+                    },
+                    {
+                        "name": "minAge",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "maxAge",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
                         }
                     },
                     {

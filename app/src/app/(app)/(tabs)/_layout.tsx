@@ -1,11 +1,12 @@
 import { Tabs } from "expo-router";
 import type { Icon } from "phosphor-react-native";
+import { BookOpenIcon } from "phosphor-react-native/src/icons/BookOpen";
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { FireIcon } from "phosphor-react-native/src/icons/Fire";
 import { GearIcon } from "phosphor-react-native/src/icons/Gear";
 import { HouseIcon } from "phosphor-react-native/src/icons/House";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
-import { TrophyIcon } from "phosphor-react-native/src/icons/Trophy";
+import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,6 +22,7 @@ import { Glass } from "@/components/ui/Glass";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { formatUnreadCount } from "@/lib/chat";
 import { useChatSelectionStore } from "@/lib/chat/store";
+import { koreaDateParam } from "@/lib/date";
 import {
   BOTTOM_BAR_HEIGHT,
   bottomBarHeight,
@@ -45,7 +47,7 @@ const BAR_HEIGHT = GLASS_ENABLED ? FLOATING_BAR_HEIGHT : BOTTOM_BAR_HEIGHT;
 const BADGE_TOP = (BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
 type TabTitleKey =
-  "tabs.main" | "tabs.chat" | "tabs.lounge" | "tabs.rank" | "tabs.setting";
+  "tabs.main" | "tabs.chat" | "tabs.lounge" | "tabs.diary" | "tabs.setting";
 
 type Tab = {
   name: string;
@@ -71,7 +73,18 @@ const TABS: Tab[] = [
     headerRight: () => <ChatHeaderRight />,
   },
   { name: "feed", titleKey: "tabs.lounge", icon: FireIcon },
-  { name: "rank", titleKey: "tabs.rank", icon: TrophyIcon },
+  {
+    name: "diary",
+    titleKey: "tabs.diary",
+    icon: BookOpenIcon,
+    headerRight: () => (
+      <HeaderIconButton
+        icon={NotePencilIcon}
+        label={i18n.t("diary.writeToday")}
+        onPress={() => pushOnce(`/diary/${koreaDateParam(Date.now())}`)}
+      />
+    ),
+  },
   { name: "setting", titleKey: "tabs.setting", icon: GearIcon },
 ];
 

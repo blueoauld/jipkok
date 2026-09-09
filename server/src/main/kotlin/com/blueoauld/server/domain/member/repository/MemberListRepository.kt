@@ -85,7 +85,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                cast(null as double precision) as distance,
                $FAVORITED as favoritedByMe
         from member m
-        where $VISIBLE $GENDER
+        where $VISIBLE $GENDER $AGE
           and (
             cast(:cursorLikeCount as bigint) is null
             or (m.received_like_count, $LOCATED_EPOCH, m.id) < (
@@ -102,6 +102,8 @@ interface MemberListRepository : JpaRepository<Member, Long> {
     fun findByReceivedLikeCount(
         @Param("memberId") memberId: Long,
         @Param("gender") gender: String?,
+        @Param("minBirthYear") minBirthYear: Int?,
+        @Param("maxBirthYear") maxBirthYear: Int?,
         @Param("cursorLikeCount") cursorLikeCount: Long?,
         @Param("cursorLocatedAt") cursorLocatedAt: Long?,
         @Param("cursorId") cursorId: Long?,

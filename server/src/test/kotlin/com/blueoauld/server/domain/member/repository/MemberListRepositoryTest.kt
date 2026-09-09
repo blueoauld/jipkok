@@ -151,7 +151,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getMemberId() }).containsSubsequence(hongId, nearId)
@@ -162,11 +162,13 @@ class MemberListRepositoryTest {
     @Test
     fun `랭킹 커서를 주면 그 뒤부터 준다`() {
         // given
-        val first = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, 1).first()
+        val first = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, 1).first()
 
         // when
         val next = memberListRepository.findByReceivedLikeCount(
             meId,
+            null,
+            null,
             null,
             first.getOrderValue().toLong(),
             first.getLocatedAt()?.epochSecond ?: 0,
@@ -193,7 +195,7 @@ class MemberListRepositoryTest {
         ).id
 
         // when
-        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getMemberId() }).containsSubsequence(newer, older)
@@ -205,7 +207,7 @@ class MemberListRepositoryTest {
         memberBlockRepository.saveAndFlush(MemberBlock(meId, hongId))
 
         // when
-        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getMemberId() }).doesNotContain(hongId)
@@ -216,7 +218,7 @@ class MemberListRepositoryTest {
         // given
 
         // when
-        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, PAGE_SIZE)
+        val rows = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, PAGE_SIZE)
 
         // then
         assertThat(rows.map { it.getMemberId() }).contains(farId)

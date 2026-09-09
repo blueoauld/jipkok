@@ -25,7 +25,7 @@ export const zh: typeof ko = {
     main: "首頁",
     chat: "聊天",
     lounge: "交流",
-    rank: "排行",
+    diary: "日記",
     setting: "設定",
     selectedCount: "已選擇 {{count}} 個",
     cancel: "取消",
@@ -298,7 +298,7 @@ export const zh: typeof ko = {
     },
   },
   main: {
-    sort: { RECENT: "最近", DISTANCE: "距離" },
+    sort: { RECENT: "最近", DISTANCE: "距離", RANK: "排行" },
     filterEmpty: "沒有符合篩選條件的會員。",
     resetFilter: "重設篩選",
   },
@@ -400,12 +400,8 @@ export const zh: typeof ko = {
     loadFailed: "無法載入日記。",
     empty: "這個月沒有寫日記。",
   },
-  rank: {
-    errorMessage: "無法載入排行榜。",
-  },
   list: {
     myProfile: "我的個人檔案",
-    diaries: "日記",
     likes: "按讚列表",
     favorites: "收藏列表",
     secretPhotos: "私密照片列表",

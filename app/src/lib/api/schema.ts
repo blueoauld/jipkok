@@ -995,7 +995,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 좋아요 랭킹 */
+        /**
+         * 좋아요 랭킹
+         * @description 회원 목록과 같은 성별, 나이 조건을 받는다.
+         */
         get: operations["findRanking"];
         put?: never;
         post?: never;
@@ -9001,6 +9004,8 @@ export interface operations {
         parameters: {
             query?: {
                 gender?: "MALE" | "FEMALE";
+                minAge?: number;
+                maxAge?: number;
                 cursor?: string;
                 size?: number;
             };

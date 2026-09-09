@@ -26,7 +26,7 @@ export const ja: typeof ko = {
     main: "メイン",
     chat: "チャット",
     lounge: "ラウンジ",
-    rank: "ランキング",
+    diary: "日記",
     setting: "設定",
     selectedCount: "{{count}}件選択",
     cancel: "キャンセル",
@@ -313,7 +313,7 @@ export const ja: typeof ko = {
     },
   },
   main: {
-    sort: { RECENT: "最近", DISTANCE: "距離" },
+    sort: { RECENT: "最近", DISTANCE: "距離", RANK: "ランキング" },
     filterEmpty: "条件に合う会員がいません。",
     resetFilter: "フィルターをリセット",
   },
@@ -419,12 +419,8 @@ export const ja: typeof ko = {
     loadFailed: "日記を読み込めませんでした。",
     empty: "この月に書いた日記はありません。",
   },
-  rank: {
-    errorMessage: "ランキングを読み込めませんでした。",
-  },
   list: {
     myProfile: "マイプロフィール",
-    diaries: "日記",
     likes: "いいねリスト",
     favorites: "お気に入りリスト",
     secretPhotos: "シークレット写真リスト",

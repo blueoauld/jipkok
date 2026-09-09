@@ -11,7 +11,9 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneOffset
 
 class MemberRankingServiceTest {
 
@@ -19,7 +21,11 @@ class MemberRankingServiceTest {
 
     private val memberSummaryService = mockk<MemberSummaryService>()
 
-    private val service = MemberRankingService(memberListRepository, memberSummaryService)
+    private val service = MemberRankingService(
+        memberListRepository,
+        memberSummaryService,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+    )
 
     @BeforeEach
     fun setUp() {
@@ -31,11 +37,12 @@ class MemberRankingServiceTest {
     @Test
     fun `좋아요 순으로 조회해 접속 시각과 함께 준다`() {
         // given
-        every { memberListRepository.findByReceivedLikeCount(ME_ID, "FEMALE", null, null, null, 20) } returns
-            listOf(row(2L, 7.0), row(3L, 3.0))
+        every {
+            memberListRepository.findByReceivedLikeCount(ME_ID, "FEMALE", null, null, null, null, null, 20)
+        } returns listOf(row(2L, 7.0), row(3L, 3.0))
 
         // when
-        val response = service.findRanking(ME_ID, Gender.FEMALE, null, 20)
+        val response = service.findRanking(ME_ID, Gender.FEMALE, null, null, null, 20)
 
         // then
         assertThat(response.items.map { it.memberId }).containsExactly(2L, 3L)
@@ -46,11 +53,12 @@ class MemberRankingServiceTest {
     @Test
     fun `페이지가 꽉 차면 좋아요 수, 접속 시각, id로 다음 커서를 만든다`() {
         // given
-        every { memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), 2) } returns
-            listOf(row(2L, 7.0), row(3L, 3.0))
+        every {
+            memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any(), any(), 2)
+        } returns listOf(row(2L, 7.0), row(3L, 3.0))
 
         // when
-        val response = service.findRanking(ME_ID, null, null, 2)
+        val response = service.findRanking(ME_ID, null, null, null, null, 2)
 
         // then
         assertThat(response.nextCursor)
@@ -58,17 +66,34 @@ class MemberRankingServiceTest {
     }
 
     @Test
+    fun `나이 범위를 출생 연도로 바꿔 넘긴다`() {
+        // given
+        every {
+            memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any(), any(), any())
+        } returns emptyList()
+
+        // when
+        service.findRanking(ME_ID, null, 20, 30, null, 20)
+
+        // then
+        verify { memberListRepository.findByReceivedLikeCount(ME_ID, null, 1996, 2006, null, null, null, 20) }
+    }
+
+    @Test
     fun `커서를 풀어서 조회에 넘긴다`() {
         // given
         val cursor = MemberListCursor.encodeRanking(3L, LOCATED_AT.epochSecond, 3L)
-        every { memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any()) } returns
-            emptyList()
+        every {
+            memberListRepository.findByReceivedLikeCount(any(), any(), any(), any(), any(), any(), any(), any())
+        } returns emptyList()
 
         // when
-        service.findRanking(ME_ID, null, cursor, 20)
+        service.findRanking(ME_ID, null, null, null, cursor, 20)
 
         // then
-        verify { memberListRepository.findByReceivedLikeCount(ME_ID, null, 3L, LOCATED_AT.epochSecond, 3L, 20) }
+        verify {
+            memberListRepository.findByReceivedLikeCount(ME_ID, null, null, null, 3L, LOCATED_AT.epochSecond, 3L, 20)
+        }
     }
 
     private fun row(memberId: Long, likeCount: Double) = mockk<MemberListRow> {
@@ -100,6 +125,7 @@ class MemberRankingServiceTest {
     companion object {
 
         private const val ME_ID = 1L
+        private val NOW: Instant = Instant.parse("2026-09-09T00:00:00Z")
         private val LOCATED_AT: Instant = Instant.parse("2026-08-01T00:00:00Z")
     }
 }

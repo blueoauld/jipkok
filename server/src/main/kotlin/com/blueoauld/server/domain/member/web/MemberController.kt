@@ -82,14 +82,17 @@ class MemberController(
     ): ScrollResponse<MemberListItemResponse> =
         memberListService.findMembers(memberId, sort, gender, minAge, maxAge, cursor, size)
 
-    @Operation(summary = "좋아요 랭킹")
+    @Operation(summary = "좋아요 랭킹", description = "회원 목록과 같은 성별, 나이 조건을 받는다.")
     @GetMapping("/ranking")
     fun findRanking(
         @AuthenticationPrincipal memberId: Long,
         @RequestParam(required = false) gender: Gender?,
+        @RequestParam(required = false) minAge: Int?,
+        @RequestParam(required = false) maxAge: Int?,
         @RequestParam(required = false) cursor: String?,
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
-    ): ScrollResponse<MemberListItemResponse> = memberRankingService.findRanking(memberId, gender, cursor, size)
+    ): ScrollResponse<MemberListItemResponse> =
+        memberRankingService.findRanking(memberId, gender, minAge, maxAge, cursor, size)
 
     @Operation(summary = "닉네임 검색")
     @GetMapping("/search")

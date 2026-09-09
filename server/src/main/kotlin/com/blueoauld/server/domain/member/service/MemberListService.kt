@@ -8,11 +8,8 @@ import com.blueoauld.server.domain.member.entity.type.MemberSort
 import com.blueoauld.server.domain.member.repository.MemberListRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
-import com.blueoauld.server.global.exception.BusinessException
-import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
-import com.blueoauld.server.global.time.currentYear
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -37,7 +34,7 @@ class MemberListService(
         size: Int,
     ): ScrollResponse<MemberListItemResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val birthYears = toBirthYearRange(minAge, maxAge)
+        val birthYears = BirthYearRange.of(minAge, maxAge, clock)
         val member = memberRepository.getMember(memberId)
         val rows = findRows(member, sort, gender, birthYears, MemberListCursor.decode(cursor), pageSize)
         val last = rows.lastOrNull().takeIf { rows.size == pageSize }
@@ -45,25 +42,6 @@ class MemberListService(
         return ScrollResponse(
             items = memberSummaryService.findListItems(memberId, rows),
             nextCursor = last?.let { MemberListCursor.encode(it.getOrderValue(), it.getMemberId()) },
-        )
-    }
-
-    private fun toBirthYearRange(minAge: Int?, maxAge: Int?): BirthYearRange {
-        val lower = minAge ?: Member.MIN_AGE
-        val upper = maxAge ?: Member.MAX_AGE
-
-        if (lower !in Member.MIN_AGE..Member.MAX_AGE ||
-            upper !in Member.MIN_AGE..Member.MAX_AGE ||
-            lower > upper
-        ) {
-            throw BusinessException(ErrorCode.INVALID_AGE_RANGE)
-        }
-
-        val currentYear = clock.currentYear()
-
-        return BirthYearRange(
-            min = maxAge?.let { currentYear - it },
-            max = minAge?.let { currentYear - it },
         )
     }
 
@@ -104,10 +82,4 @@ class MemberListService(
             size = pageSize,
         )
     }
-
-    private data class BirthYearRange(
-
-        val min: Int?,
-        val max: Int?,
-    )
 }
