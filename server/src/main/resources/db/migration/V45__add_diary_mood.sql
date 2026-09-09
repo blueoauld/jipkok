@@ -1,2 +1,0 @@
-ALTER TABLE diary
-    ADD COLUMN mood VARCHAR(255);
