@@ -2,6 +2,7 @@ import { fromDateParam, koreaDateParam } from "@/lib/date";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
+  useDiaryFilterStore,
   useFeedFilterStore,
   useMemberFilterStore,
 } from "@/lib/filter/store";
@@ -61,6 +62,20 @@ describe("필터 저장 옵션", () => {
       gender: "MALE",
       minAge: 25,
       maxAge: 35,
+    });
+  });
+});
+
+describe("일기 필터", () => {
+  it("기본은 최신순이고 고른 순서를 저장한다", () => {
+    const partialize = useDiaryFilterStore.persist.getOptions().partialize;
+
+    expect(useDiaryFilterStore.getState().sort).toBe("LATEST");
+
+    useDiaryFilterStore.getState().setSort("OLDEST");
+
+    expect(partialize?.(useDiaryFilterStore.getState())).toEqual({
+      sort: "OLDEST",
     });
   });
 });

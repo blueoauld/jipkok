@@ -402,11 +402,12 @@ export const ja: typeof ko = {
     added: "番号をブロックしました。",
     removed: "ブロックを解除しました。",
     empty: "ブロックした番号はありません。",
-    notice:
-      "ブロックした番号で登録した会員とは互いに表示されず、メッセージも送れません。",
+    notice: "ブロックした番号の会員とは互いに表示されません。",
   },
   diary: {
+    sort: { LATEST: "新しい順", OLDEST: "古い順" },
     writeToday: "今日の日記",
+    notice: "日記は自分だけが見られ、誰にも公開されません。",
     addAttachment: "写真、動画を追加",
     removeAttachment: "添付を削除",
     moveLeft: "前へ移動",

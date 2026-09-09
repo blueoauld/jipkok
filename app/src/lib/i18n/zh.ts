@@ -384,10 +384,12 @@ export const zh: typeof ko = {
     added: "已封鎖此號碼。",
     removed: "已解除封鎖。",
     empty: "沒有封鎖的號碼。",
-    notice: "與以封鎖號碼註冊的會員互不可見，也無法互傳訊息。",
+    notice: "與封鎖號碼的會員互不可見。",
   },
   diary: {
+    sort: { LATEST: "由新到舊", OLDEST: "由舊到新" },
     writeToday: "今天的日記",
+    notice: "日記只有自己看得到，不會公開給任何人。",
     addAttachment: "新增照片、影片",
     removeAttachment: "刪除附件",
     moveLeft: "往前移",

@@ -399,11 +399,12 @@ export const ko = {
     added: "번호를 차단했습니다.",
     removed: "차단을 해제했습니다.",
     empty: "차단한 번호가 없습니다.",
-    notice:
-      "차단한 번호로 가입한 회원과는 서로 보이지 않고 쪽지도 주고받을 수 없습니다.",
+    notice: "차단한 번호의 회원과는 서로 보이지 않습니다.",
   },
   diary: {
+    sort: { LATEST: "최신순", OLDEST: "과거순" },
     writeToday: "오늘 일기",
+    notice: "일기는 나만 볼 수 있고 아무에게도 공개되지 않습니다.",
     addAttachment: "사진, 동영상 추가",
     removeAttachment: "첨부 삭제",
     moveLeft: "앞으로 옮기기",

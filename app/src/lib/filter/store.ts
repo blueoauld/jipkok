@@ -14,6 +14,7 @@ import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
 const MEMBER_STORAGE_KEY = "jipkok.memberFilter";
 const FEED_STORAGE_KEY = "jipkok.feedFilter";
+const DIARY_STORAGE_KEY = "jipkok.diaryFilter";
 
 const DEFAULT_FEED_SORT: FeedSort = "LATEST";
 
@@ -114,6 +115,27 @@ export const useFeedFilterStore = create<FeedFilterState>()(
         worrySort: state.worrySort,
         worryCategory: state.worryCategory,
       }),
+    },
+  ),
+);
+
+export type DiarySort = "LATEST" | "OLDEST";
+
+type DiaryFilterState = {
+  sort: DiarySort;
+  setSort: (sort: DiarySort) => void;
+};
+
+export const useDiaryFilterStore = create<DiaryFilterState>()(
+  persist(
+    (set) => ({
+      sort: "LATEST",
+      setSort: (sort) => set({ sort }),
+    }),
+    {
+      name: DIARY_STORAGE_KEY,
+      storage,
+      partialize: (state) => ({ sort: state.sort }),
     },
   ),
 );

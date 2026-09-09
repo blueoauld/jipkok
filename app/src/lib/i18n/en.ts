@@ -399,11 +399,12 @@ export const en: typeof ko = {
     added: "Number blocked.",
     removed: "Block removed.",
     empty: "No blocked numbers.",
-    notice:
-      "Members who signed up with a blocked number and you cannot see each other or exchange notes.",
+    notice: "You and members with a blocked number can't see each other.",
   },
   diary: {
+    sort: { LATEST: "Newest first", OLDEST: "Oldest first" },
     writeToday: "Today's entry",
+    notice: "Your diary is private. No one else can see it.",
     addAttachment: "Add photos or videos",
     removeAttachment: "Remove attachment",
     moveLeft: "Move earlier",
