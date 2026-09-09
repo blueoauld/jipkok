@@ -85,7 +85,7 @@ function Tile({
 }: {
   item: DiaryDraftAttachment;
   onPress: () => void;
-  onRemove: () => void;
+  onRemove?: () => void;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
 }) {
@@ -139,15 +139,21 @@ function Tile({
         </>
       )}
 
-      <OverlayButton
-        t="$2"
-        r="$2"
-        bg="$red10"
-        label={t("diary.removeAttachment")}
-        onPress={onRemove}
-      >
-        <XIcon size={BADGE_ICON_SIZE} weight="bold" color={theme.onFill.val} />
-      </OverlayButton>
+      {onRemove && (
+        <OverlayButton
+          t="$2"
+          r="$2"
+          bg="$red10"
+          label={t("diary.removeAttachment")}
+          onPress={onRemove}
+        >
+          <XIcon
+            size={BADGE_ICON_SIZE}
+            weight="bold"
+            color={theme.onFill.val}
+          />
+        </OverlayButton>
+      )}
 
       {onMoveLeft && (
         <OverlayButton
@@ -193,8 +199,8 @@ export function DiaryAttachmentStrip({
 }: {
   items: DiaryDraftAttachment[];
   onAdd?: () => void;
-  onRemove: (index: number) => void;
-  onMove: (from: number, to: number) => void;
+  onRemove?: (index: number) => void;
+  onMove?: (from: number, to: number) => void;
   onPress: (index: number) => void;
 }) {
   const { t } = useTranslation();
@@ -217,10 +223,12 @@ export function DiaryAttachmentStrip({
           key={item.key}
           item={item}
           onPress={() => onPress(index)}
-          onRemove={() => onRemove(index)}
-          onMoveLeft={index > 0 ? () => onMove(index, index - 1) : undefined}
+          onRemove={onRemove ? () => onRemove(index) : undefined}
+          onMoveLeft={
+            onMove && index > 0 ? () => onMove(index, index - 1) : undefined
+          }
           onMoveRight={
-            index < items.length - 1
+            onMove && index < items.length - 1
               ? () => onMove(index, index + 1)
               : undefined
           }

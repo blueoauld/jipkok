@@ -333,6 +333,7 @@ export const ko = {
       "위치를 확인하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
   },
   action: {
+    edit: "수정",
     save: "저장",
     copy: "복사",
     reply: "답장",
@@ -401,6 +402,7 @@ export const ko = {
     notice: "차단한 번호의 회원과는 서로 보이지 않습니다.",
   },
   diary: {
+    copied: "일기를 복사했습니다.",
     search: {
       title: "일기 검색",
       hint: "내용을 {{count}}자 이상 입력해주시길 바랍니다.",

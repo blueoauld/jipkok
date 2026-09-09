@@ -335,6 +335,7 @@ export const ja: typeof ko = {
       "位置を確認できませんでした。しばらくしてからもう一度お試しください。",
   },
   action: {
+    edit: "編集",
     save: "保存",
     copy: "コピー",
     reply: "返信",
@@ -404,6 +405,7 @@ export const ja: typeof ko = {
     notice: "ブロックした番号の会員とは互いに表示されません。",
   },
   diary: {
+    copied: "日記をコピーしました。",
     search: {
       title: "日記検索",
       hint: "内容を{{count}}文字以上入力してください。",

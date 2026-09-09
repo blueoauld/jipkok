@@ -332,6 +332,7 @@ export const en: typeof ko = {
     locationFailed: "Couldn't get your location. Please try again in a moment.",
   },
   action: {
+    edit: "Edit",
     save: "Save",
     copy: "Copy",
     reply: "Reply",
@@ -401,6 +402,7 @@ export const en: typeof ko = {
     notice: "You and members with a blocked number can't see each other.",
   },
   diary: {
+    copied: "Entry copied.",
     search: {
       title: "Search diary",
       hint: "Enter at least {{count}} characters.",

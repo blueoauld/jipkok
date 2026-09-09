@@ -318,6 +318,7 @@ export const zh: typeof ko = {
     locationFailed: "無法確認位置。請稍後再試。",
   },
   action: {
+    edit: "編輯",
     save: "儲存",
     copy: "複製",
     reply: "回覆",
@@ -386,6 +387,7 @@ export const zh: typeof ko = {
     notice: "與封鎖號碼的會員互不可見。",
   },
   diary: {
+    copied: "已複製日記。",
     search: {
       title: "日記搜尋",
       hint: "請輸入至少 {{count}} 個字。",
