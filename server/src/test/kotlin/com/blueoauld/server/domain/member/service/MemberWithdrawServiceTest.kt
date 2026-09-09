@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.service.ChatRoomService
+import com.blueoauld.server.domain.diary.repository.DiaryRepository
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostLikeRepository
 import com.blueoauld.server.domain.feed.repository.FeedPostRepository
@@ -49,6 +50,8 @@ class MemberWithdrawServiceTest {
 
     private val worryCommentRepository = mockk<WorryCommentRepository>(relaxed = true)
 
+    private val diaryRepository = mockk<DiaryRepository>(relaxed = true)
+
     private val memberBlockRepository = mockk<MemberBlockRepository>(relaxed = true)
 
     private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
@@ -78,6 +81,7 @@ class MemberWithdrawServiceTest {
         worryPostRepository,
         worryPostLikeRepository,
         worryCommentRepository,
+        diaryRepository,
         memberBlockRepository,
         contactBlockRepository,
         memberFavoriteRepository,
@@ -115,6 +119,7 @@ class MemberWithdrawServiceTest {
         verify { worryPostRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { worryPostLikeRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { worryCommentRepository.deleteAllByMemberId(MEMBER_ID) }
+        verify { diaryRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberBlockRepository.deleteAllByMember(MEMBER_ID) }
         verify { contactBlockRepository.deleteAllByMemberId(MEMBER_ID) }
         verify { memberFavoriteRepository.deleteAllByMember(MEMBER_ID) }

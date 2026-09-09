@@ -157,6 +157,8 @@ export const ja: typeof ko = {
     WORRY_006: "自分が書いたコメントのみ削除できます。",
     WORRY_007: "すでに通報したコメントです。",
     WORRY_008: "返信には返信できません。",
+    DIARY_001: "日記が見つかりません。",
+    DIARY_002: "まだ来ていない日の日記は書けません。",
     TRANSLATION_001:
       "翻訳できませんでした。しばらくしてからもう一度お試しください。",
     TRANSLATION_002:
@@ -402,11 +404,22 @@ export const ja: typeof ko = {
     notice:
       "ブロックした番号で登録した会員とは互いに表示されず、メッセージも送れません。",
   },
+  diary: {
+    writeToday: "今日の日記",
+    placeholder: "今日の出来事を書きましょう。",
+    saved: "日記を保存しました。",
+    deleted: "日記を削除しました。",
+    deleteConfirm: "削除した日記は元に戻せません。",
+    discardConfirm: "変更した内容を破棄しますか？",
+    loadFailed: "日記を読み込めませんでした。",
+    empty: "この月に書いた日記はありません。",
+  },
   rank: {
     errorMessage: "ランキングを読み込めませんでした。",
   },
   list: {
     myProfile: "マイプロフィール",
+    diaries: "日記",
     likes: "いいねリスト",
     favorites: "お気に入りリスト",
     secretPhotos: "シークレット写真リスト",

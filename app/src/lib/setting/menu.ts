@@ -1,6 +1,7 @@
 import type { Href } from "expo-router";
 import type { Icon } from "phosphor-react-native";
 import { AddressBookIcon } from "phosphor-react-native/src/icons/AddressBook";
+import { BookOpenIcon } from "phosphor-react-native/src/icons/BookOpen";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
@@ -59,6 +60,7 @@ export const SECTIONS: SettingGroup[] = [
     key: "profile",
     items: [
       { labelKey: "list.myProfile", icon: UserIcon, href: "/member/me" },
+      { labelKey: "list.diaries", icon: BookOpenIcon, href: "/diary" },
       {
         labelKey: "list.contactBlocks",
         icon: AddressBookIcon,

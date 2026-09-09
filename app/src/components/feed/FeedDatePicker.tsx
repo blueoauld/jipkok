@@ -1,10 +1,8 @@
-import "@/lib/i18n/calendar";
-
 import { useState } from "react";
-import { Calendar, type DateData } from "react-native-calendars";
-import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, Text, XStack, YStack } from "tamagui";
 
 import { Glass } from "@/components/ui/Glass";
+import { RetroCalendar } from "@/components/ui/RetroCalendar";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import {
@@ -15,14 +13,8 @@ import {
   SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
-import i18n from "@/lib/i18n";
-import {
-  useAccent,
-  useAccentToken,
-  useThemeBackground,
-} from "@/lib/theme/accent";
+import { useAccent, useThemeBackground } from "@/lib/theme/accent";
 
-const DAY_SIZE = 36;
 const GLASS_TEXT_PADDING = 16;
 
 function DateButton({
@@ -83,51 +75,6 @@ function DateButton({
   );
 }
 
-function CalendarDay({
-  date,
-  state,
-  marking,
-  onPress,
-}: {
-  date?: DateData;
-  state?: string;
-  marking?: { selected?: boolean };
-  onPress?: (date?: DateData) => void;
-}) {
-  const selected = state === "selected" || Boolean(marking?.selected);
-  const disabled = state === "disabled";
-  const today = state === "today";
-  const accent = useAccentToken();
-  const weight = disabled ? "400" : selected || today ? "700" : "500";
-
-  return (
-    <XStack
-      width={DAY_SIZE}
-      height={DAY_SIZE}
-      items="center"
-      justify="center"
-      bg={selected ? accent : "transparent"}
-      onPress={disabled ? undefined : () => onPress?.(date)}
-    >
-      <Text
-        fontSize="$4"
-        fontWeight={weight}
-        color={
-          selected
-            ? "$onFill"
-            : disabled
-              ? "$color8"
-              : today
-                ? accent
-                : "$color12"
-        }
-      >
-        {date?.day}
-      </Text>
-    </XStack>
-  );
-}
-
 export function FeedDatePicker({
   date,
   today,
@@ -137,7 +84,6 @@ export function FeedDatePicker({
   today: string;
   onChange: (date: Date) => void;
 }) {
-  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const background = useThemeBackground();
   const selected = toDateParam(date);
@@ -171,24 +117,14 @@ export function FeedDatePicker({
             borderTopWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
           >
-            <Calendar
+            <RetroCalendar
               initialDate={selected}
               maxDate={today}
               markedDates={{ [selected]: { selected: true } }}
-              monthFormat={i18n.t("component.monthFormat")}
               showSixWeeks
-              dayComponent={CalendarDay}
               onDayPress={(day) => {
                 setOpen(false);
                 onChange(fromDateParam(day.dateString));
-              }}
-              theme={{
-                calendarBackground: "transparent",
-                monthTextColor: theme.color12.val,
-                textMonthFontWeight: "700",
-                textSectionTitleColor: theme.color11.val,
-                arrowColor: theme.color12.val,
-                disabledArrowColor: theme.color8.val,
               }}
             />
           </YStack>

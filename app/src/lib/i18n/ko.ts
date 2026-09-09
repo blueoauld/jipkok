@@ -154,6 +154,8 @@ export const ko = {
     WORRY_006: "본인이 쓴 댓글만 지울 수 있습니다.",
     WORRY_007: "이미 신고한 댓글입니다.",
     WORRY_008: "답글에는 답글을 달 수 없습니다.",
+    DIARY_001: "일기를 찾을 수 없습니다.",
+    DIARY_002: "아직 오지 않은 날의 일기는 쓸 수 없습니다.",
     TRANSLATION_001: "번역하지 못했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
     TRANSLATION_002:
       "번역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주시길 바랍니다.",
@@ -399,11 +401,22 @@ export const ko = {
     notice:
       "차단한 번호로 가입한 회원과는 서로 보이지 않고 쪽지도 주고받을 수 없습니다.",
   },
+  diary: {
+    writeToday: "오늘 일기",
+    placeholder: "오늘 하루를 남겨보세요.",
+    saved: "일기를 저장했습니다.",
+    deleted: "일기를 삭제했습니다.",
+    deleteConfirm: "삭제한 일기는 되돌릴 수 없습니다.",
+    discardConfirm: "고친 내용을 버릴까요?",
+    loadFailed: "일기를 불러오지 못했습니다.",
+    empty: "이 달에 쓴 일기가 없습니다.",
+  },
   rank: {
     errorMessage: "랭킹을 불러오지 못했습니다.",
   },
   list: {
     myProfile: "내 프로필",
+    diaries: "일기",
     likes: "좋아요 목록",
     favorites: "즐겨찾기 목록",
     secretPhotos: "비밀 사진 목록",

@@ -19,6 +19,7 @@ import type {
   CreateProfilePhotoUploadUrlRequest,
   CreateReportRequest,
   DevicePlatform,
+  DiaryResponse,
   EditProfileRequest,
   FeedPostPage,
   FeedSort,
@@ -314,6 +315,20 @@ export const contactBlocks = {
     request<void>(`/api/members/me/contact-blocks/${contactBlockId}`, {
       method: "DELETE",
     }),
+};
+
+export const diaries = {
+  list: (month: string) =>
+    request<DiaryResponse[]>("/api/diaries", { query: { month } }),
+
+  write: (entryDate: string, content: string) =>
+    request<void>(`/api/diaries/${entryDate}`, {
+      method: "PUT",
+      body: { content },
+    }),
+
+  remove: (entryDate: string) =>
+    request<void>(`/api/diaries/${entryDate}`, { method: "DELETE" }),
 };
 
 export const points = {

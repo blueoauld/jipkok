@@ -154,6 +154,8 @@ export const en: typeof ko = {
     WORRY_006: "You can only delete your own comments.",
     WORRY_007: "You've already reported this comment.",
     WORRY_008: "You can't reply to a reply.",
+    DIARY_001: "Entry not found.",
+    DIARY_002: "You can't write an entry for a day that hasn't come yet.",
     TRANSLATION_001: "Couldn't translate. Please try again in a moment.",
     TRANSLATION_002:
       "You've reached the translation limit. Please try again in a moment.",
@@ -399,11 +401,22 @@ export const en: typeof ko = {
     notice:
       "Members who signed up with a blocked number and you cannot see each other or exchange notes.",
   },
+  diary: {
+    writeToday: "Today's entry",
+    placeholder: "Write about your day.",
+    saved: "Entry saved.",
+    deleted: "Entry deleted.",
+    deleteConfirm: "Deleted entries can't be restored.",
+    discardConfirm: "Discard your changes?",
+    loadFailed: "Couldn't load your diary.",
+    empty: "No entries this month.",
+  },
   rank: {
     errorMessage: "Couldn't load the ranking.",
   },
   list: {
     myProfile: "My profile",
+    diaries: "Diary",
     likes: "Likes",
     favorites: "Favorites",
     secretPhotos: "Private photos",

@@ -11,6 +11,7 @@ import {
   isKoreaToday,
   koreaDateParam,
   toDateParam,
+  toMonthParam,
 } from "@/lib/date";
 
 describe("date params", () => {
@@ -19,6 +20,10 @@ describe("date params", () => {
 
     expect(toDateParam(date)).toBe("2026-08-05");
     expect(fromDateParam("2026-08-05").getTime()).toBe(date.getTime());
+  });
+
+  it("날짜 파라미터에서 달만 떼어 낸다", () => {
+    expect(toMonthParam("2026-08-05")).toBe("2026-08");
   });
 });
 
