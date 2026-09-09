@@ -145,8 +145,8 @@ function DiaryEditor({
   // 저장 중에는 막지 않아야 성공 직후의 뒤로 가기가 통과한다.
   usePreventRemove(dirty && !pending, ({ data }) =>
     confirm({
-      message: t("diary.discardConfirm"),
-      confirmLabel: t("action.discard"),
+      message: t("common.leaveUnsaved"),
+      confirmLabel: t("action.leave"),
       destructive: true,
       onConfirm: () => navigation.dispatch(data.action),
     }),

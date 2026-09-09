@@ -60,8 +60,8 @@ export default function WorryComposeScreen() {
   // 등록 중에는 막지 않아야 성공 직후의 뒤로 가기가 통과한다.
   usePreventRemove(!empty && !compose.isPending, ({ data }) =>
     confirm({
-      message: t("worry.compose.discardConfirm"),
-      confirmLabel: t("action.discard"),
+      message: t("common.leaveUnsaved"),
+      confirmLabel: t("action.leave"),
       destructive: true,
       onConfirm: () => navigation.dispatch(data.action),
     }),

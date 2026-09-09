@@ -143,8 +143,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
   usePreventRemove(dirty && !saved && !busy, ({ data }) =>
     confirm({
-      message: t("profileEdit.discardConfirm"),
-      confirmLabel: t("action.discard"),
+      message: t("common.leaveUnsaved"),
+      confirmLabel: t("action.leave"),
       destructive: true,
       onConfirm: () => navigation.dispatch(data.action),
     }),

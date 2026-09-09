@@ -17,6 +17,7 @@ export const en: typeof ko = {
     commentCopied: "Comment copied.",
     bioCopied: "Bio copied.",
     contentPlaceholder: "Write here",
+    leaveUnsaved: "Leave without saving?",
   },
   crash: {
     title: "Something went wrong.",
@@ -64,7 +65,6 @@ export const en: typeof ko = {
     save: "Save",
     publicPhotos: "Public photos",
     secretPhotos: "Private photos",
-    discardConfirm: "Discard your changes?",
   },
   validation: {
     phoneNumberRequired: "Enter your phone number.",
@@ -340,7 +340,6 @@ export const en: typeof ko = {
     delete: "Delete",
     report: "Report",
     reportSubmit: "Submit report",
-    discard: "Discard",
   },
   alert: {
     error: "Error",
@@ -413,7 +412,6 @@ export const en: typeof ko = {
     saved: "Entry saved.",
     deleted: "Entry deleted.",
     deleteConfirm: "Deleted entries can't be restored.",
-    discardConfirm: "Discard your changes?",
     loadFailed: "Couldn't load your diary.",
     empty: "No entries this month.",
   },
@@ -546,7 +544,6 @@ export const en: typeof ko = {
       posted: "Posted.",
       categoryLabel: "Category",
       submit: "Post",
-      discardConfirm: "Discard what you've written?",
     },
     loadFailed: "Couldn't load the worries.",
     list: {

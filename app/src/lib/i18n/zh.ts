@@ -16,6 +16,7 @@ export const zh: typeof ko = {
     commentCopied: "已複製留言。",
     bioCopied: "已複製自我介紹。",
     contentPlaceholder: "輸入內容",
+    leaveUnsaved: "要不儲存就離開嗎？",
   },
   crash: {
     title: "發生問題了。",
@@ -63,7 +64,6 @@ export const zh: typeof ko = {
     save: "儲存",
     publicPhotos: "公開照片",
     secretPhotos: "私密照片",
-    discardConfirm: "要捨棄修改的內容嗎？",
   },
   validation: {
     phoneNumberRequired: "請輸入手機號碼。",
@@ -326,7 +326,6 @@ export const zh: typeof ko = {
     delete: "刪除",
     report: "檢舉",
     reportSubmit: "提交檢舉",
-    discard: "捨棄",
   },
   alert: {
     error: "錯誤",
@@ -398,7 +397,6 @@ export const zh: typeof ko = {
     saved: "已儲存日記。",
     deleted: "已刪除日記。",
     deleteConfirm: "刪除的日記無法復原。",
-    discardConfirm: "要捨棄修改的內容嗎？",
     loadFailed: "無法載入日記。",
     empty: "這個月沒有寫日記。",
   },
@@ -527,7 +525,6 @@ export const zh: typeof ko = {
       posted: "已發布煩惱。",
       categoryLabel: "分類",
       submit: "發布",
-      discardConfirm: "要捨棄正在撰寫的內容嗎？",
     },
     loadFailed: "無法載入煩惱。",
     list: {

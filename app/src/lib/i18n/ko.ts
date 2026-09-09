@@ -15,6 +15,7 @@ export const ko = {
     commentCopied: "코멘트가 복사되었습니다.",
     bioCopied: "자기소개가 복사되었습니다.",
     contentPlaceholder: "내용 입력",
+    leaveUnsaved: "저장하지 않고 나갈까요?",
   },
   crash: {
     title: "문제가 발생했습니다.",
@@ -63,7 +64,6 @@ export const ko = {
     save: "저장",
     publicPhotos: "공개 사진",
     secretPhotos: "비밀 사진",
-    discardConfirm: "고치던 내용을 버릴까요?",
   },
   validation: {
     phoneNumberRequired: "휴대폰 번호를 입력해주시길 바랍니다.",
@@ -341,7 +341,6 @@ export const ko = {
     delete: "삭제",
     report: "신고",
     reportSubmit: "신고하기",
-    discard: "버리기",
   },
   alert: {
     error: "에러",
@@ -413,7 +412,6 @@ export const ko = {
     saved: "일기를 저장했습니다.",
     deleted: "일기를 삭제했습니다.",
     deleteConfirm: "삭제한 일기는 되돌릴 수 없습니다.",
-    discardConfirm: "고친 내용을 버릴까요?",
     loadFailed: "일기를 불러오지 못했습니다.",
     empty: "이 달에 쓴 일기가 없습니다.",
   },
@@ -545,7 +543,6 @@ export const ko = {
       posted: "고민을 올렸습니다.",
       categoryLabel: "분류",
       submit: "등록",
-      discardConfirm: "작성 중인 글을 버릴까요?",
     },
     loadFailed: "고민을 불러오지 못했습니다.",
     list: {

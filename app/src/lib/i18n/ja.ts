@@ -17,6 +17,7 @@ export const ja: typeof ko = {
     commentCopied: "コメントをコピーしました。",
     bioCopied: "自己紹介をコピーしました。",
     contentPlaceholder: "内容を入力",
+    leaveUnsaved: "保存せずに戻りますか？",
   },
   crash: {
     title: "問題が発生しました。",
@@ -64,7 +65,6 @@ export const ja: typeof ko = {
     save: "保存",
     publicPhotos: "公開写真",
     secretPhotos: "シークレット写真",
-    discardConfirm: "変更した内容を破棄しますか？",
   },
   validation: {
     phoneNumberRequired: "携帯電話番号を入力してください。",
@@ -343,7 +343,6 @@ export const ja: typeof ko = {
     delete: "削除",
     report: "通報",
     reportSubmit: "通報する",
-    discard: "破棄",
   },
   alert: {
     error: "エラー",
@@ -416,7 +415,6 @@ export const ja: typeof ko = {
     saved: "日記を保存しました。",
     deleted: "日記を削除しました。",
     deleteConfirm: "削除した日記は元に戻せません。",
-    discardConfirm: "変更した内容を破棄しますか？",
     loadFailed: "日記を読み込めませんでした。",
     empty: "この月に書いた日記はありません。",
   },
@@ -547,7 +545,6 @@ export const ja: typeof ko = {
       posted: "悩みを投稿しました。",
       categoryLabel: "分類",
       submit: "投稿",
-      discardConfirm: "書きかけの内容を破棄しますか？",
     },
     loadFailed: "悩みを読み込めませんでした。",
     list: {
