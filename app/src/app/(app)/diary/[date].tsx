@@ -15,6 +15,7 @@ import { Spinner } from "tamagui";
 
 import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
 import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
+import { DiaryMoodPicker } from "@/components/diary/DiaryMoodPicker";
 import { FormScreen } from "@/components/FormScreen";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
@@ -28,7 +29,7 @@ import {
   useDiaryAttachments,
 } from "@/hooks/useDiaryAttachments";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
-import { api, type DiaryResponse } from "@/lib/api";
+import { api, type DiaryMood, type DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam, toMonthParam } from "@/lib/date";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
@@ -56,11 +57,13 @@ function DiaryEditor({
     diary?.attachments ?? [],
     showApiError,
   );
+  const initialMood = diary?.mood ?? null;
+  const [mood, setMood] = useState<DiaryMood | null>(initialMood);
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   const empty = textEmpty && attachments.items.length === 0;
-  const dirty = textDirty || attachments.dirty;
+  const dirty = textDirty || attachments.dirty || mood !== initialMood;
 
   const invalidate = useCallback(
     () => queryClient.invalidateQueries({ queryKey: DIARIES_KEY }),
@@ -80,6 +83,7 @@ function DiaryEditor({
 
       await api.diaries.write(entryDate, {
         content: contentRef.current.trim() || null,
+        mood,
         attachments: uploaded,
       });
     },
@@ -184,6 +188,8 @@ function DiaryEditor({
           </RetroButton>
         }
       >
+        <DiaryMoodPicker value={mood} onChange={setMood} />
+
         <DiaryAttachmentStrip
           items={attachments.items}
           onAdd={

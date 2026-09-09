@@ -1465,6 +1465,8 @@ export interface components {
         };
         WriteDiaryRequest: {
             content?: string | null;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
             attachments: components["schemas"]["DiaryAttachmentRequest"][];
         };
         ReactMessageRequest: {
@@ -1980,6 +1982,8 @@ export interface components {
             /** Format: date */
             entryDate: string;
             content?: string | null;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
             attachments: components["schemas"]["DiaryAttachmentResponse"][];
             /** Format: date-time */
             updatedAt: string;

@@ -15570,6 +15570,26 @@
                             "null"
                         ]
                     },
+                    "mood": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "HEART",
+                            "STAR",
+                            "SPARKLES",
+                            "FIRE",
+                            "SUN",
+                            "MOON",
+                            "RAINBOW",
+                            "RAIN",
+                            "WAVE",
+                            "FLOWER",
+                            "CLOVER",
+                            "PARTY"
+                        ]
+                    },
                     "attachments": {
                         "type": "array",
                         "items": {
@@ -17688,6 +17708,26 @@
                         "type": [
                             "string",
                             "null"
+                        ]
+                    },
+                    "mood": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "HEART",
+                            "STAR",
+                            "SPARKLES",
+                            "FIRE",
+                            "SUN",
+                            "MOON",
+                            "RAINBOW",
+                            "RAIN",
+                            "WAVE",
+                            "FLOWER",
+                            "CLOVER",
+                            "PARTY"
                         ]
                     },
                     "attachments": {

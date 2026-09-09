@@ -13,6 +13,14 @@ import { useAccentToken } from "@/lib/theme/accent";
 const DAY_SIZE = 36;
 const DOT_SIZE = 4;
 const DOT_BOTTOM = 3;
+const EMOJI_FONT_SIZE = 22;
+
+// 이모지가 있는 날은 숫자 대신 이모지를 그리고 점은 생략한다.
+export type DayMarking = {
+  selected?: boolean;
+  marked?: boolean;
+  emoji?: string;
+};
 
 function CalendarDay({
   date,
@@ -22,7 +30,7 @@ function CalendarDay({
 }: {
   date?: DateData;
   state?: string;
-  marking?: { selected?: boolean; marked?: boolean };
+  marking?: DayMarking;
   onPress?: (date?: DateData) => void;
 }) {
   const selected = state === "selected" || Boolean(marking?.selected);
@@ -40,23 +48,29 @@ function CalendarDay({
       bg={selected ? accent : "transparent"}
       onPress={disabled ? undefined : () => onPress?.(date)}
     >
-      <Text
-        fontSize="$4"
-        fontWeight={weight}
-        color={
-          selected
-            ? "$onFill"
-            : disabled
-              ? "$color8"
-              : today
-                ? accent
-                : "$color12"
-        }
-      >
-        {date?.day}
-      </Text>
+      {marking?.emoji ? (
+        <Text fontSize={EMOJI_FONT_SIZE} lineHeight={DAY_SIZE}>
+          {marking.emoji}
+        </Text>
+      ) : (
+        <Text
+          fontSize="$4"
+          fontWeight={weight}
+          color={
+            selected
+              ? "$onFill"
+              : disabled
+                ? "$color8"
+                : today
+                  ? accent
+                  : "$color12"
+          }
+        >
+          {date?.day}
+        </Text>
+      )}
 
-      {marking?.marked && (
+      {marking?.marked && !marking.emoji && (
         <YStack
           position="absolute"
           b={DOT_BOTTOM}

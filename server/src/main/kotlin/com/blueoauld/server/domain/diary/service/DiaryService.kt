@@ -70,8 +70,11 @@ class DiaryService(
         }
 
         val diary = diaryRepository.findByMemberIdAndEntryDate(memberId, entryDate)
-            ?.also { it.content = content }
-            ?: diaryRepository.saveAndFlush(Diary(memberId, entryDate, content))
+            ?.also {
+                it.content = content
+                it.mood = request.mood
+            }
+            ?: diaryRepository.saveAndFlush(Diary(memberId, entryDate, content, request.mood))
 
         syncAttachments(memberId, diary, request.attachments)
     }
@@ -180,6 +183,7 @@ class DiaryService(
     private fun toResponse(diary: Diary, attachments: List<DiaryAttachment>) = DiaryResponse(
         entryDate = diary.entryDate,
         content = diary.content,
+        mood = diary.mood,
         attachments = attachments.map {
             DiaryAttachmentResponse(
                 type = it.type,

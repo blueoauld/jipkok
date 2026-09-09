@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.diary.dto.request.WriteDiaryRequest
 import com.blueoauld.server.domain.diary.entity.Diary
 import com.blueoauld.server.domain.diary.entity.DiaryAttachment
 import com.blueoauld.server.domain.diary.entity.type.DiaryAttachmentType
+import com.blueoauld.server.domain.diary.entity.type.DiaryMood
 import com.blueoauld.server.domain.diary.repository.DiaryAttachmentRepository
 import com.blueoauld.server.domain.diary.repository.DiaryRepository
 import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
@@ -65,27 +66,42 @@ class DiaryServiceTest {
         val saved = slot<Diary>()
 
         // when
-        diaryService.write(MEMBER_ID, TODAY, request(" 오늘은 집에만 있었다. "))
+        diaryService.write(MEMBER_ID, TODAY, WriteDiaryRequest(" 오늘은 집에만 있었다. ", DiaryMood.STAR))
 
         // then
         verify { diaryRepository.saveAndFlush(capture(saved)) }
         assertThat(saved.captured.memberId).isEqualTo(MEMBER_ID)
         assertThat(saved.captured.entryDate).isEqualTo(TODAY)
         assertThat(saved.captured.content).isEqualTo("오늘은 집에만 있었다.")
+        assertThat(saved.captured.mood).isEqualTo(DiaryMood.STAR)
     }
 
     @Test
-    fun `그날 일기가 있으면 내용을 덮어쓴다`() {
+    fun `그날 일기가 있으면 내용과 기분을 덮어쓴다`() {
         // given
-        val diary = Diary(MEMBER_ID, TODAY, "처음 쓴 내용")
+        val diary = Diary(MEMBER_ID, TODAY, "처음 쓴 내용", DiaryMood.HEART)
         every { diaryRepository.findByMemberIdAndEntryDate(MEMBER_ID, TODAY) } returns diary
 
         // when
-        diaryService.write(MEMBER_ID, TODAY, request("고쳐 쓴 내용"))
+        diaryService.write(MEMBER_ID, TODAY, WriteDiaryRequest("고쳐 쓴 내용", DiaryMood.RAIN))
 
         // then
         assertThat(diary.content).isEqualTo("고쳐 쓴 내용")
+        assertThat(diary.mood).isEqualTo(DiaryMood.RAIN)
         verify(exactly = 0) { diaryRepository.saveAndFlush(any()) }
+    }
+
+    @Test
+    fun `기분을 비우면 지워진다`() {
+        // given
+        val diary = Diary(MEMBER_ID, TODAY, "내용", DiaryMood.HEART)
+        every { diaryRepository.findByMemberIdAndEntryDate(MEMBER_ID, TODAY) } returns diary
+
+        // when
+        diaryService.write(MEMBER_ID, TODAY, request("내용"))
+
+        // then
+        assertThat(diary.mood).isNull()
     }
 
     @Test
@@ -267,6 +283,7 @@ class DiaryServiceTest {
         // then
         assertThat(responses).hasSize(1)
         assertThat(responses[0].entryDate).isEqualTo(LocalDate.of(2026, 2, 3))
+        assertThat(responses[0].mood).isNull()
         assertThat(responses[0].attachments).hasSize(1)
         assertThat(responses[0].attachments[0].url).isEqualTo("https://signed/$VIDEO_KEY")
         assertThat(responses[0].attachments[0].thumbnailUrl).isEqualTo("https://signed/$THUMBNAIL_KEY")
@@ -320,7 +337,7 @@ class DiaryServiceTest {
     }
 
     private fun request(content: String, vararg attachments: DiaryAttachmentRequest) =
-        WriteDiaryRequest(content, attachments.toList())
+        WriteDiaryRequest(content, null, attachments.toList())
 
     private fun photo() = StoredObject(1_000, "image/webp")
 

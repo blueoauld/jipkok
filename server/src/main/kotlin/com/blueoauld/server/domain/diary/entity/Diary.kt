@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.diary.entity
 
+import com.blueoauld.server.domain.diary.entity.type.DiaryMood
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -27,6 +30,10 @@ class Diary(
 
     @Column(name = "content", columnDefinition = "TEXT")
     var content: String?,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mood")
+    var mood: DiaryMood? = null,
 ) : BaseEntity() {
 
     @Id

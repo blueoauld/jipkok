@@ -9,7 +9,7 @@ import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroCalendar } from "@/components/ui/RetroCalendar";
+import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useDiaryMonth } from "@/hooks/useDiaries";
@@ -22,6 +22,7 @@ import {
   toMonthParam,
 } from "@/lib/date";
 import { IMAGE_TRANSITION, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { moodEmoji } from "@/lib/diary";
 import { photoCacheKey } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
 
@@ -35,6 +36,7 @@ function DiaryRow({
   onPress: (entryDate: string) => void;
 }) {
   const theme = useTheme();
+  const emoji = moodEmoji(diary.mood);
   const cover = diary.attachments[0];
   const coverUri = cover ? (cover.thumbnailUrl ?? cover.url) : null;
 
@@ -43,6 +45,7 @@ function DiaryRow({
       <XStack items="center" gap="$3">
         <YStack flex={1} gap="$1">
           <Text fontSize="$4" fontWeight="600">
+            {emoji ? `${emoji} ` : ""}
             {formatFullDate(fromDateParam(diary.entryDate))}
           </Text>
           {diary.content != null && (
@@ -100,7 +103,10 @@ export default function DiaryCalendarScreen() {
   const markedDates = useMemo(
     () =>
       Object.fromEntries(
-        (diaries ?? []).map((diary) => [diary.entryDate, { marked: true }]),
+        (diaries ?? []).map((diary): [string, DayMarking] => [
+          diary.entryDate,
+          { marked: true, emoji: moodEmoji(diary.mood) ?? undefined },
+        ]),
       ),
     [diaries],
   );

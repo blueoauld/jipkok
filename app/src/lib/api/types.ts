@@ -23,6 +23,7 @@ export type EditProfileRequest = Schemas["EditProfileRequest"];
 export type ContactBlockRequest = Schemas["ContactBlockRequest"];
 export type ContactBlockResponse = Schemas["ContactBlockResponse"];
 export type DiaryResponse = Schemas["DiaryResponse"];
+export type DiaryMood = NonNullable<DiaryResponse["mood"]>;
 export type DiaryAttachmentResponse = Schemas["DiaryAttachmentResponse"];
 export type DiaryAttachmentType = DiaryAttachmentResponse["type"];
 export type WriteDiaryRequest = Schemas["WriteDiaryRequest"];
