@@ -24,6 +24,7 @@ const targetHrefs: Partial<Record<AdminActionType, (id: number) => string>> = {
   WITHDRAW_MEMBER: (id) => `/members/detail?id=${id}`,
   HANDLE_REPORT: (id) => `/reports/members/detail?id=${id}`,
   VIEW_CHAT_ROOM: (id) => `/chat-rooms/detail?id=${id}`,
+  VIEW_DIARY: (id) => `/diaries/detail?id=${id}`,
 };
 
 const detailLabels: Record<string, string> = {

@@ -1742,6 +1742,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/diaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 일기 목록
+         * @description 최신 날짜부터 주고 본문은 첫 줄 80자까지만 담는다. 회원 ID를 주면 그 회원 것만 준다.
+         */
+        get: operations["findAdminDiaries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/diaries/{diaryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 일기 상세
+         * @description 본문 전체와 첨부의 서명 URL을 준다. 조회할 때마다 열람 기록을 조치 이력에 남긴다.
+         */
+        get: operations["findAdminDiary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/dashboard/trend": {
         parameters: {
             query?: never;
@@ -2986,6 +3026,59 @@ export interface components {
             /** Format: date-time */
             reportedAt: string;
         };
+        AdminChatMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        AdminDiaryPageResponse: {
+            items: components["schemas"]["AdminDiarySummaryResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminDiarySummaryResponse: {
+            /** Format: int64 */
+            id: number;
+            member: components["schemas"]["AdminChatMemberResponse"];
+            /** Format: date */
+            entryDate: string;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
+            contentPreview?: string | null;
+            /** Format: int32 */
+            attachmentCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminDiaryAttachmentResponse: {
+            /** @enum {string} */
+            type: "PHOTO" | "VIDEO";
+            url: string;
+            thumbnailUrl?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
+        };
+        AdminDiaryDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            member: components["schemas"]["AdminChatMemberResponse"];
+            /** Format: date */
+            entryDate: string;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
+            content?: string | null;
+            attachments: components["schemas"]["AdminDiaryAttachmentResponse"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         TrendPointResponse: {
             /** Format: date */
             date: string;
@@ -3079,11 +3172,6 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
-        };
-        AdminChatMemberResponse: {
-            /** Format: int64 */
-            id: number;
-            nickname: string;
         };
         AdminChatRoomPageResponse: {
             items: components["schemas"]["AdminChatRoomResponse"][];
@@ -3258,7 +3346,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;
@@ -13983,6 +14071,196 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminFeedReportPageResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findAdminDiaries: {
+        parameters: {
+            query?: {
+                memberId?: number;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDiaryPageResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findAdminDiary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                diaryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDiaryDetailResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

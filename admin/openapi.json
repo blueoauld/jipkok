@@ -13220,6 +13220,252 @@
                 }
             }
         },
+        "/api/admin/diaries": {
+            "get": {
+                "tags": [
+                    "admin-diary-controller"
+                ],
+                "summary": "\uc77c\uae30 \ubaa9\ub85d",
+                "description": "\ucd5c\uc2e0 \ub0a0\uc9dc\ubd80\ud130 \uc8fc\uace0 \ubcf8\ubb38\uc740 \uccab \uc904 80\uc790\uae4c\uc9c0\ub9cc \ub2f4\ub294\ub2e4. \ud68c\uc6d0 ID\ub97c \uc8fc\uba74 \uadf8 \ud68c\uc6d0 \uac83\ub9cc \uc900\ub2e4.",
+                "operationId": "findAdminDiaries",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminDiaryPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/diaries/{diaryId}": {
+            "get": {
+                "tags": [
+                    "admin-diary-controller"
+                ],
+                "summary": "\uc77c\uae30 \uc0c1\uc138",
+                "description": "\ubcf8\ubb38 \uc804\uccb4\uc640 \ucca8\ubd80\uc758 \uc11c\uba85 URL\uc744 \uc900\ub2e4. \uc870\ud68c\ud560 \ub54c\ub9c8\ub2e4 \uc5f4\ub78c \uae30\ub85d\uc744 \uc870\uce58 \uc774\ub825\uc5d0 \ub0a8\uae34\ub2e4.",
+                "operationId": "findAdminDiary",
+                "parameters": [
+                    {
+                        "name": "diaryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminDiaryDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/dashboard/trend": {
             "get": {
                 "tags": [
@@ -18981,6 +19227,209 @@
                     "reportedAt"
                 ]
             },
+            "AdminChatMemberResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nickname"
+                ]
+            },
+            "AdminDiaryPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminDiarySummaryResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminDiarySummaryResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "member": {
+                        "$ref": "#/components/schemas/AdminChatMemberResponse"
+                    },
+                    "entryDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "mood": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "HEART",
+                            "STAR",
+                            "SPARKLES",
+                            "FIRE",
+                            "SUN",
+                            "MOON",
+                            "RAINBOW",
+                            "RAIN",
+                            "WAVE",
+                            "FLOWER",
+                            "CLOVER",
+                            "PARTY"
+                        ]
+                    },
+                    "contentPreview": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "attachmentCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "attachmentCount",
+                    "createdAt",
+                    "entryDate",
+                    "id",
+                    "member",
+                    "updatedAt"
+                ]
+            },
+            "AdminDiaryAttachmentResponse": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "PHOTO",
+                            "VIDEO"
+                        ]
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "thumbnailUrl": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "durationSeconds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    }
+                },
+                "required": [
+                    "type",
+                    "url"
+                ]
+            },
+            "AdminDiaryDetailResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "member": {
+                        "$ref": "#/components/schemas/AdminChatMemberResponse"
+                    },
+                    "entryDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "mood": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "HEART",
+                            "STAR",
+                            "SPARKLES",
+                            "FIRE",
+                            "SUN",
+                            "MOON",
+                            "RAINBOW",
+                            "RAIN",
+                            "WAVE",
+                            "FLOWER",
+                            "CLOVER",
+                            "PARTY"
+                        ]
+                    },
+                    "content": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "attachments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminDiaryAttachmentResponse"
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "attachments",
+                    "createdAt",
+                    "entryDate",
+                    "id",
+                    "member",
+                    "updatedAt"
+                ]
+            },
             "TrendPointResponse": {
                 "type": "object",
                 "properties": {
@@ -19292,22 +19741,6 @@
                     "count",
                     "platform",
                     "version"
-                ]
-            },
-            "AdminChatMemberResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "nickname": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "nickname"
                 ]
             },
             "AdminChatRoomPageResponse": {
@@ -19962,7 +20395,8 @@
                             "DELETE_WORRY_POST",
                             "DELETE_WORRY_COMMENT",
                             "HANDLE_REPORT",
-                            "VIEW_CHAT_ROOM"
+                            "VIEW_CHAT_ROOM",
+                            "VIEW_DIARY"
                         ]
                     },
                     "targetId": {

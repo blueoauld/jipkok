@@ -11,4 +11,5 @@ enum class AdminActionType {
     DELETE_WORRY_COMMENT,
     HANDLE_REPORT,
     VIEW_CHAT_ROOM,
+    VIEW_DIARY,
 }

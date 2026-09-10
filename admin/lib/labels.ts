@@ -1,4 +1,5 @@
 import type {
+  DiaryMood,
   AdminActionType,
   DevicePlatform,
   Gender,
@@ -85,6 +86,7 @@ export const adminActionLabels: Record<AdminActionType, string> = {
   DELETE_WORRY_COMMENT: "고민 댓글 삭제",
   HANDLE_REPORT: "신고 처리",
   VIEW_CHAT_ROOM: "채팅 열람",
+  VIEW_DIARY: "일기 열람",
 };
 
 export const smsStatusLabels: Record<SmsMessageStatus, string> = {
@@ -122,3 +124,18 @@ export const recommendationTypeLabels: Record<
 
 export const appleAdsActionTypeLabels: Record<AppleAdsActionType, string> =
   recommendationTypeLabels;
+
+export const diaryMoodEmojis: Record<DiaryMood, string> = {
+  HEART: "❤️",
+  STAR: "⭐",
+  SPARKLES: "✨",
+  FIRE: "🔥",
+  SUN: "🌞",
+  MOON: "🌙",
+  RAINBOW: "🌈",
+  RAIN: "☔",
+  WAVE: "🌊",
+  FLOWER: "🌸",
+  CLOVER: "🍀",
+  PARTY: "🎉",
+};

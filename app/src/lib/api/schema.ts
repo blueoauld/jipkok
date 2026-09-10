@@ -2312,6 +2312,59 @@ export interface components {
             /** Format: date-time */
             reportedAt: string;
         };
+        AdminChatMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+        };
+        AdminDiaryPageResponse: {
+            items: components["schemas"]["AdminDiarySummaryResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminDiarySummaryResponse: {
+            /** Format: int64 */
+            id: number;
+            member: components["schemas"]["AdminChatMemberResponse"];
+            /** Format: date */
+            entryDate: string;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
+            contentPreview?: string | null;
+            /** Format: int32 */
+            attachmentCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminDiaryAttachmentResponse: {
+            /** @enum {string} */
+            type: "PHOTO" | "VIDEO";
+            url: string;
+            thumbnailUrl?: string | null;
+            /** Format: int32 */
+            durationSeconds?: number | null;
+        };
+        AdminDiaryDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            member: components["schemas"]["AdminChatMemberResponse"];
+            /** Format: date */
+            entryDate: string;
+            /** @enum {string|null} */
+            mood?: "HEART" | "STAR" | "SPARKLES" | "FIRE" | "SUN" | "MOON" | "RAINBOW" | "RAIN" | "WAVE" | "FLOWER" | "CLOVER" | "PARTY" | null;
+            content?: string | null;
+            attachments: components["schemas"]["AdminDiaryAttachmentResponse"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         TrendPointResponse: {
             /** Format: date */
             date: string;
@@ -2405,11 +2458,6 @@ export interface components {
             platform: "IOS" | "ANDROID";
             /** Format: int64 */
             count: number;
-        };
-        AdminChatMemberResponse: {
-            /** Format: int64 */
-            id: number;
-            nickname: string;
         };
         AdminChatRoomPageResponse: {
             items: components["schemas"]["AdminChatRoomResponse"][];
@@ -2584,7 +2632,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;

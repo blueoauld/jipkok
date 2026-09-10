@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   Flag,
   History,
   LayoutDashboard,
@@ -21,6 +22,7 @@ export const navItems: NavItem[] = [
   { title: "대시보드", href: "/", icon: LayoutDashboard },
   { title: "회원", href: "/members", icon: Users },
   { title: "채팅방", href: "/chat-rooms", icon: MessagesSquare },
+  { title: "일기", href: "/diaries", icon: BookOpen },
   {
     title: "신고",
     href: "/reports/members",

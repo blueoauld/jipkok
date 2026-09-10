@@ -99,6 +99,13 @@ function Loaded({ member }: { member: MemberDetailData }) {
           >
             채팅방
           </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href={`/diaries?memberId=${member.id}`} />}
+          >
+            일기
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={<Button variant="outline" />}

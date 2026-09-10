@@ -71,3 +71,8 @@ export type ProfileTarget = NonNullable<
 >;
 export type DevicePlatform = Schemas["VersionCountResponse"]["platform"];
 export type AdminActionType = AdminAction["action"];
+
+export type DiaryPage = Schemas["AdminDiaryPageResponse"];
+export type DiarySummary = Schemas["AdminDiarySummaryResponse"];
+export type DiaryDetail = Schemas["AdminDiaryDetailResponse"];
+export type DiaryMood = NonNullable<DiaryDetail["mood"]>;
