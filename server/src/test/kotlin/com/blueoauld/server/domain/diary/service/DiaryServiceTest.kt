@@ -333,6 +333,26 @@ class DiaryServiceTest {
     }
 
     @Test
+    fun `내보내기는 전체 일기를 오래된 날짜부터 첨부와 함께 준다`() {
+        // given
+        val first = Diary(MEMBER_ID, LocalDate.of(2026, 9, 1), "첫날", DiaryMood.SUN)
+        val second = Diary(MEMBER_ID, LocalDate.of(2026, 9, 2), null, null)
+        every { diaryRepository.findAllByMemberIdOrderByEntryDate(MEMBER_ID) } returns listOf(first, second)
+        every { diaryAttachmentRepository.findAllByDiaryIdInOrderByPosition(any()) } returns listOf(
+            DiaryAttachment(first.id, DiaryAttachmentType.PHOTO, PHOTO_KEY, position = 0),
+        )
+
+        // when
+        val items = diaryService.export(MEMBER_ID)
+
+        // then
+        assertThat(items.map { it.entryDate }).containsExactly(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 2))
+        assertThat(items[0].mood).isEqualTo(DiaryMood.SUN)
+        assertThat(items[0].attachments.map { it.url }).containsExactly("https://signed/$PHOTO_KEY")
+        assertThat(items[1].content).isNull()
+    }
+
+    @Test
     fun `일기를 지우면 첨부도 지우고 파일 삭제 이벤트를 낸다`() {
         // given
         val diary = Diary(MEMBER_ID, TODAY, "내용")

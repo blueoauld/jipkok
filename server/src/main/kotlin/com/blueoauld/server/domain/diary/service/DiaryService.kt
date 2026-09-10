@@ -83,6 +83,10 @@ class DiaryService(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun export(memberId: Long): List<DiaryResponse> =
+        toResponses(diaryRepository.findAllByMemberIdOrderByEntryDate(memberId))
+
     fun createUploadUrl(memberId: Long, contentType: String): PhotoUploadUrlResponse =
         photoUploadService.createMediaUploadUrl(memberId, keyPrefix(memberId), contentType)
 

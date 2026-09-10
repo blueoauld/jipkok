@@ -16,6 +16,7 @@ import { useAdReward } from "@/hooks/useAdReward";
 import { useAppLockToggle } from "@/hooks/useAppLockToggle";
 import { ATTENDANCE_DAYS_KEY } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
+import { useExportDiary } from "@/hooks/useExportDiary";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
 import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -102,7 +103,18 @@ export default function SettingScreen() {
   const appLock = useAppLockToggle({ show, showApiError, confirm });
   const gate = useInterstitialGate();
 
-  useLoadingOverlay(loggingOut);
+  const {
+    exportDiary,
+    exporting,
+    progress: exportProgress,
+  } = useExportDiary({ show, showApiError, confirm });
+
+  // 첨부를 내려받는 동안은 항목 스피너 대신 진행 숫자가 있는 오버레이를 띄운다.
+  useLoadingOverlay(
+    loggingOut || exportProgress.total > 0,
+    exportProgress.done,
+    exportProgress.total,
+  );
 
   const earnAttendanceReward = useMutation({
     mutationFn: api.attendances.checkIn,
@@ -152,9 +164,11 @@ export default function SettingScreen() {
       ? "version"
       : appLock.pending
         ? "appLock"
-        : !adReward.ready && !adReward.unavailable
-          ? "adReward"
-          : null;
+        : exporting
+          ? "exportDiary"
+          : !adReward.ready && !adReward.unavailable
+            ? "adReward"
+            : null;
 
   const handleAction = useCallback(
     (action: SettingAction) => {
@@ -187,6 +201,14 @@ export default function SettingScreen() {
         return;
       }
 
+      if (action === "exportDiary") {
+        if (!exporting) {
+          exportDiary();
+        }
+
+        return;
+      }
+
       if (action === "attendanceReward" && !earnAttendanceReward.isPending) {
         earnAttendanceReward.mutate();
       }
@@ -196,6 +218,8 @@ export default function SettingScreen() {
       appLock,
       checkVersion,
       earnAttendanceReward,
+      exportDiary,
+      exporting,
       profile?.memberId,
       show,
       t,

@@ -358,6 +358,7 @@ export const ko = {
       contact: "문의하기",
       suggest: "건의하기",
       version: "버전 확인",
+      exportDiary: "일기 내보내기",
       appLock: "앱 잠금",
       logout: "로그아웃",
       withdraw: "회원 탈퇴",
@@ -370,6 +371,7 @@ export const ko = {
     languageChange: "바꾸기",
     logoutNotice: "로그아웃하면 다시 로그인해야 이용할 수 있습니다.",
     alreadyEarned: "오늘 출석 보상은 이미 받았습니다.",
+    exportDiaryEmpty: "내보낼 일기가 없습니다.",
     attendanceGrass: "최근 {{total}}일 중 {{count}}일 출석",
     attendanceError: "출석 기록을 불러오지 못했습니다.",
     rewarded: "{{amount}} 포인트를 받았습니다.",
@@ -402,6 +404,8 @@ export const ko = {
     notice: "차단한 번호의 회원과는 서로 보이지 않습니다.",
   },
   diary: {
+    exportFileName: "집콕 일기 {{date}}",
+    exportAttachments: "첨부",
     copied: "일기를 복사했습니다.",
     search: {
       title: "일기 검색",

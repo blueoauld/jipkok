@@ -4,6 +4,7 @@ import { AddressBookIcon } from "phosphor-react-native/src/icons/AddressBook";
 import { CalendarCheckIcon } from "phosphor-react-native/src/icons/CalendarCheck";
 import { ChatCircleTextIcon } from "phosphor-react-native/src/icons/ChatCircleText";
 import { CoinsIcon } from "phosphor-react-native/src/icons/Coins";
+import { DownloadSimpleIcon } from "phosphor-react-native/src/icons/DownloadSimple";
 import { EyeIcon } from "phosphor-react-native/src/icons/Eye";
 import { FileTextIcon } from "phosphor-react-native/src/icons/FileText";
 import { FootprintsIcon } from "phosphor-react-native/src/icons/Footprints";
@@ -28,6 +29,7 @@ export type SettingAction =
   | "attendanceReward"
   | "adReward"
   | "appLock"
+  | "exportDiary"
   | "contact"
   | "suggest"
   | "version";
@@ -94,6 +96,11 @@ export const SECTIONS: SettingGroup[] = [
         labelKey: "list.worries",
         icon: ChatCircleTextIcon,
         href: "/activity/worry",
+      },
+      {
+        labelKey: "setting.menu.exportDiary",
+        icon: DownloadSimpleIcon,
+        action: "exportDiary",
       },
     ],
   },

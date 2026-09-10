@@ -117,7 +117,9 @@
         {
           "faceIDPermission": "앱 잠금을 풀기 위해 Face ID 사용 권한이 필요합니다."
         }
-      ]
+      ],
+      "expo-sharing",
+      "react-native-zip-archive"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -357,6 +357,7 @@ export const en: typeof ko = {
       contact: "Contact us",
       suggest: "Send feedback",
       version: "Check version",
+      exportDiary: "Export diary",
       appLock: "App lock",
       logout: "Log out",
       withdraw: "Delete account",
@@ -369,6 +370,7 @@ export const en: typeof ko = {
     languageChange: "Change",
     logoutNotice: "You'll need to log in again.",
     alreadyEarned: "You've already claimed today's check-in.",
+    exportDiaryEmpty: "There are no entries to export.",
     attendanceGrass: "Attended {{count}} of the last {{total}} days",
     attendanceError: "Couldn't load attendance.",
     rewarded: "You received {{amount}} points.",
@@ -402,6 +404,8 @@ export const en: typeof ko = {
     notice: "You and members with a blocked number can't see each other.",
   },
   diary: {
+    exportFileName: "Jipkok diary {{date}}",
+    exportAttachments: "Attachments",
     copied: "Entry copied.",
     search: {
       title: "Search diary",

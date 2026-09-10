@@ -50,6 +50,10 @@ class DiaryController(
         @RequestParam(defaultValue = "$DEFAULT_PAGE_SIZE") size: Int,
     ): CursorResponse<DiaryResponse> = diaryService.search(memberId, keyword, cursor, size)
 
+    @Operation(summary = "일기 내보내기", description = "내 일기 전체를 오래된 날짜부터 첨부의 서명 URL과 함께 준다.")
+    @GetMapping("/export")
+    fun export(@AuthenticationPrincipal memberId: Long): List<DiaryResponse> = diaryService.export(memberId)
+
     @Operation(
         operationId = "createDiaryAttachmentUploadUrl",
         summary = "일기 첨부 업로드 URL 발급",

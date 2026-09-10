@@ -330,6 +330,8 @@ export const diaries = {
   search: (params: DiarySearchParams) =>
     request<DiaryPage>("/api/diaries/search", { query: params }),
 
+  export: () => request<DiaryResponse[]>("/api/diaries/export"),
+
   createAttachmentUploadUrl: (contentType: string) =>
     request<PhotoUploadUrlResponse>("/api/diaries/attachments/upload-url", {
       method: "POST",

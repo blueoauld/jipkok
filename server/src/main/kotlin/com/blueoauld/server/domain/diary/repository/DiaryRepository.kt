@@ -11,6 +11,8 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
 
     fun findByMemberIdAndEntryDate(memberId: Long, entryDate: LocalDate): Diary?
 
+    fun findAllByMemberIdOrderByEntryDate(memberId: Long): List<Diary>
+
     fun findAllByMemberIdAndEntryDateBetweenOrderByEntryDate(
         memberId: Long,
         from: LocalDate,

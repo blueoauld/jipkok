@@ -360,6 +360,7 @@ export const ja: typeof ko = {
       contact: "お問い合わせ",
       suggest: "ご意見を送る",
       version: "バージョン確認",
+      exportDiary: "日記を書き出す",
       appLock: "アプリロック",
       logout: "ログアウト",
       withdraw: "退会",
@@ -372,6 +373,7 @@ export const ja: typeof ko = {
     languageChange: "変更",
     logoutNotice: "ログアウトすると、もう一度ログインが必要になります。",
     alreadyEarned: "本日のデイリーボーナスはすでに受け取っています。",
+    exportDiaryEmpty: "書き出す日記がありません。",
     attendanceGrass: "直近{{total}}日のうち{{count}}日出席",
     attendanceError: "出席記録を読み込めませんでした。",
     rewarded: "{{amount}}ポイントを受け取りました。",
@@ -405,6 +407,8 @@ export const ja: typeof ko = {
     notice: "ブロックした番号の会員とは互いに表示されません。",
   },
   diary: {
+    exportFileName: "Jipkok 日記 {{date}}",
+    exportAttachments: "添付",
     copied: "日記をコピーしました。",
     search: {
       title: "日記検索",

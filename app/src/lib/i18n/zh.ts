@@ -343,6 +343,7 @@ export const zh: typeof ko = {
       contact: "聯絡我們",
       suggest: "提供建議",
       version: "版本資訊",
+      exportDiary: "匯出日記",
       appLock: "應用程式鎖定",
       logout: "登出",
       withdraw: "刪除帳號",
@@ -355,6 +356,7 @@ export const zh: typeof ko = {
     languageChange: "變更",
     logoutNotice: "登出後需要重新登入才能使用。",
     alreadyEarned: "今天已領取簽到獎勵。",
+    exportDiaryEmpty: "沒有可匯出的日記。",
     attendanceGrass: "最近 {{total}} 天中出席 {{count}} 天",
     attendanceError: "無法載入出席記錄。",
     rewarded: "獲得了 {{amount}} 點。",
@@ -387,6 +389,8 @@ export const zh: typeof ko = {
     notice: "與封鎖號碼的會員互不可見。",
   },
   diary: {
+    exportFileName: "Jipkok 日記 {{date}}",
+    exportAttachments: "附件",
     copied: "已複製日記。",
     search: {
       title: "日記搜尋",

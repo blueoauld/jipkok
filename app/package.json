@@ -32,6 +32,7 @@
     "expo-router": "~57.0.14",
     "expo-screen-capture": "~57.0.2",
     "expo-secure-store": "^57.0.1",
+    "expo-sharing": "~57.0.18",
     "expo-splash-screen": "~57.0.7",
     "expo-status-bar": "~57.0.1",
     "expo-store-review": "~57.0.2",
@@ -58,6 +59,7 @@
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-worklets": "0.11.4",
+    "react-native-zip-archive": "^9.5.1",
     "react-native-zoom-toolkit": "^5.1.1",
     "tamagui": "^2.7.4",
     "zustand": "^5.0.14"
