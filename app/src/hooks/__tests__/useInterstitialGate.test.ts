@@ -76,6 +76,25 @@ describe("useInterstitialGate", () => {
     await unmount();
   });
 
+  it("동작도 광고가 닫힌 뒤에 실행한다", async () => {
+    const action = jest.fn();
+    useAd.mockReturnValue(adState({ isLoaded: true }));
+    const { result, rerender, unmount } = await renderHook(() =>
+      useInterstitialGate(),
+    );
+
+    await act(async () => result.current.run(action));
+
+    expect(show).toHaveBeenCalledTimes(1);
+    expect(action).not.toHaveBeenCalled();
+
+    useAd.mockReturnValue(adState({ isLoaded: false, isClosed: true }));
+    await rerender(undefined);
+
+    expect(action).toHaveBeenCalledTimes(1);
+    await unmount();
+  });
+
   it("광고가 실패하면 기다리지 않고 이동한다", async () => {
     useAd.mockReturnValue(adState({ isLoaded: true }));
     const { result, rerender, unmount } = await renderHook(() =>

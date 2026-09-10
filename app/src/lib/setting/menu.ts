@@ -97,11 +97,6 @@ export const SECTIONS: SettingGroup[] = [
         icon: ChatCircleTextIcon,
         href: "/activity/worry",
       },
-      {
-        labelKey: "setting.menu.exportDiary",
-        icon: DownloadSimpleIcon,
-        action: "exportDiary",
-      },
     ],
   },
   {
@@ -129,6 +124,12 @@ export const SECTIONS: SettingGroup[] = [
         labelKey: "list.profileViews",
         icon: FootprintsIcon,
         href: PROFILE_VIEW_HREF,
+        gated: true,
+      },
+      {
+        labelKey: "setting.menu.exportDiary",
+        icon: DownloadSimpleIcon,
+        action: "exportDiary",
         gated: true,
       },
     ],

@@ -10,16 +10,14 @@ export function useInterstitialGate() {
   const { isLoaded, isClosed, error, load, show } = useInterstitialAd(
     INTERSTITIAL_AD_UNIT_ID,
   );
-  const pendingHref = useRef<Href | null>(null);
+  const pendingAction = useRef<(() => void) | null>(null);
   const { reload } = useAdReload(error, load);
 
   const enter = useCallback(() => {
-    const href = pendingHref.current;
-    pendingHref.current = null;
+    const action = pendingAction.current;
+    pendingAction.current = null;
 
-    if (href) {
-      pushOnce(href);
-    }
+    action?.();
   }, []);
 
   useEffect(() => {
@@ -39,18 +37,21 @@ export function useInterstitialGate() {
     }
   }, [error, enter]);
 
-  const open = useCallback(
-    (href: Href) => {
+  // 광고가 준비되지 않았거나 실패하면 기다리지 않고 바로 실행한다.
+  const run = useCallback(
+    (action: () => void) => {
       if (!isLoaded) {
-        pushOnce(href);
+        action();
         return;
       }
 
-      pendingHref.current = href;
+      pendingAction.current = action;
       show();
     },
     [isLoaded, show],
   );
 
-  return { open };
+  const open = useCallback((href: Href) => run(() => pushOnce(href)), [run]);
+
+  return { open, run };
 }

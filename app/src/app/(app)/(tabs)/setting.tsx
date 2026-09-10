@@ -229,7 +229,14 @@ export default function SettingScreen() {
   const handlePress = useCallback(
     (item: SettingItem) => {
       if (item.action) {
-        handleAction(item.action);
+        const action = item.action;
+
+        if (item.gated) {
+          gate.run(() => handleAction(action));
+        } else {
+          handleAction(action);
+        }
+
         return;
       }
 
