@@ -104,7 +104,23 @@ export default function WorryDetailScreen() {
   );
 
   const listRef = useRef<FlatList<WorryCommentResponse[]>>(null);
+  const scrollPending = useRef(false);
   const { fetchNextPage } = commentsQuery;
+
+  // 받아 온 댓글이 아직 그려지지 않아 여기서 바로 내리면 예전 높이로 자리를 잡는다.
+  // 내용 높이가 바뀔 때 내려야 새 댓글이 있는 진짜 끝에 닿는다.
+  const handleContentSizeChange = useCallback(
+    (_width: number, height: number) => {
+      if (!scrollPending.current) {
+        return;
+      }
+
+      scrollPending.current = false;
+      listRef.current?.scrollToOffset({ offset: height, animated: true });
+    },
+    [],
+  );
+
   // 댓글은 오래된 순이라 새로 쓴 것은 맨 끝에 붙는데, 무효화는 이미 받아 둔 장만 다시
   // 받는다. 안 받은 장이 남아 있으면 내 댓글이 목록에 없어 실패로 보이고 다시 쓰게 된다.
   const handleSubmitComment = useCallback(
@@ -119,7 +135,7 @@ export default function WorryDetailScreen() {
         }
       }
 
-      listRef.current?.scrollToEnd({ animated: true });
+      scrollPending.current = true;
     },
     [fetchNextPage, submitComment],
   );
@@ -161,6 +177,7 @@ export default function WorryDetailScreen() {
               )}
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
+              onContentSizeChange={handleContentSizeChange}
               ListHeaderComponent={
                 <YStack gap="$4">
                   <WorryPostSection
