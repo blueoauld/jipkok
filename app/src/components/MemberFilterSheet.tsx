@@ -7,6 +7,7 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
 import {
@@ -74,6 +75,8 @@ export function MemberFilterSheet({
 
     onOpenChange(next);
   };
+
+  useCloseOnGoBack(open, () => changeOpen(false));
 
   const draft: MemberFilter = {
     gender: GENDER_FILTER_VALUES[gender],

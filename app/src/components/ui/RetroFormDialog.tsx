@@ -2,6 +2,7 @@ import { Fragment, type ReactNode, useState } from "react";
 import { Dialog, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
+import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
@@ -22,6 +23,9 @@ export function RetroFormDialog({
 }) {
   const keyboardOffset = useDialogKeyboardOffset();
   const visible = useVisibleWhenUnlocked(open);
+
+  useCloseOnGoBack(visible, () => onOpenChange(false));
+
   // 열 때마다 새로 만들어 지난번 입력이 남지 않게 한다. 닫힐 때는 나가는 전환 동안
   // 그대로 둬야 새 입력칸이 다시 포커스를 잡아 키보드를 망가뜨리지 않는다.
   // 잠금으로 숨은 것은 여는 것이 아니므로 open으로만 센다.
