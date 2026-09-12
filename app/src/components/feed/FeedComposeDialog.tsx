@@ -145,7 +145,7 @@ function ComposeForm({
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
           {pending ? (
-            <Spinner size="small" color="$onFill" />
+            <Spinner size="small" color="$color11" />
           ) : (
             t("feed.composeSubmit")
           )}

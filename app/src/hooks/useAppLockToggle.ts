@@ -7,6 +7,7 @@ import { useAppLockStore } from "@/lib/lock/store";
 import { showToast } from "@/lib/toast/store";
 
 const UNAVAILABLE_MESSAGE = i18n.t("lock.unavailable");
+const TURNED_OFF_MESSAGE = i18n.t("lock.turnedOff");
 const ENABLED_MESSAGE = i18n.t("lock.enabled");
 const DISABLED_MESSAGE = i18n.t("lock.disabled");
 
@@ -24,8 +25,16 @@ export function useAppLockToggle({ show }: RetroAlertApi) {
     setPending(true);
 
     try {
-      if (!enabled && !(await isDeviceLockAvailable())) {
-        show("warning", UNAVAILABLE_MESSAGE);
+      // 켠 뒤에 기기 잠금을 지우면 인증이 영영 실패해 끄지도 못한다. 켤 때만 보지
+      // 않고 항상 보고, 이미 켜져 있었으면 AppLockOverlay와 같게 그냥 풀어 준다.
+      if (!(await isDeviceLockAvailable())) {
+        if (enabled) {
+          setEnabled(false);
+          showToast("warning", TURNED_OFF_MESSAGE);
+        } else {
+          show("warning", UNAVAILABLE_MESSAGE);
+        }
+
         return;
       }
 

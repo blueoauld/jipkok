@@ -48,8 +48,12 @@ export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
     mutationFn: ({ roomId, enabled }: { roomId: number; enabled: boolean }) =>
       api.chats.updateNotification(roomId, enabled),
     onMutate: ({ roomId, enabled }) => apply(roomId, enabled),
-    onSuccess: (_data, { roomId }) =>
-      queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) }),
+    // 요청 중에 새 메시지로 목록을 다시 받으면 낙관적 값이 서버의 예전 값에 덮인다.
+    // 서버가 받아들인 뒤 한 번 더 적어 두면 목록을 다시 받지 않고도 맞는다.
+    onSuccess: (_data, { roomId, enabled }) => {
+      apply(roomId, enabled);
+      queryClient.invalidateQueries({ queryKey: chatRoomKey(roomId) });
+    },
     onError: (error) => {
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
       showApiError(error);

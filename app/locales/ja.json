@@ -6,7 +6,8 @@
     "NSMicrophoneUsageDescription": "動画を撮影して送信するためにマイクへのアクセスが必要です。",
     "NSPhotoLibraryAddUsageDescription": "チャットで受け取った写真や動画を保存するために写真へのアクセスが必要です。",
     "NSLocationWhenInUseUsageDescription": "近くの会員を距離順に表示するために位置情報へのアクセスが必要です。",
-    "NSUserTrackingUsageDescription": "興味に合った広告を表示するためにトラッキングの許可が必要です。"
+    "NSUserTrackingUsageDescription": "興味に合った広告を表示するためにトラッキングの許可が必要です。",
+    "NSFaceIDUsageDescription": "アプリのロックを解除するためにFace IDの使用許可が必要です。"
   },
   "android": {
     "app_name": "Jipkok"

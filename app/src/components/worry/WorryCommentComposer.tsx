@@ -57,11 +57,14 @@ export function WorryCommentComposer({
         disabled={!trimmed || pending}
         onPress={() => {
           setContent("");
-          onSubmit(trimmed).catch(() => setContent(trimmed));
+          // 실패를 기다리는 동안 다음 댓글을 적고 있었을 수 있다. 빈 칸만 되돌린다.
+          onSubmit(trimmed).catch(() =>
+            setContent((current) => (current.length > 0 ? current : trimmed)),
+          );
         }}
       >
         {pending ? (
-          <Spinner size="small" color="$onFill" />
+          <Spinner size="small" color="$color11" />
         ) : (
           t("worry.detail.submit")
         )}

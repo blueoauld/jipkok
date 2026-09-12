@@ -157,11 +157,13 @@ function ReplyMessage({
   return (
     <BubbleFrame mine={mine} onLongPress={onLongPress}>
       <YStack px={H_PADDING} py={10} gap={SECTION_GAP}>
+        {/* 인용부에도 길게 누르기를 달아야 액션 메뉴가 열린다. 없으면 원문으로 튄다. */}
         <XStack
           items="flex-start"
           gap="$2.5"
           pressStyle={{ opacity: PRESS_OPACITY }}
           onPress={() => onPressReply(reply.messageId)}
+          onLongPress={onLongPress}
         >
           <ReplyPreviewThumbnail reply={reply} />
 

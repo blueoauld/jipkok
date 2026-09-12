@@ -49,6 +49,9 @@ export function usePushNotifications() {
 
     if (href) {
       handledId.current = identifier;
+      // 언어를 바꾸면 앱이 다시 시작하고 ref는 초기화되는데, 처리한 응답은 네이티브에
+      // 남아 있어 옛 채팅방으로 다시 들어간다. 응답 자체를 비워야 되풀이되지 않는다.
+      Notifications.clearLastNotificationResponse();
       pushOnce(href);
     }
   }, [group, response, status]);

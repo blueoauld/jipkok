@@ -25,6 +25,12 @@ type RewardOutcome = "rewarded" | "pending" | "unknown";
 
 function delay(millis: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
+    // 이미 끊긴 signal에 abort 리스너를 달면 다시 불리지 않아 그대로 흘러간다.
+    if (signal.aborted) {
+      reject(new Error("aborted"));
+      return;
+    }
+
     const onAbort = () => {
       clearTimeout(timer);
       reject(new Error("aborted"));
@@ -54,6 +60,11 @@ export async function waitForReward(
     await delay(interval, signal);
 
     const balance = await fetchBalance().catch(() => null);
+
+    // 조회 중에 끊겼으면 마지막 시도라도 결과를 내지 않는다. 토스트까지 뜬다.
+    if (signal.aborted) {
+      throw new Error("aborted");
+    }
 
     if (balance !== null && balance > before) {
       return "rewarded";

@@ -68,4 +68,15 @@ describe("waitForReward", () => {
     await expect(settled).resolves.toBe("aborted");
     expect(fetchBalance).toHaveBeenCalledTimes(1);
   });
+
+  it("이미 끊긴 signal이면 한 번도 조회하지 않는다", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const fetchBalance = jest.fn().mockResolvedValue(999);
+
+    await expect(
+      waitForReward(100, fetchBalance, controller.signal, 10, 6),
+    ).rejects.toThrow("aborted");
+    expect(fetchBalance).not.toHaveBeenCalled();
+  });
 });

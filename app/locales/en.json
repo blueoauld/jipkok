@@ -6,7 +6,8 @@
     "NSMicrophoneUsageDescription": "Jipkok uses the microphone to record videos to share.",
     "NSPhotoLibraryAddUsageDescription": "Jipkok saves photos and videos you receive in chat to your photo library.",
     "NSLocationWhenInUseUsageDescription": "Jipkok uses your location to show nearby members sorted by distance.",
-    "NSUserTrackingUsageDescription": "Jipkok uses your activity to show ads that match your interests."
+    "NSUserTrackingUsageDescription": "Jipkok uses your activity to show ads that match your interests.",
+    "NSFaceIDUsageDescription": "Jipkok uses Face ID to unlock the app."
   },
   "android": {
     "app_name": "Jipkok"

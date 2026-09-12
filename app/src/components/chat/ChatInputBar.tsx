@@ -10,7 +10,7 @@ import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import type { ChatMessageResponse } from "@/lib/api";
-import { replySummary } from "@/lib/chat";
+import { replySummary, toReply } from "@/lib/chat";
 import { useChatDraftStore } from "@/lib/chat/draft-store";
 import {
   FLOATING_BUTTON_SIZE,
@@ -100,7 +100,8 @@ export function ChatInputBar({
             py="$2"
             gap="$2.5"
           >
-            <ReplyPreviewThumbnail reply={reply} />
+            {/* ChatMessageResponse에는 previewUrl이 없어 그대로 넘기면 늘 비어 보인다. */}
+            <ReplyPreviewThumbnail reply={toReply(reply)} />
 
             <YStack flex={1} gap={2}>
               <Text fontSize="$2" fontWeight="600" color="$color12">

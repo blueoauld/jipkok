@@ -1,5 +1,6 @@
 import "@/lib/i18n/calendar";
 
+import { useCallback } from "react";
 import {
   Calendar,
   type CalendarProps,
@@ -22,20 +23,27 @@ export type DayMarking = {
   emoji?: string;
 };
 
-function CalendarDay({
-  date,
-  state,
-  marking,
-  onPress,
-}: {
+type CalendarDayProps = {
   date?: DateData;
   state?: string;
   marking?: DayMarking;
   onPress?: (date?: DateData) => void;
-}) {
+};
+
+function CalendarDay({
+  date,
+  state,
+  marking,
+  maxDate,
+  onPress,
+}: CalendarDayProps & { maxDate?: string }) {
   const selected = state === "selected" || Boolean(marking?.selected);
-  const disabled = state === "disabled";
-  const today = state === "today";
+  // 라이브러리는 maxDate보다 today를 먼저 보고, today는 기기 날짜다. 한국보다 앞선
+  // 시간대에서는 아직 오지 않은 날이 눌리는 오늘로 그려지므로 여기서 한 번 더 막는다.
+  const beyondMax =
+    maxDate !== undefined && date !== undefined && date.dateString > maxDate;
+  const disabled = state === "disabled" || beyondMax;
+  const today = state === "today" && !beyondMax;
   const accent = useAccentToken();
   const weight = disabled ? "400" : selected || today ? "700" : "500";
 
@@ -96,12 +104,19 @@ export function RetroCalendar(
   >,
 ) {
   const theme = useTheme();
+  const { maxDate } = props;
+  const dayComponent = useCallback(
+    (dayProps: CalendarDayProps) => (
+      <CalendarDay {...dayProps} maxDate={maxDate} />
+    ),
+    [maxDate],
+  );
 
   return (
     <Calendar
       {...props}
       monthFormat={i18n.t("component.monthFormat")}
-      dayComponent={CalendarDay}
+      dayComponent={dayComponent}
       theme={{
         calendarBackground: "transparent",
         monthTextColor: theme.color12.val,

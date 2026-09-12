@@ -1,3 +1,4 @@
+import { koreaYear } from "@/lib/date";
 import i18n from "@/lib/i18n";
 import { patternOf } from "@/lib/phone";
 import { currentCountry } from "@/lib/phone/store";
@@ -85,7 +86,8 @@ function validateBirthYear(value: string) {
     return i18n.t("validation.birthYearInvalid");
   }
 
-  const age = new Date().getFullYear() - Number(value);
+  // 서버는 한국 연도로 나이를 재므로 기기 연도를 쓰면 연초 몇 시간 동안 판정이 갈린다.
+  const age = koreaYear() - Number(value);
 
   if (age < MIN_AGE || age > MAX_AGE) {
     return i18n.t("validation.ageRange", { min: MIN_AGE, max: MAX_AGE });

@@ -62,6 +62,22 @@ export function useWorryDetailActions(
     );
   }, [detailKey, postId, queryClient]);
 
+  // 누른 순간의 글로 캐시를 통째로 덮으면 그 사이 늘어난 댓글 수처럼 다시 받아 둔 값이
+  // 예전 값으로 되돌아간다. 지금 캐시를 밑절미로 두고 좋아요 두 칸만 고친다.
+  const setLiked = useCallback(
+    (liked: boolean) =>
+      queryClient.setQueryData<WorryPostResponse>(
+        detailKey,
+        (post) =>
+          post && {
+            ...post,
+            likedByMe: liked,
+            likeCount: post.likeCount + (liked ? 1 : -1),
+          },
+      ),
+    [detailKey, queryClient],
+  );
+
   const toggleLike = useMutation({
     mutationFn: (current: WorryPostResponse) =>
       current.likedByMe
@@ -69,19 +85,11 @@ export function useWorryDetailActions(
         : api.worries.like(postId),
     onMutate: async (current) => {
       await queryClient.cancelQueries({ queryKey: detailKey });
-      const previous = queryClient.getQueryData<WorryPostResponse>(detailKey);
-
-      queryClient.setQueryData<WorryPostResponse>(detailKey, {
-        ...current,
-        likedByMe: !current.likedByMe,
-        likeCount: current.likeCount + (current.likedByMe ? -1 : 1),
-      });
-
-      return { previous };
+      setLiked(!current.likedByMe);
     },
     onSuccess: syncListFromDetail,
-    onError: (mutationError, _current, context) => {
-      queryClient.setQueryData(detailKey, context?.previous);
+    onError: (mutationError, current) => {
+      setLiked(current.likedByMe);
       showApiError(mutationError);
     },
   });

@@ -10,6 +10,7 @@ import {
   fromDateParam,
   isKoreaToday,
   koreaDateParam,
+  koreaYear,
   toDateParam,
   toMonthParam,
 } from "@/lib/date";
@@ -110,5 +111,11 @@ describe("koreaDateParam", () => {
     expect(koreaDateParam(Date.parse("2026-09-03T14:59:59Z"))).toBe(
       "2026-09-03",
     );
+  });
+
+  it("연도도 한국 기준으로 센다", () => {
+    // UTC로 12월 31일 15시면 한국은 이미 다음 해 1월 1일 0시다.
+    expect(koreaYear(Date.UTC(2025, 11, 31, 15))).toBe(2026);
+    expect(koreaYear(Date.UTC(2025, 11, 31, 14, 59))).toBe(2025);
   });
 });

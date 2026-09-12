@@ -50,6 +50,10 @@ export function koreaDateParam(now: number) {
   return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())}`;
 }
 
+export function koreaYear(now = Date.now()) {
+  return new Date(now + KOREA_OFFSET_MILLIS).getUTCFullYear();
+}
+
 const MONTH_PARAM_LENGTH = "yyyy-MM".length;
 
 export function toMonthParam(dateParam: string) {

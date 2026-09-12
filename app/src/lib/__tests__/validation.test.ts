@@ -1,3 +1,4 @@
+import { koreaYear } from "@/lib/date";
 import { usePhoneCountryStore } from "@/lib/phone/store";
 import {
   BIRTH_YEAR_RULES,
@@ -28,7 +29,7 @@ describe("NICKNAME_RULES", () => {
 });
 
 describe("BIRTH_YEAR_RULES", () => {
-  const year = new Date().getFullYear();
+  const year = koreaYear();
 
   it("네 자리 숫자만 받는다", () => {
     expect(BIRTH_YEAR_RULES.validate("")).toBe(

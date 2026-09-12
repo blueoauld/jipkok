@@ -96,6 +96,7 @@ function ViewerContent({
   const [index, setIndex] = useState(initialIndex);
   const [chromeVisible, setChromeVisible] = useState(true);
   const pullY = useSharedValue(0);
+  const pulling = useSharedValue(false);
   const dismissed = useSharedValue(false);
   const releaseY = useSharedValue(0);
   const holdY = useSharedValue(0);
@@ -121,7 +122,21 @@ function ViewerContent({
 
       pullY.value = translateY;
 
-      if (!released || !shouldDismiss(translateY, velocityY)) {
+      if (!released) {
+        pulling.value = true;
+        return;
+      }
+
+      // 갤러리는 되돌림 애니메이션이 끝날 때만 released를 내린다. 그 전에 다시 잡으면
+      // 새 판 도중에도 released가 켜져 있어, 손을 떼기 전에 닫혀 버린다. 이번 판에서
+      // released가 아닌 적을 한 번이라도 본 뒤에만 닫기로 본다.
+      if (!pulling.value) {
+        return;
+      }
+
+      pulling.value = false;
+
+      if (!shouldDismiss(translateY, velocityY)) {
         return;
       }
 
@@ -140,7 +155,7 @@ function ViewerContent({
         },
       );
     },
-    [dismissed, exitY, holdY, onClose, pullY, releaseY, screen.height],
+    [dismissed, exitY, holdY, onClose, pullY, pulling, releaseY, screen.height],
   );
 
   const renderPhoto = useCallback(

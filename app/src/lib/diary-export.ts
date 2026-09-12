@@ -82,7 +82,10 @@ async function download(
     const directory = new Directory(root, folder);
 
     directory.create({ intermediates: true, idempotent: true });
-    await File.downloadFileAsync(url, new File(directory, name));
+    // 지난번 내보내기가 중간에 끊겨 파일이 남아 있으면 그냥 덮는다. 기본값은 예외다.
+    await File.downloadFileAsync(url, new File(directory, name), {
+      idempotent: true,
+    });
   }
 }
 
