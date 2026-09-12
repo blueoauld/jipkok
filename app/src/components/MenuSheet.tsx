@@ -1,6 +1,6 @@
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { useEffect } from "react";
-import { Keyboard } from "react-native";
+import { BackHandler, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, useTheme, XStack } from "tamagui";
 
@@ -35,6 +35,24 @@ export function MenuSheet({
       Keyboard.dismiss();
     }
   }, [open]);
+
+  // 시트는 Modal이 아니라 루트 포털로 그려지므로 안드로이드 뒤로가기가 시트를 지나쳐
+  // 아래 네비게이터로 간다. 떠 있는 동안은 시트가 먼저 먹고 닫힌다.
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        onOpenChange(false);
+        return true;
+      },
+    );
+
+    return () => subscription.remove();
+  }, [onOpenChange, open]);
 
   return (
     <Sheet

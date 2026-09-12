@@ -184,7 +184,7 @@ export default function SettingScreen() {
       }
 
       if (action === "adReward") {
-        adReward.watch();
+        void adReward.watch();
         return;
       }
 

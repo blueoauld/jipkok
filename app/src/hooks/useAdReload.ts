@@ -4,6 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 // 끝없이 반복하면 AdMob이 요청 남용으로 보므로 횟수를 제한한다.
 export const AD_RELOAD_DELAYS = [30_000, 60_000, 120_000];
 
+// 라이브러리는 ERROR 이벤트에서 isLoaded를 내리지 않지만 네이티브 객체는 이미 비워 둔다.
+// 그 상태로 show()를 부르면 동기적으로 던지므로 준비된 것으로 보지 않는다. 다시 불러오면
+// error가 지워져 풀린다.
+export function isAdReady(isLoaded: boolean, error: Error | undefined) {
+  return isLoaded && error === undefined;
+}
+
 export function useAdReload(error: Error | undefined, load: () => void) {
   const [failures, setFailures] = useState(0);
 

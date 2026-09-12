@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useRewardedAd } from "react-native-google-mobile-ads";
 
-import { useAdReload } from "@/hooks/useAdReload";
+import { isAdReady, useAdReload } from "@/hooks/useAdReload";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
@@ -121,11 +121,13 @@ export function useAdReward() {
 
   useEffect(() => () => polling.current?.abort(), []);
 
+  const ready = isAdReady(isLoaded, error);
+
   return {
-    ready: isLoaded,
+    ready,
     unavailable: givenUp,
     watch: async () => {
-      if (!isLoaded) {
+      if (!ready) {
         if (givenUp) {
           reload();
         }
@@ -143,7 +145,14 @@ export function useAdReward() {
           staleTime: 0,
         })
         .catch(() => null);
-      showAd();
+
+      // ready가 걸러 주지만 네이티브와 어긋나는 다른 경로가 남을 수 있어 한 번 더 받는다.
+      try {
+        showAd();
+      } catch {
+        showToast("warning", NOT_READY_MESSAGE);
+        reload();
+      }
     },
   };
 }

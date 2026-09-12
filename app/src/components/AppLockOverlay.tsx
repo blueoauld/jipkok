@@ -8,6 +8,7 @@ import { Spinner, useTheme, YStack } from "tamagui";
 import { RetroButton } from "@/components/ui/RetroButton";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { useAppLock } from "@/hooks/useAppLock";
+import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { STATUS_ICON_SIZE } from "@/lib/design";
 import {
   authenticateDevice,
@@ -27,6 +28,10 @@ function LockScreen() {
   const [authenticating, setAuthenticating] = useState(false);
   const busy = useRef(false);
   const promptEndedAt = useRef(0);
+
+  // 잠금 화면은 트리 안의 겹침이라 뒤로가기가 아래 네비게이터로 새어 나간다. 가려진
+  // 화면이 몰래 넘어가면 풀고 나서 다른 곳에 서 있거나 저장 안 한 내용을 잃는다.
+  useBlockGoBack();
 
   const attempt = useCallback(async () => {
     if (busy.current) {

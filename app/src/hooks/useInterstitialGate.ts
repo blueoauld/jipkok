@@ -2,7 +2,7 @@ import type { Href } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 import { useInterstitialAd } from "react-native-google-mobile-ads";
 
-import { useAdReload } from "@/hooks/useAdReload";
+import { isAdReady, useAdReload } from "@/hooks/useAdReload";
 import { INTERSTITIAL_AD_UNIT_ID } from "@/lib/ads";
 import { pushOnce } from "@/lib/router";
 
@@ -40,15 +40,22 @@ export function useInterstitialGate() {
   // 광고가 준비되지 않았거나 실패하면 기다리지 않고 바로 실행한다.
   const run = useCallback(
     (action: () => void) => {
-      if (!isLoaded) {
+      if (!isAdReady(isLoaded, error)) {
         action();
         return;
       }
 
       pendingAction.current = action;
-      show();
+
+      // 위 가드가 걸러 주지만 네이티브와 어긋나는 다른 경로가 남을 수 있어 한 번 더 받는다.
+      try {
+        show();
+      } catch {
+        enter();
+        reload();
+      }
     },
-    [isLoaded, show],
+    [enter, error, isLoaded, reload, show],
   );
 
   const open = useCallback((href: Href) => run(() => pushOnce(href)), [run]);

@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 
-import { AD_RELOAD_DELAYS, useAdReload } from "@/hooks/useAdReload";
+import { AD_RELOAD_DELAYS, isAdReady, useAdReload } from "@/hooks/useAdReload";
 
 const load = jest.fn();
 
@@ -11,6 +11,20 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+});
+
+describe("isAdReady", () => {
+  it("불러왔고 실패가 없으면 준비된 것이다", () => {
+    expect(isAdReady(true, undefined)).toBe(true);
+  });
+
+  it("불러왔더라도 실패가 있으면 준비된 것이 아니다", () => {
+    expect(isAdReady(true, new Error("no fill"))).toBe(false);
+  });
+
+  it("아직 못 불러왔으면 준비된 것이 아니다", () => {
+    expect(isAdReady(false, undefined)).toBe(false);
+  });
 });
 
 describe("useAdReload", () => {
