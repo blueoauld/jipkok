@@ -51,6 +51,18 @@ export function useMemberList(queryKey: string[], fetcher: MemberListFetcher) {
   return { ...query, members };
 }
 
+function findInPages(data: Page | undefined, memberId: number) {
+  for (const [page, { items }] of (data?.pages ?? []).entries()) {
+    const index = items.findIndex((item) => item.memberId === memberId);
+
+    if (index >= 0) {
+      return { page, index, member: items[index] };
+    }
+  }
+
+  return undefined;
+}
+
 export function useRemoveFromMemberList(
   queryKey: string[],
   remove: (memberId: number) => Promise<void>,
@@ -63,18 +75,38 @@ export function useRemoveFromMemberList(
     onMutate: async (memberId: number) => {
       await queryClient.cancelQueries({ queryKey });
 
+      const removed = findInPages(
+        queryClient.getQueryData<Page>(queryKey),
+        memberId,
+      );
+
       queryClient.setQueryData<Page>(queryKey, (current) =>
         mapPages(current, (items) =>
           items.filter((item) => item.memberId !== memberId),
         ),
       );
+
+      return removed;
     },
     onSuccess: (_data, memberId) =>
       queryClient.invalidateQueries({ queryKey: memberDetailKey(memberId) }),
-    // 목록 전체를 스냅샷으로 되돌리면 그 사이 성공한 다른 삭제까지 되살아난다.
-    // 실패는 드물므로 서버에서 다시 받아 맞춘다. 성공 경로에는 요청이 늘지 않는다.
-    onError: (error) => {
-      queryClient.invalidateQueries({ queryKey });
+    // 목록 전체를 스냅샷으로 되돌리면 그 사이 성공한 다른 삭제까지 되살아난다. 끊긴 채로
+    // 실패했으면 쿼리가 멈춰 다시 받지도 못하므로, 지운 한 명만 제자리에 도로 끼운다.
+    onError: (error, _memberId, removed) => {
+      if (removed) {
+        queryClient.setQueryData<Page>(queryKey, (current) =>
+          mapPages(current, (items, page) =>
+            page === removed.page
+              ? [
+                  ...items.slice(0, removed.index),
+                  removed.member,
+                  ...items.slice(removed.index),
+                ]
+              : items,
+          ),
+        );
+      }
+
       onError(error);
     },
   });
