@@ -55,6 +55,16 @@ export function MemberFilterSheet({
     filter.maxAge,
   ]);
 
+  // 빈 목록의 초기화처럼 시트 밖에서 필터가 바뀌면 고치던 값이 낡는다. 그대로 두면 다시
+  // 열어 적용할 때 방금 지운 필터가 되살아난다.
+  const [applied, setApplied] = useState(filter);
+
+  if (applied !== filter) {
+    setApplied(filter);
+    setGender(genderFilterOf(filter.gender));
+    setAges([filter.minAge, filter.maxAge]);
+  }
+
   // 적용하지 않고 닫으면 고치던 값을 버리고 현재 필터로 되돌린다.
   const changeOpen = (next: boolean) => {
     if (!next) {

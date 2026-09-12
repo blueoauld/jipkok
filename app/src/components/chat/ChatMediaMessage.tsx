@@ -169,7 +169,7 @@ export function PhotoMessage({
 }: {
   message: ChatMessageResponse;
   url: string;
-  onPress: (url: string) => void;
+  onPress: (message: ChatMessageResponse) => void;
   onLongPress: () => void;
 }) {
   const theme = useTheme();
@@ -180,7 +180,7 @@ export function PhotoMessage({
   return (
     <YStack
       pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
-      onPress={busy ? undefined : () => onPress(url)}
+      onPress={busy ? undefined : () => onPress(message)}
       onLongPress={busy ? undefined : onLongPress}
     >
       <Image

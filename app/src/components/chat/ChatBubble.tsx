@@ -205,7 +205,7 @@ export function ChatBubbleContent({
   message: ChatMessageResponse;
   mine: boolean;
   replyName: string;
-  onPressPhoto: (url: string) => void;
+  onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onLongPress: () => void;
@@ -269,7 +269,7 @@ export function ChatBubble({
   showTime: boolean;
   replyName: string;
   myMemberId: number;
-  onPressPhoto: (url: string) => void;
+  onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;

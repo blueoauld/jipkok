@@ -41,6 +41,25 @@ describe("splitLinks", () => {
     ]);
   });
 
+  it("링크 뒤에 붙은 CJK 문장부호는 링크에서 뺀다", () => {
+    expect(splitLinks("看這裡https://jipkok.app，謝謝")).toEqual([
+      { text: "看這裡" },
+      { text: "https://jipkok.app", url: "https://jipkok.app" },
+      { text: "，謝謝" },
+    ]);
+    expect(splitLinks("ここです https://jipkok.app。")).toEqual([
+      { text: "ここです " },
+      { text: "https://jipkok.app", url: "https://jipkok.app" },
+      { text: "。" },
+    ]);
+  });
+
+  it("대문자로 시작해도 링크로 본다", () => {
+    expect(splitLinks("Www.jipkok.app")).toEqual([
+      { text: "Www.jipkok.app", url: "https://Www.jipkok.app" },
+    ]);
+  });
+
   it("링크가 여러 개면 순서대로 준다", () => {
     expect(
       splitLinks("https://a.com https://b.com").map((segment) => segment.url),

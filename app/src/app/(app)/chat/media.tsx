@@ -27,7 +27,7 @@ export default function ChatMediaScreen() {
   const media = useChatRoomMedia(roomId, validRoom);
   const { messages, error, refetch } = media;
   const paged = usePagedList(media);
-  const playback = useChatMediaPlayback(roomId);
+  const playback = useChatMediaPlayback(roomId, "media");
 
   const { width } = useWindowDimensions();
   const { padding, gap, tileSize } = useMemo(() => {
@@ -42,13 +42,22 @@ export default function ChatMediaScreen() {
     };
   }, [width]);
 
+  // 목록을 새로 받으면 URL이 새로 서명되므로 보던 사진을 messageId로 다시 찾는다.
+  const viewerPhotos = useMemo(() => {
+    const url = messages?.find(
+      (message) => message.messageId === playback.viewerMessageId,
+    )?.imageUrl;
+
+    return url != null ? [url] : [];
+  }, [messages, playback.viewerMessageId]);
+
   const { openViewer, playVideo } = playback;
   const handlePress = useCallback(
     (message: ChatMessageResponse) => {
       if (message.type === "VIDEO") {
         playVideo(message);
       } else if (message.imageUrl) {
-        openViewer(message.imageUrl);
+        openViewer(message);
       }
     },
     [openViewer, playVideo],
@@ -87,9 +96,9 @@ export default function ChatMediaScreen() {
       )}
 
       <PhotoViewer
-        photos={playback.viewerUrl ? [playback.viewerUrl] : []}
+        photos={viewerPhotos}
         initialIndex={0}
-        open={playback.viewerUrl !== null}
+        open={viewerPhotos.length > 0}
         onClose={playback.closeViewer}
       />
 

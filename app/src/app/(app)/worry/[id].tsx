@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { TrashIcon } from "phosphor-react-native/src/icons/Trash";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl, type ScrollViewProps } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
@@ -30,6 +30,9 @@ import { useWorryComments } from "@/hooks/useWorryComments";
 import { useWorryDetailActions } from "@/hooks/useWorryDetailActions";
 import { worryDetailKey } from "@/hooks/useWorryPosts";
 import { api, type WorryCommentResponse } from "@/lib/api";
+
+// 한 장이 20개이므로 1000개까지는 끝까지 받는다.
+const MAX_DRAIN_PAGES = 50;
 
 export default function WorryDetailScreen() {
   const { t } = useTranslation();
@@ -100,6 +103,27 @@ export default function WorryDetailScreen() {
     [comments],
   );
 
+  const listRef = useRef<FlatList<WorryCommentResponse[]>>(null);
+  const { fetchNextPage } = commentsQuery;
+  // 댓글은 오래된 순이라 새로 쓴 것은 맨 끝에 붙는데, 무효화는 이미 받아 둔 장만 다시
+  // 받는다. 안 받은 장이 남아 있으면 내 댓글이 목록에 없어 실패로 보이고 다시 쓰게 된다.
+  const handleSubmitComment = useCallback(
+    async (text: string) => {
+      await submitComment(text);
+
+      // 다음 장이 없으면 fetchNextPage는 요청 없이 지금 것을 그대로 주므로 그냥 돌려도
+      // 된다. 서버가 커서를 잘못 주면 끝나지 않으니 현실적인 길이 위쪽에서 끊는다.
+      for (let page = 0; page <= MAX_DRAIN_PAGES; page++) {
+        if (!(await fetchNextPage()).hasNextPage) {
+          break;
+        }
+      }
+
+      listRef.current?.scrollToEnd({ animated: true });
+    },
+    [fetchNextPage, submitComment],
+  );
+
   const renderComments = useCallback(
     ({ item }: { item: WorryCommentResponse[] }) => (
       <RetroListPanel>
@@ -126,6 +150,7 @@ export default function WorryDetailScreen() {
         <>
           <YStack flex={1}>
             <FlatList
+              ref={listRef}
               {...paged}
               contentContainerStyle={listStyle}
               data={listData}
@@ -174,7 +199,7 @@ export default function WorryDetailScreen() {
             <WorryCommentComposer
               replyTo={replyTo}
               pending={submittingComment}
-              onSubmit={submitComment}
+              onSubmit={handleSubmitComment}
             />
           </KeyboardStickyView>
         </>

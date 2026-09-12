@@ -31,7 +31,7 @@ export function useChatMedia({
   onPicked: () => void;
   onError: (error: unknown) => void;
 }) {
-  const playback = useChatMediaPlayback(roomId);
+  const playback = useChatMediaPlayback(roomId, "messages");
 
   const pick = async () => {
     try {

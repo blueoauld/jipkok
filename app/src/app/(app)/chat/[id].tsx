@@ -144,16 +144,23 @@ export default function ChatRoomScreen() {
   }, [rows]);
 
   // 뷰어는 방의 사진을 시간순으로 넘겨 본다. 목록은 최신순이라 뒤집는다.
-  const photoUrls = useMemo(
+  const photos = useMemo(
     () =>
       (messages ?? [])
-        .filter((message) => message.type === "PHOTO")
-        .map((message) => message.imageUrl)
-        .filter((url): url is string => url != null)
+        .flatMap((message) =>
+          message.type === "PHOTO" && message.imageUrl != null
+            ? [{ id: message.messageId, url: message.imageUrl }]
+            : [],
+        )
         .reverse(),
     [messages],
   );
-  const viewerIndex = media.viewerUrl ? photoUrls.indexOf(media.viewerUrl) : -1;
+  const photoUrls = useMemo(() => photos.map((photo) => photo.url), [photos]);
+  // URL은 목록을 다시 받을 때마다 새로 서명되므로 자리를 잡는 데 쓸 수 없다.
+  const viewerIndex =
+    media.viewerMessageId === null
+      ? -1
+      : photos.findIndex((photo) => photo.id === media.viewerMessageId);
 
   useEffect(() => {
     if (partnerLeft) {
@@ -418,15 +425,9 @@ export default function ChatRoomScreen() {
       {alertElement}
 
       <PhotoViewer
-        photos={
-          viewerIndex >= 0
-            ? photoUrls
-            : media.viewerUrl
-              ? [media.viewerUrl]
-              : []
-        }
+        photos={photoUrls}
         initialIndex={Math.max(0, viewerIndex)}
-        open={media.viewerUrl !== null}
+        open={viewerIndex >= 0}
         onClose={media.closeViewer}
       />
 

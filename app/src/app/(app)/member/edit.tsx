@@ -141,13 +141,17 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       profile.secretPhotos.map((photo) => photo.objectKey),
     );
 
-  usePreventRemove(dirty && !saved && !busy, ({ data }) =>
-    confirm({
-      message: t("common.leaveUnsaved"),
-      confirmLabel: t("action.leave"),
-      destructive: true,
-      onConfirm: () => navigation.dispatch(data.action),
-    }),
+  // 올리는 중에도 물어야 한다. objectKeys는 한 장씩 끝날 때마다 늘어나므로 그때까지는
+  // dirty가 아직 false이고, 저장 없이 나가면 적어 둔 것과 올라간 사진이 함께 버려진다.
+  usePreventRemove(
+    (dirty || uploading) && !saved && !save.isPending,
+    ({ data }) =>
+      confirm({
+        message: t("common.leaveUnsaved"),
+        confirmLabel: t("action.leave"),
+        destructive: true,
+        onConfirm: () => navigation.dispatch(data.action),
+      }),
   );
 
   const submit = handleSubmit((values) =>

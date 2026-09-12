@@ -104,7 +104,7 @@ function Row({
   partnerId: number;
   partnerImageUrl: string | null;
   onPressAvatar: () => void;
-  onPressPhoto: (url: string) => void;
+  onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
   onPressReply: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
