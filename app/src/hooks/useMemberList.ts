@@ -32,6 +32,7 @@ export type MemberListQuery = {
   members?: MemberSummaryResponse[];
   error: unknown;
   isFetchingNextPage: boolean;
+  isFetchNextPageError: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => unknown;
   refetch: () => unknown;
@@ -61,20 +62,19 @@ export function useRemoveFromMemberList(
     mutationFn: remove,
     onMutate: async (memberId: number) => {
       await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<Page>(queryKey);
 
       queryClient.setQueryData<Page>(queryKey, (current) =>
         mapPages(current, (items) =>
           items.filter((item) => item.memberId !== memberId),
         ),
       );
-
-      return { previous };
     },
     onSuccess: (_data, memberId) =>
       queryClient.invalidateQueries({ queryKey: memberDetailKey(memberId) }),
-    onError: (error, _memberId, context) => {
-      queryClient.setQueryData(queryKey, context?.previous);
+    // 목록 전체를 스냅샷으로 되돌리면 그 사이 성공한 다른 삭제까지 되살아난다.
+    // 실패는 드물므로 서버에서 다시 받아 맞춘다. 성공 경로에는 요청이 늘지 않는다.
+    onError: (error) => {
+      queryClient.invalidateQueries({ queryKey });
       onError(error);
     },
   });

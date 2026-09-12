@@ -134,10 +134,13 @@ export function useAdReward() {
         return;
       }
 
+      // ensureQueryData는 낡은 캐시를 그대로 주므로 보상 판정 기준이 틀어진다.
+      // 여기서는 반드시 지금 잔액이어야 하니 staleTime 0으로 새로 받는다.
       balanceBefore.current = await queryClient
-        .ensureQueryData({
+        .fetchQuery({
           queryKey: POINT_BALANCE_KEY,
           queryFn: api.points.balance,
+          staleTime: 0,
         })
         .catch(() => null);
       showAd();

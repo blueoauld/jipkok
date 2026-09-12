@@ -1,11 +1,15 @@
 import { useMemo } from "react";
 import { getTokens, Spinner, YStack } from "tamagui";
 
+import { ErrorState } from "@/components/ui/ErrorState";
+import { listErrorMessage } from "@/lib/message";
+
 const END_REACHED_THRESHOLD = 0.5;
 
 type PagedQuery = {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  isFetchNextPageError: boolean;
   fetchNextPage: () => unknown;
 };
 
@@ -17,8 +21,41 @@ function FooterSpinner() {
   );
 }
 
+function FooterError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <YStack py="$4">
+      <ErrorState message={listErrorMessage()} onRetry={onRetry} />
+    </YStack>
+  );
+}
+
+function footerFor({
+  fetching,
+  failed,
+  onRetry,
+}: {
+  fetching: boolean;
+  failed: boolean;
+  onRetry: () => void;
+}) {
+  if (fetching) {
+    return <FooterSpinner />;
+  }
+
+  if (failed) {
+    return <FooterError onRetry={onRetry} />;
+  }
+
+  return null;
+}
+
 export function usePagedList(
-  { hasNextPage, isFetchingNextPage, fetchNextPage }: PagedQuery,
+  {
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  }: PagedQuery,
   bottomInset = 0,
 ) {
   const contentContainerStyle = useMemo(() => {
@@ -45,11 +82,17 @@ export function usePagedList(
     contentContainerStyle,
     ...indicatorProps,
     onEndReachedThreshold: END_REACHED_THRESHOLD,
+    // 실패해도 hasNextPage와 isFetchingNextPage는 원래대로 돌아오므로, 끝에 머무는
+    // 동안 같은 장을 끝없이 다시 받는다. 다시 받아 성공하면 이 값이 저절로 풀린다.
     onEndReached: () => {
-      if (hasNextPage && !isFetchingNextPage) {
+      if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
         fetchNextPage();
       }
     },
-    ListFooterComponent: isFetchingNextPage ? <FooterSpinner /> : null,
+    ListFooterComponent: footerFor({
+      fetching: isFetchingNextPage,
+      failed: isFetchNextPageError,
+      onRetry: fetchNextPage,
+    }),
   };
 }

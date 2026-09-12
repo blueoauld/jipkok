@@ -75,8 +75,8 @@ export default function ChatRoomScreen() {
   const { alertElement, confirm, show, showApiError } = useRetroAlert();
 
   const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
-  const clearDeletedRoom = useDeletedRoomStore((state) => state.clear);
   const partnerLeft = deletedRoomId === roomId;
+  const roomAlive = validRoom && !partnerLeft;
 
   const handleRoomError = useCallback(
     (error: unknown) => {
@@ -95,7 +95,7 @@ export default function ChatRoomScreen() {
     data: room,
     error: roomError,
     refetch,
-  } = useChatRoom(roomId, validRoom && !partnerLeft);
+  } = useChatRoom(roomId, roomAlive);
   const { sendText, sendPhotos, sendVideos, uploading } = useSendMessage(
     roomId,
     myMemberId,
@@ -120,7 +120,7 @@ export default function ChatRoomScreen() {
     handleRoomError,
     handleReply,
   );
-  const chatMessages = useChatMessages(roomId, validRoom && !partnerLeft);
+  const chatMessages = useChatMessages(roomId, roomAlive);
   const { messages, error, isFetchingNextPage, hasNextPage, fetchNextPage } =
     chatMessages;
 
@@ -157,10 +157,22 @@ export default function ChatRoomScreen() {
 
   useEffect(() => {
     if (partnerLeft) {
-      clearDeletedRoom();
       show("info", t("chatRoom.partnerLeft"), () => router.back());
     }
-  }, [clearDeletedRoom, partnerLeft, show, t]);
+  }, [partnerLeft, show, t]);
+
+  // 알림과 함께 지우면 partnerLeft가 풀려 방 쿼리가 다시 켜지고, 404가 플래그를 또
+  // 세워 알림까지 되풀이된다. 화면을 떠날 때 지워야 다음 입장이 막히지 않는다.
+  useEffect(
+    () => () => {
+      const store = useDeletedRoomStore.getState();
+
+      if (store.roomId === roomId) {
+        store.clear();
+      }
+    },
+    [roomId],
+  );
 
   useChatRoomEffects(roomId, messages, partnerId);
 

@@ -18,6 +18,7 @@ type SearchQuery = {
   refetch: () => unknown;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  isFetchNextPageError: boolean;
   fetchNextPage: () => unknown;
 };
 

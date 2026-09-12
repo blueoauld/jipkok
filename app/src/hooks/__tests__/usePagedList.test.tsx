@@ -16,9 +16,12 @@ jest.mock("tamagui", () => {
 function setup(query: {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  isFetchNextPageError?: boolean;
   fetchNextPage: () => unknown;
 }) {
-  return renderHook(() => usePagedList(query));
+  return renderHook(() =>
+    usePagedList({ isFetchNextPageError: false, ...query }),
+  );
 }
 
 describe("usePagedList", () => {
@@ -64,12 +67,40 @@ describe("usePagedList", () => {
     await unmount();
   });
 
+  it("다음 장 받기가 실패했으면 끝에 닿아도 다시 받지 않는다", async () => {
+    const fetchNextPage = jest.fn();
+    const { result, unmount } = await setup({
+      hasNextPage: true,
+      isFetchingNextPage: false,
+      isFetchNextPageError: true,
+      fetchNextPage,
+    });
+
+    result.current.onEndReached();
+
+    expect(fetchNextPage).not.toHaveBeenCalled();
+    await unmount();
+  });
+
+  it("다음 장 받기가 실패했으면 아래에 다시 시도를 둔다", async () => {
+    const { result, unmount } = await setup({
+      hasNextPage: true,
+      isFetchingNextPage: false,
+      isFetchNextPageError: true,
+      fetchNextPage: jest.fn(),
+    });
+
+    expect(result.current.ListFooterComponent).not.toBeNull();
+    await unmount();
+  });
+
   it("받는 중일 때만 아래에 spinner를 둔다", async () => {
     const { result, rerender, unmount } = await renderHook(
       ({ fetching }: { fetching: boolean }) =>
         usePagedList({
           hasNextPage: true,
           isFetchingNextPage: fetching,
+          isFetchNextPageError: false,
           fetchNextPage: jest.fn(),
         }),
       { initialProps: { fetching: false } },

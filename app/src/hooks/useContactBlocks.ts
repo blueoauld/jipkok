@@ -36,20 +36,17 @@ export function useRemoveContactBlock(onError: (error: unknown) => void) {
     mutationFn: api.contactBlocks.remove,
     onMutate: async (contactBlockId: number) => {
       await queryClient.cancelQueries({ queryKey: CONTACT_BLOCKS_KEY });
-      const previous =
-        queryClient.getQueryData<ContactBlockResponse[]>(CONTACT_BLOCKS_KEY);
 
       queryClient.setQueryData<ContactBlockResponse[]>(
         CONTACT_BLOCKS_KEY,
         (current) =>
           current?.filter((item) => item.contactBlockId !== contactBlockId),
       );
-
-      return { previous };
     },
     onSuccess: () => showToast("info", REMOVED_MESSAGE),
-    onError: (error, _contactBlockId, context) => {
-      queryClient.setQueryData(CONTACT_BLOCKS_KEY, context?.previous);
+    // 목록 전체를 스냅샷으로 되돌리면 그 사이 성공한 다른 삭제까지 되살아난다.
+    onError: (error) => {
+      queryClient.invalidateQueries({ queryKey: CONTACT_BLOCKS_KEY });
       onError(error);
     },
   });

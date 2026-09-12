@@ -193,32 +193,42 @@ export default function FeedScreen() {
     [invalidate, showApiError],
   );
 
+  const setLiked = useCallback(
+    (key: string[], postId: number, liked: boolean) =>
+      queryClient.setQueryData<InfiniteData<FeedPostPage>>(key, (current) =>
+        mapPages(current, (items) =>
+          items.map((item) =>
+            item.postId === postId ? { ...item, likedByMe: liked } : item,
+          ),
+        ),
+      ),
+    [queryClient],
+  );
+
   const toggleLike = useMutation({
     mutationFn: (post: FeedPostResponse) =>
       post.likedByMe
         ? api.feeds.cancelLike(post.postId)
         : api.feeds.like(post.postId),
+    // 아직 한 번도 받지 못한 키를 cancelQueries로 끊으면 그 쿼리가 pending으로 굳어
+    // 아무도 다시 받지 않는다. 캐시가 없으면 낙관적 패치도 어차피 무의미하다.
     onMutate: async (post) => {
+      if (!queryClient.getQueryData(queryKey)) {
+        return undefined;
+      }
+
       await queryClient.cancelQueries({ queryKey });
-      const previous =
-        queryClient.getQueryData<InfiniteData<FeedPostPage>>(queryKey);
+      setLiked(queryKey, post.postId, !post.likedByMe);
 
-      queryClient.setQueryData<InfiniteData<FeedPostPage>>(
-        queryKey,
-        (current) =>
-          mapPages(current, (items) =>
-            items.map((item) =>
-              item.postId === post.postId
-                ? { ...item, likedByMe: !item.likedByMe }
-                : item,
-            ),
-          ),
-      );
-
-      return { previous };
+      return { key: queryKey, liked: post.likedByMe };
     },
-    onError: (mutationError, _post, context) => {
-      queryClient.setQueryData(queryKey, context?.previous);
+    // 되돌릴 때는 onMutate가 잡아둔 키를 쓴다. 그 사이 날짜나 정렬이 바뀌었으면 렌더
+    // 시점 queryKey는 다른 목록을 가리킨다. 목록 전체가 아니라 이 글만 되돌린다.
+    onError: (mutationError, post, context) => {
+      if (context) {
+        setLiked(context.key, post.postId, context.liked);
+      }
+
       handlePostError(mutationError);
     },
   });
