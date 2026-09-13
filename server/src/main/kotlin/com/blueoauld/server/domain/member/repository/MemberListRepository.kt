@@ -180,13 +180,13 @@ interface MemberListRepository : JpaRepository<Member, Long> {
 
         private const val DISTANCE = """
             st_distancesphere(
-              st_makepoint(m.longitude, m.latitude),
+              st_makepoint(m.grid_longitude, m.grid_latitude),
               st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision))
             )
         """
 
         private const val DISTANCE_ORDER = """
-            geography(st_makepoint(m.longitude, m.latitude))
+            geography(st_makepoint(m.grid_longitude, m.grid_latitude))
               <-> geography(st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision)))
         """
     }

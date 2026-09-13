@@ -20,7 +20,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -113,9 +112,21 @@ class MemberDetailServiceTest {
         assertThat(response.likedByMe).isTrue()
         assertThat(response.secretPhotoGrantedToMe).isTrue()
         assertThat(response.secretPhotoGrantedByMe).isFalse()
-        assertThat(response.distance).isCloseTo(1112.0, within(20.0))
+        assertThat(response.distance).isNotNull()
         assertThat(response.comment).isEqualTo("코멘트")
         assertThat(response.bio).isEqualTo("자기소개")
+    }
+
+    @Test
+    fun `거리는 상대가 있는 격자 칸의 가운데까지로 잰다`() {
+        // given
+        every { memberRepository.findById(TARGET_ID) } returns Optional.of(member(37.5199, 127.0001, "상대"))
+
+        // when
+        val response = memberDetailService.findDetail(ME_ID, TARGET_ID)
+
+        // then
+        assertThat(response.distance).isEqualTo(sphericalDistanceMeters(37.5, 127.0, 37.515, 127.005))
     }
 
     @Test

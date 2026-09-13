@@ -93,6 +93,11 @@ class MemberDetailService(
         val targetLatitude = target.latitude ?: return null
         val targetLongitude = target.longitude ?: return null
 
-        return sphericalDistanceMeters(myLatitude, myLongitude, targetLatitude, targetLongitude)
+        return sphericalDistanceMeters(
+            myLatitude,
+            myLongitude,
+            gridLatitude(targetLatitude),
+            gridLongitude(targetLongitude),
+        )
     }
 }

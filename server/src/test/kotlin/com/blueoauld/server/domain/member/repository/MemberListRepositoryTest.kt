@@ -7,7 +7,9 @@ import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.service.sphericalDistanceMeters
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -82,6 +84,23 @@ class MemberListRepositoryTest {
 
         // then
         assertThat(rows.map { it.getMemberId() }).containsSubsequence(nearId, farId)
+    }
+
+    @Test
+    fun `같은 격자 칸 안이면 위치가 달라도 거리가 같다`() {
+        // given
+        val now = Instant.now()
+        val firstId = save(member("+821099990006", Gender.FEMALE, 37.5101, 127.0101, now)).id
+        val secondId = save(member("+821099990007", Gender.FEMALE, 37.5199, 127.0199, now)).id
+
+        // when
+        val rows = findByDistance()
+        val distances = listOf(firstId, secondId).map { id -> rows.first { it.getMemberId() == id }.getDistance() }
+
+        // then
+        assertThat(distances).containsOnly(distances.first())
+        assertThat(distances.first())
+            .isCloseTo(sphericalDistanceMeters(MY_LATITUDE, MY_LONGITUDE, 37.515, 127.015), within(0.1))
     }
 
     @Test
