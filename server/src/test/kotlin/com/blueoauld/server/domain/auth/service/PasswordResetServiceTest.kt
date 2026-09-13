@@ -110,6 +110,19 @@ class PasswordResetServiceTest {
     }
 
     @Test
+    fun `비밀번호가 72바이트를 넘으면 인증번호를 쓰지 않는다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            passwordResetService.reset(request(password = "가".repeat(25)))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
+        verify(exactly = 0) { verificationCodeService.verify(any(), any(), any()) }
+        assertThat(member.password).isEqualTo(OLD_ENCODED_PASSWORD)
+    }
+
+    @Test
     fun `가입하지 않은 번호면 바꿀 수 없다`() {
         // given
         every { memberRepository.findByPhoneNumber(PHONE_NUMBER) } returns null
@@ -141,10 +154,10 @@ class PasswordResetServiceTest {
         assertThat(member.password).isEqualTo(OLD_ENCODED_PASSWORD)
     }
 
-    private fun request(passwordConfirm: String = NEW_PASSWORD) = ResetPasswordRequest(
+    private fun request(password: String = NEW_PASSWORD, passwordConfirm: String = password) = ResetPasswordRequest(
         phoneNumber = PHONE_NUMBER,
         verificationCode = VERIFICATION_CODE,
-        password = NEW_PASSWORD,
+        password = password,
         passwordConfirm = passwordConfirm,
     )
 

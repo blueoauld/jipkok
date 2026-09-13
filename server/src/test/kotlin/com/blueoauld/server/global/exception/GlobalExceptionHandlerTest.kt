@@ -2,13 +2,17 @@ package com.blueoauld.server.global.exception
 
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.global.security.JwtProvider
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -83,6 +87,32 @@ class GlobalExceptionHandlerTest {
         // then
         result.andExpect(status().isMethodNotAllowed)
         result.andExpect(jsonPath("$.code").value(ErrorCode.INVALID_REQUEST.code))
+    }
+
+    @Test
+    fun `동시 요청이 유니크 제약에 걸리면 중복 요청으로 준다`() {
+        // given
+        val exception = DataIntegrityViolationException("duplicate key value violates unique constraint")
+
+        // when
+        val response = GlobalExceptionHandler().handleDataIntegrityViolation(exception)
+
+        // then
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
+        assertThat(response.body?.code).isEqualTo(ErrorCode.DUPLICATE_REQUEST.code)
+    }
+
+    @Test
+    fun `다른 요청이 먼저 지운 행을 지우려 하면 중복 요청으로 준다`() {
+        // given
+        val exception = ObjectOptimisticLockingFailureException(Any::class.java, 1L)
+
+        // when
+        val response = GlobalExceptionHandler().handleOptimisticLockingFailure(exception)
+
+        // then
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
+        assertThat(response.body?.code).isEqualTo(ErrorCode.DUPLICATE_REQUEST.code)
     }
 
     companion object {

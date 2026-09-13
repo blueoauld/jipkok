@@ -1,5 +1,8 @@
 package com.blueoauld.server.global.security
 
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.read.ListAppender
 import com.blueoauld.server.global.web.RequestLoggingFilter
 import io.mockk.every
 import io.mockk.mockk
@@ -12,6 +15,7 @@ import jakarta.servlet.ServletResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.http.HttpHeaders
 import org.springframework.mock.web.MockFilterChain
@@ -51,8 +55,30 @@ class JwtAuthenticationFilterTest {
         assertThat(authentication?.principal).isEqualTo(MEMBER_ID)
         assertThat(authentication?.authorities?.map { it.authority }).containsExactly("ROLE_$ROLE")
         assertThat(memberIdInChain).isEqualTo(MEMBER_ID.toString())
-        assertThat(MDC.get(RequestLoggingFilter.MEMBER_ID_KEY)).isNull()
         assertThat(chain.request).isSameAs(request)
+    }
+
+    @Test
+    fun `요청 로그 필터 안에서 인증하면 요약 로그에 회원 id가 남고 요청이 끝나면 비운다`() {
+        // given
+        every { jwtProvider.parseAccessToken(TOKEN) } returns JwtPayload(MEMBER_ID, ROLE)
+        val logger = LoggerFactory.getLogger(RequestLoggingFilter::class.java) as Logger
+        val appender = ListAppender<ILoggingEvent>().apply { start() }
+        logger.addAppender(appender)
+        val request = requestWith("Bearer $TOKEN").apply { requestURI = "/api/members/me" }
+        val chain = MockFilterChain(mockk<Servlet>(relaxed = true), RequestLoggingFilter(), filter)
+
+        // when
+        try {
+            chain.doFilter(request, MockHttpServletResponse())
+        } finally {
+            logger.detachAppender(appender)
+        }
+
+        // then
+        assertThat(appender.list.single().mdcPropertyMap[RequestLoggingFilter.MEMBER_ID_KEY])
+            .isEqualTo(MEMBER_ID.toString())
+        assertThat(MDC.getCopyOfContextMap()).isNullOrEmpty()
     }
 
     @Test

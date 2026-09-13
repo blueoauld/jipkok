@@ -9,14 +9,10 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Index
 import jakarta.persistence.Table
 
 @Entity
-@Table(
-    name = "admin_action",
-    indexes = [Index(name = "idx_admin_action_created_at", columnList = "created_at")],
-)
+@Table(name = "admin_action")
 class AdminAction(
 
     @Column(name = "actor_id", nullable = false, updatable = false)

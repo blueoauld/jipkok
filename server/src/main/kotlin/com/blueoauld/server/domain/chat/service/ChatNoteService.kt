@@ -36,6 +36,12 @@ class ChatNoteService(
             throw BusinessException(ErrorCode.SELF_NOTE)
         }
 
+        val trimmed = content.trim()
+
+        if (trimmed.isEmpty()) {
+            throw BusinessException(ErrorCode.INVALID_REQUEST)
+        }
+
         val receiver = memberRepository.getMember(receiverId)
 
         if (memberBlockRepository.existsBetween(senderId, receiverId) ||
@@ -52,7 +58,7 @@ class ChatNoteService(
                 roomId = room.id,
                 senderId = senderId,
                 type = ChatMessageType.TEXT,
-                content = content,
+                content = trimmed,
             ),
         )
     }

@@ -147,12 +147,13 @@ class DiaryService(
     }
 
     private fun syncAttachments(memberId: Long, diary: Diary, requested: List<DiaryAttachmentRequest>) {
-        val requestedKeys = requested.map { it.objectKey }
+        val allRequestedKeys = requested.flatMap { listOfNotNull(it.objectKey, it.thumbnailObjectKey) }
 
-        if (requestedKeys.toSet().size != requestedKeys.size) {
+        if (allRequestedKeys.toSet().size != allRequestedKeys.size) {
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
 
+        val requestedKeys = requested.map { it.objectKey }
         val existing = diaryAttachmentRepository.findAllByDiaryIdOrderByPosition(diary.id).associateBy { it.objectKey }
         val removed = existing.values.filter { it.objectKey !in requestedKeys }
         val added = requested.filter { it.objectKey !in existing }

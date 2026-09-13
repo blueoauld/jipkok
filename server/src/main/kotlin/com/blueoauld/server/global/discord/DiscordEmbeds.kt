@@ -9,13 +9,16 @@ import java.time.format.DateTimeFormatter
 object DiscordEmbeds {
 
     const val DESCRIPTION_MAX_LENGTH = 4096
+    const val TOTAL_MAX_LENGTH = 6000
+
+    private const val OMITTED = "\n…(이하 생략)"
 
     private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     fun format(instant: Instant): String = FORMATTER.format(instant.atZone(KOREA))
 
     fun of(title: String, body: String): List<MessageEmbed> =
-        chunk(body, DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
+        chunk(truncate(body, TOTAL_MAX_LENGTH - title.length), DESCRIPTION_MAX_LENGTH).mapIndexed { index, chunk ->
             EmbedBuilder()
                 .apply { if (index == 0) setTitle(title) }
                 .setDescription(chunk)
@@ -25,6 +28,9 @@ object DiscordEmbeds {
     fun field(label: String, value: String) = "**$label**\n$value"
 
     fun member(nickname: String, memberId: Long) = "$nickname(`$memberId`)"
+
+    private fun truncate(text: String, maxLength: Int) =
+        if (text.length <= maxLength) text else text.take(maxLength - OMITTED.length) + OMITTED
 
     private fun chunk(text: String, maxLength: Int) =
         text.lineSequence()

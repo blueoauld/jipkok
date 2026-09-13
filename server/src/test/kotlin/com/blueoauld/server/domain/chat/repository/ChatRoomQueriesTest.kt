@@ -56,6 +56,22 @@ class ChatRoomQueriesTest {
     }
 
     @Test
+    fun `지운 방과 같은 두 회원으로 방을 다시 열면 새 방을 찾는다`() {
+        // given
+        val deleted = chatRoomRepository.saveAndFlush(ChatRoom.of(1L, 2L))
+        chatRoomRepository.softDeleteAllByIdIn(listOf(deleted.id))
+        entityManager.flush()
+
+        // when
+        val reopened = chatRoomRepository.saveAndFlush(ChatRoom.of(2L, 1L))
+
+        // then
+        assertThat(reopened.id).isNotEqualTo(deleted.id)
+        assertThat(chatRoomRepository.findByMembers(1L, 2L)?.id).isEqualTo(reopened.id)
+        assertThat(chatRoomRepository.findByMembers(2L, 1L)?.id).isEqualTo(reopened.id)
+    }
+
+    @Test
     fun `방 목록은 방 멤버가 들고 있는 마지막 메시지 순으로 준다`() {
         // given
         val older = saveRoom(partnerId = 2L)

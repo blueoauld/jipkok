@@ -287,14 +287,15 @@ class AuthServiceTest {
     }
 
     @Test
-    fun `로그아웃하면 회원의 리프레시 토큰을 지운다`() {
+    fun `로그아웃하면 보낸 리프레시 토큰이 저장된 것과 같을 때만 지운다`() {
         // given
 
         // when
         authService.logout(REFRESH_TOKEN)
 
         // then
-        verify { refreshTokenRepository.delete(MEMBER_ID) }
+        verify { refreshTokenRepository.deleteIfMatches(MEMBER_ID, REFRESH_TOKEN) }
+        verify(exactly = 0) { refreshTokenRepository.delete(any()) }
     }
 
     @Test
@@ -307,6 +308,7 @@ class AuthServiceTest {
 
         // then
         verify(exactly = 0) { refreshTokenRepository.delete(any()) }
+        verify(exactly = 0) { refreshTokenRepository.deleteIfMatches(any(), any()) }
     }
 
     private fun member() = Member(

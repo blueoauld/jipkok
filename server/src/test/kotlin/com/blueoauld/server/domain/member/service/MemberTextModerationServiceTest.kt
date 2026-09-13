@@ -41,14 +41,15 @@ class MemberTextModerationServiceTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
         every { textModerator.moderate(COMMENT) } returns ModerationResult(true, ModerationCategory.ABUSE)
         every { textModerator.moderate(BIO) } returns ModerationResult.PASSED
+        every { memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT) } returns true
         every { eventPublisher.publishEvent(capture(blocked)) } returns Unit
 
         // when
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
 
         // then
-        verify { memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT) }
-        verify(exactly = 0) { memberTextBlocker.block(MEMBER_ID, TextTarget.BIO) }
+        verify { memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT) }
+        verify(exactly = 0) { memberTextBlocker.block(MEMBER_ID, TextTarget.BIO, any()) }
         assertThat(blocked.captured.field).isEqualTo(TextTarget.COMMENT.label)
         assertThat(blocked.captured.category).isEqualTo(ModerationCategory.ABUSE)
         assertThat(blocked.captured.text).isEqualTo(COMMENT)
@@ -67,8 +68,23 @@ class MemberTextModerationServiceTest {
         // then
         verifyOrder {
             textModerator.moderate(COMMENT)
-            memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT)
+            memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT)
         }
+    }
+
+    @Test
+    fun `검수하는 사이 글이 바뀌어 가리지 못했으면 알리지 않는다`() {
+        // given
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
+        every { textModerator.moderate(COMMENT) } returns ModerationResult(true, ModerationCategory.ABUSE)
+        every { textModerator.moderate(BIO) } returns ModerationResult.PASSED
+        every { memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT) } returns false
+
+        // when
+        service.moderate(MemberTextChangedEvent(MEMBER_ID))
+
+        // then
+        verify(exactly = 0) { eventPublisher.publishEvent(any<MemberTextBlockedEvent>()) }
     }
 
     @Test
@@ -83,7 +99,7 @@ class MemberTextModerationServiceTest {
 
         // then
         verify(exactly = 0) { textModerator.moderate(Member.BLOCKED_TEXT) }
-        verify(exactly = 0) { memberTextBlocker.block(any(), any()) }
+        verify(exactly = 0) { memberTextBlocker.block(any(), any(), any()) }
         verify(exactly = 0) { eventPublisher.publishEvent(ofType<MemberTextBlockedEvent>()) }
     }
 
@@ -97,7 +113,7 @@ class MemberTextModerationServiceTest {
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
 
         // then
-        verify(exactly = 0) { memberTextBlocker.block(any(), any()) }
+        verify(exactly = 0) { memberTextBlocker.block(any(), any(), any()) }
         verify(exactly = 0) { eventPublisher.publishEvent(ofType<MemberTextBlockedEvent>()) }
     }
 
@@ -111,7 +127,7 @@ class MemberTextModerationServiceTest {
         service.moderate(MemberTextChangedEvent(MEMBER_ID))
 
         // then
-        verify(exactly = 0) { memberTextBlocker.block(any(), any()) }
+        verify(exactly = 0) { memberTextBlocker.block(any(), any(), any()) }
     }
 
     @Test

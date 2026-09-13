@@ -79,6 +79,32 @@ class ChatNoteServiceTest {
     }
 
     @Test
+    fun `쪽지 내용은 앞뒤 공백과 줄바꿈을 떼고 남긴다`() {
+        // given
+        val message = slot<ChatMessage>()
+
+        // when
+        chatNoteService.send(SENDER_ID, RECEIVER_ID, "  $CONTENT\n\n")
+
+        // then
+        verify { chatMessageService.append(any(), SENDER_ID, capture(message)) }
+        assertThat(message.captured.content).isEqualTo(CONTENT)
+    }
+
+    @Test
+    fun `공백을 떼면 빈 쪽지는 포인트를 쓰지 않고 실패한다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatNoteService.send(SENDER_ID, RECEIVER_ID, "\u00A0\n")
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
+        verify(exactly = 0) { pointService.spend(any(), any()) }
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
+    }
+
+    @Test
     fun `누가 먼저 보내든 방의 회원 순서는 같다`() {
         // given
         every { memberRepository.findById(SENDER_ID) } returns Optional.of(member())

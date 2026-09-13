@@ -100,9 +100,7 @@ class WorryPostService(
 
     @Transactional(readOnly = true)
     fun findDetail(memberId: Long, postId: Long): WorryPostResponse {
-        val post = worryPostRepository.findById(postId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
-        }
+        val post = findPost(postId)
 
         return WorryPostResponse(
             worryId = post.id,

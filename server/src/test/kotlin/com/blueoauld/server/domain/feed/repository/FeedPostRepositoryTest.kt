@@ -207,6 +207,29 @@ class FeedPostRepositoryTest {
     }
 
     @Test
+    fun `회원이 좋아요한 게시물만 좋아요 수를 하나씩 내리고 0 아래로는 내리지 않는다`() {
+        // given
+        val liked = savePost(maleId, slot(1), likeCount = 3)
+        val likedByOther = savePost(maleId, slot(2), likeCount = 1)
+        val alreadyZero = savePost(maleId, slot(3))
+        feedPostLikeRepository.saveAllAndFlush(
+            listOf(
+                FeedPostLike(liked.id, meId),
+                FeedPostLike(likedByOther.id, femaleId),
+                FeedPostLike(alreadyZero.id, meId),
+            ),
+        )
+
+        // when
+        feedPostRepository.decreaseLikeCountLikedBy(meId)
+
+        // then
+        assertThat(feedPostRepository.findById(liked.id).orElseThrow().likeCount).isEqualTo(2)
+        assertThat(feedPostRepository.findById(likedByOther.id).orElseThrow().likeCount).isOne()
+        assertThat(feedPostRepository.findById(alreadyZero.id).orElseThrow().likeCount).isZero()
+    }
+
+    @Test
     fun `사진 키는 지운 글까지 준다`() {
         // given
         val post = savePost(meId, slot(1))
@@ -243,8 +266,13 @@ class FeedPostRepositoryTest {
         size = PAGE_SIZE,
     )
 
-    private fun savePost(memberId: Long, slotAt: Instant) = feedPostRepository.saveAndFlush(
-        FeedPost(memberId = memberId, slotAt = slotAt, objectKey = "feeds/$memberId/$slotAt.jpg"),
+    private fun savePost(memberId: Long, slotAt: Instant, likeCount: Int = 0) = feedPostRepository.saveAndFlush(
+        FeedPost(
+            memberId = memberId,
+            slotAt = slotAt,
+            objectKey = "feeds/$memberId/$slotAt.jpg",
+            likeCount = likeCount,
+        ),
     )
 
     private fun save(member: Member) = memberRepository.saveAndFlush(member)

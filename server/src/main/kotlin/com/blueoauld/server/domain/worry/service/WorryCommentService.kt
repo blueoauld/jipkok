@@ -97,9 +97,7 @@ class WorryCommentService(
     }
 
     private fun validateParent(postId: Long, parentId: Long) {
-        val parent = worryCommentRepository.findById(parentId).orElseThrow {
-            BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)
-        }
+        val parent = findComment(parentId)
 
         if (parent.postId != postId) {
             throw BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND)

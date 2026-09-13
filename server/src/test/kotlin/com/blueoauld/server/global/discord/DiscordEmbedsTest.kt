@@ -59,7 +59,7 @@ class DiscordEmbedsTest {
     @Test
     fun `줄 단위로 묶어 상한을 넘기지 않는다`() {
         // given
-        val line = "가".repeat(3000)
+        val line = "가".repeat(2900)
 
         // when
         val embeds = DiscordEmbeds.of(TITLE, "$line\n$line")
@@ -67,7 +67,7 @@ class DiscordEmbedsTest {
         // then
         assertThat(embeds).hasSize(2)
         assertThat(embeds.map { it.description }).allSatisfy {
-            assertThat(it).hasSize(3000)
+            assertThat(it).hasSize(2900)
         }
     }
 
@@ -95,6 +95,32 @@ class DiscordEmbedsTest {
 
         // then
         assertThat(embeds).hasSize(2)
+    }
+
+    @Test
+    fun `제목과 본문을 합쳐 한 메시지 상한을 넘으면 뒤를 생략한다`() {
+        // given
+        val body = "가".repeat(10_000)
+
+        // when
+        val embeds = DiscordEmbeds.of(TITLE, body)
+
+        // then
+        assertThat(embeds.sumOf { it.length }).isLessThanOrEqualTo(DiscordEmbeds.TOTAL_MAX_LENGTH)
+        assertThat(embeds.last().description).endsWith("\n…(이하 생략)")
+    }
+
+    @Test
+    fun `제목과 본문을 합쳐 한 메시지 상한에 딱 맞으면 생략하지 않는다`() {
+        // given
+        val body = "가".repeat(DiscordEmbeds.TOTAL_MAX_LENGTH - TITLE.length)
+
+        // when
+        val embeds = DiscordEmbeds.of(TITLE, body)
+
+        // then
+        assertThat(embeds.sumOf { it.length }).isEqualTo(DiscordEmbeds.TOTAL_MAX_LENGTH)
+        assertThat(embeds.joinToString("") { it.description.orEmpty() }).isEqualTo(body)
     }
 
     @Test

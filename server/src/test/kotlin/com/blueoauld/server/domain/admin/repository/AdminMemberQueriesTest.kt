@@ -139,6 +139,34 @@ class AdminMemberQueriesTest {
     }
 
     @Test
+    fun `이용 정지가 아닌 부분 정지만 걸린 회원은 정상으로 판정한다`() {
+        // given
+        val partial = saveMember("+821077778888", "달맞이", Gender.FEMALE)
+        memberSuspensionRepository.saveAndFlush(
+            MemberSuspension(
+                phoneNumber = "+821077778888",
+                memberId = partial.id,
+                nickname = "달맞이",
+                type = SuspensionType.SECRET_PHOTO,
+                reason = SuspensionReason.ABUSE,
+                startedAt = NOW.minusSeconds(3600),
+                expiresAt = null,
+            ),
+        )
+        entityManager.flush()
+        entityManager.clear()
+
+        // when
+        val normal = memberAdminRepository.findAllForAdmin("NORMAL", null, null, null, null, NOW, 20, 0)
+        val suspended = memberAdminRepository.findAllForAdmin("SUSPENDED", null, null, null, null, NOW, 20, 0)
+
+        // then
+        assertThat(normal.map { it.id }).contains(partial.id)
+        assertThat(normal.first { it.id == partial.id }.suspended).isFalse()
+        assertThat(suspended.map { it.id }).doesNotContain(partial.id)
+    }
+
+    @Test
     fun `상세 행은 탈퇴 회원도 준다`() {
         // given
 

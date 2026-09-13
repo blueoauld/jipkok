@@ -2,10 +2,17 @@ package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.TestcontainersConfiguration
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
+import com.blueoauld.server.domain.block.entity.ContactBlock
 import com.blueoauld.server.domain.block.entity.MemberBlock
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.diary.entity.Diary
+import com.blueoauld.server.domain.diary.entity.DiaryAttachment
+import com.blueoauld.server.domain.diary.entity.type.DiaryAttachmentType
+import com.blueoauld.server.domain.diary.repository.DiaryAttachmentRepository
+import com.blueoauld.server.domain.diary.repository.DiaryRepository
 import com.blueoauld.server.domain.favorite.entity.MemberFavorite
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.feed.entity.FeedPost
@@ -45,6 +52,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.LocalDate
 
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
@@ -76,7 +84,16 @@ class MemberWithdrawServiceIntegrationTest {
     private lateinit var worryCommentRepository: WorryCommentRepository
 
     @Autowired
+    private lateinit var diaryRepository: DiaryRepository
+
+    @Autowired
+    private lateinit var diaryAttachmentRepository: DiaryAttachmentRepository
+
+    @Autowired
     private lateinit var memberBlockRepository: MemberBlockRepository
+
+    @Autowired
+    private lateinit var contactBlockRepository: ContactBlockRepository
 
     @Autowired
     private lateinit var memberFavoriteRepository: MemberFavoriteRepository
@@ -112,21 +129,31 @@ class MemberWithdrawServiceIntegrationTest {
     fun `모든 도메인에서 회원의 흔적을 지운다`() {
         // given
         val member = memberRepository.save(newMember("+821011112222", "탈퇴자"))
-        val partner = memberRepository.save(newMember("+821033334444", "상대방"))
+        val partner = memberRepository.save(newMember("+821033334444", "상대방", receivedLikeCount = 1))
         val now = clock.instant()
 
         chatRoomRepository.save(ChatRoom.of(member.id, partner.id))
 
         feedPostRepository.save(FeedPost(member.id, now, "feeds/mine.webp"))
-        val partnerFeedPost = feedPostRepository.save(FeedPost(partner.id, now, "feeds/partner.webp"))
+        val partnerFeedPost = feedPostRepository.save(
+            FeedPost(partner.id, now, "feeds/partner.webp", likeCount = 1),
+        )
         feedPostLikeRepository.save(FeedPostLike(partnerFeedPost.id, member.id))
 
         worryPostRepository.save(WorryPost(member.id, WorryCategory.LOVE, "내 고민"))
-        val partnerWorryPost = worryPostRepository.save(WorryPost(partner.id, WorryCategory.WORK, "상대 고민"))
+        val partnerWorryPost = worryPostRepository.save(
+            WorryPost(partner.id, WorryCategory.WORK, "상대 고민", likeCount = 1, commentCount = 1),
+        )
         worryPostLikeRepository.save(WorryPostLike(partnerWorryPost.id, member.id))
         worryCommentRepository.save(WorryComment(partnerWorryPost.id, member.id, "내 댓글", 1))
 
+        val diary = diaryRepository.save(Diary(member.id, LocalDate.of(2026, 9, 1), "내 일기"))
+        diaryAttachmentRepository.save(
+            DiaryAttachment(diary.id, DiaryAttachmentType.PHOTO, "diaries/${member.id}/photo.webp", position = 0),
+        )
+
         memberBlockRepository.save(MemberBlock(member.id, partner.id))
+        contactBlockRepository.save(ContactBlock(member.id, "+821055556666"))
         memberFavoriteRepository.save(MemberFavorite(member.id, partner.id))
         memberLikeRepository.save(MemberLike(member.id, partner.id))
         memberMemoRepository.save(MemberMemo(member.id, partner.id, "내가 남긴 메모"))
@@ -150,17 +177,25 @@ class MemberWithdrawServiceIntegrationTest {
         assertThat(memberRepository.findById(member.id)).isEmpty()
         assertThat(chatRoomRepository.findAllByMember(member.id)).isEmpty()
         assertThat(refreshTokenRepository.findToken(member.id)).isNull()
+        assertThat(diaryAttachmentRepository.findAllByDiaryIdOrderByPosition(diary.id)).isEmpty()
 
         val remaining = REMAINING_ROW_QUERIES.filterValues { countRows(it, member.id) > 0 }.keys
         assertThat(remaining).isEmpty()
+
+        assertThat(memberRepository.findById(partner.id).orElseThrow().receivedLikeCount).isZero()
+        assertThat(feedPostRepository.findById(partnerFeedPost.id).orElseThrow().likeCount).isZero()
+        val worryPost = worryPostRepository.findById(partnerWorryPost.id).orElseThrow()
+        assertThat(worryPost.likeCount).isZero()
+        assertThat(worryPost.commentCount).isZero()
     }
 
-    private fun newMember(phoneNumber: String, nickname: String) = Member(
+    private fun newMember(phoneNumber: String, nickname: String, receivedLikeCount: Int = 0) = Member(
         phoneNumber = phoneNumber,
         password = "encoded-password",
         gender = Gender.MALE,
         nickname = nickname,
         birthYear = 1998,
+        receivedLikeCount = receivedLikeCount,
     )
 
     private fun countRows(condition: String, memberId: Long): Long {
@@ -181,7 +216,9 @@ class MemberWithdrawServiceIntegrationTest {
             "고민 글" to "worry_post|member_id = :memberId and deleted_at is null",
             "고민 좋아요" to "worry_post_like|member_id = :memberId",
             "고민 댓글" to "worry_comment|member_id = :memberId and deleted_at is null",
+            "일기" to "diary|member_id = :memberId",
             "차단" to "member_block|blocker_id = :memberId or blocked_member_id = :memberId",
+            "번호 차단" to "contact_block|member_id = :memberId",
             "즐겨찾기" to "member_favorite|member_id = :memberId or favorite_member_id = :memberId",
             "좋아요" to "member_like|liker_id = :memberId or liked_member_id = :memberId",
             "회원 메모" to "member_memo|owner_id = :memberId or target_id = :memberId",

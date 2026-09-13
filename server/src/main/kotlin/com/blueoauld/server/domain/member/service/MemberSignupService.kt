@@ -13,6 +13,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.security.checkPasswordBytes
 import com.blueoauld.server.global.security.checkPasswordConfirm
 import com.blueoauld.server.global.security.encodePassword
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -33,6 +34,7 @@ class MemberSignupService(
     @Transactional
     fun signup(request: SignupRequest): TokenResponse {
         checkPasswordConfirm(request.password, request.passwordConfirm)
+        checkPasswordBytes(request.password)
 
         verificationCodeService.verify(
             request.phoneNumber,

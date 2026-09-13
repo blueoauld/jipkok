@@ -1,0 +1,1 @@
+DROP INDEX idx_admin_action_created_at;

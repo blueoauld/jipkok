@@ -2,6 +2,7 @@ package com.blueoauld.server.global.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,14 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleDataIntegrityViolation(exception: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
         val errorCode = ErrorCode.DUPLICATE_REQUEST
         log.warn(exception) { "데이터 무결성 제약을 위반했다." }
+
+        return ResponseEntity.status(errorCode.status).body(ErrorResponse.from(errorCode))
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException::class)
+    fun handleOptimisticLockingFailure(exception: OptimisticLockingFailureException): ResponseEntity<ErrorResponse> {
+        val errorCode = ErrorCode.DUPLICATE_REQUEST
+        log.warn(exception) { "다른 요청이 먼저 바꾼 데이터를 고치려 했다." }
 
         return ResponseEntity.status(errorCode.status).body(ErrorResponse.from(errorCode))
     }

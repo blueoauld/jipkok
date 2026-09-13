@@ -135,6 +135,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
         private const val ACTIVE_SUSPENSION = """exists(
             select 1 from member_suspension s
             where s.phone_number = m.phone_number
+              and s.type = 'SERVICE'
               and s.released_at is null
               and (s.expires_at is null or s.expires_at > :now))"""
 

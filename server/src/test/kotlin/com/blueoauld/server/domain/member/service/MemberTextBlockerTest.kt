@@ -23,9 +23,10 @@ class MemberTextBlockerTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
 
         // when
-        memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT)
+        val blocked = memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT)
 
         // then
+        assertThat(blocked).isTrue()
         assertThat(member.comment).isEqualTo(Member.BLOCKED_TEXT)
         assertThat(member.bio).isEqualTo(BIO)
     }
@@ -37,9 +38,10 @@ class MemberTextBlockerTest {
         every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
 
         // when
-        memberTextBlocker.block(MEMBER_ID, TextTarget.BIO)
+        val blocked = memberTextBlocker.block(MEMBER_ID, TextTarget.BIO, BIO)
 
         // then
+        assertThat(blocked).isTrue()
         assertThat(member.bio).isEqualTo(Member.BLOCKED_TEXT)
         assertThat(member.comment).isEqualTo(COMMENT)
     }
@@ -49,8 +51,25 @@ class MemberTextBlockerTest {
         // given
         every { memberRepository.findById(MEMBER_ID) } returns Optional.empty()
 
-        // when, then
-        memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT)
+        // when
+        val blocked = memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT)
+
+        // then
+        assertThat(blocked).isFalse()
+    }
+
+    @Test
+    fun `검수하는 사이 글을 고쳤으면 고친 글을 가리지 않는다`() {
+        // given
+        val member = member().apply { comment = "안녕하세요" }
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member)
+
+        // when
+        val blocked = memberTextBlocker.block(MEMBER_ID, TextTarget.COMMENT, COMMENT)
+
+        // then
+        assertThat(blocked).isFalse()
+        assertThat(member.comment).isEqualTo("안녕하세요")
     }
 
     private fun member() = Member(

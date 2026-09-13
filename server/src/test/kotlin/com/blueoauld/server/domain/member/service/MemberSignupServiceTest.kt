@@ -132,6 +132,22 @@ class MemberSignupServiceTest {
     }
 
     @Test
+    fun `비밀번호가 72바이트를 넘으면 인증번호를 확인하지 않고 실패한다`() {
+        // given
+        val request = signupRequest(password = "가".repeat(25))
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberSignupService.signup(request)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
+        verify(exactly = 0) { verificationCodeService.verify(any(), any(), any()) }
+        verify(exactly = 0) { memberRepository.save(any()) }
+    }
+
+    @Test
     fun `이미 가입된 번호면 회원을 만들지 않는다`() {
         // given
         every { memberRepository.existsByPhoneNumber(PHONE_NUMBER) } returns true
@@ -180,10 +196,10 @@ class MemberSignupServiceTest {
         verify(exactly = 0) { memberRepository.save(any()) }
     }
 
-    private fun signupRequest(passwordConfirm: String = PASSWORD) = SignupRequest(
+    private fun signupRequest(password: String = PASSWORD, passwordConfirm: String = password) = SignupRequest(
         phoneNumber = PHONE_NUMBER,
         verificationCode = VERIFICATION_CODE,
-        password = PASSWORD,
+        password = password,
         passwordConfirm = passwordConfirm,
         gender = Gender.MALE,
     )

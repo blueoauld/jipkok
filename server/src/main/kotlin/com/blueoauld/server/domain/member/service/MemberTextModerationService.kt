@@ -50,7 +50,9 @@ class MemberTextModerationService(
             return
         }
 
-        memberTextBlocker.block(memberId, target)
+        if (!memberTextBlocker.block(memberId, target, text)) {
+            return
+        }
 
         eventPublisher.publishEvent(
             MemberTextBlockedEvent(

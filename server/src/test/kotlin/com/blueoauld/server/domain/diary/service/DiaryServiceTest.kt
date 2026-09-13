@@ -260,6 +260,47 @@ class DiaryServiceTest {
     }
 
     @Test
+    fun `동영상 썸네일 키가 다른 첨부의 키와 겹치면 받지 않는다`() {
+        // given
+        every { photoUploadService.confirm(any()) } returns mapOf(
+            PHOTO_KEY to photo(),
+            VIDEO_KEY to video(),
+            OTHER_VIDEO_KEY to video(),
+            THUMBNAIL_KEY to photo(),
+        )
+
+        // when
+        val sameAsPhoto = assertThrows(BusinessException::class.java) {
+            diaryService.write(
+                MEMBER_ID,
+                TODAY,
+                request(
+                    "내용",
+                    DiaryAttachmentRequest(PHOTO_KEY),
+                    DiaryAttachmentRequest(VIDEO_KEY, PHOTO_KEY, 12),
+                ),
+            )
+        }
+        val sharedThumbnail = assertThrows(BusinessException::class.java) {
+            diaryService.write(
+                MEMBER_ID,
+                TODAY,
+                request(
+                    "내용",
+                    DiaryAttachmentRequest(VIDEO_KEY, THUMBNAIL_KEY, 12),
+                    DiaryAttachmentRequest(OTHER_VIDEO_KEY, THUMBNAIL_KEY, 12),
+                ),
+            )
+        }
+
+        // then
+        assertThat(sameAsPhoto.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        assertThat(sharedThumbnail.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { photoUploadService.confirm(any()) }
+        verify(exactly = 0) { diaryAttachmentRepository.save(any()) }
+    }
+
+    @Test
     fun `동영상에는 썸네일과 길이가 있어야 한다`() {
         // given
         every { photoUploadService.confirm(listOf(VIDEO_KEY)) } returns mapOf(VIDEO_KEY to video())
@@ -444,6 +485,7 @@ class DiaryServiceTest {
         private const val PREFIX = "diaries/$MEMBER_ID"
         private const val PHOTO_KEY = "$PREFIX/photo.webp"
         private const val VIDEO_KEY = "$PREFIX/video.mp4"
+        private const val OTHER_VIDEO_KEY = "$PREFIX/other-video.mp4"
         private const val THUMBNAIL_KEY = "$PREFIX/thumbnail.jpg"
         private val NOW: Instant = Instant.parse("2026-09-09T15:30:00Z")
         private val TODAY: LocalDate = LocalDate.of(2026, 9, 10)

@@ -215,6 +215,18 @@ class RequestLoggingFilterTest {
         assertThat(appender.list).isEmpty()
     }
 
+    @Test
+    fun `api 경로가 아니어도 요청이 끝나면 진단 정보를 비운다`() {
+        // given
+        val chain = FilterChain { _, _ -> MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, MEMBER_ID.toString()) }
+
+        // when
+        filter.doFilter(MockHttpServletRequest("GET", "/ws"), MockHttpServletResponse(), chain)
+
+        // then
+        assertThat(MDC.getCopyOfContextMap()).isNullOrEmpty()
+    }
+
     private fun message() = appender.list.single().formattedMessage
 
     private fun diagnostics() = appender.list.single().mdcPropertyMap

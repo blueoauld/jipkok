@@ -71,7 +71,9 @@ class AuthService(
     }
 
     fun logout(refreshToken: String) {
-        jwtProvider.parseRefreshTokenMemberId(refreshToken)?.let(refreshTokenRepository::delete)
+        jwtProvider.parseRefreshTokenMemberId(refreshToken)?.let {
+            refreshTokenRepository.deleteIfMatches(it, refreshToken)
+        }
     }
 
     fun issueTokens(member: Member): TokenResponse {

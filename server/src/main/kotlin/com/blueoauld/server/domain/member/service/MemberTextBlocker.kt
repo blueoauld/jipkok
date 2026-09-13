@@ -14,12 +14,22 @@ class MemberTextBlocker(
 ) {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun block(memberId: Long, target: TextTarget) {
-        val member = memberRepository.findById(memberId).orElse(null) ?: return
+    fun block(memberId: Long, target: TextTarget, moderatedText: String): Boolean {
+        val member = memberRepository.findById(memberId).orElse(null) ?: return false
+        val currentText = when (target) {
+            TextTarget.COMMENT -> member.comment
+            TextTarget.BIO -> member.bio
+        }
+
+        if (currentText != moderatedText) {
+            return false
+        }
 
         when (target) {
             TextTarget.COMMENT -> member.comment = Member.BLOCKED_TEXT
             TextTarget.BIO -> member.bio = Member.BLOCKED_TEXT
         }
+
+        return true
     }
 }

@@ -7,8 +7,3 @@ jwt:
 
 r2:
     enabled: false
-    endpoint: ""
-    access-key-id: ""
-    secret-access-key: ""
-    bucket: ""
-    public-base-url: ""

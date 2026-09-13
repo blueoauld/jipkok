@@ -23,6 +23,22 @@ class RequestLoggingFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
+        try {
+            if (request.requestURI.startsWith(API_PATH_PREFIX)) {
+                filterWithSummary(request, response, filterChain)
+            } else {
+                filterChain.doFilter(request, response)
+            }
+        } finally {
+            MDC.clear()
+        }
+    }
+
+    private fun filterWithSummary(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain,
+    ) {
         val requestId = newRequestId()
         val startedAt = System.nanoTime()
 
@@ -34,11 +50,8 @@ class RequestLoggingFilter : OncePerRequestFilter() {
             filterChain.doFilter(request, response)
         } finally {
             log.info { describe(request, response.status, elapsedMillis(startedAt)) }
-            MDC.clear()
         }
     }
-
-    override fun shouldNotFilter(request: HttpServletRequest) = !request.requestURI.startsWith(API_PATH_PREFIX)
 
     private fun describe(request: HttpServletRequest, status: Int, elapsedMillis: Long) = buildString {
         append("${request.method} ${maskPath(request.requestURI)}")

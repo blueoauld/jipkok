@@ -382,10 +382,33 @@ class WorryQueriesTest {
     }
 
     @Test
-    fun `회원이 단 댓글만큼 글의 댓글 수를 내린다`() {
+    fun `회원이 공감한 글만 공감 수를 하나씩 내리고 0 아래로는 내리지 않는다`() {
+        // given
+        worryPostLikeRepository.saveAllAndFlush(
+            listOf(
+                WorryPostLike(likedPostId, meId),
+                WorryPostLike(talkedPostId, authorId),
+                WorryPostLike(quietPostId, meId),
+            ),
+        )
+
+        // when
+        worryPostRepository.decreaseLikeCountLikedBy(meId)
+
+        // then
+        entityManager.clear()
+        assertThat(worryPostRepository.findById(likedPostId).orElseThrow().likeCount).isEqualTo(4)
+        assertThat(worryPostRepository.findById(talkedPostId).orElseThrow().likeCount).isEqualTo(2)
+        assertThat(worryPostRepository.findById(quietPostId).orElseThrow().likeCount).isZero()
+    }
+
+    @Test
+    fun `회원이 단 댓글 중 지우지 않은 것만큼 글의 댓글 수를 내린다`() {
         // given
         saveComment(talkedPostId, meId, anonymousNo = 1)
         saveComment(talkedPostId, meId, anonymousNo = 1)
+        worryCommentRepository.delete(saveComment(talkedPostId, meId, anonymousNo = 1))
+        saveComment(talkedPostId, authorId, anonymousNo = 2)
 
         // when
         worryPostRepository.decreaseCommentCountCommentedBy(meId)

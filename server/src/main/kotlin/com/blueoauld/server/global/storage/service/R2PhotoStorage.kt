@@ -2,6 +2,7 @@ package com.blueoauld.server.global.storage.service
 
 import com.blueoauld.server.global.properties.R2Properties
 import com.blueoauld.server.global.storage.dto.StoredObject
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
@@ -21,6 +22,8 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.net.URI
 import java.time.Duration
+
+private val log = KotlinLogging.logger {}
 
 @Component
 @ConditionalOnProperty(prefix = "r2", name = ["enabled"], havingValue = "true")
@@ -105,12 +108,16 @@ class R2PhotoStorage(
                 .objects(chunk.map { ObjectIdentifier.builder().key(it).build() })
                 .build()
 
-            client.deleteObjects(
+            val errors = client.deleteObjects(
                 DeleteObjectsRequest.builder()
                     .bucket(r2Properties.bucket)
                     .delete(delete)
                     .build(),
-            )
+            ).errors()
+
+            if (errors.isNotEmpty()) {
+                log.error { "사진 일부를 지우지 못했다. errors=${errors.map { "${it.key()}(${it.code()})" }}" }
+            }
         }
     }
 

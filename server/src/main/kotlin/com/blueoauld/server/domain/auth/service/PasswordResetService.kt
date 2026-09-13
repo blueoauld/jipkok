@@ -9,6 +9,7 @@ import com.blueoauld.server.domain.push.service.DeviceTokenService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.security.AccessTokenRevocationCache
+import com.blueoauld.server.global.security.checkPasswordBytes
 import com.blueoauld.server.global.security.checkPasswordConfirm
 import com.blueoauld.server.global.security.encodePassword
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -30,6 +31,7 @@ class PasswordResetService(
     @Transactional
     fun reset(request: ResetPasswordRequest) {
         checkPasswordConfirm(request.password, request.passwordConfirm)
+        checkPasswordBytes(request.password)
 
         verificationCodeService.verify(
             request.phoneNumber,
