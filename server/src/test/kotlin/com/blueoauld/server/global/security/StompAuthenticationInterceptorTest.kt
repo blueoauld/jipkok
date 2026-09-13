@@ -71,9 +71,47 @@ class StompAuthenticationInterceptorTest {
     }
 
     @Test
-    fun `CONNECT와 SEND가 아닌 명령은 토큰을 보지 않고 그대로 통과시킨다`() {
+    fun `개인 큐 구독은 그대로 통과시킨다`() {
         // given
-        val accessor = StompHeaderAccessor.create(StompCommand.SUBSCRIBE).apply {
+        val message = StompHeaderAccessor.create(StompCommand.SUBSCRIBE)
+            .apply { destination = "/user/queue/chat" }
+            .toMessage()
+
+        // when
+        val result = interceptor.preSend(message, channel)
+
+        // then
+        assertThat(result).isSameAs(message)
+    }
+
+    @Test
+    fun `개인 큐가 아닌 목적지를 구독하면 막는다`() {
+        // given
+        val message = StompHeaderAccessor.create(StompCommand.SUBSCRIBE)
+            .apply { destination = "/queue/**" }
+            .toMessage()
+
+        // when, then
+        assertThatThrownBy { interceptor.preSend(message, channel) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FORBIDDEN)
+    }
+
+    @Test
+    fun `목적지 없는 구독은 막는다`() {
+        // given
+        val message = StompHeaderAccessor.create(StompCommand.SUBSCRIBE).toMessage()
+
+        // when, then
+        assertThatThrownBy { interceptor.preSend(message, channel) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FORBIDDEN)
+    }
+
+    @Test
+    fun `CONNECT, SUBSCRIBE, SEND가 아닌 명령은 토큰을 보지 않고 그대로 통과시킨다`() {
+        // given
+        val accessor = StompHeaderAccessor.create(StompCommand.UNSUBSCRIBE).apply {
             setNativeHeader(HttpHeaders.AUTHORIZATION, "Bearer $TOKEN")
         }
         val message = accessor.toMessage()

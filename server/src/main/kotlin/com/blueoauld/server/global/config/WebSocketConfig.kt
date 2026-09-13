@@ -31,9 +31,9 @@ class WebSocketConfig(
     companion object {
 
         const val ENDPOINT = "/ws"
+        const val USER_PREFIX = "/user"
 
         private const val QUEUE_PREFIX = "/queue"
-        private const val USER_PREFIX = "/user"
         private const val ALLOWED_ORIGIN_PATTERN = "*"
     }
 }

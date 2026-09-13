@@ -1,5 +1,6 @@
 package com.blueoauld.server.global.security
 
+import com.blueoauld.server.global.config.WebSocketConfig
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import org.springframework.http.HttpHeaders
@@ -25,11 +26,21 @@ class StompAuthenticationInterceptor(
                 accessor.user = jwtProvider.authenticateBearer(accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION))
                     ?: throw BusinessException(ErrorCode.UNAUTHORIZED)
 
+            StompCommand.SUBSCRIBE ->
+                if (accessor.destination?.startsWith(USER_DESTINATION_PREFIX) != true) {
+                    throw BusinessException(ErrorCode.FORBIDDEN)
+                }
+
             StompCommand.SEND -> throw BusinessException(ErrorCode.FORBIDDEN)
 
             else -> Unit
         }
 
         return message
+    }
+
+    companion object {
+
+        private const val USER_DESTINATION_PREFIX = "${WebSocketConfig.USER_PREFIX}/"
     }
 }
