@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.service.DeviceTokenService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
@@ -30,12 +31,15 @@ class PasswordResetServiceTest {
 
     private val loginAttemptCache = mockk<LoginAttemptCache>(relaxed = true)
 
+    private val deviceTokenService = mockk<DeviceTokenService>(relaxed = true)
+
     private val passwordResetService = PasswordResetService(
         memberRepository,
         verificationCodeService,
         passwordEncoder,
         refreshTokenRepository,
         loginAttemptCache,
+        deviceTokenService,
     )
 
     private val member = Member(
@@ -75,6 +79,7 @@ class PasswordResetServiceTest {
 
         // then
         verify { refreshTokenRepository.delete(member.id) }
+        verify { deviceTokenService.removeAll(member.id) }
     }
 
     @Test

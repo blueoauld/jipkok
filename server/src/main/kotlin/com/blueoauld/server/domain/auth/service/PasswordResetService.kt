@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
 import com.blueoauld.server.domain.auth.repository.LoginAttemptCache
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.push.service.DeviceTokenService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.security.checkPasswordConfirm
@@ -21,6 +22,7 @@ class PasswordResetService(
     private val passwordEncoder: PasswordEncoder,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val loginAttemptCache: LoginAttemptCache,
+    private val deviceTokenService: DeviceTokenService,
 ) {
 
     @Transactional
@@ -39,6 +41,7 @@ class PasswordResetService(
         member.password = passwordEncoder.encodePassword(request.password)
 
         refreshTokenRepository.delete(member.id)
+        deviceTokenService.removeAll(member.id)
         loginAttemptCache.clear(request.phoneNumber)
     }
 }

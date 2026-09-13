@@ -35,6 +35,11 @@ class DeviceTokenService(
         deviceTokenRepository.deleteByTokenAndMemberId(token, memberId)
     }
 
+    @Transactional
+    fun removeAll(memberId: Long) {
+        deviceTokenRepository.deleteAllByMemberId(memberId)
+    }
+
     @Transactional(readOnly = true)
     fun findTokens(memberId: Long) = deviceTokenRepository.findAllByMemberId(memberId).map { it.token }
 

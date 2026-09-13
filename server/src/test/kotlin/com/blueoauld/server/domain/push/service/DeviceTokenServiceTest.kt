@@ -75,6 +75,15 @@ class DeviceTokenServiceTest {
     }
 
     @Test
+    fun `회원의 기기 토큰을 모두 지운다`() {
+        // when
+        deviceTokenService.removeAll(MEMBER_ID)
+
+        // then
+        verify { deviceTokenRepository.deleteAllByMemberId(MEMBER_ID) }
+    }
+
+    @Test
     fun `만료된 토큰을 지운다`() {
         // given
         val tokens = listOf(TOKEN)
