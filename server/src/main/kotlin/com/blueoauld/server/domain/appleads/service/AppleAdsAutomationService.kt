@@ -13,6 +13,7 @@ import com.blueoauld.server.global.time.today
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.Clock
 import java.time.Period
 
@@ -44,6 +45,7 @@ class AppleAdsAutomationService(
         lowerBid: Boolean,
         raiseBid: Boolean,
         addKeyword: Boolean,
+        maxBid: BigDecimal?,
     ): AppleAdsAutomation = settings().also {
         it.update(
             enabled = enabled,
@@ -53,6 +55,7 @@ class AppleAdsAutomationService(
             lowerBid = lowerBid,
             raiseBid = raiseBid,
             addKeyword = addKeyword,
+            maxBid = maxBid,
             updatedById = actorId,
         )
     }
@@ -61,7 +64,7 @@ class AppleAdsAutomationService(
         val settings = settings()
 
         if (!settings.enabled) {
-            return AppleAdsAutomationResult(enabled = false, candidates = 0, applied = 0, failed = 0)
+            return AppleAdsAutomationResult(enabled = false, candidates = 0, applied = 0, failed = 0, remaining = 0)
         }
 
         val today = clock.today()
@@ -69,6 +72,7 @@ class AppleAdsAutomationService(
         val startDate = endDate.minusDays(WINDOW_DAYS - 1)
         val recommendations = recommender.recommend(startDate, endDate, null).items
             .filter { settings.allows(actionTypeOf(it.type)) }
+            .mapNotNull { capRaisedBid(it, settings.maxBid) }
 
         val appliedToday = actionRepository.countByAutomaticTrueAndCreatedAtAfter(
             today.atStartOfDay(KOREA).toInstant(),
@@ -78,7 +82,11 @@ class AppleAdsAutomationService(
         var applied = 0
         var failed = 0
 
-        recommendations.take(remaining).forEach { recommendation ->
+        for (recommendation in recommendations) {
+            if (applied >= remaining || applied + failed >= remaining * ATTEMPTS_PER_SLOT) {
+                break
+            }
+
             runCatching { actionService.apply(null, commandOf(recommendation), automatic = true) }
                 .onSuccess { applied++ }
                 .onFailure {
@@ -96,7 +104,23 @@ class AppleAdsAutomationService(
             candidates = recommendations.size,
             applied = applied,
             failed = failed,
+            remaining = remaining,
         )
+    }
+
+    private fun capRaisedBid(recommendation: AppleAdsRecommendation, maxBid: BigDecimal?): AppleAdsRecommendation? {
+        if (maxBid == null || recommendation.type != AppleAdsRecommendationType.RAISE_BID) {
+            return recommendation
+        }
+
+        val currentBid = recommendation.currentBid ?: return null
+        val suggestedBid = recommendation.suggestedBid ?: return null
+
+        if (currentBid >= maxBid) {
+            return null
+        }
+
+        return recommendation.copy(suggestedBid = minOf(suggestedBid, maxBid))
     }
 
     private fun commandOf(recommendation: AppleAdsRecommendation) = AppleAdsActionCommand(
@@ -119,6 +143,8 @@ class AppleAdsAutomationService(
         const val WINDOW_DAYS = 30L
 
         val ATTRIBUTION_LAG: Period = Period.ofDays(3)
+
+        private const val ATTEMPTS_PER_SLOT = 2
 
         fun actionTypeOf(type: AppleAdsRecommendationType): AppleAdsActionType = when (type) {
             AppleAdsRecommendationType.PAUSE_KEYWORD -> AppleAdsActionType.PAUSE_KEYWORD

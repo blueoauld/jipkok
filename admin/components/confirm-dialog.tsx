@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { ApiError } from "@/lib/api/client";
 
-type Props = {
+type Props<T> = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
@@ -23,11 +23,11 @@ type Props = {
   confirmVariant?: "destructive" | "default";
   errorFallback: string;
   invalidateKeys: string[][];
-  action: () => Promise<unknown>;
-  onSuccess?: () => void;
+  action: () => Promise<T>;
+  onSuccess?: (result: T) => void;
 };
 
-export function ConfirmDialog({
+export function ConfirmDialog<T>({
   open,
   onOpenChange,
   title,
@@ -38,18 +38,18 @@ export function ConfirmDialog({
   invalidateKeys,
   action,
   onSuccess,
-}: Props) {
+}: Props<T>) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: action,
-    onSuccess: () => {
+    onSuccess: (result) => {
       invalidateKeys.forEach((queryKey) =>
         queryClient.invalidateQueries({ queryKey }),
       );
       close();
-      onSuccess?.();
+      onSuccess?.(result);
     },
     onError: (caught) => {
       setError(caught instanceof ApiError ? caught.message : errorFallback);
@@ -63,8 +63,8 @@ export function ConfirmDialog({
   };
 
   const change = (next: boolean) => {
-    if (!next) close();
-    else onOpenChange(true);
+    if (next) onOpenChange(true);
+    else if (!mutation.isPending) close();
   };
 
   return (
@@ -78,7 +78,11 @@ export function ConfirmDialog({
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
         <DialogFooter>
-          <Button variant="outline" onClick={close}>
+          <Button
+            variant="outline"
+            disabled={mutation.isPending}
+            onClick={close}
+          >
             취소
           </Button>
           <PendingButton

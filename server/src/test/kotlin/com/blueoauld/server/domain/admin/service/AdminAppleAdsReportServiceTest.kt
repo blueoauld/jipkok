@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.admin.service
 
+import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordSummaryRow
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
 import com.blueoauld.server.domain.appleads.repository.AppleAdsCampaignRepository
@@ -21,9 +22,16 @@ class AdminAppleAdsReportServiceTest {
 
     private val summaryRepository = mockk<AppleAdsSummaryRepository>()
 
+    private val appleAdsAdminRepository = mockk<AppleAdsAdminRepository>()
+
     private val recommender = mockk<AppleAdsRecommender>()
 
-    private val service = AdminAppleAdsReportService(campaignRepository, summaryRepository, recommender)
+    private val service = AdminAppleAdsReportService(
+        campaignRepository,
+        summaryRepository,
+        appleAdsAdminRepository,
+        recommender,
+    )
 
     @Test
     fun `키워드 성과에 파생 지표와 합계를 붙인다`() {
@@ -94,6 +102,7 @@ class AdminAppleAdsReportServiceTest {
             every { keyword } returns "keyword $keywordId"
             every { matchType } returns "EXACT"
             every { keywordStatus } returns "ACTIVE"
+            every { deleted } returns false
             every { bidAmount } returns BigDecimal("1.45")
             every { suggestedBidAmount } returns null
             every { bidMin } returns null

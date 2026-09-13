@@ -170,6 +170,10 @@ export const ja: typeof ko = {
     APPLE_ADS_003: "レポート期間は90日まで、開始日は今日から90日前までです。",
     APPLE_ADS_004: "Apple Adsの操作が見つかりません。",
     APPLE_ADS_005: "すでに元に戻した操作です。",
+    APPLE_ADS_006:
+      "Apple Adsでキーワードが変更されました。レポートを同期してからもう一度お試しください。",
+    APPLE_ADS_007:
+      "同じ対象にもっと後の操作があります。後の操作から元に戻してください。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "過去" },

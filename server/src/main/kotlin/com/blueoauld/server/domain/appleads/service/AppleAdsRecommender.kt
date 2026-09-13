@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendation
 import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendationResult
 import com.blueoauld.server.domain.appleads.dto.AppleAdsRecommendationType
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermSummaryRow
+import com.blueoauld.server.domain.appleads.entity.type.AppleAdsActionType
 import com.blueoauld.server.domain.appleads.repository.AppleAdsActionRepository
 import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
 import org.springframework.stereotype.Service
@@ -26,28 +27,33 @@ class AppleAdsRecommender(
     @Transactional(readOnly = true)
     fun recommend(startDate: LocalDate, endDate: LocalDate, campaignId: Long?): AppleAdsRecommendationResult {
         val keywords = summaryRepository.summarizeKeywords(startDate, endDate, campaignId)
-        val searchTerms = summaryRepository.summarizeSearchTerms(startDate, endDate, campaignId, SEARCH_MATCH)
+        val allSearchTerms = summaryRepository.summarizeSearchTerms(startDate, endDate, campaignId, null)
+        val searchTerms = allSearchTerms.filter { it.searchTermSource == SEARCH_MATCH }
+        val keywordMatchedInstalls = allSearchTerms
+            .filter { it.searchTermSource == KEYWORD_MATCH }
+            .groupBy { it.adGroupId to normalize(it.searchTerm) }
+            .mapValues { (_, rows) -> rows.sumOf { it.totalInstalls } }
 
         val installs = keywords.sumOf { it.totalInstalls }
         val spend = keywords.fold(BigDecimal.ZERO) { acc, it -> acc + it.spend }
         val currency = keywords.firstNotNullOfOrNull { it.currency }
         val baseline = perUnit(spend, installs)
-        val existingKeywords = keywords.map { normalize(it.keyword) }.toSet()
-        val recentActions = actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(clock.instant().minus(COOLDOWN))
+        val liveKeywords = keywords.filterNot { it.deleted }
+        val existingKeywords = liveKeywords.map { normalize(it.keyword) }.toSet()
+        val cooldownSince = clock.instant().minus(COOLDOWN)
+        val recentActions = actionRepository.findAllByCreatedAtAfterOrRevertedAtAfter(cooldownSince, cooldownSince)
+        val searchTermActions = actionRepository.findAllByTypeInAndRevertedAtIsNull(SEARCH_TERM_ACTION_TYPES)
         val actedKeywordIds = recentActions.mapNotNull { it.keywordId }.toSet()
-        val actedSearchTerms = recentActions.mapNotNull { action ->
-            action.searchTerm?.let {
-                action.adGroupId to
-            normalize(it)
-            }
+        val actedSearchTerms = (recentActions + searchTermActions).mapNotNull { action ->
+            action.searchTerm?.let { action.adGroupId to normalize(it) }
         }.toSet()
 
-        val items = keywords
+        val items = liveKeywords
             .filterNot { it.keywordId in actedKeywordIds }
-            .mapNotNull { keywordRecommendation(it, baseline) } +
+            .mapNotNull { keywordRecommendation(it, baselineWithout(it, spend, installs)) } +
             searchTerms
                 .filterNot { (it.adGroupId to normalize(it.searchTerm)) in actedSearchTerms }
-                .mapNotNull { searchTermRecommendation(it, existingKeywords, keywords) }
+                .mapNotNull { searchTermRecommendation(it, existingKeywords, liveKeywords, keywordMatchedInstalls) }
 
         return AppleAdsRecommendationResult(
             baselineCostPerInstall = baseline,
@@ -58,12 +64,13 @@ class AppleAdsRecommender(
         )
     }
 
+    private fun baselineWithout(row: AppleAdsKeywordSummaryRow, spend: BigDecimal, installs: Long): BigDecimal? =
+        perUnit(spend - row.spend, installs - row.totalInstalls)?.takeIf { it.signum() > 0 }
+
     private fun keywordRecommendation(row: AppleAdsKeywordSummaryRow, baseline: BigDecimal?): AppleAdsRecommendation? {
         if (row.keywordStatus != ACTIVE) {
             return null
         }
-
-        val costPerInstall = perUnit(row.spend, row.totalInstalls)
 
         if (row.totalInstalls == 0L && row.taps >= PAUSE_MIN_TAPS) {
             return fromKeyword(
@@ -76,17 +83,32 @@ class AppleAdsRecommender(
 
         val bid = row.bidAmount ?: return null
 
-        if (baseline == null || costPerInstall == null) {
+        if (baseline == null) {
             return null
         }
+
+        if (row.totalInstalls == 0L) {
+            if (row.taps < BID_MIN_TAPS) {
+                return null
+            }
+
+            return fromKeyword(
+                type = AppleAdsRecommendationType.LOWER_BID,
+                row = row,
+                suggestedBid = scaleBid(bid * LOWER_BID_STEP),
+                reason = "탭 ${row.taps}회 동안 설치가 없다. 다른 키워드의 설치당 비용은 ${money(baseline, row.currency)}다.",
+            )
+        }
+
+        val costPerInstall = perUnit(row.spend, row.totalInstalls) ?: return null
 
         if (row.taps >= BID_MIN_TAPS && costPerInstall >= baseline * LOWER_BID_RATIO) {
             return fromKeyword(
                 type = AppleAdsRecommendationType.LOWER_BID,
                 row = row,
                 suggestedBid = scaleBid(bid * LOWER_BID_STEP),
-                reason = "설치당 비용 ${money(costPerInstall, row.currency)}가 기준 ${money(baseline, row.currency)}의 " +
-                    "${LOWER_BID_RATIO}배를 넘는다.",
+                reason = "설치당 비용 ${money(costPerInstall, row.currency)}가 다른 키워드 설치당 비용 " +
+                    "${money(baseline, row.currency)}의 ${LOWER_BID_RATIO}배 이상이다.",
             )
         }
 
@@ -94,14 +116,15 @@ class AppleAdsRecommender(
             val step = scaleBid(bid * RAISE_BID_STEP)
             val appleSuggested = row.suggestedBidAmount?.takeIf { it > bid }
             val suggested = appleSuggested?.let { minOf(it, step) } ?: step
-            val appleNote = row.suggestedBidAmount?.let { " 애플 제안 입찰가는 ${money(it, row.currency)}다." }.orEmpty()
+            val appleNote = appleSuggested?.let { " 애플 제안 입찰가 ${money(it, row.currency)}를 넘지 않는다." }.orEmpty()
 
             return fromKeyword(
                 type = AppleAdsRecommendationType.RAISE_BID,
                 row = row,
                 suggestedBid = suggested,
-                reason = "설치 ${row.totalInstalls}회, 설치당 비용 ${money(costPerInstall, row.currency)}로 기준 " +
-                    "${money(baseline, row.currency)}의 ${RAISE_BID_RATIO.movePointRight(2).toInt()}% 이하다.$appleNote",
+                reason = "설치 ${row.totalInstalls}회, 설치당 비용 ${money(costPerInstall, row.currency)}로 " +
+                    "다른 키워드 설치당 비용 ${money(baseline, row.currency)}의 " +
+                    "${RAISE_BID_RATIO.movePointRight(2).toInt()}% 이하다.$appleNote",
             )
         }
 
@@ -112,12 +135,19 @@ class AppleAdsRecommender(
         row: AppleAdsSearchTermSummaryRow,
         existingKeywords: Set<String>,
         keywords: List<AppleAdsKeywordSummaryRow>,
+        keywordMatchedInstalls: Map<Pair<Long, String>, Long>,
     ): AppleAdsRecommendation? {
-        if (normalize(row.searchTerm) in existingKeywords) {
+        val term = normalize(row.searchTerm)
+
+        if (term in existingKeywords) {
             return null
         }
 
         if (row.totalInstalls == 0L && row.taps >= NEGATIVE_MIN_TAPS) {
+            if ((keywordMatchedInstalls[row.adGroupId to term] ?: 0L) > 0L) {
+                return null
+            }
+
             return fromSearchTerm(
                 type = AppleAdsRecommendationType.ADD_NEGATIVE_KEYWORD,
                 row = row,
@@ -132,6 +162,7 @@ class AppleAdsRecommender(
                 .filter { it.adGroupId == row.adGroupId && it.keywordStatus == ACTIVE }
                 .mapNotNull { it.bidAmount }
                 .maxOrNull()
+                ?: return null
 
             return fromSearchTerm(
                 type = AppleAdsRecommendationType.ADD_KEYWORD,
@@ -205,6 +236,8 @@ class AppleAdsRecommender(
 
         val COOLDOWN: Duration = Duration.ofDays(14)
 
+        val SEARCH_TERM_ACTION_TYPES = listOf(AppleAdsActionType.ADD_NEGATIVE_KEYWORD, AppleAdsActionType.ADD_KEYWORD)
+
         val LOWER_BID_RATIO: BigDecimal = BigDecimal("1.5")
         val RAISE_BID_RATIO: BigDecimal = BigDecimal("0.7")
         val LOWER_BID_STEP: BigDecimal = BigDecimal("0.85")
@@ -212,6 +245,7 @@ class AppleAdsRecommender(
 
         private const val ACTIVE = "ACTIVE"
         private const val SEARCH_MATCH = "AUTO"
+        private const val KEYWORD_MATCH = "TARGETED"
         private const val MONEY_SCALE = 2
 
         private val MIN_BID = BigDecimal("0.01")

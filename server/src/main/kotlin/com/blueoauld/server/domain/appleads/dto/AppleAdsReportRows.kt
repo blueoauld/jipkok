@@ -23,6 +23,7 @@ data class AppleAdsKeywordDailyRow(
     val keyword: String,
     val matchType: String?,
     val keywordStatus: String?,
+    val deleted: Boolean,
     val bidAmount: BigDecimal?,
     val suggestedBidAmount: BigDecimal?,
     val bidMin: BigDecimal?,

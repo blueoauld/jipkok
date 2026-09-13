@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsOrgResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAdAccountResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSyncResponse
 import com.blueoauld.server.domain.appleads.service.AppleAdsClient
 import com.blueoauld.server.domain.appleads.service.AppleAdsReportSyncer
@@ -14,10 +14,11 @@ class AdminAppleAdsService(
     private val reportSyncer: AppleAdsReportSyncer,
 ) {
 
-    fun findOrgs(): List<AdminAppleAdsOrgResponse> = appleAdsClient.findOrgs().map {
-        AdminAppleAdsOrgResponse(
+    fun findAdAccounts(): List<AdminAppleAdsAdAccountResponse> = appleAdsClient.findAdAccounts().map {
+        AdminAppleAdsAdAccountResponse(
+            adAccountId = it.adAccountId,
+            name = it.name,
             orgId = it.orgId,
-            orgName = it.orgName,
             currency = it.currency,
             timeZone = it.timeZone,
             roleNames = it.roleNames,

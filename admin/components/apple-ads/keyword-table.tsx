@@ -58,7 +58,9 @@ export function KeywordTable({ data }: Props) {
                 : dash}
             </TableCell>
             <TableCell>
-              {item.keywordStatus ? (
+              {item.deleted ? (
+                <StatusText tone="muted">삭제됨</StatusText>
+              ) : item.keywordStatus ? (
                 <StatusText
                   tone={item.keywordStatus === "ACTIVE" ? "positive" : "muted"}
                 >

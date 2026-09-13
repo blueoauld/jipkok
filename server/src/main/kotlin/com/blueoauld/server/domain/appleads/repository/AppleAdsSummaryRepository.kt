@@ -16,6 +16,7 @@ interface AppleAdsSummaryRepository : JpaRepository<AppleAdsKeywordDaily, Long> 
                (array_agg(k.keyword order by k.report_date desc))[1] as keyword,
                (array_agg(k.match_type order by k.report_date desc))[1] as matchType,
                (array_agg(k.keyword_status order by k.report_date desc))[1] as keywordStatus,
+               bool_or(k.deleted) as deleted,
                (array_agg(k.bid_amount order by k.report_date desc))[1] as bidAmount,
                (array_agg(k.suggested_bid_amount order by k.report_date desc))[1] as suggestedBidAmount,
                (array_agg(k.bid_min order by k.report_date desc))[1] as bidMin,

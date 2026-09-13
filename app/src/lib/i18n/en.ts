@@ -167,6 +167,10 @@ export const en: typeof ko = {
       "The report range can be up to 90 days, and the start date must be within the last 90 days.",
     APPLE_ADS_004: "Apple Ads action not found.",
     APPLE_ADS_005: "This action has already been reverted.",
+    APPLE_ADS_006:
+      "The keyword has changed in Apple Ads. Please sync the reports and try again.",
+    APPLE_ADS_007:
+      "A later action exists for the same target. Please revert the later action first.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },

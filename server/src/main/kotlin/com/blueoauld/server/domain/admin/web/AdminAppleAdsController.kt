@@ -4,12 +4,13 @@ import com.blueoauld.server.domain.admin.dto.request.ApplyAppleAdsActionRequest
 import com.blueoauld.server.domain.admin.dto.request.UpdateAppleAdsAutomationRequest
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsActionResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAdAccountResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAutomationResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsAutomationRunResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsCampaignResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordListResponse
-import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsOrgResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationListResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsReportStatusResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSyncResponse
 import com.blueoauld.server.domain.admin.service.AdminAppleAdsActionService
@@ -41,11 +42,11 @@ class AdminAppleAdsController(
 ) {
 
     @Operation(
-        summary = "애플 광고 조직 목록",
-        description = "API 사용자가 접근할 수 있는 조직을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 orgId를 얻는 데 쓴다.",
+        summary = "애플 광고 광고 계정 목록",
+        description = "API 사용자가 접근할 수 있는 광고 계정을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 adAccountId를 얻는 데 쓴다.",
     )
-    @GetMapping("/orgs")
-    fun findOrgs(): List<AdminAppleAdsOrgResponse> = adminAppleAdsService.findOrgs()
+    @GetMapping("/ad-accounts")
+    fun findAdAccounts(): List<AdminAppleAdsAdAccountResponse> = adminAppleAdsService.findAdAccounts()
 
     @Operation(
         summary = "애플 광고 리포트 적재",
@@ -57,6 +58,13 @@ class AdminAppleAdsController(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate,
     ): AdminAppleAdsSyncResponse = adminAppleAdsService.syncReports(startDate, endDate)
+
+    @Operation(
+        summary = "애플 광고 리포트 적재 상태",
+        description = "키워드 리포트를 마지막으로 저장한 시각과, 저장된 가장 최근 리포트 날짜다. 적재가 멈췄는지 볼 때 쓴다.",
+    )
+    @GetMapping("/reports/status")
+    fun findReportStatus(): AdminAppleAdsReportStatusResponse = adminAppleAdsReportService.findReportStatus()
 
     @Operation(summary = "애플 광고 캠페인 목록", description = "적재해 둔 캠페인 스냅샷이다. 필터에 쓴다.")
     @GetMapping("/campaigns")
@@ -89,7 +97,8 @@ class AdminAppleAdsController(
     @Operation(
         summary = "애플 광고 조치 추천",
         description = "기간 성과를 규칙에 대어 일시정지, 제외 키워드, 입찰가 조정, 키워드 추가를 추천한다. " +
-            "기준은 기간의 키워드 설치당 비용이고, 표본이 모자란 항목은 추천하지 않는다. 적용은 하지 않는다.",
+            "입찰가는 평가하는 키워드를 뺀 나머지 키워드의 설치당 비용과 비교하고, 표본이 모자란 항목은 추천하지 않는다. " +
+            "적용은 하지 않는다.",
     )
     @GetMapping("/recommendations")
     fun findRecommendations(
@@ -102,7 +111,8 @@ class AdminAppleAdsController(
     @Operation(
         summary = "애플 광고 조치 적용",
         description = "추천을 애플 광고에 실제로 적용하고 이력을 남긴다. 일시정지와 입찰가 변경은 keywordId, " +
-            "제외 키워드와 키워드 추가는 searchTerm이 필요하고, 입찰가 변경과 키워드 추가는 suggestedBid와 currency도 필요하다.",
+            "제외 키워드와 키워드 추가는 searchTerm이 필요하고, 입찰가 변경과 키워드 추가는 suggestedBid와 currency도 필요하다. " +
+            "입찰가 변경은 currentBid도 필요하고, 애플의 현재 입찰가나 상태가 추천 때와 다르면 거절한다.",
     )
     @PostMapping("/actions")
     fun applyAppleAdsAction(
@@ -112,7 +122,8 @@ class AdminAppleAdsController(
 
     @Operation(
         summary = "애플 광고 조치 되돌리기",
-        description = "입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있다.",
+        description = "입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있고, " +
+            "같은 대상에 더 나중에 한 조치가 남아 있으면 되돌리지 않는다.",
     )
     @PostMapping("/actions/{actionId}/revert")
     fun revertAppleAdsAction(
@@ -127,7 +138,7 @@ class AdminAppleAdsController(
         @RequestParam(defaultValue = "20") size: Int,
     ): AdminAppleAdsActionPageResponse = adminAppleAdsActionService.findActions(page, size)
 
-    @Operation(summary = "애플 광고 자동 실행 설정", description = "켜짐 여부, 하루 한도, 유형별 허용 여부다.")
+    @Operation(summary = "애플 광고 자동 실행 설정", description = "켜짐 여부, 하루 한도, 유형별 허용 여부, 올리기 최대 입찰가다.")
     @GetMapping("/automation")
     fun findAutomation(): AdminAppleAdsAutomationResponse = adminAppleAdsAutomationService.findSettings()
 

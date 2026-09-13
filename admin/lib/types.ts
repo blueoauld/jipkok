@@ -46,6 +46,7 @@ export type AppleAdsSearchTerm = Schemas["AdminAppleAdsSearchTermResponse"];
 export type AppleAdsSearchTermList =
   Schemas["AdminAppleAdsSearchTermListResponse"];
 export type AppleAdsSyncResult = Schemas["AdminAppleAdsSyncResponse"];
+export type AppleAdsReportStatus = Schemas["AdminAppleAdsReportStatusResponse"];
 export type AppleAdsRecommendation =
   Schemas["AdminAppleAdsRecommendationResponse"];
 export type AppleAdsRecommendationList =

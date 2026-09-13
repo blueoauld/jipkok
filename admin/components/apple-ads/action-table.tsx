@@ -11,11 +11,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime, formatMoney } from "@/lib/format";
-import { appleAdsActionTypeLabels, matchTypeLabels } from "@/lib/labels";
+import {
+  appleAdsActionTypeLabels,
+  keywordStatusLabels,
+  matchTypeLabels,
+} from "@/lib/labels";
 import { inactiveRowClassName } from "@/lib/styles";
 import type { AppleAdsAction } from "@/lib/types";
 
 const dash = <span className="text-muted-foreground">-</span>;
+
+function statusLabel(status: string) {
+  return keywordStatusLabels[status] ?? status;
+}
 
 function changeOf(action: AppleAdsAction) {
   if (action.previousBid != null || action.newBid != null) {
@@ -42,12 +50,12 @@ function changeOf(action: AppleAdsAction) {
         {action.previousStatus && (
           <>
             <span className="text-muted-foreground">
-              {action.previousStatus}
+              {statusLabel(action.previousStatus)}
             </span>
             <ArrowRight className="size-3 text-muted-foreground" />
           </>
         )}
-        {action.newStatus ?? dash}
+        {action.newStatus ? statusLabel(action.newStatus) : dash}
       </span>
     );
   }

@@ -7,6 +7,7 @@ import type {
   AppleAdsCampaign,
   AppleAdsKeywordList,
   AppleAdsRecommendationList,
+  AppleAdsReportStatus,
   AppleAdsSearchTermList,
   AppleAdsSyncResult,
   ApplyAppleAdsActionBody,
@@ -22,6 +23,9 @@ export type AppleAdsReportParams = {
 
 const campaignIdOf = (campaignId: string) =>
   campaignId === "ALL" ? undefined : Number(campaignId);
+
+export const fetchAppleAdsReportStatus = () =>
+  api<AppleAdsReportStatus>("/api/admin/apple-ads/reports/status");
 
 export const fetchAppleAdsCampaigns = () =>
   api<AppleAdsCampaign[]>("/api/admin/apple-ads/campaigns");

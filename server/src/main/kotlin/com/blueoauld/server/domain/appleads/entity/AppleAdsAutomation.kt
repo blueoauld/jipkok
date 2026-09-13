@@ -1,11 +1,14 @@
 package com.blueoauld.server.domain.appleads.entity
 
+import com.blueoauld.server.domain.appleads.entity.AppleAdsKeywordDaily.Companion.MONEY_PRECISION
+import com.blueoauld.server.domain.appleads.entity.AppleAdsKeywordDaily.Companion.MONEY_SCALE
 import com.blueoauld.server.domain.appleads.entity.type.AppleAdsActionType
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "apple_ads_automation")
@@ -32,6 +35,9 @@ class AppleAdsAutomation(
     @Column(name = "auto_add_keyword", nullable = false)
     var addKeyword: Boolean = false,
 
+    @Column(name = "max_bid", precision = MONEY_PRECISION, scale = MONEY_SCALE)
+    var maxBid: BigDecimal? = null,
+
     @Column(name = "updated_by_id")
     var updatedById: Long? = null,
 ) : BaseEntity() {
@@ -56,6 +62,7 @@ class AppleAdsAutomation(
         lowerBid: Boolean,
         raiseBid: Boolean,
         addKeyword: Boolean,
+        maxBid: BigDecimal?,
         updatedById: Long,
     ) {
         this.enabled = enabled
@@ -65,6 +72,7 @@ class AppleAdsAutomation(
         this.lowerBid = lowerBid
         this.raiseBid = raiseBid
         this.addKeyword = addKeyword
+        this.maxBid = maxBid
         this.updatedById = updatedById
     }
 

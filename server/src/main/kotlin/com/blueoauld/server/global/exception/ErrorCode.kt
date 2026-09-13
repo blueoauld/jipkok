@@ -149,4 +149,14 @@ enum class ErrorCode(
     ),
     APPLE_ADS_ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLE_ADS_004", "애플 광고 조치를 찾을 수 없습니다."),
     APPLE_ADS_ACTION_ALREADY_REVERTED(HttpStatus.CONFLICT, "APPLE_ADS_005", "이미 되돌린 조치입니다."),
+    APPLE_ADS_KEYWORD_CHANGED(
+        HttpStatus.CONFLICT,
+        "APPLE_ADS_006",
+        "애플 광고에서 키워드가 바뀌었습니다. 리포트를 동기화한 뒤 다시 시도해주시길 바랍니다.",
+    ),
+    APPLE_ADS_ACTION_SUPERSEDED(
+        HttpStatus.CONFLICT,
+        "APPLE_ADS_007",
+        "같은 대상에 더 나중에 한 조치가 있습니다. 나중 조치부터 되돌려주시길 바랍니다.",
+    ),
 }

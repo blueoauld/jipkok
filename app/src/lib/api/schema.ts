@@ -1536,6 +1536,7 @@ export interface components {
             lowerBid: boolean | null;
             raiseBid: boolean | null;
             addKeyword: boolean | null;
+            maxBid?: number | null;
         };
         AdminAppleAdsAutomationResponse: {
             enabled: boolean;
@@ -1546,6 +1547,7 @@ export interface components {
             lowerBid: boolean;
             raiseBid: boolean;
             addKeyword: boolean;
+            maxBid?: number | null;
             /** Format: int64 */
             updatedById?: number | null;
             updatedByNickname?: string | null;
@@ -1758,6 +1760,8 @@ export interface components {
             applied: number;
             /** Format: int32 */
             failed: number;
+            /** Format: int32 */
+            remaining: number;
         };
         ApplyAppleAdsActionRequest: {
             /** @enum {string|null} */
@@ -2560,6 +2564,12 @@ export interface components {
             adGroupName?: string | null;
             metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
         };
+        AdminAppleAdsReportStatusResponse: {
+            /** Format: date-time */
+            lastSyncedAt?: string | null;
+            /** Format: date */
+            latestReportDate?: string | null;
+        };
         AdminAppleAdsRecommendationListResponse: {
             baselineCostPerInstall?: number | null;
             /** Format: int64 */
@@ -2594,14 +2604,6 @@ export interface components {
             costPerInstall?: number | null;
             reason: string;
         };
-        AdminAppleAdsOrgResponse: {
-            /** Format: int64 */
-            orgId: number;
-            orgName: string;
-            currency?: string | null;
-            timeZone?: string | null;
-            roleNames: string[];
-        };
         AdminAppleAdsKeywordListResponse: {
             items: components["schemas"]["AdminAppleAdsKeywordResponse"][];
             total: components["schemas"]["AdminAppleAdsMetricsResponse"];
@@ -2612,6 +2614,7 @@ export interface components {
             keyword: string;
             matchType?: string | null;
             keywordStatus?: string | null;
+            deleted: boolean;
             bidAmount?: number | null;
             /** Format: int64 */
             campaignId: number;
@@ -2626,6 +2629,16 @@ export interface components {
             name: string;
             status?: string | null;
             deleted: boolean;
+        };
+        AdminAppleAdsAdAccountResponse: {
+            /** Format: int64 */
+            adAccountId: number;
+            name: string;
+            /** Format: int64 */
+            orgId?: number | null;
+            currency?: string | null;
+            timeZone?: string | null;
+            roleNames: string[];
         };
         AdminAppleAdsActionPageResponse: {
             items: components["schemas"]["AdminAppleAdsActionResponse"][];

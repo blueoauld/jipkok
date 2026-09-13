@@ -21,7 +21,7 @@ class AppleAdsSchedulerTest {
     private val scheduler = AppleAdsScheduler(reportSyncer, automationService, Clock.fixed(NOW, ZoneOffset.UTC))
 
     @Test
-    fun `최근 일주일을 오늘까지 다시 받은 뒤 자동 조치를 돌린다`() {
+    fun `자동 조치가 보는 30일 창의 시작부터 어제까지 다시 받은 뒤 자동 조치를 돌린다`() {
         // given
         every { reportSyncer.sync(any(), any()) } returns mockk()
         every { automationService.run() } returns mockk()
@@ -30,7 +30,7 @@ class AppleAdsSchedulerTest {
         scheduler.runDaily()
 
         // then
-        verify { reportSyncer.sync(TODAY.minus(AppleAdsScheduler.SYNC_WINDOW), TODAY) }
+        verify { reportSyncer.sync(LocalDate.of(2026, 8, 6), LocalDate.of(2026, 9, 6)) }
         verify { automationService.run() }
     }
 
@@ -62,6 +62,5 @@ class AppleAdsSchedulerTest {
 
         // UTC 6일 16시는 한국 7일 1시다.
         private val NOW: Instant = Instant.parse("2026-09-06T16:00:00Z")
-        private val TODAY: LocalDate = LocalDate.of(2026, 9, 7)
     }
 }

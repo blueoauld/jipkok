@@ -6,8 +6,10 @@ import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsKeywordRespon
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsMetricsResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsRecommendationResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsReportStatusResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermListResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAppleAdsSearchTermResponse
+import com.blueoauld.server.domain.admin.repository.AppleAdsAdminRepository
 import com.blueoauld.server.domain.appleads.dto.AppleAdsMetricsRow
 import com.blueoauld.server.domain.appleads.repository.AppleAdsCampaignRepository
 import com.blueoauld.server.domain.appleads.repository.AppleAdsSummaryRepository
@@ -26,8 +28,19 @@ class AdminAppleAdsReportService(
 
     private val campaignRepository: AppleAdsCampaignRepository,
     private val summaryRepository: AppleAdsSummaryRepository,
+    private val appleAdsAdminRepository: AppleAdsAdminRepository,
     private val recommender: AppleAdsRecommender,
 ) {
+
+    @Transactional(readOnly = true)
+    fun findReportStatus(): AdminAppleAdsReportStatusResponse {
+        val status = appleAdsAdminRepository.findReportStatus()
+
+        return AdminAppleAdsReportStatusResponse(
+            lastSyncedAt = status.lastSyncedAt,
+            latestReportDate = status.latestReportDate,
+        )
+    }
 
     @Transactional(readOnly = true)
     fun findCampaigns(): List<AdminAppleAdsCampaignResponse> =
@@ -47,6 +60,7 @@ class AdminAppleAdsReportService(
                 keyword = it.keyword,
                 matchType = it.matchType,
                 keywordStatus = it.keywordStatus,
+                deleted = it.deleted,
                 bidAmount = it.bidAmount,
                 campaignId = it.campaignId,
                 adGroupId = it.adGroupId,

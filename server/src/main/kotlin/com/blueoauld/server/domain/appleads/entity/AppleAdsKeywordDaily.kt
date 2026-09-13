@@ -51,6 +51,9 @@ class AppleAdsKeywordDaily(
     @Column(name = "keyword_status", length = TYPE_MAX_LENGTH)
     val keywordStatus: String?,
 
+    @Column(name = "deleted", nullable = false)
+    val deleted: Boolean,
+
     @Column(name = "bid_amount", precision = MONEY_PRECISION, scale = MONEY_SCALE)
     val bidAmount: BigDecimal?,
 

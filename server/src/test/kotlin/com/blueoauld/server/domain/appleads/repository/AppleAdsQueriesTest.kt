@@ -90,6 +90,7 @@ class AppleAdsQueriesTest {
             now = NOW,
             reportDate = NEXT_DATE,
             status = "PAUSED",
+            deleted = true,
         )
         upsertKeyword(impressions = 99, spend = BigDecimal("9.00"), now = NOW, reportDate = NEXT_DATE.plusDays(1))
         upsertKeyword(
@@ -109,6 +110,8 @@ class AppleAdsQueriesTest {
         assertThat(row.impressions).isEqualTo(30)
         assertThat(row.spend).isEqualByComparingTo(BigDecimal("3.00"))
         assertThat(row.keywordStatus).isEqualTo("PAUSED")
+        assertThat(row.deleted).isTrue()
+        assertThat(rows.single { it.keywordId == OTHER_KEYWORD_ID }.deleted).isFalse()
         assertThat(row.suggestedBidAmount).isEqualByComparingTo(BigDecimal("2.40"))
         assertThat(row.bidMin).isNull()
         assertThat(rows.map { it.keywordId }).containsExactly(KEYWORD_ID, OTHER_KEYWORD_ID)
@@ -136,30 +139,92 @@ class AppleAdsQueriesTest {
     }
 
     @Test
-    fun `되돌리지 않은 최근 조치만 찾는다`() {
+    fun `최근에 만들었거나 최근에 되돌린 조치를 찾는다`() {
         // given
         val kept = actionRepository.save(action(keywordId = KEYWORD_ID))
-        val reverted = actionRepository.save(action(keywordId = OTHER_KEYWORD_ID)).also { it.revert(2L, NOW) }
-        actionRepository.save(reverted)
+        val reverted = actionRepository.save(action(keywordId = OTHER_KEYWORD_ID))
+        val createdThreshold = kept.createdAt.minusSeconds(1)
+        val revertedThreshold = reverted.createdAt.plusSeconds(1)
+        reverted.revert(2L, revertedThreshold.plusSeconds(60))
+        actionRepository.saveAndFlush(reverted)
 
         // when
-        val recent = actionRepository.findAllByCreatedAtAfterAndRevertedAtIsNull(kept.createdAt.minusSeconds(1))
+        val createdRecently = actionRepository.findAllByCreatedAtAfterOrRevertedAtAfter(
+            createdThreshold,
+            createdThreshold,
+        )
+        val revertedRecently = actionRepository.findAllByCreatedAtAfterOrRevertedAtAfter(
+            revertedThreshold,
+            revertedThreshold,
+        )
 
         // then
-        assertThat(recent.map { it.id }).contains(kept.id).doesNotContain(reverted.id)
+        assertThat(createdRecently.map { it.id }).contains(kept.id, reverted.id)
+        assertThat(revertedRecently.map { it.id }).contains(reverted.id).doesNotContain(kept.id)
     }
 
-    private fun action(keywordId: Long) = AppleAdsAction(
+    @Test
+    fun `되돌리지 않은 검색어 조치는 기간과 상관없이 유형으로 찾는다`() {
+        // given
+        val negative = actionRepository.save(action(type = AppleAdsActionType.ADD_NEGATIVE_KEYWORD))
+        val reverted = actionRepository.save(action(type = AppleAdsActionType.ADD_NEGATIVE_KEYWORD))
+        reverted.revert(2L, NOW)
+        actionRepository.saveAndFlush(reverted)
+        val paused = actionRepository.save(action(keywordId = KEYWORD_ID))
+
+        // when
+        val found = actionRepository.findAllByTypeInAndRevertedAtIsNull(
+            listOf(AppleAdsActionType.ADD_NEGATIVE_KEYWORD, AppleAdsActionType.ADD_KEYWORD),
+        )
+
+        // then
+        assertThat(found.map { it.id }).contains(negative.id).doesNotContain(reverted.id, paused.id)
+    }
+
+    @Test
+    fun `같은 키워드나 검색어에 더 나중의 되돌리지 않은 조치가 있는지 본다`() {
+        // given
+        val first = actionRepository.save(action(keywordId = KEYWORD_ID))
+        val later = actionRepository.save(action(keywordId = KEYWORD_ID))
+        val firstNegative = actionRepository.save(
+            action(type = AppleAdsActionType.ADD_NEGATIVE_KEYWORD, searchTerm = "디스코드"),
+        )
+        val laterNegative = actionRepository.save(
+            action(type = AppleAdsActionType.ADD_NEGATIVE_KEYWORD, searchTerm = "디스코드"),
+        )
+        laterNegative.revert(2L, NOW)
+        actionRepository.saveAndFlush(laterNegative)
+
+        // when
+        val firstHasLater = actionRepository.existsByIdGreaterThanAndKeywordIdAndRevertedAtIsNull(first.id, KEYWORD_ID)
+        val laterHasLater = actionRepository.existsByIdGreaterThanAndKeywordIdAndRevertedAtIsNull(later.id, KEYWORD_ID)
+        val searchTermHasLater = actionRepository.existsByIdGreaterThanAndAdGroupIdAndSearchTermAndRevertedAtIsNull(
+            firstNegative.id,
+            AD_GROUP_ID,
+            "디스코드",
+        )
+
+        // then
+        assertThat(firstHasLater).isTrue()
+        assertThat(laterHasLater).isFalse()
+        assertThat(searchTermHasLater).isFalse()
+    }
+
+    private fun action(
+        type: AppleAdsActionType = AppleAdsActionType.PAUSE_KEYWORD,
+        keywordId: Long? = null,
+        searchTerm: String? = null,
+    ) = AppleAdsAction(
         actorId = 1L,
         automatic = false,
-        type = AppleAdsActionType.PAUSE_KEYWORD,
+        type = type,
         campaignId = CAMPAIGN_ID,
         adGroupId = AD_GROUP_ID,
         adGroupName = "Ad Group 1",
         keywordId = keywordId,
         keyword = "dating app",
         matchType = "EXACT",
-        searchTerm = null,
+        searchTerm = searchTerm,
         negativeKeywordId = null,
         previousBid = null,
         newBid = null,
@@ -175,6 +240,7 @@ class AppleAdsQueriesTest {
         now: Instant,
         reportDate: LocalDate = REPORT_DATE,
         status: String = "ACTIVE",
+        deleted: Boolean = false,
         keywordId: Long = KEYWORD_ID,
         campaignId: Long = CAMPAIGN_ID,
     ) {
@@ -187,6 +253,7 @@ class AppleAdsQueriesTest {
             keyword = "dating app",
             matchType = "EXACT",
             keywordStatus = status,
+            deleted = deleted,
             bidAmount = BigDecimal("1.50"),
             suggestedBidAmount = BigDecimal("2.40"),
             bidMin = null,

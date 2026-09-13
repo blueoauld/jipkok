@@ -6,4 +6,5 @@ data class AppleAdsAutomationResult(
     val candidates: Int,
     val applied: Int,
     val failed: Int,
+    val remaining: Int,
 )

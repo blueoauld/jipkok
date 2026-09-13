@@ -1,9 +1,10 @@
 package com.blueoauld.server.domain.admin.dto.response
 
-data class AdminAppleAdsOrgResponse(
+data class AdminAppleAdsAdAccountResponse(
 
-    val orgId: Long,
-    val orgName: String,
+    val adAccountId: Long,
+    val name: String,
+    val orgId: Long?,
     val currency: String?,
     val timeZone: String?,
     val roleNames: List<String>,

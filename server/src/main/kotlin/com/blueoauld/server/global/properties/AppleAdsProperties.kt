@@ -9,7 +9,7 @@ data class AppleAdsProperties(
     val teamId: String = "",
     val keyId: String = "",
     val privateKey: String = "",
-    val orgId: String = "",
+    val adAccountId: String = "",
     val tokenUrl: String = "",
     val apiUrl: String = "",
 )

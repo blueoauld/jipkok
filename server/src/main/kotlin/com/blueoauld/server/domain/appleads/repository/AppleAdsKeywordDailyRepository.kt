@@ -16,12 +16,12 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
         value = """
         insert into apple_ads_keyword_daily (
             report_date, campaign_id, ad_group_id, ad_group_name, keyword_id, keyword, match_type, keyword_status,
-            bid_amount, suggested_bid_amount, bid_min, bid_max, currency, impressions, taps, total_installs,
+            deleted, bid_amount, suggested_bid_amount, bid_min, bid_max, currency, impressions, taps, total_installs,
             tap_installs, view_installs, total_new_downloads, total_redownloads, spend, created_at, updated_at
         )
         values (
             :reportDate, :campaignId, :adGroupId, :adGroupName, :keywordId, :keyword, :matchType, :keywordStatus,
-            :bidAmount, :suggestedBidAmount, :bidMin, :bidMax, :currency, :impressions, :taps, :totalInstalls,
+            :deleted, :bidAmount, :suggestedBidAmount, :bidMin, :bidMax, :currency, :impressions, :taps, :totalInstalls,
             :tapInstalls, :viewInstalls, :totalNewDownloads, :totalRedownloads, :spend, :now, :now
         )
         on conflict (keyword_id, report_date) do update
@@ -30,6 +30,7 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
             keyword = excluded.keyword,
             match_type = excluded.match_type,
             keyword_status = excluded.keyword_status,
+            deleted = excluded.deleted,
             bid_amount = excluded.bid_amount,
             suggested_bid_amount = excluded.suggested_bid_amount,
             bid_min = excluded.bid_min,
@@ -56,6 +57,7 @@ interface AppleAdsKeywordDailyRepository : JpaRepository<AppleAdsKeywordDaily, L
         @Param("keyword") keyword: String,
         @Param("matchType") matchType: String?,
         @Param("keywordStatus") keywordStatus: String?,
+        @Param("deleted") deleted: Boolean,
         @Param("bidAmount") bidAmount: BigDecimal?,
         @Param("suggestedBidAmount") suggestedBidAmount: BigDecimal?,
         @Param("bidMin") bidMin: BigDecimal?,

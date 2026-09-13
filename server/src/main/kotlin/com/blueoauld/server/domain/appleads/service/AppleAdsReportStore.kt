@@ -42,6 +42,7 @@ class AppleAdsReportStore(
                 keyword = it.keyword,
                 matchType = it.matchType,
                 keywordStatus = it.keywordStatus,
+                deleted = it.deleted,
                 bidAmount = it.bidAmount,
                 suggestedBidAmount = it.suggestedBidAmount,
                 bidMin = it.bidMin,

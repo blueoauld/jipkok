@@ -1,10 +1,10 @@
 package com.blueoauld.server.domain.appleads.service
 
+import com.blueoauld.server.domain.appleads.dto.AppleAdsAdAccount
 import com.blueoauld.server.domain.appleads.dto.AppleAdsCampaignInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordDailyRow
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsNegativeKeywordInfo
-import com.blueoauld.server.domain.appleads.dto.AppleAdsOrg
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermDailyRow
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -17,7 +17,7 @@ import java.time.LocalDate
 @ConditionalOnExpression("'\${apple-ads.client-id:}'.isEmpty()")
 class DisabledAppleAdsClient : AppleAdsClient {
 
-    override fun findOrgs(): List<AppleAdsOrg> = throw notConfigured()
+    override fun findAdAccounts(): List<AppleAdsAdAccount> = throw notConfigured()
 
     override fun findCampaigns(): List<AppleAdsCampaignInfo> = throw notConfigured()
 
@@ -33,9 +33,9 @@ class DisabledAppleAdsClient : AppleAdsClient {
         endDate: LocalDate,
     ): List<AppleAdsSearchTermDailyRow> = throw notConfigured()
 
+    override fun findKeyword(keywordId: Long): AppleAdsKeywordInfo = throw notConfigured()
+
     override fun updateKeyword(
-        campaignId: Long,
-        adGroupId: Long,
         keywordId: Long,
         status: String?,
         bid: BigDecimal?,
@@ -43,7 +43,6 @@ class DisabledAppleAdsClient : AppleAdsClient {
     ): AppleAdsKeywordInfo = throw notConfigured()
 
     override fun createKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
@@ -51,17 +50,15 @@ class DisabledAppleAdsClient : AppleAdsClient {
         currency: String,
     ): AppleAdsKeywordInfo = throw notConfigured()
 
-    override fun deleteKeyword(campaignId: Long, adGroupId: Long, keywordId: Long): Unit = throw notConfigured()
+    override fun deleteKeyword(keywordId: Long): Unit = throw notConfigured()
 
     override fun createNegativeKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
     ): AppleAdsNegativeKeywordInfo = throw notConfigured()
 
-    override fun deleteNegativeKeyword(campaignId: Long, adGroupId: Long, negativeKeywordId: Long): Unit =
-        throw notConfigured()
+    override fun deleteNegativeKeyword(negativeKeywordId: Long): Unit = throw notConfigured()
 
     private fun notConfigured() = BusinessException(ErrorCode.APPLE_ADS_NOT_CONFIGURED)
 }

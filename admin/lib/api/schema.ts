@@ -207,7 +207,7 @@ export interface paths {
         };
         /**
          * 애플 광고 자동 실행 설정
-         * @description 켜짐 여부, 하루 한도, 유형별 허용 여부다.
+         * @description 켜짐 여부, 하루 한도, 유형별 허용 여부, 올리기 최대 입찰가다.
          */
         get: operations["findAutomation"];
         /**
@@ -999,7 +999,7 @@ export interface paths {
         put?: never;
         /**
          * 애플 광고 조치 적용
-         * @description 추천을 애플 광고에 실제로 적용하고 이력을 남긴다. 일시정지와 입찰가 변경은 keywordId, 제외 키워드와 키워드 추가는 searchTerm이 필요하고, 입찰가 변경과 키워드 추가는 suggestedBid와 currency도 필요하다.
+         * @description 추천을 애플 광고에 실제로 적용하고 이력을 남긴다. 일시정지와 입찰가 변경은 keywordId, 제외 키워드와 키워드 추가는 searchTerm이 필요하고, 입찰가 변경과 키워드 추가는 suggestedBid와 currency도 필요하다. 입찰가 변경은 currentBid도 필요하고, 애플의 현재 입찰가나 상태가 추천 때와 다르면 거절한다.
          */
         post: operations["applyAppleAdsAction"];
         delete?: never;
@@ -1019,7 +1019,7 @@ export interface paths {
         put?: never;
         /**
          * 애플 광고 조치 되돌리기
-         * @description 입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있다.
+         * @description 입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있고, 같은 대상에 더 나중에 한 조치가 남아 있으면 되돌리지 않는다.
          */
         post: operations["revertAppleAdsAction"];
         delete?: never;
@@ -1984,6 +1984,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/apple-ads/reports/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 리포트 적재 상태
+         * @description 키워드 리포트를 마지막으로 저장한 시각과, 저장된 가장 최근 리포트 날짜다. 적재가 멈췄는지 볼 때 쓴다.
+         */
+        get: operations["findReportStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/apple-ads/recommendations": {
         parameters: {
             query?: never;
@@ -1993,29 +2013,9 @@ export interface paths {
         };
         /**
          * 애플 광고 조치 추천
-         * @description 기간 성과를 규칙에 대어 일시정지, 제외 키워드, 입찰가 조정, 키워드 추가를 추천한다. 기준은 기간의 키워드 설치당 비용이고, 표본이 모자란 항목은 추천하지 않는다. 적용은 하지 않는다.
+         * @description 기간 성과를 규칙에 대어 일시정지, 제외 키워드, 입찰가 조정, 키워드 추가를 추천한다. 입찰가는 평가하는 키워드를 뺀 나머지 키워드의 설치당 비용과 비교하고, 표본이 모자란 항목은 추천하지 않는다. 적용은 하지 않는다.
          */
         get: operations["findRecommendations"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/apple-ads/orgs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 애플 광고 조직 목록
-         * @description API 사용자가 접근할 수 있는 조직을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 orgId를 얻는 데 쓴다.
-         */
-        get: operations["findOrgs"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2056,6 +2056,26 @@ export interface paths {
          * @description 적재해 둔 캠페인 스냅샷이다. 필터에 쓴다.
          */
         get: operations["findCampaigns"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/apple-ads/ad-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 애플 광고 광고 계정 목록
+         * @description API 사용자가 접근할 수 있는 광고 계정을 애플 광고에서 가져온다. 인증 연동이 되는지 확인하고 adAccountId를 얻는 데 쓴다.
+         */
+        get: operations["findAdAccounts"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2250,6 +2270,7 @@ export interface components {
             lowerBid: boolean | null;
             raiseBid: boolean | null;
             addKeyword: boolean | null;
+            maxBid?: number | null;
         };
         AdminAppleAdsAutomationResponse: {
             enabled: boolean;
@@ -2260,6 +2281,7 @@ export interface components {
             lowerBid: boolean;
             raiseBid: boolean;
             addKeyword: boolean;
+            maxBid?: number | null;
             /** Format: int64 */
             updatedById?: number | null;
             updatedByNickname?: string | null;
@@ -2472,6 +2494,8 @@ export interface components {
             applied: number;
             /** Format: int32 */
             failed: number;
+            /** Format: int32 */
+            remaining: number;
         };
         ApplyAppleAdsActionRequest: {
             /** @enum {string|null} */
@@ -3274,6 +3298,12 @@ export interface components {
             adGroupName?: string | null;
             metrics: components["schemas"]["AdminAppleAdsMetricsResponse"];
         };
+        AdminAppleAdsReportStatusResponse: {
+            /** Format: date-time */
+            lastSyncedAt?: string | null;
+            /** Format: date */
+            latestReportDate?: string | null;
+        };
         AdminAppleAdsRecommendationListResponse: {
             baselineCostPerInstall?: number | null;
             /** Format: int64 */
@@ -3308,14 +3338,6 @@ export interface components {
             costPerInstall?: number | null;
             reason: string;
         };
-        AdminAppleAdsOrgResponse: {
-            /** Format: int64 */
-            orgId: number;
-            orgName: string;
-            currency?: string | null;
-            timeZone?: string | null;
-            roleNames: string[];
-        };
         AdminAppleAdsKeywordListResponse: {
             items: components["schemas"]["AdminAppleAdsKeywordResponse"][];
             total: components["schemas"]["AdminAppleAdsMetricsResponse"];
@@ -3326,6 +3348,7 @@ export interface components {
             keyword: string;
             matchType?: string | null;
             keywordStatus?: string | null;
+            deleted: boolean;
             bidAmount?: number | null;
             /** Format: int64 */
             campaignId: number;
@@ -3340,6 +3363,16 @@ export interface components {
             name: string;
             status?: string | null;
             deleted: boolean;
+        };
+        AdminAppleAdsAdAccountResponse: {
+            /** Format: int64 */
+            adAccountId: number;
+            name: string;
+            /** Format: int64 */
+            orgId?: number | null;
+            currency?: string | null;
+            timeZone?: string | null;
+            roleNames: string[];
         };
         AdminAppleAdsActionPageResponse: {
             items: components["schemas"]["AdminAppleAdsActionResponse"][];
@@ -15386,13 +15419,9 @@ export interface operations {
             };
         };
     };
-    findRecommendations: {
+    findReportStatus: {
         parameters: {
-            query: {
-                startDate: string;
-                endDate: string;
-                campaignId?: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -15405,7 +15434,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminAppleAdsRecommendationListResponse"];
+                    "application/json": components["schemas"]["AdminAppleAdsReportStatusResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -15482,9 +15511,13 @@ export interface operations {
             };
         };
     };
-    findOrgs: {
+    findRecommendations: {
         parameters: {
-            query?: never;
+            query: {
+                startDate: string;
+                endDate: string;
+                campaignId?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -15497,7 +15530,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminAppleAdsOrgResponse"][];
+                    "application/json": components["schemas"]["AdminAppleAdsRecommendationListResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */
@@ -15686,6 +15719,98 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminAppleAdsCampaignResponse"][];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findAdAccounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppleAdsAdAccountResponse"][];
                 };
             };
             /** @description 요청이 올바르지 않다 */

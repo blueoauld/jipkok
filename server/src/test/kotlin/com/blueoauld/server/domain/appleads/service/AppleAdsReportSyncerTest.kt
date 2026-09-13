@@ -116,6 +116,7 @@ class AppleAdsReportSyncerTest {
             keyword = "dating app",
             matchType = "EXACT",
             keywordStatus = "ACTIVE",
+            deleted = false,
             bidAmount = BigDecimal("1.50"),
             suggestedBidAmount = BigDecimal("2.40"),
             bidMin = BigDecimal("1.00"),

@@ -107,7 +107,87 @@ class AppleAdsAutomationServiceTest {
         // then
         assertThat(result.candidates).isEqualTo(2)
         assertThat(result.applied).isEqualTo(1)
+        assertThat(result.remaining).isEqualTo(1)
         verify(exactly = 1) { actionService.apply(null, any(), automatic = true) }
+    }
+
+    @Test
+    fun `실패한 건은 한도를 쓰지 않고 다음 후보로 넘어간다`() {
+        // given
+        every { actionRepository.countByAutomaticTrueAndCreatedAtAfter(KST_START_OF_TODAY) } returns 2
+        given(
+            recommendation(AppleAdsRecommendationType.ADD_NEGATIVE_KEYWORD, searchTerm = "디스코드"),
+            recommendation(AppleAdsRecommendationType.LOWER_BID, keywordId = 1L),
+            recommendation(AppleAdsRecommendationType.LOWER_BID, keywordId = 2L),
+        )
+        every { actionService.apply(null, match { it.searchTerm == "디스코드" }, automatic = true) } throws
+            BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+
+        // when
+        val result = service.run()
+
+        // then
+        assertThat(result.applied).isEqualTo(1)
+        assertThat(result.failed).isEqualTo(1)
+        val commands = mutableListOf<AppleAdsActionCommand>()
+        verify(exactly = 2) { actionService.apply(null, capture(commands), automatic = true) }
+        assertThat(commands.map { it.keywordId }).containsExactly(null, 1L)
+    }
+
+    @Test
+    fun `실패가 이어지면 남은 한도의 두 배까지만 시도한다`() {
+        // given
+        every { actionRepository.countByAutomaticTrueAndCreatedAtAfter(KST_START_OF_TODAY) } returns 2
+        given(
+            *(1L..5L).map { recommendation(AppleAdsRecommendationType.PAUSE_KEYWORD, keywordId = it) }.toTypedArray(),
+        )
+        every { actionService.apply(null, any(), automatic = true) } throws
+            BusinessException(ErrorCode.APPLE_ADS_KEYWORD_CHANGED)
+
+        // when
+        val result = service.run()
+
+        // then
+        assertThat(result.applied).isEqualTo(0)
+        assertThat(result.failed).isEqualTo(2)
+        verify(exactly = 2) { actionService.apply(null, any(), automatic = true) }
+    }
+
+    @Test
+    fun `오늘 한도를 이미 다 썼으면 아무것도 시도하지 않는다`() {
+        // given
+        every { actionRepository.countByAutomaticTrueAndCreatedAtAfter(KST_START_OF_TODAY) } returns 5
+        given(recommendation(AppleAdsRecommendationType.PAUSE_KEYWORD, keywordId = 1L))
+
+        // when
+        val result = service.run()
+
+        // then
+        assertThat(result.applied).isEqualTo(0)
+        assertThat(result.remaining).isEqualTo(0)
+        verify(exactly = 0) { actionService.apply(any(), any(), any()) }
+    }
+
+    @Test
+    fun `최대 입찰가를 두면 올리기는 그 값에서 자르고 이미 닿은 키워드는 건너뛴다`() {
+        // given
+        settings.maxBid = BigDecimal("1.60")
+        given(
+            bidRecommendation(AppleAdsRecommendationType.RAISE_BID, 1L, current = "1.45", suggested = "1.67"),
+            bidRecommendation(AppleAdsRecommendationType.RAISE_BID, 2L, current = "1.60", suggested = "1.84"),
+            bidRecommendation(AppleAdsRecommendationType.LOWER_BID, 3L, current = "2.00", suggested = "1.70"),
+        )
+
+        // when
+        val result = service.run()
+
+        // then
+        assertThat(result.candidates).isEqualTo(2)
+        val commands = mutableListOf<AppleAdsActionCommand>()
+        verify(exactly = 2) { actionService.apply(null, capture(commands), automatic = true) }
+        assertThat(commands.map { it.keywordId }).containsExactly(1L, 3L)
+        assertThat(commands[0].suggestedBid).isEqualByComparingTo(BigDecimal("1.60"))
+        assertThat(commands[1].suggestedBid).isEqualByComparingTo(BigDecimal("1.70"))
     }
 
     @Test
@@ -154,10 +234,19 @@ class AppleAdsAutomationServiceTest {
         )
     }
 
+    private fun bidRecommendation(
+        type: AppleAdsRecommendationType,
+        keywordId: Long,
+        current: String,
+        suggested: String,
+    ) = recommendation(type, keywordId = keywordId, currentBid = current, suggestedBid = suggested)
+
     private fun recommendation(
         type: AppleAdsRecommendationType,
         keywordId: Long? = null,
         searchTerm: String? = null,
+        currentBid: String = "1.45",
+        suggestedBid: String = "1.23",
     ) = AppleAdsRecommendation(
         type = type,
         campaignId = 1000L,
@@ -167,8 +256,8 @@ class AppleAdsAutomationServiceTest {
         keyword = keywordId?.let { "keyword $it" },
         matchType = keywordId?.let { "EXACT" },
         searchTerm = searchTerm,
-        currentBid = BigDecimal("1.45"),
-        suggestedBid = BigDecimal("1.23"),
+        currentBid = BigDecimal(currentBid),
+        suggestedBid = BigDecimal(suggestedBid),
         currency = "USD",
         impressions = 100,
         taps = 20,

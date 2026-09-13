@@ -1,11 +1,11 @@
 package com.blueoauld.server.domain.appleads.service
 
+import com.blueoauld.server.domain.appleads.dto.AppleAdsAdAccount
 import com.blueoauld.server.domain.appleads.dto.AppleAdsCampaignInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsDailyMetrics
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordDailyRow
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsNegativeKeywordInfo
-import com.blueoauld.server.domain.appleads.dto.AppleAdsOrg
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermDailyRow
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -43,10 +43,10 @@ class AppleAdsApiClient(
         )
         .build()
 
-    override fun findOrgs(): List<AppleAdsOrg> {
+    override fun findAdAccounts(): List<AppleAdsAdAccount> {
         val token = tokenProvider.accessToken()
 
-        val response = call("애플 광고 조직 목록을 불러오지 못했다.") {
+        val response = call("애플 광고 광고 계정 목록을 불러오지 못했다.") {
             restClient.get()
                 .uri(ACLS_PATH)
                 .headers { it.setBearerAuth(token) }
@@ -54,29 +54,34 @@ class AppleAdsApiClient(
                 .body<AclResponse>()
         }
 
-        return response.data.orEmpty().map {
-            AppleAdsOrg(
-                orgId = it.orgId,
-                orgName = it.orgName.orEmpty(),
-                currency = it.currency,
-                timeZone = it.timeZone,
-                roleNames = it.roleNames.orEmpty(),
+        return response.result?.acls.orEmpty().mapNotNull { acl ->
+            val adAccount = acl.adAccount ?: return@mapNotNull null
+            val detail = findAdAccount(adAccount.id)
+
+            AppleAdsAdAccount(
+                adAccountId = adAccount.id,
+                name = adAccount.name ?: detail.name.orEmpty(),
+                orgId = adAccount.orgId,
+                currency = detail.currency,
+                timeZone = detail.timezone,
+                roleNames = acl.roles.orEmpty(),
             )
         }
     }
 
     override fun findCampaigns(): List<AppleAdsCampaignInfo> {
-        val headers = orgHeaders()
+        val headers = accountHeaders()
 
         val response = call("애플 광고 캠페인 목록을 불러오지 못했다.") {
-            restClient.get()
-                .uri("$CAMPAIGNS_PATH?limit=$PAGE_SIZE")
+            restClient.post()
+                .uri(CAMPAIGNS_QUERY_PATH)
                 .headers { it.addAll(headers) }
+                .body(QueryRequest(pagination = QueryPagination(offset = 0, pageSize = PAGE_SIZE)))
                 .retrieve()
-                .body<CampaignListResponse>()
+                .body<CampaignQueryResponse>()
         }
 
-        return response.data.orEmpty().map {
+        return response.result.orEmpty().map {
             AppleAdsCampaignInfo(
                 id = it.id,
                 name = it.name.orEmpty(),
@@ -91,29 +96,26 @@ class AppleAdsApiClient(
         startDate: LocalDate,
         endDate: LocalDate,
     ): List<AppleAdsKeywordDailyRow> =
-        reportRows("$REPORTS_PATH/$campaignId/keywords", startDate, endDate).flatMap { row ->
+        reportRows(KEYWORD_REPORT_PATH, campaignId, startDate, endDate, groupBy = null).flatMap { row ->
             val metadata = row.metadata ?: return@flatMap emptyList()
-            val keywordId = metadata.keywordId ?: return@flatMap emptyList()
+            val keywordId = metadata.id ?: return@flatMap emptyList()
             val adGroupId = metadata.adGroupId ?: return@flatMap emptyList()
 
-            val recommendation = row.insights?.bidRecommendation
-
-            row.granularity.orEmpty().mapNotNull { metrics ->
-                toMetrics(metrics)?.let {
-                    AppleAdsKeywordDailyRow(
-                        keywordId = keywordId,
-                        keyword = metadata.keyword.orEmpty(),
-                        matchType = metadata.matchType,
-                        keywordStatus = metadata.keywordStatus,
-                        bidAmount = metadata.bidAmount?.amount?.toBigDecimalOrNull(),
-                        suggestedBidAmount = recommendation?.suggestedBidAmount?.amount?.toBigDecimalOrNull(),
-                        bidMin = recommendation?.bidMin?.amount?.toBigDecimalOrNull(),
-                        bidMax = recommendation?.bidMax?.amount?.toBigDecimalOrNull(),
-                        adGroupId = adGroupId,
-                        adGroupName = metadata.adGroupName,
-                        metrics = it,
-                    )
-                }
+            dailyEntries(row, startDate, endDate).map {
+                AppleAdsKeywordDailyRow(
+                    keywordId = keywordId,
+                    keyword = metadata.text.orEmpty(),
+                    matchType = metadata.matchType,
+                    keywordStatus = domainStatus(metadata.status),
+                    deleted = metadata.deleted ?: false,
+                    bidAmount = metadata.bid?.amount?.toBigDecimalOrNull(),
+                    suggestedBidAmount = row.insights?.bidRecommendation?.suggestedBidAmount,
+                    bidMin = null,
+                    bidMax = null,
+                    adGroupId = adGroupId,
+                    adGroupName = metadata.adGroup?.name,
+                    metrics = it.metrics,
+                )
             }
         }
 
@@ -122,134 +124,154 @@ class AppleAdsApiClient(
         startDate: LocalDate,
         endDate: LocalDate,
     ): List<AppleAdsSearchTermDailyRow> =
-        reportRows("$REPORTS_PATH/$campaignId/searchterms", startDate, endDate).flatMap { row ->
-            if (row.other == true) {
-                return@flatMap emptyList()
-            }
+        reportRows(SEARCH_TERM_REPORT_PATH, campaignId, startDate, endDate, groupBy = SEARCH_TERM_GROUP_BY)
+            .flatMap { row ->
+                val metadata = row.metadata ?: return@flatMap emptyList()
+                val searchTerm = metadata.searchTermText ?: return@flatMap emptyList()
+                val adGroupId = metadata.adGroupId ?: return@flatMap emptyList()
+                val keyword = metadata.keyword?.takeIf { it.id != null }
 
-            val metadata = row.metadata ?: return@flatMap emptyList()
-            val searchTerm = metadata.searchTermText ?: return@flatMap emptyList()
-            val adGroupId = metadata.adGroupId ?: return@flatMap emptyList()
-
-            row.granularity.orEmpty().mapNotNull { metrics ->
-                toMetrics(metrics)?.let {
+                dailyEntries(row, startDate, endDate).map {
                     AppleAdsSearchTermDailyRow(
                         searchTerm = searchTerm,
-                        searchTermSource = metadata.searchTermSource,
-                        countryOrRegion = metadata.countryOrRegion,
-                        keywordId = metadata.keywordId,
-                        keyword = metadata.keyword,
-                        matchType = metadata.matchType,
+                        searchTermSource = if (keyword == null) SOURCE_SEARCH_MATCH else SOURCE_KEYWORD,
+                        countryOrRegion = metadata.countryOrRegion ?: it.countryOrRegion,
+                        keywordId = keyword?.id,
+                        keyword = keyword?.text,
+                        matchType = keyword?.matchType,
                         adGroupId = adGroupId,
-                        adGroupName = metadata.adGroupName,
-                        metrics = it,
+                        adGroupName = metadata.adGroup?.name,
+                        metrics = it.metrics,
                     )
                 }
             }
+
+    override fun findKeyword(keywordId: Long): AppleAdsKeywordInfo {
+        val headers = accountHeaders()
+
+        val response = call("애플 광고 키워드를 불러오지 못했다. keywordId=$keywordId") {
+            restClient.get()
+                .uri("$KEYWORDS_PATH/$keywordId")
+                .headers { it.addAll(headers) }
+                .retrieve()
+                .body<KeywordResponse>()
         }
 
+        return response.result?.let(::toKeywordInfo) ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+    }
+
     override fun updateKeyword(
-        campaignId: Long,
-        adGroupId: Long,
         keywordId: Long,
         status: String?,
         bid: BigDecimal?,
         currency: String?,
     ): AppleAdsKeywordInfo {
-        val headers = orgHeaders()
-        val body =
-            listOf(KeywordUpdateRequest(id = keywordId.toString(), status = status, bidAmount = money(bid, currency)))
+        val headers = accountHeaders()
+        val body = KeywordUpdateRequest(status = status?.let(::apiStatus), bid = money(bid, currency))
 
         val response = call("애플 광고 키워드를 수정하지 못했다. keywordId=$keywordId") {
             restClient.put()
-                .uri("${keywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .uri("$KEYWORDS_PATH/$keywordId")
                 .headers { it.addAll(headers) }
                 .body(body)
                 .retrieve()
-                .body<KeywordListResponse>()
+                .body<KeywordResponse>()
         }
 
-        return response.data.orEmpty().firstOrNull()?.let(::toKeywordInfo)
-            ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+        return response.result?.let(::toKeywordInfo) ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
     }
 
     override fun createKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
         bid: BigDecimal,
         currency: String,
     ): AppleAdsKeywordInfo {
-        val headers = orgHeaders()
-        val body = listOf(KeywordCreateRequest(text = text, matchType = matchType, bidAmount = money(bid, currency)))
+        val headers = accountHeaders()
+        val body = KeywordCreateRequest(
+            adGroupId = adGroupId,
+            text = text,
+            matchType = matchType,
+            bid = money(bid, currency),
+        )
 
         val response = call("애플 광고 키워드를 만들지 못했다. text=$text") {
             restClient.post()
-                .uri("${keywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .uri(KEYWORDS_PATH)
                 .headers { it.addAll(headers) }
                 .body(body)
                 .retrieve()
-                .body<KeywordListResponse>()
+                .body<KeywordResponse>()
         }
 
-        return response.data.orEmpty().firstOrNull()?.let(::toKeywordInfo)
-            ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+        return response.result?.let(::toKeywordInfo) ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
     }
 
-    override fun deleteKeyword(campaignId: Long, adGroupId: Long, keywordId: Long) {
-        val headers = orgHeaders()
+    override fun deleteKeyword(keywordId: Long) {
+        val headers = accountHeaders()
 
         call("애플 광고 키워드를 지우지 못했다. keywordId=$keywordId") {
-            restClient.post()
-                .uri("${keywordsPath(campaignId, adGroupId)}$DELETE_SUFFIX")
+            restClient.delete()
+                .uri("$KEYWORDS_PATH/$keywordId")
                 .headers { it.addAll(headers) }
-                .body(listOf(keywordId))
                 .retrieve()
-                .body<CountResponse>()
+                .toBodilessEntity()
         }
     }
 
     override fun createNegativeKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
     ): AppleAdsNegativeKeywordInfo {
-        val headers = orgHeaders()
-        val body = listOf(NegativeKeywordCreateRequest(text = text, matchType = matchType))
+        val headers = accountHeaders()
+        val body = NegativeKeywordCreateRequest(adGroupId = adGroupId, text = text, matchType = matchType)
 
         val response = call("애플 광고 제외 키워드를 만들지 못했다. text=$text") {
             restClient.post()
-                .uri("${negativeKeywordsPath(campaignId, adGroupId)}$BULK_SUFFIX")
+                .uri(NEGATIVE_KEYWORDS_PATH)
                 .headers { it.addAll(headers) }
                 .body(body)
                 .retrieve()
-                .body<NegativeKeywordListResponse>()
+                .body<NegativeKeywordResponse>()
         }
 
-        val created = response.data.orEmpty().firstOrNull() ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
+        val created = response.result ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
 
         return AppleAdsNegativeKeywordInfo(
             id = created.id,
             adGroupId = created.adGroupId ?: adGroupId,
             text = created.text.orEmpty(),
             matchType = created.matchType,
-            status = created.status,
+            status = domainStatus(created.status),
         )
     }
 
-    override fun deleteNegativeKeyword(campaignId: Long, adGroupId: Long, negativeKeywordId: Long) {
-        val headers = orgHeaders()
+    override fun deleteNegativeKeyword(negativeKeywordId: Long) {
+        val headers = accountHeaders()
 
         call("애플 광고 제외 키워드를 지우지 못했다. negativeKeywordId=$negativeKeywordId") {
-            restClient.post()
-                .uri("${negativeKeywordsPath(campaignId, adGroupId)}$DELETE_SUFFIX")
+            restClient.delete()
+                .uri("$NEGATIVE_KEYWORDS_PATH/$negativeKeywordId")
                 .headers { it.addAll(headers) }
-                .body(listOf(negativeKeywordId))
                 .retrieve()
-                .body<CountResponse>()
+                .toBodilessEntity()
         }
+    }
+
+    private fun findAdAccount(adAccountId: Long): AdAccount {
+        val headers = contextHeaders(adAccountId.toString())
+
+        val response = call("애플 광고 광고 계정을 불러오지 못했다. adAccountId=$adAccountId") {
+            restClient.get()
+                .uri("$AD_ACCOUNTS_PATH/$adAccountId")
+                .headers { it.addAll(headers) }
+                .retrieve()
+                .body<AdAccountResponse>()
+        }
+
+        return response.result ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
     }
 
     private fun toKeywordInfo(keyword: Keyword) = AppleAdsKeywordInfo(
@@ -257,9 +279,10 @@ class AppleAdsApiClient(
         adGroupId = keyword.adGroupId ?: 0,
         text = keyword.text.orEmpty(),
         matchType = keyword.matchType,
-        status = keyword.status,
-        bidAmount = keyword.bidAmount?.amount?.toBigDecimalOrNull(),
-        currency = keyword.bidAmount?.currency,
+        status = domainStatus(keyword.status),
+        bidAmount = keyword.bid?.amount?.toBigDecimalOrNull(),
+        currency = keyword.bid?.currency,
+        deleted = keyword.deleted ?: false,
     )
 
     private fun money(amount: BigDecimal?, currency: String?): Money? {
@@ -270,25 +293,34 @@ class AppleAdsApiClient(
         return Money(amount = amount.setScale(MONEY_SCALE, RoundingMode.HALF_UP).toPlainString(), currency = currency)
     }
 
-    private fun keywordsPath(campaignId: Long, adGroupId: Long) =
-        "$CAMPAIGNS_PATH/$campaignId/adgroups/$adGroupId/targetingkeywords"
+    private fun domainStatus(status: String?) = if (status == API_ENABLED) DOMAIN_ACTIVE else status
 
-    private fun negativeKeywordsPath(campaignId: Long, adGroupId: Long) =
-        "$CAMPAIGNS_PATH/$campaignId/adgroups/$adGroupId/negativekeywords"
+    private fun apiStatus(status: String) = if (status == DOMAIN_ACTIVE) API_ENABLED else status
 
-    private fun reportRows(path: String, startDate: LocalDate, endDate: LocalDate): List<ReportRow> {
-        val headers = orgHeaders()
+    private fun reportRows(
+        path: String,
+        campaignId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        groupBy: List<String>?,
+    ): List<ReportRow> {
+        val headers = accountHeaders()
         val rows = mutableListOf<ReportRow>()
         var offset = 0
 
         while (true) {
             val request = ReportRequest(
-                startTime = startDate.toString(),
-                endTime = endDate.toString(),
-                selector = ReportSelector(pagination = ReportPagination(offset = offset, limit = PAGE_SIZE)),
+                filters = listOf(ReportFilter(field = CAMPAIGN_ID_FIELD, value = listOf(campaignId.toString()))),
+                timeRange = TimeRange(
+                    start = startDate.toString(),
+                    end = endDate.toString(),
+                    granularity = GRANULARITY_DAILY.takeIf { startDate != endDate },
+                ),
+                pagination = ReportPagination(offset = offset, pageSize = PAGE_SIZE),
+                groupBy = groupBy,
             )
 
-            val response = call("애플 광고 리포트를 불러오지 못했다. path=$path") {
+            val response = call("애플 광고 리포트를 불러오지 못했다. path=$path campaignId=$campaignId") {
                 restClient.post()
                     .uri(path)
                     .headers { it.addAll(headers) }
@@ -297,7 +329,7 @@ class AppleAdsApiClient(
                     .body<ReportResponse>()
             }
 
-            val page = response.data?.reportingDataResponse?.row.orEmpty()
+            val page = response.result?.rows.orEmpty()
             rows += page
 
             if (page.size < PAGE_SIZE) {
@@ -308,10 +340,20 @@ class AppleAdsApiClient(
         }
     }
 
-    private fun toMetrics(row: ReportMetrics): AppleAdsDailyMetrics? {
-        val date = row.date?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return null
+    private fun dailyEntries(row: ReportRow, startDate: LocalDate, endDate: LocalDate): List<DailyEntry> {
+        if (startDate == endDate) {
+            return listOfNotNull(row.totalMetrics?.let { toDailyEntry(it, startDate) })
+        }
 
-        return AppleAdsDailyMetrics(
+        return row.granularMetrics.orEmpty().mapNotNull { metrics ->
+            metrics.date
+                ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+                ?.let { toDailyEntry(metrics, it) }
+        }
+    }
+
+    private fun toDailyEntry(row: ReportMetrics, date: LocalDate) = DailyEntry(
+        metrics = AppleAdsDailyMetrics(
             date = date,
             impressions = row.impressions ?: 0,
             taps = row.taps ?: 0,
@@ -322,18 +364,21 @@ class AppleAdsApiClient(
             totalRedownloads = row.totalRedownloads ?: 0,
             spend = row.localSpend?.amount?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             currency = row.localSpend?.currency,
-        )
-    }
+        ),
+        countryOrRegion = row.countryOrRegion,
+    )
 
-    private fun orgHeaders(): HttpHeaders {
-        if (properties.orgId.isBlank()) {
+    private fun accountHeaders(): HttpHeaders {
+        if (properties.adAccountId.isBlank()) {
             throw BusinessException(ErrorCode.APPLE_ADS_NOT_CONFIGURED)
         }
 
-        return HttpHeaders().apply {
-            setBearerAuth(tokenProvider.accessToken())
-            set(ORG_HEADER, "$ORG_HEADER_PREFIX${properties.orgId}")
-        }
+        return contextHeaders(properties.adAccountId)
+    }
+
+    private fun contextHeaders(adAccountId: String) = HttpHeaders().apply {
+        setBearerAuth(tokenProvider.accessToken())
+        set(CONTEXT_HEADER, "$AD_ACCOUNT_CONTEXT_PREFIX$adAccountId")
     }
 
     private fun <T> call(failureMessage: String, request: () -> T?): T = runCatching(request)
@@ -341,17 +386,25 @@ class AppleAdsApiClient(
         .getOrNull()
         ?: throw BusinessException(ErrorCode.APPLE_ADS_UNAVAILABLE)
 
-    private data class AclResponse(val data: List<Acl>?)
+    private data class DailyEntry(val metrics: AppleAdsDailyMetrics, val countryOrRegion: String?)
 
-    private data class Acl(
-        val orgId: Long,
-        val orgName: String?,
-        val currency: String?,
-        val timeZone: String?,
-        val roleNames: List<String>?,
-    )
+    private data class AclResponse(val result: AclResult?)
 
-    private data class CampaignListResponse(val data: List<Campaign>?)
+    private data class AclResult(val acls: List<Acl>?)
+
+    private data class Acl(val adAccount: AclAdAccount?, val roles: List<String>?)
+
+    private data class AclAdAccount(val id: Long, val name: String?, val orgId: Long?)
+
+    private data class AdAccountResponse(val result: AdAccount?)
+
+    private data class AdAccount(val id: Long, val name: String?, val currency: String?, val timezone: String?)
+
+    private data class QueryRequest(val pagination: QueryPagination)
+
+    private data class QueryPagination(val offset: Int, val pageSize: Int)
+
+    private data class CampaignQueryResponse(val result: List<Campaign>?)
 
     private data class Campaign(
         val id: Long,
@@ -360,59 +413,58 @@ class AppleAdsApiClient(
         val deleted: Boolean?,
     )
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private data class ReportRequest(
-        val startTime: String,
-        val endTime: String,
-        val selector: ReportSelector,
-        val granularity: String = GRANULARITY_DAILY,
-        val timeZone: String = TIME_ZONE_ORG,
-        val returnRowTotals: Boolean = false,
-        val returnGrandTotals: Boolean = false,
-        val returnRecordsWithNoMetrics: Boolean = false,
-    )
-
-    private data class ReportSelector(
+        val filters: List<ReportFilter>,
+        val timeRange: TimeRange,
         val pagination: ReportPagination,
-        val orderBy: List<ReportOrder> = listOf(ReportOrder()),
+        val groupBy: List<String>?,
     )
 
-    private data class ReportPagination(val offset: Int, val limit: Int)
+    private data class ReportFilter(val field: String, val operator: String = OPERATOR_EQUALS, val value: List<String>)
 
-    private data class ReportOrder(val field: String = ORDER_FIELD, val sortOrder: String = ORDER_DESCENDING)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private data class TimeRange(
+        val start: String,
+        val end: String,
+        val timeZone: String = TIME_ZONE_ORG,
+        val granularity: String?,
+    )
 
-    private data class ReportResponse(val data: ReportData?)
+    private data class ReportPagination(val offset: Int, val pageSize: Int)
 
-    private data class ReportData(val reportingDataResponse: ReportingData?)
+    private data class ReportResponse(val result: ReportResult?)
 
-    private data class ReportingData(val row: List<ReportRow>?)
+    private data class ReportResult(val rows: List<ReportRow>?)
 
     private data class ReportRow(
-        val other: Boolean?,
         val metadata: ReportMetadata?,
-        val granularity: List<ReportMetrics>?,
+        val totalMetrics: ReportMetrics?,
+        val granularMetrics: List<ReportMetrics>?,
         val insights: ReportInsights?,
     )
 
     private data class ReportInsights(val bidRecommendation: BidRecommendation?)
 
-    private data class BidRecommendation(
-        val suggestedBidAmount: Money?,
-        val bidMin: Money?,
-        val bidMax: Money?,
-    )
+    private data class BidRecommendation(val suggestedBidAmount: BigDecimal?)
 
     private data class ReportMetadata(
-        val keywordId: Long?,
-        val keyword: String?,
-        val keywordStatus: String?,
+        val id: Long?,
+        val text: String?,
         val matchType: String?,
-        val bidAmount: Money?,
+        val status: String?,
+        val deleted: Boolean?,
+        val bid: Money?,
         val adGroupId: Long?,
-        val adGroupName: String?,
+        val adGroup: ReportAdGroup?,
         val searchTermText: String?,
-        val searchTermSource: String?,
+        val keyword: ReportKeyword?,
         val countryOrRegion: String?,
     )
+
+    private data class ReportAdGroup(val name: String?)
+
+    private data class ReportKeyword(val id: Long?, val text: String?, val matchType: String?)
 
     private data class ReportMetrics(
         val date: String?,
@@ -424,19 +476,31 @@ class AppleAdsApiClient(
         val totalNewDownloads: Long?,
         val totalRedownloads: Long?,
         val localSpend: Money?,
+        val countryOrRegion: String?,
     )
 
     private data class Money(val amount: String?, val currency: String?)
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private data class KeywordUpdateRequest(val id: String, val status: String?, val bidAmount: Money?)
+    private data class KeywordUpdateRequest(val status: String?, val bid: Money?)
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private data class KeywordCreateRequest(val text: String, val matchType: String, val bidAmount: Money?)
+    private data class KeywordCreateRequest(
+        val adGroupId: Long,
+        val text: String,
+        val matchType: String,
+        val bid: Money?,
+        val status: String = API_ENABLED,
+    )
 
-    private data class NegativeKeywordCreateRequest(val text: String, val matchType: String)
+    private data class NegativeKeywordCreateRequest(
+        val adGroupId: Long,
+        val text: String,
+        val matchType: String,
+        val status: String = API_ENABLED,
+    )
 
-    private data class KeywordListResponse(val data: List<Keyword>?)
+    private data class KeywordResponse(val result: Keyword?)
 
     private data class Keyword(
         val id: Long,
@@ -444,10 +508,11 @@ class AppleAdsApiClient(
         val text: String?,
         val status: String?,
         val matchType: String?,
-        val bidAmount: Money?,
+        val bid: Money?,
+        val deleted: Boolean?,
     )
 
-    private data class NegativeKeywordListResponse(val data: List<NegativeKeyword>?)
+    private data class NegativeKeywordResponse(val result: NegativeKeyword?)
 
     private data class NegativeKeyword(
         val id: Long,
@@ -457,25 +522,30 @@ class AppleAdsApiClient(
         val matchType: String?,
     )
 
-    private data class CountResponse(val data: Int?)
-
     companion object {
 
         const val PAGE_SIZE = 1000
 
         private const val ACLS_PATH = "/acls"
-        private const val CAMPAIGNS_PATH = "/campaigns"
-        private const val REPORTS_PATH = "/reports/campaigns"
-        private const val ORG_HEADER = "X-AP-Context"
-        private const val ORG_HEADER_PREFIX = "orgId="
+        private const val AD_ACCOUNTS_PATH = "/ad-accounts"
+        private const val CAMPAIGNS_QUERY_PATH = "/campaigns/query"
+        private const val KEYWORD_REPORT_PATH = "/reports/apps/keywords/query"
+        private const val SEARCH_TERM_REPORT_PATH = "/reports/apps/searchterms/query"
+        private const val KEYWORDS_PATH = "/keywords"
+        private const val NEGATIVE_KEYWORDS_PATH = "/negative-keywords"
+        private const val CONTEXT_HEADER = "X-AP-Context"
+        private const val AD_ACCOUNT_CONTEXT_PREFIX = "adAccountId="
+        private const val CAMPAIGN_ID_FIELD = "campaignId"
+        private const val OPERATOR_EQUALS = "EQUALS"
         private const val GRANULARITY_DAILY = "DAILY"
         private const val TIME_ZONE_ORG = "ORTZ"
-        private const val ORDER_FIELD = "impressions"
-        private const val ORDER_DESCENDING = "DESCENDING"
-        private const val BULK_SUFFIX = "/bulk"
-        private const val DELETE_SUFFIX = "/delete/bulk"
+        private const val API_ENABLED = "ENABLED"
+        private const val DOMAIN_ACTIVE = "ACTIVE"
+        private const val SOURCE_SEARCH_MATCH = "AUTO"
+        private const val SOURCE_KEYWORD = "TARGETED"
         private const val MONEY_SCALE = 2
 
+        private val SEARCH_TERM_GROUP_BY = listOf("countryOrRegion")
         private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(2)
         private val READ_TIMEOUT: Duration = Duration.ofSeconds(30)
     }

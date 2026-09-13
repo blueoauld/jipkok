@@ -33,6 +33,7 @@ data class AdminAppleAdsKeywordResponse(
     val keyword: String,
     val matchType: String?,
     val keywordStatus: String?,
+    val deleted: Boolean,
     val bidAmount: BigDecimal?,
     val campaignId: Long,
     val adGroupId: Long,

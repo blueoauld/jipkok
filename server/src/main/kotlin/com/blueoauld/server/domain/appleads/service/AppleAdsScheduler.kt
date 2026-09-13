@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Clock
-import java.time.Period
 
 private val log = KotlinLogging.logger {}
 
@@ -23,8 +22,11 @@ class AppleAdsScheduler(
     @Scheduled(cron = DAILY_CRON, zone = KOREA_ID)
     fun runDaily() {
         val today = clock.today()
+        val startDate = today.minus(AppleAdsAutomationService.ATTRIBUTION_LAG)
+            .minusDays(AppleAdsAutomationService.WINDOW_DAYS - 1)
+        val endDate = today.minusDays(1)
 
-        val synced = runCatching { reportSyncer.sync(today.minus(SYNC_WINDOW), today) }
+        val synced = runCatching { reportSyncer.sync(startDate, endDate) }
             .onFailure { log.error(it) { "애플 광고 리포트를 적재하지 못했다. 자동 조치는 건너뛴다." } }
             .isSuccess
 
@@ -37,8 +39,6 @@ class AppleAdsScheduler(
     }
 
     companion object {
-
-        val SYNC_WINDOW: Period = Period.ofDays(7)
 
         private const val DAILY_CRON = "0 0 6 * * *"
     }

@@ -33,12 +33,17 @@ class AppleAdsActionServiceTest {
     @BeforeEach
     fun setUp() {
         every { actionRepository.save(any()) } answers { firstArg() }
+        every { actionRepository.existsByIdGreaterThanAndKeywordIdAndRevertedAtIsNull(any(), any()) } returns false
+        every {
+            actionRepository.existsByIdGreaterThanAndAdGroupIdAndSearchTermAndRevertedAtIsNull(any(), any(), any())
+        } returns false
     }
 
     @Test
     fun `키워드를 일시정지하고 이전 상태를 남긴다`() {
         // given
-        every { appleAdsClient.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, "PAUSED", null, null) } returns
+        every { appleAdsClient.findKeyword(KEYWORD_ID) } returns keywordInfo(status = "ACTIVE")
+        every { appleAdsClient.updateKeyword(KEYWORD_ID, "PAUSED", null, null) } returns
             keywordInfo(status = "PAUSED")
 
         // when
@@ -53,10 +58,48 @@ class AppleAdsActionServiceTest {
     }
 
     @Test
+    fun `이미 일시정지됐거나 지워진 키워드는 멈추지 않는다`() {
+        // given
+        every { appleAdsClient.findKeyword(KEYWORD_ID) } returns keywordInfo(status = "PAUSED")
+        every { appleAdsClient.findKeyword(OTHER_KEYWORD_ID) } returns
+            keywordInfo(id = OTHER_KEYWORD_ID, status = "ACTIVE", deleted = true)
+
+        // when
+        val paused = assertThrows(BusinessException::class.java) {
+            service.apply(ACTOR_ID, command(AppleAdsActionType.PAUSE_KEYWORD, keywordId = KEYWORD_ID))
+        }
+        val deleted = assertThrows(BusinessException::class.java) {
+            service.apply(ACTOR_ID, command(AppleAdsActionType.PAUSE_KEYWORD, keywordId = OTHER_KEYWORD_ID))
+        }
+
+        // then
+        assertThat(paused.errorCode).isEqualTo(ErrorCode.APPLE_ADS_KEYWORD_CHANGED)
+        assertThat(deleted.errorCode).isEqualTo(ErrorCode.APPLE_ADS_KEYWORD_CHANGED)
+        verify(exactly = 0) { appleAdsClient.updateKeyword(any(), any(), any(), any()) }
+        verify(exactly = 0) { actionRepository.save(any()) }
+    }
+
+    @Test
+    fun `애플의 현재 입찰가가 추천 때와 다르면 입찰가를 바꾸지 않는다`() {
+        // given
+        every { appleAdsClient.findKeyword(KEYWORD_ID) } returns keywordInfo(bid = "1.30")
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            service.apply(ACTOR_ID, bidCommand(currentBid = "1.45", suggestedBid = "1.23"))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.APPLE_ADS_KEYWORD_CHANGED)
+        verify(exactly = 0) { appleAdsClient.updateKeyword(any(), any(), any(), any()) }
+    }
+
+    @Test
     fun `입찰가를 바꾸고 이전 값과 애플이 확정한 값을 남긴다`() {
         // given
+        every { appleAdsClient.findKeyword(KEYWORD_ID) } returns keywordInfo(bid = "1.4500")
         every {
-            appleAdsClient.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, null, BigDecimal("1.23"), "USD")
+            appleAdsClient.updateKeyword(KEYWORD_ID, null, BigDecimal("1.23"), "USD")
         } returns
             keywordInfo(bid = "1.23")
 
@@ -75,7 +118,7 @@ class AppleAdsActionServiceTest {
     @Test
     fun `제외 키워드는 정확 일치로 만들고 ID를 남긴다`() {
         // given
-        every { appleAdsClient.createNegativeKeyword(CAMPAIGN_ID, AD_GROUP_ID, "디스코드", "EXACT") } returns
+        every { appleAdsClient.createNegativeKeyword(AD_GROUP_ID, "디스코드", "EXACT") } returns
             AppleAdsNegativeKeywordInfo(
                 id = NEGATIVE_KEYWORD_ID,
                 adGroupId = AD_GROUP_ID,
@@ -97,7 +140,7 @@ class AppleAdsActionServiceTest {
     fun `키워드 추가는 만들어진 키워드 ID와 입찰가를 남긴다`() {
         // given
         every {
-            appleAdsClient.createKeyword(CAMPAIGN_ID, AD_GROUP_ID, "소개팅 앱", "EXACT", BigDecimal("1.45"), "USD")
+            appleAdsClient.createKeyword(AD_GROUP_ID, "소개팅 앱", "EXACT", BigDecimal("1.45"), "USD")
         } returns
             keywordInfo(id = NEW_KEYWORD_ID, text = "소개팅 앱", bid = "1.45", status = "ACTIVE")
 
@@ -120,13 +163,24 @@ class AppleAdsActionServiceTest {
         // given
 
         // when
-        val exception = assertThrows(BusinessException::class.java) {
-            service.apply(ACTOR_ID, command(AppleAdsActionType.RAISE_BID, keywordId = KEYWORD_ID, suggestedBid = null))
+        val noSuggestedBid = assertThrows(BusinessException::class.java) {
+            service.apply(
+                ACTOR_ID,
+                command(AppleAdsActionType.RAISE_BID, keywordId = KEYWORD_ID, currentBid = "1.45", suggestedBid = null),
+            )
+        }
+        val noCurrentBid = assertThrows(BusinessException::class.java) {
+            service.apply(
+                ACTOR_ID,
+                command(AppleAdsActionType.RAISE_BID, keywordId = KEYWORD_ID, currentBid = null, suggestedBid = "1.67"),
+            )
         }
 
         // then
-        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
-        verify(exactly = 0) { appleAdsClient.updateKeyword(any(), any(), any(), any(), any(), any()) }
+        assertThat(noSuggestedBid.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
+        assertThat(noCurrentBid.errorCode).isEqualTo(ErrorCode.INVALID_REQUEST)
+        verify(exactly = 0) { appleAdsClient.findKeyword(any()) }
+        verify(exactly = 0) { appleAdsClient.updateKeyword(any(), any(), any(), any()) }
     }
 
     @Test
@@ -134,7 +188,7 @@ class AppleAdsActionServiceTest {
         // given
         val action = savedAction(AppleAdsActionType.PAUSE_KEYWORD, keywordId = KEYWORD_ID, previousStatus = "ACTIVE")
         every { actionRepository.findById(ACTION_ID) } returns Optional.of(action)
-        every { appleAdsClient.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, "ACTIVE", null, null) } returns
+        every { appleAdsClient.updateKeyword(KEYWORD_ID, "ACTIVE", null, null) } returns
             keywordInfo(status = "ACTIVE")
 
         // when
@@ -157,7 +211,7 @@ class AppleAdsActionServiceTest {
         )
         every { actionRepository.findById(ACTION_ID) } returns Optional.of(action)
         every {
-            appleAdsClient.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, null, BigDecimal("1.45"), "USD")
+            appleAdsClient.updateKeyword(KEYWORD_ID, null, BigDecimal("1.45"), "USD")
         } returns
             keywordInfo(bid = "1.45")
 
@@ -165,7 +219,7 @@ class AppleAdsActionServiceTest {
         service.revert(REVERTER_ID, ACTION_ID)
 
         // then
-        verify { appleAdsClient.updateKeyword(CAMPAIGN_ID, AD_GROUP_ID, KEYWORD_ID, null, BigDecimal("1.45"), "USD") }
+        verify { appleAdsClient.updateKeyword(KEYWORD_ID, null, BigDecimal("1.45"), "USD") }
     }
 
     @Test
@@ -175,16 +229,16 @@ class AppleAdsActionServiceTest {
         val added = savedAction(AppleAdsActionType.ADD_KEYWORD, keywordId = NEW_KEYWORD_ID)
         every { actionRepository.findById(ACTION_ID) } returns Optional.of(negative)
         every { actionRepository.findById(OTHER_ACTION_ID) } returns Optional.of(added)
-        justRun { appleAdsClient.deleteNegativeKeyword(CAMPAIGN_ID, AD_GROUP_ID, NEGATIVE_KEYWORD_ID) }
-        justRun { appleAdsClient.deleteKeyword(CAMPAIGN_ID, AD_GROUP_ID, NEW_KEYWORD_ID) }
+        justRun { appleAdsClient.deleteNegativeKeyword(NEGATIVE_KEYWORD_ID) }
+        justRun { appleAdsClient.deleteKeyword(NEW_KEYWORD_ID) }
 
         // when
         service.revert(REVERTER_ID, ACTION_ID)
         service.revert(REVERTER_ID, OTHER_ACTION_ID)
 
         // then
-        verify { appleAdsClient.deleteNegativeKeyword(CAMPAIGN_ID, AD_GROUP_ID, NEGATIVE_KEYWORD_ID) }
-        verify { appleAdsClient.deleteKeyword(CAMPAIGN_ID, AD_GROUP_ID, NEW_KEYWORD_ID) }
+        verify { appleAdsClient.deleteNegativeKeyword(NEGATIVE_KEYWORD_ID) }
+        verify { appleAdsClient.deleteKeyword(NEW_KEYWORD_ID) }
     }
 
     @Test
@@ -202,6 +256,32 @@ class AppleAdsActionServiceTest {
     }
 
     @Test
+    fun `같은 대상에 더 나중 조치가 남아 있으면 되돌리지 않는다`() {
+        // given
+        val paused = savedAction(AppleAdsActionType.PAUSE_KEYWORD, keywordId = KEYWORD_ID, previousStatus = "ACTIVE")
+        val negative = savedAction(AppleAdsActionType.ADD_NEGATIVE_KEYWORD, negativeKeywordId = NEGATIVE_KEYWORD_ID)
+        every { actionRepository.findById(ACTION_ID) } returns Optional.of(paused)
+        every { actionRepository.findById(OTHER_ACTION_ID) } returns Optional.of(negative)
+        every { actionRepository.existsByIdGreaterThanAndKeywordIdAndRevertedAtIsNull(0L, KEYWORD_ID) } returns true
+        every {
+            actionRepository.existsByIdGreaterThanAndAdGroupIdAndSearchTermAndRevertedAtIsNull(0L, AD_GROUP_ID, "디스코드")
+        } returns true
+
+        // when
+        val keywordException = assertThrows(BusinessException::class.java) { service.revert(REVERTER_ID, ACTION_ID) }
+        val searchTermException = assertThrows(BusinessException::class.java) {
+            service.revert(REVERTER_ID, OTHER_ACTION_ID)
+        }
+
+        // then
+        assertThat(keywordException.errorCode).isEqualTo(ErrorCode.APPLE_ADS_ACTION_SUPERSEDED)
+        assertThat(searchTermException.errorCode).isEqualTo(ErrorCode.APPLE_ADS_ACTION_SUPERSEDED)
+        verify(exactly = 0) { appleAdsClient.updateKeyword(any(), any(), any(), any()) }
+        verify(exactly = 0) { appleAdsClient.deleteNegativeKeyword(any()) }
+        verify(exactly = 0) { actionRepository.save(any()) }
+    }
+
+    @Test
     fun `없는 조치는 되돌리지 못한다`() {
         // given
         every { actionRepository.findById(ACTION_ID) } returns Optional.empty()
@@ -212,6 +292,13 @@ class AppleAdsActionServiceTest {
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.APPLE_ADS_ACTION_NOT_FOUND)
     }
+
+    private fun bidCommand(currentBid: String, suggestedBid: String) = command(
+        AppleAdsActionType.LOWER_BID,
+        keywordId = KEYWORD_ID,
+        currentBid = currentBid,
+        suggestedBid = suggestedBid,
+    )
 
     private fun command(
         type: AppleAdsActionType,
@@ -266,6 +353,7 @@ class AppleAdsActionServiceTest {
         text: String = "dating app",
         status: String? = "ACTIVE",
         bid: String? = "1.45",
+        deleted: Boolean = false,
     ) = AppleAdsKeywordInfo(
         id = id,
         adGroupId = AD_GROUP_ID,
@@ -274,6 +362,7 @@ class AppleAdsActionServiceTest {
         status = status,
         bidAmount = bid?.let { BigDecimal(it) },
         currency = "USD",
+        deleted = deleted,
     )
 
     companion object {
@@ -283,6 +372,7 @@ class AppleAdsActionServiceTest {
         private const val CAMPAIGN_ID = 1000L
         private const val AD_GROUP_ID = 10L
         private const val KEYWORD_ID = 500L
+        private const val OTHER_KEYWORD_ID = 502L
         private const val NEW_KEYWORD_ID = 501L
         private const val NEGATIVE_KEYWORD_ID = 600L
         private const val ACTION_ID = 7L

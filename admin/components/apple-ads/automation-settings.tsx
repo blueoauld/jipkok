@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { ReportSyncStatus } from "@/components/apple-ads/report-sync-status";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PendingButton } from "@/components/pending-button";
 import { QuerySection } from "@/components/query-section";
 import {
@@ -13,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -24,7 +27,11 @@ import {
 import { ApiError } from "@/lib/api/client";
 import { formatCount, formatDateTime } from "@/lib/format";
 import { recommendationTypeLabels } from "@/lib/labels";
-import type { AppleAdsAutomation } from "@/lib/types";
+import type {
+  AppleAdsAutomation,
+  AppleAdsAutomationRun,
+  UpdateAppleAdsAutomationBody,
+} from "@/lib/types";
 
 const MAX_DAILY_LIMIT = 50;
 
@@ -36,9 +43,10 @@ type AutomationDraft = {
   lowerBid: boolean;
   raiseBid: boolean;
   addKeyword: boolean;
+  maxBid: string;
 };
 
-type TypeKey = keyof Omit<AutomationDraft, "enabled" | "dailyLimit">;
+type TypeKey = keyof Omit<AutomationDraft, "enabled" | "dailyLimit" | "maxBid">;
 
 const typeFields: { key: TypeKey; label: string; note: string }[] = [
   {
@@ -54,12 +62,12 @@ const typeFields: { key: TypeKey; label: string; note: string }[] = [
   {
     key: "lowerBid",
     label: recommendationTypeLabels.LOWER_BID,
-    note: "설치당 비용이 기준의 1.5배 이상이면 15% 낮춤",
+    note: "탭 10회 이상이고, 설치가 없거나 설치당 비용이 다른 키워드의 1.5배 이상이면 15% 낮춤",
   },
   {
     key: "raiseBid",
     label: recommendationTypeLabels.RAISE_BID,
-    note: "설치 3회 이상, 설치당 비용이 기준의 70% 이하면 15% 올림",
+    note: "설치 3회 이상, 설치당 비용이 다른 키워드의 70% 이하면 15% 올림(애플 제안 입찰가가 더 높으면 그 값까지)",
   },
   {
     key: "addKeyword",
@@ -77,6 +85,14 @@ function draftOf(settings: AppleAdsAutomation): AutomationDraft {
     lowerBid: settings.lowerBid,
     raiseBid: settings.raiseBid,
     addKeyword: settings.addKeyword,
+    maxBid: settings.maxBid != null ? String(settings.maxBid) : "",
+  };
+}
+
+function bodyOf(draft: AutomationDraft): UpdateAppleAdsAutomationBody {
+  return {
+    ...draft,
+    maxBid: draft.maxBid === "" ? null : Number(draft.maxBid),
   };
 }
 
@@ -112,7 +128,8 @@ function AutomationForm({ settings }: FormProps) {
   const dirty = JSON.stringify(draft) !== JSON.stringify(draftOf(settings));
 
   const save = useMutation({
-    mutationFn: (body: AutomationDraft) => updateAppleAdsAutomation(body),
+    mutationFn: (body: AutomationDraft) =>
+      updateAppleAdsAutomation(bodyOf(body)),
     onSuccess: (saved) => {
       queryClient.setQueryData(["apple-ads", "automation"], saved);
       toast.success("자동 실행 설정을 저장했습니다.");
@@ -124,28 +141,7 @@ function AutomationForm({ settings }: FormProps) {
     },
   });
 
-  const run = useMutation({
-    mutationFn: runAppleAdsAutomation,
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["apple-ads"] });
-      if (!result.enabled) {
-        toast.success("자동 실행이 꺼져 있어 아무것도 하지 않았습니다.");
-        return;
-      }
-      const failed =
-        result.failed > 0
-          ? ` ${formatCount(result.failed)}건은 실패했습니다.`
-          : "";
-      toast.success(
-        `후보 ${formatCount(result.candidates)}건 중 ${formatCount(result.applied)}건을 적용했습니다.${failed}`,
-      );
-    },
-    onError: (caught) => {
-      toast.error(
-        caught instanceof ApiError ? caught.message : "실행하지 못했습니다.",
-      );
-    },
-  });
+  const [runOpen, setRunOpen] = useState(false);
 
   return (
     <Card>
@@ -156,6 +152,7 @@ function AutomationForm({ settings }: FormProps) {
           허용한 유형만 하루 한도까지 애플 광고에 바로 적용합니다. 적용한 조치는
           조치 이력에 자동으로 표시되고 되돌릴 수 있습니다.
         </CardDescription>
+        <ReportSyncStatus />
       </CardHeader>
       <CardContent className="space-y-6">
         <label className="flex items-center gap-3">
@@ -185,6 +182,26 @@ function AutomationForm({ settings }: FormProps) {
           />
           <span className="text-sm">건</span>
         </div>
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <span className="text-sm">올리기 최대 입찰가</span>
+            <Input
+              type="number"
+              min={0.01}
+              step={0.01}
+              className="w-28"
+              placeholder="제한 없음"
+              value={draft.maxBid}
+              onChange={(event) =>
+                setDraft({ ...draft, maxBid: event.target.value })
+              }
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            자동으로 입찰가를 올릴 때 이 값을 넘지 않고, 이미 이 값에 닿은
+            키워드는 건너뜁니다. 계정 통화 기준이고, 비우면 제한이 없습니다.
+          </p>
+        </div>
         <div className="space-y-3">
           {typeFields.map((field) => (
             <label key={field.key} className="flex items-start gap-3">
@@ -212,14 +229,13 @@ function AutomationForm({ settings }: FormProps) {
             : "아직 바꾼 적 없음"}
         </p>
         <div className="flex gap-2">
-          <PendingButton
+          <Button
             variant="outline"
-            pending={run.isPending}
             disabled={dirty}
-            onClick={() => run.mutate()}
+            onClick={() => setRunOpen(true)}
           >
             지금 실행
-          </PendingButton>
+          </Button>
           <PendingButton
             pending={save.isPending}
             disabled={!dirty}
@@ -229,6 +245,41 @@ function AutomationForm({ settings }: FormProps) {
           </PendingButton>
         </div>
       </CardFooter>
+      <ConfirmDialog
+        open={runOpen}
+        onOpenChange={setRunOpen}
+        title="자동 실행 지금 돌리기"
+        description="저장된 설정으로 지금 추천을 만들고, 허용한 유형을 오늘 남은 한도만큼 애플 광고에 바로 적용합니다. 적용한 조치는 조치 이력에서 하나씩 되돌릴 수 있습니다."
+        confirmLabel="실행"
+        confirmVariant="default"
+        errorFallback="실행하지 못했습니다."
+        invalidateKeys={[["apple-ads"]]}
+        action={runAppleAdsAutomation}
+        onSuccess={notifyRun}
+      />
     </Card>
   );
+}
+
+function notifyRun(result: AppleAdsAutomationRun) {
+  if (!result.enabled) {
+    toast.info("자동 실행이 꺼져 있어 아무것도 하지 않았습니다.");
+    return;
+  }
+
+  if (result.remaining === 0) {
+    toast.info("오늘 남은 자동 적용 한도가 없어 아무것도 하지 않았습니다.");
+    return;
+  }
+
+  const summary = `후보 ${formatCount(result.candidates)}건 중 ${formatCount(result.applied)}건을 적용했습니다.`;
+
+  if (result.failed > 0) {
+    toast.warning(
+      `${summary} ${formatCount(result.failed)}건은 실패해서 서버 로그에 남겼습니다.`,
+    );
+    return;
+  }
+
+  toast.success(summary);
 }

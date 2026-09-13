@@ -7,6 +7,7 @@ import {
   RecommendationFilters,
 } from "@/components/apple-ads/recommendation-filters";
 import { RecommendationTable } from "@/components/apple-ads/recommendation-table";
+import { ReportSyncStatus } from "@/components/apple-ads/report-sync-status";
 import { QuerySection } from "@/components/query-section";
 import {
   Card,
@@ -25,10 +26,11 @@ import type { AppleAdsRecommendationList } from "@/lib/types";
 
 const rules = [
   "일시정지: 활성 키워드가 탭 20회 이상인데 설치가 없다.",
-  "제외 키워드: Search Match 검색어가 탭 10회 이상인데 설치가 없다.",
-  "입찰가 낮추기: 탭 10회 이상이고 설치당 비용이 기준의 1.5배 이상이다. 15% 낮춘다.",
-  "입찰가 올리기: 설치 3회 이상이고 설치당 비용이 기준의 70% 이하다. 15% 올리되 애플 제안 입찰가를 넘지 않는다.",
-  "키워드 추가: Search Match 검색어에서 설치가 2회 이상 나왔고 아직 키워드가 아니다.",
+  "제외 키워드: Search Match 검색어가 탭 10회 이상인데 설치가 없다. 같은 광고그룹에서 키워드 매칭으로 설치가 났으면 뺀다.",
+  "입찰가 낮추기: 탭 10회 이상이고, 설치가 없거나 설치당 비용이 다른 키워드의 1.5배 이상이다. 15% 낮춘다.",
+  "입찰가 올리기: 설치 3회 이상이고 설치당 비용이 다른 키워드의 70% 이하다. 15% 올리되, 애플 제안 입찰가가 현재보다 높으면 그 값을 넘지 않는다.",
+  "키워드 추가: Search Match 검색어에서 설치가 2회 이상 나왔고 아직 키워드가 아니다. 광고그룹 입찰가를 알 수 있을 때만 추천한다.",
+  "다른 키워드: 기간의 전체 키워드에서 평가하는 키워드를 뺀 나머지의 지출을 설치 수로 나눈 값이다. 지워진 키워드는 추천하지 않는다.",
 ];
 
 function baselineText(data: AppleAdsRecommendationList) {
@@ -68,6 +70,7 @@ export function RecommendationList() {
             기본 기간은 3일 전까지의 30일입니다. 설치는 탭 뒤 며칠 늦게 붙어서
             최근 며칠은 뺍니다.
           </CardDescription>
+          <ReportSyncStatus />
         </CardHeader>
       </Card>
       <Card>

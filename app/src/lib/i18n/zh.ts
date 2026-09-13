@@ -157,6 +157,8 @@ export const zh: typeof ko = {
     APPLE_ADS_003: "報表期間最多 90 天，開始日須在今天起 90 天內。",
     APPLE_ADS_004: "找不到 Apple Ads 操作。",
     APPLE_ADS_005: "此操作已還原。",
+    APPLE_ADS_006: "Apple Ads 中的關鍵字已變更。請同步報表後再試。",
+    APPLE_ADS_007: "同一對象有較晚的操作。請先還原較晚的操作。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "最舊" },

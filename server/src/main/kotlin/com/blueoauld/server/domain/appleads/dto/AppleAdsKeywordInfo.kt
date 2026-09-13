@@ -11,6 +11,7 @@ data class AppleAdsKeywordInfo(
     val status: String?,
     val bidAmount: BigDecimal?,
     val currency: String?,
+    val deleted: Boolean,
 )
 
 data class AppleAdsNegativeKeywordInfo(

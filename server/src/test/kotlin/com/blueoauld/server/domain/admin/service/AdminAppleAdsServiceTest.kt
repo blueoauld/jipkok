@@ -1,6 +1,6 @@
 package com.blueoauld.server.domain.admin.service
 
-import com.blueoauld.server.domain.appleads.dto.AppleAdsOrg
+import com.blueoauld.server.domain.appleads.dto.AppleAdsAdAccount
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSyncResult
 import com.blueoauld.server.domain.appleads.service.AppleAdsClient
 import com.blueoauld.server.domain.appleads.service.AppleAdsReportSyncer
@@ -19,28 +19,30 @@ class AdminAppleAdsServiceTest {
     private val adminAppleAdsService = AdminAppleAdsService(appleAdsClient, reportSyncer)
 
     @Test
-    fun `조직 목록을 응답으로 옮긴다`() {
+    fun `광고 계정 목록을 응답으로 옮긴다`() {
         // given
-        every { appleAdsClient.findOrgs() } returns listOf(
-            AppleAdsOrg(
+        every { appleAdsClient.findAdAccounts() } returns listOf(
+            AppleAdsAdAccount(
+                adAccountId = 654321L,
+                name = "Jipkok",
                 orgId = 123456L,
-                orgName = "Jipkok",
-                currency = "KRW",
+                currency = "USD",
                 timeZone = "Asia/Seoul",
-                roleNames = listOf("API Account Manager"),
+                roleNames = listOf("API Campaign Manager"),
             ),
         )
 
         // when
-        val orgs = adminAppleAdsService.findOrgs()
+        val adAccounts = adminAppleAdsService.findAdAccounts()
 
         // then
-        assertThat(orgs).hasSize(1)
-        assertThat(orgs[0].orgId).isEqualTo(123456L)
-        assertThat(orgs[0].orgName).isEqualTo("Jipkok")
-        assertThat(orgs[0].currency).isEqualTo("KRW")
-        assertThat(orgs[0].timeZone).isEqualTo("Asia/Seoul")
-        assertThat(orgs[0].roleNames).containsExactly("API Account Manager")
+        assertThat(adAccounts).hasSize(1)
+        assertThat(adAccounts[0].adAccountId).isEqualTo(654321L)
+        assertThat(adAccounts[0].name).isEqualTo("Jipkok")
+        assertThat(adAccounts[0].orgId).isEqualTo(123456L)
+        assertThat(adAccounts[0].currency).isEqualTo("USD")
+        assertThat(adAccounts[0].timeZone).isEqualTo("Asia/Seoul")
+        assertThat(adAccounts[0].roleNames).containsExactly("API Campaign Manager")
     }
 
     @Test

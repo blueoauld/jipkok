@@ -28,6 +28,7 @@ class AdminAppleAdsAutomationService(
                 lowerBid = requireNotNull(request.lowerBid),
                 raiseBid = requireNotNull(request.raiseBid),
                 addKeyword = requireNotNull(request.addKeyword),
+                maxBid = request.maxBid,
             ),
         )
 
@@ -39,6 +40,7 @@ class AdminAppleAdsAutomationService(
             candidates = result.candidates,
             applied = result.applied,
             failed = result.failed,
+            remaining = result.remaining,
         )
     }
 
@@ -53,6 +55,7 @@ class AdminAppleAdsAutomationService(
             lowerBid = settings.lowerBid,
             raiseBid = settings.raiseBid,
             addKeyword = settings.addKeyword,
+            maxBid = settings.maxBid,
             updatedById = settings.updatedById,
             updatedByNickname = nickname,
             updatedAt = settings.updatedAt,

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { KeywordTable } from "@/components/apple-ads/keyword-table";
+import { ReportSyncStatus } from "@/components/apple-ads/report-sync-status";
 import {
   defaultAppleAdsFilter,
   ReportFilters,
@@ -58,6 +59,7 @@ export function AppleAdsReport() {
             />
             <SyncButton startDate={filter.startDate} endDate={filter.endDate} />
           </div>
+          <ReportSyncStatus />
         </CardHeader>
       </Card>
       <Card>

@@ -1,17 +1,17 @@
 package com.blueoauld.server.domain.appleads.service
 
+import com.blueoauld.server.domain.appleads.dto.AppleAdsAdAccount
 import com.blueoauld.server.domain.appleads.dto.AppleAdsCampaignInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordDailyRow
 import com.blueoauld.server.domain.appleads.dto.AppleAdsKeywordInfo
 import com.blueoauld.server.domain.appleads.dto.AppleAdsNegativeKeywordInfo
-import com.blueoauld.server.domain.appleads.dto.AppleAdsOrg
 import com.blueoauld.server.domain.appleads.dto.AppleAdsSearchTermDailyRow
 import java.math.BigDecimal
 import java.time.LocalDate
 
 interface AppleAdsClient {
 
-    fun findOrgs(): List<AppleAdsOrg>
+    fun findAdAccounts(): List<AppleAdsAdAccount>
 
     fun findCampaigns(): List<AppleAdsCampaignInfo>
 
@@ -23,9 +23,9 @@ interface AppleAdsClient {
         endDate: LocalDate,
     ): List<AppleAdsSearchTermDailyRow>
 
+    fun findKeyword(keywordId: Long): AppleAdsKeywordInfo
+
     fun updateKeyword(
-        campaignId: Long,
-        adGroupId: Long,
         keywordId: Long,
         status: String?,
         bid: BigDecimal?,
@@ -33,7 +33,6 @@ interface AppleAdsClient {
     ): AppleAdsKeywordInfo
 
     fun createKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
@@ -41,14 +40,13 @@ interface AppleAdsClient {
         currency: String,
     ): AppleAdsKeywordInfo
 
-    fun deleteKeyword(campaignId: Long, adGroupId: Long, keywordId: Long)
+    fun deleteKeyword(keywordId: Long)
 
     fun createNegativeKeyword(
-        campaignId: Long,
         adGroupId: Long,
         text: String,
         matchType: String,
     ): AppleAdsNegativeKeywordInfo
 
-    fun deleteNegativeKeyword(campaignId: Long, adGroupId: Long, negativeKeywordId: Long)
+    fun deleteNegativeKeyword(negativeKeywordId: Long)
 }
