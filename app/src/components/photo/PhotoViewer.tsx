@@ -193,7 +193,9 @@ function ViewerContent({
         <Animated.View style={[styles.root, contentStyle]}>
           <Gallery
             data={photos}
-            keyExtractor={(photo, photoIndex) => `${photoIndex}-${photo}`}
+            keyExtractor={(photo, photoIndex) =>
+              `${photoIndex}-${photoCacheKey(photo)}`
+            }
             initialIndex={initialIndex}
             maxScale={MAX_SCALE}
             tapOnEdgeToItem={false}
