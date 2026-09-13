@@ -21,6 +21,7 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.request.EnabledRequest
 import com.blueoauld.server.global.time.ageOf
+import com.blueoauld.server.global.time.koreaDate
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -73,6 +74,7 @@ class MemberService(
             noteReceiveEnabled = member.noteReceiveEnabled,
             feedNotificationEnabled = member.feedNotificationEnabled,
             suspensions = memberSuspensionService.findActive(memberId).map(SuspensionResponse::from),
+            signupDate = member.createdAt.koreaDate(),
         )
     }
 

@@ -13,6 +13,7 @@ export const BIRTH_YEAR_LENGTH = 4;
 export const BIO_MAX_LENGTH = 1000;
 export const WORRY_CONTENT_MAX_LENGTH = 1000;
 export const WORRY_COMMENT_MAX_LENGTH = 300;
+export const DIARY_CONTENT_MAX_LENGTH = 20000;
 export const DIARY_ATTACHMENTS_MAX = 10;
 export const CHAT_MESSAGE_MAX_LENGTH = 1000;
 export const REPORT_DETAIL_MAX_LENGTH = 1000;

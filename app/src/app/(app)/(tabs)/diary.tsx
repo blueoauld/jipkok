@@ -16,6 +16,7 @@ import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useDiaryMonth } from "@/hooks/useDiaries";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { koreaDateParam, toMonthParam } from "@/lib/date";
 import { moodEmoji } from "@/lib/diary";
@@ -35,6 +36,7 @@ export default function DiaryScreen() {
   const today = koreaDateParam(useNow());
   const [month, setMonth] = useState(() => toMonthParam(today));
   const { data: diaries, error, refetch } = useDiaryMonth(month);
+  const { data: profile } = useMyProfile();
 
   const sort = useDiaryFilterStore((state) => state.sort);
   const setSort = useDiaryFilterStore((state) => state.setSort);
@@ -119,6 +121,7 @@ export default function DiaryScreen() {
           <YStack mx={-gutter}>
             <RetroCalendar
               initialDate={today}
+              minDate={profile?.signupDate}
               maxDate={today}
               markedDates={markedDates}
               onDayPress={(day) => openEntry(day.dateString)}

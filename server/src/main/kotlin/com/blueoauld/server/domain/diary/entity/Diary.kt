@@ -40,4 +40,9 @@ class Diary(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0
+
+    companion object {
+
+        const val CONTENT_MAX_LENGTH = 20_000
+    }
 }

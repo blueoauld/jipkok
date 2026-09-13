@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.member.dto.response
 
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.suspension.dto.response.SuspensionResponse
+import java.time.LocalDate
 
 data class MyProfileResponse(
 
@@ -18,4 +19,5 @@ data class MyProfileResponse(
     val noteReceiveEnabled: Boolean,
     val feedNotificationEnabled: Boolean,
     val suspensions: List<SuspensionResponse>,
+    val signupDate: LocalDate,
 )

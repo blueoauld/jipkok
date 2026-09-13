@@ -150,6 +150,7 @@ export const zh: typeof ko = {
     DIARY_001: "找不到日記。",
     DIARY_002: "還沒到的日子無法寫日記。",
     DIARY_003: "請輸入內容或加入照片。",
+    DIARY_004: "無法撰寫註冊前的日記。",
     TRANSLATION_001: "翻譯失敗。請稍後再試。",
     TRANSLATION_002: "已超過翻譯請求上限。請稍後再試。",
     APPLE_ADS_001: "尚未設定 Apple Ads API。",

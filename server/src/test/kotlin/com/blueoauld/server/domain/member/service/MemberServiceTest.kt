@@ -15,6 +15,7 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 import java.util.*
 
@@ -248,6 +250,19 @@ class MemberServiceTest {
         // then
         assertThat(response.birthYear).isEqualTo(2000)
         assertThat(response.age).isEqualTo(26)
+    }
+
+    @Test
+    fun `내 프로필의 가입일은 한국 날짜로 준다`() {
+        // given
+        val member = spyk(member()) { every { createdAt } returns Instant.parse("2026-07-31T15:30:00Z") }
+        stubMember(member)
+
+        // when
+        val response = memberService.findMyProfile(MEMBER_ID)
+
+        // then
+        assertThat(response.signupDate).isEqualTo(LocalDate.of(2026, 8, 1))
     }
 
     @Test

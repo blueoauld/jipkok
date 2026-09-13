@@ -126,7 +126,7 @@ export interface paths {
         get?: never;
         /**
          * 일기 쓰기
-         * @description 그날 일기가 없으면 만들고 있으면 덮어쓴다. 한국 날짜로 오늘까지만 쓸 수 있고, 내용이나 첨부 중 하나는 있어야 한다. 첨부는 보낸 순서대로 남고 빠진 첨부는 지운다.
+         * @description 그날 일기가 없으면 만들고 있으면 덮어쓴다. 한국 날짜로 가입한 날부터 오늘까지 쓸 수 있고, 내용이나 첨부 중 하나는 있어야 한다. 내용은 2만 자까지다. 첨부는 보낸 순서대로 남고 빠진 첨부는 지운다.
          */
         put: operations["write"];
         post?: never;
@@ -1966,6 +1966,8 @@ export interface components {
             noteReceiveEnabled: boolean;
             feedNotificationEnabled: boolean;
             suspensions: components["schemas"]["SuspensionResponse"][];
+            /** Format: date */
+            signupDate: string;
         };
         ProfilePhotoResponse: {
             objectKey: string;

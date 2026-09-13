@@ -47,7 +47,7 @@ services:
   redis:
     image: redis:8.4.0
     restart: unless-stopped
-    command: [ "redis-server", "--appendonly", "yes" ]
+    command: [ "redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "volatile-ttl" ]
     volumes:
       - redis-data:/data
     healthcheck:

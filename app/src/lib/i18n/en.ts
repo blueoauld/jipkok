@@ -157,6 +157,7 @@ export const en: typeof ko = {
     DIARY_001: "Entry not found.",
     DIARY_002: "You can't write an entry for a day that hasn't come yet.",
     DIARY_003: "Add some text or a photo.",
+    DIARY_004: "You can't write an entry for a day before you signed up.",
     TRANSLATION_001: "Couldn't translate. Please try again in a moment.",
     TRANSLATION_002:
       "You've reached the translation limit. Please try again in a moment.",

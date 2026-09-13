@@ -9,6 +9,8 @@ import com.blueoauld.server.domain.diary.entity.DiaryAttachment
 import com.blueoauld.server.domain.diary.entity.type.DiaryAttachmentType
 import com.blueoauld.server.domain.diary.repository.DiaryAttachmentRepository
 import com.blueoauld.server.domain.diary.repository.DiaryRepository
+import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.domain.photo.service.PhotoUploadService
@@ -19,6 +21,7 @@ import com.blueoauld.server.global.repository.escapeLike
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
+import com.blueoauld.server.global.time.koreaDate
 import com.blueoauld.server.global.time.today
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -32,6 +35,7 @@ class DiaryService(
 
     private val diaryRepository: DiaryRepository,
     private val diaryAttachmentRepository: DiaryAttachmentRepository,
+    private val memberRepository: MemberRepository,
     private val photoUploadService: PhotoUploadService,
     private val photoStorage: PhotoStorage,
     private val eventPublisher: ApplicationEventPublisher,
@@ -94,6 +98,10 @@ class DiaryService(
     fun write(memberId: Long, entryDate: LocalDate, request: WriteDiaryRequest) {
         if (entryDate.isAfter(clock.today())) {
             throw BusinessException(ErrorCode.FUTURE_DIARY_DATE)
+        }
+
+        if (entryDate.isBefore(memberRepository.getMember(memberId).createdAt.koreaDate())) {
+            throw BusinessException(ErrorCode.BEFORE_SIGNUP_DIARY_DATE)
         }
 
         val content = request.content?.trim()?.ifEmpty { null }

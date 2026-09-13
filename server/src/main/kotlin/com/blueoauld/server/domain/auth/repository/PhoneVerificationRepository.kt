@@ -2,7 +2,9 @@ package com.blueoauld.server.domain.auth.repository
 
 import com.blueoauld.server.domain.auth.entity.PhoneVerification
 import com.blueoauld.server.domain.auth.entity.type.VerificationPurpose
+import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -12,6 +14,7 @@ interface PhoneVerificationRepository : JpaRepository<PhoneVerification, Long> {
 
     fun findFirstByPhoneNumberOrderByIssuedAtDesc(phoneNumber: String): PhoneVerification?
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     fun findFirstByPhoneNumberAndPurposeOrderByIssuedAtDesc(
         phoneNumber: String,
         purpose: VerificationPurpose,

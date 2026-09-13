@@ -32,7 +32,10 @@ import { moodEmoji } from "@/lib/diary";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
 import { describeUploadError } from "@/lib/upload";
-import { DIARY_ATTACHMENTS_MAX } from "@/lib/validation";
+import {
+  DIARY_ATTACHMENTS_MAX,
+  DIARY_CONTENT_MAX_LENGTH,
+} from "@/lib/validation";
 
 const ROWS = 14;
 
@@ -155,6 +158,7 @@ function DiaryEditor({
           rows={ROWS}
           textAlignVertical="top"
           placeholder={t("diary.placeholder")}
+          maxLength={DIARY_CONTENT_MAX_LENGTH}
           defaultValue={initial}
           onChangeText={(text) => {
             contentRef.current = text;

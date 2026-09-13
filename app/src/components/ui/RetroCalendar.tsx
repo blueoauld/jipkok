@@ -96,6 +96,7 @@ export function RetroCalendar(
   props: Pick<
     CalendarProps,
     | "initialDate"
+    | "minDate"
     | "maxDate"
     | "markedDates"
     | "showSixWeeks"

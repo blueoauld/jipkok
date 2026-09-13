@@ -8,6 +8,8 @@ import com.blueoauld.server.domain.diary.entity.type.DiaryAttachmentType
 import com.blueoauld.server.domain.diary.entity.type.DiaryMood
 import com.blueoauld.server.domain.diary.repository.DiaryAttachmentRepository
 import com.blueoauld.server.domain.diary.repository.DiaryRepository
+import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.photo.event.PhotosDeletedEvent
 import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
@@ -28,12 +30,15 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
+import java.util.*
 
 class DiaryServiceTest {
 
     private val diaryRepository = mockk<DiaryRepository>(relaxed = true)
 
     private val diaryAttachmentRepository = mockk<DiaryAttachmentRepository>(relaxed = true)
+
+    private val memberRepository = mockk<MemberRepository>()
 
     private val photoUploadService = mockk<PhotoUploadService>()
 
@@ -44,6 +49,7 @@ class DiaryServiceTest {
     private val diaryService = DiaryService(
         diaryRepository,
         diaryAttachmentRepository,
+        memberRepository,
         photoUploadService,
         photoStorage,
         eventPublisher,
@@ -52,6 +58,7 @@ class DiaryServiceTest {
 
     @BeforeEach
     fun setUp() {
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
         every { diaryRepository.findByMemberIdAndEntryDate(any(), any()) } returns null
         every { diaryRepository.saveAndFlush(any()) } answers { firstArg() }
         every { diaryAttachmentRepository.findAllByDiaryIdOrderByPosition(any()) } returns emptyList()
@@ -108,6 +115,27 @@ class DiaryServiceTest {
     fun `지난 날짜에는 쓸 수 있다`() {
         // when
         diaryService.write(MEMBER_ID, TODAY.minusDays(1), request("어제 일기"))
+
+        // then
+        verify { diaryRepository.saveAndFlush(any()) }
+    }
+
+    @Test
+    fun `한국 날짜로 가입하기 전 날의 일기는 쓸 수 없다`() {
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            diaryService.write(MEMBER_ID, SIGNUP_DATE.minusDays(1), request("가입 전 일기"))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.BEFORE_SIGNUP_DIARY_DATE)
+        verify(exactly = 0) { diaryRepository.saveAndFlush(any()) }
+    }
+
+    @Test
+    fun `가입한 날의 일기는 쓸 수 있다`() {
+        // when
+        diaryService.write(MEMBER_ID, SIGNUP_DATE, request("가입한 날 일기"))
 
         // then
         verify { diaryRepository.saveAndFlush(any()) }
@@ -401,6 +429,8 @@ class DiaryServiceTest {
     private fun request(content: String, vararg attachments: DiaryAttachmentRequest) =
         WriteDiaryRequest(content, null, attachments.toList())
 
+    private fun member() = mockk<Member> { every { createdAt } returns SIGNUP_AT }
+
     private fun photo() = StoredObject(1_000, "image/webp")
 
     private fun video() = StoredObject(1_000, "video/mp4")
@@ -414,5 +444,7 @@ class DiaryServiceTest {
         private const val THUMBNAIL_KEY = "$PREFIX/thumbnail.jpg"
         private val NOW: Instant = Instant.parse("2026-09-09T15:30:00Z")
         private val TODAY: LocalDate = LocalDate.of(2026, 9, 10)
+        private val SIGNUP_AT: Instant = Instant.parse("2026-09-01T15:30:00Z")
+        private val SIGNUP_DATE: LocalDate = LocalDate.of(2026, 9, 2)
     }
 }
