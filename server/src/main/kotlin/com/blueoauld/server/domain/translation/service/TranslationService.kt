@@ -27,6 +27,7 @@ class TranslationService(
 ) {
 
     fun translate(memberId: Long, request: TranslateRequest): TranslationResponse {
+        val source = sourceContentOf(request)
         val targetLocale = memberRepository.findLocaleById(memberId) ?: MemberLocale.DEFAULT
         val cached = translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(
             request.sourceType,
@@ -37,8 +38,6 @@ class TranslationService(
         if (cached != null) {
             return TranslationResponse(cached.content)
         }
-
-        val source = sourceContentOf(request)
 
         if (translationLimitCache.increaseAndCount(memberId) > TranslationLimitCache.DAILY_LIMIT) {
             throw BusinessException(ErrorCode.TRANSLATE_LIMIT_EXCEEDED)
@@ -63,9 +62,15 @@ class TranslationService(
                 .orElseThrow { BusinessException(ErrorCode.WORRY_POST_NOT_FOUND) }
                 .content
 
-        TranslationSource.WORRY_COMMENT ->
-            worryCommentRepository.findById(request.sourceId)
+        TranslationSource.WORRY_COMMENT -> {
+            val comment = worryCommentRepository.findById(request.sourceId)
                 .orElseThrow { BusinessException(ErrorCode.WORRY_COMMENT_NOT_FOUND) }
-                .content
+
+            if (!worryPostRepository.existsById(comment.postId)) {
+                throw BusinessException(ErrorCode.WORRY_POST_NOT_FOUND)
+            }
+
+            comment.content
+        }
     }
 }

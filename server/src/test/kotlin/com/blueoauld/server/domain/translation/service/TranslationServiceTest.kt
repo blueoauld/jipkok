@@ -7,6 +7,7 @@ import com.blueoauld.server.domain.translation.entity.Translation
 import com.blueoauld.server.domain.translation.entity.type.TranslationSource
 import com.blueoauld.server.domain.translation.repository.TranslationLimitCache
 import com.blueoauld.server.domain.translation.repository.TranslationRepository
+import com.blueoauld.server.domain.worry.entity.WorryComment
 import com.blueoauld.server.domain.worry.entity.WorryPost
 import com.blueoauld.server.domain.worry.entity.type.WorryCategory
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
@@ -146,6 +147,61 @@ class TranslationServiceTest {
     }
 
     @Test
+    fun `지워진 글은 남아 있는 번역도 주지 않는다`() {
+        // given
+        every { worryPostRepository.findById(POST_ID) } returns Optional.empty()
+        every { translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(any(), any(), any()) } returns
+            Translation(TranslationSource.WORRY_POST, POST_ID, MemberLocale.JA, CACHED)
+
+        // when, then
+        assertThatThrownBy { translationService.translate(MEMBER_ID, request()) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORRY_POST_NOT_FOUND)
+    }
+
+    @Test
+    fun `댓글을 번역해서 준다`() {
+        // given
+        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment())
+        every { worryPostRepository.existsById(POST_ID) } returns true
+
+        // when
+        val response = translationService.translate(MEMBER_ID, commentRequest())
+
+        // then
+        assertThat(response.content).isEqualTo(TRANSLATED)
+        verify { translator.translate(COMMENT_CONTENT, MemberLocale.JA) }
+    }
+
+    @Test
+    fun `지워진 댓글은 남아 있는 번역도 주지 않는다`() {
+        // given
+        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.empty()
+        every { translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(any(), any(), any()) } returns
+            Translation(TranslationSource.WORRY_COMMENT, COMMENT_ID, MemberLocale.JA, CACHED)
+
+        // when, then
+        assertThatThrownBy { translationService.translate(MEMBER_ID, commentRequest()) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORRY_COMMENT_NOT_FOUND)
+    }
+
+    @Test
+    fun `글이 지워진 댓글은 번역하지 않는다`() {
+        // given
+        every { worryCommentRepository.findById(COMMENT_ID) } returns Optional.of(comment())
+        every { worryPostRepository.existsById(POST_ID) } returns false
+        every { translationRepository.findBySourceTypeAndSourceIdAndTargetLocale(any(), any(), any()) } returns
+            Translation(TranslationSource.WORRY_COMMENT, COMMENT_ID, MemberLocale.JA, CACHED)
+
+        // when, then
+        assertThatThrownBy { translationService.translate(MEMBER_ID, commentRequest()) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORRY_POST_NOT_FOUND)
+        verify(exactly = 0) { translationLimitCache.increaseAndCount(any()) }
+    }
+
+    @Test
     fun `번역기가 실패하면 쓴 한도를 되돌린다`() {
         // given
         every { translator.translate(any(), any()) } throws BusinessException(ErrorCode.TRANSLATE_FAILED)
@@ -183,17 +239,28 @@ class TranslationServiceTest {
 
     private fun request() = TranslateRequest(TranslationSource.WORRY_POST, POST_ID)
 
+    private fun commentRequest() = TranslateRequest(TranslationSource.WORRY_COMMENT, COMMENT_ID)
+
     private fun post() = WorryPost(
         memberId = 1L,
         category = WorryCategory.ETC,
         content = CONTENT,
     )
 
+    private fun comment() = WorryComment(
+        postId = POST_ID,
+        memberId = 1L,
+        content = COMMENT_CONTENT,
+        anonymousNo = 1,
+    )
+
     companion object {
 
         private const val MEMBER_ID = 7L
         private const val POST_ID = 42L
+        private const val COMMENT_ID = 43L
         private const val CONTENT = "고민 내용"
+        private const val COMMENT_CONTENT = "댓글 내용"
         private const val TRANSLATED = "翻訳された内容"
         private const val CACHED = "이미 번역된 것"
     }

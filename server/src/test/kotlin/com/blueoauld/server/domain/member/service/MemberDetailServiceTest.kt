@@ -153,7 +153,7 @@ class MemberDetailServiceTest {
     }
 
     @Test
-    fun `상대가 나를 차단했으면 사진과 글을 비운다`() {
+    fun `상대가 나를 차단했으면 사진과 글과 위치를 비운다`() {
         // given
         every { memberBlockRepository.existsByBlockerIdAndBlockedMemberId(TARGET_ID, ME_ID) } returns true
 
@@ -165,8 +165,9 @@ class MemberDetailServiceTest {
         assertThat(response.secretPhotoCount).isZero()
         assertThat(response.comment).isNull()
         assertThat(response.bio).isNull()
+        assertThat(response.locatedAt).isNull()
+        assertThat(response.distance).isNull()
         assertThat(response.nickname).isEqualTo("상대")
-        assertThat(response.distance).isNotNull()
     }
 
     @Test
@@ -181,6 +182,8 @@ class MemberDetailServiceTest {
         assertThat(response.blockedByMe).isTrue()
         assertThat(response.publicPhotoUrls).isNotEmpty()
         assertThat(response.comment).isEqualTo("코멘트")
+        assertThat(response.locatedAt).isEqualTo(NOW)
+        assertThat(response.distance).isNotNull()
     }
 
     @Test
