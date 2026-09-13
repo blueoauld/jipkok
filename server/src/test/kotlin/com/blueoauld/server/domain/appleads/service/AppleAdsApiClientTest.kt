@@ -182,6 +182,7 @@ class AppleAdsApiClientTest {
         assertThat(rows[0].metrics.currency).isEqualTo("USD")
         assertThat(rows[1].metrics.date).isEqualTo(END)
         assertThat(rows[1].metrics.spend).isEqualByComparingTo(BigDecimal.ZERO)
+        assertThat(rows[1].metrics.currency).isEqualTo("USD")
     }
 
     @Test
@@ -255,6 +256,7 @@ class AppleAdsApiClientTest {
         assertThat(rows[1].keywordId).isEqualTo(KEYWORD_ID)
         assertThat(rows[1].keyword).isEqualTo("dating app")
         assertThat(rows[1].matchType).isEqualTo("EXACT")
+        assertThat(rows[1].metrics.currency).isEqualTo("USD")
     }
 
     @Test
@@ -427,8 +429,7 @@ class AppleAdsApiClientTest {
             """{"date":"2026-09-01","impressions":76,"taps":45,"totalInstalls":16,"tapInstalls":10,""" +
             """"viewInstalls":6,"totalNewDownloads":12,"totalRedownloads":4,""" +
             """"localSpend":{"amount":"12.34","currency":"USD"}},""" +
-            """{"date":"2026-09-02","impressions":3,"taps":0,""" +
-            """"localSpend":{"amount":"0","currency":"USD"}}],""" +
+            """{"date":"2026-09-02","impressions":3,"taps":0}],""" +
             """"insights":{"bidRecommendation":{"suggestedBidAmount":2.40}}}"""
 
         private const val SEARCH_TERM_ROWS = """{"metadata":{"campaignId":$CAMPAIGN_ID,""" +
@@ -439,9 +440,9 @@ class AppleAdsApiClientTest {
             """"tapInstalls":1,"localSpend":{"amount":"2.00","currency":"USD"}}]},""" +
             """{"metadata":{"campaignId":$CAMPAIGN_ID,"searchTermText":"dating app","searchTermSource":"SEARCH",""" +
             """"keyword":{"id":$KEYWORD_ID,"text":"dating app","matchType":"EXACT","status":"ENABLED",""" +
-            """"adGroupId":$AD_GROUP_ID},"adGroupId":$AD_GROUP_ID,"adGroup":{"name":"Ad Group 1"}},""" +
-            """"granularMetrics":[{"date":"2026-09-01","countryOrRegion":"KR","impressions":12,"taps":2,""" +
-            """"localSpend":{"amount":"1.00","currency":"USD"}}]},""" +
+            """"bid":{"amount":"1.50","currency":"USD"},"adGroupId":$AD_GROUP_ID},""" +
+            """"adGroupId":$AD_GROUP_ID,"adGroup":{"name":"Ad Group 1"}},""" +
+            """"granularMetrics":[{"date":"2026-09-01","countryOrRegion":"KR","impressions":12,"taps":0}]},""" +
             """{"metadata":{"campaignId":$CAMPAIGN_ID,"adGroupId":$AD_GROUP_ID},""" +
             """"granularMetrics":[{"date":"2026-09-01","impressions":9,"taps":0}]}"""
     }

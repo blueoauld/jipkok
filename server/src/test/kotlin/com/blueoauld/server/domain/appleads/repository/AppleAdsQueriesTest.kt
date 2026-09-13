@@ -81,7 +81,7 @@ class AppleAdsQueriesTest {
     }
 
     @Test
-    fun `키워드 성과는 기간을 합산하고 상태는 가장 최근 날 값을 쓴다`() {
+    fun `키워드 성과는 기간을 합산하고 상태는 가장 최근 날 값을, 통화는 비어 있지 않은 가장 최근 값을 쓴다`() {
         // given
         upsertKeyword(impressions = 10, spend = BigDecimal("1.00"), now = NOW)
         upsertKeyword(
@@ -91,6 +91,7 @@ class AppleAdsQueriesTest {
             reportDate = NEXT_DATE,
             status = "PAUSED",
             deleted = true,
+            currency = null,
         )
         upsertKeyword(impressions = 99, spend = BigDecimal("9.00"), now = NOW, reportDate = NEXT_DATE.plusDays(1))
         upsertKeyword(
@@ -111,6 +112,7 @@ class AppleAdsQueriesTest {
         assertThat(row.spend).isEqualByComparingTo(BigDecimal("3.00"))
         assertThat(row.keywordStatus).isEqualTo("PAUSED")
         assertThat(row.deleted).isTrue()
+        assertThat(row.currency).isEqualTo("USD")
         assertThat(rows.single { it.keywordId == OTHER_KEYWORD_ID }.deleted).isFalse()
         assertThat(row.suggestedBidAmount).isEqualByComparingTo(BigDecimal("2.40"))
         assertThat(row.bidMin).isNull()
@@ -243,6 +245,7 @@ class AppleAdsQueriesTest {
         deleted: Boolean = false,
         keywordId: Long = KEYWORD_ID,
         campaignId: Long = CAMPAIGN_ID,
+        currency: String? = "USD",
     ) {
         keywordDailyRepository.upsert(
             reportDate = reportDate,
@@ -258,7 +261,7 @@ class AppleAdsQueriesTest {
             suggestedBidAmount = BigDecimal("2.40"),
             bidMin = null,
             bidMax = null,
-            currency = "USD",
+            currency = currency,
             impressions = impressions,
             taps = 1,
             totalInstalls = 1,

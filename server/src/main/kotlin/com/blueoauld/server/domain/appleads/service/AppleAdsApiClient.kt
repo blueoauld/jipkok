@@ -341,18 +341,22 @@ class AppleAdsApiClient(
     }
 
     private fun dailyEntries(row: ReportRow, startDate: LocalDate, endDate: LocalDate): List<DailyEntry> {
+        val rowCurrency = row.totalMetrics?.localSpend?.currency
+            ?: row.metadata?.bid?.currency
+            ?: row.metadata?.keyword?.bid?.currency
+
         if (startDate == endDate) {
-            return listOfNotNull(row.totalMetrics?.let { toDailyEntry(it, startDate) })
+            return listOfNotNull(row.totalMetrics?.let { toDailyEntry(it, startDate, rowCurrency) })
         }
 
         return row.granularMetrics.orEmpty().mapNotNull { metrics ->
             metrics.date
                 ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-                ?.let { toDailyEntry(metrics, it) }
+                ?.let { toDailyEntry(metrics, it, rowCurrency) }
         }
     }
 
-    private fun toDailyEntry(row: ReportMetrics, date: LocalDate) = DailyEntry(
+    private fun toDailyEntry(row: ReportMetrics, date: LocalDate, rowCurrency: String?) = DailyEntry(
         metrics = AppleAdsDailyMetrics(
             date = date,
             impressions = row.impressions ?: 0,
@@ -363,7 +367,7 @@ class AppleAdsApiClient(
             totalNewDownloads = row.totalNewDownloads ?: 0,
             totalRedownloads = row.totalRedownloads ?: 0,
             spend = row.localSpend?.amount?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            currency = row.localSpend?.currency,
+            currency = row.localSpend?.currency ?: rowCurrency,
         ),
         countryOrRegion = row.countryOrRegion,
     )
@@ -464,7 +468,7 @@ class AppleAdsApiClient(
 
     private data class ReportAdGroup(val name: String?)
 
-    private data class ReportKeyword(val id: Long?, val text: String?, val matchType: String?)
+    private data class ReportKeyword(val id: Long?, val text: String?, val matchType: String?, val bid: Money?)
 
     private data class ReportMetrics(
         val date: String?,
