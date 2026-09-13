@@ -1,6 +1,7 @@
 package com.blueoauld.server.global.storage.service
 
 import com.blueoauld.server.global.storage.dto.StoredObject
+import java.time.Duration
 
 interface PhotoStorage {
 
@@ -9,6 +10,8 @@ interface PhotoStorage {
     fun toPublicUrl(objectKey: String): String
 
     fun createSignedViewUrl(objectKey: String): String
+
+    fun createSignedViewUrl(objectKey: String, validity: Duration): String
 
     fun head(objectKey: String): StoredObject?
 

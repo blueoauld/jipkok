@@ -15,6 +15,8 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler
 import org.springframework.messaging.simp.stomp.StompHeaders
 import org.springframework.messaging.simp.stomp.StompSession
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter
+import org.springframework.scheduling.TaskScheduler
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.lang.reflect.Type
@@ -47,6 +49,23 @@ class WebSocketConnectionTest {
         // then
         assertThat(session.isConnected).isTrue()
         session.disconnect()
+    }
+
+    @Test
+    fun `하트비트를 요청하면 서버도 같은 간격의 하트비트로 응답한다`() {
+        // given
+        val connected = LinkedBlockingQueue<StompHeaders>()
+        val scheduler = ThreadPoolTaskScheduler().apply { initialize() }
+        val headers = authorized(MEMBER_ID).apply { heartbeat = longArrayOf(HEARTBEAT_MILLIS, HEARTBEAT_MILLIS) }
+
+        // when
+        val session = connect(headers, ConnectedHandler(connected), scheduler)
+
+        // then
+        assertThat(connected.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS)?.heartbeat)
+            .containsExactly(HEARTBEAT_MILLIS, HEARTBEAT_MILLIS)
+        session.disconnect()
+        scheduler.shutdown()
     }
 
     @Test
@@ -106,9 +125,14 @@ class WebSocketConnectionTest {
         set("Authorization", "Bearer ${jwtProvider.createAccessToken(memberId, ROLE)}")
     }
 
-    private fun connect(headers: StompHeaders, handler: Handler = Handler()): StompSession {
+    private fun connect(
+        headers: StompHeaders,
+        handler: StompSessionHandlerAdapter = Handler(),
+        taskScheduler: TaskScheduler? = null,
+    ): StompSession {
         val client = WebSocketStompClient(StandardWebSocketClient())
         client.messageConverter = StringMessageConverter()
+        taskScheduler?.let { client.taskScheduler = it }
 
         return client
             .connectAsync("ws://localhost:$port${WebSocketConfig.ENDPOINT}", null, headers, handler)
@@ -120,6 +144,13 @@ class WebSocketConnectionTest {
 
         override fun handleFrame(headers: StompHeaders, payload: Any?) {
             errors.add(headers)
+        }
+    }
+
+    private class ConnectedHandler(private val connected: BlockingQueue<StompHeaders>) : StompSessionHandlerAdapter() {
+
+        override fun afterConnected(session: StompSession, connectedHeaders: StompHeaders) {
+            connected.add(connectedHeaders)
         }
     }
 
@@ -142,6 +173,7 @@ class WebSocketConnectionTest {
         private const val OTHER_PAYLOAD = "other"
 
         private const val TIMEOUT_SECONDS = 5L
+        private const val HEARTBEAT_MILLIS = 10_000L
         private const val POLL_MILLIS = 100L
         private const val MAX_SEND_ATTEMPTS = 50
         private const val QUIET_MILLIS = 500L

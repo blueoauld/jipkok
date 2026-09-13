@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 private val log = KotlinLogging.logger {}
 
@@ -26,7 +27,8 @@ class FeedReminder(
     @Scheduled(cron = REMIND_CRON, zone = KOREA_ID)
     fun remind() {
         val now = clock.instant()
-        val targets = feedReminderRepository.findFeedReminderTargets(now.minus(REMIND_INTERVAL), now)
+        val since = now.truncatedTo(ChronoUnit.HOURS).minus(REMIND_INTERVAL)
+        val targets = feedReminderRepository.findFeedReminderTargets(since, now)
 
         if (targets.isEmpty()) {
             return

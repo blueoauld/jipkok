@@ -66,14 +66,16 @@ class R2PhotoStorage(
 
     override fun toPublicUrl(objectKey: String) = "${r2Properties.publicBaseUrl}/$objectKey"
 
-    override fun createSignedViewUrl(objectKey: String): String {
+    override fun createSignedViewUrl(objectKey: String) = createSignedViewUrl(objectKey, r2Properties.viewUrlValidity)
+
+    override fun createSignedViewUrl(objectKey: String, validity: Duration): String {
         val getObject = GetObjectRequest.builder()
             .bucket(r2Properties.bucket)
             .key(objectKey)
             .build()
 
         val presignRequest = GetObjectPresignRequest.builder()
-            .signatureDuration(r2Properties.viewUrlValidity)
+            .signatureDuration(validity)
             .getObjectRequest(getObject)
             .build()
 

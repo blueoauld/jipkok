@@ -4,6 +4,7 @@ import com.blueoauld.server.global.storage.dto.StoredObject
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 private val log = KotlinLogging.logger {}
 
@@ -20,6 +21,8 @@ class LocalPhotoStorage : PhotoStorage {
     override fun toPublicUrl(objectKey: String) = "$BASE_URL/$objectKey"
 
     override fun createSignedViewUrl(objectKey: String) = "$BASE_URL/$objectKey?signed=true"
+
+    override fun createSignedViewUrl(objectKey: String, validity: Duration) = createSignedViewUrl(objectKey)
 
     override fun head(objectKey: String): StoredObject {
         log.info { "객체 정보를 읽는다. objectKey=$objectKey" }

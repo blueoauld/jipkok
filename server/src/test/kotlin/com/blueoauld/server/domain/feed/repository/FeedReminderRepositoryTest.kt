@@ -35,15 +35,17 @@ class FeedReminderRepositoryTest {
         val stale = save(member("+821077770002"))
         val never = save(member("+821077770003"))
         val muted = save(member("+821077770004", feedNotificationEnabled = false))
+        val atSince = save(member("+821077770005"))
         savePost(recent.id, NOW.minus(Duration.ofHours(1)))
         savePost(stale.id, NOW.minus(Duration.ofHours(4)))
+        savePost(atSince.id, NOW.minus(Duration.ofHours(3)))
 
         // when
         val targets = feedReminderRepository.findFeedReminderTargets(NOW.minus(Duration.ofHours(3)), NOW)
 
         // then
         assertThat(targets.map { it.getMemberId() }).containsExactlyInAnyOrder(stale.id, never.id)
-        assertThat(targets.map { it.getMemberId() }).doesNotContain(recent.id, muted.id)
+        assertThat(targets.map { it.getMemberId() }).doesNotContain(recent.id, muted.id, atSince.id)
     }
 
     private fun savePost(memberId: Long, slotAt: Instant) = feedPostRepository.saveAndFlush(

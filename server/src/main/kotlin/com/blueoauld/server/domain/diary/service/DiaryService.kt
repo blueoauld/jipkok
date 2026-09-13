@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -53,7 +54,10 @@ class DiaryService(
         return toResponses(diaries)
     }
 
-    private fun toResponses(diaries: List<Diary>): List<DiaryResponse> {
+    private fun toResponses(
+        diaries: List<Diary>,
+        signUrl: (String) -> String = photoStorage::createSignedViewUrl,
+    ): List<DiaryResponse> {
         if (diaries.isEmpty()) {
             return emptyList()
         }
@@ -62,7 +66,7 @@ class DiaryService(
             .findAllByDiaryIdInOrderByPosition(diaries.map { it.id })
             .groupBy { it.diaryId }
 
-        return diaries.map { toResponse(it, attachments[it.id].orEmpty()) }
+        return diaries.map { toResponse(it, attachments[it.id].orEmpty(), signUrl) }
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +93,9 @@ class DiaryService(
 
     @Transactional(readOnly = true)
     fun export(memberId: Long): List<DiaryResponse> =
-        toResponses(diaryRepository.findAllByMemberIdOrderByEntryDate(memberId))
+        toResponses(diaryRepository.findAllByMemberIdOrderByEntryDate(memberId)) {
+            photoStorage.createSignedViewUrl(it, EXPORT_URL_VALIDITY)
+        }
 
     fun createUploadUrl(memberId: Long, contentType: String): PhotoUploadUrlResponse =
         photoUploadService.createMediaUploadUrl(memberId, keyPrefix(memberId), contentType)
@@ -221,7 +227,11 @@ class DiaryService(
         }
     }
 
-    private fun toResponse(diary: Diary, attachments: List<DiaryAttachment>) = DiaryResponse(
+    private fun toResponse(
+        diary: Diary,
+        attachments: List<DiaryAttachment>,
+        signUrl: (String) -> String,
+    ) = DiaryResponse(
         entryDate = diary.entryDate,
         content = diary.content,
         mood = diary.mood,
@@ -229,8 +239,8 @@ class DiaryService(
             DiaryAttachmentResponse(
                 type = it.type,
                 objectKey = it.objectKey,
-                url = photoStorage.createSignedViewUrl(it.objectKey),
-                thumbnailUrl = it.thumbnailObjectKey?.let(photoStorage::createSignedViewUrl),
+                url = signUrl(it.objectKey),
+                thumbnailUrl = it.thumbnailObjectKey?.let(signUrl),
                 durationSeconds = it.durationSeconds,
             )
         },
@@ -240,6 +250,8 @@ class DiaryService(
     private fun keyPrefix(memberId: Long) = "$KEY_ROOT/$memberId/"
 
     companion object {
+
+        val EXPORT_URL_VALIDITY: Duration = Duration.ofHours(1)
 
         private const val KEY_ROOT = "diaries"
         private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"

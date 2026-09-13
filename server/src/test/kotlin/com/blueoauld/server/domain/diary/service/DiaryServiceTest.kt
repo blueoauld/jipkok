@@ -361,7 +361,7 @@ class DiaryServiceTest {
     }
 
     @Test
-    fun `내보내기는 전체 일기를 오래된 날짜부터 첨부와 함께 준다`() {
+    fun `내보내기는 전체 일기를 오래된 날짜부터 주고 첨부 URL은 내려받는 동안 만료되지 않게 길게 서명한다`() {
         // given
         val first = Diary(MEMBER_ID, LocalDate.of(2026, 9, 1), "첫날", DiaryMood.SUN)
         val second = Diary(MEMBER_ID, LocalDate.of(2026, 9, 2), null, null)
@@ -369,6 +369,9 @@ class DiaryServiceTest {
         every { diaryAttachmentRepository.findAllByDiaryIdInOrderByPosition(any()) } returns listOf(
             DiaryAttachment(first.id, DiaryAttachmentType.PHOTO, PHOTO_KEY, position = 0),
         )
+        every { photoStorage.createSignedViewUrl(any(), DiaryService.EXPORT_URL_VALIDITY) } answers {
+            "https://signed-export/${firstArg<String>()}"
+        }
 
         // when
         val items = diaryService.export(MEMBER_ID)
@@ -376,7 +379,7 @@ class DiaryServiceTest {
         // then
         assertThat(items.map { it.entryDate }).containsExactly(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 2))
         assertThat(items[0].mood).isEqualTo(DiaryMood.SUN)
-        assertThat(items[0].attachments.map { it.url }).containsExactly("https://signed/$PHOTO_KEY")
+        assertThat(items[0].attachments.map { it.url }).containsExactly("https://signed-export/$PHOTO_KEY")
         assertThat(items[1].content).isNull()
     }
 

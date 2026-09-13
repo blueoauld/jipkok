@@ -55,6 +55,24 @@ class FeedReminderTest {
     }
 
     @Test
+    fun `정각보다 늦게 돌아도 직전 알림 정각 슬롯부터 올린 회원을 뺀다`() {
+        // given
+        val lateNow = Instant.parse("2026-08-03T05:00:00.004Z")
+        val lateReminder = FeedReminder(
+            feedReminderRepository,
+            pushService,
+            pushMessages,
+            Clock.fixed(lateNow, ZoneOffset.UTC),
+        )
+
+        // when
+        lateReminder.remind()
+
+        // then
+        verify { feedReminderRepository.findFeedReminderTargets(SINCE, lateNow) }
+    }
+
+    @Test
     fun `언어가 다르면 나눠 보낸다`() {
         // given
         every { feedReminderRepository.findFeedReminderTargets(SINCE, NOW) } returns listOf(
@@ -106,6 +124,6 @@ class FeedReminderTest {
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-08-03T05:00:30Z")
-        private val SINCE: Instant = NOW.minus(FeedReminder.REMIND_INTERVAL)
+        private val SINCE: Instant = Instant.parse("2026-08-03T02:00:00Z")
     }
 }
