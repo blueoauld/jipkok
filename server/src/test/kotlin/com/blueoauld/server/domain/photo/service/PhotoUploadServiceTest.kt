@@ -118,15 +118,20 @@ class PhotoUploadServiceTest {
     }
 
     @Test
-    fun `이미 확정된 키는 다시 확인하지 않는다`() {
+    fun `발급 기록이 없는 키가 하나라도 있으면 확인하지 않고 거절한다`() {
         // given
-        every { photoUploadRepository.findAllByObjectKeyIn(any()) } returns emptyList()
+        val upload = issued(PHOTO_KEY)
+        every { photoUploadRepository.findAllByObjectKeyIn(listOf(PHOTO_KEY, VIDEO_KEY)) } returns listOf(upload)
 
         // when
-        photoUploadService.confirm(listOf(PHOTO_KEY))
+        val exception = assertThrows(BusinessException::class.java) {
+            photoUploadService.confirm(listOf(PHOTO_KEY, VIDEO_KEY))
+        }
 
         // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
         verify(exactly = 0) { photoStorage.head(any()) }
+        verify(exactly = 0) { photoUploadRepository.deleteAll(any<List<PhotoUpload>>()) }
     }
 
     @Test

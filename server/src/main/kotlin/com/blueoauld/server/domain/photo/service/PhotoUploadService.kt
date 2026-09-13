@@ -49,6 +49,11 @@ class PhotoUploadService(
         }
 
         val uploads = photoUploadRepository.findAllByObjectKeyIn(objectKeys)
+
+        if (uploads.size != objectKeys.toSet().size) {
+            throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+        }
+
         val stored = uploads.associate { it.objectKey to validateUploaded(it.objectKey) }
 
         photoUploadRepository.deleteAll(uploads)

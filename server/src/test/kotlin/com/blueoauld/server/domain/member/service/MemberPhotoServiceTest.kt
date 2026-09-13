@@ -148,12 +148,39 @@ class MemberPhotoServiceTest {
     }
 
     @Test
-    fun `확정된 사진은 발급 기록에서 지운다`() {
+    fun `새로 추가한 사진만 업로드를 확인한다`() {
+        // given
+        every { memberPhotoRepository.findAllByMemberId(MEMBER_ID) } returns listOf(
+            MemberPhoto(MEMBER_ID, PhotoVisibility.PUBLIC, 0, photoKey("a")),
+        )
+
         // when
-        memberPhotoService.replace(MEMBER_ID, listOf(photoKey("a")), emptyList())
+        memberPhotoService.replace(
+            MEMBER_ID,
+            listOf(photoKey("a"), photoKey("b")),
+            listOf(photoKey("c", PhotoVisibility.SECRET)),
+        )
 
         // then
-        verify { photoUploadService.confirm(listOf(photoKey("a"))) }
+        verify { photoUploadService.confirm(listOf(photoKey("b"), photoKey("c", PhotoVisibility.SECRET))) }
+    }
+
+    @Test
+    fun `새 사진의 업로드 확인이 실패하면 기존 사진을 건드리지 않는다`() {
+        // given
+        every { photoUploadService.confirm(listOf(photoKey("b"))) } throws
+            BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberPhotoService.replace(MEMBER_ID, listOf(photoKey("b")), emptyList())
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { memberPhotoRepository.deleteAllByMemberId(any()) }
+        verify(exactly = 0) { memberPhotoRepository.saveAll(any<List<MemberPhoto>>()) }
+        verify(exactly = 0) { eventPublisher.publishEvent(any<PhotosDeletedEvent>()) }
     }
 
     @Test

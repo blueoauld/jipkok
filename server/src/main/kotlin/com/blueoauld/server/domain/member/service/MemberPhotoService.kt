@@ -29,9 +29,11 @@ class MemberPhotoService(
         validateKeys(memberId, publicPhotoKeys, secretPhotoKeys)
 
         val keptKeys = publicPhotoKeys + secretPhotoKeys
-        val removedKeys = memberPhotoRepository.findAllByMemberId(memberId)
-            .map { it.objectKey }
-            .filterNot { it in keptKeys }
+        val existingKeys = memberPhotoRepository.findAllByMemberId(memberId).map { it.objectKey }
+        val addedKeys = keptKeys.filterNot { it in existingKeys }
+        val removedKeys = existingKeys.filterNot { it in keptKeys }
+
+        photoUploadService.confirm(addedKeys)
 
         memberPhotoRepository.deleteAllByMemberId(memberId)
         memberPhotoRepository.flush()
@@ -39,7 +41,6 @@ class MemberPhotoService(
             toPhotos(memberId, publicPhotoKeys, PhotoVisibility.PUBLIC) +
                 toPhotos(memberId, secretPhotoKeys, PhotoVisibility.SECRET),
         )
-        photoUploadService.confirm(keptKeys)
 
         publishDeleted(removedKeys)
     }
