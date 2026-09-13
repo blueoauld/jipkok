@@ -14,8 +14,8 @@ class SuspendedMemberCache(
     fun find(memberId: Long, type: SuspensionType): Boolean? =
         stringRedisTemplate.opsForValue()[toKey(memberId, type)]?.toBooleanStrictOrNull()
 
-    fun save(memberId: Long, type: SuspensionType, suspended: Boolean) {
-        stringRedisTemplate.opsForValue().set(toKey(memberId, type), suspended.toString(), TTL)
+    fun save(memberId: Long, type: SuspensionType, suspended: Boolean, ttl: Duration) {
+        stringRedisTemplate.opsForValue().set(toKey(memberId, type), suspended.toString(), ttl)
     }
 
     fun evict(memberId: Long) {
@@ -27,6 +27,7 @@ class SuspendedMemberCache(
     companion object {
 
         val TTL: Duration = Duration.ofMinutes(10)
+        val MIN_TTL: Duration = Duration.ofSeconds(1)
 
         private const val KEY_PREFIX = "suspension:"
     }

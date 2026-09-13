@@ -160,7 +160,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
         """
 
         private const val LOCATED_EPOCH = """
-            coalesce(cast(extract(epoch from m.located_at) as bigint), 0)
+            coalesce(cast(floor(extract(epoch from m.located_at)) as bigint), 0)
         """
 
         private const val GENDER = """

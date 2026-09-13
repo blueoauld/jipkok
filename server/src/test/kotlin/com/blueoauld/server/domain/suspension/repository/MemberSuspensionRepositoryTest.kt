@@ -97,8 +97,7 @@ class MemberSuspensionRepositoryTest {
         val active = memberSuspensionRepository.findActive(rejoined.id, NOW)
 
         // then
-        assertThat(active).hasSize(1)
-        assertThat(memberSuspensionRepository.existsActive(rejoined.id, SuspensionType.SERVICE, NOW)).isTrue()
+        assertThat(active.map { it.type }).containsExactly(SuspensionType.SERVICE)
     }
 
     @Test

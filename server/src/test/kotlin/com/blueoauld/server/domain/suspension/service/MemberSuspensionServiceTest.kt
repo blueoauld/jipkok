@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.event.MemberSuspensionChangedEvent
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.repository.SuspendedMemberCache
 import com.blueoauld.server.global.exception.BusinessException
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -33,16 +35,18 @@ class MemberSuspensionServiceTest {
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 
+    private val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+
     private val memberSuspensionService = MemberSuspensionService(
         memberSuspensionRepository,
         suspendedMemberCache,
         memberRepository,
+        eventPublisher,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
     @BeforeEach
     fun setUp() {
-        every { memberSuspensionRepository.existsActive(any(), any(), any()) } returns false
         every { memberSuspensionRepository.existsActiveByPhoneNumber(any(), any(), any()) } returns false
         every { memberSuspensionRepository.findActive(any(), any()) } returns emptyList()
         every { memberSuspensionRepository.save(any()) } answers { firstArg() }
@@ -67,7 +71,8 @@ class MemberSuspensionServiceTest {
 
         // then
         verify { memberSuspensionRepository.save(capture(saved)) }
-        verify { suspendedMemberCache.evict(MEMBER_ID) }
+        verify { eventPublisher.publishEvent(MemberSuspensionChangedEvent(setOf(MEMBER_ID))) }
+        verify(exactly = 0) { suspendedMemberCache.evict(any()) }
         assertThat(saved.captured.phoneNumber).isEqualTo(PHONE_NUMBER)
         assertThat(saved.captured.startedAt).isEqualTo(NOW)
         assertThat(saved.captured.expiresAt).isEqualTo(NOW.plus(Duration.ofDays(7)))
@@ -138,7 +143,8 @@ class MemberSuspensionServiceTest {
         // then
         assertThat(released).isSameAs(target)
         assertThat(target.releasedAt).isEqualTo(NOW)
-        verify { suspendedMemberCache.evict(MEMBER_ID) }
+        verify { eventPublisher.publishEvent(MemberSuspensionChangedEvent(setOf(MEMBER_ID))) }
+        verify(exactly = 0) { suspendedMemberCache.evict(any()) }
     }
 
     @Test
@@ -157,7 +163,7 @@ class MemberSuspensionServiceTest {
 
         // then
         assertThat(rejoined.releasedAt).isEqualTo(NOW)
-        verify { suspendedMemberCache.evict(OTHER_MEMBER_ID) }
+        verify { eventPublisher.publishEvent(MemberSuspensionChangedEvent(setOf(MEMBER_ID, OTHER_MEMBER_ID))) }
     }
 
     @Test
@@ -199,8 +205,7 @@ class MemberSuspensionServiceTest {
         memberSuspensionService.suspend(MEMBER_ID, SuspensionType.SERVICE, SuspensionReason.ABUSE, 7, null)
 
         // then
-        verify { suspendedMemberCache.evict(MEMBER_ID) }
-        verify { suspendedMemberCache.evict(OTHER_MEMBER_ID) }
+        verify { eventPublisher.publishEvent(MemberSuspensionChangedEvent(setOf(MEMBER_ID, OTHER_MEMBER_ID))) }
     }
 
     @Test
@@ -236,9 +241,8 @@ class MemberSuspensionServiceTest {
     @Test
     fun `비밀 사진 정지면 막는다`() {
         // given
-        every {
-            memberSuspensionRepository.existsActive(MEMBER_ID, SuspensionType.SECRET_PHOTO, NOW)
-        } returns true
+        every { memberSuspensionRepository.findActive(MEMBER_ID, NOW) } returns
+            listOf(suspension(SuspensionType.SECRET_PHOTO))
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -252,7 +256,8 @@ class MemberSuspensionServiceTest {
     @Test
     fun `유형마다 다른 오류를 준다`() {
         // given
-        every { memberSuspensionRepository.existsActive(any(), any(), any()) } returns true
+        every { memberSuspensionRepository.findActive(MEMBER_ID, NOW) } returns
+            listOf(suspension(SuspensionType.SERVICE))
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -269,7 +274,35 @@ class MemberSuspensionServiceTest {
         memberSuspensionService.check(MEMBER_ID, SuspensionType.SECRET_PHOTO)
 
         // then
-        verify { suspendedMemberCache.save(MEMBER_ID, SuspensionType.SECRET_PHOTO, false) }
+        verify { suspendedMemberCache.save(MEMBER_ID, SuspensionType.SECRET_PHOTO, false, SuspendedMemberCache.TTL) }
+    }
+
+    @Test
+    fun `기한 없는 정지면 정지 결과를 기본 시간만큼 캐시한다`() {
+        // given
+        every { memberSuspensionRepository.findActive(MEMBER_ID, NOW) } returns
+            listOf(suspension(SuspensionType.SERVICE))
+
+        // when
+        memberSuspensionService.isSuspended(MEMBER_ID, SuspensionType.SERVICE)
+
+        // then
+        verify { suspendedMemberCache.save(MEMBER_ID, SuspensionType.SERVICE, true, SuspendedMemberCache.TTL) }
+    }
+
+    @Test
+    fun `곧 끝나는 정지면 끝나는 시각까지만 캐시한다`() {
+        // given
+        every { memberSuspensionRepository.findActive(MEMBER_ID, NOW) } returns listOf(
+            suspension(SuspensionType.SERVICE, expiresAt = NOW.plus(Duration.ofMinutes(3))),
+            suspension(SuspensionType.SECRET_PHOTO),
+        )
+
+        // when
+        memberSuspensionService.isSuspended(MEMBER_ID, SuspensionType.SERVICE)
+
+        // then
+        verify { suspendedMemberCache.save(MEMBER_ID, SuspensionType.SERVICE, true, Duration.ofMinutes(3)) }
     }
 
     @Test
@@ -281,7 +314,7 @@ class MemberSuspensionServiceTest {
         memberSuspensionService.check(MEMBER_ID, SuspensionType.SECRET_PHOTO)
 
         // then
-        verify(exactly = 0) { memberSuspensionRepository.existsActive(any(), any(), any()) }
+        verify(exactly = 0) { memberSuspensionRepository.findActive(any(), any()) }
     }
 
     @Test
@@ -296,7 +329,7 @@ class MemberSuspensionServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.SERVICE_SUSPENDED)
-        verify(exactly = 0) { memberSuspensionRepository.existsActive(any(), any(), any()) }
+        verify(exactly = 0) { memberSuspensionRepository.findActive(any(), any()) }
     }
 
     @Test
@@ -316,13 +349,14 @@ class MemberSuspensionServiceTest {
         birthYear = 1998,
     ).also { setId(it, id) }
 
-    private fun suspension(type: SuspensionType) = MemberSuspension(
+    private fun suspension(type: SuspensionType, expiresAt: Instant? = null) = MemberSuspension(
         phoneNumber = PHONE_NUMBER,
         memberId = MEMBER_ID,
         nickname = "홍길동",
         type = type,
         reason = SuspensionReason.ABUSE,
         startedAt = NOW,
+        expiresAt = expiresAt,
     )
 
     private fun setId(member: Member, id: Long) {

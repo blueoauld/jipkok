@@ -53,10 +53,10 @@ class AdminMemberService(
         val now = clock.instant()
 
         val trimmed = keyword?.trim()?.takeIf { it.isNotEmpty() }
-        val digits = trimmed?.takeIf { it.all(Char::isDigit) }
-        val keywordId = digits?.let { it.toLongOrNull() ?: 0 }
-        val phoneLike = digits?.let { "%$it%" }
-        val nicknameLike = trimmed?.takeIf { digits == null }?.let { "%${it.escapeLike()}%" }
+        val phoneDigits = trimmed?.let(::phoneDigitsOf)
+        val keywordId = phoneDigits?.let { trimmed.takeIf { it.all(Char::isDigit) }?.toLongOrNull() ?: 0 }
+        val phoneLike = phoneDigits?.let { "%$it%" }
+        val nicknameLike = trimmed?.takeIf { phoneDigits == null }?.let { "%${it.escapeLike()}%" }
 
         val statusName = status?.name
 
@@ -170,10 +170,29 @@ class AdminMemberService(
         )
     }
 
+    private fun phoneDigitsOf(keyword: String): String? {
+        val compact = keyword.filterNot { it == PHONE_SEPARATOR || it.isWhitespace() }
+        val digits = compact.removePrefix(INTERNATIONAL_PREFIX)
+
+        if (digits.isEmpty() || !digits.all(Char::isDigit)) {
+            return null
+        }
+
+        if (compact.startsWith(INTERNATIONAL_PREFIX)) {
+            return digits
+        }
+
+        return digits.removePrefix(TRUNK_PREFIX).ifEmpty { digits }
+    }
+
     private class CachedCount(val cachedAt: Instant, val count: Long)
 
     companion object {
 
         private val TOTAL_COUNT_TTL: Duration = Duration.ofMinutes(1)
+
+        private const val PHONE_SEPARATOR = '-'
+        private const val INTERNATIONAL_PREFIX = "+"
+        private const val TRUNK_PREFIX = "0"
     }
 }

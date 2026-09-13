@@ -221,6 +221,32 @@ class MemberListRepositoryTest {
     }
 
     @Test
+    fun `같은 초의 소수부가 달라도 랭킹 커서 다음 쪽에서 회원이 빠지지 않는다`() {
+        // given
+        val second = Instant.parse("2026-09-01T00:00:00Z")
+        val early = saveRanked("+821099990006", second.plusMillis(200))
+        val middle = saveRanked("+821099990007", second.plusMillis(700))
+        val late = saveRanked("+821099990008", second.plusMillis(900))
+        val first = memberListRepository.findByReceivedLikeCount(meId, null, null, null, null, null, null, 1).first()
+
+        // when
+        val next = memberListRepository.findByReceivedLikeCount(
+            meId,
+            null,
+            null,
+            null,
+            first.getOrderValue().toLong(),
+            first.getLocatedAt()?.epochSecond ?: 0,
+            first.getMemberId(),
+            PAGE_SIZE,
+        )
+
+        // then
+        assertThat(first.getMemberId()).isEqualTo(late)
+        assertThat(next.map { it.getMemberId() }).containsSubsequence(middle, early)
+    }
+
+    @Test
     fun `랭킹에서도 차단한 회원은 빠진다`() {
         // given
         memberBlockRepository.saveAndFlush(MemberBlock(meId, hongId))
@@ -373,6 +399,10 @@ class MemberListRepositoryTest {
 
     private fun save(member: Member) = memberRepository.saveAndFlush(member)
 
+    private fun saveRanked(phoneNumber: String, locatedAt: Instant) = save(
+        member(phoneNumber, Gender.MALE, 37.5, 127.0, locatedAt).apply { receivedLikeCount = TOP_LIKE_COUNT },
+    ).id
+
     private fun member(
         phoneNumber: String,
         gender: Gender,
@@ -394,6 +424,7 @@ class MemberListRepositoryTest {
     companion object {
 
         private const val PAGE_SIZE = 200
+        private const val TOP_LIKE_COUNT = 11
         private const val MY_PHONE_NUMBER = "+821099990000"
         private const val NEAR_PHONE_NUMBER = "+821099990001"
         private const val MY_LATITUDE = 37.5

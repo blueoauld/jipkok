@@ -5,10 +5,12 @@ import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.suspension.entity.MemberSuspension
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionReason
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.event.MemberSuspensionChangedEvent
 import com.blueoauld.server.domain.suspension.repository.MemberSuspensionRepository
 import com.blueoauld.server.domain.suspension.repository.SuspendedMemberCache
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -21,6 +23,7 @@ class MemberSuspensionService(
     private val memberSuspensionRepository: MemberSuspensionRepository,
     private val suspendedMemberCache: SuspendedMemberCache,
     private val memberRepository: MemberRepository,
+    private val eventPublisher: ApplicationEventPublisher,
     private val clock: Clock,
 ) {
 
@@ -50,7 +53,7 @@ class MemberSuspensionService(
                 expiresAt = days?.let { now.plus(Duration.ofDays(it)) },
                 detail = detail,
             ),
-        ).also { evict(it) }
+        ).also { publishChanged(listOf(it)) }
     }
 
     @Transactional
@@ -64,10 +67,10 @@ class MemberSuspensionService(
             throw BusinessException(ErrorCode.SUSPENSION_NOT_FOUND)
         }
 
-        memberSuspensionRepository.findActiveByPhoneNumber(suspension.phoneNumber, suspension.type, now).forEach {
-            it.releasedAt = now
-            evict(it)
-        }
+        val released = memberSuspensionRepository.findActiveByPhoneNumber(suspension.phoneNumber, suspension.type, now)
+
+        released.forEach { it.releasedAt = now }
+        publishChanged(released)
 
         return suspension
     }
@@ -79,11 +82,12 @@ class MemberSuspensionService(
     fun findActive(memberId: Long): List<MemberSuspension> =
         memberSuspensionRepository.findActive(memberId, clock.instant())
 
-    private fun evict(suspension: MemberSuspension) {
-        suspendedMemberCache.evict(suspension.memberId)
-        memberRepository.findByPhoneNumber(suspension.phoneNumber)
-            ?.takeIf { it.id != suspension.memberId }
-            ?.let { suspendedMemberCache.evict(it.id) }
+    private fun publishChanged(suspensions: List<MemberSuspension>) {
+        val memberIds = suspensions.flatMap { suspension ->
+            listOfNotNull(suspension.memberId, memberRepository.findByPhoneNumber(suspension.phoneNumber)?.id)
+        }
+
+        eventPublisher.publishEvent(MemberSuspensionChangedEvent(memberIds.toSet()))
     }
 
     @Transactional(readOnly = true)
@@ -102,8 +106,20 @@ class MemberSuspensionService(
     fun isSuspended(memberId: Long, type: SuspensionType): Boolean {
         suspendedMemberCache.find(memberId, type)?.let { return it }
 
-        return memberSuspensionRepository.existsActive(memberId, type, clock.instant())
-            .also { suspendedMemberCache.save(memberId, type, it) }
+        val now = clock.instant()
+        val active = findActiveOf(memberId, type, now)
+        val suspended = active.isNotEmpty()
+
+        suspendedMemberCache.save(memberId, type, suspended, cacheTtlOf(active, now))
+
+        return suspended
+    }
+
+    private fun cacheTtlOf(active: List<MemberSuspension>, now: Instant): Duration {
+        val lastExpiresAt = active.map { it.expiresAt ?: return SuspendedMemberCache.TTL }.maxOrNull()
+            ?: return SuspendedMemberCache.TTL
+
+        return Duration.between(now, lastExpiresAt).coerceIn(SuspendedMemberCache.MIN_TTL, SuspendedMemberCache.TTL)
     }
 
     private fun errorCodeOf(type: SuspensionType) = when (type) {

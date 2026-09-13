@@ -86,6 +86,53 @@ class AdminMemberServiceTest {
     }
 
     @Test
+    fun `국제 표기 전화번호는 +를 떼고 전화번호 조건으로만 넘긴다`() {
+        // given
+        every {
+            memberAdminRepository.findAllForAdmin(null, null, 0, "%821033334444%", null, NOW, 20, 0)
+        } returns emptyList()
+        every { memberAdminRepository.countForAdmin(null, null, 0, "%821033334444%", null, NOW) } returns 0
+
+        // when
+        val response = adminMemberService.findMembers(null, null, " +821033334444 ", 1, 20)
+
+        // then
+        assertThat(response.totalCount).isZero()
+    }
+
+    @Test
+    fun `하이픈이 든 국내 표기 전화번호는 하이픈과 앞의 0을 떼고 넘긴다`() {
+        // given
+        every {
+            memberAdminRepository.findAllForAdmin(null, null, 0, "%1033334444%", null, NOW, 20, 0)
+        } returns emptyList()
+        every { memberAdminRepository.countForAdmin(null, null, 0, "%1033334444%", null, NOW) } returns 0
+
+        // when
+        val response = adminMemberService.findMembers(null, null, "010-3333-4444", 1, 20)
+
+        // then
+        assertThat(response.totalCount).isZero()
+    }
+
+    @Test
+    fun `숫자만 있는 국내 표기 번호는 ID로도 찾고 전화번호는 앞의 0을 떼고 넘긴다`() {
+        // given
+        every {
+            memberAdminRepository.findAllForAdmin(null, null, 1033334444, "%1033334444%", null, NOW, 20, 0)
+        } returns emptyList()
+        every {
+            memberAdminRepository.countForAdmin(null, null, 1033334444, "%1033334444%", null, NOW)
+        } returns 0
+
+        // when
+        val response = adminMemberService.findMembers(null, null, "01033334444", 1, 20)
+
+        // then
+        assertThat(response.totalCount).isZero()
+    }
+
+    @Test
     fun `문자 검색어는 와일드카드를 이스케이프해 닉네임 조건으로 넘긴다`() {
         // given
         every {
