@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.repository
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository.Companion.NOT_CONTACT_BLOCKED
 import com.blueoauld.server.domain.member.dto.projection.MemberListRow
 import com.blueoauld.server.domain.member.dto.projection.MemberSearchRow
 import com.blueoauld.server.domain.member.entity.Member
@@ -148,14 +149,7 @@ interface MemberListRepository : JpaRepository<Member, Long> {
                 where (b.blocker_id = :memberId and b.blocked_member_id = m.id)
                    or (b.blocker_id = m.id and b.blocked_member_id = :memberId)
               )
-              and not exists (
-                select 1 from contact_block c
-                where (c.member_id = :memberId and c.phone_number = m.phone_number)
-                   or (
-                     c.member_id = m.id
-                     and c.phone_number = (select me.phone_number from member me where me.id = :memberId)
-                   )
-              )
+              and $NOT_CONTACT_BLOCKED
         """
 
         private const val FAVORITED = """

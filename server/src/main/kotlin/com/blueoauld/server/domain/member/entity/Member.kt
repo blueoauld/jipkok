@@ -13,12 +13,14 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.SoftDelete
 import org.hibernate.annotations.SoftDeleteType
 import java.time.Instant
 import java.util.*
 
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@DynamicUpdate
 @Entity
 @Table(
     name = "member",

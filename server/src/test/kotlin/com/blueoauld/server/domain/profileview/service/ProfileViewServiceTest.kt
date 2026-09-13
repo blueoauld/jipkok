@@ -16,7 +16,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Limit
 import java.time.Clock
 import java.time.Instant
 import java.util.*
@@ -90,7 +89,7 @@ class ProfileViewServiceTest {
         // given
         val older = NOW.minusSeconds(60)
         every {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any())
+            profileViewRepository.findVisibleFirstPage(VIEWED_MEMBER_ID, any())
         } returns listOf(profileView(30L, VIEWER_ID, NOW), profileView(20L, 3L, older))
         every { memberSummaryService.findSummaries(VIEWED_MEMBER_ID, listOf(VIEWER_ID, 3L)) } returns
             listOf(summary(VIEWER_ID), summary(3L))
@@ -108,7 +107,7 @@ class ProfileViewServiceTest {
     fun `마지막 쪽이면 다음 커서를 주지 않는다`() {
         // given
         every {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any())
+            profileViewRepository.findVisibleFirstPage(VIEWED_MEMBER_ID, any())
         } returns listOf(profileView(30L, VIEWER_ID, NOW))
 
         // when
@@ -122,15 +121,15 @@ class ProfileViewServiceTest {
     fun `커서를 주면 그 뒤부터 조회한다`() {
         // given
         val cursor = "${NOW.toEpochMilli()}:30"
-        every { profileViewRepository.findNextPage(any(), any(), any(), any()) } returns emptyList()
+        every { profileViewRepository.findVisibleNextPage(any(), any(), any(), any()) } returns emptyList()
 
         // when
         profileViewService.findViewers(VIEWED_MEMBER_ID, cursor, 20)
 
         // then
-        verify { profileViewRepository.findNextPage(VIEWED_MEMBER_ID, NOW, 30L, any()) }
+        verify { profileViewRepository.findVisibleNextPage(VIEWED_MEMBER_ID, NOW, 30L, any()) }
         verify(exactly = 0) {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(any(), any())
+            profileViewRepository.findVisibleFirstPage(any(), any())
         }
     }
 
@@ -138,30 +137,28 @@ class ProfileViewServiceTest {
     fun `망가진 커서는 첫 쪽으로 본다`() {
         // given
         every {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any())
+            profileViewRepository.findVisibleFirstPage(VIEWED_MEMBER_ID, any())
         } returns emptyList()
 
         // when
         profileViewService.findViewers(VIEWED_MEMBER_ID, "깨진커서", 20)
 
         // then
-        verify { profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, any()) }
-        verify(exactly = 0) { profileViewRepository.findNextPage(any(), any(), any(), any()) }
+        verify { profileViewRepository.findVisibleFirstPage(VIEWED_MEMBER_ID, any()) }
+        verify(exactly = 0) { profileViewRepository.findVisibleNextPage(any(), any(), any(), any()) }
     }
 
     @Test
     fun `요청한 크기가 상한을 넘으면 상한으로 자른다`() {
         // given
-        val limit = slot<Limit>()
-        every {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(VIEWED_MEMBER_ID, capture(limit))
-        } returns emptyList()
+        val size = slot<Int>()
+        every { profileViewRepository.findVisibleFirstPage(VIEWED_MEMBER_ID, capture(size)) } returns emptyList()
 
         // when
         profileViewService.findViewers(VIEWED_MEMBER_ID, null, 1000)
 
         // then
-        assertThat(limit.captured.max()).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
+        assertThat(size.captured).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
     }
 
     @Test
@@ -170,14 +167,14 @@ class ProfileViewServiceTest {
         val seenAt = NOW.minusSeconds(600)
         every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
             Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns seenAt })
-        every { profileViewRepository.countByViewedMemberIdAndViewedAtAfter(VIEWED_MEMBER_ID, seenAt) } returns 3
+        every { profileViewRepository.countVisibleViewsAfter(VIEWED_MEMBER_ID, seenAt) } returns 3
 
         // when
         val count = profileViewService.countNew(VIEWED_MEMBER_ID)
 
         // then
         assertThat(count).isEqualTo(3)
-        verify(exactly = 0) { profileViewRepository.countByViewedMemberId(any()) }
+        verify(exactly = 0) { profileViewRepository.countVisibleViews(any()) }
     }
 
     @Test
@@ -185,7 +182,7 @@ class ProfileViewServiceTest {
         // given
         every { memberRepository.findById(VIEWED_MEMBER_ID) } returns
             Optional.of(mockk(relaxed = true) { every { profileViewsSeenAt } returns null })
-        every { profileViewRepository.countByViewedMemberId(VIEWED_MEMBER_ID) } returns 7
+        every { profileViewRepository.countVisibleViews(VIEWED_MEMBER_ID) } returns 7
 
         // when
         val count = profileViewService.countNew(VIEWED_MEMBER_ID)

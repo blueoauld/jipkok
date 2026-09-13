@@ -9,7 +9,9 @@ import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import org.hibernate.annotations.DynamicUpdate
 
+@DynamicUpdate
 @Entity
 @Table(
     name = "chat_room_member",

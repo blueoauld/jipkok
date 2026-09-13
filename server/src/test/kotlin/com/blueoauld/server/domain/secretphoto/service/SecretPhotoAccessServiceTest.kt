@@ -214,7 +214,7 @@ class SecretPhotoAccessServiceTest {
         // given
         val accesses = listOf(access(30L, VIEWER_ID), access(20L, 3L))
         every {
-            secretPhotoAccessRepository.findByOwnerIdAndIdLessThanOrderByIdDesc(OWNER_ID, Long.MAX_VALUE, any())
+            secretPhotoAccessRepository.findVisibleByOwnerId(OWNER_ID, Long.MAX_VALUE, any())
         } returns accesses
         every { memberSummaryService.findSummaries(OWNER_ID, listOf(VIEWER_ID, 3L)) } returns
             listOf(summary(VIEWER_ID), summary(3L))
@@ -231,7 +231,7 @@ class SecretPhotoAccessServiceTest {
     fun `나에게 공개된 목록은 공개한 사람을 준다`() {
         // given
         every {
-            secretPhotoAccessRepository.findByViewerIdAndIdLessThanOrderByIdDesc(VIEWER_ID, 40L, any())
+            secretPhotoAccessRepository.findVisibleByViewerId(VIEWER_ID, 40L, any())
         } returns listOf(access(30L, VIEWER_ID))
 
         // when

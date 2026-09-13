@@ -1,7 +1,7 @@
 package com.blueoauld.server.domain.profileview.repository
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository.Companion.NOT_CONTACT_BLOCKED
 import com.blueoauld.server.domain.profileview.entity.ProfileView
-import org.springframework.data.domain.Limit
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -16,24 +16,58 @@ interface ProfileViewRepository : JpaRepository<ProfileView, Long> {
     @Query("delete from ProfileView v where v.viewerId = :memberId or v.viewedMemberId = :memberId")
     fun deleteAllByMember(@Param("memberId") memberId: Long)
 
-    fun findByViewedMemberIdOrderByViewedAtDescIdDesc(viewedMemberId: Long, limit: Limit): List<ProfileView>
-
-    fun countByViewedMemberIdAndViewedAtAfter(viewedMemberId: Long, viewedAt: Instant): Int
-
-    fun countByViewedMemberId(viewedMemberId: Long): Int
+    @Query(
+        value = """
+        select v.* from profile_view v
+        join member m on m.id = v.viewer_id
+        where v.viewed_member_id = :memberId
+          and $NOT_CONTACT_BLOCKED
+        order by v.viewed_at desc, v.id desc
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findVisibleFirstPage(@Param("memberId") memberId: Long, @Param("size") size: Int): List<ProfileView>
 
     @Query(
-        """
-        select v from ProfileView v
-        where v.viewedMemberId = :viewedMemberId
-            and (v.viewedAt < :viewedAt or (v.viewedAt = :viewedAt and v.id < :id))
-        order by v.viewedAt desc, v.id desc
+        value = """
+        select v.* from profile_view v
+        join member m on m.id = v.viewer_id
+        where v.viewed_member_id = :memberId
+          and (v.viewed_at < :viewedAt or (v.viewed_at = :viewedAt and v.id < :id))
+          and $NOT_CONTACT_BLOCKED
+        order by v.viewed_at desc, v.id desc
+        limit :size
         """,
+        nativeQuery = true,
     )
-    fun findNextPage(
-        @Param("viewedMemberId") viewedMemberId: Long,
+    fun findVisibleNextPage(
+        @Param("memberId") memberId: Long,
         @Param("viewedAt") viewedAt: Instant,
         @Param("id") id: Long,
-        limit: Limit,
+        @Param("size") size: Int,
     ): List<ProfileView>
+
+    @Query(
+        value = """
+        select count(*) from profile_view v
+        join member m on m.id = v.viewer_id
+        where v.viewed_member_id = :memberId
+          and $NOT_CONTACT_BLOCKED
+        """,
+        nativeQuery = true,
+    )
+    fun countVisibleViews(@Param("memberId") memberId: Long): Int
+
+    @Query(
+        value = """
+        select count(*) from profile_view v
+        join member m on m.id = v.viewer_id
+        where v.viewed_member_id = :memberId
+          and v.viewed_at > :viewedAt
+          and $NOT_CONTACT_BLOCKED
+        """,
+        nativeQuery = true,
+    )
+    fun countVisibleViewsAfter(@Param("memberId") memberId: Long, @Param("viewedAt") viewedAt: Instant): Int
 }

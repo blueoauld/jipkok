@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.like.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.like.entity.MemberLike
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
@@ -9,7 +10,6 @@ import com.blueoauld.server.domain.member.service.MemberSummaryService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
-import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,6 +18,7 @@ class MemberLikeService(
 
     private val memberLikeRepository: MemberLikeRepository,
     private val memberRepository: MemberRepository,
+    private val contactBlockRepository: ContactBlockRepository,
     private val memberSummaryService: MemberSummaryService,
 ) {
 
@@ -28,6 +29,10 @@ class MemberLikeService(
         }
 
         memberRepository.checkMember(likedMemberId)
+
+        if (contactBlockRepository.existsBetween(likerId, likedMemberId)) {
+            throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+        }
 
         if (memberLikeRepository.existsByLikerIdAndLikedMemberId(likerId, likedMemberId)) {
             return
@@ -47,11 +52,7 @@ class MemberLikeService(
     @Transactional(readOnly = true)
     fun findLiked(likerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val likes = memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
-            likerId,
-            cursor ?: Long.MAX_VALUE,
-            Limit.of(pageSize),
-        )
+        val likes = memberLikeRepository.findVisibleByLikerId(likerId, cursor ?: Long.MAX_VALUE, pageSize)
 
         return toResponse(likerId, likes, pageSize) { it.likedMemberId }
     }
@@ -59,11 +60,7 @@ class MemberLikeService(
     @Transactional(readOnly = true)
     fun findReceived(likedMemberId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val likes = memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
-            likedMemberId,
-            cursor ?: Long.MAX_VALUE,
-            Limit.of(pageSize),
-        )
+        val likes = memberLikeRepository.findVisibleByLikedMemberId(likedMemberId, cursor ?: Long.MAX_VALUE, pageSize)
 
         return toResponse(likedMemberId, likes, pageSize) { it.likerId }
     }

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.feed.repository
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository.Companion.NOT_CONTACT_BLOCKED
 import com.blueoauld.server.domain.feed.dto.projection.FeedPostRow
 import com.blueoauld.server.domain.feed.entity.FeedPost
 import jakarta.persistence.LockModeType
@@ -125,14 +126,7 @@ interface FeedPostRepository : JpaRepository<FeedPost, Long> {
             where (b.blocker_id = :memberId and b.blocked_member_id = p.member_id)
                or (b.blocker_id = p.member_id and b.blocked_member_id = :memberId)
           )
-          and not exists (
-            select 1 from contact_block c
-            where (c.member_id = :memberId and c.phone_number = m.phone_number)
-               or (
-                 c.member_id = m.id
-                 and c.phone_number = (select me.phone_number from member me where me.id = :memberId)
-               )
-          )
+          and $NOT_CONTACT_BLOCKED
           and not exists (
             select 1 from feed_post_report r
             where r.reporter_id = :memberId and r.post_id = p.id

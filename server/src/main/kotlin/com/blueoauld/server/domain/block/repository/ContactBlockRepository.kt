@@ -34,4 +34,18 @@ interface ContactBlockRepository : JpaRepository<ContactBlock, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from ContactBlock c where c.memberId = :memberId")
     fun deleteAllByMemberId(@Param("memberId") memberId: Long)
+
+    companion object {
+
+        const val NOT_CONTACT_BLOCKED = """
+            not exists (
+              select 1 from contact_block c
+              where (c.member_id = :memberId and c.phone_number = m.phone_number)
+                 or (
+                   c.member_id = m.id
+                   and c.phone_number = (select me.phone_number from member me where me.id = :memberId)
+                 )
+            )
+        """
+    }
 }

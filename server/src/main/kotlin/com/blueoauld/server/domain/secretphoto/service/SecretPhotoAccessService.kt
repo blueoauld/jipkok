@@ -17,7 +17,6 @@ import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.storage.service.PhotoStorage
-import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -57,11 +56,7 @@ class SecretPhotoAccessService(
     @Transactional(readOnly = true)
     fun findGranted(ownerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val accesses = secretPhotoAccessRepository.findByOwnerIdAndIdLessThanOrderByIdDesc(
-            ownerId,
-            cursor ?: Long.MAX_VALUE,
-            Limit.of(pageSize),
-        )
+        val accesses = secretPhotoAccessRepository.findVisibleByOwnerId(ownerId, cursor ?: Long.MAX_VALUE, pageSize)
 
         return toResponse(ownerId, accesses, pageSize) { it.viewerId }
     }
@@ -69,11 +64,7 @@ class SecretPhotoAccessService(
     @Transactional(readOnly = true)
     fun findReceived(viewerId: Long, cursor: Long?, size: Int): CursorResponse<MemberSummaryResponse> {
         val pageSize = CursorResponse.pageSize(size)
-        val accesses = secretPhotoAccessRepository.findByViewerIdAndIdLessThanOrderByIdDesc(
-            viewerId,
-            cursor ?: Long.MAX_VALUE,
-            Limit.of(pageSize),
-        )
+        val accesses = secretPhotoAccessRepository.findVisibleByViewerId(viewerId, cursor ?: Long.MAX_VALUE, pageSize)
 
         return toResponse(viewerId, accesses, pageSize) { it.ownerId }
     }

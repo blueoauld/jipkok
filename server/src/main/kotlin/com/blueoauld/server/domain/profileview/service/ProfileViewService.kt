@@ -8,7 +8,6 @@ import com.blueoauld.server.domain.profileview.entity.ProfileView
 import com.blueoauld.server.domain.profileview.repository.ProfileViewRepository
 import com.blueoauld.server.global.response.CursorResponse
 import com.blueoauld.server.global.response.ScrollResponse
-import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -44,9 +43,9 @@ class ProfileViewService(
     @Transactional(readOnly = true)
     fun countNew(viewedMemberId: Long): Int {
         val seenAt = memberRepository.getMember(viewedMemberId).profileViewsSeenAt
-            ?: return profileViewRepository.countByViewedMemberId(viewedMemberId)
+            ?: return profileViewRepository.countVisibleViews(viewedMemberId)
 
-        return profileViewRepository.countByViewedMemberIdAndViewedAtAfter(viewedMemberId, seenAt)
+        return profileViewRepository.countVisibleViewsAfter(viewedMemberId, seenAt)
     }
 
     @Transactional
@@ -60,9 +59,9 @@ class ProfileViewService(
         val decoded = ProfileViewCursor.decode(cursor)
 
         val views = if (decoded == null) {
-            profileViewRepository.findByViewedMemberIdOrderByViewedAtDescIdDesc(viewedMemberId, Limit.of(pageSize))
+            profileViewRepository.findVisibleFirstPage(viewedMemberId, pageSize)
         } else {
-            profileViewRepository.findNextPage(viewedMemberId, decoded.first, decoded.second, Limit.of(pageSize))
+            profileViewRepository.findVisibleNextPage(viewedMemberId, decoded.first, decoded.second, pageSize)
         }
 
         val summaries = memberSummaryService.findSummaries(viewedMemberId, views.map { it.viewerId })

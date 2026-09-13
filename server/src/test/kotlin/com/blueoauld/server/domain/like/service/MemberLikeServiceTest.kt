@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.like.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.like.entity.MemberLike
 import com.blueoauld.server.domain.like.repository.MemberLikeRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
@@ -17,7 +18,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Limit
 
 class MemberLikeServiceTest {
 
@@ -25,11 +25,14 @@ class MemberLikeServiceTest {
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
     private val memberLikeService = MemberLikeService(
         memberLikeRepository,
         memberRepository,
+        contactBlockRepository,
         memberSummaryService,
     )
 
@@ -99,6 +102,22 @@ class MemberLikeServiceTest {
     }
 
     @Test
+    fun `번호 차단 관계면 좋아요를 누를 수 없다`() {
+        // given
+        every { contactBlockRepository.existsBetween(LIKER_ID, LIKED_MEMBER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberLikeService.like(LIKER_ID, LIKED_MEMBER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+        verify(exactly = 0) { memberLikeRepository.saveAndFlush(any()) }
+        verify(exactly = 0) { memberRepository.increaseReceivedLikeCount(any()) }
+    }
+
+    @Test
     fun `좋아요를 취소하면 기록을 지우고 받은 개수를 줄인다`() {
         // given
 
@@ -127,11 +146,7 @@ class MemberLikeServiceTest {
         // given
         val likes = listOf(memberLike(30L, LIKED_MEMBER_ID), memberLike(20L, 3L))
         every {
-            memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
-                LIKER_ID,
-                Long.MAX_VALUE,
-                any(),
-            )
+            memberLikeRepository.findVisibleByLikerId(LIKER_ID, Long.MAX_VALUE, any())
         } returns likes
         every {
             memberSummaryService.findSummaries(
@@ -154,7 +169,7 @@ class MemberLikeServiceTest {
     @Test
     fun `마지막 쪽이면 다음 커서를 주지 않는다`() {
         // given
-        every { memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(LIKER_ID, any(), any()) } returns
+        every { memberLikeRepository.findVisibleByLikerId(LIKER_ID, any(), any()) } returns
             listOf(memberLike(30L, LIKED_MEMBER_ID))
 
         // when
@@ -168,11 +183,7 @@ class MemberLikeServiceTest {
     fun `받은 좋아요 목록은 누른 사람을 준다`() {
         // given
         every {
-            memberLikeRepository.findByLikedMemberIdAndIdLessThanOrderByIdDesc(
-                LIKED_MEMBER_ID,
-                40L,
-                any(),
-            )
+            memberLikeRepository.findVisibleByLikedMemberId(LIKED_MEMBER_ID, 40L, any())
         } returns
             listOf(memberLike(30L, LIKED_MEMBER_ID))
 
@@ -186,20 +197,14 @@ class MemberLikeServiceTest {
     @Test
     fun `요청한 크기가 상한을 넘으면 상한으로 자른다`() {
         // given
-        val limit = slot<Limit>()
-        every {
-            memberLikeRepository.findByLikerIdAndIdLessThanOrderByIdDesc(
-                LIKER_ID,
-                any(),
-                capture(limit),
-            )
-        } returns emptyList()
+        val size = slot<Int>()
+        every { memberLikeRepository.findVisibleByLikerId(LIKER_ID, any(), capture(size)) } returns emptyList()
 
         // when
         memberLikeService.findLiked(LIKER_ID, null, 1000)
 
         // then
-        assertThat(limit.captured.max()).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
+        assertThat(size.captured).isEqualTo(CursorResponse.MAX_PAGE_SIZE)
     }
 
     private fun memberLike(id: Long, likedMemberId: Long) = mockk<MemberLike>(relaxed = true) {

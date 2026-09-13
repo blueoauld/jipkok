@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.favorite.service
 
+import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.favorite.entity.MemberFavorite
 import com.blueoauld.server.domain.favorite.repository.MemberFavoriteRepository
 import com.blueoauld.server.domain.member.dto.response.MemberSummaryResponse
@@ -23,11 +24,14 @@ class MemberFavoriteServiceTest {
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
 
+    private val contactBlockRepository = mockk<ContactBlockRepository>(relaxed = true)
+
     private val memberSummaryService = mockk<MemberSummaryService>(relaxed = true)
 
     private val memberFavoriteService = MemberFavoriteService(
         memberFavoriteRepository,
         memberRepository,
+        contactBlockRepository,
         memberSummaryService,
     )
 
@@ -96,6 +100,21 @@ class MemberFavoriteServiceTest {
     }
 
     @Test
+    fun `번호 차단 관계면 즐겨찾기할 수 없다`() {
+        // given
+        every { contactBlockRepository.existsBetween(MEMBER_ID, FAVORITE_MEMBER_ID) } returns true
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberFavoriteService.add(MEMBER_ID, FAVORITE_MEMBER_ID)
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+        verify(exactly = 0) { memberFavoriteRepository.saveAndFlush(any()) }
+    }
+
+    @Test
     fun `즐겨찾기를 해제하면 기록을 지운다`() {
         // given
 
@@ -111,7 +130,7 @@ class MemberFavoriteServiceTest {
         // given
         val favorites = listOf(favorite(30L, FAVORITE_MEMBER_ID), favorite(20L, 3L))
         every {
-            memberFavoriteRepository.findByMemberIdAndIdLessThanOrderByIdDesc(MEMBER_ID, Long.MAX_VALUE, any())
+            memberFavoriteRepository.findVisibleByMemberId(MEMBER_ID, Long.MAX_VALUE, any())
         } returns favorites
         every { memberSummaryService.findSummaries(MEMBER_ID, listOf(FAVORITE_MEMBER_ID, 3L)) } returns
             listOf(summary(FAVORITE_MEMBER_ID), summary(3L))
@@ -128,7 +147,7 @@ class MemberFavoriteServiceTest {
     fun `받은 즐겨찾기 목록은 추가한 사람을 준다`() {
         // given
         every {
-            memberFavoriteRepository.findByFavoriteMemberIdAndIdLessThanOrderByIdDesc(FAVORITE_MEMBER_ID, 40L, any())
+            memberFavoriteRepository.findVisibleByFavoriteMemberId(FAVORITE_MEMBER_ID, 40L, any())
         } returns listOf(favorite(30L, FAVORITE_MEMBER_ID))
 
         // when
