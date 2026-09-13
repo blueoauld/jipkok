@@ -287,6 +287,22 @@ class ReportServiceTest {
     }
 
     @Test
+    fun `다른 회원과의 방으로는 신고할 수 없다`() {
+        // given
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(ChatRoom.of(REPORTER_ID, 999L))
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            reportService.report(REPORTER_ID, createReportRequest(roomId = ROOM_ID))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        verify(exactly = 0) { reportRepository.save(any()) }
+        verify(exactly = 0) { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(any(), any(), any()) }
+    }
+
+    @Test
     fun `프로필 신고면 대화 내용이 없다`() {
         // given
         val saved = slot<Report>()

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.report.service
 
+import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.repository.getRoomOf
 import com.blueoauld.server.domain.member.repository.MemberRepository
@@ -54,7 +55,7 @@ class ReportService(
 
         validatePhotoKeys(reporterId, request.photoKeys)
 
-        val room = request.roomId?.let { chatRoomRepository.getRoomOf(reporterId, it) }
+        val room = request.roomId?.let { findRoomWith(reporterId, it, request.reportedMemberId) }
         val report = reportRepository.save(
             Report(
                 reporterId = reporterId,
@@ -129,6 +130,16 @@ class ReportService(
 
     fun createPhotoUploadUrl(reporterId: Long, request: CreatePhotoUploadUrlRequest): PhotoUploadUrlResponse =
         photoUploadService.createUploadUrl(reporterId, evidenceKeyPrefix(reporterId), request.contentType)
+
+    private fun findRoomWith(reporterId: Long, roomId: Long, reportedMemberId: Long): ChatRoom {
+        val room = chatRoomRepository.getRoomOf(reporterId, roomId)
+
+        if (room.partnerIdOf(reporterId) != reportedMemberId) {
+            throw BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND)
+        }
+
+        return room
+    }
 
     private fun validatePhotoKeys(reporterId: Long, objectKeys: List<String>) {
         val prefix = evidenceKeyPrefix(reporterId)

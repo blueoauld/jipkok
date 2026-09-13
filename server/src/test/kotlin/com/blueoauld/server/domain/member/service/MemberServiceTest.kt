@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.member.dto.request.UpdateCommentRequest
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.event.MemberTextChangedEvent
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.NicknameHistoryRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -64,6 +65,27 @@ class MemberServiceTest {
         assertThat(member.nickname).isEqualTo(NICKNAME)
         assertThat(member.birthYear).isEqualTo(1998)
         assertThat(member.bio).isEqualTo("자기소개")
+    }
+
+    @Test
+    fun `프로필 수정 정지 중이면 프로필을 설정할 수 없다`() {
+        // given
+        val member = member()
+        stubMember(member)
+        every {
+            memberSuspensionService.check(MEMBER_ID, SuspensionType.PROFILE_EDIT)
+        } throws BusinessException(ErrorCode.PROFILE_EDIT_SUSPENDED)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            memberService.setupProfile(MEMBER_ID, SetupProfileRequest(NICKNAME, 1998, "자기소개"))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.PROFILE_EDIT_SUSPENDED)
+        assertThat(member.nickname).isNotEqualTo(NICKNAME)
+        assertThat(member.bio).isNull()
+        verify(exactly = 0) { eventPublisher.publishEvent(any<MemberTextChangedEvent>()) }
     }
 
     @Test

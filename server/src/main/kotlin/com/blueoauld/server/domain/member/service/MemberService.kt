@@ -39,6 +39,8 @@ class MemberService(
 
     @Transactional
     fun setupProfile(memberId: Long, request: SetupProfileRequest) {
+        memberSuspensionService.check(memberId, SuspensionType.PROFILE_EDIT)
+
         val member = memberRepository.getMember(memberId)
 
         val nickname = request.nickname.trim()
