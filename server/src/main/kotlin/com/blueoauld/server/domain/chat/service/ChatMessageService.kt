@@ -18,6 +18,7 @@ import com.blueoauld.server.domain.photo.service.PhotoUploadService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
 import com.blueoauld.server.global.response.CursorResponse
+import com.blueoauld.server.global.storage.dto.StoredObject
 import com.blueoauld.server.global.storage.service.PhotoStorage
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Limit
@@ -114,12 +115,14 @@ class ChatMessageService(
         message: ChatMessage,
         replyTarget: ChatMessage? = null,
     ): ChatMessageResponse {
+        val stored = photoUploadService.confirm(listOfNotNull(message.objectKey, message.thumbnailObjectKey))
+        validateMediaTypes(message, stored)
+
         val saved = chatMessageRepository.save(message)
         val partnerId = room.partnerIdOf(senderId)
 
         room.lastMessageId = saved.id
         chatRoomMemberRepository.applyLastMessage(room.id, saved.id, partnerId)
-        photoUploadService.confirm(listOfNotNull(saved.objectKey, saved.thumbnailObjectKey))
 
         val response = ChatMessageResponse.of(saved, toMediaUrls(saved), replyTarget?.let(::toReplyResponse))
 
@@ -207,7 +210,7 @@ class ChatMessageService(
             roomId = roomId,
             senderId = memberId,
             type = ChatMessageType.PHOTO,
-            objectKey = validatePhotoKey(memberId, request.objectKey),
+            objectKey = validateMediaKey(memberId, request.objectKey),
             replyToMessageId = replyTarget?.id,
             clientMessageId = request.clientMessageId,
         )
@@ -216,28 +219,29 @@ class ChatMessageService(
             roomId = roomId,
             senderId = memberId,
             type = ChatMessageType.VIDEO,
-            objectKey = validateVideoKey(memberId, request.objectKey),
-            thumbnailObjectKey = validatePhotoKey(memberId, request.thumbnailKey),
+            objectKey = validateMediaKey(memberId, request.objectKey),
+            thumbnailObjectKey = validateMediaKey(memberId, request.thumbnailKey),
             durationSeconds = validateDuration(request.durationSeconds),
             replyToMessageId = replyTarget?.id,
             clientMessageId = request.clientMessageId,
         )
     }
 
-    private fun validateVideoKey(memberId: Long, objectKey: String?): String {
-        val key = validatePhotoKey(memberId, objectKey)
-        val stored = photoStorage.head(key) ?: throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
+    private fun validateMediaTypes(message: ChatMessage, stored: Map<String, StoredObject>) {
+        when (message.type) {
+            ChatMessageType.TEXT -> Unit
+            ChatMessageType.PHOTO -> checkContentType(stored, message.objectKey, IMAGE_CONTENT_TYPE_PREFIX)
+            ChatMessageType.VIDEO -> {
+                checkContentType(stored, message.objectKey, VIDEO_CONTENT_TYPE_PREFIX)
+                checkContentType(stored, message.thumbnailObjectKey, IMAGE_CONTENT_TYPE_PREFIX)
+            }
+        }
+    }
 
-        if (stored.contentType?.startsWith(VIDEO_CONTENT_TYPE_PREFIX) != true) {
+    private fun checkContentType(stored: Map<String, StoredObject>, objectKey: String?, prefix: String) {
+        if (objectKey?.let(stored::get)?.contentType?.startsWith(prefix) != true) {
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
-
-        if (stored.contentLength > PhotoUploadService.VIDEO_MAX_BYTES) {
-            photoStorage.delete(listOf(key))
-            throw BusinessException(ErrorCode.VIDEO_TOO_LARGE)
-        }
-
-        return key
     }
 
     private fun validateDuration(durationSeconds: Int?): Int {
@@ -252,7 +256,7 @@ class ChatMessageService(
         return durationSeconds
     }
 
-    private fun validatePhotoKey(memberId: Long, objectKey: String?): String {
+    private fun validateMediaKey(memberId: Long, objectKey: String?): String {
         if (objectKey == null || !objectKey.startsWith(photoKeyPrefix(memberId))) {
             throw BusinessException(ErrorCode.INVALID_PHOTO_KEY)
         }
@@ -266,6 +270,7 @@ class ChatMessageService(
 
         private const val PHOTO_KEY_ROOT = "chats"
         private const val VIDEO_CONTENT_TYPE_PREFIX = "video/"
+        private const val IMAGE_CONTENT_TYPE_PREFIX = "image/"
         private val MEDIA_TYPES = listOf(ChatMessageType.PHOTO, ChatMessageType.VIDEO)
     }
 }

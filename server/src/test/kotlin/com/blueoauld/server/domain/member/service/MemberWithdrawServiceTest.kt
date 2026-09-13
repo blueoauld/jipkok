@@ -23,6 +23,7 @@ import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
 import com.blueoauld.server.global.exception.BusinessException
+import com.blueoauld.server.global.security.AccessTokenRevocationCache
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -72,6 +73,8 @@ class MemberWithdrawServiceTest {
 
     private val refreshTokenRepository = mockk<RefreshTokenRepository>(relaxed = true)
 
+    private val accessTokenRevocationCache = mockk<AccessTokenRevocationCache>(relaxed = true)
+
     private val memberWithdrawService = MemberWithdrawService(
         memberRepository,
         chatRoomRepository,
@@ -92,6 +95,7 @@ class MemberWithdrawServiceTest {
         pointHistoryRepository,
         deviceTokenRepository,
         refreshTokenRepository,
+        accessTokenRevocationCache,
     )
 
     private val member = Member(
@@ -165,12 +169,13 @@ class MemberWithdrawServiceTest {
     }
 
     @Test
-    fun `저장된 리프레시 토큰을 지운다`() {
+    fun `저장된 리프레시 토큰을 지우고 발급한 액세스 토큰을 무효화한다`() {
         // when
         memberWithdrawService.withdraw(MEMBER_ID)
 
         // then
         verify { refreshTokenRepository.delete(MEMBER_ID) }
+        verify { accessTokenRevocationCache.revokeAll(MEMBER_ID) }
     }
 
     @Test

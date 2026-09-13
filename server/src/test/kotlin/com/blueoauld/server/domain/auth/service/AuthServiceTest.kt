@@ -11,10 +11,12 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.DeviceTokenService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.security.AccessTokenRevocationCache
 import com.blueoauld.server.global.security.JwtProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -32,6 +34,8 @@ class AuthServiceTest {
 
     private val deviceTokenService = mockk<DeviceTokenService>(relaxed = true)
 
+    private val accessTokenRevocationCache = mockk<AccessTokenRevocationCache>(relaxed = true)
+
     private val passwordEncoder = mockk<PasswordEncoder>()
 
     private val jwtProvider = mockk<JwtProvider>()
@@ -41,6 +45,7 @@ class AuthServiceTest {
         refreshTokenRepository,
         loginAttemptCache,
         deviceTokenService,
+        accessTokenRevocationCache,
         passwordEncoder,
         jwtProvider,
     )
@@ -82,6 +87,22 @@ class AuthServiceTest {
     }
 
     @Test
+    fun `로그인하면 전에 발급한 액세스 토큰을 무효화한 뒤 새 토큰을 발급한다`() {
+        // given
+        stubMember(member())
+        every { passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD) } returns true
+
+        // when
+        authService.login(LoginRequest(PHONE_NUMBER, PASSWORD), IP_ADDRESS)
+
+        // then
+        verifyOrder {
+            accessTokenRevocationCache.revokeAll(MEMBER_ID)
+            jwtProvider.createAccessToken(MEMBER_ID, any())
+        }
+    }
+
+    @Test
     fun `로그인에 실패하면 기기 토큰을 지우지 않는다`() {
         // given
         stubMember(member())
@@ -94,6 +115,7 @@ class AuthServiceTest {
 
         // then
         verify(exactly = 0) { deviceTokenService.removeAll(any()) }
+        verify(exactly = 0) { accessTokenRevocationCache.revokeAll(any()) }
     }
 
     @Test
@@ -198,6 +220,7 @@ class AuthServiceTest {
         // then
         verify { refreshTokenRepository.save(MEMBER_ID, NEW_REFRESH_TOKEN) }
         verify(exactly = 0) { deviceTokenService.removeAll(any()) }
+        verify(exactly = 0) { accessTokenRevocationCache.revokeAll(any()) }
         assertThat(response.refreshToken).isEqualTo(NEW_REFRESH_TOKEN)
     }
 

@@ -12,6 +12,7 @@ import java.util.*
 class JwtProvider(
 
     private val jwtProperties: JwtProperties,
+    private val accessTokenRevocationCache: AccessTokenRevocationCache,
     private val clock: Clock,
 ) {
 
@@ -47,6 +48,11 @@ class JwtProvider(
         val claims = parseClaims(token, ACCESS_TYPE) ?: return null
         val memberId = claims.subject?.toLongOrNull() ?: return null
         val role = claims[ROLE_CLAIM]?.toString() ?: return null
+        val issuedAt = claims.issuedAt?.toInstant() ?: return null
+
+        if (accessTokenRevocationCache.isRevoked(memberId, issuedAt)) {
+            return null
+        }
 
         return JwtPayload(memberId, role)
     }

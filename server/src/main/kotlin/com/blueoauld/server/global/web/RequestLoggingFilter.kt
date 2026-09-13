@@ -41,12 +41,15 @@ class RequestLoggingFilter : OncePerRequestFilter() {
     override fun shouldNotFilter(request: HttpServletRequest) = !request.requestURI.startsWith(API_PATH_PREFIX)
 
     private fun describe(request: HttpServletRequest, status: Int, elapsedMillis: Long) = buildString {
-        append("${request.method} ${request.requestURI}")
-        request.queryString?.let { append("?${mask(it)}") }
+        append("${request.method} ${maskPath(request.requestURI)}")
+        request.queryString?.let { append("?${maskQuery(it)}") }
         append(" $status ${elapsedMillis}ms")
     }
 
-    private fun mask(queryString: String) = SENSITIVE_PARAM_PATTERN.replace(queryString) { "${it.groupValues[1]}=***" }
+    private fun maskPath(path: String) = SENSITIVE_PATH_PATTERN.replace(path) { "${it.groupValues[1]}***" }
+
+    private fun maskQuery(queryString: String) =
+        SENSITIVE_PARAM_PATTERN.replace(queryString) { "${it.groupValues[1]}=***" }
 
     private fun putClientInfo(request: HttpServletRequest) {
         request.getHeader(APP_VERSION_HEADER)?.let { MDC.put(APP_VERSION_KEY, it) }
@@ -68,7 +71,8 @@ class RequestLoggingFilter : OncePerRequestFilter() {
 
         const val APP_VERSION_HEADER = "X-App-Version"
 
-        private val SENSITIVE_PARAM_PATTERN = Regex("(keyword|reportedPhoneNumber)=[^&]*")
+        private val SENSITIVE_PARAM_PATTERN = Regex("((?:^|&)(?:keyword|reportedPhoneNumber|to))=[^&]*")
+        private val SENSITIVE_PATH_PATTERN = Regex("(/device-tokens/)[^/]+")
         private const val PLATFORM_HEADER = "X-Platform"
 
         private const val API_PATH_PREFIX = "/api/"

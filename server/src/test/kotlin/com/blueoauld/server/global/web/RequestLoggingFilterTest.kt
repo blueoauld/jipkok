@@ -93,6 +93,33 @@ class RequestLoggingFilterTest {
     }
 
     @Test
+    fun `문자 발송 내역의 수신 번호도 가리고 이름이 겹치는 다른 파라미터는 남긴다`() {
+        // given
+        val request = MockHttpServletRequest("GET", "/api/admin/messages")
+        request.queryString = "status=FAILED&to=%2B821012345678&photo=keep"
+
+        // when
+        filter.doFilter(request, MockHttpServletResponse(), mockk<FilterChain>(relaxed = true))
+
+        // then
+        assertThat(message()).contains("status=FAILED&to=***&photo=keep")
+        assertThat(message()).doesNotContain("821012345678")
+    }
+
+    @Test
+    fun `경로에 담긴 기기 토큰은 가린다`() {
+        // given
+        val request = MockHttpServletRequest("DELETE", "/api/members/me/device-tokens/ExponentPushToken[abc123]")
+
+        // when
+        filter.doFilter(request, MockHttpServletResponse(), mockk<FilterChain>(relaxed = true))
+
+        // then
+        assertThat(message()).startsWith("DELETE /api/members/me/device-tokens/*** ")
+        assertThat(message()).doesNotContain("abc123")
+    }
+
+    @Test
     fun `뒤따르는 필터가 담은 회원 id를 함께 남긴다`() {
         // given
         val chain = FilterChain { _, _ -> MDC.put(RequestLoggingFilter.MEMBER_ID_KEY, MEMBER_ID.toString()) }

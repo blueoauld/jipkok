@@ -20,6 +20,7 @@ import com.blueoauld.server.domain.secretphoto.repository.SecretPhotoAccessRepos
 import com.blueoauld.server.domain.worry.repository.WorryCommentRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostLikeRepository
 import com.blueoauld.server.domain.worry.repository.WorryPostRepository
+import com.blueoauld.server.global.security.AccessTokenRevocationCache
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -45,6 +46,7 @@ class MemberWithdrawService(
     private val pointHistoryRepository: PointHistoryRepository,
     private val deviceTokenRepository: DeviceTokenRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val accessTokenRevocationCache: AccessTokenRevocationCache,
 ) {
 
     @Transactional
@@ -72,6 +74,7 @@ class MemberWithdrawService(
         pointHistoryRepository.deleteAllByMemberId(memberId)
         deviceTokenRepository.deleteAllByMemberId(memberId)
         refreshTokenRepository.delete(memberId)
+        accessTokenRevocationCache.revokeAll(memberId)
 
         memberRepository.delete(member)
     }

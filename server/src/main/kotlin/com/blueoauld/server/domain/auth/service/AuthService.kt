@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.service.DeviceTokenService
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
+import com.blueoauld.server.global.security.AccessTokenRevocationCache
 import com.blueoauld.server.global.security.JwtProvider
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -21,6 +22,7 @@ class AuthService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val loginAttemptCache: LoginAttemptCache,
     private val deviceTokenService: DeviceTokenService,
+    private val accessTokenRevocationCache: AccessTokenRevocationCache,
     private val passwordEncoder: PasswordEncoder,
     private val jwtProvider: JwtProvider,
 ) {
@@ -37,6 +39,7 @@ class AuthService(
 
         loginAttemptCache.clear(request.phoneNumber)
         deviceTokenService.removeAll(member.id)
+        accessTokenRevocationCache.revokeAll(member.id)
 
         return issueTokens(member)
     }

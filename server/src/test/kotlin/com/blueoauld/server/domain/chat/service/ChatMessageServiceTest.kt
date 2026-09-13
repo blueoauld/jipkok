@@ -20,6 +20,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -62,6 +63,7 @@ class ChatMessageServiceTest {
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
         every { chatMessageRepository.save(any()) } answers { firstArg() }
         every { photoStorage.createSignedViewUrl(any()) } returns SIGNED_URL
+        every { photoUploadService.confirm(any()) } returns emptyMap()
     }
 
     @Test
@@ -78,7 +80,7 @@ class ChatMessageServiceTest {
     @Test
     fun `영상 메시지는 영상과 썸네일 URL, 길이를 준다`() {
         // given
-        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(10L * 1024 * 1024, "video/mp4")
+        stubUploaded(VIDEO_KEY to VIDEO_TYPE, THUMBNAIL_KEY to IMAGE_TYPE)
 
         // when
         val response = chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 120))
@@ -93,10 +95,10 @@ class ChatMessageServiceTest {
     }
 
     @Test
-    fun `영상이 상한보다 크면 지우고 거절한다`() {
+    fun `업로드 확인에서 영상이 상한보다 커 거절되면 저장하지 않는다`() {
         // given
-        every { photoStorage.head(VIDEO_KEY) } returns
-            StoredObject(PhotoUploadService.VIDEO_MAX_BYTES + 1, "video/mp4")
+        every { photoUploadService.confirm(listOf(VIDEO_KEY, THUMBNAIL_KEY)) } throws
+            BusinessException(ErrorCode.VIDEO_TOO_LARGE)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -105,15 +107,12 @@ class ChatMessageServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.VIDEO_TOO_LARGE)
-        verify { photoStorage.delete(listOf(VIDEO_KEY)) }
         verify(exactly = 0) { chatMessageRepository.save(any()) }
+        verify(exactly = 0) { chatRoomMemberRepository.applyLastMessage(any(), any(), any()) }
     }
 
     @Test
     fun `영상이 5분을 넘으면 보낼 수 없다`() {
-        // given
-        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, "video/mp4")
-
         // when
         val exception = assertThrows(BusinessException::class.java) {
             chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, ChatMessage.VIDEO_MAX_SECONDS + 1))
@@ -124,9 +123,9 @@ class ChatMessageServiceTest {
     }
 
     @Test
-    fun `올라오지 않은 영상 키로는 보낼 수 없다`() {
+    fun `업로드 확인 결과에 없는 영상 키로는 보낼 수 없다`() {
         // given
-        every { photoStorage.head(VIDEO_KEY) } returns null
+        stubUploaded(THUMBNAIL_KEY to IMAGE_TYPE)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -140,7 +139,7 @@ class ChatMessageServiceTest {
     @Test
     fun `종류를 알 수 없는 파일이 올라와 있으면 보낼 수 없다`() {
         // given
-        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, null)
+        stubUploaded(VIDEO_KEY to null, THUMBNAIL_KEY to IMAGE_TYPE)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -154,7 +153,7 @@ class ChatMessageServiceTest {
     @Test
     fun `영상이 아닌 파일이 올라와 있으면 보낼 수 없다`() {
         // given
-        every { photoStorage.head(VIDEO_KEY) } returns StoredObject(1024, "image/jpeg")
+        stubUploaded(VIDEO_KEY to IMAGE_TYPE, THUMBNAIL_KEY to IMAGE_TYPE)
 
         // when
         val exception = assertThrows(BusinessException::class.java) {
@@ -163,6 +162,36 @@ class ChatMessageServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+    }
+
+    @Test
+    fun `썸네일로 영상 파일을 보내면 거절한다`() {
+        // given
+        stubUploaded(VIDEO_KEY to VIDEO_TYPE, THUMBNAIL_KEY to VIDEO_TYPE)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, THUMBNAIL_KEY, 10))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { chatMessageRepository.save(any()) }
+    }
+
+    @Test
+    fun `썸네일 키를 영상 키와 같게 보내면 거절한다`() {
+        // given
+        stubUploaded(VIDEO_KEY to VIDEO_TYPE)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, video(VIDEO_KEY, VIDEO_KEY, 10))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { chatMessageRepository.save(any()) }
     }
 
     @Test
@@ -193,14 +222,35 @@ class ChatMessageServiceTest {
     }
 
     @Test
-    fun `사진 메시지는 서명된 URL을 준다`() {
+    fun `사진 메시지는 업로드를 확인한 뒤 저장하고 서명된 URL을 준다`() {
+        // given
+        stubUploaded(OBJECT_KEY to IMAGE_TYPE)
+
         // when
         val response = chatMessageService.send(ME_ID, ROOM_ID, photo(OBJECT_KEY))
 
         // then
         assertThat(response.type).isEqualTo(ChatMessageType.PHOTO)
         assertThat(response.imageUrl).isEqualTo(SIGNED_URL)
-        verify { photoUploadService.confirm(listOf(OBJECT_KEY)) }
+        verifyOrder {
+            photoUploadService.confirm(listOf(OBJECT_KEY))
+            chatMessageRepository.save(any())
+        }
+    }
+
+    @Test
+    fun `사진으로 영상 파일을 보내면 거절한다`() {
+        // given
+        stubUploaded(OBJECT_KEY to VIDEO_TYPE)
+
+        // when
+        val exception = assertThrows(BusinessException::class.java) {
+            chatMessageService.send(ME_ID, ROOM_ID, photo(OBJECT_KEY))
+        }
+
+        // then
+        assertThat(exception.errorCode).isEqualTo(ErrorCode.INVALID_PHOTO_KEY)
+        verify(exactly = 0) { chatMessageRepository.save(any()) }
     }
 
     @Test
@@ -561,6 +611,11 @@ class ChatMessageServiceTest {
         type = type,
     )
 
+    private fun stubUploaded(vararg contentTypes: Pair<String, String?>) {
+        every { photoUploadService.confirm(any()) } returns
+            contentTypes.associate { (key, type) -> key to StoredObject(UPLOADED_BYTES, type) }
+    }
+
     private fun photo(objectKey: String?) = SendMessageRequest(type = ChatMessageType.PHOTO, objectKey = objectKey)
 
     private fun video(objectKey: String, thumbnailKey: String, durationSeconds: Int) = SendMessageRequest(
@@ -581,6 +636,9 @@ class ChatMessageServiceTest {
 
     companion object {
 
+        private const val VIDEO_TYPE = "video/mp4"
+        private const val IMAGE_TYPE = "image/jpeg"
+        private const val UPLOADED_BYTES = 1024L
         private const val ROOM_ID = 10L
         private const val ANOTHER_ROOM_ID = 11L
         private const val ME_ID = 1L

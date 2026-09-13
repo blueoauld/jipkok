@@ -3,6 +3,8 @@ package com.blueoauld.server.global.security
 import com.blueoauld.server.global.properties.JwtProperties
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import io.mockk.every
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
@@ -13,8 +15,13 @@ import java.util.*
 
 class JwtProviderTest {
 
+    private val accessTokenRevocationCache = mockk<AccessTokenRevocationCache> {
+        every { isRevoked(any(), any()) } returns false
+    }
+
     private val jwtProvider = JwtProvider(
         JwtProperties(SECRET, Duration.ofHours(1), Duration.ofDays(14)),
+        accessTokenRevocationCache,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -29,6 +36,31 @@ class JwtProviderTest {
         // then
         assertThat(payload?.memberId).isEqualTo(MEMBER_ID)
         assertThat(payload?.role).isEqualTo(ROLE)
+    }
+
+    @Test
+    fun `무효화된 액세스 토큰은 읽지 않는다`() {
+        // given
+        val token = jwtProvider.createAccessToken(MEMBER_ID, ROLE)
+        every { accessTokenRevocationCache.isRevoked(MEMBER_ID, NOW) } returns true
+
+        // when
+        val payload = jwtProvider.parseAccessToken(token)
+
+        // then
+        assertThat(payload).isNull()
+    }
+
+    @Test
+    fun `발급 시각이 없으면 읽지 않는다`() {
+        // given
+        val token = accessToken(subject = MEMBER_ID.toString(), role = ROLE, issuedAt = null)
+
+        // when
+        val payload = jwtProvider.parseAccessToken(token)
+
+        // then
+        assertThat(payload).isNull()
     }
 
     @Test
@@ -101,6 +133,7 @@ class JwtProviderTest {
         role: String?,
         expiration: Instant = NOW.plus(Duration.ofHours(1)),
         secret: String = SECRET,
+        issuedAt: Instant? = NOW,
     ): String {
         val builder = Jwts.builder()
             .subject(subject)
@@ -108,6 +141,7 @@ class JwtProviderTest {
             .expiration(Date.from(expiration))
 
         role?.let { builder.claim(JwtProvider.ROLE_CLAIM, it) }
+        issuedAt?.let { builder.issuedAt(Date.from(it)) }
 
         return builder.signWith(Keys.hmacShaKeyFor(secret.toByteArray())).compact()
     }

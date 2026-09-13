@@ -14,6 +14,9 @@ api.jipkok.app {
 
     log {
         output stdout
-        format json
+        format filter {
+            request>uri regexp "(/device-tokens/)[^/?]*|([?&](?:keyword|reportedPhoneNumber|to)=)[^&]*" "${1}${2}***"
+            wrap json
+        }
     }
 }
