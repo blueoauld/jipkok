@@ -196,7 +196,7 @@ class ChatNoteServiceTest {
     }
 
     @Test
-    fun `아는 사람 차단 관계면 쪽지를 보낼 수 없다`() {
+    fun `번호 차단 관계면 새 방을 열 수 없다`() {
         // given
         every { contactBlockRepository.existsBetween(SENDER_ID, RECEIVER_ID) } returns true
 
@@ -207,7 +207,21 @@ class ChatNoteServiceTest {
 
         // then
         assertThat(exception.errorCode).isEqualTo(ErrorCode.NOTE_BLOCKED)
+        verify(exactly = 0) { pointService.spend(any(), any()) }
         verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
+    }
+
+    @Test
+    fun `번호 차단 관계여도 이미 열린 방에는 채팅처럼 보낼 수 있다`() {
+        // given
+        every { contactBlockRepository.existsBetween(SENDER_ID, RECEIVER_ID) } returns true
+        every { chatRoomRepository.findByMembers(SENDER_ID, RECEIVER_ID) } returns ChatRoom.of(SENDER_ID, RECEIVER_ID)
+
+        // when
+        chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
+
+        // then
+        verify { chatMessageService.append(any(), SENDER_ID, any()) }
     }
 
     @Test
