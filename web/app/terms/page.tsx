@@ -42,6 +42,14 @@ export default function EnglishTerms() {
           </li>
         </ul>
         <p>
+          Some member accounts in the Service are created and operated by us,
+          and their replies are generated automatically. They appear in the
+          member list and in chat in the same way as other members and are not
+          labeled. Sending a note to such an account uses points in the same way
+          as sending one to any other member. These accounts do not ask for
+          contact details, arrange meetings, or request money.
+        </p>
+        <p>
           What the Service offers may change as we operate it. We announce
           significant changes in advance.
         </p>
@@ -153,7 +161,8 @@ export default function EnglishTerms() {
         />
         <p>
           Points can only be used within the Service and cannot be exchanged for
-          cash or anything else of value.
+          cash or anything else of value. Points spent on a note are not
+          refunded, including notes sent to accounts operated by us.
         </p>
       </Section>
 

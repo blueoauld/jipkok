@@ -15,6 +15,8 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
@@ -39,6 +41,8 @@ class AiReplyContextServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val memberSuspensionService = mockk<MemberSuspensionService>()
+
     private val ai = member(MemberRole.AI)
 
     private val partner = member(MemberRole.MEMBER)
@@ -49,6 +53,7 @@ class AiReplyContextServiceTest {
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(ChatRoom.of(USER_ID, AI_ID))
         every { memberRepository.findById(AI_ID) } returns Optional.of(ai)
         every { memberRepository.findById(USER_ID) } returns Optional.of(partner)
+        every { memberSuspensionService.isSuspended(AI_ID, SuspensionType.SERVICE) } returns false
         every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, AI_ID) } returns
             roomMember(lastReadMessageId = 0L)
         every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
@@ -75,6 +80,18 @@ class AiReplyContextServiceTest {
     fun `비활성 페르소나면 버린다`() {
         // given
         every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona(enabled = false))
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat(decision).isInstanceOf(AiReplyDecision.Drop::class.java)
+    }
+
+    @Test
+    fun `AI가 서비스 정지 중이면 버린다`() {
+        // given
+        every { memberSuspensionService.isSuspended(AI_ID, SuspensionType.SERVICE) } returns true
 
         // when
         val decision = service(DAYTIME).decide(job())
@@ -152,6 +169,7 @@ class AiReplyContextServiceTest {
         chatRoomMemberRepository,
         chatMessageRepository,
         memberRepository,
+        memberSuspensionService,
         Clock.fixed(now, ZoneOffset.UTC),
     )
 

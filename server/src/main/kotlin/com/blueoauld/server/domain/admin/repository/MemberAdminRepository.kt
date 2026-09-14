@@ -93,17 +93,17 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
     )
     fun findRowById(@Param("memberId") memberId: Long): AdminMemberRow?
 
-    @Query(value = "select count(*) from member where created_at >= :start", nativeQuery = true)
+    @Query(value = "select count(*) from member where created_at >= :start and $NOT_AI", nativeQuery = true)
     fun countCreatedSince(@Param("start") start: Instant): Long
 
-    @Query(value = "select count(*) from member where deleted_at >= :start", nativeQuery = true)
+    @Query(value = "select count(*) from member where deleted_at >= :start and $NOT_AI", nativeQuery = true)
     fun countDeletedSince(@Param("start") start: Instant): Long
 
     @Query(
         value = """
         select cast(created_at at time zone '$KOREA_ID' as date) as day, count(*) as count
         from member
-        where created_at >= :start
+        where created_at >= :start and $NOT_AI
         group by day
         """,
         nativeQuery = true,
@@ -114,7 +114,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
         value = """
         select cast(deleted_at at time zone '$KOREA_ID' as date) as day, count(*) as count
         from member
-        where deleted_at >= :start
+        where deleted_at >= :start and $NOT_AI
         group by day
         """,
         nativeQuery = true,
@@ -125,7 +125,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
         value = """
         select gender as gender, birth_year as birthYear, count(*) as count
         from member
-        where deleted_at is null
+        where deleted_at is null and $NOT_AI
         group by gender, birth_year
         """,
         nativeQuery = true,
@@ -133,6 +133,8 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
     fun countByGenderAndBirthYear(): List<GenderBirthYearCount>
 
     companion object {
+
+        private const val NOT_AI = "role <> 'AI'"
 
         private const val ACTIVE_SUSPENSION = """exists(
             select 1 from member_suspension s

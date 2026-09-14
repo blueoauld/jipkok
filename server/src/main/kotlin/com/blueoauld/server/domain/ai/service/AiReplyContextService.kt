@@ -10,6 +10,8 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
+import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
+import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import com.blueoauld.server.global.time.KOREA
 import com.blueoauld.server.global.time.today
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -31,6 +33,7 @@ class AiReplyContextService(
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
     private val memberRepository: MemberRepository,
+    private val memberSuspensionService: MemberSuspensionService,
     private val clock: Clock,
 ) {
 
@@ -48,6 +51,10 @@ class AiReplyContextService(
             ?: return AiReplyDecision.Drop("채팅방이 없다.")
         val ai = memberRepository.findById(job.aiMemberId).orElse(null)
             ?: return AiReplyDecision.Drop("AI 회원이 없다.")
+
+        if (memberSuspensionService.isSuspended(ai.id, SuspensionType.SERVICE)) {
+            return AiReplyDecision.Drop("AI 회원이 정지 중이다.")
+        }
         val partner = memberRepository.findById(room.partnerIdOf(ai.id)).orElse(null)
             ?: return AiReplyDecision.Drop("상대가 탈퇴했다.")
 

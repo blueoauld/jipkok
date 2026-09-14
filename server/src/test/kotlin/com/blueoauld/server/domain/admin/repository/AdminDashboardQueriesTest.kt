@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.access.entity.AccessLog
 import com.blueoauld.server.domain.access.repository.AccessLogRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.push.entity.type.DevicePlatform
 import com.blueoauld.server.domain.report.entity.Report
@@ -88,6 +89,31 @@ class AdminDashboardQueriesTest {
 
         // then
         assertThat(count).isEqualTo(1)
+    }
+
+    @Test
+    fun `AI 계정은 가입, 탈퇴, 회원 구성 집계에서 뺀다`() {
+        // given
+        val ai = saveMember("AI-0000000000001", role = MemberRole.AI)
+        val since = Instant.now().minusSeconds(60)
+        val maleCountWithAi = memberAdminRepository.countByGenderAndBirthYear()
+            .filter { it.birthYear == 1998 && it.gender == Gender.MALE.name }
+            .sumOf { it.count }
+        memberRepository.delete(ai)
+        entityManager.flush()
+
+        // when
+        val created = memberAdminRepository.countCreatedSince(since)
+        val dailyCreated = memberAdminRepository.countDailyCreatedSince(since)
+        val deleted = memberAdminRepository.countDeletedSince(since)
+        val dailyDeleted = memberAdminRepository.countDailyDeletedSince(since)
+
+        // then
+        assertThat(created).isZero()
+        assertThat(dailyCreated.sumOf { it.count }).isZero()
+        assertThat(deleted).isZero()
+        assertThat(dailyDeleted.sumOf { it.count }).isZero()
+        assertThat(maleCountWithAi).isZero()
     }
 
     @Test
@@ -187,16 +213,21 @@ class AdminDashboardQueriesTest {
         assertThat(versions.first { it.platform == DevicePlatform.IOS }.count).isEqualTo(1)
     }
 
-    private fun saveMember(phoneNumber: String, gender: Gender = Gender.MALE, birthYear: Int = 1998) =
-        memberRepository.saveAndFlush(
-            Member(
-                phoneNumber = phoneNumber,
-                password = "encoded-password",
-                gender = gender,
-                nickname = phoneNumber.takeLast(10),
-                birthYear = birthYear,
-            ),
-        )
+    private fun saveMember(
+        phoneNumber: String,
+        gender: Gender = Gender.MALE,
+        birthYear: Int = 1998,
+        role: MemberRole = MemberRole.MEMBER,
+    ) = memberRepository.saveAndFlush(
+        Member(
+            phoneNumber = phoneNumber,
+            password = "encoded-password",
+            gender = gender,
+            nickname = phoneNumber.takeLast(10),
+            birthYear = birthYear,
+            role = role,
+        ),
+    )
 
     private fun saveSuspension(
         memberId: Long,
