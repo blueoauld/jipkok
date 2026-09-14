@@ -52,6 +52,6 @@ class OpenAiReplyGenerator(
     companion object {
 
         const val REPLY_MAX_TOKENS = 300
-        const val SUMMARY_MAX_TOKENS = 600
+        const val SUMMARY_MAX_TOKENS = 800
     }
 }
