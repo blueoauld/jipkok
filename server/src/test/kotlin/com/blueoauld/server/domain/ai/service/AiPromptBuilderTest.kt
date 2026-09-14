@@ -30,23 +30,24 @@ class AiPromptBuilderTest {
         // then
         val system = messages.first() as SystemMessage
         assertThat(system.text).contains("밝고 장난기 많은 성격")
-        assertThat(system.text).contains("닉네임 루나, 28세, 여자")
-        assertThat(system.text).contains("닉네임 바다, 31세, 남자")
-        assertThat(system.text).contains("코멘트: 산책 좋아해요")
+        assertThat(system.text).contains("너의 닉네임은 '루나'이고 28세 여자다.")
+        assertThat(system.text).contains("상대의 닉네임은 '바다'이고 31세 남자다.")
+        assertThat(system.text).contains("상대를 부를 때는 '바다'만 쓰고, 너 자신을 그 닉네임으로 부르지 않는다.")
+        assertThat(system.text).contains("상대의 코멘트: 산책 좋아해요")
         assertThat(system.text).contains("반드시 일본어로 답한다.")
         assertThat(system.text).contains("2026-09-15 12:30")
     }
 
     @Test
-    fun `AI마다 같은 규칙, 페르소나, 내 프로필이 앞에 오고 상대와 시각은 뒤에 온다`() {
+    fun `AI마다 같은 규칙, 페르소나, 자기 프로필이 앞에 오고 상대와 시각은 뒤에 온다`() {
         // when
         val text = (builder.build(context()).first() as SystemMessage).text!!
 
         // then
         assertThat(text.indexOf("[규칙]")).isLessThan(text.indexOf("[페르소나]"))
-        assertThat(text.indexOf("[페르소나]")).isLessThan(text.indexOf("[내 프로필]"))
-        assertThat(text.indexOf("[내 프로필]")).isLessThan(text.indexOf("[상대 프로필]"))
-        assertThat(text.indexOf("[상대 프로필]")).isLessThan(text.indexOf("[지금 상황]"))
+        assertThat(text.indexOf("[페르소나]")).isLessThan(text.indexOf("[너 자신]"))
+        assertThat(text.indexOf("[너 자신]")).isLessThan(text.indexOf("[대화 상대]"))
+        assertThat(text.indexOf("[대화 상대]")).isLessThan(text.indexOf("[지금 상황]"))
         assertThat(text.indexOf("반드시 일본어로")).isGreaterThan(text.indexOf("[지금 상황]"))
     }
 
@@ -59,7 +60,7 @@ class AiPromptBuilderTest {
         val text = (builder.build(context().copy(partner = partner)).first() as SystemMessage).text!!
 
         // then
-        assertThat(text).contains("자기소개: " + "가".repeat(AiPromptBuilder.BIO_MAX_CHARS))
+        assertThat(text).contains("상대의 자기소개: " + "가".repeat(AiPromptBuilder.BIO_MAX_CHARS))
         assertThat(text).doesNotContain("가".repeat(AiPromptBuilder.BIO_MAX_CHARS + 1))
     }
 

@@ -42,22 +42,37 @@ class AiPromptBuilder(
         |[페르소나]
         |${context.systemPrompt}
         |
-        |[내 프로필]
-        |${profileOf(context.ai)}
+        |[너 자신]
+        |${selfProfile(context.ai)}
         |
-        |[상대 프로필]
-        |${profileOf(context.partner)}
+        |[대화 상대]
+        |${partnerProfile(context.partner)}
         |
         |[지금 상황]
         |- 반드시 ${LANGUAGE_NAMES.getValue(context.partner.locale)}로 답한다.
         |- 지금은 한국 시간 ${TIME_FORMATTER.format(context.now.atZone(KOREA))}이다.
     """.trimMargin()
 
-    private fun profileOf(member: Member) = listOfNotNull(
-        "닉네임 ${member.nickname}, ${clock.ageOf(member.birthYear)}세, ${GENDER_NAMES.getValue(member.gender)}",
-        member.comment?.let { "코멘트: $it" },
-        member.bio?.let { "자기소개: ${it.take(BIO_MAX_CHARS)}" },
+    private fun selfProfile(ai: Member) = profileOf(
+        member = ai,
+        subject = "너의",
+        intro = "너의 닉네임은 '${ai.nickname}'이고 ${describe(ai)}다.",
+    )
+
+    private fun partnerProfile(partner: Member) = profileOf(
+        member = partner,
+        subject = "상대의",
+        intro = "상대의 닉네임은 '${partner.nickname}'이고 ${describe(partner)}다. " +
+            "상대를 부를 때는 '${partner.nickname}'만 쓰고, 너 자신을 그 닉네임으로 부르지 않는다.",
+    )
+
+    private fun profileOf(member: Member, subject: String, intro: String) = listOfNotNull(
+        intro,
+        member.comment?.let { "$subject 코멘트: $it" },
+        member.bio?.let { "$subject 자기소개: ${it.take(BIO_MAX_CHARS)}" },
     ).joinToString("\n")
+
+    private fun describe(member: Member) = "${clock.ageOf(member.birthYear)}세 ${GENDER_NAMES.getValue(member.gender)}"
 
     private fun trim(messages: List<ChatMessage>): List<ChatMessage> {
         val kept = ArrayDeque<ChatMessage>()
