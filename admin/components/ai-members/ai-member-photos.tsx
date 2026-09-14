@@ -180,6 +180,18 @@ function PhotoSection({
                     className="aspect-square w-full object-cover"
                   />
                 </a>
+                <Button
+                  variant="secondary"
+                  size="icon-sm"
+                  className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
+                  disabled={busy}
+                  onClick={() =>
+                    onChange(keys.filter((k) => k !== photo.objectKey))
+                  }
+                  aria-label="삭제"
+                >
+                  <X />
+                </Button>
                 <div className="absolute inset-x-1 bottom-1 flex justify-between opacity-0 transition-opacity group-hover:opacity-100">
                   <Button
                     variant="secondary"
@@ -189,17 +201,6 @@ function PhotoSection({
                     aria-label="앞으로"
                   >
                     <ArrowLeft />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon-sm"
-                    disabled={busy}
-                    onClick={() =>
-                      onChange(keys.filter((k) => k !== photo.objectKey))
-                    }
-                    aria-label="삭제"
-                  >
-                    <X />
                   </Button>
                   <Button
                     variant="secondary"

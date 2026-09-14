@@ -25,27 +25,33 @@ class OpenAiReplyGenerator(
     private val chatClient = chatClientBuilder.build()
 
     override fun generate(context: AiReplyContext): AiReply? =
-        call(aiPromptBuilder.build(context), ChatMessage.CONTENT_MAX_LENGTH)
+        call(aiPromptBuilder.build(context), ChatMessage.CONTENT_MAX_LENGTH, REPLY_MAX_TOKENS)
 
     override fun summarize(context: AiSummaryContext): AiReply? =
-        call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS)
+        call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS, SUMMARY_MAX_TOKENS)
 
-    private fun call(messages: List<Message>, maxChars: Int): AiReply? {
-        val spec = chatClient.prompt().messages(messages)
+    private fun call(messages: List<Message>, maxChars: Int, maxTokens: Int): AiReply? {
+        val options = OpenAiChatOptions.builder().maxTokens(maxTokens)
 
         if (aiChatProperties.model.isNotBlank()) {
-            spec.options(OpenAiChatOptions.builder().model(aiChatProperties.model))
+            options.model(aiChatProperties.model)
         }
 
-        val response = spec.call().chatResponse() ?: return null
+        val response = chatClient.prompt().messages(messages).options(options).call().chatResponse() ?: return null
         val content = response.result?.output?.text?.trim()?.take(maxChars)?.ifEmpty { null } ?: return null
         val usage = response.metadata.usage
 
         return AiReply(
             content = content,
-            promptTokens = usage.promptTokens ?: 0,
-            completionTokens = usage.completionTokens ?: 0,
-            model = response.metadata.model?.take(AiReplyLog.MODEL_MAX_LENGTH),
+            promptTokens = usage.promptTokens,
+            completionTokens = usage.completionTokens,
+            model = response.metadata.model.take(AiReplyLog.MODEL_MAX_LENGTH),
         )
+    }
+
+    companion object {
+
+        const val REPLY_MAX_TOKENS = 300
+        const val SUMMARY_MAX_TOKENS = 600
     }
 }

@@ -81,7 +81,7 @@ class AiPersona(
         return when {
             activeStartHour == activeEndHour -> true
             activeStartHour < activeEndHour -> hour in activeStartHour until activeEndHour
-            else -> hour >= activeStartHour || hour < activeEndHour
+            else -> hour !in activeEndHour..<activeStartHour
         }
     }
 
