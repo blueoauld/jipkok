@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
@@ -42,13 +43,13 @@ class AiReplySchedulerTest {
     fun `답할 수 있으면 생성한 내용으로 완료한다`() {
         // given
         every { aiReplyContextService.decide(job) } returns AiReplyDecision.Reply(context)
-        every { aiReplyGenerator.generate(context) } returns "안녕!"
+        every { aiReplyGenerator.generate(context) } returns REPLY
 
         // when
         scheduler.run()
 
         // then
-        verify { aiReplyJobService.complete(job, 40L, "안녕!") }
+        verify { aiReplyJobService.complete(job, 40L, REPLY) }
     }
 
     @Test
@@ -97,5 +98,6 @@ class AiReplySchedulerTest {
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-09-15T03:00:00Z")
+        private val REPLY = AiReply(content = "안녕!", promptTokens = 100, completionTokens = 5, model = null)
     }
 }

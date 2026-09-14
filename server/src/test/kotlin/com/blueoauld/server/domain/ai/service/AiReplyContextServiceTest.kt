@@ -4,7 +4,7 @@ import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
-import com.blueoauld.server.domain.ai.repository.AiReplyCountRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
@@ -29,7 +29,7 @@ class AiReplyContextServiceTest {
 
     private val aiPersonaRepository = mockk<AiPersonaRepository>()
 
-    private val aiReplyCountRepository = mockk<AiReplyCountRepository>()
+    private val aiReplyLogRepository = mockk<AiReplyLogRepository>()
 
     private val chatRoomRepository = mockk<ChatRoomRepository>()
 
@@ -53,9 +53,9 @@ class AiReplyContextServiceTest {
             roomMember(lastReadMessageId = 0L)
         every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
             listOf(message(USER_ID, "뭐해?"), message(AI_ID, "안녕"))
-        every { aiReplyCountRepository.countRoomRepliesSince(ROOM_ID, AI_ID, any()) } returns 0
-        every { aiReplyCountRepository.countRepliesSince(AI_ID, any()) } returns 0
-        every { aiReplyCountRepository.countAllRepliesSince(any()) } returns 0
+        every { aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(ROOM_ID, any()) } returns 0
+        every { aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(AI_ID, any()) } returns 0
+        every { aiReplyLogRepository.countByCreatedAtGreaterThanEqual(any()) } returns 0
     }
 
     @Test
@@ -68,6 +68,7 @@ class AiReplyContextServiceTest {
         val context = (decision as AiReplyDecision.Reply).context
         assertThat(context.messages.map { it.content }).containsExactly("안녕", "뭐해?")
         assertThat(context.partner).isSameAs(partner)
+        assertThat(context.systemPrompt).isEqualTo("프롬프트")
     }
 
     @Test
@@ -109,7 +110,7 @@ class AiReplyContextServiceTest {
     @Test
     fun `방의 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyCountRepository.countRoomRepliesSince(ROOM_ID, AI_ID, DAY_START) } returns
+        every { aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(ROOM_ID, DAY_START) } returns
             AiReplyContextService.ROOM_DAILY_LIMIT
 
         // when
@@ -122,7 +123,7 @@ class AiReplyContextServiceTest {
     @Test
     fun `AI의 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyCountRepository.countRepliesSince(AI_ID, DAY_START) } returns 3
+        every { aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(AI_ID, DAY_START) } returns 3
 
         // when
         val decision = service(DAYTIME).decide(job())
@@ -134,7 +135,7 @@ class AiReplyContextServiceTest {
     @Test
     fun `전체 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyCountRepository.countAllRepliesSince(DAY_START) } returns
+        every { aiReplyLogRepository.countByCreatedAtGreaterThanEqual(DAY_START) } returns
             AiReplyContextService.GLOBAL_DAILY_LIMIT
 
         // when
@@ -146,7 +147,7 @@ class AiReplyContextServiceTest {
 
     private fun service(now: Instant) = AiReplyContextService(
         aiPersonaRepository,
-        aiReplyCountRepository,
+        aiReplyLogRepository,
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageRepository,

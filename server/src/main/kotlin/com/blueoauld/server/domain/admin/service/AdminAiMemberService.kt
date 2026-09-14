@@ -3,14 +3,20 @@ package com.blueoauld.server.domain.admin.service
 import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberPageResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAiReplyStatResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAiTestChatResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.AiMemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.AiReplyLogAdminRepository
+import com.blueoauld.server.domain.ai.dto.request.AiTestChatRequest
 import com.blueoauld.server.domain.ai.dto.request.CreateAiMemberRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberPhotosRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberRequest
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.getPersona
 import com.blueoauld.server.domain.ai.service.AiMemberService
+import com.blueoauld.server.domain.ai.service.AiReplyContextService
+import com.blueoauld.server.domain.ai.service.AiTestChatService
 import com.blueoauld.server.domain.member.dto.request.CreateProfilePhotoUploadUrlRequest
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
@@ -19,19 +25,24 @@ import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.member.service.MemberPhotoService
 import com.blueoauld.server.domain.photo.dto.response.PhotoUploadUrlResponse
 import com.blueoauld.server.global.repository.escapeLike
+import com.blueoauld.server.global.time.KOREA
 import com.blueoauld.server.global.time.ageOf
+import com.blueoauld.server.global.time.today
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Instant
 
 @Service
 class AdminAiMemberService(
 
     private val aiMemberAdminRepository: AiMemberAdminRepository,
+    private val aiReplyLogAdminRepository: AiReplyLogAdminRepository,
     private val aiPersonaRepository: AiPersonaRepository,
     private val memberRepository: MemberRepository,
     private val memberPhotoService: MemberPhotoService,
     private val aiMemberService: AiMemberService,
+    private val aiTestChatService: AiTestChatService,
     private val adminActionRecorder: AdminActionRecorder,
     private val clock: Clock,
 ) {
@@ -49,6 +60,11 @@ class AdminAiMemberService(
             offset = AdminPaging.offset(safePage, safeSize),
         )
 
+        val dayStart = dayStart()
+        val ids = rows.map { it.id }
+        val today = statsByMember(ids, dayStart)
+        val total = statsByMember(ids, Instant.EPOCH)
+
         return AdminAiMemberPageResponse(
             items = rows.map {
                 AdminAiMemberResponse(
@@ -60,11 +76,15 @@ class AdminAiMemberService(
                     publicPhotoCount = it.publicPhotoCount.toInt(),
                     locatedAt = it.locatedAt,
                     createdAt = it.createdAt,
+                    today = today[it.id] ?: AdminAiReplyStatResponse.EMPTY,
+                    total = total[it.id] ?: AdminAiReplyStatResponse.EMPTY,
                 )
             },
             page = safePage,
             size = safeSize,
             totalCount = aiMemberAdminRepository.countForAdmin(enabled, nicknameLike),
+            todayTotal = AdminAiReplyStatResponse.of(aiReplyLogAdminRepository.sumAllSince(dayStart)),
+            globalDailyLimit = AiReplyContextService.GLOBAL_DAILY_LIMIT,
         )
     }
 
@@ -73,6 +93,7 @@ class AdminAiMemberService(
         val persona = aiPersonaRepository.getPersona(memberId)
         val member = memberRepository.getMember(memberId)
         val photos = memberPhotoService.findProfilePhotos(memberId)
+        val ids = listOf(memberId)
 
         return AdminAiMemberDetailResponse.of(
             member = member,
@@ -80,8 +101,13 @@ class AdminAiMemberService(
             age = clock.ageOf(member.birthYear),
             publicPhotos = photos[PhotoVisibility.PUBLIC].orEmpty(),
             secretPhotos = photos[PhotoVisibility.SECRET].orEmpty(),
+            today = statsByMember(ids, dayStart())[memberId] ?: AdminAiReplyStatResponse.EMPTY,
+            total = statsByMember(ids, Instant.EPOCH)[memberId] ?: AdminAiReplyStatResponse.EMPTY,
         )
     }
+
+    fun testChat(memberId: Long, request: AiTestChatRequest): AdminAiTestChatResponse =
+        AdminAiTestChatResponse.of(aiTestChatService.chat(memberId, request))
 
     @Transactional
     fun create(actorId: Long, request: CreateAiMemberRequest): AdminAiMemberDetailResponse {
@@ -118,6 +144,17 @@ class AdminAiMemberService(
         aiMemberService.withdraw(memberId)
         adminActionRecorder.record(actorId = actorId, action = AdminActionType.WITHDRAW_MEMBER, targetId = memberId)
     }
+
+    private fun statsByMember(ids: List<Long>, start: Instant): Map<Long, AdminAiReplyStatResponse> {
+        if (ids.isEmpty()) {
+            return emptyMap()
+        }
+
+        return aiReplyLogAdminRepository.sumByAiMemberIdSince(ids, start)
+            .associate { it.aiMemberId to AdminAiReplyStatResponse.of(it) }
+    }
+
+    private fun dayStart(): Instant = clock.today().atStartOfDay(KOREA).toInstant()
 
     companion object {
 

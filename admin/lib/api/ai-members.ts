@@ -3,6 +3,8 @@ import type { AiMemberFilter } from "@/components/ai-members/ai-member-filters";
 import type {
   AiMemberDetail,
   AiMemberPage,
+  AiTestChatBody,
+  AiTestChatReply,
   CreateAiMemberBody,
   PhotoUploadUrl,
   PhotoVisibility,
@@ -28,6 +30,12 @@ export const createAiMember = (body: CreateAiMemberBody) =>
 
 export const updateAiMember = (id: number, body: UpdateAiMemberBody) =>
   api<AiMemberDetail>(`/api/admin/ai-members/${id}`, { method: "PUT", body });
+
+export const testAiChat = (id: number, body: AiTestChatBody) =>
+  api<AiTestChatReply>(`/api/admin/ai-members/${id}/test-chat`, {
+    method: "POST",
+    body,
+  });
 
 export const withdrawAiMember = (id: number) =>
   api<void>(`/api/admin/ai-members/${id}`, { method: "DELETE" });

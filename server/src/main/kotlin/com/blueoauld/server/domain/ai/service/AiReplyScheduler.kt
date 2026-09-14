@@ -39,12 +39,12 @@ class AiReplyScheduler(
             is AiReplyDecision.Postpone -> aiReplyJobService.postpone(job, decision.dueAt)
 
             is AiReplyDecision.Reply -> {
-                val content = aiReplyGenerator.generate(decision.context)
+                val reply = aiReplyGenerator.generate(decision.context)
 
-                if (content == null) {
+                if (reply == null) {
                     aiReplyJobService.drop(job)
                 } else {
-                    aiReplyJobService.complete(job, decision.context.lastMessageId, content)
+                    aiReplyJobService.complete(job, decision.context.lastMessageId, reply)
                 }
             }
         }

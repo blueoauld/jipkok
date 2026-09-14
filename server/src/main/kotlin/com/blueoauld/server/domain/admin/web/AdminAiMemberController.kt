@@ -2,7 +2,9 @@ package com.blueoauld.server.domain.admin.web
 
 import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberDetailResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberPageResponse
+import com.blueoauld.server.domain.admin.dto.response.AdminAiTestChatResponse
 import com.blueoauld.server.domain.admin.service.AdminAiMemberService
+import com.blueoauld.server.domain.ai.dto.request.AiTestChatRequest
 import com.blueoauld.server.domain.ai.dto.request.CreateAiMemberRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberPhotosRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberRequest
@@ -76,6 +78,18 @@ class AdminAiMemberController(
         @PathVariable memberId: Long,
         @Valid @RequestBody request: UpdateAiMemberRequest,
     ): AdminAiMemberDetailResponse = adminAiMemberService.update(actorId, memberId, request)
+
+    @Operation(
+        operationId = "testAiChat",
+        summary = "AI 계정 테스트 대화",
+        description = "보낸 대화에 이어지는 AI 답을 만들어 준다. 저장하지 않고 응답 한도에도 세지 않는다. " +
+            "systemPrompt를 주면 저장된 페르소나 대신 그 내용으로 답한다.",
+    )
+    @PostMapping("/{memberId}/test-chat")
+    fun testChat(
+        @PathVariable memberId: Long,
+        @Valid @RequestBody request: AiTestChatRequest,
+    ): AdminAiTestChatResponse = adminAiMemberService.testChat(memberId, request)
 
     @Operation(
         operationId = "createAiMemberPhotoUploadUrl",

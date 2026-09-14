@@ -12,6 +12,8 @@ import {
 } from "@/components/ai-members/ai-member-draft";
 import { AiMemberForm } from "@/components/ai-members/ai-member-form";
 import { AiMemberPhotos } from "@/components/ai-members/ai-member-photos";
+import { AiMemberStats } from "@/components/ai-members/ai-member-stats";
+import { AiMemberTestChat } from "@/components/ai-members/ai-member-test-chat";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
@@ -64,6 +66,7 @@ function Loaded({ member }: { member: AiMemberDetailData }) {
   const queryClient = useQueryClient();
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [draftPrompt, setDraftPrompt] = useState(member.persona.systemPrompt);
 
   const save = useMutation({
     mutationFn: (draft: AiMemberDraft) =>
@@ -137,6 +140,7 @@ function Loaded({ member }: { member: AiMemberDetailData }) {
         pending={save.isPending}
         error={error}
         onSubmit={(draft) => save.mutate(draft)}
+        onChange={(draft) => setDraftPrompt(draft.systemPrompt)}
       />
 
       <AiMemberPhotos
@@ -144,6 +148,15 @@ function Loaded({ member }: { member: AiMemberDetailData }) {
         publicPhotos={member.publicPhotos}
         secretPhotos={member.secretPhotos}
       />
+
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+        <AiMemberStats today={member.today} total={member.total} />
+        <AiMemberTestChat
+          memberId={member.id}
+          nickname={member.nickname}
+          systemPrompt={draftPrompt}
+        />
+      </div>
     </>
   );
 }

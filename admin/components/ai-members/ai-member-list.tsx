@@ -18,6 +18,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useListState } from "@/hooks/use-list-state";
 import { usePageGuard } from "@/hooks/use-page-guard";
 import { fetchAiMembers } from "@/lib/api/ai-members";
+import { formatCount } from "@/lib/format";
 
 export function AiMemberList() {
   const { filter, changeFilter, page, setPage } = useListState(
@@ -42,8 +43,13 @@ export function AiMemberList() {
     >
       {data && (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-wrap items-center justify-between gap-2">
             <AiMemberFilters value={filter} onChange={changeFilter} />
+            <p className="text-sm text-muted-foreground">
+              오늘 전체 응답 {formatCount(data.todayTotal.replyCount)} /{" "}
+              {formatCount(data.globalDailyLimit)} · 토큰{" "}
+              {formatCount(data.todayTotal.tokenCount)}
+            </p>
           </CardHeader>
           <CardContent>
             <AiMemberTable members={data.items} />

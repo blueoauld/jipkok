@@ -29,7 +29,7 @@ class AiPromptBuilder(
         |너는 위치 기반 채팅 앱 '집콕'의 회원이다. 아래 페르소나대로 실제 사람처럼 대화한다.
         |
         |[페르소나]
-        |${context.persona.systemPrompt}
+        |${context.systemPrompt}
         |
         |[내 프로필]
         |${profileOf(context.ai)}

@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.AiReplyLog
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
@@ -19,6 +22,7 @@ import java.time.Instant
 class AiReplyJobService(
 
     private val aiReplyJobRepository: AiReplyJobRepository,
+    private val aiReplyLogRepository: AiReplyLogRepository,
     private val aiPersonaRepository: AiPersonaRepository,
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
@@ -71,7 +75,7 @@ class AiReplyJobService(
     }
 
     @Transactional
-    fun complete(job: AiReplyJob, repliedMessageId: Long, content: String) {
+    fun complete(job: AiReplyJob, repliedMessageId: Long, reply: AiReply) {
         val room = chatRoomRepository.findById(job.roomId).orElse(null)
 
         if (room == null) {
@@ -80,14 +84,24 @@ class AiReplyJobService(
         }
 
         chatRoomMemberRepository.markRead(room.id, job.aiMemberId, repliedMessageId)
-        chatMessageService.append(
+        val sent = chatMessageService.append(
             room = room,
             senderId = job.aiMemberId,
             message = ChatMessage(
                 roomId = room.id,
                 senderId = job.aiMemberId,
                 type = ChatMessageType.TEXT,
-                content = content,
+                content = reply.content,
+            ),
+        )
+        aiReplyLogRepository.save(
+            AiReplyLog(
+                aiMemberId = job.aiMemberId,
+                roomId = room.id,
+                messageId = sent.messageId,
+                promptTokens = reply.promptTokens,
+                completionTokens = reply.completionTokens,
+                model = reply.model,
             ),
         )
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)

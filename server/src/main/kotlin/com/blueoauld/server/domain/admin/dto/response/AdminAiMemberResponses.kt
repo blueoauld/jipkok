@@ -1,5 +1,8 @@
 package com.blueoauld.server.domain.admin.dto.response
 
+import com.blueoauld.server.domain.admin.dto.projection.AiReplyStatRow
+import com.blueoauld.server.domain.admin.dto.projection.AiReplyTotalRow
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
@@ -12,6 +15,8 @@ data class AdminAiMemberPageResponse(
     val page: Int,
     val size: Int,
     val totalCount: Long,
+    val todayTotal: AdminAiReplyStatResponse,
+    val globalDailyLimit: Long,
 )
 
 data class AdminAiMemberResponse(
@@ -24,6 +29,8 @@ data class AdminAiMemberResponse(
     val publicPhotoCount: Int,
     val locatedAt: Instant?,
     val createdAt: Instant,
+    val today: AdminAiReplyStatResponse,
+    val total: AdminAiReplyStatResponse,
 )
 
 data class AdminAiMemberDetailResponse(
@@ -42,6 +49,8 @@ data class AdminAiMemberDetailResponse(
     val publicPhotos: List<ProfilePhotoResponse>,
     val secretPhotos: List<ProfilePhotoResponse>,
     val persona: AdminAiPersonaResponse,
+    val today: AdminAiReplyStatResponse,
+    val total: AdminAiReplyStatResponse,
     val createdAt: Instant,
     val updatedAt: Instant,
 ) {
@@ -54,6 +63,8 @@ data class AdminAiMemberDetailResponse(
             age: Int,
             publicPhotos: List<ProfilePhotoResponse>,
             secretPhotos: List<ProfilePhotoResponse>,
+            today: AdminAiReplyStatResponse,
+            total: AdminAiReplyStatResponse,
         ) = AdminAiMemberDetailResponse(
             id = member.id,
             nickname = member.nickname,
@@ -69,6 +80,8 @@ data class AdminAiMemberDetailResponse(
             publicPhotos = publicPhotos,
             secretPhotos = secretPhotos,
             persona = AdminAiPersonaResponse.of(persona),
+            today = today,
+            total = total,
             createdAt = member.createdAt,
             updatedAt = maxOf(member.updatedAt, persona.updatedAt),
         )
@@ -98,6 +111,41 @@ data class AdminAiPersonaResponse(
             activeEndHour = persona.activeEndHour,
             dailyReplyLimit = persona.dailyReplyLimit,
             nextLocationRefreshAt = persona.nextLocationRefreshAt,
+        )
+    }
+}
+
+data class AdminAiReplyStatResponse(
+
+    val replyCount: Long,
+    val tokenCount: Long,
+) {
+
+    companion object {
+
+        val EMPTY = AdminAiReplyStatResponse(0, 0)
+
+        fun of(row: AiReplyStatRow) = AdminAiReplyStatResponse(row.replyCount, row.tokenCount)
+
+        fun of(row: AiReplyTotalRow) = AdminAiReplyStatResponse(row.replyCount, row.tokenCount)
+    }
+}
+
+data class AdminAiTestChatResponse(
+
+    val content: String,
+    val promptTokens: Int,
+    val completionTokens: Int,
+    val model: String?,
+) {
+
+    companion object {
+
+        fun of(reply: AiReply) = AdminAiTestChatResponse(
+            content = reply.content,
+            promptTokens = reply.promptTokens,
+            completionTokens = reply.completionTokens,
+            model = reply.model,
         )
     }
 }

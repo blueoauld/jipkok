@@ -1,14 +1,19 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.projection.AdminAiMemberRow
+import com.blueoauld.server.domain.admin.dto.projection.AiReplyStatRow
+import com.blueoauld.server.domain.admin.dto.projection.AiReplyTotalRow
+import com.blueoauld.server.domain.admin.dto.response.AdminAiReplyStatResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
 import com.blueoauld.server.domain.admin.repository.AiMemberAdminRepository
+import com.blueoauld.server.domain.admin.repository.AiReplyLogAdminRepository
 import com.blueoauld.server.domain.ai.dto.request.AiPersonaRequest
 import com.blueoauld.server.domain.ai.dto.request.CreateAiMemberRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberPhotosRequest
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.service.AiMemberService
+import com.blueoauld.server.domain.ai.service.AiTestChatService
 import com.blueoauld.server.domain.member.dto.response.ProfilePhotoResponse
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
@@ -20,6 +25,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
@@ -30,6 +36,8 @@ class AdminAiMemberServiceTest {
 
     private val aiMemberAdminRepository = mockk<AiMemberAdminRepository>()
 
+    private val aiReplyLogAdminRepository = mockk<AiReplyLogAdminRepository>()
+
     private val aiPersonaRepository = mockk<AiPersonaRepository>()
 
     private val memberRepository = mockk<MemberRepository>()
@@ -38,20 +46,33 @@ class AdminAiMemberServiceTest {
 
     private val aiMemberService = mockk<AiMemberService>(relaxed = true)
 
+    private val aiTestChatService = mockk<AiTestChatService>()
+
     private val adminActionRecorder = mockk<AdminActionRecorder>(relaxed = true)
 
     private val adminAiMemberService = AdminAiMemberService(
         aiMemberAdminRepository,
+        aiReplyLogAdminRepository,
         aiPersonaRepository,
         memberRepository,
         memberPhotoService,
         aiMemberService,
+        aiTestChatService,
         adminActionRecorder,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
+    @BeforeEach
+    fun setUp() {
+        every { aiReplyLogAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), DAY_START) } returns
+            listOf(statRow(replyCount = 4, tokenCount = 900))
+        every { aiReplyLogAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), Instant.EPOCH) } returns
+            listOf(statRow(replyCount = 40, tokenCount = 9000))
+        every { aiReplyLogAdminRepository.sumAllSince(DAY_START) } returns totalRow(replyCount = 12, tokenCount = 3000)
+    }
+
     @Test
-    fun `검색어는 와일드카드를 이스케이프해 닉네임 조건으로 넘긴다`() {
+    fun `검색어는 와일드카드를 이스케이프해 닉네임 조건으로 넘기고 오늘과 누적 통계를 붙인다`() {
         // given
         every { aiMemberAdminRepository.findAllForAdmin(true, """%루\%%""", 20, 0) } returns listOf(row())
         every { aiMemberAdminRepository.countForAdmin(true, """%루\%%""") } returns 1
@@ -62,6 +83,24 @@ class AdminAiMemberServiceTest {
         // then
         assertThat(response.totalCount).isEqualTo(1)
         assertThat(response.items.single().age).isEqualTo(28)
+        assertThat(response.items.single().today.replyCount).isEqualTo(4)
+        assertThat(response.items.single().total.tokenCount).isEqualTo(9000)
+        assertThat(response.todayTotal.replyCount).isEqualTo(12)
+        assertThat(response.globalDailyLimit).isEqualTo(2000)
+    }
+
+    @Test
+    fun `통계가 없는 계정은 0으로 채운다`() {
+        // given
+        every { aiMemberAdminRepository.findAllForAdmin(null, null, 20, 0) } returns listOf(row())
+        every { aiMemberAdminRepository.countForAdmin(null, null) } returns 1
+        every { aiReplyLogAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), any()) } returns emptyList()
+
+        // when
+        val response = adminAiMemberService.findMembers(null, null, 1, 20)
+
+        // then
+        assertThat(response.items.single().today).isEqualTo(AdminAiReplyStatResponse.EMPTY)
     }
 
     @Test
@@ -77,6 +116,8 @@ class AdminAiMemberServiceTest {
         assertThat(response.persona.systemPrompt).isEqualTo("밝은 성격")
         assertThat(response.publicPhotos).hasSize(1)
         assertThat(response.secretPhotos).isEmpty()
+        assertThat(response.today.tokenCount).isEqualTo(900)
+        assertThat(response.total.replyCount).isEqualTo(40)
     }
 
     @Test
@@ -151,6 +192,17 @@ class AdminAiMemberServiceTest {
         nextLocationRefreshAt = NOW,
     )
 
+    private fun statRow(replyCount: Long, tokenCount: Long) = object : AiReplyStatRow {
+        override val aiMemberId = MEMBER_ID
+        override val replyCount = replyCount
+        override val tokenCount = tokenCount
+    }
+
+    private fun totalRow(replyCount: Long, tokenCount: Long) = object : AiReplyTotalRow {
+        override val replyCount = replyCount
+        override val tokenCount = tokenCount
+    }
+
     private fun row() = object : AdminAiMemberRow {
         override val id = MEMBER_ID
         override val nickname = "루나"
@@ -167,5 +219,6 @@ class AdminAiMemberServiceTest {
         private const val ACTOR_ID = 1L
         private const val MEMBER_ID = 0L
         private val NOW: Instant = Instant.parse("2026-09-14T00:00:00Z")
+        private val DAY_START: Instant = Instant.parse("2026-09-14T00:00:00+09:00")
     }
 }

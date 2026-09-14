@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDateTime } from "@/lib/format";
+import { formatCount, formatDateTime } from "@/lib/format";
 import { genderLabels } from "@/lib/labels";
 import type { AiMemberSummary } from "@/lib/types";
 import { inactiveRowClassName } from "@/lib/styles";
@@ -33,6 +33,10 @@ export function AiMemberTable({ members }: Props) {
           <TableHead className="w-16 text-right">나이</TableHead>
           <TableHead className="w-24 text-right">공개 사진</TableHead>
           <TableHead className="w-20">상태</TableHead>
+          <TableHead className="w-24 text-right">오늘 응답</TableHead>
+          <TableHead className="w-24 text-right">오늘 토큰</TableHead>
+          <TableHead className="w-24 text-right">누적 응답</TableHead>
+          <TableHead className="w-24 text-right">누적 토큰</TableHead>
           <TableHead className="text-right">위치 갱신</TableHead>
           <TableHead className="text-right">생성일</TableHead>
         </TableRow>
@@ -41,7 +45,7 @@ export function AiMemberTable({ members }: Props) {
         {members.length === 0 && (
           <TableRow>
             <TableCell
-              colSpan={8}
+              colSpan={12}
               className="h-24 text-center text-muted-foreground"
             >
               조건에 맞는 AI 계정이 없습니다.
@@ -74,6 +78,18 @@ export function AiMemberTable({ members }: Props) {
               ) : (
                 <StatusText tone="muted">비활성</StatusText>
               )}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {formatCount(member.today.replyCount)}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {formatCount(member.today.tokenCount)}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {formatCount(member.total.replyCount)}
+            </TableCell>
+            <TableCell className="text-right tabular-nums">
+              {formatCount(member.total.tokenCount)}
             </TableCell>
             <TableCell className="text-right tabular-nums text-muted-foreground">
               {member.locatedAt ? formatDateTime(member.locatedAt) : "-"}

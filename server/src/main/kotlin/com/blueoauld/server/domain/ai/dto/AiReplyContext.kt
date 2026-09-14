@@ -1,6 +1,5 @@
 package com.blueoauld.server.domain.ai.dto
 
-import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.member.entity.Member
 import java.time.Instant
@@ -8,7 +7,7 @@ import java.time.Instant
 data class AiReplyContext(
 
     val ai: Member,
-    val persona: AiPersona,
+    val systemPrompt: String,
     val partner: Member,
     val messages: List<ChatMessage>,
     val now: Instant,
@@ -16,4 +15,9 @@ data class AiReplyContext(
 
     val lastMessageId: Long
         get() = messages.last().id
+
+    companion object {
+
+        const val MAX_MESSAGES = 30
+    }
 }

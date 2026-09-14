@@ -162,6 +162,7 @@ export const zh: typeof ko = {
     APPLE_ADS_007: "同一對象有較晚的操作。請先還原較晚的操作。",
     AI_001: "找不到 AI 帳號。",
     AI_002: "回覆延遲的最小值不能大於最大值。",
+    AI_003: "缺少 OpenAI 金鑰，無法產生 AI 回覆。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "最舊" },

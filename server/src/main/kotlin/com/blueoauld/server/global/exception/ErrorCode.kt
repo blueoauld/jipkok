@@ -157,6 +157,7 @@ enum class ErrorCode(
     ),
     AI_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "AI_001", "AI 계정을 찾을 수 없습니다."),
     INVALID_REPLY_DELAY(HttpStatus.BAD_REQUEST, "AI_002", "응답 지연은 최소값이 최대값보다 클 수 없습니다."),
+    AI_REPLY_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI_003", "OpenAI 키가 없어 AI 응답을 만들 수 없습니다."),
 
     APPLE_ADS_ACTION_SUPERSEDED(
         HttpStatus.CONFLICT,

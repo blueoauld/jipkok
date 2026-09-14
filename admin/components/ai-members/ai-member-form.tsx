@@ -35,6 +35,7 @@ type Props = {
   pending: boolean;
   error: string | null;
   onSubmit: (draft: AiMemberDraft) => void;
+  onChange?: (draft: AiMemberDraft) => void;
 };
 
 export function AiMemberForm({
@@ -44,11 +45,15 @@ export function AiMemberForm({
   pending,
   error,
   onSubmit,
+  onChange,
 }: Props) {
   const [draft, setDraft] = useState(initial);
   const dirty = JSON.stringify(draft) !== JSON.stringify(initial);
-  const patch = (next: Partial<AiMemberDraft>) =>
-    setDraft({ ...draft, ...next });
+  const patch = (next: Partial<AiMemberDraft>) => {
+    const merged = { ...draft, ...next };
+    setDraft(merged);
+    onChange?.(merged);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">

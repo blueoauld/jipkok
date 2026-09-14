@@ -1603,6 +1603,8 @@ export interface components {
             publicPhotos: components["schemas"]["ProfilePhotoResponse"][];
             secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
             persona: components["schemas"]["AdminAiPersonaResponse"];
+            today: components["schemas"]["AdminAiReplyStatResponse"];
+            total: components["schemas"]["AdminAiReplyStatResponse"];
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -1623,6 +1625,12 @@ export interface components {
             dailyReplyLimit: number;
             /** Format: date-time */
             nextLocationRefreshAt: string;
+        };
+        AdminAiReplyStatResponse: {
+            /** Format: int64 */
+            replyCount: number;
+            /** Format: int64 */
+            tokenCount: number;
         };
         ProfilePhotoResponse: {
             objectKey: string;
@@ -1907,6 +1915,25 @@ export interface components {
             /** Format: double */
             longitude?: number | null;
             persona: components["schemas"]["AiPersonaRequest"] | null;
+        };
+        AiTestChatMessage: {
+            /** @enum {string|null} */
+            role?: "USER" | "AI" | null;
+            content: string;
+        };
+        AiTestChatRequest: {
+            systemPrompt?: string | null;
+            /** @enum {string} */
+            locale: "KO" | "JA" | "EN" | "ZH_TW";
+            messages: components["schemas"]["AiTestChatMessage"][];
+        };
+        AdminAiTestChatResponse: {
+            content: string;
+            /** Format: int32 */
+            promptTokens: number;
+            /** Format: int32 */
+            completionTokens: number;
+            model?: string | null;
         };
         SetupProfileRequest: {
             nickname: string;
@@ -2751,6 +2778,9 @@ export interface components {
             size: number;
             /** Format: int64 */
             totalCount: number;
+            todayTotal: components["schemas"]["AdminAiReplyStatResponse"];
+            /** Format: int64 */
+            globalDailyLimit: number;
         };
         AdminAiMemberResponse: {
             /** Format: int64 */
@@ -2767,6 +2797,8 @@ export interface components {
             locatedAt?: string | null;
             /** Format: date-time */
             createdAt: string;
+            today: components["schemas"]["AdminAiReplyStatResponse"];
+            total: components["schemas"]["AdminAiReplyStatResponse"];
         };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];

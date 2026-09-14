@@ -1,9 +1,11 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
 import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
@@ -25,6 +27,8 @@ class AiReplyJobServiceTest {
 
     private val aiReplyJobRepository = mockk<AiReplyJobRepository>(relaxed = true)
 
+    private val aiReplyLogRepository = mockk<AiReplyLogRepository>(relaxed = true)
+
     private val aiPersonaRepository = mockk<AiPersonaRepository>()
 
     private val chatRoomRepository = mockk<ChatRoomRepository>()
@@ -35,6 +39,7 @@ class AiReplyJobServiceTest {
 
     private val service = AiReplyJobService(
         aiReplyJobRepository,
+        aiReplyLogRepository,
         aiPersonaRepository,
         chatRoomRepository,
         chatRoomMemberRepository,
@@ -101,14 +106,15 @@ class AiReplyJobServiceTest {
     }
 
     @Test
-    fun `완료하면 답한 메시지까지 읽음 처리하고 답장을 붙인 뒤 같은 메시지 기준의 작업만 지운다`() {
+    fun `완료하면 답한 메시지까지 읽음 처리하고 답장과 로그를 남긴 뒤 같은 메시지 기준의 작업만 지운다`() {
         // given
         val room = ChatRoom.of(USER_ID, AI_ID)
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
         every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 77L, senderId = AI_ID)
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
 
         // when
-        service.complete(job(), MESSAGE_ID, "안녕!")
+        service.complete(job(), MESSAGE_ID, reply())
 
         // then
         verifyOrder {
@@ -117,6 +123,15 @@ class AiReplyJobServiceTest {
                 room,
                 AI_ID,
                 match { it.senderId == AI_ID && it.type == ChatMessageType.TEXT && it.content == "안녕!" },
+            )
+            aiReplyLogRepository.save(
+                match {
+                    it.aiMemberId == AI_ID &&
+                        it.messageId == 77L &&
+                        it.promptTokens == 120 &&
+                        it.completionTokens == 8 &&
+                        it.model == "test-model"
+                },
             )
             aiReplyJobRepository.deleteIfUnchanged(ROOM_ID, MESSAGE_ID)
         }
@@ -128,7 +143,7 @@ class AiReplyJobServiceTest {
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.empty()
 
         // when
-        service.complete(job(), MESSAGE_ID, "안녕!")
+        service.complete(job(), MESSAGE_ID, reply())
 
         // then
         verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
@@ -158,6 +173,8 @@ class AiReplyJobServiceTest {
         imageUrl = null,
         createdAt = NOW,
     )
+
+    private fun reply() = AiReply(content = "안녕!", promptTokens = 120, completionTokens = 8, model = "test-model")
 
     private fun persona(enabled: Boolean) = AiPersona(
         memberId = AI_ID,

@@ -1,7 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
-import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.Member
@@ -55,7 +54,7 @@ class AiPromptBuilderTest {
 
     private fun context() = AiReplyContext(
         ai = member(AI_ID, "루나", Gender.FEMALE, 1998, comment = null),
-        persona = AiPersona(memberId = AI_ID, systemPrompt = "밝고 장난기 많은 성격", nextLocationRefreshAt = NOW),
+        systemPrompt = "밝고 장난기 많은 성격",
         partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = "산책 좋아해요", locale = MemberLocale.JA),
         messages = listOf(
             ChatMessage(roomId = 1L, senderId = USER_ID, type = ChatMessageType.TEXT, content = "안녕하세요"),

@@ -1,6 +1,8 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.ai.entity.AiReplyLog
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.global.properties.AiChatProperties
 import org.springframework.ai.chat.client.ChatClient
@@ -19,13 +21,23 @@ class OpenAiReplyGenerator(
 
     private val chatClient = chatClientBuilder.build()
 
-    override fun generate(context: AiReplyContext): String? {
+    override fun generate(context: AiReplyContext): AiReply? {
         val spec = chatClient.prompt().messages(aiPromptBuilder.build(context))
 
         if (aiChatProperties.model.isNotBlank()) {
             spec.options(OpenAiChatOptions.builder().model(aiChatProperties.model))
         }
 
-        return spec.call().content()?.trim()?.take(ChatMessage.CONTENT_MAX_LENGTH)?.ifEmpty { null }
+        val response = spec.call().chatResponse() ?: return null
+        val content = response.result?.output?.text?.trim()?.take(ChatMessage.CONTENT_MAX_LENGTH)?.ifEmpty { null }
+            ?: return null
+        val usage = response.metadata.usage
+
+        return AiReply(
+            content = content,
+            promptTokens = usage.promptTokens ?: 0,
+            completionTokens = usage.completionTokens ?: 0,
+            model = response.metadata.model?.take(AiReplyLog.MODEL_MAX_LENGTH),
+        )
     }
 }

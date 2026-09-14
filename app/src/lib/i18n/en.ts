@@ -174,6 +174,7 @@ export const en: typeof ko = {
       "A later action exists for the same target. Please revert the later action first.",
     AI_001: "AI account not found.",
     AI_002: "The minimum reply delay can't be greater than the maximum.",
+    AI_003: "Can't generate an AI reply because the OpenAI key is missing.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },

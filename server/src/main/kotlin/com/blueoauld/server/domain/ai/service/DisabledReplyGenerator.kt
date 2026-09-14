@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
@@ -11,7 +12,7 @@ private val log = KotlinLogging.logger {}
 @ConditionalOnExpression("'\${spring.ai.openai.api-key:}'.isEmpty()")
 class DisabledReplyGenerator : AiReplyGenerator {
 
-    override fun generate(context: AiReplyContext): String? {
+    override fun generate(context: AiReplyContext): AiReply? {
         log.warn { "OpenAI 키가 없어 AI 응답을 만들지 않는다. aiMemberId=${context.ai.id}" }
 
         return null

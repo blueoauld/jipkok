@@ -14,6 +14,7 @@ import type {
   AppleAdsRecommendationType,
   ChatMessageType,
   ChatRoomStatus,
+  MemberLocale,
 } from "@/lib/types";
 
 export const reportTypeLabels: Record<ReportType, string> = {
@@ -140,4 +141,11 @@ export const diaryMoodEmojis: Record<DiaryMood, string> = {
   FLOWER: "🌸",
   CLOVER: "🍀",
   PARTY: "🎉",
+};
+
+export const memberLocaleLabels: Record<MemberLocale, string> = {
+  KO: "한국어",
+  JA: "일본어",
+  EN: "영어",
+  ZH_TW: "중국어(번체)",
 };

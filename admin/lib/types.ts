@@ -35,6 +35,12 @@ export type CreateAiMemberBody = Schemas["CreateAiMemberRequest"];
 export type UpdateAiMemberBody = Schemas["UpdateAiMemberRequest"];
 export type PhotoVisibility =
   Schemas["CreateProfilePhotoUploadUrlRequest"]["visibility"];
+export type AiReplyStat = Schemas["AdminAiReplyStatResponse"];
+export type AiTestChatBody = Schemas["AiTestChatRequest"];
+export type AiTestChatMessage = Schemas["AiTestChatMessage"];
+export type AiTestChatRole = NonNullable<AiTestChatMessage["role"]>;
+export type AiTestChatReply = Schemas["AdminAiTestChatResponse"];
+export type MemberLocale = NonNullable<AiTestChatBody["locale"]>;
 export type Suspension = Schemas["AdminSuspensionResponse"];
 export type SuspensionStatus = Suspension["status"];
 export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];

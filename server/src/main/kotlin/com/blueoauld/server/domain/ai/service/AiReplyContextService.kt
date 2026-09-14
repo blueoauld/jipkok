@@ -5,7 +5,7 @@ import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
-import com.blueoauld.server.domain.ai.repository.AiReplyCountRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -26,7 +26,7 @@ private val log = KotlinLogging.logger {}
 class AiReplyContextService(
 
     private val aiPersonaRepository: AiPersonaRepository,
-    private val aiReplyCountRepository: AiReplyCountRepository,
+    private val aiReplyLogRepository: AiReplyLogRepository,
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
@@ -59,7 +59,7 @@ class AiReplyContextService(
         }
 
         val messages = chatMessageRepository
-            .findByRoomIdAndIdLessThanOrderByIdDesc(room.id, Long.MAX_VALUE, Limit.of(CONTEXT_SIZE))
+            .findByRoomIdAndIdLessThanOrderByIdDesc(room.id, Long.MAX_VALUE, Limit.of(AiReplyContext.MAX_MESSAGES))
             .asReversed()
 
         if (messages.isEmpty()) {
@@ -74,22 +74,24 @@ class AiReplyContextService(
 
         limitDrop(room.id, persona)?.let { return it }
 
-        return AiReplyDecision.Reply(AiReplyContext(ai, persona, partner, messages, now))
+        return AiReplyDecision.Reply(AiReplyContext(ai, persona.systemPrompt, partner, messages, now))
     }
 
     private fun limitDrop(roomId: Long, persona: AiPersona): AiReplyDecision.Drop? {
         val today = clock.today()
         val dayStart = today.atStartOfDay(KOREA).toInstant()
 
-        if (aiReplyCountRepository.countRoomRepliesSince(roomId, persona.memberId, dayStart) >= ROOM_DAILY_LIMIT) {
+        if (aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(roomId, dayStart) >= ROOM_DAILY_LIMIT) {
             return AiReplyDecision.Drop("방의 하루 응답 한도에 닿았다.")
         }
 
-        if (aiReplyCountRepository.countRepliesSince(persona.memberId, dayStart) >= persona.dailyReplyLimit) {
+        val aiCount = aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(persona.memberId, dayStart)
+
+        if (aiCount >= persona.dailyReplyLimit) {
             return AiReplyDecision.Drop("AI의 하루 응답 한도에 닿았다.")
         }
 
-        if (aiReplyCountRepository.countAllRepliesSince(dayStart) >= GLOBAL_DAILY_LIMIT) {
+        if (aiReplyLogRepository.countByCreatedAtGreaterThanEqual(dayStart) >= GLOBAL_DAILY_LIMIT) {
             alertGlobalLimit(today)
 
             return AiReplyDecision.Drop("전체 하루 응답 한도에 닿았다.")
@@ -106,7 +108,6 @@ class AiReplyContextService(
 
     companion object {
 
-        const val CONTEXT_SIZE = 30
         const val ROOM_DAILY_LIMIT = 100L
         const val GLOBAL_DAILY_LIMIT = 2000L
     }
