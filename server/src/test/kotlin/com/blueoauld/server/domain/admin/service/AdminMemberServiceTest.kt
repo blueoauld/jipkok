@@ -244,6 +244,7 @@ class AdminMemberServiceTest {
         override val nickname = "밤산책"
         override val phoneNumber = "+821011112222"
         override val gender = "MALE"
+        override val role = "MEMBER"
         override val birthYear = 1998
         override val comment = null
         override val bio = null

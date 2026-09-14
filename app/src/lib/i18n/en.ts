@@ -172,6 +172,8 @@ export const en: typeof ko = {
       "The keyword has changed in Apple Ads. Please sync the reports and try again.",
     APPLE_ADS_007:
       "A later action exists for the same target. Please revert the later action first.",
+    AI_001: "AI account not found.",
+    AI_002: "The minimum reply delay can't be greater than the maximum.",
   },
   feed: {
     sort: { LATEST: "Newest", OLDEST: "Oldest" },

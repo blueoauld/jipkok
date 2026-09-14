@@ -12,6 +12,7 @@ import com.blueoauld.server.domain.admin.repository.MemberAdminRepository
 import com.blueoauld.server.domain.admin.repository.NicknameHistoryAdminRepository
 import com.blueoauld.server.domain.admin.repository.SuspensionAdminRepository
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
 import com.blueoauld.server.domain.member.service.MemberAdminService
 import com.blueoauld.server.domain.member.service.MemberWithdrawService
@@ -78,6 +79,7 @@ class AdminMemberService(
                     id = it.id,
                     nickname = it.nickname,
                     gender = Gender.valueOf(it.gender),
+                    role = MemberRole.valueOf(it.role),
                     age = clock.ageOf(it.birthYear),
                     phoneNumber = it.phoneNumber,
                     publicPhotoCount = it.publicPhotoCount.toInt(),
@@ -129,6 +131,7 @@ class AdminMemberService(
             nickname = row.nickname,
             phoneNumber = row.phoneNumber,
             gender = Gender.valueOf(row.gender),
+            role = MemberRole.valueOf(row.role),
             age = clock.ageOf(row.birthYear),
             comment = row.comment,
             bio = row.bio,

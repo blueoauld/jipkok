@@ -4,4 +4,5 @@ enum class MemberRole {
 
     MEMBER,
     ADMIN,
+    AI,
 }

@@ -92,6 +92,15 @@ function Loaded({ member }: { member: MemberDetailData }) {
     <>
       <PageHeader title={`${member.nickname} #${member.id}`}>
         <div className="flex items-center gap-2">
+          {member.role === "AI" && (
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href={`/ai-members/detail?id=${member.id}`} />}
+            >
+              AI 계정
+            </Button>
+          )}
           <Button
             variant="outline"
             nativeButton={false}

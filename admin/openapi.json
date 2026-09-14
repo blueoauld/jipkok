@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "\uc9d1\ucf55 API",
-        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_014 | 403 | \uad8c\ud55c\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| AUTH_015 | 503 | \ubb38\uc790 \ubc1c\uc1a1 \ub0b4\uc5ed\uc744 \ubd88\ub7ec\uc624\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_003 | 400 | \uc0ac\uc9c4\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 10MB\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| BLOCK_002 | 400 | \ucc28\ub2e8\ud560 \uc218 \uc788\ub294 \ubc88\ud638 \uc218\ub97c \ub118\uc5c8\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| MEMO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uba54\ubaa8\ub97c \ub0a8\uae38 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| CHAT_010 | 400 | \ucc44\ud305\ubc29\uc740 5\uac1c\uae4c\uc9c0 \uace0\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_001 | 404 | \uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_002 | 409 | \uace0\ubbfc\uc740 \ud558\ub8e8\uc5d0 5\uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_003 | 403 | \ubcf8\uc778\uc774 \uc4f4 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_004 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uae00\uc785\ub2c8\ub2e4. |\n| WORRY_005 | 404 | \ub313\uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_006 | 403 | \ubcf8\uc778\uc774 \uc4f4 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_007 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \ub313\uae00\uc785\ub2c8\ub2e4. |\n| WORRY_008 | 400 | \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_001 | 404 | \uc77c\uae30\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_002 | 400 | \uc544\uc9c1 \uc624\uc9c0 \uc54a\uc740 \ub0a0\uc758 \uc77c\uae30\ub294 \uc4f8 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_003 | 400 | \ub0b4\uc6a9\uc774\ub098 \uc0ac\uc9c4\uc744 \ub123\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| DIARY_004 | 400 | \uac00\uc785\ud558\uae30 \uc804 \ub0a0\uc758 \uc77c\uae30\ub294 \uc4f8 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| TRANSLATION_001 | 503 | \ubc88\uc5ed\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| TRANSLATION_002 | 429 | \ubc88\uc5ed \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| APPLE_ADS_001 | 503 | \uc560\ud50c \uad11\uace0 API\uac00 \uc124\uc815\ub418\uc5b4 \uc788\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| APPLE_ADS_002 | 503 | \uc560\ud50c \uad11\uace0 API\uc5d0 \uc5f0\uacb0\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| APPLE_ADS_003 | 400 | \ub9ac\ud3ec\ud2b8 \uae30\uac04\uc740 90\uc77c\uae4c\uc9c0\uc774\uace0, \uc2dc\uc791\uc77c\uc740 \uc624\ub298\ubd80\ud130 90\uc77c \uc804\uae4c\uc9c0\uc5ec\uc57c \ud569\ub2c8\ub2e4. |\n| APPLE_ADS_004 | 404 | \uc560\ud50c \uad11\uace0 \uc870\uce58\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| APPLE_ADS_005 | 409 | \uc774\ubbf8 \ub418\ub3cc\ub9b0 \uc870\uce58\uc785\ub2c8\ub2e4. |\n| APPLE_ADS_006 | 409 | \uc560\ud50c \uad11\uace0\uc5d0\uc11c \ud0a4\uc6cc\ub4dc\uac00 \ubc14\ub00c\uc5c8\uc2b5\ub2c8\ub2e4. \ub9ac\ud3ec\ud2b8\ub97c \ub3d9\uae30\ud654\ud55c \ub4a4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| APPLE_ADS_007 | 409 | \uac19\uc740 \ub300\uc0c1\uc5d0 \ub354 \ub098\uc911\uc5d0 \ud55c \uc870\uce58\uac00 \uc788\uc2b5\ub2c8\ub2e4. \ub098\uc911 \uc870\uce58\ubd80\ud130 \ub418\ub3cc\ub824\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |",
+        "description": "## \uc624\ub958 \ucf54\ub4dc\n\n| \ucf54\ub4dc | \uc0c1\ud0dc | \uba54\uc2dc\uc9c0 |\n| --- | --- | --- |\n| COMMON_001 | 400 | \uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| COMMON_002 | 409 | \uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| COMMON_999 | 500 | \uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. |\n| AUTH_001 | 429 | \uc778\uc99d\ubc88\ud638\ub97c \ub108\ubb34 \uc790\uc8fc \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_002 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_003 | 429 | \uc778\uc99d\ubc88\ud638 \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_004 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_005 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \ub9cc\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_006 | 400 | \uc778\uc99d\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_007 | 429 | \uc778\uc99d\ubc88\ud638 \uc785\ub825 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc778\uc99d\ubc88\ud638\ub97c \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_008 | 401 | \ud734\ub300\ud3f0 \ubc88\ud638 \ub610\ub294 \ube44\ubc00\ubc88\ud638\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| AUTH_009 | 401 | \ub2e4\uc2dc \ub85c\uadf8\uc778\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_010 | 401 | \ub85c\uadf8\uc778\uc774 \ud544\uc694\ud569\ub2c8\ub2e4. |\n| AUTH_011 | 503 | \uc778\uc99d\ubc88\ud638\ub97c \ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_012 | 429 | \ub85c\uadf8\uc778 \uc2dc\ub3c4 \ud69f\uc218\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_013 | 400 | \uc774\ubbf8 \uc0ac\uc6a9\ud55c \uc778\uc99d\ubc88\ud638\uc785\ub2c8\ub2e4. \ub2e4\uc2dc \uc694\uccad\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AUTH_014 | 403 | \uad8c\ud55c\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| AUTH_015 | 503 | \ubb38\uc790 \ubc1c\uc1a1 \ub0b4\uc5ed\uc744 \ubd88\ub7ec\uc624\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| MEMBER_001 | 409 | \uc774\ubbf8 \uac00\uc785\ub41c \ud734\ub300\ud3f0 \ubc88\ud638\uc785\ub2c8\ub2e4. |\n| MEMBER_002 | 400 | \ube44\ubc00\ubc88\ud638\uac00 \uc77c\uce58\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_003 | 404 | \ud68c\uc6d0\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_004 | 409 | \uc774\ubbf8 \uc0ac\uc6a9 \uc911\uc778 \ub2c9\ub124\uc784\uc785\ub2c8\ub2e4. |\n| MEMBER_005 | 400 | 19\uc138 \uc774\uc0c1 90\uc138 \uc774\ud558\ub9cc \uac00\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| MEMBER_006 | 400 | \uc704\uce58 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| MEMBER_009 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc870\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| MEMBER_010 | 400 | \ub098\uc774 \ubc94\uc704\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_001 | 400 | \uc9c0\uc6d0\ud558\uc9c0 \uc54a\ub294 \uc774\ubbf8\uc9c0 \ud615\uc2dd\uc785\ub2c8\ub2e4. |\n| PHOTO_002 | 400 | \uc0ac\uc9c4 \uc815\ubcf4\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| PHOTO_003 | 400 | \uc0ac\uc9c4\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 10MB\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| LIKE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uc88b\uc544\uc694\ub97c \ub204\ub97c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FAVORITE_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc990\uaca8\ucc3e\uae30\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ube44\ubc00 \uc0ac\uc9c4\uc744 \uacf5\uac1c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SECRET_PHOTO_002 | 403 | \ube44\ubc00 \uc0ac\uc9c4\uc744 \ubcfc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_001 | 403 | \ube44\ubc00 \uc0ac\uc9c4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_002 | 403 | \ud504\ub85c\ud544 \uc218\uc815\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_003 | 403 | \uc11c\ube44\uc2a4 \uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_004 | 404 | \uc815\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| SUSPENSION_005 | 409 | \uc774\ubbf8 \uc815\uc9c0 \uc911\uc785\ub2c8\ub2e4. \ud574\uc81c \ud6c4 \ub2e4\uc2dc \uac78\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| BLOCK_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \ucc28\ub2e8\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| BLOCK_002 | 400 | \ucc28\ub2e8\ud560 \uc218 \uc788\ub294 \ubc88\ud638 \uc218\ub97c \ub118\uc5c8\uc2b5\ub2c8\ub2e4. |\n| POINT_001 | 400 | \ud3ec\uc778\ud2b8\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4. |\n| AD_001 | 401 | \uad11\uace0 \ubcf4\uc0c1 \uc11c\uba85\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| FEED_001 | 409 | \uc774\ubc88 \uc2dc\uac04\uc5d0\ub294 \uc774\ubbf8 \uc62c\ub838\uc2b5\ub2c8\ub2e4. |\n| FEED_002 | 404 | \uac8c\uc2dc\ubb3c\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| FEED_003 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uac8c\uc2dc\ubb3c\uc785\ub2c8\ub2e4. |\n| MEMO_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \uba54\ubaa8\ub97c \ub0a8\uae38 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc5d0\uac8c\ub294 \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_002 | 400 | \uc0c1\ub300\uac00 \ucabd\uc9c0\ub97c \ubc1b\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| CHAT_003 | 400 | \ucabd\uc9c0\ub97c \ubcf4\ub0bc \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_004 | 404 | \ucc44\ud305\ubc29\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_005 | 404 | \ub2f5\uae00 \ub300\uc0c1 \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_006 | 404 | \uba54\uc2dc\uc9c0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| CHAT_007 | 400 | \ub3d9\uc601\uc0c1\uc740 5\ubd84\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_008 | 400 | \ub3d9\uc601\uc0c1\uc774 \ub108\ubb34 \ud07d\ub2c8\ub2e4. 150MB\uae4c\uc9c0 \ubcf4\ub0bc \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| CHAT_009 | 400 | \ub3d9\uc601\uc0c1 \uba54\uc2dc\uc9c0\uac00 \uc544\ub2d9\ub2c8\ub2e4. |\n| CHAT_010 | 400 | \ucc44\ud305\ubc29\uc740 5\uac1c\uae4c\uc9c0 \uace0\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| REPORT_001 | 400 | \uc790\uae30 \uc790\uc2e0\uc740 \uc2e0\uace0\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| REPORT_002 | 404 | \uc2e0\uace0\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_001 | 404 | \uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_002 | 409 | \uace0\ubbfc\uc740 \ud558\ub8e8\uc5d0 5\uac1c\uae4c\uc9c0 \uc62c\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_003 | 403 | \ubcf8\uc778\uc774 \uc4f4 \uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_004 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \uae00\uc785\ub2c8\ub2e4. |\n| WORRY_005 | 404 | \ub313\uae00\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| WORRY_006 | 403 | \ubcf8\uc778\uc774 \uc4f4 \ub313\uae00\ub9cc \uc9c0\uc6b8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. |\n| WORRY_007 | 409 | \uc774\ubbf8 \uc2e0\uace0\ud55c \ub313\uae00\uc785\ub2c8\ub2e4. |\n| WORRY_008 | 400 | \ub2f5\uae00\uc5d0\ub294 \ub2f5\uae00\uc744 \ub2ec \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_001 | 404 | \uc77c\uae30\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_002 | 400 | \uc544\uc9c1 \uc624\uc9c0 \uc54a\uc740 \ub0a0\uc758 \uc77c\uae30\ub294 \uc4f8 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| DIARY_003 | 400 | \ub0b4\uc6a9\uc774\ub098 \uc0ac\uc9c4\uc744 \ub123\uc5b4\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| DIARY_004 | 400 | \uac00\uc785\ud558\uae30 \uc804 \ub0a0\uc758 \uc77c\uae30\ub294 \uc4f8 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| TRANSLATION_001 | 503 | \ubc88\uc5ed\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| TRANSLATION_002 | 429 | \ubc88\uc5ed \uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| APPLE_ADS_001 | 503 | \uc560\ud50c \uad11\uace0 API\uac00 \uc124\uc815\ub418\uc5b4 \uc788\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. |\n| APPLE_ADS_002 | 503 | \uc560\ud50c \uad11\uace0 API\uc5d0 \uc5f0\uacb0\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| APPLE_ADS_003 | 400 | \ub9ac\ud3ec\ud2b8 \uae30\uac04\uc740 90\uc77c\uae4c\uc9c0\uc774\uace0, \uc2dc\uc791\uc77c\uc740 \uc624\ub298\ubd80\ud130 90\uc77c \uc804\uae4c\uc9c0\uc5ec\uc57c \ud569\ub2c8\ub2e4. |\n| APPLE_ADS_004 | 404 | \uc560\ud50c \uad11\uace0 \uc870\uce58\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| APPLE_ADS_005 | 409 | \uc774\ubbf8 \ub418\ub3cc\ub9b0 \uc870\uce58\uc785\ub2c8\ub2e4. |\n| APPLE_ADS_006 | 409 | \uc560\ud50c \uad11\uace0\uc5d0\uc11c \ud0a4\uc6cc\ub4dc\uac00 \ubc14\ub00c\uc5c8\uc2b5\ub2c8\ub2e4. \ub9ac\ud3ec\ud2b8\ub97c \ub3d9\uae30\ud654\ud55c \ub4a4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |\n| AI_001 | 404 | AI \uacc4\uc815\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| AI_002 | 400 | \uc751\ub2f5 \uc9c0\uc5f0\uc740 \ucd5c\uc18c\uac12\uc774 \ucd5c\ub300\uac12\ubcf4\ub2e4 \ud074 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. |\n| APPLE_ADS_007 | 409 | \uac19\uc740 \ub300\uc0c1\uc5d0 \ub354 \ub098\uc911\uc5d0 \ud55c \uc870\uce58\uac00 \uc788\uc2b5\ub2c8\ub2e4. \ub098\uc911 \uc870\uce58\ubd80\ud130 \ub418\ub3cc\ub824\uc8fc\uc2dc\uae38 \ubc14\ub78d\ub2c8\ub2e4. |",
         "version": "v1"
     },
     "servers": [
@@ -1587,6 +1587,459 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/ai-members/{memberId}": {
+            "get": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc0c1\uc138",
+                "operationId": "findAdminAiMemberDetail",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAiMemberDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc218\uc815",
+                "description": "\uc131\ubcc4\uc740 \ubc14\uafc0 \uc218 \uc5c6\ub2e4. \uc88c\ud45c\ub97c \ubc14\uafb8\uba74 \ub2e4\uc74c \uc704\uce58 \uac31\uc2e0 \ub54c\ubd80\ud130 \ubc18\uc601\ub41c\ub2e4.",
+                "operationId": "updateAiMember",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAiMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAiMemberDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc0ad\uc81c",
+                "description": "\ud68c\uc6d0 \ud0c8\ud1f4\uc640 \uac19\uc740 \uc808\ucc28\ub85c \ucc98\ub9ac\ud558\uace0 \ud398\ub974\uc18c\ub098\ub97c \uc9c0\uc6b4\ub2e4.",
+                "operationId": "withdrawAiMember",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/ai-members/{memberId}/photos": {
+            "put": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc0ac\uc9c4 \uc800\uc7a5",
+                "description": "\ubcf4\ub0b8 \uc21c\uc11c\ub300\ub85c \uc800\uc7a5\ud558\uace0, \ube60\uc9c4 \uc0ac\uc9c4\uc740 \uc9c0\uc6b4\ub2e4.",
+                "operationId": "updateAiMemberPhotos",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAiMemberPhotosRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
@@ -7876,6 +8329,379 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AdminAppleAdsActionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/ai-members": {
+            "get": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \ubaa9\ub85d",
+                "description": "\ud0c8\ud1f4 \ucc98\ub9ac\ub41c AI \uacc4\uc815\uc740 \ube60\uc9c4\ub2e4. \uac80\uc0c9\uc5b4\ub294 \ub2c9\ub124\uc784\uc5d0 \ub9de\ucd98\ub2e4.",
+                "operationId": "findAdminAiMembers",
+                "parameters": [
+                    {
+                        "name": "enabled",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAiMemberPageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc0dd\uc131",
+                "description": "\ud68c\uc6d0 \ud589\uacfc \ud398\ub974\uc18c\ub098\ub97c \ud568\uaed8 \ub9cc\ub4e0\ub2e4. \uc804\ud654\ubc88\ud638\ub294 \ub85c\uadf8\uc778\ud560 \uc218 \uc5c6\ub294 \ud615\uc2dd\uc73c\ub85c \uc790\ub3d9 \uc0dd\uc131\ub41c\ub2e4.",
+                "operationId": "createAiMember",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateAiMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminAiMemberDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\uc694\uccad\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d\uc774 \ud544\uc694\ud558\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "\uc774\uc6a9\uc774 \uc815\uc9c0\ub418\uc5c8\uac70\ub098 \uad8c\ud55c\uc774 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ucc3e\uc744 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "\uc694\uccad\uc774 \uc911\ubcf5\ub418\uc5c8\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\uc694\uccad \ud55c\ub3c4\ub97c \ucd08\uacfc\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "\uc11c\ubc84\uc5d0 \ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "\uc77c\uc2dc\uc801\uc73c\ub85c \ucc98\ub9ac\ud560 \uc218 \uc5c6\ub2e4",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/ai-members/{memberId}/photo-upload-url": {
+            "post": {
+                "tags": [
+                    "admin-ai-member-controller"
+                ],
+                "summary": "AI \uacc4\uc815 \uc0ac\uc9c4 \uc5c5\ub85c\ub4dc URL \ubc1c\uae09",
+                "description": "\ud68c\uc6d0 \ud504\ub85c\ud544 \uc0ac\uc9c4\uacfc \uac19\uc740 \uaddc\uce59\uc73c\ub85c \ubc1c\uae09\ud55c\ub2e4. \uc62c\ub9b0 \ub4a4 \uc0ac\uc9c4 \ubaa9\ub85d\uc744 \uc800\uc7a5\ud574\uc57c \ubc18\uc601\ub41c\ub2e4.",
+                "operationId": "createAiMemberPhotoUploadUrl",
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProfilePhotoUploadUrlRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PhotoUploadUrlResponse"
                                 }
                             }
                         }
@@ -16394,6 +17220,307 @@
                     "updatedAt"
                 ]
             },
+            "AiPersonaRequest": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "systemPrompt": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 0
+                    },
+                    "replyDelayMinSeconds": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 3600,
+                        "minimum": 0
+                    },
+                    "replyDelayMaxSeconds": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 3600,
+                        "minimum": 0
+                    },
+                    "activeStartHour": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 23,
+                        "minimum": 0
+                    },
+                    "activeEndHour": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 23,
+                        "minimum": 0
+                    },
+                    "dailyReplyLimit": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 10000,
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "activeEndHour",
+                    "activeStartHour",
+                    "dailyReplyLimit",
+                    "enabled",
+                    "replyDelayMaxSeconds",
+                    "replyDelayMinSeconds",
+                    "systemPrompt"
+                ]
+            },
+            "UpdateAiMemberRequest": {
+                "type": "object",
+                "properties": {
+                    "nickname": {
+                        "type": "string",
+                        "maxLength": 10,
+                        "minLength": 0,
+                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163\u3041-\u3096\u30a1-\u30fa\u30fc\u3005\u4e00-\u9fafa-zA-Z0-9 ]+$"
+                    },
+                    "birthYear": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000,
+                        "minLength": 0
+                    },
+                    "latitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "maximum": 90.0,
+                        "minimum": -90.0
+                    },
+                    "longitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "maximum": 180.0,
+                        "minimum": -180.0
+                    },
+                    "persona": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/AiPersonaRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "birthYear",
+                    "nickname",
+                    "persona"
+                ]
+            },
+            "AdminAiMemberDetailResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    },
+                    "birthYear": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "latitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "longitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "locatedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "receivedLikeCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "publicPhotos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProfilePhotoResponse"
+                        }
+                    },
+                    "secretPhotos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProfilePhotoResponse"
+                        }
+                    },
+                    "persona": {
+                        "$ref": "#/components/schemas/AdminAiPersonaResponse"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "age",
+                    "birthYear",
+                    "createdAt",
+                    "gender",
+                    "id",
+                    "nickname",
+                    "persona",
+                    "publicPhotos",
+                    "receivedLikeCount",
+                    "secretPhotos",
+                    "updatedAt"
+                ]
+            },
+            "AdminAiPersonaResponse": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "systemPrompt": {
+                        "type": "string"
+                    },
+                    "replyDelayMinSeconds": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "replyDelayMaxSeconds": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "activeStartHour": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "activeEndHour": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "dailyReplyLimit": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "nextLocationRefreshAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "activeEndHour",
+                    "activeStartHour",
+                    "dailyReplyLimit",
+                    "enabled",
+                    "nextLocationRefreshAt",
+                    "replyDelayMaxSeconds",
+                    "replyDelayMinSeconds",
+                    "systemPrompt"
+                ]
+            },
+            "ProfilePhotoResponse": {
+                "type": "object",
+                "properties": {
+                    "objectKey": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "objectKey",
+                    "url"
+                ]
+            },
+            "UpdateAiMemberPhotosRequest": {
+                "type": "object",
+                "properties": {
+                    "publicPhotoKeys": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "maxItems": 6,
+                        "minItems": 0
+                    },
+                    "secretPhotoKeys": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "maxItems": 6,
+                        "minItems": 0
+                    }
+                },
+                "required": [
+                    "publicPhotoKeys",
+                    "secretPhotoKeys"
+                ]
+            },
             "CreateWorryPostRequest": {
                 "type": "object",
                 "properties": {
@@ -17519,6 +18646,80 @@
                     "type"
                 ]
             },
+            "CreateAiMemberRequest": {
+                "type": "object",
+                "properties": {
+                    "nickname": {
+                        "type": "string",
+                        "maxLength": 10,
+                        "minLength": 0,
+                        "pattern": "^[\uac00-\ud7a3\u3131-\u314e\u314f-\u3163\u3041-\u3096\u30a1-\u30fa\u30fc\u3005\u4e00-\u9fafa-zA-Z0-9 ]+$"
+                    },
+                    "gender": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    },
+                    "birthYear": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000,
+                        "minLength": 0
+                    },
+                    "latitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "maximum": 90.0,
+                        "minimum": -90.0
+                    },
+                    "longitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double",
+                        "maximum": 180.0,
+                        "minimum": -180.0
+                    },
+                    "persona": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/AiPersonaRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "birthYear",
+                    "nickname",
+                    "persona"
+                ]
+            },
             "SetupProfileRequest": {
                 "type": "object",
                 "properties": {
@@ -18097,21 +19298,6 @@
                     "secretPhotos",
                     "signupDate",
                     "suspensions"
-                ]
-            },
-            "ProfilePhotoResponse": {
-                "type": "object",
-                "properties": {
-                    "objectKey": {
-                        "type": "string"
-                    },
-                    "url": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "objectKey",
-                    "url"
                 ]
             },
             "SuspensionResponse": {
@@ -19177,6 +20363,14 @@
                             "FEMALE"
                         ]
                     },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "MEMBER",
+                            "ADMIN",
+                            "AI"
+                        ]
+                    },
                     "age": {
                         "type": "integer",
                         "format": "int32"
@@ -19215,6 +20409,7 @@
                     "nickname",
                     "phoneNumber",
                     "publicPhotoCount",
+                    "role",
                     "secretPhotoCount",
                     "suspended"
                 ]
@@ -19237,6 +20432,14 @@
                         "enum": [
                             "MALE",
                             "FEMALE"
+                        ]
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "MEMBER",
+                            "ADMIN",
+                            "AI"
                         ]
                     },
                     "age": {
@@ -19335,6 +20538,7 @@
                     "pointBalance",
                     "publicPhotoUrls",
                     "receivedLikeCount",
+                    "role",
                     "secretPhotoUrls",
                     "suspensions"
                 ]
@@ -20604,6 +21808,85 @@
                     "totalCount"
                 ]
             },
+            "AdminAiMemberPageResponse": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminAiMemberResponse"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "items",
+                    "page",
+                    "size",
+                    "totalCount"
+                ]
+            },
+            "AdminAiMemberResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    },
+                    "age": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "publicPhotoCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "locatedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "age",
+                    "createdAt",
+                    "enabled",
+                    "gender",
+                    "id",
+                    "nickname",
+                    "publicPhotoCount"
+                ]
+            },
             "AdminActionPageResponse": {
                 "type": "object",
                 "properties": {
@@ -20659,7 +21942,9 @@
                             "DELETE_WORRY_COMMENT",
                             "HANDLE_REPORT",
                             "VIEW_CHAT_ROOM",
-                            "VIEW_DIARY"
+                            "VIEW_DIARY",
+                            "CREATE_AI_MEMBER",
+                            "UPDATE_AI_MEMBER"
                         ]
                     },
                     "targetId": {

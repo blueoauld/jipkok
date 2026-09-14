@@ -222,6 +222,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/ai-members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** AI 계정 상세 */
+        get: operations["findAdminAiMemberDetail"];
+        /**
+         * AI 계정 수정
+         * @description 성별은 바꿀 수 없다. 좌표를 바꾸면 다음 위치 갱신 때부터 반영된다.
+         */
+        put: operations["updateAiMember"];
+        post?: never;
+        /**
+         * AI 계정 삭제
+         * @description 회원 탈퇴와 같은 절차로 처리하고 페르소나를 지운다.
+         */
+        delete: operations["withdrawAiMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/ai-members/{memberId}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * AI 계정 사진 저장
+         * @description 보낸 순서대로 저장하고, 빠진 사진은 지운다.
+         */
+        put: operations["updateAiMemberPhotos"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/worries": {
         parameters: {
             query?: never;
@@ -1022,6 +1067,50 @@ export interface paths {
          * @description 입찰가는 이전 값으로, 일시정지는 재개로 돌리고 제외 키워드와 추가한 키워드는 지운다. 한 번만 되돌릴 수 있고, 같은 대상에 더 나중에 한 조치가 남아 있으면 되돌리지 않는다.
          */
         post: operations["revertAppleAdsAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/ai-members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * AI 계정 목록
+         * @description 탈퇴 처리된 AI 계정은 빠진다. 검색어는 닉네임에 맞춘다.
+         */
+        get: operations["findAdminAiMembers"];
+        put?: never;
+        /**
+         * AI 계정 생성
+         * @description 회원 행과 페르소나를 함께 만든다. 전화번호는 로그인할 수 없는 형식으로 자동 생성된다.
+         */
+        post: operations["createAiMember"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/ai-members/{memberId}/photo-upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * AI 계정 사진 업로드 URL 발급
+         * @description 회원 프로필 사진과 같은 규칙으로 발급한다. 올린 뒤 사진 목록을 저장해야 반영된다.
+         */
+        post: operations["createAiMemberPhotoUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2288,6 +2377,84 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        AiPersonaRequest: {
+            enabled: boolean;
+            systemPrompt: string;
+            /** Format: int32 */
+            replyDelayMinSeconds: number;
+            /** Format: int32 */
+            replyDelayMaxSeconds: number;
+            /** Format: int32 */
+            activeStartHour: number;
+            /** Format: int32 */
+            activeEndHour: number;
+            /** Format: int32 */
+            dailyReplyLimit: number;
+        };
+        UpdateAiMemberRequest: {
+            nickname: string;
+            /** Format: int32 */
+            birthYear: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            persona: components["schemas"]["AiPersonaRequest"] | null;
+        };
+        AdminAiMemberDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            birthYear: number;
+            /** Format: int32 */
+            age: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            /** Format: date-time */
+            locatedAt?: string | null;
+            /** Format: int32 */
+            receivedLikeCount: number;
+            publicPhotos: components["schemas"]["ProfilePhotoResponse"][];
+            secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
+            persona: components["schemas"]["AdminAiPersonaResponse"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminAiPersonaResponse: {
+            enabled: boolean;
+            systemPrompt: string;
+            /** Format: int32 */
+            replyDelayMinSeconds: number;
+            /** Format: int32 */
+            replyDelayMaxSeconds: number;
+            /** Format: int32 */
+            activeStartHour: number;
+            /** Format: int32 */
+            activeEndHour: number;
+            /** Format: int32 */
+            dailyReplyLimit: number;
+            /** Format: date-time */
+            nextLocationRefreshAt: string;
+        };
+        ProfilePhotoResponse: {
+            objectKey: string;
+            url: string;
+        };
+        UpdateAiMemberPhotosRequest: {
+            publicPhotoKeys: string[];
+            secretPhotoKeys: string[];
+        };
         CreateWorryPostRequest: {
             /** @enum {string} */
             category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
@@ -2550,6 +2717,20 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        CreateAiMemberRequest: {
+            nickname: string;
+            /** @enum {string|null} */
+            gender?: "MALE" | "FEMALE" | null;
+            /** Format: int32 */
+            birthYear: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            persona: components["schemas"]["AiPersonaRequest"] | null;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
@@ -2702,10 +2883,6 @@ export interface components {
             suspensions: components["schemas"]["SuspensionResponse"][];
             /** Format: date */
             signupDate: string;
-        };
-        ProfilePhotoResponse: {
-            objectKey: string;
-            url: string;
         };
         SuspensionResponse: {
             /** @enum {string} */
@@ -2991,6 +3168,8 @@ export interface components {
             nickname: string;
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
+            /** @enum {string} */
+            role: "MEMBER" | "ADMIN" | "AI";
             /** Format: int32 */
             age: number;
             phoneNumber: string;
@@ -3011,6 +3190,8 @@ export interface components {
             phoneNumber: string;
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
+            /** @enum {string} */
+            role: "MEMBER" | "ADMIN" | "AI";
             /** Format: int32 */
             age: number;
             comment?: string | null;
@@ -3385,6 +3566,31 @@ export interface components {
             /** Format: int64 */
             totalCount: number;
         };
+        AdminAiMemberPageResponse: {
+            items: components["schemas"]["AdminAiMemberResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminAiMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            enabled: boolean;
+            /** Format: int32 */
+            publicPhotoCount: number;
+            /** Format: date-time */
+            locatedAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];
             /** Format: int32 */
@@ -3401,7 +3607,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY" | "CREATE_AI_MEMBER" | "UPDATE_AI_MEMBER";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;
@@ -4771,6 +4977,386 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminAppleAdsAutomationResponse"];
                 };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findAdminAiMemberDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiMemberDetailResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateAiMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAiMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiMemberDetailResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    withdrawAiMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateAiMemberPhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAiMemberPhotosRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description 요청이 올바르지 않다 */
             400: {
@@ -10052,6 +10638,297 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminAppleAdsActionResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    findAdminAiMembers: {
+        parameters: {
+            query?: {
+                enabled?: boolean;
+                keyword?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiMemberPageResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createAiMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAiMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiMemberDetailResponse"];
+                };
+            };
+            /** @description 요청이 올바르지 않다 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 인증이 필요하다 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 이용이 정지되었거나 권한이 없다 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 찾을 수 없다 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청이 중복되었다 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 요청 한도를 초과했다 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 서버에 문제가 발생했다 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 일시적으로 처리할 수 없다 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createAiMemberPhotoUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProfilePhotoUploadUrlRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoUploadUrlResponse"];
                 };
             };
             /** @description 요청이 올바르지 않다 */

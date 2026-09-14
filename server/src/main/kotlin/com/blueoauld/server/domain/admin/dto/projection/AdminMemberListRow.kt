@@ -7,6 +7,7 @@ interface AdminMemberListRow {
     val id: Long
     val nickname: String
     val gender: String
+    val role: String
     val birthYear: Int
     val phoneNumber: String
     val publicPhotoCount: Long

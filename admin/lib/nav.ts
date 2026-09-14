@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Bot,
   Flag,
   History,
   LayoutDashboard,
@@ -21,6 +22,7 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { title: "대시보드", href: "/", icon: LayoutDashboard },
   { title: "회원", href: "/members", icon: Users },
+  { title: "AI 계정", href: "/ai-members", icon: Bot },
   { title: "채팅방", href: "/chat-rooms", icon: MessagesSquare },
   { title: "일기", href: "/diaries", icon: BookOpen },
   {
@@ -64,7 +66,8 @@ export function breadcrumbsFor(pathname: string): Breadcrumb[] {
     }
     if (item.href === pathname) return [{ title: item.title }];
     if (item.href !== "/" && pathname.startsWith(item.href)) {
-      return [{ title: item.title, href: item.href }, { title: "상세" }];
+      const leaf = pathname.endsWith("/new") ? "만들기" : "상세";
+      return [{ title: item.title, href: item.href }, { title: leaf }];
     }
   }
   return [];

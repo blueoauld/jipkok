@@ -18,6 +18,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
         select m.id as id,
                m.nickname as nickname,
                m.gender as gender,
+               m.role as role,
                m.birth_year as birthYear,
                m.phone_number as phoneNumber,
                (select count(*) from member_photo p where p.member_id = m.id and p.visibility = 'PUBLIC')
@@ -73,6 +74,7 @@ interface MemberAdminRepository : JpaRepository<Member, Long> {
                m.nickname as nickname,
                m.phone_number as phoneNumber,
                m.gender as gender,
+               m.role as role,
                m.birth_year as birthYear,
                m.comment as comment,
                m.bio as bio,

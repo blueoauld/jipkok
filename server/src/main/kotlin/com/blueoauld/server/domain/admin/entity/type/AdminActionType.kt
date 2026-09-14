@@ -12,4 +12,6 @@ enum class AdminActionType {
     HANDLE_REPORT,
     VIEW_CHAT_ROOM,
     VIEW_DIARY,
+    CREATE_AI_MEMBER,
+    UPDATE_AI_MEMBER,
 }

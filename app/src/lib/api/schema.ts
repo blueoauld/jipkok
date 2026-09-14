@@ -1554,6 +1554,84 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        AiPersonaRequest: {
+            enabled: boolean;
+            systemPrompt: string;
+            /** Format: int32 */
+            replyDelayMinSeconds: number;
+            /** Format: int32 */
+            replyDelayMaxSeconds: number;
+            /** Format: int32 */
+            activeStartHour: number;
+            /** Format: int32 */
+            activeEndHour: number;
+            /** Format: int32 */
+            dailyReplyLimit: number;
+        };
+        UpdateAiMemberRequest: {
+            nickname: string;
+            /** Format: int32 */
+            birthYear: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            persona: components["schemas"]["AiPersonaRequest"] | null;
+        };
+        AdminAiMemberDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            birthYear: number;
+            /** Format: int32 */
+            age: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            /** Format: date-time */
+            locatedAt?: string | null;
+            /** Format: int32 */
+            receivedLikeCount: number;
+            publicPhotos: components["schemas"]["ProfilePhotoResponse"][];
+            secretPhotos: components["schemas"]["ProfilePhotoResponse"][];
+            persona: components["schemas"]["AdminAiPersonaResponse"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminAiPersonaResponse: {
+            enabled: boolean;
+            systemPrompt: string;
+            /** Format: int32 */
+            replyDelayMinSeconds: number;
+            /** Format: int32 */
+            replyDelayMaxSeconds: number;
+            /** Format: int32 */
+            activeStartHour: number;
+            /** Format: int32 */
+            activeEndHour: number;
+            /** Format: int32 */
+            dailyReplyLimit: number;
+            /** Format: date-time */
+            nextLocationRefreshAt: string;
+        };
+        ProfilePhotoResponse: {
+            objectKey: string;
+            url: string;
+        };
+        UpdateAiMemberPhotosRequest: {
+            publicPhotoKeys: string[];
+            secretPhotoKeys: string[];
+        };
         CreateWorryPostRequest: {
             /** @enum {string} */
             category: "LOVE" | "RELATIONSHIP" | "WORK" | "FAMILY" | "MIND" | "LIFE" | "ETC";
@@ -1816,6 +1894,20 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        CreateAiMemberRequest: {
+            nickname: string;
+            /** @enum {string|null} */
+            gender?: "MALE" | "FEMALE" | null;
+            /** Format: int32 */
+            birthYear: number;
+            comment?: string | null;
+            bio?: string | null;
+            /** Format: double */
+            latitude?: number | null;
+            /** Format: double */
+            longitude?: number | null;
+            persona: components["schemas"]["AiPersonaRequest"] | null;
+        };
         SetupProfileRequest: {
             nickname: string;
             /** Format: int32 */
@@ -1968,10 +2060,6 @@ export interface components {
             suspensions: components["schemas"]["SuspensionResponse"][];
             /** Format: date */
             signupDate: string;
-        };
-        ProfilePhotoResponse: {
-            objectKey: string;
-            url: string;
         };
         SuspensionResponse: {
             /** @enum {string} */
@@ -2257,6 +2345,8 @@ export interface components {
             nickname: string;
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
+            /** @enum {string} */
+            role: "MEMBER" | "ADMIN" | "AI";
             /** Format: int32 */
             age: number;
             phoneNumber: string;
@@ -2277,6 +2367,8 @@ export interface components {
             phoneNumber: string;
             /** @enum {string} */
             gender: "MALE" | "FEMALE";
+            /** @enum {string} */
+            role: "MEMBER" | "ADMIN" | "AI";
             /** Format: int32 */
             age: number;
             comment?: string | null;
@@ -2651,6 +2743,31 @@ export interface components {
             /** Format: int64 */
             totalCount: number;
         };
+        AdminAiMemberPageResponse: {
+            items: components["schemas"]["AdminAiMemberResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            /** Format: int64 */
+            totalCount: number;
+        };
+        AdminAiMemberResponse: {
+            /** Format: int64 */
+            id: number;
+            nickname: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** Format: int32 */
+            age: number;
+            enabled: boolean;
+            /** Format: int32 */
+            publicPhotoCount: number;
+            /** Format: date-time */
+            locatedAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
         AdminActionPageResponse: {
             items: components["schemas"]["AdminActionResponse"][];
             /** Format: int32 */
@@ -2667,7 +2784,7 @@ export interface components {
             actorId: number;
             actorNickname: string;
             /** @enum {string} */
-            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY";
+            action: "SUSPEND" | "RELEASE_SUSPENSION" | "RESET_PROFILE" | "WITHDRAW_MEMBER" | "DELETE_FEED_POST" | "DELETE_WORRY_POST" | "DELETE_WORRY_COMMENT" | "HANDLE_REPORT" | "VIEW_CHAT_ROOM" | "VIEW_DIARY" | "CREATE_AI_MEMBER" | "UPDATE_AI_MEMBER";
             /** Format: int64 */
             targetId: number;
             detail?: string | null;

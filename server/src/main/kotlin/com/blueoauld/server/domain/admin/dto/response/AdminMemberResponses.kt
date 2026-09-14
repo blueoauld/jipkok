@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.admin.dto.response
 
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberRole
 import java.time.Instant
 
 data class AdminMemberPageResponse(
@@ -16,6 +17,7 @@ data class AdminMemberResponse(
     val id: Long,
     val nickname: String,
     val gender: Gender,
+    val role: MemberRole,
     val age: Int,
     val phoneNumber: String,
     val publicPhotoCount: Int,
@@ -31,6 +33,7 @@ data class AdminMemberDetailResponse(
     val nickname: String,
     val phoneNumber: String,
     val gender: Gender,
+    val role: MemberRole,
     val age: Int,
     val comment: String?,
     val bio: String?,

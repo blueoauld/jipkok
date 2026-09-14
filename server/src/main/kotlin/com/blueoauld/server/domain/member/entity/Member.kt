@@ -103,7 +103,11 @@ class Member(
         const val PASSWORD_MAX_LENGTH = 30
         const val MIN_AGE = 19
         const val MAX_AGE = 90
+        const val AI_PHONE_NUMBER_PREFIX = "AI-"
 
         fun generateNickname() = UUID.randomUUID().toString().replace("-", "").take(NICKNAME_MAX_LENGTH)
+
+        fun generateAiPhoneNumber() = AI_PHONE_NUMBER_PREFIX +
+            UUID.randomUUID().toString().replace("-", "").take(PHONE_NUMBER_LENGTH - AI_PHONE_NUMBER_PREFIX.length)
     }
 }

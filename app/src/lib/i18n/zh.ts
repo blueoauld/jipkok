@@ -160,6 +160,8 @@ export const zh: typeof ko = {
     APPLE_ADS_005: "此操作已還原。",
     APPLE_ADS_006: "Apple Ads 中的關鍵字已變更。請同步報表後再試。",
     APPLE_ADS_007: "同一對象有較晚的操作。請先還原較晚的操作。",
+    AI_001: "找不到 AI 帳號。",
+    AI_002: "回覆延遲的最小值不能大於最大值。",
   },
   feed: {
     sort: { LATEST: "最新", OLDEST: "最舊" },

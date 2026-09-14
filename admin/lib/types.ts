@@ -24,6 +24,17 @@ export type ChatRoomStatus = "ACTIVE" | "DELETED";
 export type MemberSummary = Schemas["AdminMemberResponse"];
 export type MemberPage = Schemas["AdminMemberPageResponse"];
 export type MemberDetail = Schemas["AdminMemberDetailResponse"];
+export type MemberRole = MemberSummary["role"];
+export type AiMemberSummary = Schemas["AdminAiMemberResponse"];
+export type AiMemberPage = Schemas["AdminAiMemberPageResponse"];
+export type AiMemberDetail = Schemas["AdminAiMemberDetailResponse"];
+export type AiPersona = Schemas["AdminAiPersonaResponse"];
+export type ProfilePhoto = Schemas["ProfilePhotoResponse"];
+export type PhotoUploadUrl = Schemas["PhotoUploadUrlResponse"];
+export type CreateAiMemberBody = Schemas["CreateAiMemberRequest"];
+export type UpdateAiMemberBody = Schemas["UpdateAiMemberRequest"];
+export type PhotoVisibility =
+  Schemas["CreateProfilePhotoUploadUrlRequest"]["visibility"];
 export type Suspension = Schemas["AdminSuspensionResponse"];
 export type SuspensionStatus = Suspension["status"];
 export type SuspensionPage = Schemas["AdminSuspensionPageResponse"];

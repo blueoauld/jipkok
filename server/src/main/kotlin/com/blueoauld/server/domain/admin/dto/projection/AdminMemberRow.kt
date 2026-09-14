@@ -8,6 +8,7 @@ interface AdminMemberRow {
     val nickname: String
     val phoneNumber: String
     val gender: String
+    val role: String
     val birthYear: Int
     val comment: String?
     val bio: String?

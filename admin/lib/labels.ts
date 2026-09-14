@@ -87,6 +87,8 @@ export const adminActionLabels: Record<AdminActionType, string> = {
   HANDLE_REPORT: "신고 처리",
   VIEW_CHAT_ROOM: "채팅 열람",
   VIEW_DIARY: "일기 열람",
+  CREATE_AI_MEMBER: "AI 계정 생성",
+  UPDATE_AI_MEMBER: "AI 계정 수정",
 };
 
 export const smsStatusLabels: Record<SmsMessageStatus, string> = {

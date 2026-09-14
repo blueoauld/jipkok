@@ -61,7 +61,12 @@ export function MemberTable({ members }: Props) {
             <TableCell className="tabular-nums text-muted-foreground">
               {member.id}
             </TableCell>
-            <TableCell>{member.nickname}</TableCell>
+            <TableCell>
+              {member.nickname}
+              {member.role === "AI" && (
+                <span className="ml-1.5 text-xs text-muted-foreground">AI</span>
+              )}
+            </TableCell>
             <TableCell>{genderLabels[member.gender]}</TableCell>
             <TableCell className="text-right tabular-nums">
               {member.age}
