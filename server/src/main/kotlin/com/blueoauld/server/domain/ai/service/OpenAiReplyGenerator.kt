@@ -31,7 +31,7 @@ class OpenAiReplyGenerator(
         call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS, SUMMARY_MAX_TOKENS)
 
     private fun call(messages: List<Message>, maxChars: Int, maxTokens: Int): AiReply? {
-        val options = OpenAiChatOptions.builder().maxTokens(maxTokens)
+        val options = OpenAiChatOptions.builder().maxCompletionTokens(maxTokens)
 
         if (aiChatProperties.model.isNotBlank()) {
             options.model(aiChatProperties.model)
