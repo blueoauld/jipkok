@@ -1,0 +1,187 @@
+package com.blueoauld.server.domain.ai.service
+
+import com.blueoauld.server.domain.ai.entity.AiPersona
+import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
+import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
+import com.blueoauld.server.domain.chat.entity.ChatRoom
+import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
+import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
+import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
+import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.chat.service.ChatMessageService
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifyOrder
+import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
+import java.util.*
+
+class AiReplyJobServiceTest {
+
+    private val aiReplyJobRepository = mockk<AiReplyJobRepository>(relaxed = true)
+
+    private val aiPersonaRepository = mockk<AiPersonaRepository>()
+
+    private val chatRoomRepository = mockk<ChatRoomRepository>()
+
+    private val chatRoomMemberRepository = mockk<ChatRoomMemberRepository>(relaxed = true)
+
+    private val chatMessageService = mockk<ChatMessageService>()
+
+    private val service = AiReplyJobService(
+        aiReplyJobRepository,
+        aiPersonaRepository,
+        chatRoomRepository,
+        chatRoomMemberRepository,
+        chatMessageService,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+    )
+
+    @Test
+    fun `받는 사람이 AI면 응답 지연 범위 안의 시각으로 작업을 올린다`() {
+        // given
+        every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona(enabled = true))
+        every { aiPersonaRepository.existsById(USER_ID) } returns false
+
+        // when
+        service.schedule(event(receiverId = AI_ID, senderId = USER_ID))
+
+        // then
+        verify {
+            aiReplyJobRepository.upsert(
+                ROOM_ID,
+                AI_ID,
+                MESSAGE_ID,
+                match { it >= NOW.plusSeconds(10) && it <= NOW.plusSeconds(20) },
+                NOW,
+            )
+        }
+    }
+
+    @Test
+    fun `받는 사람이 AI가 아니면 아무것도 하지 않는다`() {
+        // given
+        every { aiPersonaRepository.findById(USER_ID) } returns Optional.empty()
+
+        // when
+        service.schedule(event(receiverId = USER_ID, senderId = AI_ID))
+
+        // then
+        verify(exactly = 0) { aiReplyJobRepository.upsert(any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `비활성 페르소나면 작업을 올리지 않는다`() {
+        // given
+        every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona(enabled = false))
+
+        // when
+        service.schedule(event(receiverId = AI_ID, senderId = USER_ID))
+
+        // then
+        verify(exactly = 0) { aiReplyJobRepository.upsert(any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `보낸 사람도 AI면 작업을 올리지 않는다`() {
+        // given
+        every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona(enabled = true))
+        every { aiPersonaRepository.existsById(USER_ID) } returns true
+
+        // when
+        service.schedule(event(receiverId = AI_ID, senderId = USER_ID))
+
+        // then
+        verify(exactly = 0) { aiReplyJobRepository.upsert(any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `완료하면 답한 메시지까지 읽음 처리하고 답장을 붙인 뒤 같은 메시지 기준의 작업만 지운다`() {
+        // given
+        val room = ChatRoom.of(USER_ID, AI_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+        every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 77L, senderId = AI_ID)
+
+        // when
+        service.complete(job(), MESSAGE_ID, "안녕!")
+
+        // then
+        verifyOrder {
+            chatRoomMemberRepository.markRead(room.id, AI_ID, MESSAGE_ID)
+            chatMessageService.append(
+                room,
+                AI_ID,
+                match { it.senderId == AI_ID && it.type == ChatMessageType.TEXT && it.content == "안녕!" },
+            )
+            aiReplyJobRepository.deleteIfUnchanged(ROOM_ID, MESSAGE_ID)
+        }
+    }
+
+    @Test
+    fun `방이 없으면 답장 없이 작업을 지운다`() {
+        // given
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.empty()
+
+        // when
+        service.complete(job(), MESSAGE_ID, "안녕!")
+
+        // then
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
+        verify { aiReplyJobRepository.deleteById(ROOM_ID) }
+    }
+
+    @Test
+    fun `실패하면 시도 횟수를 올리고 5분 뒤로 미루되 마지막 시도였으면 지운다`() {
+        // when
+        service.fail(job(attempts = 0))
+        service.fail(job(attempts = AiReplyJob.MAX_ATTEMPTS - 1))
+
+        // then
+        verify { aiReplyJobRepository.retry(ROOM_ID, NOW.plus(AiReplyJob.RETRY_DELAY), NOW) }
+        verify { aiReplyJobRepository.deleteById(ROOM_ID) }
+    }
+
+    private fun event(receiverId: Long, senderId: Long) =
+        ChatMessageSentEvent(receiverId, response(MESSAGE_ID, senderId))
+
+    private fun response(messageId: Long, senderId: Long) = ChatMessageResponse(
+        messageId = messageId,
+        roomId = ROOM_ID,
+        senderId = senderId,
+        type = ChatMessageType.TEXT,
+        content = "안녕",
+        imageUrl = null,
+        createdAt = NOW,
+    )
+
+    private fun persona(enabled: Boolean) = AiPersona(
+        memberId = AI_ID,
+        enabled = enabled,
+        systemPrompt = "프롬프트",
+        replyDelayMinSeconds = 10,
+        replyDelayMaxSeconds = 20,
+        nextLocationRefreshAt = NOW,
+    )
+
+    private fun job(attempts: Int = 0) = AiReplyJob(
+        roomId = ROOM_ID,
+        aiMemberId = AI_ID,
+        lastMessageId = MESSAGE_ID,
+        dueAt = NOW,
+        attempts = attempts,
+    )
+
+    companion object {
+
+        private const val ROOM_ID = 0L
+        private const val AI_ID = 5L
+        private const val USER_ID = 9L
+        private const val MESSAGE_ID = 40L
+        private val NOW: Instant = Instant.parse("2026-09-15T03:00:00Z")
+    }
+}

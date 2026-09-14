@@ -87,6 +87,9 @@ jwt:
 admob:
     verifier-keys-url: ${ADMOB_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
 
+ai-chat:
+    model: ${AI_CHAT_MODEL:}
+
 google-translate:
     api-key: ${GOOGLE_TRANSLATE_API_KEY:}
 

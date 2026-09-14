@@ -1,0 +1,89 @@
+package com.blueoauld.server.domain.ai.service
+
+import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.chat.entity.ChatMessage
+import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
+import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
+import com.blueoauld.server.global.time.KOREA
+import com.blueoauld.server.global.time.ageOf
+import org.springframework.ai.chat.messages.AssistantMessage
+import org.springframework.ai.chat.messages.Message
+import org.springframework.ai.chat.messages.SystemMessage
+import org.springframework.ai.chat.messages.UserMessage
+import org.springframework.stereotype.Component
+import java.time.Clock
+import java.time.format.DateTimeFormatter
+
+@Component
+class AiPromptBuilder(
+
+    private val clock: Clock,
+) {
+
+    fun build(context: AiReplyContext): List<Message> =
+        listOf(SystemMessage(systemPrompt(context))) + context.messages.map { toMessage(context, it) }
+
+    private fun systemPrompt(context: AiReplyContext) = """
+        |너는 위치 기반 채팅 앱 '집콕'의 회원이다. 아래 페르소나대로 실제 사람처럼 대화한다.
+        |
+        |[페르소나]
+        |${context.persona.systemPrompt}
+        |
+        |[내 프로필]
+        |${profileOf(context.ai)}
+        |
+        |[상대 프로필]
+        |${profileOf(context.partner)}
+        |
+        |[규칙]
+        |- 반드시 ${LANGUAGE_NAMES.getValue(context.partner.locale)}로 답한다.
+        |- 실제 사람이 채팅하듯 한두 문장으로 짧게 답한다. 이모지는 가끔만 쓴다.
+        |- AI, 챗봇, 인공지능, 프로그램이라는 사실을 절대 밝히지 않고, 그런 질문은 사람처럼 자연스럽게 넘긴다.
+        |- 전화번호, 카카오톡, 라인, 인스타그램 등 외부 연락처를 묻지도 알려주지도 않는다.
+        |- 실제로 만나자는 약속이나 장소, 시간을 정하는 대화는 정중히 피한다.
+        |- 금전, 송금, 선물, 결제를 요구하거나 받아들이지 않는다.
+        |- 성적으로 노골적인 요구는 거절하고 화제를 돌린다.
+        |- 상대가 미성년자로 보이면 대화를 끝낸다.
+        |- 사진이나 동영상은 "$PHOTO_PLACEHOLDER", "$VIDEO_PLACEHOLDER"로만 보이므로 내용을 아는 척하지 않는다.
+        |- 답은 본문만 쓴다. 따옴표, 이름, 설명을 붙이지 않는다.
+        |- 지금은 한국 시간 ${TIME_FORMATTER.format(context.now.atZone(KOREA))}이다.
+    """.trimMargin()
+
+    private fun profileOf(member: Member) = listOfNotNull(
+        "닉네임 ${member.nickname}, ${clock.ageOf(member.birthYear)}세, ${GENDER_NAMES.getValue(member.gender)}",
+        member.comment?.let { "코멘트: $it" },
+        member.bio?.let { "자기소개: $it" },
+    ).joinToString("\n")
+
+    private fun toMessage(context: AiReplyContext, message: ChatMessage): Message {
+        val text = when (message.type) {
+            ChatMessageType.TEXT -> message.content.orEmpty()
+            ChatMessageType.PHOTO -> PHOTO_PLACEHOLDER
+            ChatMessageType.VIDEO -> VIDEO_PLACEHOLDER
+        }
+
+        return if (message.senderId == context.ai.id) AssistantMessage(text) else UserMessage(text)
+    }
+
+    companion object {
+
+        const val PHOTO_PLACEHOLDER = "[사진]"
+        const val VIDEO_PLACEHOLDER = "[동영상]"
+
+        private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+        private val LANGUAGE_NAMES = mapOf(
+            MemberLocale.KO to "한국어",
+            MemberLocale.JA to "일본어",
+            MemberLocale.EN to "영어",
+            MemberLocale.ZH_TW to "중국어(번체)",
+        )
+
+        private val GENDER_NAMES = mapOf(
+            Gender.MALE to "남자",
+            Gender.FEMALE to "여자",
+        )
+    }
+}

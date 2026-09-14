@@ -10,6 +10,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.DynamicUpdate
 import java.time.Duration
 import java.time.Instant
+import kotlin.random.Random
 
 @DynamicUpdate
 @Entity
@@ -70,6 +71,9 @@ class AiPersona(
         this.activeEndHour = activeEndHour
         this.dailyReplyLimit = dailyReplyLimit
     }
+
+    fun randomReplyDelay(): Duration =
+        Duration.ofSeconds(Random.nextLong(replyDelayMinSeconds.toLong(), replyDelayMaxSeconds + 1L))
 
     fun isActiveAt(instant: Instant): Boolean {
         val hour = instant.atZone(KOREA).hour
