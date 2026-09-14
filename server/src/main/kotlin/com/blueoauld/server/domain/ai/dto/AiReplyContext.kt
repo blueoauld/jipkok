@@ -11,6 +11,8 @@ data class AiReplyContext(
     val partner: Member,
     val messages: List<ChatMessage>,
     val now: Instant,
+    val silentDays: Long? = null,
+    val memory: String? = null,
 ) {
 
     val lastMessageId: Long

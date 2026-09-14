@@ -4,8 +4,10 @@ import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
+import com.blueoauld.server.domain.ai.repository.AiRoomMemoryRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.atomic.AtomicReference
 
@@ -29,6 +32,7 @@ class AiReplyContextService(
 
     private val aiPersonaRepository: AiPersonaRepository,
     private val aiReplyLogRepository: AiReplyLogRepository,
+    private val aiRoomMemoryRepository: AiRoomMemoryRepository,
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
@@ -61,7 +65,7 @@ class AiReplyContextService(
         val lastReadMessageId = chatRoomMemberRepository.findByRoomIdAndMemberId(room.id, ai.id)?.lastReadMessageId
             ?: return AiReplyDecision.Drop("AI가 방에 없다.")
 
-        if (job.lastMessageId <= lastReadMessageId) {
+        if (job.kind == AiReplyKind.REPLY && job.lastMessageId <= lastReadMessageId) {
             return AiReplyDecision.Drop("이미 답한 메시지다.")
         }
 
@@ -73,6 +77,10 @@ class AiReplyContextService(
             return AiReplyDecision.Drop("메시지가 없다.")
         }
 
+        if (job.kind == AiReplyKind.NUDGE && messages.last().senderId != ai.id) {
+            return AiReplyDecision.Drop("상대가 이미 답해서 말을 걸 필요가 없다.")
+        }
+
         val now = clock.instant()
 
         if (!persona.isActiveAt(now)) {
@@ -81,24 +89,46 @@ class AiReplyContextService(
 
         limitDrop(room.id, persona)?.let { return it }
 
-        return AiReplyDecision.Reply(AiReplyContext(ai, persona.systemPrompt, partner, messages, now))
+        val silentDays = if (job.kind == AiReplyKind.NUDGE) {
+            Duration.between(messages.last().createdAt, now).toDays()
+        } else {
+            null
+        }
+
+        val memory = aiRoomMemoryRepository.findById(room.id).orElse(null)?.summary
+
+        return AiReplyDecision.Reply(
+            AiReplyContext(ai, persona.systemPrompt, partner, messages, now, silentDays, memory),
+        )
     }
 
     private fun limitDrop(roomId: Long, persona: AiPersona): AiReplyDecision.Drop? {
         val today = clock.today()
         val dayStart = today.atStartOfDay(KOREA).toInstant()
 
-        if (aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(roomId, dayStart) >= ROOM_DAILY_LIMIT) {
+        val roomCount = aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+            roomId,
+            AiReplyKind.SUMMARY,
+            dayStart,
+        )
+
+        if (roomCount >= ROOM_DAILY_LIMIT) {
             return AiReplyDecision.Drop("방의 하루 응답 한도에 닿았다.")
         }
 
-        val aiCount = aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(persona.memberId, dayStart)
+        val aiCount = aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
+            persona.memberId,
+            AiReplyKind.SUMMARY,
+            dayStart,
+        )
 
         if (aiCount >= persona.dailyReplyLimit) {
             return AiReplyDecision.Drop("AI의 하루 응답 한도에 닿았다.")
         }
 
-        if (aiReplyLogRepository.countByCreatedAtGreaterThanEqual(dayStart) >= GLOBAL_DAILY_LIMIT) {
+        val globalCount = aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, dayStart)
+
+        if (globalCount >= GLOBAL_DAILY_LIMIT) {
             alertGlobalLimit(today)
 
             return AiReplyDecision.Drop("전체 하루 응답 한도에 닿았다.")

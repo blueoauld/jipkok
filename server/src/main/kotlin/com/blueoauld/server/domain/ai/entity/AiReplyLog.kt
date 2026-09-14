@@ -1,7 +1,10 @@
 package com.blueoauld.server.domain.ai.entity
 
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -17,6 +20,7 @@ import java.time.Instant
         Index(name = "idx_ai_reply_log_ai_member_id_created_at", columnList = "ai_member_id, created_at"),
         Index(name = "idx_ai_reply_log_room_id_created_at", columnList = "room_id, created_at"),
         Index(name = "idx_ai_reply_log_created_at", columnList = "created_at"),
+        Index(name = "idx_ai_reply_log_room_id_kind_message_id", columnList = "room_id, kind, message_id"),
     ],
 )
 class AiReplyLog(
@@ -38,6 +42,10 @@ class AiReplyLog(
 
     @Column(name = "model", updatable = false, length = MODEL_MAX_LENGTH)
     val model: String?,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kind", nullable = false, updatable = false)
+    val kind: AiReplyKind = AiReplyKind.REPLY,
 ) {
 
     @Id

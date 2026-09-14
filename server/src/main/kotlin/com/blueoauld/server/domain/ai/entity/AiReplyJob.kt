@@ -1,8 +1,11 @@
 package com.blueoauld.server.domain.ai.entity
 
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.global.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
@@ -31,6 +34,10 @@ class AiReplyJob(
 
     @Column(name = "attempts", nullable = false)
     val attempts: Int = 0,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kind", nullable = false)
+    val kind: AiReplyKind = AiReplyKind.REPLY,
 ) : BaseEntity() {
 
     fun hasAttemptsLeft() = attempts + 1 < MAX_ATTEMPTS

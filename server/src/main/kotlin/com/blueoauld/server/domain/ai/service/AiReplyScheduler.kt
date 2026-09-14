@@ -15,6 +15,7 @@ class AiReplyScheduler(
     private val aiReplyJobService: AiReplyJobService,
     private val aiReplyContextService: AiReplyContextService,
     private val aiReplyGenerator: AiReplyGenerator,
+    private val aiMemoryService: AiMemoryService,
     private val clock: Clock,
 ) {
 
@@ -45,6 +46,7 @@ class AiReplyScheduler(
                     aiReplyJobService.drop(job)
                 } else {
                     aiReplyJobService.complete(job, decision.context.lastMessageId, reply)
+                    aiMemoryService.refreshIfNeeded(job.roomId, decision.context)
                 }
             }
         }

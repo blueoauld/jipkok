@@ -2,10 +2,13 @@ package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.ai.entity.AiReplyLog
+import com.blueoauld.server.domain.ai.entity.AiRoomMemory
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.global.properties.AiChatProperties
 import org.springframework.ai.chat.client.ChatClient
+import org.springframework.ai.chat.messages.Message
 import org.springframework.ai.openai.OpenAiChatOptions
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
@@ -21,16 +24,21 @@ class OpenAiReplyGenerator(
 
     private val chatClient = chatClientBuilder.build()
 
-    override fun generate(context: AiReplyContext): AiReply? {
-        val spec = chatClient.prompt().messages(aiPromptBuilder.build(context))
+    override fun generate(context: AiReplyContext): AiReply? =
+        call(aiPromptBuilder.build(context), ChatMessage.CONTENT_MAX_LENGTH)
+
+    override fun summarize(context: AiSummaryContext): AiReply? =
+        call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS)
+
+    private fun call(messages: List<Message>, maxChars: Int): AiReply? {
+        val spec = chatClient.prompt().messages(messages)
 
         if (aiChatProperties.model.isNotBlank()) {
             spec.options(OpenAiChatOptions.builder().model(aiChatProperties.model))
         }
 
         val response = spec.call().chatResponse() ?: return null
-        val content = response.result?.output?.text?.trim()?.take(ChatMessage.CONTENT_MAX_LENGTH)?.ifEmpty { null }
-            ?: return null
+        val content = response.result?.output?.text?.trim()?.take(maxChars)?.ifEmpty { null } ?: return null
         val usage = response.metadata.usage
 
         return AiReply(

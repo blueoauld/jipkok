@@ -1,8 +1,10 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReply
+import com.blueoauld.server.domain.ai.dto.projection.AiNudgeCandidateRow
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
@@ -17,6 +19,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
@@ -138,6 +141,48 @@ class AiReplyJobServiceTest {
     }
 
     @Test
+    fun `말 걸기 후보 방마다 한 시간 안의 기한으로 작업을 넣는다`() {
+        // given
+        every {
+            aiReplyJobRepository.findNudgeCandidates(
+                NOW.minus(AiReplyJobService.NUDGE_WINDOW),
+                NOW.minus(AiReplyJobService.NUDGE_AFTER),
+                AiReplyJobService.NUDGE_BATCH_SIZE,
+            )
+        } returns listOf(candidate())
+
+        // when
+        val scheduled = service.scheduleNudges()
+
+        // then
+        assertThat(scheduled).isEqualTo(1)
+        verify {
+            aiReplyJobRepository.insertNudgeIfAbsent(
+                ROOM_ID,
+                AI_ID,
+                MESSAGE_ID,
+                match { it >= NOW && it <= NOW.plus(AiReplyJobService.NUDGE_SPREAD) },
+                NOW,
+            )
+        }
+    }
+
+    @Test
+    fun `말 걸기 작업을 완료하면 로그에 종류가 남는다`() {
+        // given
+        val room = ChatRoom.of(USER_ID, AI_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+        every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 78L, senderId = AI_ID)
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
+
+        // when
+        service.complete(job(kind = AiReplyKind.NUDGE), MESSAGE_ID, reply())
+
+        // then
+        verify { aiReplyLogRepository.save(match { it.kind == AiReplyKind.NUDGE && it.messageId == 78L }) }
+    }
+
+    @Test
     fun `방이 없으면 답장 없이 작업을 지운다`() {
         // given
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.empty()
@@ -185,13 +230,20 @@ class AiReplyJobServiceTest {
         nextLocationRefreshAt = NOW,
     )
 
-    private fun job(attempts: Int = 0) = AiReplyJob(
+    private fun job(attempts: Int = 0, kind: AiReplyKind = AiReplyKind.REPLY) = AiReplyJob(
         roomId = ROOM_ID,
         aiMemberId = AI_ID,
         lastMessageId = MESSAGE_ID,
         dueAt = NOW,
         attempts = attempts,
+        kind = kind,
     )
+
+    private fun candidate() = object : AiNudgeCandidateRow {
+        override val roomId = ROOM_ID
+        override val aiMemberId = AI_ID
+        override val lastMessageId = MESSAGE_ID
+    }
 
     companion object {
 

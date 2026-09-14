@@ -1,6 +1,8 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.ai.dto.AiSummaryContext
+import com.blueoauld.server.domain.ai.entity.AiRoomMemory
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.Member
@@ -44,14 +46,51 @@ class AiPromptBuilder(
         |
         |[너 자신]
         |${selfProfile(context.ai)}
-        |
+        |${memoryBlock(context)}
         |[대화 상대]
         |${partnerProfile(context.partner)}
         |
         |[지금 상황]
         |- 반드시 ${LANGUAGE_NAMES.getValue(context.partner.locale)}로 답한다.
         |- 지금은 한국 시간 ${TIME_FORMATTER.format(context.now.atZone(KOREA))}이다.
-    """.trimMargin()
+        |${nudgeLine(context)}
+    """.trimMargin().trimEnd()
+
+    fun buildSummary(context: AiSummaryContext): List<Message> = listOf(
+        SystemMessage(
+            """
+            |너는 채팅 대화를 요약하는 도우미다. '${context.ai.nickname}'(나)와 '${context.partner.nickname}'(상대)의 대화에서
+            |나중에 대화를 이어 갈 때 기억해야 할 것만 남긴다.
+            |
+            |- 상대에 대해 알게 된 사실(직업, 사는 곳, 취미, 일정, 고민, 좋아하고 싫어하는 것), 서로 약속하거나 하기로 한 것,
+            |  대화의 분위기와 마지막 화제를 담는다.
+            |- 이전 요약이 있으면 새 대화를 반영해 하나로 합친다. 더 이상 맞지 않는 내용은 고친다.
+            |- 한국어 평서문 한 문단, ${AiRoomMemory.SUMMARY_MAX_CHARS}자 이내. 제목, 목록, 따옴표, 설명을 붙이지 않는다.
+            """.trimMargin(),
+        ),
+        UserMessage(
+            listOfNotNull(
+                context.previousSummary?.let { "[이전 요약]\n$it" },
+                "[새 대화]\n" + context.messages.joinToString("\n") { transcriptLine(context, it) },
+            ).joinToString("\n\n"),
+        ),
+    )
+
+    private fun memoryBlock(context: AiReplyContext): String {
+        val memory = context.memory ?: return ""
+
+        return "\n[지난 대화 기억]\n$memory\n"
+    }
+
+    private fun transcriptLine(context: AiSummaryContext, message: ChatMessage) =
+        (if (message.senderId == context.ai.id) "나: " else "상대: ") + textOf(message)
+
+    private fun nudgeLine(context: AiReplyContext): String {
+        val days = context.silentDays ?: return ""
+
+        return "- 네가 마지막으로 말한 뒤 상대가 ${days}일째 답이 없다. 지난 대화에 이어서 부담 없이 먼저 가볍게 말을 건다. " +
+            "한 문장으로 하고, 답이 없었던 것을 탓하거나 재촉하지 않는다."
+    }
 
     private fun selfProfile(ai: Member) = profileOf(
         member = ai,

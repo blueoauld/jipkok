@@ -21,6 +21,8 @@ class AiReplySchedulerTest {
 
     private val aiReplyGenerator = mockk<AiReplyGenerator>()
 
+    private val aiMemoryService = mockk<AiMemoryService>(relaxed = true)
+
     private val context = mockk<AiReplyContext> {
         every { lastMessageId } returns 40L
     }
@@ -29,6 +31,7 @@ class AiReplySchedulerTest {
         aiReplyJobService,
         aiReplyContextService,
         aiReplyGenerator,
+        aiMemoryService,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -50,6 +53,7 @@ class AiReplySchedulerTest {
 
         // then
         verify { aiReplyJobService.complete(job, 40L, REPLY) }
+        verify { aiMemoryService.refreshIfNeeded(1L, context) }
     }
 
     @Test
@@ -64,6 +68,7 @@ class AiReplySchedulerTest {
         // then
         verify { aiReplyJobService.drop(job) }
         verify(exactly = 0) { aiReplyJobService.complete(any(), any(), any()) }
+        verify(exactly = 0) { aiMemoryService.refreshIfNeeded(any(), any()) }
     }
 
     @Test

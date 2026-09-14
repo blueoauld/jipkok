@@ -16,7 +16,9 @@ import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
+import kotlin.random.Random
 
 @Service
 class AiReplyJobService(
@@ -47,6 +49,28 @@ class AiReplyJobService(
             dueAt = now.plus(persona.randomReplyDelay()),
             now = now,
         )
+    }
+
+    @Transactional
+    fun scheduleNudges(): Int {
+        val now = clock.instant()
+        val candidates = aiReplyJobRepository.findNudgeCandidates(
+            oldest = now.minus(NUDGE_WINDOW),
+            threshold = now.minus(NUDGE_AFTER),
+            size = NUDGE_BATCH_SIZE,
+        )
+
+        candidates.forEach {
+            aiReplyJobRepository.insertNudgeIfAbsent(
+                roomId = it.roomId,
+                aiMemberId = it.aiMemberId,
+                lastMessageId = it.lastMessageId,
+                dueAt = now.plusSeconds(Random.nextLong(NUDGE_SPREAD.seconds + 1)),
+                now = now,
+            )
+        }
+
+        return candidates.size
     }
 
     @Transactional(readOnly = true)
@@ -102,6 +126,7 @@ class AiReplyJobService(
                 promptTokens = reply.promptTokens,
                 completionTokens = reply.completionTokens,
                 model = reply.model,
+                kind = job.kind,
             ),
         )
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
@@ -110,5 +135,10 @@ class AiReplyJobService(
     companion object {
 
         const val BATCH_SIZE = 20
+        const val NUDGE_BATCH_SIZE = 20
+
+        val NUDGE_AFTER: Duration = Duration.ofDays(2)
+        val NUDGE_WINDOW: Duration = Duration.ofDays(14)
+        val NUDGE_SPREAD: Duration = Duration.ofHours(1)
     }
 }

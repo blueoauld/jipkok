@@ -3,12 +3,14 @@ package com.blueoauld.server.domain.ai.service
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.AiRoomMemory
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
+import com.blueoauld.server.domain.ai.repository.AiRoomMemoryRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
-import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 class AiReplyContextServiceTest {
@@ -32,6 +35,8 @@ class AiReplyContextServiceTest {
     private val aiPersonaRepository = mockk<AiPersonaRepository>()
 
     private val aiReplyLogRepository = mockk<AiReplyLogRepository>()
+
+    private val aiRoomMemoryRepository = mockk<AiRoomMemoryRepository>()
 
     private val chatRoomRepository = mockk<ChatRoomRepository>()
 
@@ -58,9 +63,22 @@ class AiReplyContextServiceTest {
             roomMember(lastReadMessageId = 0L)
         every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
             listOf(message(USER_ID, "뭐해?"), message(AI_ID, "안녕"))
-        every { aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(ROOM_ID, any()) } returns 0
-        every { aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(AI_ID, any()) } returns 0
-        every { aiReplyLogRepository.countByCreatedAtGreaterThanEqual(any()) } returns 0
+        every {
+            aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+                ROOM_ID,
+                AiReplyKind.SUMMARY,
+                any(),
+            )
+        } returns 0
+        every {
+            aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
+                AI_ID,
+                AiReplyKind.SUMMARY,
+                any(),
+            )
+        } returns 0
+        every { aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, any()) } returns 0
+        every { aiRoomMemoryRepository.findById(ROOM_ID) } returns Optional.empty()
     }
 
     @Test
@@ -74,6 +92,49 @@ class AiReplyContextServiceTest {
         assertThat(context.messages.map { it.content }).containsExactly("안녕", "뭐해?")
         assertThat(context.partner).isSameAs(partner)
         assertThat(context.systemPrompt).isEqualTo("프롬프트")
+        assertThat(context.memory).isNull()
+    }
+
+    @Test
+    fun `방에 대화 기억이 있으면 문맥에 담는다`() {
+        // given
+        every { aiRoomMemoryRepository.findById(ROOM_ID) } returns
+            Optional.of(AiRoomMemory(ROOM_ID, AI_ID, "상대는 부산에 산다.", 10L))
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat((decision as AiReplyDecision.Reply).context.memory).isEqualTo("상대는 부산에 산다.")
+    }
+
+    @Test
+    fun `말 걸기 작업은 상대가 조용한 방이면 읽음 위치와 무관하게 며칠째 조용한지 담아 답한다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, AI_ID) } returns
+            roomMember(lastReadMessageId = LAST_MESSAGE_ID)
+        every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
+            listOf(message(AI_ID, "잘 자", createdAt = DAYTIME.minus(3, ChronoUnit.DAYS)), message(USER_ID, "뭐해?"))
+
+        // when
+        val decision = service(DAYTIME).decide(job(kind = AiReplyKind.NUDGE))
+
+        // then
+        assertThat(decision).isInstanceOf(AiReplyDecision.Reply::class.java)
+        assertThat((decision as AiReplyDecision.Reply).context.silentDays).isEqualTo(3)
+    }
+
+    @Test
+    fun `말 걸기 작업인데 상대가 이미 답했으면 버린다`() {
+        // given
+        every { chatRoomMemberRepository.findByRoomIdAndMemberId(ROOM_ID, AI_ID) } returns
+            roomMember(lastReadMessageId = LAST_MESSAGE_ID)
+
+        // when
+        val decision = service(DAYTIME).decide(job(kind = AiReplyKind.NUDGE))
+
+        // then
+        assertThat(decision).isInstanceOf(AiReplyDecision.Drop::class.java)
     }
 
     @Test
@@ -127,7 +188,13 @@ class AiReplyContextServiceTest {
     @Test
     fun `방의 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyLogRepository.countByRoomIdAndCreatedAtGreaterThanEqual(ROOM_ID, DAY_START) } returns
+        every {
+            aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+                ROOM_ID,
+                AiReplyKind.SUMMARY,
+                DAY_START,
+            )
+        } returns
             AiReplyContextService.ROOM_DAILY_LIMIT
 
         // when
@@ -140,7 +207,13 @@ class AiReplyContextServiceTest {
     @Test
     fun `AI의 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyLogRepository.countByAiMemberIdAndCreatedAtGreaterThanEqual(AI_ID, DAY_START) } returns 3
+        every {
+            aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
+                AI_ID,
+                AiReplyKind.SUMMARY,
+                DAY_START,
+            )
+        } returns 3
 
         // when
         val decision = service(DAYTIME).decide(job())
@@ -152,7 +225,9 @@ class AiReplyContextServiceTest {
     @Test
     fun `전체 하루 응답 한도에 닿으면 버린다`() {
         // given
-        every { aiReplyLogRepository.countByCreatedAtGreaterThanEqual(DAY_START) } returns
+        every {
+            aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, DAY_START)
+        } returns
             AiReplyContextService.GLOBAL_DAILY_LIMIT
 
         // when
@@ -165,6 +240,7 @@ class AiReplyContextServiceTest {
     private fun service(now: Instant) = AiReplyContextService(
         aiPersonaRepository,
         aiReplyLogRepository,
+        aiRoomMemoryRepository,
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageRepository,
@@ -187,19 +263,24 @@ class AiReplyContextServiceTest {
         every { id } returns if (role == MemberRole.AI) AI_ID else USER_ID
     }
 
-    private fun message(senderId: Long, content: String) = ChatMessage(
-        roomId = ROOM_ID,
-        senderId = senderId,
-        type = ChatMessageType.TEXT,
-        content = content,
-    )
+    private fun message(senderId: Long, content: String, createdAt: Instant = DAYTIME) = mockk<ChatMessage> {
+        every { this@mockk.senderId } returns senderId
+        every { this@mockk.content } returns content
+        every { this@mockk.createdAt } returns createdAt
+        every { id } returns 0L
+    }
 
     private fun roomMember(lastReadMessageId: Long) = ChatRoomMember(ROOM_ID, AI_ID).apply {
         this.lastReadMessageId = lastReadMessageId
     }
 
-    private fun job() =
-        AiReplyJob(roomId = ROOM_ID, aiMemberId = AI_ID, lastMessageId = LAST_MESSAGE_ID, dueAt = DAYTIME)
+    private fun job(kind: AiReplyKind = AiReplyKind.REPLY) = AiReplyJob(
+        roomId = ROOM_ID,
+        aiMemberId = AI_ID,
+        lastMessageId = LAST_MESSAGE_ID,
+        dueAt = DAYTIME,
+        kind = kind,
+    )
 
     companion object {
 

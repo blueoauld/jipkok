@@ -13,7 +13,7 @@ interface AiReplyLogAdminRepository : JpaRepository<AiReplyLog, Long> {
     @Query(
         """
         select l.aiMemberId as aiMemberId,
-               count(l) as replyCount,
+               coalesce(sum(case when l.kind = 'SUMMARY' then 0 else 1 end), 0) as replyCount,
                coalesce(sum(l.promptTokens + l.completionTokens), 0) as tokenCount
         from AiReplyLog l
         where l.aiMemberId in :aiMemberIds and l.createdAt >= :start
@@ -27,7 +27,7 @@ interface AiReplyLogAdminRepository : JpaRepository<AiReplyLog, Long> {
 
     @Query(
         """
-        select count(l) as replyCount,
+        select coalesce(sum(case when l.kind = 'SUMMARY' then 0 else 1 end), 0) as replyCount,
                coalesce(sum(l.promptTokens + l.completionTokens), 0) as tokenCount
         from AiReplyLog l
         where l.createdAt >= :start

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
+import com.blueoauld.server.domain.ai.repository.AiRoomMemoryRepository
 import com.blueoauld.server.global.time.KOREA_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
@@ -15,6 +16,7 @@ private val log = KotlinLogging.logger {}
 class AiReplyLogCleaner(
 
     private val aiReplyLogRepository: AiReplyLogRepository,
+    private val aiRoomMemoryRepository: AiRoomMemoryRepository,
     private val clock: Clock,
 ) {
 
@@ -25,6 +27,12 @@ class AiReplyLogCleaner(
 
         if (removed > 0) {
             log.info { "오래된 AI 응답 로그 ${removed}건을 정리했다." }
+        }
+
+        val orphans = aiRoomMemoryRepository.deleteOrphans()
+
+        if (orphans > 0) {
+            log.info { "방이 사라진 AI 대화 기억 ${orphans}건을 정리했다." }
         }
     }
 

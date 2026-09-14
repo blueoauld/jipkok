@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
@@ -17,4 +18,6 @@ class DisabledReplyGenerator : AiReplyGenerator {
 
         return null
     }
+
+    override fun summarize(context: AiSummaryContext): AiReply? = null
 }

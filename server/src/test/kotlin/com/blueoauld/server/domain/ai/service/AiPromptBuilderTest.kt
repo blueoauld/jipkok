@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
+import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.Member
@@ -49,6 +50,53 @@ class AiPromptBuilderTest {
         assertThat(text.indexOf("[너 자신]")).isLessThan(text.indexOf("[대화 상대]"))
         assertThat(text.indexOf("[대화 상대]")).isLessThan(text.indexOf("[지금 상황]"))
         assertThat(text.indexOf("반드시 일본어로")).isGreaterThan(text.indexOf("[지금 상황]"))
+    }
+
+    @Test
+    fun `며칠째 조용한 방이면 먼저 말을 걸라는 지시가 붙고 아니면 붙지 않는다`() {
+        // when
+        val plain = (builder.build(context()).first() as SystemMessage).text!!
+        val nudge = (builder.build(context().copy(silentDays = 3)).first() as SystemMessage).text!!
+
+        // then
+        assertThat(plain).doesNotContain("먼저 가볍게 말을 건다")
+        assertThat(plain).endsWith("이다.")
+        assertThat(nudge).contains("상대가 3일째 답이 없다")
+        assertThat(nudge).contains("먼저 가볍게 말을 건다")
+    }
+
+    @Test
+    fun `대화 기억이 있으면 자기 프로필 뒤, 상대 프로필 앞에 넣는다`() {
+        // when
+        val text = (builder.build(context().copy(memory = "상대는 부산에 산다.")).first() as SystemMessage).text!!
+
+        // then
+        assertThat(text.indexOf("[너 자신]")).isLessThan(text.indexOf("[지난 대화 기억]"))
+        assertThat(text.indexOf("[지난 대화 기억]")).isLessThan(text.indexOf("[대화 상대]"))
+        assertThat(text).contains("상대는 부산에 산다.")
+        assertThat((builder.build(context()).first() as SystemMessage).text).doesNotContain("[지난 대화 기억]")
+    }
+
+    @Test
+    fun `요약 프롬프트는 이전 요약과 화자를 구분한 새 대화를 담는다`() {
+        // when
+        val messages = builder.buildSummary(
+            AiSummaryContext(
+                ai = context().ai,
+                partner = context().partner,
+                previousSummary = "상대는 부산에 산다.",
+                messages = context().messages,
+            ),
+        )
+
+        // then
+        assertThat(messages).hasSize(2)
+        assertThat((messages[0] as SystemMessage).text).contains("500자 이내")
+        val user = (messages[1] as UserMessage).text!!
+        assertThat(user).contains("[이전 요약]\n상대는 부산에 산다.")
+        assertThat(user).contains("상대: 안녕하세요")
+        assertThat(user).contains("나: 반가워요")
+        assertThat(user).contains("상대: " + AiPromptBuilder.PHOTO_PLACEHOLDER)
     }
 
     @Test
