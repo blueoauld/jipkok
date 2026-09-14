@@ -14,6 +14,7 @@ interface FeedReminderRepository : JpaRepository<Member, Long> {
         select m.id as memberId, m.locale as locale
         from Member m
         where m.feedNotificationEnabled = true
+          and m.role <> com.blueoauld.server.domain.member.entity.type.MemberRole.AI
           and not exists (
             select 1 from FeedPost p
             where p.memberId = m.id and p.slotAt >= :since
