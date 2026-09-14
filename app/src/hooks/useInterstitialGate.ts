@@ -11,7 +11,7 @@ export function useInterstitialGate() {
     INTERSTITIAL_AD_UNIT_ID,
   );
   const pendingAction = useRef<(() => void) | null>(null);
-  const { reload } = useAdReload(error, load);
+  const { reload } = useAdReload(error, load, "interstitial-ad");
 
   const enter = useCallback(() => {
     const action = pendingAction.current;

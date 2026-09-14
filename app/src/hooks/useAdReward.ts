@@ -89,7 +89,7 @@ export function useAdReward() {
   } = useRewardedAd(memberId === undefined ? null : REWARDED_AD_UNIT_ID, {
     serverSideVerificationOptions: { userId: String(memberId) },
   });
-  const { reload, givenUp } = useAdReload(error, load);
+  const { reload, givenUp } = useAdReload(error, load, "rewarded-ad");
 
   useEffect(() => {
     reload();
