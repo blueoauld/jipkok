@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.ai.dto.request.CreateAiMemberRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberRequest
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
 import com.blueoauld.server.domain.ai.repository.getPersona
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.NicknameHistory
@@ -32,6 +33,7 @@ class AiMemberService(
     private val memberRepository: MemberRepository,
     private val nicknameHistoryRepository: NicknameHistoryRepository,
     private val aiPersonaRepository: AiPersonaRepository,
+    private val aiReplyJobRepository: AiReplyJobRepository,
     private val memberPhotoService: MemberPhotoService,
     private val memberWithdrawService: MemberWithdrawService,
     private val passwordEncoder: PasswordEncoder,
@@ -120,6 +122,9 @@ class AiMemberService(
             activeEndHour = personaRequest.activeEndHour,
             dailyReplyLimit = personaRequest.dailyReplyLimit,
         )
+
+        val now = clock.instant()
+        aiReplyJobRepository.pullForward(memberId, now.plus(persona.randomReplyDelay()), now)
     }
 
     fun createPhotoUploadUrl(memberId: Long, visibility: PhotoVisibility, contentType: String): PhotoUploadUrlResponse {

@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.ai.dto.request.CreateAiMemberRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberRequest
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
+import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberRole
@@ -36,6 +37,8 @@ class AiMemberServiceTest {
 
     private val aiPersonaRepository = mockk<AiPersonaRepository>(relaxed = true)
 
+    private val aiReplyJobRepository = mockk<AiReplyJobRepository>(relaxed = true)
+
     private val memberPhotoService = mockk<MemberPhotoService>(relaxed = true)
 
     private val memberWithdrawService = mockk<MemberWithdrawService>(relaxed = true)
@@ -46,6 +49,7 @@ class AiMemberServiceTest {
         memberRepository,
         nicknameHistoryRepository,
         aiPersonaRepository,
+        aiReplyJobRepository,
         memberPhotoService,
         memberWithdrawService,
         passwordEncoder,
@@ -140,6 +144,25 @@ class AiMemberServiceTest {
         assertThat(persona.systemPrompt).isEqualTo("차분한 성격")
         assertThat(persona.dailyReplyLimit).isEqualTo(50)
         verify { nicknameHistoryRepository.save(match { it.nickname == "하늘" }) }
+    }
+
+    @Test
+    fun `수정하면 미뤄진 응답 작업을 새 응답 지연 안으로 당긴다`() {
+        // given
+        every { aiPersonaRepository.findById(MEMBER_ID) } returns Optional.of(persona())
+        every { memberRepository.findById(MEMBER_ID) } returns Optional.of(member())
+
+        // when
+        aiMemberService.update(MEMBER_ID, updateRequest())
+
+        // then
+        verify {
+            aiReplyJobRepository.pullForward(
+                MEMBER_ID,
+                match { it >= NOW.plusSeconds(5) && it <= NOW.plusSeconds(60) },
+                NOW,
+            )
+        }
     }
 
     @Test

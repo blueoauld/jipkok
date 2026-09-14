@@ -48,6 +48,16 @@ interface AiReplyJobRepository : JpaRepository<AiReplyJob, Long> {
     fun retry(@Param("roomId") roomId: Long, @Param("dueAt") dueAt: Instant, @Param("now") now: Instant)
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        update AiReplyJob j
+        set j.dueAt = :dueAt, j.updatedAt = :now
+        where j.aiMemberId = :aiMemberId and j.dueAt > :dueAt
+        """,
+    )
+    fun pullForward(@Param("aiMemberId") aiMemberId: Long, @Param("dueAt") dueAt: Instant, @Param("now") now: Instant)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from AiReplyJob j where j.roomId = :roomId and j.lastMessageId = :lastMessageId")
     fun deleteIfUnchanged(@Param("roomId") roomId: Long, @Param("lastMessageId") lastMessageId: Long)
 }
