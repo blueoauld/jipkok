@@ -38,6 +38,75 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun `AI마다 같은 규칙, 페르소나, 내 프로필이 앞에 오고 상대와 시각은 뒤에 온다`() {
+        // when
+        val text = (builder.build(context()).first() as SystemMessage).text!!
+
+        // then
+        assertThat(text.indexOf("[규칙]")).isLessThan(text.indexOf("[페르소나]"))
+        assertThat(text.indexOf("[페르소나]")).isLessThan(text.indexOf("[내 프로필]"))
+        assertThat(text.indexOf("[내 프로필]")).isLessThan(text.indexOf("[상대 프로필]"))
+        assertThat(text.indexOf("[상대 프로필]")).isLessThan(text.indexOf("[지금 상황]"))
+        assertThat(text.indexOf("반드시 일본어로")).isGreaterThan(text.indexOf("[지금 상황]"))
+    }
+
+    @Test
+    fun `자기소개는 200자까지만 넣는다`() {
+        // given
+        val partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = null, bio = "가".repeat(500))
+
+        // when
+        val text = (builder.build(context().copy(partner = partner)).first() as SystemMessage).text!!
+
+        // then
+        assertThat(text).contains("자기소개: " + "가".repeat(AiPromptBuilder.BIO_MAX_CHARS))
+        assertThat(text).doesNotContain("가".repeat(AiPromptBuilder.BIO_MAX_CHARS + 1))
+    }
+
+    @Test
+    fun `긴 메시지는 300자로 자르고 합쳐서 1500자를 넘기면 오래된 것부터 뺀다`() {
+        // given
+        val long = "나".repeat(1000)
+        val messages = List(6) { index ->
+            ChatMessage(
+                roomId = 1L,
+                senderId = if (index % 2 ==
+                0
+                ) {
+                    USER_ID
+                } else {
+                    AI_ID
+                },
+                    type = ChatMessageType.TEXT,
+                content = long,
+            )
+        }
+
+        // when
+        val built = builder.build(context().copy(messages = messages)).drop(1)
+
+        // then
+        assertThat(built).hasSize(5)
+        assertThat(built.map { it.text!!.length }).containsOnly(AiPromptBuilder.MESSAGE_MAX_CHARS)
+        assertThat(built.last()).isInstanceOf(AssistantMessage::class.java)
+    }
+
+    @Test
+    fun `모든 메시지가 한도를 넘어도 마지막 메시지는 남긴다`() {
+        // given
+        val messages = listOf(
+            ChatMessage(roomId = 1L, senderId = USER_ID, type = ChatMessageType.TEXT, content = "가".repeat(2000)),
+        )
+
+        // when
+        val built = builder.build(context().copy(messages = messages)).drop(1)
+
+        // then
+        assertThat(built).hasSize(1)
+        assertThat(built.single().text).hasSize(AiPromptBuilder.MESSAGE_MAX_CHARS)
+    }
+
+    @Test
     fun `대화는 시간순으로 AI 메시지는 assistant, 상대 메시지는 user가 되고 미디어는 자리표시자로 바뀐다`() {
         // when
         val messages = builder.build(context()).drop(1)
@@ -71,13 +140,14 @@ class AiPromptBuilderTest {
         birthYear: Int,
         comment: String?,
         locale: MemberLocale = MemberLocale.KO,
+        bio: String? = null,
     ) = mockk<Member> {
         every { id } returns memberId
         every { this@mockk.nickname } returns nickname
         every { this@mockk.gender } returns gender
         every { this@mockk.birthYear } returns birthYear
         every { this@mockk.comment } returns comment
-        every { bio } returns null
+        every { this@mockk.bio } returns bio
         every { this@mockk.locale } returns locale
         every { role } returns MemberRole.MEMBER
     }
