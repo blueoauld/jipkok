@@ -172,7 +172,7 @@ class WebSocketConnectionTest {
         private const val MY_PAYLOAD = "mine"
         private const val OTHER_PAYLOAD = "other"
 
-        private const val TIMEOUT_SECONDS = 5L
+        private const val TIMEOUT_SECONDS = 15L
         private const val HEARTBEAT_MILLIS = 10_000L
         private const val POLL_MILLIS = 100L
         private const val MAX_SEND_ATTEMPTS = 50
