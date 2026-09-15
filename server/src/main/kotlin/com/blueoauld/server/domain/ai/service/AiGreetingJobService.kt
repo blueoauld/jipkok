@@ -9,7 +9,6 @@ import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
 import com.blueoauld.server.domain.chat.service.ChatNoteService
-import com.blueoauld.server.domain.member.entity.type.Gender
 import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,7 +30,6 @@ class AiGreetingJobService(
     fun schedule(): Int {
         val now = clock.instant()
         val memberIds = aiGreetingJobRepository.findCandidates(
-            gender = TARGET_GENDER.name,
             oldest = now.minus(MAX_MEMBER_AGE),
             threshold = now.minus(MIN_MEMBER_AGE),
             size = SCAN_BATCH_SIZE,
@@ -88,8 +86,6 @@ class AiGreetingJobService(
     }
 
     companion object {
-
-        val TARGET_GENDER = Gender.FEMALE
 
         const val BATCH_SIZE = 20
         const val SCAN_BATCH_SIZE = 50

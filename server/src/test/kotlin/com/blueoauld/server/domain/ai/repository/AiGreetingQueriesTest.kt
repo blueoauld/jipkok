@@ -47,10 +47,10 @@ class AiGreetingQueriesTest {
     private lateinit var entityManager: EntityManager
 
     @Test
-    fun `가입 후 10분에서 3일 사이의 쪽지를 받는 여자 일반 회원만 인사 후보가 된다`() {
+    fun `가입 후 10분에서 3일 사이의 쪽지를 받는 일반 회원만 성별과 상관없이 인사 후보가 된다`() {
         // given
-        val eligible = saveMember(Gender.FEMALE, "+821088880001", signedUpAgo = Duration.ofHours(1))
-        saveMember(Gender.MALE, "+821088880002", signedUpAgo = Duration.ofHours(1))
+        val woman = saveMember(Gender.FEMALE, "+821088880001", signedUpAgo = Duration.ofHours(1))
+        val man = saveMember(Gender.MALE, "+821088880002", signedUpAgo = Duration.ofHours(2))
         saveMember(Gender.FEMALE, "+821088880003", signedUpAgo = Duration.ofMinutes(5))
         saveMember(Gender.FEMALE, "+821088880004", signedUpAgo = Duration.ofDays(4))
         saveMember(Gender.FEMALE, "+821088880005", signedUpAgo = Duration.ofHours(1), noteReceiveEnabled = false)
@@ -60,14 +60,13 @@ class AiGreetingQueriesTest {
 
         // when
         val ids = aiGreetingJobRepository.findCandidates(
-            gender = Gender.FEMALE.name,
             oldest = Instant.now().minus(Duration.ofDays(3)),
             threshold = Instant.now().minus(Duration.ofMinutes(10)),
             size = 10,
         )
 
         // then
-        assertThat(ids).containsExactly(eligible)
+        assertThat(ids).containsExactly(man, woman)
     }
 
     @Test

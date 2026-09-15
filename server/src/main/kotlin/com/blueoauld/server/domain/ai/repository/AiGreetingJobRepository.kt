@@ -25,7 +25,6 @@ interface AiGreetingJobRepository : JpaRepository<AiGreetingJob, Long> {
         select m.id
         from member m
         where m.role = 'MEMBER'
-          and m.gender = :gender
           and m.deleted_at is null
           and m.note_receive_enabled
           and m.created_at between :oldest and :threshold
@@ -36,7 +35,6 @@ interface AiGreetingJobRepository : JpaRepository<AiGreetingJob, Long> {
         nativeQuery = true,
     )
     fun findCandidates(
-        @Param("gender") gender: String,
         @Param("oldest") oldest: Instant,
         @Param("threshold") threshold: Instant,
         @Param("size") size: Int,

@@ -44,11 +44,10 @@ class AiGreetingJobServiceTest {
     private val member = mockk<Member> { every { id } returns USER_ID }
 
     @Test
-    fun `가입 후 10분이 지난 여자 회원을 찾아 10분에서 2시간 사이 시각으로 예약한다`() {
+    fun `가입 후 10분이 지난 회원을 찾아 10분에서 2시간 사이 시각으로 예약한다`() {
         // given
         every {
             aiGreetingJobRepository.findCandidates(
-                "FEMALE",
                 NOW.minus(Duration.ofDays(3)),
                 NOW.minus(Duration.ofMinutes(10)),
                 50,

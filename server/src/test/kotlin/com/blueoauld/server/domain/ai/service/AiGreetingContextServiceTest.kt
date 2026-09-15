@@ -71,6 +71,25 @@ class AiGreetingContextServiceTest {
     }
 
     @Test
+    fun `남자 회원이면 여자 AI 중에서 고른다`() {
+        // given
+        val man = member(USER_ID, Gender.MALE, createdAt = NOW.minus(Duration.ofHours(1)))
+        val womanAi = member(OTHER_AI_ID, Gender.FEMALE, createdAt = NOW.minus(Duration.ofDays(30)))
+        every { memberRepository.findById(USER_ID) } returns Optional.of(man)
+        every { memberRepository.findById(OTHER_AI_ID) } returns Optional.of(womanAi)
+        every { aiPersonaRepository.findById(OTHER_AI_ID) } returns Optional.of(persona())
+        every { contactBlockRepository.existsBetween(OTHER_AI_ID, USER_ID) } returns false
+        every { aiGreetingJobRepository.findNearestAiCandidates(USER_ID, "FEMALE", 37.5, 127.0, DAY_START, 5) } returns
+            listOf(candidate(OTHER_AI_ID, 800.0))
+
+        // when
+        val decision = service(NOW).decide(job())
+
+        // then
+        assertThat((decision as AiGreetingDecision.Send).context.ai).isSameAs(womanAi)
+    }
+
+    @Test
     fun `회원이 탈퇴했으면 버린다`() {
         // given
         every { memberRepository.findById(USER_ID) } returns Optional.empty()
