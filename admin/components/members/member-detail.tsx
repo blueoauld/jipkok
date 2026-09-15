@@ -186,7 +186,7 @@ function Loaded({ member }: { member: MemberDetailData }) {
         action={() => withdrawMember(member.id)}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-4 md:gap-6 lg:grid-cols-3">
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>프로필</CardTitle>

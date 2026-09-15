@@ -66,7 +66,7 @@ export function AiMemberPhotos({
     });
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 items-start gap-4 md:gap-6 lg:grid-cols-2">
       {(Object.keys(visibilityLabels) as PhotoVisibility[]).map(
         (visibility) => (
           <PhotoSection

@@ -57,7 +57,7 @@ export function AiMemberForm({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 items-start gap-4 md:gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>프로필</CardTitle>

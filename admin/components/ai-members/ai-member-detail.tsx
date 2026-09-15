@@ -149,7 +149,7 @@ function Loaded({ member }: { member: AiMemberDetailData }) {
         secretPhotos={member.secretPhotos}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-4 md:gap-6 lg:grid-cols-2">
         <AiMemberStats today={member.today} total={member.total} />
         <AiMemberTestChat
           memberId={member.id}
