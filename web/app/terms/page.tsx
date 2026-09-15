@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function EnglishTerms() {
   return (
-    <LegalPage title="Terms of Service" effectiveDate="August 24, 2026">
+    <LegalPage title="Terms of Service" effectiveDate="September 15, 2026">
       <p>
         These terms set out what applies between us and you when you use 집콕
         (Jipkok, the &ldquo;Service&rdquo;), published by blueoauld. By signing
@@ -46,8 +46,9 @@ export default function EnglishTerms() {
           and their replies are generated automatically. They appear in the
           member list and in chat in the same way as other members and are not
           labeled. Sending a note to such an account uses points in the same way
-          as sending one to any other member. These accounts do not ask for
-          contact details, arrange meetings, or request money.
+          as sending one to any other member. These accounts may also send you a
+          note first after you sign up. They do not ask for contact details,
+          arrange meetings, or request money.
         </p>
         <p>
           What the Service offers may change as we operate it. We announce

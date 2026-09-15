@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function EnglishPrivacy() {
   return (
-    <LegalPage title="Privacy Policy" effectiveDate="August 24, 2026">
+    <LegalPage title="Privacy Policy" effectiveDate="September 15, 2026">
       <p>
         집콕 (Jipkok, the &ldquo;Service&rdquo;), published by blueoauld, treats
         your personal information with care and follows the Personal Information
@@ -144,7 +144,11 @@ export default function EnglishPrivacy() {
               "Sending verification codes by SMS",
               "Mobile phone number",
             ],
-            ["OpenAI", "Screening bios and comments", "Bio, comment"],
+            [
+              "OpenAI",
+              "Screening bios and comments, generating replies from accounts operated by us",
+              "Bio, comment, nickname, age, gender, language, messages exchanged with accounts operated by us",
+            ],
             [
               "Discord",
               "Passing reports and screening results to operators",
