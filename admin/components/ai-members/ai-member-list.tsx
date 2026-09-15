@@ -48,7 +48,8 @@ export function AiMemberList() {
             <p className="text-sm text-muted-foreground">
               오늘 전체 응답 {formatCount(data.todayTotal.replyCount)} /{" "}
               {formatCount(data.globalDailyLimit)}, 토큰{" "}
-              {formatCount(data.todayTotal.tokenCount)}, 인사{" "}
+              {formatCount(data.todayTotal.tokenCount)} (캐시{" "}
+              {formatCount(data.todayTotal.cachedTokenCount)}), 인사{" "}
               {formatCount(data.todayTotal.greetingCount)} /{" "}
               {formatCount(data.globalDailyGreetingLimit)} (답장{" "}
               {formatCount(data.todayTotal.greetingReplyCount)})

@@ -25,17 +25,29 @@ class OpenAiReplyGenerator(
 
     private val chatClient = chatClientBuilder.build()
 
-    override fun generate(context: AiReplyContext): AiReply? =
-        call(aiPromptBuilder.build(context), ChatMessage.CONTENT_MAX_LENGTH, REPLY_MAX_TOKENS)
+    override fun generate(context: AiReplyContext): AiReply? = call(
+        messages = aiPromptBuilder.build(context),
+        maxChars = ChatMessage.CONTENT_MAX_LENGTH,
+        maxTokens = REPLY_MAX_TOKENS,
+        cacheKey = cacheKeyOf(context.ai.id),
+    )
 
-    override fun greet(context: AiGreetingContext): AiReply? =
-        call(aiPromptBuilder.buildGreeting(context), ChatMessage.CONTENT_MAX_LENGTH, REPLY_MAX_TOKENS)
+    override fun greet(context: AiGreetingContext): AiReply? = call(
+        messages = aiPromptBuilder.buildGreeting(context),
+        maxChars = ChatMessage.CONTENT_MAX_LENGTH,
+        maxTokens = REPLY_MAX_TOKENS,
+        cacheKey = cacheKeyOf(context.ai.id),
+    )
 
-    override fun summarize(context: AiSummaryContext): AiReply? =
-        call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS, SUMMARY_MAX_TOKENS)
+    override fun summarize(context: AiSummaryContext): AiReply? = call(
+        messages = aiPromptBuilder.buildSummary(context),
+        maxChars = AiRoomMemory.SUMMARY_MAX_CHARS,
+        maxTokens = SUMMARY_MAX_TOKENS,
+        cacheKey = cacheKeyOf(context.ai.id),
+    )
 
-    private fun call(messages: List<Message>, maxChars: Int, maxTokens: Int): AiReply? {
-        val options = OpenAiChatOptions.builder().maxCompletionTokens(maxTokens)
+    private fun call(messages: List<Message>, maxChars: Int, maxTokens: Int, cacheKey: String): AiReply? {
+        val options = OpenAiChatOptions.builder().maxCompletionTokens(maxTokens).promptCacheKey(cacheKey)
 
         if (aiChatProperties.model.isNotBlank()) {
             options.model(aiChatProperties.model)
@@ -49,13 +61,17 @@ class OpenAiReplyGenerator(
             content = content,
             promptTokens = usage.promptTokens,
             completionTokens = usage.completionTokens,
+            cachedTokens = usage.cacheReadInputTokens?.toInt() ?: 0,
             model = response.metadata.model.take(AiReplyLog.MODEL_MAX_LENGTH),
         )
     }
+
+    private fun cacheKeyOf(aiMemberId: Long) = "$CACHE_KEY_PREFIX$aiMemberId"
 
     companion object {
 
         const val REPLY_MAX_TOKENS = 300
         const val SUMMARY_MAX_TOKENS = 800
+        const val CACHE_KEY_PREFIX = "ai-"
     }
 }

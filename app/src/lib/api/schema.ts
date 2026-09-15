@@ -1638,6 +1638,8 @@ export interface components {
             /** Format: int64 */
             tokenCount: number;
             /** Format: int64 */
+            cachedTokenCount: number;
+            /** Format: int64 */
             greetingCount: number;
             /** Format: int64 */
             greetingReplyCount: number;
@@ -1943,6 +1945,8 @@ export interface components {
             promptTokens: number;
             /** Format: int32 */
             completionTokens: number;
+            /** Format: int32 */
+            cachedTokens: number;
             model?: string | null;
         };
         SetupProfileRequest: {

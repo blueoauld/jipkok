@@ -4,4 +4,5 @@ interface AiReplyTotalRow {
 
     val replyCount: Long
     val tokenCount: Long
+    val cachedTokenCount: Long
 }

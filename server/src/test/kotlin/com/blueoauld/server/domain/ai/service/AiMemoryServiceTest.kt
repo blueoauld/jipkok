@@ -145,6 +145,12 @@ class AiMemoryServiceTest {
         private const val ROOM_ID = 3L
         private const val AI_ID = 5L
         private const val USER_ID = 9L
-        private val REPLY = AiReply(content = "상대는 부산에 산다.", promptTokens = 300, completionTokens = 40, model = "m")
+        private val REPLY = AiReply(
+            content = "상대는 부산에 산다.",
+            promptTokens = 300,
+            completionTokens = 40,
+            cachedTokens = 0,
+            model = "m",
+        )
     }
 }

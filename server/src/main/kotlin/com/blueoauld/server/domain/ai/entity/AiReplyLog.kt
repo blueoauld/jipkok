@@ -40,6 +40,9 @@ class AiReplyLog(
     @Column(name = "completion_tokens", nullable = false, updatable = false)
     val completionTokens: Int,
 
+    @Column(name = "cached_tokens", nullable = false, updatable = false)
+    val cachedTokens: Int,
+
     @Column(name = "model", updatable = false, length = MODEL_MAX_LENGTH)
     val model: String?,
 

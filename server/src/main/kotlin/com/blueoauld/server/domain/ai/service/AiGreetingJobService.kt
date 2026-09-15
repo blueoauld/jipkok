@@ -57,6 +57,7 @@ class AiGreetingJobService(
                 messageId = sent.messageId,
                 promptTokens = reply.promptTokens,
                 completionTokens = reply.completionTokens,
+                cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = AiReplyKind.GREETING,
             ),

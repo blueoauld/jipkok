@@ -15,6 +15,7 @@ import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,7 +49,7 @@ class AiGreetingContextServiceTest {
         every {
             aiGreetingJobRepository.countByStateAndSentAtGreaterThanEqual(AiGreetingState.SENT, DAY_START)
         } returns 0
-        every { aiGreetingJobRepository.findAiCandidates(USER_ID, "MALE", 37.5, 127.0, DAY_START, 5) } returns
+        every { aiGreetingJobRepository.findNearestAiCandidates(USER_ID, "MALE", 37.5, 127.0, DAY_START, 5) } returns
             listOf(candidate(AI_ID, 1200.0))
         every { contactBlockRepository.existsBetween(AI_ID, USER_ID) } returns false
         every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona())
@@ -119,16 +120,34 @@ class AiGreetingContextServiceTest {
     }
 
     @Test
-    fun `아직 위치가 없으면 한 시간 뒤로 미룬다`() {
+    fun `아직 앱을 켜지 않아 위치 갱신 시각이 없으면 한 시간 뒤로 미룬다`() {
         // given
-        every { member.latitude } returns null
-        every { member.longitude } returns null
+        every { member.locatedAt } returns null
 
         // when
         val decision = service(NOW).decide(job())
 
         // then
         assertThat(decision).isEqualTo(AiGreetingDecision.Postpone(NOW.plus(Duration.ofHours(1))))
+    }
+
+    @Test
+    fun `위치를 끈 회원이면 거리 없이 무작위 AI 중에서 고른다`() {
+        // given
+        every { member.latitude } returns null
+        every { member.longitude } returns null
+        every { aiGreetingJobRepository.findRandomAiCandidates(USER_ID, "MALE", DAY_START, 5) } returns listOf(AI_ID)
+
+        // when
+        val decision = service(NOW).decide(job())
+
+        // then
+        val context = (decision as AiGreetingDecision.Send).context
+        assertThat(context.ai).isSameAs(ai)
+        assertThat(context.distanceMeters).isNull()
+        verify(exactly = 0) {
+            aiGreetingJobRepository.findNearestAiCandidates(any(), any(), any(), any(), any(), any())
+        }
     }
 
     @Test
@@ -150,7 +169,7 @@ class AiGreetingContextServiceTest {
     @Test
     fun `정지 중이거나 번호 차단 관계인 AI는 건너뛰고 남는 AI가 없으면 한 시간 뒤로 미룬다`() {
         // given
-        every { aiGreetingJobRepository.findAiCandidates(USER_ID, "MALE", 37.5, 127.0, DAY_START, 5) } returns
+        every { aiGreetingJobRepository.findNearestAiCandidates(USER_ID, "MALE", 37.5, 127.0, DAY_START, 5) } returns
             listOf(candidate(AI_ID, 1200.0), candidate(OTHER_AI_ID, 3400.0))
         every { memberSuspensionService.isSuspended(AI_ID, SuspensionType.SERVICE) } returns true
         every { contactBlockRepository.existsBetween(OTHER_AI_ID, USER_ID) } returns true
@@ -198,6 +217,7 @@ class AiGreetingContextServiceTest {
         every { noteReceiveEnabled } returns true
         every { latitude } returns 37.5
         every { longitude } returns 127.0
+        every { locatedAt } returns createdAt
     }
 
     companion object {

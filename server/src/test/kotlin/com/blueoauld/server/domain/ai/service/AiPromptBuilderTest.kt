@@ -197,7 +197,17 @@ class AiPromptBuilderTest {
         assertThat(text).contains("상대는 너와 1km 안에 있다.")
     }
 
-    private fun greetingContext(distanceMeters: Double) = AiGreetingContext(
+    @Test
+    fun `첫 쪽지 프롬프트는 위치가 없으면 거리 이야기를 꺼내지 말라고 쓴다`() {
+        // when
+        val text = (builder.buildGreeting(greetingContext(distanceMeters = null)).single() as SystemMessage).text!!
+
+        // then
+        assertThat(text).contains("상대는 위치를 공개하지 않았으니 거리나 동네 이야기는 꺼내지 않는다.")
+        assertThat(text).doesNotContain("km")
+    }
+
+    private fun greetingContext(distanceMeters: Double?) = AiGreetingContext(
         ai = member(AI_ID, "루나", Gender.FEMALE, 1998, comment = null),
         systemPrompt = "밝고 장난기 많은 성격",
         partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = "산책 좋아해요", locale = MemberLocale.JA),

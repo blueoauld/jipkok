@@ -66,6 +66,7 @@ class AiMemoryService(
                 messageId = lastMessageId,
                 promptTokens = reply.promptTokens,
                 completionTokens = reply.completionTokens,
+                cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = AiReplyKind.SUMMARY,
             ),

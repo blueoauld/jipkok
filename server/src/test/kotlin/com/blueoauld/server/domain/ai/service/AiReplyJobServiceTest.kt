@@ -219,7 +219,13 @@ class AiReplyJobServiceTest {
         createdAt = NOW,
     )
 
-    private fun reply() = AiReply(content = "안녕!", promptTokens = 120, completionTokens = 8, model = "test-model")
+    private fun reply() = AiReply(
+        content = "안녕!",
+        promptTokens = 120,
+        completionTokens = 8,
+        cachedTokens = 0,
+        model = "test-model",
+    )
 
     private fun persona(enabled: Boolean) = AiPersona(
         memberId = AI_ID,

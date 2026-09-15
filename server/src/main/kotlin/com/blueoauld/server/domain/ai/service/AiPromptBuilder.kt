@@ -128,14 +128,22 @@ class AiPromptBuilder(
     }
 
     private fun greetingLines(context: AiGreetingContext) =
-        "- 상대와는 아직 대화한 적이 없고, 네가 먼저 쪽지를 보내는 참이다. 상대는 너와 ${describeDistance(context.distanceMeters)} 있다.\n" +
+        "- 상대와는 아직 대화한 적이 없고, 네가 먼저 쪽지를 보내는 참이다. ${describeDistance(context.distanceMeters)}\n" +
             "- 상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며 가볍게 인사하고, 가벼운 질문 하나로 끝낸다. 한두 문장으로 쓴다.\n" +
             "- 너를 길게 소개하지 않고, 상대가 새로 가입했다는 것을 아는 척하지 않는다."
 
-    private fun describeDistance(meters: Double): String {
+    private fun describeDistance(meters: Double?): String {
+        if (meters == null) {
+            return "상대는 위치를 공개하지 않았으니 거리나 동네 이야기는 꺼내지 않는다."
+        }
+
         val kilometers = meters / METERS_PER_KILOMETER
 
-        return if (kilometers < 1) "1km 안에" else "약 ${kilometers.roundToInt()}km 거리에"
+        return if (kilometers < 1) {
+            "상대는 너와 1km 안에 있다."
+        } else {
+            "상대는 너와 약 ${kilometers.roundToInt()}km 거리에 있다."
+        }
     }
 
     private fun selfProfile(ai: Member) = profileOf(

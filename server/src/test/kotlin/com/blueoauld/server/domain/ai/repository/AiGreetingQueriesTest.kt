@@ -121,7 +121,7 @@ class AiGreetingQueriesTest {
         val dayStart = Instant.now().minus(Duration.ofHours(1))
 
         // when
-        val rows = aiGreetingJobRepository.findAiCandidates(
+        val rows = aiGreetingJobRepository.findNearestAiCandidates(
             memberId = target,
             gender = Gender.MALE.name,
             latitude = 37.5,
@@ -134,6 +134,29 @@ class AiGreetingQueriesTest {
         assertThat(rows.map { it.aiMemberId }).containsExactly(near, far)
         assertThat(rows[0].distanceMeters).isBetween(0.0, 3_000.0)
         assertThat(rows[1].distanceMeters).isGreaterThan(rows[0].distanceMeters)
+    }
+
+    @Test
+    fun `위치가 없으면 같은 조건의 남자 AI를 거리 없이 고른다`() {
+        // given
+        val target = saveMember(Gender.FEMALE, "+821088880041", signedUpAgo = Duration.ofHours(1))
+        val first = saveAi(Gender.MALE, greetingEnabled = true, latitude = 37.5, longitude = 127.0)
+        val second = saveAi(Gender.MALE, greetingEnabled = true, latitude = 35.1, longitude = 129.0)
+        saveAi(Gender.FEMALE, greetingEnabled = true)
+        saveAi(Gender.MALE, greetingEnabled = false)
+        val roomed = saveAi(Gender.MALE, greetingEnabled = true)
+        chatRoomRepository.saveAndFlush(ChatRoom.of(roomed, target))
+
+        // when
+        val ids = aiGreetingJobRepository.findRandomAiCandidates(
+            memberId = target,
+            gender = Gender.MALE.name,
+            dayStart = Instant.now().minus(Duration.ofHours(1)),
+            size = 5,
+        )
+
+        // then
+        assertThat(ids).containsExactlyInAnyOrder(first, second)
     }
 
     @Test

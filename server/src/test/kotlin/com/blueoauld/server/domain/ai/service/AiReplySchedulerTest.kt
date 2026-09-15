@@ -103,6 +103,12 @@ class AiReplySchedulerTest {
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-09-15T03:00:00Z")
-        private val REPLY = AiReply(content = "안녕!", promptTokens = 100, completionTokens = 5, model = null)
+        private val REPLY = AiReply(
+            content = "안녕!",
+            promptTokens = 100,
+            completionTokens = 5,
+            cachedTokens = 0,
+            model = null,
+        )
     }
 }

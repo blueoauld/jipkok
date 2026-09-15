@@ -115,6 +115,12 @@ class AiGreetingSchedulerTest {
     companion object {
 
         private val NOW: Instant = Instant.parse("2026-09-15T03:30:00Z")
-        private val REPLY = AiReply("안녕하세요", promptTokens = 10, completionTokens = 5, model = "gpt")
+        private val REPLY = AiReply(
+            "안녕하세요",
+            promptTokens = 10,
+            completionTokens = 5,
+            cachedTokens = 0,
+            model = "gpt",
+        )
     }
 }

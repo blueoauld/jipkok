@@ -9,5 +9,5 @@ data class AiGreetingContext(
     val systemPrompt: String,
     val partner: Member,
     val now: Instant,
-    val distanceMeters: Double,
+    val distanceMeters: Double?,
 )

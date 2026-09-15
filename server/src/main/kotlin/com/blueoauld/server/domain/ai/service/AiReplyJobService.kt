@@ -125,6 +125,7 @@ class AiReplyJobService(
                 messageId = sent.messageId,
                 promptTokens = reply.promptTokens,
                 completionTokens = reply.completionTokens,
+                cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = job.kind,
             ),

@@ -178,6 +178,7 @@ class AiNudgeQueriesTest {
         messageId = messageId,
         promptTokens = 1,
         completionTokens = 1,
+        cachedTokens = 0,
         model = null,
         kind = AiReplyKind.NUDGE,
     )

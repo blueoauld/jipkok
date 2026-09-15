@@ -111,6 +111,12 @@ class AiTestChatServiceTest {
 
         private const val AI_ID = 5L
         private val NOW: Instant = Instant.parse("2026-09-15T03:00:00Z")
-        private val REPLY = AiReply(content = "나 지금 산책 중!", promptTokens = 90, completionTokens = 7, model = "m")
+        private val REPLY = AiReply(
+            content = "나 지금 산책 중!",
+            promptTokens = 90,
+            completionTokens = 7,
+            cachedTokens = 0,
+            model = "m",
+        )
     }
 }

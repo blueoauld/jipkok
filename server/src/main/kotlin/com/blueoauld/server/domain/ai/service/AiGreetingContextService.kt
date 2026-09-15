@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 
 @Service
 class AiGreetingContextService(
@@ -48,10 +49,7 @@ class AiGreetingContextService(
             return AiGreetingDecision.Drop("정지 중이다.")
         }
 
-        val latitude = member.latitude
-        val longitude = member.longitude
-
-        if (latitude == null || longitude == null) {
+        if (member.locatedAt == null) {
             return AiGreetingDecision.Postpone(now.plus(RECHECK_DELAY))
         }
 
@@ -65,15 +63,7 @@ class AiGreetingContextService(
             )
         }
 
-        val candidate = aiGreetingJobRepository
-            .findAiCandidates(
-                memberId = member.id,
-                gender = aiGenderFor(member).name,
-                latitude = latitude,
-                longitude = longitude,
-                dayStart = dayStart,
-                size = AI_CANDIDATE_SIZE,
-            )
+        val candidate = findCandidates(member, dayStart)
             .shuffled()
             .firstOrNull {
                 !memberSuspensionService.isSuspended(it.aiMemberId, SuspensionType.SERVICE) &&
@@ -97,8 +87,26 @@ class AiGreetingContextService(
         )
     }
 
+    private fun findCandidates(member: Member, dayStart: Instant): List<Candidate> {
+        val gender = aiGenderFor(member).name
+        val latitude = member.latitude
+        val longitude = member.longitude
+
+        if (latitude == null || longitude == null) {
+            return aiGreetingJobRepository
+                .findRandomAiCandidates(member.id, gender, dayStart, AI_CANDIDATE_SIZE)
+                .map { Candidate(it, null) }
+        }
+
+        return aiGreetingJobRepository
+            .findNearestAiCandidates(member.id, gender, latitude, longitude, dayStart, AI_CANDIDATE_SIZE)
+            .map { Candidate(it.aiMemberId, it.distanceMeters) }
+    }
+
     private fun aiGenderFor(member: Member): Gender =
         if (member.gender == Gender.FEMALE) Gender.MALE else Gender.FEMALE
+
+    private data class Candidate(val aiMemberId: Long, val distanceMeters: Double?)
 
     companion object {
 

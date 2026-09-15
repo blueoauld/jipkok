@@ -149,7 +149,7 @@ export function AiMemberTestChat({ memberId, nickname, systemPrompt }: Props) {
         </div>
         <p className="w-full text-xs text-muted-foreground">
           {lastReply
-            ? `마지막 답: 입력 ${formatCount(lastReply.promptTokens)} 토큰, 출력 ${formatCount(lastReply.completionTokens)} 토큰${lastReply.model ? `, ${lastReply.model}` : ""}`
+            ? `마지막 답: 입력 ${formatCount(lastReply.promptTokens)} 토큰, 출력 ${formatCount(lastReply.completionTokens)} 토큰, 캐시 ${formatCount(lastReply.cachedTokens)} 토큰${lastReply.model ? `, ${lastReply.model}` : ""}`
             : "메시지는 30개까지 이어집니다."}
         </p>
       </CardFooter>

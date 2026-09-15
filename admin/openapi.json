@@ -17643,6 +17643,10 @@
                         "type": "integer",
                         "format": "int64"
                     },
+                    "cachedTokenCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
                     "greetingCount": {
                         "type": "integer",
                         "format": "int64"
@@ -17653,6 +17657,7 @@
                     }
                 },
                 "required": [
+                    "cachedTokenCount",
                     "greetingCount",
                     "greetingReplyCount",
                     "replyCount",
@@ -18969,6 +18974,10 @@
                         "type": "integer",
                         "format": "int32"
                     },
+                    "cachedTokens": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "model": {
                         "type": [
                             "string",
@@ -18977,6 +18986,7 @@
                     }
                 },
                 "required": [
+                    "cachedTokens",
                     "completionTokens",
                     "content",
                     "promptTokens"

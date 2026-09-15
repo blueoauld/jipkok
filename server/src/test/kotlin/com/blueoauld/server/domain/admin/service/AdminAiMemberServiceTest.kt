@@ -218,11 +218,13 @@ class AdminAiMemberServiceTest {
         override val aiMemberId = MEMBER_ID
         override val replyCount = replyCount
         override val tokenCount = tokenCount
+        override val cachedTokenCount = 0L
     }
 
     private fun totalRow(replyCount: Long, tokenCount: Long) = object : AiReplyTotalRow {
         override val replyCount = replyCount
         override val tokenCount = tokenCount
+        override val cachedTokenCount = 0L
     }
 
     private fun greetingRow(greetingCount: Long, greetingReplyCount: Long) = object : AiGreetingStatRow {

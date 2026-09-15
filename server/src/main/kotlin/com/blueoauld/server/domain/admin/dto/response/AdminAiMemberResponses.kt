@@ -127,17 +127,19 @@ data class AdminAiReplyStatResponse(
 
     val replyCount: Long,
     val tokenCount: Long,
+    val cachedTokenCount: Long,
     val greetingCount: Long,
     val greetingReplyCount: Long,
 ) {
 
     companion object {
 
-        val EMPTY = AdminAiReplyStatResponse(0, 0, 0, 0)
+        val EMPTY = AdminAiReplyStatResponse(0, 0, 0, 0, 0)
 
         fun of(reply: AiReplyStatRow?, greeting: AiGreetingStatRow?) = AdminAiReplyStatResponse(
             replyCount = reply?.replyCount ?: 0,
             tokenCount = reply?.tokenCount ?: 0,
+            cachedTokenCount = reply?.cachedTokenCount ?: 0,
             greetingCount = greeting?.greetingCount ?: 0,
             greetingReplyCount = greeting?.greetingReplyCount ?: 0,
         )
@@ -145,6 +147,7 @@ data class AdminAiReplyStatResponse(
         fun of(reply: AiReplyTotalRow, greeting: AiGreetingTotalRow) = AdminAiReplyStatResponse(
             replyCount = reply.replyCount,
             tokenCount = reply.tokenCount,
+            cachedTokenCount = reply.cachedTokenCount,
             greetingCount = greeting.greetingCount,
             greetingReplyCount = greeting.greetingReplyCount,
         )
@@ -156,6 +159,7 @@ data class AdminAiTestChatResponse(
     val content: String,
     val promptTokens: Int,
     val completionTokens: Int,
+    val cachedTokens: Int,
     val model: String?,
 ) {
 
@@ -165,6 +169,7 @@ data class AdminAiTestChatResponse(
             content = reply.content,
             promptTokens = reply.promptTokens,
             completionTokens = reply.completionTokens,
+            cachedTokens = reply.cachedTokens,
             model = reply.model,
         )
     }

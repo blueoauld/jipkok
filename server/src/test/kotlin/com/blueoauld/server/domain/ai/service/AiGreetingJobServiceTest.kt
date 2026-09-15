@@ -143,7 +143,13 @@ class AiGreetingJobServiceTest {
 
     private fun context() = AiGreetingContext(ai, "프롬프트", member, NOW, 1200.0)
 
-    private fun reply(content: String) = AiReply(content, promptTokens = 10, completionTokens = 5, model = "gpt")
+    private fun reply(content: String) = AiReply(
+        content,
+        promptTokens = 10,
+        completionTokens = 5,
+        cachedTokens = 0,
+        model = "gpt",
+    )
 
     private fun response(roomId: Long, messageId: Long) = ChatMessageResponse(
         messageId = messageId,

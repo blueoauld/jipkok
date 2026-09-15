@@ -62,11 +62,51 @@ interface AiGreetingJobRepository : JpaRepository<AiGreetingJob, Long> {
                ) as distanceMeters
         from ai_persona p
         join member a on a.id = p.member_id
-        where p.enabled
+        where $AI_CANDIDATE_CONDITIONS
+          and a.grid_latitude is not null
+        order by geography(st_makepoint(a.grid_longitude, a.grid_latitude))
+          <-> geography(st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision)))
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findNearestAiCandidates(
+        @Param("memberId") memberId: Long,
+        @Param("gender") gender: String,
+        @Param("latitude") latitude: Double,
+        @Param("longitude") longitude: Double,
+        @Param("dayStart") dayStart: Instant,
+        @Param("size") size: Int,
+    ): List<AiGreetingCandidateRow>
+
+    @Query(
+        value = """
+        select p.member_id
+        from ai_persona p
+        join member a on a.id = p.member_id
+        where $AI_CANDIDATE_CONDITIONS
+        order by random()
+        limit :size
+        """,
+        nativeQuery = true,
+    )
+    fun findRandomAiCandidates(
+        @Param("memberId") memberId: Long,
+        @Param("gender") gender: String,
+        @Param("dayStart") dayStart: Instant,
+        @Param("size") size: Int,
+    ): List<Long>
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from AiGreetingJob g where g.memberId = :memberId")
+    fun deleteAllByMemberId(@Param("memberId") memberId: Long)
+
+    companion object {
+
+        private const val AI_CANDIDATE_CONDITIONS = """p.enabled
           and p.greeting_enabled
           and a.deleted_at is null
           and a.gender = :gender
-          and a.grid_latitude is not null
           and not exists (
             select 1 from chat_room r
             where r.low_member_id = least(a.id, cast(:memberId as bigint))
@@ -80,23 +120,6 @@ interface AiGreetingJobRepository : JpaRepository<AiGreetingJob, Long> {
           and (
             select count(*) from ai_greeting_job g
             where g.ai_member_id = p.member_id and g.state = 'SENT' and g.sent_at >= :dayStart
-          ) < p.daily_greeting_limit
-        order by geography(st_makepoint(a.grid_longitude, a.grid_latitude))
-          <-> geography(st_makepoint(cast(:longitude as double precision), cast(:latitude as double precision)))
-        limit :size
-        """,
-        nativeQuery = true,
-    )
-    fun findAiCandidates(
-        @Param("memberId") memberId: Long,
-        @Param("gender") gender: String,
-        @Param("latitude") latitude: Double,
-        @Param("longitude") longitude: Double,
-        @Param("dayStart") dayStart: Instant,
-        @Param("size") size: Int,
-    ): List<AiGreetingCandidateRow>
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("delete from AiGreetingJob g where g.memberId = :memberId")
-    fun deleteAllByMemberId(@Param("memberId") memberId: Long)
+          ) < p.daily_greeting_limit"""
+    }
 }
