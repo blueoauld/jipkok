@@ -143,6 +143,8 @@ class AiMemberServiceTest {
         assertThat(persona.enabled).isFalse()
         assertThat(persona.systemPrompt).isEqualTo("차분한 성격")
         assertThat(persona.dailyReplyLimit).isEqualTo(50)
+        assertThat(persona.greetingEnabled).isTrue()
+        assertThat(persona.dailyGreetingLimit).isEqualTo(7)
         verify { nicknameHistoryRepository.save(match { it.nickname == "하늘" }) }
     }
 
@@ -231,6 +233,8 @@ class AiMemberServiceTest {
             activeStartHour = 9,
             activeEndHour = 22,
             dailyReplyLimit = 50,
+            greetingEnabled = true,
+            dailyGreetingLimit = 7,
         ),
     )
 

@@ -104,6 +104,12 @@ data class AiPersonaRequest(
     @field:Min(value = 0, message = "하루 응답 한도가 올바르지 않습니다.")
     @field:Max(value = AiPersona.DAILY_REPLY_LIMIT_MAX.toLong(), message = "하루 응답 한도가 올바르지 않습니다.")
     val dailyReplyLimit: Int = AiPersona.DEFAULT_DAILY_REPLY_LIMIT,
+
+    val greetingEnabled: Boolean = false,
+
+    @field:Min(value = 0, message = "하루 인사 한도가 올바르지 않습니다.")
+    @field:Max(value = AiPersona.DAILY_GREETING_LIMIT_MAX.toLong(), message = "하루 인사 한도가 올바르지 않습니다.")
+    val dailyGreetingLimit: Int = AiPersona.DEFAULT_DAILY_GREETING_LIMIT,
 )
 
 data class UpdateAiMemberPhotosRequest(

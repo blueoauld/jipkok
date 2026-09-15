@@ -1,10 +1,13 @@
 package com.blueoauld.server.domain.admin.service
 
 import com.blueoauld.server.domain.admin.dto.projection.AdminAiMemberRow
+import com.blueoauld.server.domain.admin.dto.projection.AiGreetingStatRow
+import com.blueoauld.server.domain.admin.dto.projection.AiGreetingTotalRow
 import com.blueoauld.server.domain.admin.dto.projection.AiReplyStatRow
 import com.blueoauld.server.domain.admin.dto.projection.AiReplyTotalRow
 import com.blueoauld.server.domain.admin.dto.response.AdminAiReplyStatResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.AiGreetingJobAdminRepository
 import com.blueoauld.server.domain.admin.repository.AiMemberAdminRepository
 import com.blueoauld.server.domain.admin.repository.AiReplyLogAdminRepository
 import com.blueoauld.server.domain.ai.dto.request.AiPersonaRequest
@@ -38,6 +41,8 @@ class AdminAiMemberServiceTest {
 
     private val aiReplyLogAdminRepository = mockk<AiReplyLogAdminRepository>()
 
+    private val aiGreetingJobAdminRepository = mockk<AiGreetingJobAdminRepository>()
+
     private val aiPersonaRepository = mockk<AiPersonaRepository>()
 
     private val memberRepository = mockk<MemberRepository>()
@@ -53,6 +58,7 @@ class AdminAiMemberServiceTest {
     private val adminAiMemberService = AdminAiMemberService(
         aiMemberAdminRepository,
         aiReplyLogAdminRepository,
+        aiGreetingJobAdminRepository,
         aiPersonaRepository,
         memberRepository,
         memberPhotoService,
@@ -69,6 +75,12 @@ class AdminAiMemberServiceTest {
         every { aiReplyLogAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), Instant.EPOCH) } returns
             listOf(statRow(replyCount = 40, tokenCount = 9000))
         every { aiReplyLogAdminRepository.sumAllSince(DAY_START) } returns totalRow(replyCount = 12, tokenCount = 3000)
+        every { aiGreetingJobAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), DAY_START) } returns
+            listOf(greetingRow(greetingCount = 3, greetingReplyCount = 1))
+        every { aiGreetingJobAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), Instant.EPOCH) } returns
+            emptyList()
+        every { aiGreetingJobAdminRepository.sumAllSince(DAY_START) } returns
+            greetingTotalRow(greetingCount = 5, greetingReplyCount = 2)
     }
 
     @Test
@@ -83,10 +95,16 @@ class AdminAiMemberServiceTest {
         // then
         assertThat(response.totalCount).isEqualTo(1)
         assertThat(response.items.single().age).isEqualTo(28)
+        assertThat(response.items.single().greetingEnabled).isTrue()
         assertThat(response.items.single().today.replyCount).isEqualTo(4)
+        assertThat(response.items.single().today.greetingCount).isEqualTo(3)
+        assertThat(response.items.single().today.greetingReplyCount).isEqualTo(1)
         assertThat(response.items.single().total.tokenCount).isEqualTo(9000)
+        assertThat(response.items.single().total.greetingCount).isZero()
         assertThat(response.todayTotal.replyCount).isEqualTo(12)
+        assertThat(response.todayTotal.greetingCount).isEqualTo(5)
         assertThat(response.globalDailyLimit).isEqualTo(2000)
+        assertThat(response.globalDailyGreetingLimit).isEqualTo(200)
     }
 
     @Test
@@ -95,6 +113,7 @@ class AdminAiMemberServiceTest {
         every { aiMemberAdminRepository.findAllForAdmin(null, null, 20, 0) } returns listOf(row())
         every { aiMemberAdminRepository.countForAdmin(null, null) } returns 1
         every { aiReplyLogAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), any()) } returns emptyList()
+        every { aiGreetingJobAdminRepository.sumByAiMemberIdSince(listOf(MEMBER_ID), any()) } returns emptyList()
 
         // when
         val response = adminAiMemberService.findMembers(null, null, 1, 20)
@@ -114,9 +133,12 @@ class AdminAiMemberServiceTest {
         // then
         assertThat(response.nickname).isEqualTo("루나")
         assertThat(response.persona.systemPrompt).isEqualTo("밝은 성격")
+        assertThat(response.persona.greetingEnabled).isFalse()
+        assertThat(response.persona.dailyGreetingLimit).isEqualTo(20)
         assertThat(response.publicPhotos).hasSize(1)
         assertThat(response.secretPhotos).isEmpty()
         assertThat(response.today.tokenCount).isEqualTo(900)
+        assertThat(response.today.greetingCount).isEqualTo(3)
         assertThat(response.total.replyCount).isEqualTo(40)
     }
 
@@ -203,12 +225,24 @@ class AdminAiMemberServiceTest {
         override val tokenCount = tokenCount
     }
 
+    private fun greetingRow(greetingCount: Long, greetingReplyCount: Long) = object : AiGreetingStatRow {
+        override val aiMemberId = MEMBER_ID
+        override val greetingCount = greetingCount
+        override val greetingReplyCount = greetingReplyCount
+    }
+
+    private fun greetingTotalRow(greetingCount: Long, greetingReplyCount: Long) = object : AiGreetingTotalRow {
+        override val greetingCount = greetingCount
+        override val greetingReplyCount = greetingReplyCount
+    }
+
     private fun row() = object : AdminAiMemberRow {
         override val id = MEMBER_ID
         override val nickname = "루나"
         override val gender = "FEMALE"
         override val birthYear = 1998
         override val enabled = true
+        override val greetingEnabled = true
         override val publicPhotoCount = 1L
         override val locatedAt: Instant? = NOW
         override val createdAt = NOW

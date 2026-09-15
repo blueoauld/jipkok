@@ -79,6 +79,8 @@ class AiMemberService(
                 activeStartHour = persona.activeStartHour,
                 activeEndHour = persona.activeEndHour,
                 dailyReplyLimit = persona.dailyReplyLimit,
+                greetingEnabled = persona.greetingEnabled,
+                dailyGreetingLimit = persona.dailyGreetingLimit,
                 nextLocationRefreshAt = now,
             ),
         )
@@ -121,6 +123,8 @@ class AiMemberService(
             activeStartHour = personaRequest.activeStartHour,
             activeEndHour = personaRequest.activeEndHour,
             dailyReplyLimit = personaRequest.dailyReplyLimit,
+            greetingEnabled = personaRequest.greetingEnabled,
+            dailyGreetingLimit = personaRequest.dailyGreetingLimit,
         )
 
         val now = clock.instant()

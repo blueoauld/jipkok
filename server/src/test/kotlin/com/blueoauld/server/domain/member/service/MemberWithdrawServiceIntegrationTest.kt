@@ -1,6 +1,8 @@
 package com.blueoauld.server.domain.member.service
 
 import com.blueoauld.server.TestcontainersConfiguration
+import com.blueoauld.server.domain.ai.entity.AiGreetingJob
+import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.block.entity.ContactBlock
 import com.blueoauld.server.domain.block.entity.MemberBlock
@@ -64,6 +66,9 @@ class MemberWithdrawServiceIntegrationTest {
 
     @Autowired
     private lateinit var memberRepository: MemberRepository
+
+    @Autowired
+    private lateinit var aiGreetingJobRepository: AiGreetingJobRepository
 
     @Autowired
     private lateinit var chatRoomRepository: ChatRoomRepository
@@ -133,6 +138,7 @@ class MemberWithdrawServiceIntegrationTest {
         val now = clock.instant()
 
         chatRoomRepository.save(ChatRoom.of(member.id, partner.id))
+        aiGreetingJobRepository.save(AiGreetingJob(memberId = member.id, dueAt = now))
 
         feedPostRepository.save(FeedPost(member.id, now, "feeds/mine.webp"))
         val partnerFeedPost = feedPostRepository.save(
@@ -211,6 +217,7 @@ class MemberWithdrawServiceIntegrationTest {
     companion object {
 
         private val REMAINING_ROW_QUERIES = mapOf(
+            "AI 첫 쪽지 작업" to "ai_greeting_job|member_id = :memberId",
             "피드 게시물" to "feed_post|member_id = :memberId and deleted_at is null",
             "피드 좋아요" to "feed_post_like|member_id = :memberId",
             "고민 글" to "worry_post|member_id = :memberId and deleted_at is null",

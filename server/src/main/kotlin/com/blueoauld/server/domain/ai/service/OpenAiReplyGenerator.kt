@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
@@ -26,6 +27,9 @@ class OpenAiReplyGenerator(
 
     override fun generate(context: AiReplyContext): AiReply? =
         call(aiPromptBuilder.build(context), ChatMessage.CONTENT_MAX_LENGTH, REPLY_MAX_TOKENS)
+
+    override fun greet(context: AiGreetingContext): AiReply? =
+        call(aiPromptBuilder.buildGreeting(context), ChatMessage.CONTENT_MAX_LENGTH, REPLY_MAX_TOKENS)
 
     override fun summarize(context: AiSummaryContext): AiReply? =
         call(aiPromptBuilder.buildSummary(context), AiRoomMemory.SUMMARY_MAX_CHARS, SUMMARY_MAX_TOKENS)

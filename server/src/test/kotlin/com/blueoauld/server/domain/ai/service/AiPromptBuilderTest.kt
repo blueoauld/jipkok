@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.chat.entity.ChatMessage
@@ -169,6 +170,40 @@ class AiPromptBuilderTest {
         assertThat(messages[2]).isInstanceOf(UserMessage::class.java)
         assertThat(messages[2].text).isEqualTo(AiPromptBuilder.PHOTO_PLACEHOLDER)
     }
+
+    @Test
+    fun `첫 쪽지 프롬프트는 시스템 메시지 하나이고 거리와 첫 인사 지시가 들어간다`() {
+        // when
+        val messages = builder.buildGreeting(greetingContext(distanceMeters = 2_400.0))
+
+        // then
+        assertThat(messages).hasSize(1)
+        val text = (messages.single() as SystemMessage).text!!
+        assertThat(text).contains("[페르소나]\n밝고 장난기 많은 성격")
+        assertThat(text).contains("상대의 닉네임은 '바다'이고 31세 남자다.")
+        assertThat(text).contains("상대는 너와 약 2km 거리에 있다.")
+        assertThat(text).contains("네가 먼저 쪽지를 보내는 참이다")
+        assertThat(text).contains("새로 가입했다는 것을 아는 척하지 않는다")
+        assertThat(text).doesNotContain("[지난 대화 기억]")
+        assertThat(text).doesNotContain("답이 없다")
+    }
+
+    @Test
+    fun `첫 쪽지 프롬프트는 1km 안이면 거리 대신 가깝다고 쓴다`() {
+        // when
+        val text = (builder.buildGreeting(greetingContext(distanceMeters = 300.0)).single() as SystemMessage).text!!
+
+        // then
+        assertThat(text).contains("상대는 너와 1km 안에 있다.")
+    }
+
+    private fun greetingContext(distanceMeters: Double) = AiGreetingContext(
+        ai = member(AI_ID, "루나", Gender.FEMALE, 1998, comment = null),
+        systemPrompt = "밝고 장난기 많은 성격",
+        partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = "산책 좋아해요", locale = MemberLocale.JA),
+        now = NOW,
+        distanceMeters = distanceMeters,
+    )
 
     private fun context() = AiReplyContext(
         ai = member(AI_ID, "루나", Gender.FEMALE, 1998, comment = null),

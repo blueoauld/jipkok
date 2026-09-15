@@ -9,6 +9,7 @@ interface AdminAiMemberRow {
     val gender: String
     val birthYear: Int
     val enabled: Boolean
+    val greetingEnabled: Boolean
     val publicPhotoCount: Long
     val locatedAt: Instant?
     val createdAt: Instant

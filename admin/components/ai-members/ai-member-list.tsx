@@ -47,8 +47,11 @@ export function AiMemberList() {
             <AiMemberFilters value={filter} onChange={changeFilter} />
             <p className="text-sm text-muted-foreground">
               오늘 전체 응답 {formatCount(data.todayTotal.replyCount)} /{" "}
-              {formatCount(data.globalDailyLimit)} · 토큰{" "}
-              {formatCount(data.todayTotal.tokenCount)}
+              {formatCount(data.globalDailyLimit)}, 토큰{" "}
+              {formatCount(data.todayTotal.tokenCount)}, 인사{" "}
+              {formatCount(data.todayTotal.greetingCount)} /{" "}
+              {formatCount(data.globalDailyGreetingLimit)} (답장{" "}
+              {formatCount(data.todayTotal.greetingReplyCount)})
             </p>
           </CardHeader>
           <CardContent>

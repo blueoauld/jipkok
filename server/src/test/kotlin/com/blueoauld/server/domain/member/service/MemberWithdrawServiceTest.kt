@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
@@ -36,6 +37,8 @@ import java.util.*
 class MemberWithdrawServiceTest {
 
     private val memberRepository = mockk<MemberRepository>(relaxed = true)
+
+    private val aiGreetingJobRepository = mockk<AiGreetingJobRepository>(relaxed = true)
 
     private val chatRoomRepository = mockk<ChatRoomRepository>(relaxed = true)
 
@@ -77,6 +80,7 @@ class MemberWithdrawServiceTest {
 
     private val memberWithdrawService = MemberWithdrawService(
         memberRepository,
+        aiGreetingJobRepository,
         chatRoomRepository,
         chatRoomService,
         feedPostRepository,

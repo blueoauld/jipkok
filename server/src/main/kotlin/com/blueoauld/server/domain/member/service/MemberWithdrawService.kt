@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.member.service
 
+import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
 import com.blueoauld.server.domain.auth.repository.RefreshTokenRepository
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional
 class MemberWithdrawService(
 
     private val memberRepository: MemberRepository,
+    private val aiGreetingJobRepository: AiGreetingJobRepository,
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomService: ChatRoomService,
     private val feedPostRepository: FeedPostRepository,
@@ -54,6 +56,7 @@ class MemberWithdrawService(
         val member = memberRepository.getMember(memberId)
 
         leaveRooms(memberId)
+        aiGreetingJobRepository.deleteAllByMemberId(memberId)
         feedPostRepository.deleteAllByMemberId(memberId)
         feedPostRepository.decreaseLikeCountLikedBy(memberId)
         feedPostLikeRepository.deleteAllByMemberId(memberId)

@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.chat.service
 
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.block.repository.MemberBlockRepository
+import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.ChatRoom
 import com.blueoauld.server.domain.chat.entity.ChatRoomMember
@@ -9,6 +10,7 @@ import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.domain.point.entity.type.PointType
@@ -31,7 +33,7 @@ class ChatNoteService(
 ) {
 
     @Transactional
-    fun send(senderId: Long, receiverId: Long, content: String) {
+    fun send(senderId: Long, receiverId: Long, content: String): ChatMessageResponse {
         if (senderId == receiverId) {
             throw BusinessException(ErrorCode.SELF_NOTE)
         }
@@ -49,7 +51,8 @@ class ChatNoteService(
         }
 
         val room = chatRoomRepository.findByMembers(senderId, receiverId) ?: openRoom(senderId, receiverId, receiver)
-        chatMessageService.append(
+
+        return chatMessageService.append(
             room = room,
             senderId = senderId,
             message = ChatMessage(
@@ -70,7 +73,9 @@ class ChatNoteService(
             throw BusinessException(ErrorCode.NOTE_RECEIVE_DISABLED)
         }
 
-        pointService.spend(senderId, PointType.NOTE_SEND)
+        if (memberRepository.getMember(senderId).role != MemberRole.AI) {
+            pointService.spend(senderId, PointType.NOTE_SEND)
+        }
 
         val room = chatRoomRepository.save(ChatRoom.of(senderId, receiverId))
         chatRoomMemberRepository.saveAll(

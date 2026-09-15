@@ -1,5 +1,7 @@
 package com.blueoauld.server.domain.admin.dto.response
 
+import com.blueoauld.server.domain.admin.dto.projection.AiGreetingStatRow
+import com.blueoauld.server.domain.admin.dto.projection.AiGreetingTotalRow
 import com.blueoauld.server.domain.admin.dto.projection.AiReplyStatRow
 import com.blueoauld.server.domain.admin.dto.projection.AiReplyTotalRow
 import com.blueoauld.server.domain.ai.dto.AiReply
@@ -17,6 +19,7 @@ data class AdminAiMemberPageResponse(
     val totalCount: Long,
     val todayTotal: AdminAiReplyStatResponse,
     val globalDailyLimit: Long,
+    val globalDailyGreetingLimit: Long,
 )
 
 data class AdminAiMemberResponse(
@@ -26,6 +29,7 @@ data class AdminAiMemberResponse(
     val gender: Gender,
     val age: Int,
     val enabled: Boolean,
+    val greetingEnabled: Boolean,
     val publicPhotoCount: Int,
     val locatedAt: Instant?,
     val createdAt: Instant,
@@ -97,6 +101,8 @@ data class AdminAiPersonaResponse(
     val activeStartHour: Int,
     val activeEndHour: Int,
     val dailyReplyLimit: Int,
+    val greetingEnabled: Boolean,
+    val dailyGreetingLimit: Int,
     val nextLocationRefreshAt: Instant,
 ) {
 
@@ -110,6 +116,8 @@ data class AdminAiPersonaResponse(
             activeStartHour = persona.activeStartHour,
             activeEndHour = persona.activeEndHour,
             dailyReplyLimit = persona.dailyReplyLimit,
+            greetingEnabled = persona.greetingEnabled,
+            dailyGreetingLimit = persona.dailyGreetingLimit,
             nextLocationRefreshAt = persona.nextLocationRefreshAt,
         )
     }
@@ -119,15 +127,27 @@ data class AdminAiReplyStatResponse(
 
     val replyCount: Long,
     val tokenCount: Long,
+    val greetingCount: Long,
+    val greetingReplyCount: Long,
 ) {
 
     companion object {
 
-        val EMPTY = AdminAiReplyStatResponse(0, 0)
+        val EMPTY = AdminAiReplyStatResponse(0, 0, 0, 0)
 
-        fun of(row: AiReplyStatRow) = AdminAiReplyStatResponse(row.replyCount, row.tokenCount)
+        fun of(reply: AiReplyStatRow?, greeting: AiGreetingStatRow?) = AdminAiReplyStatResponse(
+            replyCount = reply?.replyCount ?: 0,
+            tokenCount = reply?.tokenCount ?: 0,
+            greetingCount = greeting?.greetingCount ?: 0,
+            greetingReplyCount = greeting?.greetingReplyCount ?: 0,
+        )
 
-        fun of(row: AiReplyTotalRow) = AdminAiReplyStatResponse(row.replyCount, row.tokenCount)
+        fun of(reply: AiReplyTotalRow, greeting: AiGreetingTotalRow) = AdminAiReplyStatResponse(
+            replyCount = reply.replyCount,
+            tokenCount = reply.tokenCount,
+            greetingCount = greeting.greetingCount,
+            greetingReplyCount = greeting.greetingReplyCount,
+        )
     }
 }
 

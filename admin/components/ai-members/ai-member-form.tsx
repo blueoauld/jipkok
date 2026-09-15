@@ -27,6 +27,7 @@ const SYSTEM_PROMPT_MAX_LENGTH = 4000;
 const REPLY_DELAY_MAX_SECONDS = 3600;
 const LAST_HOUR = 23;
 const DAILY_REPLY_LIMIT_MAX = 10000;
+const DAILY_GREETING_LIMIT_MAX = 1000;
 
 type Props = {
   initial: AiMemberDraft;
@@ -222,6 +223,37 @@ export function AiMemberForm({
             활동 끝이 시작보다 작으면 자정을 넘겨 다음 날까지 활동합니다. 둘이
             같으면 하루 종일 활동합니다.
           </p>
+          <div className="space-y-4 border-t pt-4">
+            <label className="flex items-center gap-3">
+              <Switch
+                checked={draft.greetingEnabled}
+                onCheckedChange={(greetingEnabled) =>
+                  patch({ greetingEnabled })
+                }
+              />
+              <span className="text-sm font-medium">
+                {draft.greetingEnabled ? "먼저 인사함" : "먼저 인사 안 함"}
+              </span>
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="하루 인사 한도">
+                <Input
+                  type="number"
+                  min={0}
+                  max={DAILY_GREETING_LIMIT_MAX}
+                  value={draft.dailyGreetingLimit}
+                  onChange={(event) =>
+                    patch({ dailyGreetingLimit: event.target.value })
+                  }
+                />
+              </Field>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              남자 계정만 해당합니다. 가입 후 3일 안의 여자 신규 회원 중 가까운
+              사람에게 활동 시간 안에 먼저 쪽지를 보냅니다. 회원당 한 번이고
+              포인트는 쓰지 않습니다.
+            </p>
+          </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-2 bg-transparent">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>

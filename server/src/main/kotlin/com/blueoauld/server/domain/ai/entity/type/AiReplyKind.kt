@@ -4,5 +4,6 @@ enum class AiReplyKind {
 
     REPLY,
     NUDGE,
+    GREETING,
     SUMMARY,
 }

@@ -1567,6 +1567,9 @@ export interface components {
             activeEndHour: number;
             /** Format: int32 */
             dailyReplyLimit: number;
+            greetingEnabled: boolean;
+            /** Format: int32 */
+            dailyGreetingLimit: number;
         };
         UpdateAiMemberRequest: {
             nickname: string;
@@ -1623,6 +1626,9 @@ export interface components {
             activeEndHour: number;
             /** Format: int32 */
             dailyReplyLimit: number;
+            greetingEnabled: boolean;
+            /** Format: int32 */
+            dailyGreetingLimit: number;
             /** Format: date-time */
             nextLocationRefreshAt: string;
         };
@@ -1631,6 +1637,10 @@ export interface components {
             replyCount: number;
             /** Format: int64 */
             tokenCount: number;
+            /** Format: int64 */
+            greetingCount: number;
+            /** Format: int64 */
+            greetingReplyCount: number;
         };
         ProfilePhotoResponse: {
             objectKey: string;
@@ -2781,6 +2791,8 @@ export interface components {
             todayTotal: components["schemas"]["AdminAiReplyStatResponse"];
             /** Format: int64 */
             globalDailyLimit: number;
+            /** Format: int64 */
+            globalDailyGreetingLimit: number;
         };
         AdminAiMemberResponse: {
             /** Format: int64 */
@@ -2791,6 +2803,7 @@ export interface components {
             /** Format: int32 */
             age: number;
             enabled: boolean;
+            greetingEnabled: boolean;
             /** Format: int32 */
             publicPhotoCount: number;
             /** Format: date-time */

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
@@ -15,6 +16,12 @@ class DisabledReplyGenerator : AiReplyGenerator {
 
     override fun generate(context: AiReplyContext): AiReply? {
         log.warn { "OpenAI 키가 없어 AI 응답을 만들지 않는다. aiMemberId=${context.ai.id}" }
+
+        return null
+    }
+
+    override fun greet(context: AiGreetingContext): AiReply? {
+        log.warn { "OpenAI 키가 없어 AI 첫 쪽지를 만들지 않는다. aiMemberId=${context.ai.id}" }
 
         return null
     }

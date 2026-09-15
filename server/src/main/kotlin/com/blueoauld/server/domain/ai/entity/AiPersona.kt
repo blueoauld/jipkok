@@ -50,6 +50,12 @@ class AiPersona(
     @Column(name = "daily_reply_limit", nullable = false)
     var dailyReplyLimit: Int = DEFAULT_DAILY_REPLY_LIMIT,
 
+    @Column(name = "greeting_enabled", nullable = false)
+    var greetingEnabled: Boolean = false,
+
+    @Column(name = "daily_greeting_limit", nullable = false)
+    var dailyGreetingLimit: Int = DEFAULT_DAILY_GREETING_LIMIT,
+
     @Column(name = "next_location_refresh_at", nullable = false)
     var nextLocationRefreshAt: Instant,
 ) : BaseEntity() {
@@ -62,6 +68,8 @@ class AiPersona(
         activeStartHour: Int,
         activeEndHour: Int,
         dailyReplyLimit: Int,
+        greetingEnabled: Boolean,
+        dailyGreetingLimit: Int,
     ) {
         this.enabled = enabled
         this.systemPrompt = systemPrompt
@@ -70,6 +78,8 @@ class AiPersona(
         this.activeStartHour = activeStartHour
         this.activeEndHour = activeEndHour
         this.dailyReplyLimit = dailyReplyLimit
+        this.greetingEnabled = greetingEnabled
+        this.dailyGreetingLimit = dailyGreetingLimit
     }
 
     fun randomReplyDelay(): Duration =
@@ -98,6 +108,7 @@ class AiPersona(
         const val SYSTEM_PROMPT_MAX_LENGTH = 4000
         const val REPLY_DELAY_MAX_SECONDS = 3600
         const val DAILY_REPLY_LIMIT_MAX = 10_000
+        const val DAILY_GREETING_LIMIT_MAX = 1_000
         const val LAST_HOUR = 23
 
         const val DEFAULT_REPLY_DELAY_MIN_SECONDS = 10
@@ -105,6 +116,7 @@ class AiPersona(
         const val DEFAULT_ACTIVE_START_HOUR = 8
         const val DEFAULT_ACTIVE_END_HOUR = 1
         const val DEFAULT_DAILY_REPLY_LIMIT = 500
+        const val DEFAULT_DAILY_GREETING_LIMIT = 20
 
         val LOCATION_REFRESH_MIN_INTERVAL: Duration = Duration.ofMinutes(20)
         val LOCATION_REFRESH_MAX_INTERVAL: Duration = Duration.ofHours(3)

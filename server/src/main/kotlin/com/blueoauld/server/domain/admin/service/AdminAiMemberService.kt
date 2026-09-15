@@ -6,6 +6,7 @@ import com.blueoauld.server.domain.admin.dto.response.AdminAiMemberResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAiReplyStatResponse
 import com.blueoauld.server.domain.admin.dto.response.AdminAiTestChatResponse
 import com.blueoauld.server.domain.admin.entity.type.AdminActionType
+import com.blueoauld.server.domain.admin.repository.AiGreetingJobAdminRepository
 import com.blueoauld.server.domain.admin.repository.AiMemberAdminRepository
 import com.blueoauld.server.domain.admin.repository.AiReplyLogAdminRepository
 import com.blueoauld.server.domain.ai.dto.request.AiTestChatRequest
@@ -14,6 +15,7 @@ import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberPhotosRequest
 import com.blueoauld.server.domain.ai.dto.request.UpdateAiMemberRequest
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.getPersona
+import com.blueoauld.server.domain.ai.service.AiGreetingContextService
 import com.blueoauld.server.domain.ai.service.AiMemberService
 import com.blueoauld.server.domain.ai.service.AiReplyContextService
 import com.blueoauld.server.domain.ai.service.AiTestChatService
@@ -38,6 +40,7 @@ class AdminAiMemberService(
 
     private val aiMemberAdminRepository: AiMemberAdminRepository,
     private val aiReplyLogAdminRepository: AiReplyLogAdminRepository,
+    private val aiGreetingJobAdminRepository: AiGreetingJobAdminRepository,
     private val aiPersonaRepository: AiPersonaRepository,
     private val memberRepository: MemberRepository,
     private val memberPhotoService: MemberPhotoService,
@@ -73,6 +76,7 @@ class AdminAiMemberService(
                     gender = Gender.valueOf(it.gender),
                     age = clock.ageOf(it.birthYear),
                     enabled = it.enabled,
+                    greetingEnabled = it.greetingEnabled,
                     publicPhotoCount = it.publicPhotoCount.toInt(),
                     locatedAt = it.locatedAt,
                     createdAt = it.createdAt,
@@ -83,8 +87,12 @@ class AdminAiMemberService(
             page = safePage,
             size = safeSize,
             totalCount = aiMemberAdminRepository.countForAdmin(enabled, nicknameLike),
-            todayTotal = AdminAiReplyStatResponse.of(aiReplyLogAdminRepository.sumAllSince(dayStart)),
+            todayTotal = AdminAiReplyStatResponse.of(
+                aiReplyLogAdminRepository.sumAllSince(dayStart),
+                aiGreetingJobAdminRepository.sumAllSince(dayStart),
+            ),
             globalDailyLimit = AiReplyContextService.GLOBAL_DAILY_LIMIT,
+            globalDailyGreetingLimit = AiGreetingContextService.GLOBAL_DAILY_LIMIT,
         )
     }
 
@@ -150,8 +158,10 @@ class AdminAiMemberService(
             return emptyMap()
         }
 
-        return aiReplyLogAdminRepository.sumByAiMemberIdSince(ids, start)
-            .associate { it.aiMemberId to AdminAiReplyStatResponse.of(it) }
+        val replies = aiReplyLogAdminRepository.sumByAiMemberIdSince(ids, start).associateBy { it.aiMemberId }
+        val greetings = aiGreetingJobAdminRepository.sumByAiMemberIdSince(ids, start).associateBy { it.aiMemberId }
+
+        return (replies.keys + greetings.keys).associateWith { AdminAiReplyStatResponse.of(replies[it], greetings[it]) }
     }
 
     private fun dayStart(): Instant = clock.today().atStartOfDay(KOREA).toInstant()

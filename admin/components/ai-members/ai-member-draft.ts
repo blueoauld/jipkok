@@ -20,6 +20,8 @@ export type AiMemberDraft = {
   activeStartHour: string;
   activeEndHour: string;
   dailyReplyLimit: string;
+  greetingEnabled: boolean;
+  dailyGreetingLimit: string;
 };
 
 export const defaultAiMemberDraft: AiMemberDraft = {
@@ -37,6 +39,8 @@ export const defaultAiMemberDraft: AiMemberDraft = {
   activeStartHour: "8",
   activeEndHour: "1",
   dailyReplyLimit: "500",
+  greetingEnabled: false,
+  dailyGreetingLimit: "20",
 };
 
 export function draftOf(member: AiMemberDetail): AiMemberDraft {
@@ -55,6 +59,8 @@ export function draftOf(member: AiMemberDetail): AiMemberDraft {
     activeStartHour: String(member.persona.activeStartHour),
     activeEndHour: String(member.persona.activeEndHour),
     dailyReplyLimit: String(member.persona.dailyReplyLimit),
+    greetingEnabled: member.persona.greetingEnabled,
+    dailyGreetingLimit: String(member.persona.dailyGreetingLimit),
   };
 }
 
@@ -74,6 +80,8 @@ export function updateBodyOf(draft: AiMemberDraft): UpdateAiMemberBody {
       activeStartHour: Number(draft.activeStartHour),
       activeEndHour: Number(draft.activeEndHour),
       dailyReplyLimit: Number(draft.dailyReplyLimit),
+      greetingEnabled: draft.greetingEnabled,
+      dailyGreetingLimit: Number(draft.dailyGreetingLimit),
     },
   };
 }

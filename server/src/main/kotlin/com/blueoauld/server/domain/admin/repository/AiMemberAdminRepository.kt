@@ -15,6 +15,7 @@ interface AiMemberAdminRepository : JpaRepository<AiPersona, Long> {
                m.gender as gender,
                m.birth_year as birthYear,
                p.enabled as enabled,
+               p.greeting_enabled as greetingEnabled,
                (select count(*) from member_photo ph where ph.member_id = m.id and ph.visibility = 'PUBLIC')
                  as publicPhotoCount,
                m.located_at as locatedAt,

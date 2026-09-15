@@ -10,6 +10,7 @@ import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.point.entity.type.PointType
 import com.blueoauld.server.domain.point.service.PointService
@@ -54,6 +55,7 @@ class ChatNoteServiceTest {
     @BeforeEach
     fun setUp() {
         every { memberRepository.findById(RECEIVER_ID) } returns Optional.of(member())
+        every { memberRepository.findById(SENDER_ID) } returns Optional.of(member())
         every { memberBlockRepository.existsBetween(any(), any()) } returns false
         every { chatRoomRepository.findByMembers(any(), any()) } returns null
         every { chatRoomRepository.save(any()) } answers { firstArg() }
@@ -139,6 +141,20 @@ class ChatNoteServiceTest {
 
         // then
         verify { pointService.spend(SENDER_ID, PointType.NOTE_SEND) }
+    }
+
+    @Test
+    fun `AI가 방을 열면 포인트를 차감하지 않는다`() {
+        // given
+        every { memberRepository.findById(SENDER_ID) } returns Optional.of(member(role = MemberRole.AI))
+
+        // when
+        chatNoteService.send(SENDER_ID, RECEIVER_ID, CONTENT)
+
+        // then
+        verify(exactly = 0) { pointService.spend(any(), any()) }
+        verify { chatRoomRepository.save(any()) }
+        verify { chatMessageService.append(any(), SENDER_ID, any()) }
     }
 
     @Test
@@ -253,12 +269,13 @@ class ChatNoteServiceTest {
         assertThat(exception.errorCode).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
     }
 
-    private fun member(noteReceiveEnabled: Boolean = true) = Member(
+    private fun member(noteReceiveEnabled: Boolean = true, role: MemberRole = MemberRole.MEMBER) = Member(
         phoneNumber = "+821012345678",
         password = "encoded-password",
         gender = Gender.FEMALE,
         nickname = "상대",
         birthYear = 1998,
+        role = role,
         noteReceiveEnabled = noteReceiveEnabled,
     )
 

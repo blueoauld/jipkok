@@ -17383,13 +17383,24 @@
                         "format": "int32",
                         "maximum": 10000,
                         "minimum": 0
+                    },
+                    "greetingEnabled": {
+                        "type": "boolean"
+                    },
+                    "dailyGreetingLimit": {
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 1000,
+                        "minimum": 0
                     }
                 },
                 "required": [
                     "activeEndHour",
                     "activeStartHour",
+                    "dailyGreetingLimit",
                     "dailyReplyLimit",
                     "enabled",
+                    "greetingEnabled",
                     "replyDelayMaxSeconds",
                     "replyDelayMinSeconds",
                     "systemPrompt"
@@ -17596,6 +17607,13 @@
                         "type": "integer",
                         "format": "int32"
                     },
+                    "greetingEnabled": {
+                        "type": "boolean"
+                    },
+                    "dailyGreetingLimit": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "nextLocationRefreshAt": {
                         "type": "string",
                         "format": "date-time"
@@ -17604,8 +17622,10 @@
                 "required": [
                     "activeEndHour",
                     "activeStartHour",
+                    "dailyGreetingLimit",
                     "dailyReplyLimit",
                     "enabled",
+                    "greetingEnabled",
                     "nextLocationRefreshAt",
                     "replyDelayMaxSeconds",
                     "replyDelayMinSeconds",
@@ -17622,9 +17642,19 @@
                     "tokenCount": {
                         "type": "integer",
                         "format": "int64"
+                    },
+                    "greetingCount": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "greetingReplyCount": {
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "required": [
+                    "greetingCount",
+                    "greetingReplyCount",
                     "replyCount",
                     "tokenCount"
                 ]
@@ -22067,9 +22097,14 @@
                     "globalDailyLimit": {
                         "type": "integer",
                         "format": "int64"
+                    },
+                    "globalDailyGreetingLimit": {
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "required": [
+                    "globalDailyGreetingLimit",
                     "globalDailyLimit",
                     "items",
                     "page",
@@ -22102,6 +22137,9 @@
                     "enabled": {
                         "type": "boolean"
                     },
+                    "greetingEnabled": {
+                        "type": "boolean"
+                    },
                     "publicPhotoCount": {
                         "type": "integer",
                         "format": "int32"
@@ -22129,6 +22167,7 @@
                     "createdAt",
                     "enabled",
                     "gender",
+                    "greetingEnabled",
                     "id",
                     "nickname",
                     "publicPhotoCount",
