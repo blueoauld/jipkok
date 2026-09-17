@@ -16,7 +16,7 @@ import {
   DARK_FILL,
   DISABLED_OPACITY,
   FLOATING_BAR_RADIUS,
-  floatingBarStyle,
+  FLOATING_BAR_STYLE,
   PILL_RADIUS,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
@@ -132,7 +132,7 @@ export function MemberActionBar({
     return (
       <Glass
         style={{
-          ...floatingBarStyle(insets.bottom),
+          ...FLOATING_BAR_STYLE,
           borderRadius: FLOATING_BAR_RADIUS,
           flexDirection: "row",
         }}

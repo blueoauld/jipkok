@@ -62,29 +62,27 @@ export function bottomBarHeight(bottomInset: number) {
 }
 
 // 유리 바만 화면을 가로지르지 않고 가장자리에서 띄운다. 유리가 아닌 바는 바닥에 붙어 흐름 안에 있다.
-const FLOATING_BAR_HEIGHT = 56;
+// iOS 26 시스템 탭 바와 같은 자리에 둔다. 탭 바 크기를 읽는 API가 없어 iPhone 16e 시뮬레이터(iOS 26.2) 화면에서
+// 쟀는데, 화면 좌우와 아래에서 똑같이 21 떨어진 높이 62 캡슐이고 아래 안전영역과 상관없이 그 자리다.
+const FLOATING_BAR_HEIGHT = 62;
 
-const FLOATING_BAR_SIDE_GAP = 32;
-
-const FLOATING_BAR_BOTTOM_GAP = 8;
+const FLOATING_BAR_INSET = 21;
 
 export const FLOATING_BAR_RADIUS = FLOATING_BAR_HEIGHT / 2;
 
-export function floatingBarHeight(bottomInset: number) {
-  return FLOATING_BAR_HEIGHT + FLOATING_BAR_BOTTOM_GAP + bottomInset;
-}
+// 화면 아래에서 떠 있는 바 윗변까지의 높이다.
+export const FLOATING_BAR_AREA_HEIGHT =
+  FLOATING_BAR_HEIGHT + FLOATING_BAR_INSET;
 
 // iOS 26에서 떠 있는 프로필 액션 바의 자리다. left/right로 밀면 여백이 안 먹어서 상자를 줄이는 쪽으로 낸다.
-export function floatingBarStyle(bottomInset: number) {
-  return {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    marginHorizontal: FLOATING_BAR_SIDE_GAP,
-    bottom: bottomInset + FLOATING_BAR_BOTTOM_GAP,
-    height: FLOATING_BAR_HEIGHT,
-  } as const;
-}
+export const FLOATING_BAR_STYLE = {
+  position: "absolute",
+  left: 0,
+  right: 0,
+  marginHorizontal: FLOATING_BAR_INSET,
+  bottom: FLOATING_BAR_INSET,
+  height: FLOATING_BAR_HEIGHT,
+} as const;
 
 // 토스 디자인 시스템(TDS) 버튼에서 잰 크기별 치수다. 높이는 최소 높이라 큰 글씨에서는 늘어난다.
 export const BUTTON_SIZES = {
