@@ -10,11 +10,12 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
+import { FieldLabel } from "@/components/ui/FieldLabel";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useAlert } from "@/hooks/useAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
+import { FIELD_TEXT_GAP } from "@/lib/design";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
@@ -130,8 +131,8 @@ export default function ReportScreen() {
           </Button>
         }
       >
-        <YStack gap="$2">
-          <SectionLabel>{t("report.evidencePhotos")}</SectionLabel>
+        <YStack gap={FIELD_TEXT_GAP}>
+          <FieldLabel>{t("report.evidencePhotos")}</FieldLabel>
           <PhotoGrid
             photos={photos.urls}
             onAdd={photos.add}

@@ -4,10 +4,15 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
+import { FieldLabel } from "@/components/ui/FieldLabel";
 import { RangeSlider } from "@/components/ui/RangeSlider";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { SCREEN_PADDING, SHEET_PADDING_X } from "@/lib/design";
+import {
+  FIELD_TEXT_GAP,
+  FIELD_TEXT_INSET,
+  SCREEN_PADDING,
+  SHEET_PADDING_X,
+} from "@/lib/design";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
@@ -100,8 +105,8 @@ export function MemberFilterSheet({
       title={t("component.filter")}
     >
       <YStack px={SHEET_PADDING_X} gap="$4">
-        <YStack gap="$2">
-          <SectionLabel>{t("component.genderLabel")}</SectionLabel>
+        <YStack gap={FIELD_TEXT_GAP}>
+          <FieldLabel>{t("component.genderLabel")}</FieldLabel>
           <SegmentedControl
             items={GENDER_FILTER_ITEMS}
             value={gender}
@@ -109,11 +114,16 @@ export function MemberFilterSheet({
           />
         </YStack>
 
-        <YStack gap="$3">
+        <YStack gap={FIELD_TEXT_GAP}>
           <XStack items="center" justify="space-between">
-            <SectionLabel>{t("component.ageLabel")}</SectionLabel>
+            <FieldLabel>{t("component.ageLabel")}</FieldLabel>
             {/* ~ 글자가 대체 폰트로 그려져 줄높이를 키우므로 고정한다. */}
-            <Text fontSize="$2" lineHeight="$2" fontWeight="600">
+            <Text
+              pr={FIELD_TEXT_INSET}
+              fontSize="$2"
+              lineHeight="$2"
+              fontWeight="600"
+            >
               {formatAgeRange(ages[0], ages[1])}
             </Text>
           </XStack>

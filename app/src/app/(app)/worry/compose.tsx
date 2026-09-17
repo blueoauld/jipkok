@@ -10,11 +10,12 @@ import { YStack } from "tamagui";
 import { FormScreen } from "@/components/FormScreen";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import { FieldLabel } from "@/components/ui/FieldLabel";
 import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useAlert } from "@/hooks/useAlert";
 import { WORRY_LIST_KEY } from "@/hooks/useWorryPosts";
 import { api, type WorryCategory } from "@/lib/api";
+import { FIELD_TEXT_GAP } from "@/lib/design";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
@@ -86,8 +87,8 @@ export default function WorryComposeScreen() {
           </Button>
         }
       >
-        <YStack gap="$2">
-          <SectionLabel>{t("worry.compose.categoryLabel")}</SectionLabel>
+        <YStack gap={FIELD_TEXT_GAP}>
+          <FieldLabel>{t("worry.compose.categoryLabel")}</FieldLabel>
           <WorryCategoryPicker value={category} onChange={setCategory} />
         </YStack>
 

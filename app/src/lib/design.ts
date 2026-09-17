@@ -144,6 +144,12 @@ export const INPUT_HEIGHT = 56;
 
 export const INPUT_RADIUS = 14;
 
+// TDS 텍스트 필드의 라벨과 도움말 줄에서 잰 값이다. 글자는 컨트롤 가장자리보다 이만큼 안쪽에서 시작하고,
+// 컨트롤과는 이만큼 떨어진다.
+export const FIELD_TEXT_INSET = 4;
+
+export const FIELD_TEXT_GAP = 6;
+
 // TDS 세그먼트 컨트롤에서 잰 크기별 치수다. 선택 알약은 트랙 안쪽 여백만큼 작고, fluid 칸은 글자 폭에
 // 좌우 여백을 더한 폭이다.
 export const SEGMENT_SIZES = {

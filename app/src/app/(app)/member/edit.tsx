@@ -14,13 +14,14 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
+import { FieldLabel } from "@/components/ui/FieldLabel";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useAlert } from "@/hooks/useAlert";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
+import { FIELD_TEXT_GAP } from "@/lib/design";
 import { profileErrorMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
@@ -174,8 +175,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           </Button>
         }
       >
-        <YStack gap="$2">
-          <SectionLabel>{t("profileEdit.publicPhotos")}</SectionLabel>
+        <YStack gap={FIELD_TEXT_GAP}>
+          <FieldLabel>{t("profileEdit.publicPhotos")}</FieldLabel>
           <PhotoGrid
             photos={publicPhotos.urls}
             onAdd={publicPhotos.add}
@@ -185,8 +186,8 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
           />
         </YStack>
 
-        <YStack gap="$2">
-          <SectionLabel>{t("profileEdit.secretPhotos")}</SectionLabel>
+        <YStack gap={FIELD_TEXT_GAP}>
+          <FieldLabel>{t("profileEdit.secretPhotos")}</FieldLabel>
           <PhotoGrid
             photos={secretPhotos.urls}
             onAdd={secretPhotos.add}
