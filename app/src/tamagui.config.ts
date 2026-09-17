@@ -6,7 +6,7 @@ import { createTamagui } from "tamagui";
 const ON_FILL = "white";
 
 // 토스 디자인 시스템(TDS)의 [라이트, 다크] 색이다. TDS 문서 사이트의 CSS 변수에서 옮겼다.
-const TDS_COLORS = {
+export const TDS_COLORS = {
   grey50: ["#F9FAFB", "#202027"],
   grey100: ["#F2F4F6", "#2C2C35"],
   grey200: ["#E5E8EB", "#3C3C47"],

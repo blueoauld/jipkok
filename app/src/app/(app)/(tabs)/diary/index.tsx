@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
@@ -53,6 +53,7 @@ export default function DiaryScreen() {
 
   const screenOptions = useMemo(
     () => ({
+      title: t("tabs.diary"),
       headerLeft: () => (
         <HeaderIconButton
           icon={MagnifyingGlassIcon}
@@ -103,7 +104,7 @@ export default function DiaryScreen() {
 
   return (
     <YStack flex={1}>
-      <Tabs.Screen options={screenOptions} />
+      <Stack.Screen options={screenOptions} />
 
       <FlatList
         data={rows}

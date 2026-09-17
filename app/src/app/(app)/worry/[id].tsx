@@ -12,7 +12,7 @@ import {
 } from "react-native-safe-area-context";
 import { YStack } from "tamagui";
 
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { Border } from "@/components/ui/Border";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -80,7 +80,7 @@ export default function WorryDetailScreen() {
       title: t("worry.detail.title"),
       headerRight: post
         ? () => (
-            <HeaderSoloIconButton
+            <HeaderIconButton
               icon={post.mine ? TrashIcon : SirenIcon}
               label={post.mine ? t("action.delete") : t("a11y.report")}
               onPress={post.mine ? confirmRemovePost : confirmReportPost}

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
@@ -133,6 +133,7 @@ export default function MainScreen() {
 
   const screenOptions = useMemo(
     () => ({
+      title: t("tabs.main"),
       headerLeft: () => (
         <HeaderIconButton
           icon={MagnifyingGlassIcon}
@@ -160,7 +161,7 @@ export default function MainScreen() {
 
   return (
     <YStack flex={1}>
-      <Tabs.Screen options={screenOptions} />
+      <Stack.Screen options={screenOptions} />
 
       <Tab items={SORT_ITEMS} value={sort} onChange={changeSort} />
 

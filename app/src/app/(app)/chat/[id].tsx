@@ -20,7 +20,7 @@ import {
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { MessageActionOverlay } from "@/components/chat/MessageActionOverlay";
 import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -291,7 +291,7 @@ export default function ChatRoomScreen() {
     () => ({
       title: room?.nickname ?? "",
       headerRight: () => (
-        <HeaderSoloIconButton
+        <HeaderIconButton
           icon={DotsThreeIcon}
           label={t("a11y.more")}
           weight="bold"

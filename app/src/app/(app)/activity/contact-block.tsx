@@ -7,7 +7,7 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "tamagui";
 
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
 import { Button } from "@/components/ui/Button";
 import { ListEmpty } from "@/components/ui/ListEmpty";
@@ -98,7 +98,7 @@ export default function ContactBlockScreen() {
     () => ({
       title: t("list.contactBlocks"),
       headerRight: () => (
-        <HeaderSoloIconButton
+        <HeaderIconButton
           icon={PlusIcon}
           label={t("contactBlock.addTitle")}
           weight="bold"

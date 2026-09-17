@@ -1,10 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Stack } from "expo-router";
+import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
+import {
+  ChatHeaderRight,
+  SelectAllButton,
+  SelectionCancelButton,
+} from "@/components/chat/ChatTabHeader";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRowTopSpacer } from "@/components/ui/ListRow";
@@ -24,6 +32,7 @@ import { useChatSelectionStore } from "@/lib/chat/store";
 import { BOTTOM_CTA_FADE_HEIGHT, LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
+import { pushOnce } from "@/lib/router";
 
 const FILTERS = ["ALL", "UNREAD"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -55,7 +64,7 @@ export default function ChatScreen() {
   const { rooms, error } = chatRooms;
   const tabBarOverlay = useTabBarOverlay();
   const selecting = useChatSelectionStore((state) => state.active);
-  // 고르는 중에는 흐름 안의 셀렉션 바가 탭 바에 덮이는 만큼을 이미 품으므로, 바 위로 겹치는 흐림 띠만큼만 비운다.
+  // 고르는 중에는 탭 바를 숨기고 셀렉션 바가 흐름 안에서 바닥을 차지하므로, 바 위로 겹치는 흐림 띠만큼만 비운다.
   const paged = usePagedList(
     chatRooms,
     selecting ? BOTTOM_CTA_FADE_HEIGHT : tabBarOverlay,
@@ -81,12 +90,35 @@ export default function ChatScreen() {
     [toggleSelected],
   );
 
+  const screenOptions = useMemo(
+    () => ({
+      title: selecting
+        ? t("tabs.selectedCount", { count: selected.size })
+        : t("tabs.chat"),
+      headerLeft: selecting
+        ? () => <SelectionCancelButton />
+        : () => (
+            <HeaderIconButton
+              icon={MagnifyingGlassIcon}
+              label={t("a11y.search")}
+              onPress={() => pushOnce("/chat/search")}
+            />
+          ),
+      headerRight: selecting
+        ? () => <SelectAllButton />
+        : () => <ChatHeaderRight />,
+    }),
+    [selected.size, selecting, t],
+  );
+
   const markSelectedRead = () => markRoomsRead([...selected], endSelection);
 
   const leaveSelected = () => confirmLeaveRooms([...selected], endSelection);
 
   return (
     <YStack flex={1}>
+      <Stack.Screen options={screenOptions} />
+
       <Tab
         items={FILTER_ITEMS}
         value={filter}

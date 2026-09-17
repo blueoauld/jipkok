@@ -6,7 +6,7 @@ import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { YStack } from "tamagui";
 
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
@@ -100,7 +100,7 @@ export default function MyProfileScreen() {
     () => ({
       title: t("list.myProfile"),
       headerRight: () => (
-        <HeaderSoloIconButton
+        <HeaderIconButton
           icon={PencilSimpleIcon}
           label={t("a11y.editProfile")}
           onPress={() => pushOnce("/member/edit")}

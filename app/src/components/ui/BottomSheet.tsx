@@ -1,10 +1,10 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Keyboard, Platform } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sheet, Text, XStack, YStack } from "tamagui";
 
 import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
+import { useWindowInsets } from "@/hooks/useWindowInsets";
 import {
   PILL_RADIUS,
   SCREEN_PADDING,
@@ -77,7 +77,7 @@ export function BottomSheet({
   moveOnKeyboardChange?: boolean;
   children: ReactNode;
 }) {
-  const insets = useSafeAreaInsets();
+  const insets = useWindowInsets();
   const open = useVisibleWhenUnlocked(requested);
   const keyboardVisible = useKeyboardVisible(moveOnKeyboardChange);
   // 키보드가 없으면 TDS처럼 안전영역이 있을 때 여백을 더하지 않고 그 높이만큼만 띄운다.

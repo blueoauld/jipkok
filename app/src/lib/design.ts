@@ -9,10 +9,7 @@ export const MIN_TAP_SIZE = 44;
 
 export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
 
-// iOS가 직접 그리는 네이티브 뒤로가기 버튼과 같은 지름이라야 화면을 옮겨 다녀도 안 튄다.
-export const HEADER_GLASS_SIZE = 44;
-
-export const HEADER_GLASS_GAP = 8;
+export const HEADER_ICON_GAP = 8;
 
 // 잠금, 정지, 오류처럼 화면 전체를 차지하는 안내의 아이콘 크기.
 export const STATUS_ICON_SIZE = 56;
@@ -65,7 +62,7 @@ export function bottomBarHeight(bottomInset: number) {
 }
 
 // 유리 바만 화면을 가로지르지 않고 가장자리에서 띄운다. 유리가 아닌 바는 바닥에 붙어 흐름 안에 있다.
-export const FLOATING_BAR_HEIGHT = 56;
+const FLOATING_BAR_HEIGHT = 56;
 
 const FLOATING_BAR_SIDE_GAP = 32;
 
@@ -77,8 +74,7 @@ export function floatingBarHeight(bottomInset: number) {
   return FLOATING_BAR_HEIGHT + FLOATING_BAR_BOTTOM_GAP + bottomInset;
 }
 
-// 탭 바와 프로필 액션 바가 같은 자리에 서야 화면을 오갈 때 바가 튀지 않는다.
-// left/right로 밀면 여백이 안 먹어서 상자를 줄이는 쪽으로 낸다.
+// iOS 26에서 떠 있는 프로필 액션 바의 자리다. left/right로 밀면 여백이 안 먹어서 상자를 줄이는 쪽으로 낸다.
 export function floatingBarStyle(bottomInset: number) {
   return {
     position: "absolute",

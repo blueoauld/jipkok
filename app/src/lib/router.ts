@@ -1,5 +1,12 @@
 import { type Href, router } from "expo-router";
 
+// 앱 스택과 탭마다 둔 스택이 같은 헤더를 그리게 한다.
+export const STACK_SCREEN_OPTIONS = {
+  headerShadowVisible: false,
+  headerBackButtonDisplayMode: "minimal",
+  headerTitleAlign: "center",
+} as const;
+
 const DUPLICATE_WINDOW = 700;
 
 let lastHref: string | null = null;

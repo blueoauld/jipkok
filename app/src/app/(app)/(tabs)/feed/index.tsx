@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
 import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
@@ -289,6 +289,7 @@ export default function FeedScreen() {
 
   const screenOptions = useMemo(
     () => ({
+      title: t("tabs.lounge"),
       headerLeft:
         board === "FEED"
           ? () => <FeedNotificationButton />
@@ -327,7 +328,7 @@ export default function FeedScreen() {
 
   return (
     <YStack flex={1} bg="$greyBackground">
-      <Tabs.Screen options={screenOptions} />
+      <Stack.Screen options={screenOptions} />
 
       <Tab items={BOARD_ITEMS} value={board} onChange={changeBoard} />
 

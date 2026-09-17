@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { Text, YStack } from "tamagui";
 
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MemberActionBar } from "@/components/MemberActionBar";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
@@ -82,7 +82,7 @@ export default function MemberProfileScreen() {
     () => ({
       title: t("memberDetail.title"),
       headerRight: () => (
-        <HeaderSoloIconButton
+        <HeaderIconButton
           icon={DotsThreeIcon}
           label={t("a11y.more")}
           weight="bold"

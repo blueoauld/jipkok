@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { TranslateIcon } from "phosphor-react-native/src/icons/Translate";
 import { useCallback, useMemo, useState } from "react";
@@ -293,6 +293,7 @@ export default function SettingScreen() {
 
   const screenOptions = useMemo(
     () => ({
+      title: t("tabs.setting"),
       headerLeft: () => (
         <HeaderIconButton
           icon={TranslateIcon}
@@ -313,7 +314,7 @@ export default function SettingScreen() {
 
   return (
     <YStack flex={1}>
-      <Tabs.Screen options={screenOptions} />
+      <Stack.Screen options={screenOptions} />
 
       <YStack px={EDGE} pt={EDGE} pb={EDGE_BESIDE_ROW}>
         <SegmentedControl

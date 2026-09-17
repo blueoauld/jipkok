@@ -13,6 +13,7 @@ import { useChatSocket } from "@/hooks/useChatSocket";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useScreenTracking } from "@/hooks/useScreenTracking";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
+import { WindowInsetsProvider } from "@/hooks/useWindowInsets";
 import { initializeAds } from "@/lib/ads";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeCrashReporting } from "@/lib/crash";
@@ -33,31 +34,33 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryProvider>
-        <KeyboardProvider>
-          <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-            <Theme name={scheme}>
-              <NavigationTheme scheme={scheme}>
-                <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-                <SessionGuard />
-                <ChatSocket />
-                <Push />
-                <Ads />
-                <Analytics />
-                <CrashReporting />
-                <Performance />
-                <Review />
-                <YStack flex={1}>
-                  <Stack screenOptions={{ headerShown: false }} />
-                  <LoadingOverlay />
-                  <ToastHost />
-                  <AppLockOverlay />
-                </YStack>
-              </NavigationTheme>
-            </Theme>
-          </TamaguiProvider>
-        </KeyboardProvider>
-      </QueryProvider>
+      <WindowInsetsProvider>
+        <QueryProvider>
+          <KeyboardProvider>
+            <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+              <Theme name={scheme}>
+                <NavigationTheme scheme={scheme}>
+                  <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+                  <SessionGuard />
+                  <ChatSocket />
+                  <Push />
+                  <Ads />
+                  <Analytics />
+                  <CrashReporting />
+                  <Performance />
+                  <Review />
+                  <YStack flex={1}>
+                    <Stack screenOptions={{ headerShown: false }} />
+                    <LoadingOverlay />
+                    <ToastHost />
+                    <AppLockOverlay />
+                  </YStack>
+                </NavigationTheme>
+              </Theme>
+            </TamaguiProvider>
+          </KeyboardProvider>
+        </QueryProvider>
+      </WindowInsetsProvider>
     </GestureHandlerRootView>
   );
 }

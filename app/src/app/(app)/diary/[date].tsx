@@ -16,7 +16,7 @@ import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
 import { DiaryMoodPicker } from "@/components/diary/DiaryMoodPicker";
 import { DiaryReader } from "@/components/diary/DiaryReader";
 import { FormScreen } from "@/components/FormScreen";
-import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -219,7 +219,7 @@ function DiaryReadScreen({
     () => ({
       title: `${emoji ? `${emoji} ` : ""}${formatFullDate(fromDateParam(entryDate))}`,
       headerRight: () => (
-        <HeaderSoloIconButton
+        <HeaderIconButton
           icon={DotsThreeIcon}
           label={t("a11y.more")}
           weight="bold"
