@@ -144,6 +144,13 @@ export const INPUT_HEIGHT = 56;
 
 export const INPUT_RADIUS = 14;
 
+// 채팅과 댓글처럼 화면 아래에 붙는 입력줄의 여백이다.
+export const INPUT_BAR_PADDING_X = 12;
+
+export const INPUT_BAR_PADDING_Y = 8;
+
+export const INPUT_BAR_GAP = 8;
+
 // TDS 텍스트 필드의 라벨과 도움말 줄에서 잰 값이다. 글자는 컨트롤 가장자리보다 이만큼 안쪽에서 시작하고,
 // 컨트롤과는 이만큼 떨어진다.
 export const FIELD_TEXT_INSET = 4;

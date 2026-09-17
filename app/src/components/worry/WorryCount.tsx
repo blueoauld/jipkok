@@ -28,9 +28,9 @@ export function WorryCount({
       <CountIcon
         size={size}
         weight={active ? "fill" : "bold"}
-        color={active ? theme.red10.val : theme.gray11.val}
+        color={active ? theme.red500.val : theme.grey600.val}
       />
-      <Text theme="gray" color="$color11" fontSize="$2">
+      <Text color="$grey600" fontSize="$2">
         {value}
       </Text>
     </XStack>

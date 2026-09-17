@@ -10,14 +10,14 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { getTokens, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
+import { Border } from "@/components/ui/Border";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroListPanel } from "@/components/ui/RetroListPanel";
+import { ListHeader } from "@/components/ui/ListHeader";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CommentScrollView } from "@/components/worry/CommentScrollView";
 import { WorryCommentComposer } from "@/components/worry/WorryCommentComposer";
 import { WorryCommentRow } from "@/components/worry/WorryCommentRow";
@@ -30,6 +30,7 @@ import { useWorryComments } from "@/hooks/useWorryComments";
 import { useWorryDetailActions } from "@/hooks/useWorryDetailActions";
 import { worryDetailKey } from "@/hooks/useWorryPosts";
 import { api, type WorryCommentResponse } from "@/lib/api";
+import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 
 // 한 장이 20개이므로 1000개까지는 끝까지 받는다.
 const MAX_DRAIN_PAGES = 50;
@@ -64,15 +65,7 @@ export default function WorryDetailScreen() {
     error: commentsError,
     refetch: refetchComments,
   } = commentsQuery;
-  const paged = usePagedList(commentsQuery);
-  // 프로필처럼 라벨과 내용은 붙이고, 글과 라벨 사이만 벌린다.
-  const listStyle = useMemo(
-    () => ({
-      ...paged.contentContainerStyle,
-      gap: getTokens().space.$2.val,
-    }),
-    [paged.contentContainerStyle],
-  );
+  const paged = usePagedList(commentsQuery, 0, "rows");
 
   const { refetch: refetchDetail } = detail;
   const { refreshing, onRefresh } = usePullRefresh(
@@ -142,18 +135,17 @@ export default function WorryDetailScreen() {
 
   const renderComments = useCallback(
     ({ item }: { item: WorryCommentResponse[] }) => (
-      <RetroListPanel>
-        {item.map((comment, index) => (
+      <YStack>
+        {item.map((comment) => (
           <WorryCommentRow
             key={comment.commentId}
             comment={comment}
-            divider={index < item.length - 1}
             onReply={setReplyTo}
             onRemove={confirmRemoveComment}
             onReport={confirmReportComment}
           />
         ))}
-      </RetroListPanel>
+      </YStack>
     ),
     [confirmRemoveComment, confirmReportComment, setReplyTo],
   );
@@ -168,7 +160,6 @@ export default function WorryDetailScreen() {
             <FlatList
               ref={listRef}
               {...paged}
-              contentContainerStyle={listStyle}
               data={listData}
               keyExtractor={() => "comments"}
               renderItem={renderComments}
@@ -179,14 +170,16 @@ export default function WorryDetailScreen() {
               keyboardShouldPersistTaps="handled"
               onContentSizeChange={handleContentSizeChange}
               ListHeaderComponent={
-                <YStack gap="$4">
+                <YStack>
                   <WorryPostSection
                     post={post}
                     onToggleLike={handleToggleLike}
                   />
-                  <SectionLabel>
+                  <Border variant="height16" />
+                  {/* 제목 아래와 첫 댓글 위 여백을 합쳐 댓글 사이 간격과 같게 한다. */}
+                  <ListHeader pb={LIST_ROW_EVEN_PADDING_Y}>
                     {t("worry.detail.commentSection")}
-                  </SectionLabel>
+                  </ListHeader>
                 </YStack>
               }
               ListEmptyComponent={

@@ -4,26 +4,24 @@ import { useTranslation } from "react-i18next";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { RelativeTime } from "@/components/ui/RelativeTime";
-import { RetroListRow } from "@/components/ui/RetroListPanel";
 import { RowAction } from "@/components/worry/RowAction";
 import { useContentTranslation } from "@/hooks/useContentTranslation";
 import type { WorryCommentResponse } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
+import { LIST_ROW_EVEN_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
 import { commentLabel, deletedCommentLabel } from "@/lib/worry";
 
 const REPLY_ROW_ICON_SIZE = 18;
 const REPLY_ICON_TOP = 2;
-const REPLY_INDENT = "$5";
+const REPLY_INDENT = SCREEN_PADDING + 8;
 
 export const WorryCommentRow = memo(function WorryCommentRow({
   comment,
-  divider,
   onReply,
   onRemove,
   onReport,
 }: {
   comment: WorryCommentResponse;
-  divider: boolean;
   onReply: (comment: WorryCommentResponse) => void;
   onRemove: (commentId: number) => void;
   onReport: (commentId: number) => void;
@@ -35,25 +33,25 @@ export const WorryCommentRow = memo(function WorryCommentRow({
   const copyTarget = active ? comment.content : null;
   const translation = useContentTranslation("WORRY_COMMENT", comment.commentId);
 
+  // 꾹 눌러 복사하는 것뿐이라 누른 것처럼 보일 필요가 없다.
   return (
-    <RetroListRow
-      divider={divider}
-      pl={reply ? REPLY_INDENT : "$4"}
+    <XStack
+      pl={reply ? REPLY_INDENT : SCREEN_PADDING}
+      pr={SCREEN_PADDING}
+      py={LIST_ROW_EVEN_PADDING_Y}
       gap="$2.5"
       onLongPress={
         copyTarget
           ? () => copyText(copyTarget, t("worry.detail.commentCopied"))
           : undefined
       }
-      // 꾹 눌러 복사하는 것뿐이라 누른 것처럼 보일 필요가 없다.
-      pressStyle={undefined}
     >
       {reply && (
         <YStack self="flex-start" mt={REPLY_ICON_TOP}>
           <ArrowBendDownRightIcon
             size={REPLY_ROW_ICON_SIZE}
             weight="bold"
-            color={theme.gray11.val}
+            color={theme.grey400.val}
           />
         </YStack>
       )}
@@ -62,18 +60,21 @@ export const WorryCommentRow = memo(function WorryCommentRow({
         <XStack items="center" justify="space-between">
           <Text
             fontSize="$2"
-            fontWeight="700"
-            color={comment.byAuthor ? "$blue10" : "$color12"}
+            lineHeight="$2"
+            fontWeight="600"
+            color={comment.byAuthor ? "$blue500" : "$grey800"}
           >
             {commentLabel(comment)}
           </Text>
-          <RelativeTime at={comment.createdAt} />
+          <RelativeTime at={comment.createdAt} fontSize="$1" color="$grey500" />
         </XStack>
 
         {active ? (
-          <Text fontSize="$4">{translation.contentOf(comment.content)}</Text>
+          <Text fontSize="$4" lineHeight="$4" color="$grey800">
+            {translation.contentOf(comment.content)}
+          </Text>
         ) : (
-          <Text theme="gray" color="$color11" fontSize="$4">
+          <Text fontSize="$4" lineHeight="$4" color="$grey500">
             {deletedCommentLabel(comment)}
           </Text>
         )}
@@ -107,6 +108,6 @@ export const WorryCommentRow = memo(function WorryCommentRow({
           </XStack>
         )}
       </YStack>
-    </RetroListRow>
+    </XStack>
   );
 });

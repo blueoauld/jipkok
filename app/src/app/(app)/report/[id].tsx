@@ -11,11 +11,15 @@ import { PhotoGrid } from "@/components/PhotoGrid";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { FieldLabel } from "@/components/ui/FieldLabel";
-import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
+import { ListRow } from "@/components/ui/ListRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
-import { FIELD_TEXT_GAP } from "@/lib/design";
+import {
+  FIELD_TEXT_GAP,
+  LIST_ROW_EVEN_PADDING_Y,
+  SCREEN_PADDING,
+} from "@/lib/design";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadReportPhoto } from "@/lib/photo";
@@ -36,30 +40,39 @@ const REASONS: ReportReason[] = [
 function ReasonRow({
   label,
   selected,
-  divider,
   onPress,
 }: {
   label: string;
   selected: boolean;
-  divider: boolean;
   onPress: () => void;
 }) {
   const theme = useTheme();
 
   return (
-    <RetroListRow divider={divider} justify="space-between" onPress={onPress}>
-      <Text flex={1} numberOfLines={1} fontSize="$4">
+    <ListRow
+      horizontalPadding="small"
+      verticalPadding={LIST_ROW_EVEN_PADDING_Y}
+      right={
+        <XStack opacity={selected ? 1 : 0}>
+          <CheckIcon
+            size={CHECK_ICON_SIZE}
+            weight="bold"
+            color={theme.blue500.val}
+          />
+        </XStack>
+      }
+      onPress={onPress}
+    >
+      <Text
+        numberOfLines={1}
+        fontSize="$4"
+        lineHeight="$4"
+        fontWeight="500"
+        color="$grey800"
+      >
         {label}
       </Text>
-
-      <XStack opacity={selected ? 1 : 0}>
-        <CheckIcon
-          size={CHECK_ICON_SIZE}
-          weight="bold"
-          color={theme.color.val}
-        />
-      </XStack>
-    </RetroListRow>
+    </ListRow>
   );
 }
 
@@ -141,17 +154,17 @@ export default function ReportScreen() {
           />
         </YStack>
 
-        <RetroListPanel>
-          {REASONS.map((value, index) => (
+        {/* 행은 좌우 여백과 누름 면을 스스로 가지므로 폼 여백 밖까지 편다. */}
+        <YStack mx={-SCREEN_PADDING}>
+          {REASONS.map((value) => (
             <ReasonRow
               key={value}
               label={reasonLabel(value)}
               selected={value === reason}
-              divider={index < REASONS.length - 1}
               onPress={() => setReason(value)}
             />
           ))}
-        </RetroListPanel>
+        </YStack>
 
         <DetailField valueRef={detailRef} />
       </FormScreen>

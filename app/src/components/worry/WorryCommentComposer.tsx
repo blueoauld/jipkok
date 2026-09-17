@@ -1,14 +1,20 @@
+import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getTokens, XStack, YStack } from "tamagui";
+import { Spinner, useTheme, XStack } from "tamagui";
 
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { CircleButton } from "@/components/ui/CircleButton";
+import { PillInput } from "@/components/ui/PillInput";
 import type { WorryCommentResponse } from "@/lib/api";
-import { INPUT_HEIGHT, KEYBOARD_OVERLAP } from "@/lib/design";
+import {
+  INPUT_BAR_GAP,
+  INPUT_BAR_PADDING_X,
+  INPUT_BAR_PADDING_Y,
+  KEYBOARD_OVERLAP,
+} from "@/lib/design";
 import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
 
-const SUBMIT_BUTTON_WIDTH = 80;
+const ICON_SIZE = 22;
 
 export function WorryCommentComposer({
   replyTo,
@@ -20,50 +26,59 @@ export function WorryCommentComposer({
   onSubmit: (content: string) => Promise<unknown>;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [content, setContent] = useState("");
 
   const trimmed = content.trim();
+  const sendable = trimmed.length > 0 && !pending;
+
+  const submit = () => {
+    setContent("");
+    // 실패를 기다리는 동안 다음 댓글을 적고 있었을 수 있다. 빈 칸만 되돌린다.
+    onSubmit(trimmed).catch(() =>
+      setContent((current) => (current.length > 0 ? current : trimmed)),
+    );
+  };
 
   return (
     <XStack
-      px="$4"
-      pt="$3"
-      pb={getTokens().space.$3.val + KEYBOARD_OVERLAP}
+      px={INPUT_BAR_PADDING_X}
+      pt={INPUT_BAR_PADDING_Y}
+      pb={INPUT_BAR_PADDING_Y + KEYBOARD_OVERLAP}
       mb={-KEYBOARD_OVERLAP}
-      gap="$3"
-      items="center"
+      gap={INPUT_BAR_GAP}
+      items="flex-end"
       bg="$background"
     >
-      <YStack flex={1}>
-        {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
-        <Input
-          key={replyTo?.commentId ?? "comment"}
-          value={content}
-          onChangeText={setContent}
-          autoFocusNative={replyTo !== null}
-          placeholder={
-            replyTo
-              ? t("worry.detail.replyPlaceholder")
-              : t("worry.detail.commentPlaceholder")
-          }
-          maxLength={WORRY_COMMENT_MAX_LENGTH}
-        />
-      </YStack>
-      <Button
-        width={SUBMIT_BUTTON_WIDTH}
-        minH={INPUT_HEIGHT}
-        disabled={!trimmed}
-        loading={pending}
-        onPress={() => {
-          setContent("");
-          // 실패를 기다리는 동안 다음 댓글을 적고 있었을 수 있다. 빈 칸만 되돌린다.
-          onSubmit(trimmed).catch(() =>
-            setContent((current) => (current.length > 0 ? current : trimmed)),
-          );
-        }}
+      {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
+      <PillInput
+        key={replyTo?.commentId ?? "comment"}
+        value={content}
+        onChangeText={setContent}
+        autoFocus={replyTo !== null}
+        placeholder={
+          replyTo
+            ? t("worry.detail.replyPlaceholder")
+            : t("worry.detail.commentPlaceholder")
+        }
+        maxLength={WORRY_COMMENT_MAX_LENGTH}
+      />
+
+      <CircleButton
+        label={t("worry.detail.submit")}
+        tone={sendable ? "blue" : "grey"}
+        onPress={sendable ? submit : undefined}
       >
-        {t("worry.detail.submit")}
-      </Button>
+        {pending ? (
+          <Spinner size="small" color="$grey500" />
+        ) : (
+          <PaperPlaneRightIcon
+            size={ICON_SIZE}
+            weight="fill"
+            color={sendable ? theme.onFill.val : theme.grey400.val}
+          />
+        )}
+      </CircleButton>
     </XStack>
   );
 }
