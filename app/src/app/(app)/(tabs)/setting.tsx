@@ -11,7 +11,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { AttendanceCard } from "@/components/setting/AttendanceCard";
 import { SettingSection } from "@/components/setting/SettingSection";
-import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useAlert } from "@/hooks/useAlert";
 import { useAppLockToggle } from "@/hooks/useAppLockToggle";
@@ -311,7 +311,7 @@ export default function SettingScreen() {
       <Tabs.Screen options={screenOptions} />
 
       <YStack px="$4" pt="$4" pb="$3">
-        <RetroSegmentedControl
+        <SegmentedControl
           items={THEME_ITEMS}
           value={themeMode}
           onChange={setThemeMode}

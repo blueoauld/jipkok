@@ -7,8 +7,8 @@ import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
@@ -82,7 +82,7 @@ export default function ChatScreen() {
   return (
     <YStack flex={1}>
       <YStack px="$4" pt="$4" pb="$3">
-        <RetroSegmentedControl
+        <SegmentedControl
           items={FILTER_ITEMS}
           value={filter}
           onChange={(next) => {

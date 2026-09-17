@@ -16,8 +16,8 @@ import { TextInputDialog } from "@/components/TextInputDialog";
 import { Button } from "@/components/ui/Button";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { UserRow } from "@/components/UserRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
@@ -163,7 +163,7 @@ export default function MainScreen() {
       <Tabs.Screen options={screenOptions} />
 
       <YStack px="$4" pt="$4" pb="$3">
-        <RetroSegmentedControl
+        <SegmentedControl
           items={SORT_ITEMS}
           value={sort}
           onChange={changeSort}

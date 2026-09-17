@@ -5,8 +5,8 @@ import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
-import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
@@ -121,7 +121,7 @@ export function MemberFilterSheet({
       >
         <YStack gap="$2">
           <SectionLabel>{t("component.genderLabel")}</SectionLabel>
-          <RetroSegmentedControl
+          <SegmentedControl
             items={GENDER_FILTER_ITEMS}
             value={gender}
             onChange={setGender}

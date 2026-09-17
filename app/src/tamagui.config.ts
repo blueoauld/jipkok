@@ -74,6 +74,8 @@ const TDS_COLORS = {
   floatBackground: ["#FFFFFF", "#2C2C35"],
   hairlineBorder: ["#E5E8EB", "#3C3C47"],
   dimmedBackground: ["rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 0.56)"],
+  // 세그먼트 컨트롤의 선택 알약이다. 이름 붙은 CSS 변수가 없어 컴포넌트에서 잰 값이다.
+  segmentedIndicator: ["#FFFFFF", "#4D4D59"],
 } as const;
 
 type TdsColors = Record<keyof typeof TDS_COLORS, string>;

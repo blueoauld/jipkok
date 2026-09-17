@@ -24,8 +24,8 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WorryCard } from "@/components/worry/WorryCard";
 import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
 import { useAlert } from "@/hooks/useAlert";
@@ -330,7 +330,7 @@ export default function FeedScreen() {
       <Tabs.Screen options={screenOptions} />
 
       <YStack px="$4" pt="$4" pb="$3">
-        <RetroSegmentedControl
+        <SegmentedControl
           items={BOARD_ITEMS}
           value={board}
           onChange={changeBoard}
