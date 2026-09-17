@@ -11,6 +11,7 @@ import { DiaryRow } from "@/components/diary/DiaryRow";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
+import { Border } from "@/components/ui/Border";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRowTopSpacer } from "@/components/ui/ListRow";
 import { type DayMarking, MonthCalendar } from "@/components/ui/MonthCalendar";
@@ -128,9 +129,12 @@ export default function DiaryScreen() {
               lineHeight="$2"
               color="$grey600"
               px={LIST_ROW_PADDING_X.small}
+              pb={LIST_ROW_PADDING_X.small}
             >
               {t("diary.notice")}
             </Text>
+
+            <Border variant="height16" />
 
             <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
           </>
