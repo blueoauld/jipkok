@@ -73,6 +73,8 @@ const TDS_COLORS = {
   layeredBackground: ["#FFFFFF", "#202027"],
   floatBackground: ["#FFFFFF", "#2C2C35"],
   hairlineBorder: ["#E5E8EB", "#3C3C47"],
+  // 목록 행 구분선과 탭 밑줄의 옅은 선이다. TDS 소스의 tHairlineBackground에서 옮겼다.
+  hairline: ["rgba(0, 0, 33, 0.07)", "rgba(222, 222, 255, 0.14)"],
   dimmedBackground: ["rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 0.56)"],
   // 세그먼트 컨트롤의 선택 알약이다. 이름 붙은 CSS 변수가 없어 컴포넌트에서 잰 값이다.
   segmentedIndicator: ["#FFFFFF", "#4D4D59"],

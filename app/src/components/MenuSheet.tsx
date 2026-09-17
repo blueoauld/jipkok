@@ -2,14 +2,17 @@ import Svg, { Path } from "react-native-svg";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { BottomSheet } from "@/components/ui/BottomSheet";
-import { SHEET_PADDING_X, TRANSITION } from "@/lib/design";
+import {
+  ROW_PRESS_RADIUS,
+  ROW_PRESS_SCALE,
+  SHEET_PADDING_X,
+  TRANSITION,
+} from "@/lib/design";
 
 // TDS BottomSheet.Select에서 잰 값이다.
 const LIST_PADDING_TOP = 8;
 const LIST_PADDING_BOTTOM = 16;
 const ROW_PADDING_Y = 16;
-const ROW_RADIUS = 12;
-const ROW_PRESSED_SCALE = 0.96;
 
 // TDS 선택지의 체크 아이콘을 옮겼다.
 const CHECK_ICON_SIZE = 24;
@@ -44,8 +47,8 @@ export function MenuSheet({
             items="center"
             px={SHEET_PADDING_X}
             py={ROW_PADDING_Y}
-            rounded={ROW_RADIUS}
-            pressStyle={{ bg: "$greyOpacity100", scale: ROW_PRESSED_SCALE }}
+            rounded={ROW_PRESS_RADIUS}
+            pressStyle={{ bg: "$greyOpacity100", scale: ROW_PRESS_SCALE }}
             transition={TRANSITION}
             accessibilityRole={selected === undefined ? "button" : "radio"}
             accessibilityState={{ checked: selected }}

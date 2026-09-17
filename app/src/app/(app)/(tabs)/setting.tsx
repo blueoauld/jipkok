@@ -11,6 +11,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { AttendanceCard } from "@/components/setting/AttendanceCard";
 import { SettingSection } from "@/components/setting/SettingSection";
+import { Border } from "@/components/ui/Border";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
 import { useAlert } from "@/hooks/useAlert";
@@ -312,6 +313,7 @@ export default function SettingScreen() {
 
       <YStack px="$4" pt="$4" pb="$3">
         <SegmentedControl
+          size="small"
           items={THEME_ITEMS}
           value={themeMode}
           onChange={setThemeMode}
@@ -322,25 +324,28 @@ export default function SettingScreen() {
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingTop: space.$2.val,
           paddingBottom: space.$4.val + tabBarOverlay,
         }}
       >
-        <YStack gap="$5">
-          {SECTIONS.map((group) => (
-            <YStack key={group.key} gap="$5">
-              <SettingSection
-                items={group.items}
-                pendingAction={pendingAction}
-                profileViewCount={profileViewCount}
-                appLockEnabled={appLock.enabled}
-                onItemPress={handlePress}
-              />
+        {SECTIONS.map((group) => (
+          <YStack key={group.key}>
+            <Border variant="height16" />
+            <SettingSection
+              items={group.items}
+              pendingAction={pendingAction}
+              profileViewCount={profileViewCount}
+              appLockEnabled={appLock.enabled}
+              onItemPress={handlePress}
+            />
 
-              {group.attendance && <AttendanceCard />}
-            </YStack>
-          ))}
-        </YStack>
+            {group.attendance && (
+              <>
+                <Border variant="height16" />
+                <AttendanceCard />
+              </>
+            )}
+          </YStack>
+        ))}
       </ScrollView>
 
       <MenuSheet

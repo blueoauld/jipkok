@@ -144,13 +144,28 @@ export const INPUT_HEIGHT = 56;
 
 export const INPUT_RADIUS = 14;
 
-export const SEGMENT_HEIGHT = 48;
-
-export const SEGMENT_RADIUS = 14;
-
-export const SEGMENT_ITEM_HEIGHT = 40;
-
-export const SEGMENT_ITEM_RADIUS = 10;
+// TDS 세그먼트 컨트롤에서 잰 크기별 치수다. 선택 알약은 트랙 안쪽 여백만큼 작고, fluid 칸은 글자 폭에
+// 좌우 여백을 더한 폭이다.
+export const SEGMENT_SIZES = {
+  small: {
+    height: 39,
+    radius: 10,
+    paddingX: 3,
+    itemHeight: 33,
+    itemRadius: 8,
+    fluidItemPaddingX: 14,
+    fontSize: "$2",
+  },
+  large: {
+    height: 48,
+    radius: 14,
+    paddingX: 5,
+    itemHeight: 40,
+    itemRadius: 10,
+    fluidItemPaddingX: 12,
+    fontSize: "$4",
+  },
+} as const;
 
 export const BADGE_HEIGHT = 24;
 
@@ -172,12 +187,19 @@ export const PILL_RADIUS = 9999;
 // 화면 좌우 여백이다. space $4(18)는 요소 사이 간격에도 쓰여서 값을 바꾸지 않고 따로 둔다.
 export const SCREEN_PADDING = 20;
 
+export const LIST_ROW_PADDING_X = 24;
+
 export const LIST_ROW_VERTICAL_PADDING = {
   small: 8,
   medium: 12,
   large: 16,
   xlarge: 24,
 } as const;
+
+// TDS 목록 행을 누르면 모서리 12인 옅은 회색 면이 깔리며 이만큼 줄어든다.
+export const ROW_PRESS_RADIUS = 12;
+
+export const ROW_PRESS_SCALE = 0.96;
 
 // 흰 화면에서 묶음과 묶음 사이를 가르는 회색 띠의 높이다.
 export const SECTION_DIVIDER_HEIGHT = 16;

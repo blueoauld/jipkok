@@ -3,23 +3,13 @@ import { type LayoutRectangle, ScrollView } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import {
-  PILL_RADIUS,
-  SEGMENT_HEIGHT,
-  SEGMENT_ITEM_HEIGHT,
-  SEGMENT_ITEM_RADIUS,
-  SEGMENT_RADIUS,
-  TRANSITION,
-} from "@/lib/design";
+import { PILL_RADIUS, SEGMENT_SIZES, TRANSITION } from "@/lib/design";
 
-// TDS 세그먼트 컨트롤에서 잰 값이다.
-const TRACK_PADDING_X = 5;
-const TRACK_PADDING_Y = (SEGMENT_HEIGHT - SEGMENT_ITEM_HEIGHT) / 2;
+// TDS 세그먼트 컨트롤에서 잰 값이다. 크기별 치수는 SEGMENT_SIZES에 있다.
 const INDICATOR_SHADOW = "0 1px 2px rgba(0, 0, 0, 0.09)";
 
 // fluid에서만 쓰는 값이다. 스크롤해서 가려진 쪽 끝을 흐리게 덮고, 처음에서 벗어나면 트랙 왼쪽
 // 가장자리에 걸쳐 처음으로 돌아가는 화살표 버튼이 뜬다.
-const FLUID_ITEM_PADDING_X = 12;
 const FADE_WIDTH = 28;
 const ARROW_BUTTON_SIZE = 24;
 const ARROW_ICON_SIZE = 12;
@@ -34,19 +24,27 @@ export type SegmentedItem<T extends string> = {
   label: string;
 };
 
+type SegmentSpec = (typeof SEGMENT_SIZES)[keyof typeof SEGMENT_SIZES];
+
 type SegmentedControlProps<T extends string> = {
   items: readonly SegmentedItem<T>[];
   value: T;
   onChange: (value: T) => void;
 };
 
+function trackPaddingY(spec: SegmentSpec) {
+  return (spec.height - spec.itemHeight) / 2;
+}
+
 function Segment({
+  spec,
   label,
   selected,
   fluid,
   onLayout,
   onPress,
 }: {
+  spec: SegmentSpec;
   label: string;
   selected: boolean;
   fluid: boolean;
@@ -56,8 +54,8 @@ function Segment({
   return (
     <XStack
       flex={fluid ? undefined : 1}
-      height={SEGMENT_ITEM_HEIGHT}
-      px={fluid ? FLUID_ITEM_PADDING_X : undefined}
+      height={spec.itemHeight}
+      px={fluid ? spec.fluidItemPaddingX : undefined}
       items="center"
       justify="center"
       accessibilityRole="radio"
@@ -68,7 +66,7 @@ function Segment({
       onPress={onPress}
     >
       <Text
-        fontSize="$4"
+        fontSize={spec.fontSize}
         fontWeight={selected ? "600" : "500"}
         color={selected ? "$grey800" : "$grey600"}
       >
@@ -79,11 +77,13 @@ function Segment({
 }
 
 function Indicator({
+  spec,
   top = 0,
   left = 0,
   x,
   width,
 }: {
+  spec: SegmentSpec;
   top?: number;
   left?: number;
   x: number;
@@ -95,8 +95,8 @@ function Indicator({
       t={top}
       l={left}
       width={width}
-      height={SEGMENT_ITEM_HEIGHT}
-      rounded={SEGMENT_ITEM_RADIUS}
+      height={spec.itemHeight}
+      rounded={spec.itemRadius}
       bg="$segmentedIndicator"
       boxShadow={INDICATOR_SHADOW}
       x={x}
@@ -106,12 +106,13 @@ function Indicator({
 }
 
 function FixedSegmentedControl<T extends string>({
+  spec,
   items,
   value,
   onChange,
-}: SegmentedControlProps<T>) {
+}: SegmentedControlProps<T> & { spec: SegmentSpec }) {
   const [trackWidth, setTrackWidth] = useState(0);
-  const itemWidth = (trackWidth - TRACK_PADDING_X * 2) / items.length;
+  const itemWidth = (trackWidth - spec.paddingX * 2) / items.length;
   const selectedIndex = Math.max(
     items.findIndex((item) => item.value === value),
     0,
@@ -119,18 +120,19 @@ function FixedSegmentedControl<T extends string>({
 
   return (
     <XStack
-      height={SEGMENT_HEIGHT}
-      px={TRACK_PADDING_X}
+      height={spec.height}
+      px={spec.paddingX}
       items="center"
-      rounded={SEGMENT_RADIUS}
+      rounded={spec.radius}
       bg="$greyOpacity100"
       accessibilityRole="radiogroup"
       onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
     >
       {trackWidth > 0 && (
         <Indicator
-          top={TRACK_PADDING_Y}
-          left={TRACK_PADDING_X}
+          spec={spec}
+          top={trackPaddingY(spec)}
+          left={spec.paddingX}
           x={selectedIndex * itemWidth}
           width={itemWidth}
         />
@@ -139,6 +141,7 @@ function FixedSegmentedControl<T extends string>({
       {items.map((item) => (
         <Segment
           key={item.value}
+          spec={spec}
           label={item.label}
           selected={item.value === value}
           fluid={false}
@@ -187,10 +190,11 @@ function Fade({ side, visible }: { side: "left" | "right"; visible: boolean }) {
 }
 
 function FluidSegmentedControl<T extends string>({
+  spec,
   items,
   value,
   onChange,
-}: SegmentedControlProps<T>) {
+}: SegmentedControlProps<T> & { spec: SegmentSpec }) {
   const scrollRef = useRef<ScrollView>(null);
   const scroll = useRef({ x: 0, viewWidth: 0, contentWidth: 0 });
   const [layouts, setLayouts] = useState<LayoutRectangle[]>([]);
@@ -210,8 +214,8 @@ function FluidSegmentedControl<T extends string>({
     <YStack mx={-ARROW_BUTTON_SIZE / 2}>
       <YStack
         mx={ARROW_BUTTON_SIZE / 2}
-        height={SEGMENT_HEIGHT}
-        rounded={SEGMENT_RADIUS}
+        height={spec.height}
+        rounded={spec.radius}
         bg="$greyOpacity100"
         overflow="hidden"
       >
@@ -221,8 +225,8 @@ function FluidSegmentedControl<T extends string>({
           showsHorizontalScrollIndicator={false}
           scrollEventThrottle={16}
           contentContainerStyle={{
-            paddingHorizontal: TRACK_PADDING_X,
-            paddingVertical: TRACK_PADDING_Y,
+            paddingHorizontal: spec.paddingX,
+            paddingVertical: trackPaddingY(spec),
           }}
           onLayout={(event) => {
             scroll.current.viewWidth = event.nativeEvent.layout.width;
@@ -238,11 +242,14 @@ function FluidSegmentedControl<T extends string>({
           }}
         >
           <XStack accessibilityRole="radiogroup">
-            {selected && <Indicator x={selected.x} width={selected.width} />}
+            {selected && (
+              <Indicator spec={spec} x={selected.x} width={selected.width} />
+            )}
 
             {items.map((item, index) => (
               <Segment
                 key={item.value}
+                spec={spec}
                 label={item.label}
                 selected={item.value === value}
                 fluid
@@ -305,11 +312,17 @@ function FluidSegmentedControl<T extends string>({
 // fixed는 칸 폭을 똑같이 나누고, fluid는 칸을 글자 폭만큼 두고 넘치면 옆으로 스크롤한다.
 export function SegmentedControl<T extends string>({
   alignment = "fixed",
+  size = "large",
   ...props
-}: SegmentedControlProps<T> & { alignment?: "fixed" | "fluid" }) {
+}: SegmentedControlProps<T> & {
+  alignment?: "fixed" | "fluid";
+  size?: keyof typeof SEGMENT_SIZES;
+}) {
+  const spec = SEGMENT_SIZES[size];
+
   return alignment === "fluid" ? (
-    <FluidSegmentedControl {...props} />
+    <FluidSegmentedControl spec={spec} {...props} />
   ) : (
-    <FixedSegmentedControl {...props} />
+    <FixedSegmentedControl spec={spec} {...props} />
   );
 }
