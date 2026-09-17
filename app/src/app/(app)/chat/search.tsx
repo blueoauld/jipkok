@@ -5,16 +5,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { SearchList } from "@/components/SearchList";
+import { useAlert } from "@/hooks/useAlert";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomSearch } from "@/hooks/useChatRoomSearch";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 
 export default function ChatSearchScreen() {
   const { t } = useTranslation();
   const screenOptions = useMemo(() => ({ title: t("chat.search.title") }), [t]);
 
   const [submitted, setSubmitted] = useState("");
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const { toggleNotification, togglePin, markRoomRead, confirmLeave } =
     useChatRoomActions({
       show,

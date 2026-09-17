@@ -19,13 +19,13 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
+import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { MEMBERS_KEY, useMembers } from "@/hooks/useMembers";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePullRefresh } from "@/hooks/usePullRefresh";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
@@ -74,7 +74,7 @@ export default function MainScreen() {
   const filtered = !isDefaultMemberFilter(filter);
   const memberList = useMembers(sort, filter);
   const { data: profile } = useMyProfile();
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const location = useLocationUpdate({ show, showApiError, confirm });
 
   const updateComment = useMutation({

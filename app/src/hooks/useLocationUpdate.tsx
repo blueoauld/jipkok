@@ -3,8 +3,8 @@ import * as Location from "expo-location";
 import { useCallback, useRef } from "react";
 import { Platform } from "react-native";
 
+import type { AlertApi } from "@/hooks/useAlert";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api } from "@/lib/api";
 import i18n from "@/lib/i18n";
 
@@ -47,7 +47,7 @@ async function resolveCachedCoords() {
   return (await resolveLastKnownCoords()) ?? (await resolveCurrentCoords());
 }
 
-export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
+export function useLocationUpdate({ show, showApiError }: AlertApi) {
   const queryClient = useQueryClient();
   const updating = useRef(false);
   const refreshing = useRef(false);
@@ -89,19 +89,19 @@ export function useLocationUpdate({ show, showApiError }: RetroAlertApi) {
       const permission = await Location.requestForegroundPermissionsAsync();
 
       if (!permission.granted) {
-        show("info", DENIED_MESSAGE);
+        show(DENIED_MESSAGE);
         return false;
       }
 
       if (!(await enableServices())) {
-        show("info", SERVICES_OFF_MESSAGE);
+        show(SERVICES_OFF_MESSAGE);
         return false;
       }
 
       const coords = await resolveCoords();
 
       if (!coords) {
-        show("info", FAILED_MESSAGE);
+        show(FAILED_MESSAGE);
         return false;
       }
 

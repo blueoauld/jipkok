@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
+import type { AlertApi } from "@/hooks/useAlert";
 import { api } from "@/lib/api";
 import { releaseDevice } from "@/lib/push/notifications";
 
-export function useLogout({ showApiError }: RetroAlertApi) {
+export function useLogout({ showApiError }: AlertApi) {
   const { mutate: logout, isPending: loggingOut } = useMutation({
     mutationFn: async () => {
       await releaseDevice();

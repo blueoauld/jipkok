@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
+import type { AlertApi } from "@/hooks/useAlert";
 import { worryCommentsKey } from "@/hooks/useWorryComments";
 import { WORRY_LIST_KEY, worryDetailKey } from "@/hooks/useWorryPosts";
 import {
@@ -24,7 +24,7 @@ import { showToast } from "@/lib/toast/store";
 
 export function useWorryDetailActions(
   postId: number,
-  { show, showApiError, confirm }: RetroAlertApi,
+  { show, showApiError, confirm }: AlertApi,
 ) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -108,7 +108,7 @@ export function useWorryDetailActions(
     mutationFn: () => api.worries.report(postId),
     onSuccess: async () => {
       await invalidateList();
-      show("info", reportedMessage(), () => router.back());
+      show(reportedMessage(), () => router.back());
     },
     onError: showApiError,
   });
@@ -147,7 +147,7 @@ export function useWorryDetailActions(
     mutationFn: (commentId: number) => api.worries.reportComment(commentId),
     onSuccess: async () => {
       await invalidateComments();
-      show("info", reportedMessage());
+      show(reportedMessage());
     },
     onError: showApiError,
   });

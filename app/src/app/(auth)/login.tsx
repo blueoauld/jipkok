@@ -10,7 +10,7 @@ import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { Button } from "@/components/ui/Button";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useAlert } from "@/hooks/useAlert";
 import { api, type LoginRequest } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
 
@@ -28,7 +28,7 @@ export default function LoginScreen() {
     }
   }, [phoneNumber, setValue]);
 
-  const { alertElement, showApiError } = useRetroAlert();
+  const { alertElement, showApiError } = useAlert();
 
   const login = useMutation({
     mutationFn: api.auth.login,

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useAlert } from "@/hooks/useAlert";
 import { WORRY_LIST_KEY } from "@/hooks/useWorryPosts";
 import { api, type WorryCategory } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
@@ -33,11 +33,11 @@ export default function WorryComposeScreen() {
   const contentRef = useRef("");
   const [empty, setEmpty] = useState(true);
   const [category, setCategory] = useState<WorryCategory | null>(null);
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const navigation = useNavigation();
 
   useEffect(() => {
-    show("info", t("worry.compose.notice"));
+    show(t("worry.compose.notice"));
   }, [show, t]);
 
   const compose = useMutation({

@@ -12,12 +12,12 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroDeleteButton } from "@/components/ui/RetroDeleteButton";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useAlert } from "@/hooks/useAlert";
 import {
   useAddContactBlock,
   useContactBlocks,
   useRemoveContactBlock,
 } from "@/hooks/useContactBlocks";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import type { ContactBlockResponse } from "@/lib/api";
 import { listErrorMessage } from "@/lib/message";
 import { toDomestic } from "@/lib/phone";
@@ -50,7 +50,7 @@ function ContactBlockRow({
 
 export default function ContactBlockScreen() {
   const { t } = useTranslation();
-  const { alertElement, show, showApiError } = useRetroAlert();
+  const { alertElement, show, showApiError } = useAlert();
   const [addOpen, setAddOpen] = useState(false);
   const { data: blocks, error, refetch } = useContactBlocks();
   const add = useAddContactBlock(showApiError);
@@ -113,7 +113,7 @@ export default function ContactBlockScreen() {
         title={t("contactBlock.addTitle")}
         submitLabel={t("contactBlock.submit")}
         onSubmit={(phoneNumber, memo) => add.mutate({ phoneNumber, memo })}
-        onInvalid={() => show("warning", t("contactBlock.invalid"))}
+        onInvalid={() => show(t("contactBlock.invalid"))}
       />
 
       {alertElement}

@@ -22,6 +22,7 @@ import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useAlert } from "@/hooks/useAlert";
 import { useChatMedia } from "@/hooks/useChatMedia";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
@@ -30,7 +31,6 @@ import { useChatRoomEffects } from "@/hooks/useChatRoomEffects";
 import { forgetRoom } from "@/hooks/useChatSocket";
 import { useMessageActions } from "@/hooks/useMessageActions";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound, toReply } from "@/lib/chat";
@@ -72,7 +72,7 @@ export default function ChatRoomScreen() {
     });
 
   const queryClient = useQueryClient();
-  const { alertElement, confirm, show, showApiError } = useRetroAlert();
+  const { alertElement, confirm, show, showApiError } = useAlert();
 
   const deletedRoomId = useDeletedRoomStore((state) => state.roomId);
   const partnerLeft = deletedRoomId === roomId;
@@ -164,7 +164,7 @@ export default function ChatRoomScreen() {
 
   useEffect(() => {
     if (partnerLeft) {
-      show("info", t("chatRoom.partnerLeft"), () => router.back());
+      show(t("chatRoom.partnerLeft"), () => router.back());
     }
   }, [partnerLeft, show, t]);
 

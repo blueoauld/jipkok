@@ -7,9 +7,9 @@ import { useTheme, YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
+import { useAlert } from "@/hooks/useAlert";
 import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { formatDateTime } from "@/lib/date";
 import { STATUS_ICON_SIZE } from "@/lib/design";
@@ -20,7 +20,7 @@ export default function SuspendedScreen() {
   const { t } = useTranslation();
 
   const theme = useTheme();
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const { confirmWithdraw } = useWithdraw({ show, showApiError, confirm });
 
   const { data: profile } = useMyProfile();

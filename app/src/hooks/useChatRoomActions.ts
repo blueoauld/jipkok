@@ -6,9 +6,9 @@ import {
 import * as Haptics from "expo-haptics";
 import { useCallback } from "react";
 
+import type { AlertApi } from "@/hooks/useAlert";
 import { chatRoomKey, removeRoomQueries } from "@/hooks/useChatRoom";
 import { CHAT_ROOMS_KEY, invalidateChatLists } from "@/hooks/useChatRooms";
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { api, type ChatRoomPage, type ChatRoomResponse } from "@/lib/api";
 import {
   LEAVE_DESCRIPTION,
@@ -28,7 +28,7 @@ async function runInChunks(
   }
 }
 
-export function useChatRoomActions({ confirm, showApiError }: RetroAlertApi) {
+export function useChatRoomActions({ confirm, showApiError }: AlertApi) {
   const queryClient = useQueryClient();
 
   const apply = (roomId: number, enabled: boolean) =>

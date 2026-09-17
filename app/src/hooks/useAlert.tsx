@@ -1,11 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { RetroAlert, type RetroAlertVariant } from "@/components/ui/RetroAlert";
+import { Alert } from "@/components/ui/Alert";
 import { apiErrorMessage } from "@/lib/alert";
-import i18n from "@/lib/i18n";
 
 type AlertState = {
-  variant: RetroAlertVariant;
   message: string;
   confirmLabel?: string;
   destructive?: boolean;
@@ -13,19 +11,13 @@ type AlertState = {
   onDismiss?: () => void;
 };
 
-const TITLES: Record<RetroAlertVariant, string> = {
-  error: i18n.t("alert.error"),
-  info: i18n.t("alert.info"),
-  warning: i18n.t("alert.warning"),
-};
-
 // 훅이 알림을 띄워야 할 때는 화면의 알림을 넘겨받는다. 화면마다 알림은 하나만 둔다.
-export type RetroAlertApi = Pick<
-  ReturnType<typeof useRetroAlert>,
+export type AlertApi = Pick<
+  ReturnType<typeof useAlert>,
   "show" | "showApiError" | "confirm"
 >;
 
-export function useRetroAlert(initial?: AlertState) {
+export function useAlert(initial?: AlertState) {
   const [alert, setAlert] = useState<AlertState | null>(initial ?? null);
   // 닫힌 뒤에도 마지막 알림을 남겨 두어야 나가는 전환을 그릴 수 있다.
   const [open, setOpen] = useState(initial != null);
@@ -36,13 +28,13 @@ export function useRetroAlert(initial?: AlertState) {
   }, []);
 
   const show = useCallback(
-    (variant: RetroAlertVariant, message: string, onDismiss?: () => void) =>
-      present({ variant, message, onDismiss }),
+    (message: string, onDismiss?: () => void) =>
+      present({ message, onDismiss }),
     [present],
   );
 
   const showApiError = useCallback(
-    (error: unknown) => show("error", apiErrorMessage(error)),
+    (error: unknown) => show(apiErrorMessage(error)),
     [show],
   );
 
@@ -52,16 +44,13 @@ export function useRetroAlert(initial?: AlertState) {
       confirmLabel: string;
       destructive?: boolean;
       onConfirm: () => void;
-      variant?: RetroAlertVariant;
-    }) => present({ variant: "warning", ...options }),
+    }) => present(options),
     [present],
   );
 
   const alertElement = alert && (
-    <RetroAlert
+    <Alert
       visible={open}
-      variant={alert.variant}
-      title={TITLES[alert.variant]}
       message={alert.message}
       confirmLabel={alert.confirmLabel}
       destructive={alert.destructive}

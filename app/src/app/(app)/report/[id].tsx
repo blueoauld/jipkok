@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useAlert } from "@/hooks/useAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
 import { reportedMessage } from "@/lib/message";
@@ -86,7 +86,7 @@ export default function ReportScreen() {
   const memberId = Number(id);
   const [reason, setReason] = useState<ReportReason | null>(null);
   const detailRef = useRef("");
-  const { alertElement, show, showApiError } = useRetroAlert();
+  const { alertElement, show, showApiError } = useAlert();
   const photos = useUploadPhotos(uploadReportPhoto, showApiError);
 
   const title = roomId ? t("report.chatTitle") : t("report.title");
@@ -100,7 +100,7 @@ export default function ReportScreen() {
         detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,
       }),
-    onSuccess: () => show("info", reportedMessage(), () => router.back()),
+    onSuccess: () => show(reportedMessage(), () => router.back()),
     onError: showApiError,
   });
 

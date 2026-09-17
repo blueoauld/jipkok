@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { MemberActionKey } from "@/components/MemberActionBar";
+import type { AlertApi } from "@/hooks/useAlert";
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { CHAT_UNREAD_COUNT_KEY } from "@/hooks/useChatUnreadCount";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
@@ -13,7 +14,6 @@ import { MEMBERS_KEY } from "@/hooks/useMembers";
 import { MEMBER_SEARCH_KEY } from "@/hooks/useMemberSearch";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { PROFILE_VIEW_LIST_KEY } from "@/hooks/useProfileViews";
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
 import { useSecretPhotos } from "@/hooks/useSecretPhotos";
 import { APP_EVENT, type AppEventName, logAppEvent } from "@/lib/analytics";
 import { api, type MemberDetailResponse } from "@/lib/api";
@@ -53,7 +53,7 @@ type AwaitedRelation = Relation & { successMessage: string };
 export function useMemberActions(
   memberId: number,
   member: MemberDetailResponse | undefined,
-  { show, showApiError, confirm }: RetroAlertApi,
+  { show, showApiError, confirm }: AlertApi,
   {
     openNote,
     openSecretPhotos,
@@ -71,7 +71,7 @@ export function useMemberActions(
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      show("info", t("memberDetail.noteSent"));
+      show(t("memberDetail.noteSent"));
     },
     onError: showApiError,
   });
@@ -86,7 +86,7 @@ export function useMemberActions(
       MEMO_AFFECTED_KEYS.forEach((key) =>
         queryClient.invalidateQueries({ queryKey: key }),
       );
-      show("info", t("memberDetail.memoSaved"));
+      show(t("memberDetail.memoSaved"));
     },
     onError: showApiError,
   });
@@ -117,7 +117,7 @@ export function useMemberActions(
     onSuccess: (_data, { listKeys, successMessage }) => {
       queryClient.invalidateQueries({ queryKey });
       invalidateAll(listKeys);
-      show("info", successMessage);
+      show(successMessage);
     },
     onError: showApiError,
   });
@@ -181,7 +181,7 @@ export function useMemberActions(
           loadSecretPhotos.mutate(undefined, {
             onSuccess: (photos) =>
               photos.length === 0
-                ? show("info", t("memberDetail.secretPhotoEmpty"))
+                ? show(t("memberDetail.secretPhotoEmpty"))
                 : openSecretPhotos(),
           });
         }

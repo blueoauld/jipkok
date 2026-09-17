@@ -2,14 +2,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
+import type { AlertApi } from "@/hooks/useAlert";
 import { isApiError } from "@/lib/api";
 import { reportError } from "@/lib/crash";
 import { exportDiaries } from "@/lib/diary-export";
 
 const IDLE = { done: 0, total: 0 };
 
-export function useExportDiary({ show, showApiError }: RetroAlertApi) {
+export function useExportDiary({ show, showApiError }: AlertApi) {
   const { t } = useTranslation();
   const [progress, setProgress] = useState(IDLE);
 
@@ -18,7 +18,7 @@ export function useExportDiary({ show, showApiError }: RetroAlertApi) {
       exportDiaries((done, total) => setProgress({ done, total })),
     onSuccess: (result) => {
       if (result === "empty") {
-        show("info", t("setting.exportDiaryEmpty"));
+        show(t("setting.exportDiaryEmpty"));
       }
     },
     onError: (error) => {

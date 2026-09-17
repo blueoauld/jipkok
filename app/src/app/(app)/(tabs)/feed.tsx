@@ -28,13 +28,13 @@ import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { WorryCard } from "@/components/worry/WorryCard";
 import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
+import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePullRefresh } from "@/hooks/usePullRefresh";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
@@ -89,7 +89,7 @@ export default function FeedScreen() {
   const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [worryFilterOpen, setWorryFilterOpen] = useState(false);
@@ -237,7 +237,7 @@ export default function FeedScreen() {
     mutationFn: api.feeds.report,
     onSuccess: async () => {
       await invalidate();
-      show("info", reportedMessage());
+      show(reportedMessage());
     },
     onError: handlePostError,
   });

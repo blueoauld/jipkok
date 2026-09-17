@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
+import type { AlertApi } from "@/hooks/useAlert";
 import i18n from "@/lib/i18n";
 import { authenticateDevice, isDeviceLockAvailable } from "@/lib/lock";
 import { useAppLockStore } from "@/lib/lock/store";
@@ -12,7 +12,7 @@ const ENABLED_MESSAGE = i18n.t("lock.enabled");
 const DISABLED_MESSAGE = i18n.t("lock.disabled");
 
 // 끌 때도 인증을 받아야 남이 잠금을 풀어 두지 못한다.
-export function useAppLockToggle({ show }: RetroAlertApi) {
+export function useAppLockToggle({ show }: AlertApi) {
   const enabled = useAppLockStore((state) => state.enabled);
   const setEnabled = useAppLockStore((state) => state.setEnabled);
   const [pending, setPending] = useState(false);
@@ -32,7 +32,7 @@ export function useAppLockToggle({ show }: RetroAlertApi) {
           setEnabled(false);
           showToast("warning", TURNED_OFF_MESSAGE);
         } else {
-          show("warning", UNAVAILABLE_MESSAGE);
+          show(UNAVAILABLE_MESSAGE);
         }
 
         return;

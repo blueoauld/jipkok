@@ -8,8 +8,8 @@ import { Text } from "tamagui";
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { Button } from "@/components/ui/Button";
+import { useAlert } from "@/hooks/useAlert";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api } from "@/lib/api";
 import {
@@ -34,7 +34,7 @@ export default function SetupScreen() {
 
   useBlockGoBack();
 
-  const { alertElement, showApiError } = useRetroAlert();
+  const { alertElement, showApiError } = useAlert();
 
   const setupProfile = useMutation({
     mutationFn: api.members.setupProfile,

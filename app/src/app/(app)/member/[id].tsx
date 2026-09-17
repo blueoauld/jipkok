@@ -17,10 +17,10 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useAlert } from "@/hooks/useAlert";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { copyText } from "@/lib/clipboard";
 import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
@@ -50,7 +50,7 @@ export default function MemberProfileScreen() {
   const [memoOpen, setMemoOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
 
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const photoGridOpen = usePhotoGridStore((state) => state.open);
   const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
   const noteContent = useNoteStore((state) => state.content);

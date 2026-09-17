@@ -13,6 +13,7 @@ import { AttendanceCard } from "@/components/setting/AttendanceCard";
 import { SettingSection } from "@/components/setting/SettingSection";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { useAdReward } from "@/hooks/useAdReward";
+import { useAlert } from "@/hooks/useAlert";
 import { useAppLockToggle } from "@/hooks/useAppLockToggle";
 import { ATTENDANCE_DAYS_KEY } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
@@ -22,7 +23,6 @@ import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useProfileViewNewCount } from "@/hooks/useProfileViews";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
 import { APP_VERSION } from "@/lib/device";
@@ -79,7 +79,7 @@ export default function SettingScreen() {
   const profileViewCount = useProfileViewNewCount();
   const themeMode = useThemeStore((state) => state.mode);
   const setThemeMode = useThemeStore((state) => state.setMode);
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const locale = currentLocale();
   const setLocale = useLocaleStore((state) => state.setLocale);
 
@@ -141,18 +141,15 @@ export default function SettingScreen() {
       const detail = versionText(APP_VERSION, latestVersion);
 
       if (!isOutdated(APP_VERSION, latestVersion)) {
-        show("info", detail);
+        show(detail);
         return;
       }
 
       confirm({
-        variant: "info",
         message: detail,
         confirmLabel: t("setting.update"),
         onConfirm: () =>
-          Linking.openURL(storeUrl).catch(() =>
-            show("error", BROWSER_FAILED_MESSAGE),
-          ),
+          Linking.openURL(storeUrl).catch(() => show(BROWSER_FAILED_MESSAGE)),
       });
     },
     onError: showApiError,

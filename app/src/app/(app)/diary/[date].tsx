@@ -21,10 +21,10 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { Button } from "@/components/ui/Button";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useAlert } from "@/hooks/useAlert";
 import { DIARIES_KEY, useDiaryMonth } from "@/hooks/useDiaries";
 import { useDiaryAttachments } from "@/hooks/useDiaryAttachments";
 import { useDiaryAttachmentViewer } from "@/hooks/useDiaryAttachmentViewer";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type DiaryMood, type DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam, toMonthParam } from "@/lib/date";
 import { moodEmoji } from "@/lib/diary";
@@ -50,7 +50,7 @@ function DiaryEditor({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
-  const { alertElement, showApiError, confirm } = useRetroAlert();
+  const { alertElement, showApiError, confirm } = useAlert();
   const initial = diary?.content ?? "";
   const contentRef = useRef(initial);
   const [textEmpty, setTextEmpty] = useState(initial.trim().length === 0);
@@ -187,7 +187,7 @@ function DiaryReadScreen({
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { alertElement, showApiError, confirm } = useRetroAlert();
+  const { alertElement, showApiError, confirm } = useAlert();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const remove = useMutation({

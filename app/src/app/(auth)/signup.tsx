@@ -11,7 +11,7 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { SendCodeButton } from "@/components/SendCodeButton";
 import { Button } from "@/components/ui/Button";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useAlert } from "@/hooks/useAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
@@ -39,8 +39,7 @@ export default function SignupScreen() {
     },
   });
 
-  const { alertElement, show, showApiError } = useRetroAlert({
-    variant: "warning",
+  const { alertElement, show, showApiError } = useAlert({
     message: t("auth.signup.minorNotice"),
   });
 

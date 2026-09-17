@@ -9,11 +9,11 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { usePagedList } from "@/hooks/usePagedList";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
@@ -39,7 +39,7 @@ export default function ChatScreen() {
   const scrollTop = useScrollToTopVisible();
 
   const unreadOnly = filter === "UNREAD";
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const {
     toggleNotification,
     togglePin,

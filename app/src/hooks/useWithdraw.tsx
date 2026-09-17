@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import type { RetroAlertApi } from "@/hooks/useRetroAlert";
+import type { AlertApi } from "@/hooks/useAlert";
 import { api } from "@/lib/api";
 import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -9,7 +9,7 @@ import { forgetDevice } from "@/lib/push/notifications";
 const DESCRIPTION = i18n.t("hook.withdrawNotice");
 const CONFIRM_LABEL = i18n.t("action.withdraw");
 
-export function useWithdraw({ confirm, showApiError }: RetroAlertApi) {
+export function useWithdraw({ confirm, showApiError }: AlertApi) {
   const withdraw = useMutation({
     mutationFn: async () => {
       await api.members.withdraw();

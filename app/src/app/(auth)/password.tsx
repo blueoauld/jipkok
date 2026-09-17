@@ -9,7 +9,7 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { SendCodeButton } from "@/components/SendCodeButton";
 import { Button } from "@/components/ui/Button";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
+import { useAlert } from "@/hooks/useAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { api, type ResetPasswordRequest } from "@/lib/api";
 import { showToast } from "@/lib/toast/store";
@@ -30,7 +30,7 @@ export default function PasswordScreen() {
     },
   });
 
-  const { alertElement, showApiError } = useRetroAlert();
+  const { alertElement, showApiError } = useAlert();
 
   const code = useVerificationCode({
     purpose: "PASSWORD_RESET",

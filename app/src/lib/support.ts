@@ -32,7 +32,7 @@ function deviceInfo(memberId?: number) {
   ].join("\n");
 }
 
-type ShowError = (variant: "error", message: string) => void;
+type ShowError = (message: string) => void;
 
 export function openSupportMail(
   title: string,
@@ -44,11 +44,11 @@ export function openSupportMail(
 
   return Linking.openURL(
     `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
-  ).catch(() => show("error", MAIL_FAILED_MESSAGE));
+  ).catch(() => show(MAIL_FAILED_MESSAGE));
 }
 
 export function openWebPage(url: string, show: ShowError) {
   return WebBrowser.openBrowserAsync(url).catch(() =>
-    show("error", BROWSER_FAILED_MESSAGE),
+    show(BROWSER_FAILED_MESSAGE),
   );
 }

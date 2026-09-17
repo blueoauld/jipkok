@@ -155,6 +155,8 @@ export const SEGMENT_ITEM_RADIUS = 10;
 // TDS에는 카드가 없어서 가장 큰 버튼과 같은 모서리로 정했다.
 export const CARD_RADIUS = 16;
 
+export const DIALOG_WIDTH = 320;
+
 export const DIALOG_RADIUS = 24;
 
 export const SHEET_RADIUS = 28;

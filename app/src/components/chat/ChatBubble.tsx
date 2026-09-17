@@ -52,7 +52,7 @@ function BubbleFrame({
 }
 
 const openLink = (url: string) =>
-  openWebPage(url, (_variant, message) => showToast("error", message));
+  openWebPage(url, (message) => showToast("error", message));
 
 // 링크 위에서 길게 눌러도 말풍선 메뉴가 떠야 하므로 onLongPress를 같이 받는다.
 // Tamagui Text는 중첩돼도 부모 색을 물려받지 않아 색을 따로 준다.

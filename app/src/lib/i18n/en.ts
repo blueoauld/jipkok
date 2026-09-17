@@ -350,11 +350,6 @@ export const en: typeof ko = {
     report: "Report",
     reportSubmit: "Submit report",
   },
-  alert: {
-    error: "Error",
-    info: "Notice",
-    warning: "Warning",
-  },
   lounge: {
     board: { FEED: "Feed", WORRY: "Worries" },
   },

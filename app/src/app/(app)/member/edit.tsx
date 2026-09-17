@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useAlert } from "@/hooks/useAlert";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
 import { profileErrorMessage } from "@/lib/message";
@@ -74,7 +74,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
   const { t } = useTranslation();
 
   const queryClient = useQueryClient();
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
   const navigation = useNavigation();
   const [bioDirty, setBioDirty] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -115,7 +115,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       setSaved(true);
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
       queryClient.invalidateQueries({ queryKey: FEEDS_KEY });
-      show("info", t("profileEdit.saved"), () => router.back());
+      show(t("profileEdit.saved"), () => router.back());
     },
     onError: showApiError,
   });

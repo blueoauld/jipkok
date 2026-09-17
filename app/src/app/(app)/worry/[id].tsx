@@ -23,9 +23,9 @@ import { WorryCommentComposer } from "@/components/worry/WorryCommentComposer";
 import { WorryCommentRow } from "@/components/worry/WorryCommentRow";
 import { WorryPostSection } from "@/components/worry/WorryPostSection";
 import { WorryReplyPreview } from "@/components/worry/WorryReplyPreview";
+import { useAlert } from "@/hooks/useAlert";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePullRefresh } from "@/hooks/usePullRefresh";
-import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useWorryComments } from "@/hooks/useWorryComments";
 import { useWorryDetailActions } from "@/hooks/useWorryDetailActions";
 import { worryDetailKey } from "@/hooks/useWorryPosts";
@@ -39,7 +39,7 @@ export default function WorryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const insets = useSafeAreaInsets();
-  const { alertElement, show, showApiError, confirm } = useRetroAlert();
+  const { alertElement, show, showApiError, confirm } = useAlert();
 
   const detail = useQuery({
     queryKey: worryDetailKey(postId),
