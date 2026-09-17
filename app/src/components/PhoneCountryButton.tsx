@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { Button } from "@/components/ui/Button";
-import { COUNTRY_BUTTON_MIN_WIDTH } from "@/lib/design";
+import { COUNTRY_BUTTON_MIN_WIDTH, INPUT_HEIGHT } from "@/lib/design";
 import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
 
 const COUNTRY_LABEL_KEYS = {
@@ -33,6 +33,7 @@ export function PhoneCountryButton({
       <Button
         variant="secondary"
         minW={COUNTRY_BUTTON_MIN_WIDTH}
+        minH={INPUT_HEIGHT}
         onPress={() => setOpen(true)}
       >
         {country}

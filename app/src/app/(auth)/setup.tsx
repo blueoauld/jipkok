@@ -95,7 +95,7 @@ export default function SetupScreen() {
             },
           }}
           renderRight={(value) => (
-            <Text theme="gray" color="$color11">
+            <Text fontSize="$1" color="$grey600">
               {`${value.length} / ${BIO_MAX_LENGTH}`}
             </Text>
           )}

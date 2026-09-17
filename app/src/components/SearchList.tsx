@@ -6,7 +6,7 @@ import { Spinner, YStack } from "tamagui";
 
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { RetroInput } from "@/components/ui/RetroInput";
+import { Input } from "@/components/ui/Input";
 import { usePagedList } from "@/hooks/usePagedList";
 import { apiErrorMessage } from "@/lib/alert";
 import { NICKNAME_MAX_LENGTH } from "@/lib/validation";
@@ -63,7 +63,7 @@ export function SearchList<T>({
   return (
     <>
       <YStack px="$4" pt="$4" pb="$3">
-        <RetroInput
+        <Input
           value={keyword}
           onChangeText={setKeyword}
           onSubmitEditing={submit}

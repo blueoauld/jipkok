@@ -8,9 +8,9 @@ import {
 } from "react-hook-form";
 
 import { FormField } from "@/components/FormField";
-import { RetroInput, type RetroInputProps } from "@/components/ui/RetroInput";
+import { Input, type InputProps } from "@/components/ui/Input";
 
-type ControlledInputProps<T extends FieldValues> = RetroInputProps & {
+type ControlledInputProps<T extends FieldValues> = InputProps & {
   control: Control<T>;
   name: FieldPath<T>;
   rules?: RegisterOptions<T, FieldPath<T>>;
@@ -34,7 +34,7 @@ export function ControlledInput<T extends FieldValues>({
           error={fieldState.error?.message}
           right={renderRight?.(field.value ?? "")}
         >
-          <RetroInput
+          <Input
             value={field.value ?? ""}
             onChangeText={field.onChange}
             onBlur={field.onBlur}

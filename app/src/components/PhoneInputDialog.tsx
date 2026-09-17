@@ -4,8 +4,8 @@ import { Dialog, XStack, YStack } from "tamagui";
 
 import { PhoneCountryButton } from "@/components/PhoneCountryButton";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
-import { RetroInput } from "@/components/ui/RetroInput";
 import { maxLengthOf, patternOf, toE164 } from "@/lib/phone";
 import { usePhoneCountry } from "@/lib/phone/store";
 import { CONTACT_BLOCK_MEMO_MAX_LENGTH } from "@/lib/validation";
@@ -53,7 +53,7 @@ function DialogForm({
           <PhoneCountryButton country={country} onChange={setCountry} />
 
           <YStack flex={1}>
-            <RetroInput
+            <Input
               value={value}
               onChangeText={setValue}
               placeholder={t("auth.phoneNumberPlaceholder")}
@@ -66,7 +66,7 @@ function DialogForm({
           </YStack>
         </XStack>
 
-        <RetroInput
+        <Input
           value={memo}
           onChangeText={setMemo}
           placeholder={t("contactBlock.memoPlaceholder")}

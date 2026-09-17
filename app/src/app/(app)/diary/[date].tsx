@@ -19,7 +19,7 @@ import { FormScreen } from "@/components/FormScreen";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
 import { Button } from "@/components/ui/Button";
-import { RetroInput } from "@/components/ui/RetroInput";
+import { Input } from "@/components/ui/Input";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
 import { DIARIES_KEY, useDiaryMonth } from "@/hooks/useDiaries";
@@ -154,7 +154,7 @@ function DiaryEditor({
           onPress={viewer.open}
         />
 
-        <RetroInput
+        <Input
           multiline
           rows={ROWS}
           textAlignVertical="top"

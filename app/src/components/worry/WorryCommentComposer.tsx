@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import { getTokens, XStack, YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
-import { RetroInput } from "@/components/ui/RetroInput";
+import { Input } from "@/components/ui/Input";
 import type { WorryCommentResponse } from "@/lib/api";
-import { KEYBOARD_OVERLAP } from "@/lib/design";
+import { INPUT_HEIGHT, KEYBOARD_OVERLAP } from "@/lib/design";
 import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
 
 const SUBMIT_BUTTON_WIDTH = 80;
@@ -36,7 +36,7 @@ export function WorryCommentComposer({
     >
       <YStack flex={1}>
         {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}
-        <RetroInput
+        <Input
           key={replyTo?.commentId ?? "comment"}
           value={content}
           onChangeText={setContent}
@@ -51,6 +51,7 @@ export function WorryCommentComposer({
       </YStack>
       <Button
         width={SUBMIT_BUTTON_WIDTH}
+        minH={INPUT_HEIGHT}
         disabled={!trimmed}
         loading={pending}
         onPress={() => {

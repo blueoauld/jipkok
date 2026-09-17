@@ -2,7 +2,7 @@ import { type RefObject, useState } from "react";
 import { Text } from "tamagui";
 
 import { FormField } from "@/components/FormField";
-import { RetroInput, type RetroInputProps } from "@/components/ui/RetroInput";
+import { Input, type InputProps } from "@/components/ui/Input";
 
 export function CountedInput({
   valueRef,
@@ -10,7 +10,7 @@ export function CountedInput({
   defaultValue = "",
   onChangeText,
   ...props
-}: Omit<RetroInputProps, "maxLength"> & {
+}: Omit<InputProps, "maxLength"> & {
   valueRef: RefObject<string>;
   maxLength: number;
 }) {
@@ -19,12 +19,12 @@ export function CountedInput({
   return (
     <FormField
       right={
-        <Text theme="gray" color="$color11">
+        <Text fontSize="$1" color="$grey600">
           {`${length} / ${maxLength}`}
         </Text>
       }
     >
-      <RetroInput
+      <Input
         {...props}
         defaultValue={defaultValue}
         maxLength={maxLength}

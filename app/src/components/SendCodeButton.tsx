@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/Button";
 import { formatCountdown } from "@/lib/date";
-import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
+import { INPUT_HEIGHT, SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
 
 export function SendCodeButton({
   sending,
@@ -20,6 +20,7 @@ export function SendCodeButton({
   return (
     <Button
       minW={SEND_CODE_BUTTON_MIN_WIDTH}
+      minH={INPUT_HEIGHT}
       disabled={disabled}
       loading={sending}
       onPress={onPress}

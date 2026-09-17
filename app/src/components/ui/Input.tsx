@@ -2,43 +2,45 @@ import { XIcon } from "phosphor-react-native/src/icons/X";
 import { type Ref, useRef, useState } from "react";
 import type { TextInput } from "react-native";
 import {
-  Input,
-  type InputProps,
+  Input as TamaguiInput,
+  type InputProps as TamaguiInputProps,
   type TamaguiElement,
   useTheme,
   XStack,
   YStack,
-  type YStackProps,
 } from "tamagui";
 
-import { RetroShadow } from "@/components/ui/RetroShadow";
-import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { INPUT_HEIGHT, INPUT_RADIUS, PRESS_OPACITY } from "@/lib/design";
 
-const SINGLE_LINE_FIX = {
+// TDS 텍스트 필드에서 잰 안쪽 여백이다.
+const PADDING_X = 16;
+const PADDING_Y = 14;
+
+// 여러 줄은 Tamagui가 rows로 높이를 잡으므로 한 줄일 때만 높이를 고정한다.
+const SINGLE_LINE_STYLE = {
+  height: INPUT_HEIGHT,
   py: 0,
   textAlignVertical: "center",
   includeFontPadding: false,
 } as const;
 
-const CLEAR_BUTTON_SIZE = 36;
+// 아이콘이 오른쪽 안쪽 여백에 맞게 놓이는 폭이다.
+const CLEAR_BUTTON_WIDTH = 48;
 const CLEAR_ICON_SIZE = 18;
 
-export type RetroInputProps = InputProps & {
+export type InputProps = TamaguiInputProps & {
   clearable?: boolean;
-  shadow?: YStackProps["bg"];
 };
 
-export function RetroInput({
-  theme = "gray",
-  shadow = "$gray8",
+export function Input({
   multiline,
   clearable,
   value,
   defaultValue,
   onChangeText,
   ...inputProps
-}: RetroInputProps) {
-  const themeValues = useTheme();
+}: InputProps) {
+  const theme = useTheme();
   const inputRef = useRef<TextInput>(null);
   const [typed, setTyped] = useState(Boolean(defaultValue));
 
@@ -51,35 +53,35 @@ export function RetroInput({
   };
 
   return (
-    <YStack theme={theme}>
-      <RetroShadow color={shadow} />
-      <Input
+    <YStack>
+      <TamaguiInput
         ref={inputRef as unknown as Ref<TamaguiElement>}
         size="$4"
-        bg="$color1"
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        rounded={0}
-        focusStyle={{ borderColor: "$gray12" }}
-        color="$color12"
-        placeholderTextColor="$color11"
-        px="$3"
-        pr={showClear ? CLEAR_BUTTON_SIZE : "$3"}
+        rounded={INPUT_RADIUS}
+        bg="$greyOpacity50"
+        borderWidth={1}
+        borderColor="$greyOpacity100"
+        focusStyle={{ borderColor: "$greyOpacity100" }}
+        color="$grey800"
+        placeholderTextColor="$grey500"
+        px={PADDING_X}
+        py={PADDING_Y}
+        pr={showClear ? CLEAR_BUTTON_WIDTH : PADDING_X}
         value={value}
         defaultValue={defaultValue}
         onChangeText={changeText}
         multiline={multiline}
-        {...(multiline ? undefined : SINGLE_LINE_FIX)}
+        {...(multiline ? undefined : SINGLE_LINE_STYLE)}
         {...inputProps}
       />
 
       {showClear && (
         <XStack
           position="absolute"
-          t={RETRO_BORDER_WIDTH}
-          b={RETRO_BORDER_WIDTH}
-          r={RETRO_BORDER_WIDTH}
-          width={CLEAR_BUTTON_SIZE}
+          t={0}
+          b={0}
+          r={0}
+          width={CLEAR_BUTTON_WIDTH}
           items="center"
           justify="center"
           pressStyle={{ opacity: PRESS_OPACITY }}
@@ -91,7 +93,7 @@ export function RetroInput({
           <XIcon
             size={CLEAR_ICON_SIZE}
             weight="bold"
-            color={themeValues.color11.val}
+            color={theme.grey500.val}
           />
         </XStack>
       )}
