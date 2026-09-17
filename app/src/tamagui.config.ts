@@ -78,6 +78,11 @@ const TDS_COLORS = {
   dimmedBackground: ["rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 0.56)"],
   // 세그먼트 컨트롤의 선택 알약이다. 이름 붙은 CSS 변수가 없어 컴포넌트에서 잰 값이다.
   segmentedIndicator: ["#FFFFFF", "#4D4D59"],
+  // TDS 약한 elephant 배지의 면(grey700의 16%)이다. 소스의 tElephantBadgeBackground에서 옮겼다.
+  elephantBadgeBackground: [
+    "rgba(78, 89, 104, 0.16)",
+    "rgba(195, 195, 198, 0.16)",
+  ],
 } as const;
 
 type TdsColors = Record<keyof typeof TDS_COLORS, string>;

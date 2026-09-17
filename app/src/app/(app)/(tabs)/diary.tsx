@@ -7,11 +7,12 @@ import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { getTokens, Text, YStack } from "tamagui";
 
-import { DiaryCard } from "@/components/diary/DiaryCard";
+import { DiaryRow } from "@/components/diary/DiaryRow";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
 import { ListEmpty } from "@/components/ui/ListEmpty";
+import { ListRowSeparator, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
@@ -19,6 +20,7 @@ import { useDiaryMonth } from "@/hooks/useDiaries";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { koreaDateParam, toMonthParam } from "@/lib/date";
+import { LIST_ROW_PADDING_X } from "@/lib/design";
 import { moodEmoji } from "@/lib/diary";
 import { type DiarySort, useDiaryFilterStore } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
@@ -94,14 +96,9 @@ export default function DiaryScreen() {
     return sort === "LATEST" ? [...diaries].reverse() : diaries;
   }, [diaries, sort]);
   const tabBarOverlay = useTabBarOverlay();
-  const gutter = getTokens().space.$4.val;
   const contentStyle = useMemo(
-    () => ({
-      padding: gutter,
-      paddingBottom: gutter + tabBarOverlay,
-      gap: gutter,
-    }),
-    [gutter, tabBarOverlay],
+    () => ({ paddingBottom: getTokens().space.$4.val + tabBarOverlay }),
+    [tabBarOverlay],
   );
 
   return (
@@ -111,14 +108,12 @@ export default function DiaryScreen() {
       <FlatList
         data={rows}
         keyExtractor={(diary) => diary.entryDate}
-        renderItem={({ item }) => (
-          <DiaryCard diary={item} onPress={openEntry} />
-        )}
+        renderItem={({ item }) => <DiaryRow diary={item} onPress={openEntry} />}
+        ItemSeparatorComponent={ListRowSeparator}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          // 달력은 카드 여백에 갇히면 좁아 보여서 화면 양끝까지 편다.
-          <YStack mx={-gutter}>
+          <>
             <RetroCalendar
               initialDate={today}
               minDate={profile?.signupDate}
@@ -128,10 +123,17 @@ export default function DiaryScreen() {
               onMonthChange={(day) => setMonth(toMonthParam(day.dateString))}
             />
 
-            <Text theme="gray" color="$color11" fontSize="$2" px={gutter}>
+            <Text
+              theme="gray"
+              color="$color11"
+              fontSize="$2"
+              px={LIST_ROW_PADDING_X.small}
+            >
               {t("diary.notice")}
             </Text>
-          </YStack>
+
+            <ListRowTopSpacer />
+          </>
         }
         ListEmptyComponent={
           diaries ? (

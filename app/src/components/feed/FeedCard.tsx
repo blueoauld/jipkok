@@ -3,11 +3,11 @@ import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Text as NativeText } from "react-native";
+import { Text as NativeText } from "react-native";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
+import { Card } from "@/components/ui/Card";
 import { Glass } from "@/components/ui/Glass";
-import { RetroCard } from "@/components/ui/RetroCard";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
 import {
@@ -17,7 +17,6 @@ import {
   OVERLAY_INK,
   PRESS_OPACITY,
   RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
@@ -31,26 +30,18 @@ const GLASS_CHIP_PADDING = 14;
 // 신고 버튼이 차지하는 자리다. 닉네임이 그 아래로 물리지 않게 비운다.
 const REPORT_BUTTON_SPACE = CARD_ICON_BUTTON_SIZE + 16;
 
-const HARD_SHADOW = {
-  width: RETRO_SHADOW_OFFSET_SM,
-  height: RETRO_SHADOW_OFFSET_SM,
-};
-
-const HARD_SHADOW_RADIUS = Platform.select({ ios: 0, default: 1 });
-
-const SLOT_FONT = Platform.select({
-  ios: { fontFamily: "Menlo", fontWeight: "800" },
-  default: { fontFamily: "monospace", fontWeight: "bold" },
-} as const);
+// 사진 위 글자가 밝은 사진에서도 읽히도록 번지는 그림자를 깐다.
+const TEXT_SHADOW = {
+  textShadowColor: "rgba(0, 0, 0, 0.4)",
+  textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 8,
+} as const;
 
 const SLOT_STYLE = {
-  ...SLOT_FONT,
   fontSize: 30,
-  letterSpacing: 1,
+  fontWeight: "800",
   color: OVERLAY_INK,
-  textShadowColor: "black",
-  textShadowOffset: HARD_SHADOW,
-  textShadowRadius: HARD_SHADOW_RADIUS,
+  ...TEXT_SHADOW,
 } as const;
 
 // 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 그림자 없는 레트로 상자다.
@@ -102,7 +93,7 @@ function CardButton({
   );
 }
 
-function Card({
+function Item({
   post,
   mine,
   onPressPhoto,
@@ -121,13 +112,10 @@ function Card({
   const iconInk = GLASS_ENABLED ? photoGlass.ink : theme.color12.val;
 
   return (
-    <RetroCard
+    <Card
       p={0}
       width="100%"
       aspectRatio={CARD_RATIO}
-      overflow="hidden"
-      bg="$gray12"
-      pressBg="$gray12"
       onPress={() => onPressPhoto(post.imageUrl)}
     >
       <Image
@@ -196,16 +184,14 @@ function Card({
             color={OVERLAY_INK}
             fontSize="$5"
             fontWeight="600"
-            textShadowColor="black"
-            textShadowOffset={HARD_SHADOW}
-            textShadowRadius={HARD_SHADOW_RADIUS}
+            {...TEXT_SHADOW}
           >
             {post.caption}
           </Text>
         )}
       </YStack>
-    </RetroCard>
+    </Card>
   );
 }
 
-export const FeedCard = memo(Card);
+export const FeedCard = memo(Item);

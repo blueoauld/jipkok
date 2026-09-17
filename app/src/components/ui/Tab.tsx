@@ -5,7 +5,7 @@ import { Border } from "@/components/ui/Border";
 import { TRANSITION } from "@/lib/design";
 
 // TDS 탭에서 잰 값이다. 칸은 폭을 똑같이 나누고(TDS는 칸이 4개 이하일 때 이렇게 쓴다), 아래에는
-// 화면 폭 전체에 옅은 선이 깔린다.
+// 화면 폭 전체에 옅은 선이 깔린다. 면은 기본 배경이라 회색 화면 위에서도 흰 띠로 보인다.
 const PADDING_X = 20;
 const ITEM_MIN_WIDTH = 64;
 const ITEM_PADDING_X = 8;
@@ -36,7 +36,7 @@ export function Tab<T extends string>({
   );
 
   return (
-    <YStack>
+    <YStack bg="$background">
       <YStack mx={PADDING_X}>
         <XStack
           accessibilityRole="tablist"

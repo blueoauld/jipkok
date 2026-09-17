@@ -150,8 +150,7 @@ export const FIELD_TEXT_INSET = 4;
 
 export const FIELD_TEXT_GAP = 6;
 
-// TDS 세그먼트 컨트롤에서 잰 크기별 치수다. 선택 알약은 트랙 안쪽 여백만큼 작고, fluid 칸은 글자 폭에
-// 좌우 여백을 더한 폭이다.
+// TDS 세그먼트 컨트롤에서 잰 크기별 치수다. 선택 알약은 트랙 안쪽 여백만큼 작다.
 export const SEGMENT_SIZES = {
   small: {
     height: 39,
@@ -159,7 +158,6 @@ export const SEGMENT_SIZES = {
     paddingX: 3,
     itemHeight: 33,
     itemRadius: 8,
-    fluidItemPaddingX: 14,
     fontSize: "$2",
   },
   large: {
@@ -168,17 +166,35 @@ export const SEGMENT_SIZES = {
     paddingX: 5,
     itemHeight: 40,
     itemRadius: 10,
-    fluidItemPaddingX: 12,
     fontSize: "$4",
   },
 } as const;
 
-export const BADGE_HEIGHT = 24;
-
-export const BADGE_RADIUS = 11;
+// TDS 배지에서 잰 크기별 치수다. 높이는 줄높이(글자의 1.5배)에 위아래 여백 3씩을 더한 값이다.
+export const BADGE_SIZES = {
+  xsmall: {
+    height: 21,
+    radius: 9,
+    paddingX: 7,
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  small: {
+    height: 24,
+    radius: 11,
+    paddingX: 7,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+} as const;
 
 // TDS에는 카드가 없어서 가장 큰 버튼과 같은 모서리로 정했다.
 export const CARD_RADIUS = 16;
+
+export const CARD_PADDING = 20;
+
+// 사진 칸 모서리 비율이다. TDS ListRow의 Square 이미지(52에 모서리 12)에서 가져왔다.
+export const SQUARE_IMAGE_RADIUS_RATIO = 12 / 52;
 
 export const DIALOG_WIDTH = 320;
 

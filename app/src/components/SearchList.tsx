@@ -49,7 +49,7 @@ export function SearchList<T>({
   keyExtractor: (item: T) => string;
   renderItem: ListRenderItem<T>;
   ItemSeparatorComponent?: FlatListProps<T>["ItemSeparatorComponent"];
-  layout?: "cards" | "rows";
+  layout?: "retro" | "cards" | "rows";
 }) {
   const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
@@ -70,7 +70,7 @@ export function SearchList<T>({
 
   return (
     <>
-      <YStack px="$4" pt="$4" pb="$3">
+      <YStack px="$4" pt="$4" pb="$3" bg="$background">
         <Input
           value={keyword}
           onChangeText={setKeyword}

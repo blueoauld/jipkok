@@ -1,7 +1,7 @@
 import { LockSimpleIcon } from "phosphor-react-native/src/icons/LockSimple";
 import { useTheme, XStack, type XStackProps } from "tamagui";
 
-import { BADGE_HEIGHT, BADGE_RADIUS, DARK_FILL } from "@/lib/design";
+import { BADGE_SIZES, DARK_FILL } from "@/lib/design";
 
 const ICON_SIZE = 14;
 
@@ -11,9 +11,9 @@ export function LockBadge(props: XStackProps) {
   return (
     <XStack
       position="absolute"
-      width={BADGE_HEIGHT}
-      height={BADGE_HEIGHT}
-      rounded={BADGE_RADIUS}
+      width={BADGE_SIZES.small.height}
+      height={BADGE_SIZES.small.height}
+      rounded={BADGE_SIZES.small.radius}
       bg={DARK_FILL}
       items="center"
       justify="center"

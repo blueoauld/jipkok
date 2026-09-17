@@ -128,7 +128,7 @@ export default function FeedScreen() {
   const feed = useFeedPosts(date, sort);
   const { posts, error, refetch: refetchFeed } = feed;
   const tabBarOverlay = useTabBarOverlay();
-  const paged = usePagedList(feed, tabBarOverlay);
+  const paged = usePagedList(feed, tabBarOverlay, "cards");
 
   const worryFeed = useWorryPosts(worrySort, worryCategory);
   const {
@@ -136,7 +136,7 @@ export default function FeedScreen() {
     error: worryError,
     refetch: refetchWorries,
   } = worryFeed;
-  const pagedWorries = usePagedList(worryFeed, tabBarOverlay);
+  const pagedWorries = usePagedList(worryFeed, tabBarOverlay, "cards");
 
   const worryRefresh = usePullRefresh(refetchWorries);
 
@@ -326,13 +326,13 @@ export default function FeedScreen() {
   );
 
   return (
-    <YStack flex={1}>
+    <YStack flex={1} bg="$greyBackground">
       <Tabs.Screen options={screenOptions} />
 
       <Tab items={BOARD_ITEMS} value={board} onChange={changeBoard} />
 
       {board === "WORRY" && (
-        <YStack px="$4" pt="$3" pb="$3">
+        <YStack pt="$3" pb="$3" bg="$background">
           <WorryCategoryFilter
             value={worryCategory}
             onChange={changeWorryCategory}

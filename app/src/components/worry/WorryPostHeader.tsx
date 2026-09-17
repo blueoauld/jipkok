@@ -12,11 +12,11 @@ export function WorryPostHeader({ post }: { post: WorryPostResponse }) {
     <XStack items="center" justify="space-between">
       <XStack items="center" gap="$2">
         <WorryCategoryTag category={post.category} />
-        <Text fontSize="$4" fontWeight="700">
+        <Text fontSize="$2" lineHeight="$2" fontWeight="600" color="$grey800">
           {post.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
         </Text>
       </XStack>
-      <RelativeTime at={post.createdAt} />
+      <RelativeTime at={post.createdAt} fontSize="$1" color="$grey500" />
     </XStack>
   );
 }

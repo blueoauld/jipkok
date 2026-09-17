@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "tamagui";
 
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -14,11 +15,12 @@ import { pushOnce } from "@/lib/router";
 
 export default function MyWorryListScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const screenOptions = useMemo(() => ({ title: t("list.worries") }), [t]);
 
   const worries = useMyWorryPosts();
   const { posts, error, refetch } = worries;
-  const paged = usePagedList(worries);
+  const paged = usePagedList(worries, 0, "cards");
   const { refreshing, onRefresh } = usePullRefresh(refetch);
 
   const openDetail = useCallback(
@@ -27,7 +29,10 @@ export default function MyWorryListScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.greyBackground.val }}
+      edges={["bottom"]}
+    >
       <Stack.Screen options={screenOptions} />
 
       {posts ? (

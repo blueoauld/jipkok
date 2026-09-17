@@ -3,8 +3,9 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { DiaryCard } from "@/components/diary/DiaryCard";
+import { DiaryRow } from "@/components/diary/DiaryRow";
 import { SearchList } from "@/components/SearchList";
+import { ListRowSeparator } from "@/components/ui/ListRow";
 import { useDiarySearch } from "@/hooks/useDiarySearch";
 import { pushOnce } from "@/lib/router";
 import {
@@ -40,9 +41,9 @@ export default function DiarySearchScreen() {
         items={search.diaries}
         onSubmit={setSubmitted}
         keyExtractor={(diary) => diary.entryDate}
-        renderItem={({ item }) => (
-          <DiaryCard diary={item} onPress={openEntry} />
-        )}
+        renderItem={({ item }) => <DiaryRow diary={item} onPress={openEntry} />}
+        ItemSeparatorComponent={ListRowSeparator}
+        layout="rows"
       />
     </SafeAreaView>
   );

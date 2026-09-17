@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "tamagui";
 
 import { SearchList } from "@/components/SearchList";
 import { WorryCard } from "@/components/worry/WorryCard";
@@ -14,6 +15,7 @@ import {
 
 export default function WorrySearchScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const screenOptions = useMemo(
     () => ({ title: t("worry.search.title") }),
     [t],
@@ -28,7 +30,10 @@ export default function WorrySearchScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.greyBackground.val }}
+      edges={["bottom"]}
+    >
       <Stack.Screen options={screenOptions} />
 
       <SearchList
@@ -43,6 +48,7 @@ export default function WorrySearchScreen() {
         renderItem={({ item }) => (
           <WorryCard worry={item} onPress={openDetail} />
         )}
+        layout="cards"
       />
     </SafeAreaView>
   );

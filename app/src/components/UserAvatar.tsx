@@ -4,12 +4,9 @@ import { useState } from "react";
 import { useTheme, YStack } from "tamagui";
 
 import type { Gender } from "@/lib/api";
-import { IMAGE_TRANSITION } from "@/lib/design";
+import { IMAGE_TRANSITION, SQUARE_IMAGE_RADIUS_RATIO } from "@/lib/design";
 
 export const USER_AVATAR_SIZE = 64;
-
-// 모서리는 TDS ListRow의 Square 이미지(52, 모서리 12)와 같은 비율로 둥글린다.
-const RADIUS_RATIO = 12 / 52;
 const ICON_RATIO = 0.5;
 
 const GENDER_BG = {
@@ -37,7 +34,7 @@ export function UserAvatar({
       shrink={0}
       width={size}
       height={size}
-      rounded={size * RADIUS_RATIO}
+      rounded={size * SQUARE_IMAGE_RADIUS_RATIO}
       overflow="hidden"
       bg={gender ? GENDER_BG[gender] : "$grey100"}
       items="center"
