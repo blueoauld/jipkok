@@ -4,7 +4,7 @@ import { useTheme, XStack } from "tamagui";
 
 import { FloatingButton } from "@/components/ui/FloatingButton";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import { SCROLL_TO_TOP_BOTTOM_GAP, SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
+import { SCREEN_PADDING } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
 const ICON_SIZE = 22;
@@ -27,8 +27,8 @@ export function ScrollToTopButton({
   return (
     <XStack
       position="absolute"
-      r={SCROLL_TO_TOP_SIDE_GAP}
-      b={tabBarOverlay + SCROLL_TO_TOP_BOTTOM_GAP}
+      r={SCREEN_PADDING}
+      b={tabBarOverlay + SCREEN_PADDING}
     >
       <FloatingButton label={t("a11y.scrollToTop")} onPress={onPress}>
         <CaretUpIcon

@@ -9,11 +9,6 @@ export const MIN_TAP_SIZE = 44;
 
 export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
 
-export const SCROLL_TO_TOP_BOTTOM_GAP = 18;
-
-// 목록의 좌우 여백(space $4)과 같아야 떠 있는 버튼이 카드 테두리에 맞는다.
-export const SCROLL_TO_TOP_SIDE_GAP = 18;
-
 // iOS가 직접 그리는 네이티브 뒤로가기 버튼과 같은 지름이라야 화면을 옮겨 다녀도 안 튄다.
 export const HEADER_GLASS_SIZE = 44;
 
@@ -27,8 +22,6 @@ export const STATUS_ICON_SIZE = 56;
 export const SEND_CODE_BUTTON_MIN_WIDTH = 80;
 
 export const COUNTRY_BUTTON_MIN_WIDTH = 70;
-
-export const RETRO_BORDER_WIDTH = 2;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
@@ -64,7 +57,7 @@ export function bottomBarHeight(bottomInset: number) {
   return BOTTOM_BAR_HEIGHT + bottomInset;
 }
 
-// 유리 바만 화면을 가로지르지 않고 가장자리에서 띄운다. 레트로 바는 흐름 안에 있다.
+// 유리 바만 화면을 가로지르지 않고 가장자리에서 띄운다. 유리가 아닌 바는 바닥에 붙어 흐름 안에 있다.
 export const FLOATING_BAR_HEIGHT = 56;
 
 const FLOATING_BAR_SIDE_GAP = 32;

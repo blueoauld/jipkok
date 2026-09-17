@@ -5,7 +5,7 @@ import { useTheme, YStack } from "tamagui";
 import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { FloatingButton } from "@/components/ui/FloatingButton";
-import { SCREEN_PADDING, SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
+import { SCREEN_PADDING } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 
 const GRID_ICON_SIZE = 22;
@@ -49,7 +49,7 @@ export function PhotoGridToggle({
   const photoGlass = usePhotoGlass();
 
   return (
-    <YStack position="absolute" r={SCROLL_TO_TOP_SIDE_GAP} b={bottom}>
+    <YStack position="absolute" r={SCREEN_PADDING} b={bottom}>
       <FloatingButton label={t("a11y.photoGrid")} overPhoto onPress={onPress}>
         <SquaresFourIcon
           size={GRID_ICON_SIZE}

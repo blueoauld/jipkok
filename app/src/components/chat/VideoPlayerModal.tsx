@@ -378,6 +378,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                 <XStack
                   width={CLOSE_BUTTON_SIZE}
                   height={CLOSE_BUTTON_SIZE}
+                  rounded={PILL_RADIUS}
                   bg={OVERLAY_BG}
                   items="center"
                   justify="center"

@@ -22,10 +22,7 @@ import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { copyText } from "@/lib/clipboard";
-import {
-  LIST_ROW_VERTICAL_PADDING,
-  SCROLL_TO_TOP_BOTTOM_GAP,
-} from "@/lib/design";
+import { LIST_ROW_VERTICAL_PADDING, SCREEN_PADDING } from "@/lib/design";
 import {
   bioCopiedMessage,
   commentCopiedMessage,
@@ -185,7 +182,7 @@ export default function MemberProfileScreen() {
 
           <PhotoGridToggle
             open={photoGridOpen}
-            bottom={barHeight + SCROLL_TO_TOP_BOTTOM_GAP}
+            bottom={barHeight + SCREEN_PADDING}
             onPress={togglePhotoGrid}
           />
         </>

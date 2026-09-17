@@ -33,6 +33,7 @@ import {
   MIN_TAP_SIZE,
   OVERLAY_BG,
   OVERLAY_INK,
+  PILL_RADIUS,
   PRESS_OPACITY,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
@@ -219,6 +220,7 @@ function ViewerContent({
                 <XStack
                   width={CLOSE_BUTTON_SIZE}
                   height={CLOSE_BUTTON_SIZE}
+                  rounded={PILL_RADIUS}
                   bg={OVERLAY_BG}
                   items="center"
                   justify="center"
@@ -244,7 +246,7 @@ function ViewerContent({
             <SafeAreaView edges={["bottom"]}>
               <YStack pb="$6" items="center">
                 {photos.length > 1 && (
-                  <XStack px="$3" py="$2" bg={OVERLAY_BG}>
+                  <XStack px="$3" py="$2" rounded={PILL_RADIUS} bg={OVERLAY_BG}>
                     <PhotoDots count={photos.length} index={index} />
                   </XStack>
                 )}

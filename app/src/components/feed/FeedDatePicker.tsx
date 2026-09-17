@@ -10,7 +10,7 @@ import {
   FLOATING_BUTTON_SIZE,
   PILL_RADIUS,
   PRESS_OPACITY,
-  SCROLL_TO_TOP_BOTTOM_GAP,
+  SCREEN_PADDING,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
@@ -90,7 +90,7 @@ export function FeedDatePicker({
     <>
       <XStack
         position="absolute"
-        b={tabBarOverlay + SCROLL_TO_TOP_BOTTOM_GAP}
+        b={tabBarOverlay + SCREEN_PADDING}
         l={0}
         r={0}
         justify="center"

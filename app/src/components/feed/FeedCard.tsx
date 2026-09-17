@@ -14,9 +14,10 @@ import {
   COVER_IMAGE_STYLE,
   IMAGE_TRANSITION,
   MIN_TAP_SIZE,
+  OVERLAY_BG,
   OVERLAY_INK,
+  PILL_RADIUS,
   PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
@@ -25,7 +26,7 @@ export const CARD_RATIO = 2;
 
 const CARD_ICON_SIZE = 22;
 const CARD_ICON_BUTTON_SIZE = MIN_TAP_SIZE;
-const GLASS_CHIP_PADDING = 14;
+const CHIP_PADDING_X = 14;
 
 // 신고 버튼이 차지하는 자리다. 닉네임이 그 아래로 물리지 않게 비운다.
 const REPORT_BUTTON_SPACE = CARD_ICON_BUTTON_SIZE + 16;
@@ -44,8 +45,8 @@ const SLOT_STYLE = {
   ...TEXT_SHADOW,
 } as const;
 
-// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 그림자 없는 레트로 상자다.
-// chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가고, 아니면 아이콘 하나짜리 정사각형이다.
+// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 반투명한 검정 원이다.
+// chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가는 알약이고, 아니면 아이콘 하나짜리 원이다.
 function CardButton({
   chip = false,
   children,
@@ -61,7 +62,7 @@ function CardButton({
             height: CARD_ICON_BUTTON_SIZE,
             width: chip ? undefined : CARD_ICON_BUTTON_SIZE,
             borderRadius: CARD_ICON_BUTTON_SIZE / 2,
-            paddingHorizontal: chip ? GLASS_CHIP_PADDING : 0,
+            paddingHorizontal: chip ? CHIP_PADDING_X : 0,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -76,16 +77,14 @@ function CardButton({
 
   return (
     <XStack
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg={chip ? "$yellow9" : "$color1"}
-      px={chip ? "$3" : 0}
-      py={chip ? "$2" : 0}
       minH={CARD_ICON_BUTTON_SIZE}
       width={chip ? undefined : CARD_ICON_BUTTON_SIZE}
+      px={chip ? CHIP_PADDING_X : 0}
+      rounded={PILL_RADIUS}
+      bg={OVERLAY_BG}
       items="center"
       justify="center"
-      pressStyle={{ bg: chip ? "$yellow10" : "$color3" }}
+      pressStyle={{ opacity: PRESS_OPACITY }}
       {...props}
     >
       {children}
@@ -109,7 +108,7 @@ function Item({
   const { t } = useTranslation();
   const theme = useTheme();
   const photoGlass = usePhotoGlass();
-  const iconInk = GLASS_ENABLED ? photoGlass.ink : theme.color12.val;
+  const ink = GLASS_ENABLED ? photoGlass.ink : OVERLAY_INK;
 
   return (
     <Card
@@ -137,7 +136,7 @@ function Item({
           <Text
             shrink={1}
             numberOfLines={1}
-            color={GLASS_ENABLED ? photoGlass.ink : "black"}
+            color={ink}
             fontSize="$4"
             fontWeight="600"
           >
@@ -153,7 +152,7 @@ function Item({
             accessibilityLabel={t("a11y.report")}
             onPress={() => onReport(post.postId)}
           >
-            <SirenIcon size={CARD_ICON_SIZE} weight="bold" color={iconInk} />
+            <SirenIcon size={CARD_ICON_SIZE} weight="bold" color={ink} />
           </CardButton>
         </YStack>
       )}
@@ -168,7 +167,7 @@ function Item({
           <HeartIcon
             size={CARD_ICON_SIZE}
             weight={post.likedByMe ? "fill" : "bold"}
-            color={post.likedByMe ? theme.red10.val : iconInk}
+            color={post.likedByMe ? theme.red500.val : ink}
           />
         </CardButton>
       </YStack>

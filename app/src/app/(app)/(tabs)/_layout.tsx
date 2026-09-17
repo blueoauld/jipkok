@@ -17,6 +17,7 @@ import {
   SelectionCancelButton,
 } from "@/components/chat/ChatTabHeader";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
+import { Border } from "@/components/ui/Border";
 import { Glass } from "@/components/ui/Glass";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { formatUnreadCount } from "@/lib/chat";
@@ -27,7 +28,6 @@ import {
   FLOATING_BAR_HEIGHT,
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
-  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 import i18n from "@/lib/i18n";
@@ -74,8 +74,6 @@ const TABS: Tab[] = [
   { name: "setting", titleKey: "tabs.setting", icon: GearIcon },
 ];
 
-// 레트로 테두리는 유리와 같이 못 쓴다. 유리가 자기 경계를 그리는데 그 위에 검은 2px을
-// 얹으면 둘 다 죽는다.
 function TabBarBackground() {
   const theme = useTheme();
 
@@ -91,13 +89,11 @@ function TabBarBackground() {
     <View
       style={[
         StyleSheet.absoluteFill,
-        {
-          backgroundColor: theme.color1.val,
-          borderTopWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.gray12.val,
-        },
+        { backgroundColor: theme.background.val },
       ]}
-    />
+    >
+      <Border />
+    </View>
   );
 }
 
@@ -120,8 +116,8 @@ export default function TabsLayout() {
         headerLeftContainerStyle: { paddingLeft: HEADER_EDGE_PADDING },
         headerRightContainerStyle: { paddingRight: HEADER_EDGE_PADDING },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: theme.blue10.val,
-        tabBarInactiveTintColor: theme.color12.val,
+        tabBarActiveTintColor: theme.grey900.val,
+        tabBarInactiveTintColor: theme.grey400.val,
         // 유리 바만 띄운다. 덮이는 만큼은 useTabBarOverlay가 비운다.
         tabBarStyle: GLASS_ENABLED
           ? {
@@ -163,7 +159,7 @@ export default function TabsLayout() {
                   : undefined,
               tabBarBadgeStyle: {
                 top: BADGE_TOP,
-                backgroundColor: theme.red10.val,
+                backgroundColor: theme.red500.val,
                 color: theme.onFill.val,
                 fontSize: BADGE_FONT_SIZE,
               },

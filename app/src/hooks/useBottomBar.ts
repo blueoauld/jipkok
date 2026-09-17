@@ -12,7 +12,7 @@ export function useBottomBarHeight() {
     : bottomBarHeight(insets.bottom);
 }
 
-// 탭 바가 내용을 덮는 높이. 떠 있는 유리 바만 덮고 레트로 바는 흐름 안에 있어 0이다.
+// 탭 바가 내용을 덮는 높이. 떠 있는 유리 바만 덮고 바닥에 붙은 바는 흐름 안에 있어 0이다.
 export function useTabBarOverlay() {
   const height = useBottomBarHeight();
 

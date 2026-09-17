@@ -14,7 +14,7 @@ import { ProfileSection } from "@/components/ProfileSection";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import type { MyProfileResponse } from "@/lib/api";
-import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/lib/design";
+import { SCREEN_PADDING } from "@/lib/design";
 import {
   bioCopiedMessage,
   commentCopiedMessage,
@@ -80,7 +80,7 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
 
       <PhotoGridToggle
         open={photoGridOpen}
-        bottom={SCROLL_TO_TOP_BOTTOM_GAP}
+        bottom={SCREEN_PADDING}
         onPress={togglePhotoGrid}
       />
 
