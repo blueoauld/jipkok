@@ -146,6 +146,9 @@ function Row({
             ) : (
               <YStack
                 pressStyle={{ opacity: PRESS_OPACITY }}
+                accessible
+                accessibilityRole="button"
+                accessibilityLabel={partnerName}
                 onPress={onPressAvatar}
               >
                 <UserAvatar

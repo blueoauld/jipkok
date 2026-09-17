@@ -61,6 +61,8 @@ function ReasonRow({
           />
         </XStack>
       }
+      selectionRole="radio"
+      selected={selected}
       onPress={onPress}
     >
       <Text

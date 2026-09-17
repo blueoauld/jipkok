@@ -6,6 +6,7 @@ import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { LockBadge } from "@/components/ui/LockBadge";
@@ -84,6 +85,7 @@ function Grid({
   showPlaceholders?: boolean;
   secretFrom?: number;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
@@ -126,6 +128,9 @@ function Grid({
                     items="center"
                     justify="center"
                     pressStyle={{ bg: "$grey200" }}
+                    accessible
+                    accessibilityRole="button"
+                    accessibilityLabel={t("a11y.addPhoto")}
                     onPress={onAdd}
                   >
                     <PlusIcon
@@ -136,6 +141,9 @@ function Grid({
                   </YStack>
                 );
               }
+
+              const secret =
+                secretFrom !== undefined && cell.index >= secretFrom;
 
               return (
                 <YStack
@@ -148,6 +156,12 @@ function Grid({
                   pressStyle={
                     onPressPhoto ? { opacity: PHOTO_PRESS_OPACITY } : undefined
                   }
+                  accessible={onPressPhoto !== undefined}
+                  accessibilityRole={onPressPhoto ? "imagebutton" : undefined}
+                  accessibilityLabel={t(
+                    secret ? "a11y.secretPhotoAt" : "a11y.photoAt",
+                    { number: cell.index + 1 },
+                  )}
                   onPress={
                     onPressPhoto ? () => onPressPhoto(cell.index) : undefined
                   }
@@ -167,12 +181,15 @@ function Grid({
                     style={COVER_IMAGE_STYLE}
                   />
 
-                  {secretFrom !== undefined && cell.index >= secretFrom && (
-                    <LockBadge t="$2" l="$2" />
-                  )}
+                  {secret && <LockBadge t="$2" l="$2" />}
 
                   {showPrimaryBadge && cell.index === 0 && (
-                    <PhotoOverlayButton t="$2" l="$2" bg="$blue500">
+                    <PhotoOverlayButton
+                      t="$2"
+                      l="$2"
+                      bg="$blue500"
+                      label={t("a11y.primaryPhoto")}
+                    >
                       <CrownSimpleIcon
                         size={OVERLAY_ICON_SIZE}
                         weight="fill"
@@ -186,6 +203,7 @@ function Grid({
                       t="$2"
                       r="$2"
                       bg={DARK_FILL}
+                      label={t("a11y.removePhoto")}
                       onPress={() => onRemove(cell.index)}
                     >
                       <XIcon
@@ -201,6 +219,7 @@ function Grid({
                       b="$2"
                       l="$2"
                       bg={DARK_FILL}
+                      label={t("a11y.movePhotoForward")}
                       onPress={() => onMove(cell.index, cell.index - 1)}
                     >
                       <CaretLeftIcon
@@ -216,6 +235,7 @@ function Grid({
                       b="$2"
                       r="$2"
                       bg={DARK_FILL}
+                      label={t("a11y.movePhotoBackward")}
                       onPress={() => onMove(cell.index, cell.index + 1)}
                     >
                       <CaretRightIcon

@@ -8,6 +8,7 @@ import {
 } from "react-native-calendars";
 import { Text, useTheme, YStack } from "tamagui";
 
+import { formatFullDate, fromDateParam } from "@/lib/date";
 import { PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";
 
@@ -56,6 +57,15 @@ function CalendarDay({
       items="center"
       justify="center"
       bg={selected ? "$blue500" : "transparent"}
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={
+        date &&
+        [formatFullDate(fromDateParam(date.dateString)), marking?.emoji]
+          .filter(Boolean)
+          .join(" ")
+      }
+      accessibilityState={{ selected, disabled }}
       onPress={disabled ? undefined : () => onPress?.(date)}
     >
       {marking?.emoji ? (

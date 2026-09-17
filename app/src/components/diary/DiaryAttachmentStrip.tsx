@@ -63,8 +63,14 @@ function Tile({
       overflow="hidden"
       bg="$grey100"
       pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
+      accessible={!onRemove && !onMoveLeft && !onMoveRight}
       accessibilityRole="imagebutton"
-      accessibilityLabel={mediaSummary(video ? "VIDEO" : "PHOTO")}
+      accessibilityLabel={[
+        mediaSummary(video ? "VIDEO" : "PHOTO"),
+        durationSeconds != null && formatDuration(durationSeconds),
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onPress={onPress}
     >
       <Image
@@ -198,6 +204,7 @@ export function DiaryAttachmentStrip({
           items="center"
           justify="center"
           pressStyle={{ bg: "$grey200" }}
+          accessible
           accessibilityRole="button"
           accessibilityLabel={t("diary.addAttachment")}
           onPress={onAdd}

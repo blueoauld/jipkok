@@ -1,6 +1,7 @@
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { Text, XStack } from "tamagui";
 
 import { Card } from "@/components/ui/Card";
@@ -18,8 +19,10 @@ function Item({
   worry: WorryPostResponse;
   onPress: (worryId: number) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <Card gap="$2.5" onPress={() => onPress(worry.worryId)}>
+    <Card accessible gap="$2.5" onPress={() => onPress(worry.worryId)}>
       <WorryPostHeader post={worry} />
 
       <Text
@@ -34,11 +37,13 @@ function Item({
       <XStack gap="$4">
         <WorryCount
           icon={HeartIcon}
+          label={t("a11y.like")}
           value={worry.likeCount}
           size={COUNT_ICON_SIZE}
         />
         <WorryCount
           icon={ChatCircleIcon}
+          label={t("a11y.comment")}
           value={worry.commentCount}
           size={COUNT_ICON_SIZE}
         />

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { AccessibilityInfo } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Svg, { Circle, Path } from "react-native-svg";
 import { AnimatePresence, Text, useTheme, XStack, YStack } from "tamagui";
@@ -84,6 +85,8 @@ export function ToastHost() {
     if (!toast) {
       return;
     }
+
+    AccessibilityInfo.announceForAccessibility(toast.message);
 
     const timer = setTimeout(hide, VISIBLE_DURATION);
 

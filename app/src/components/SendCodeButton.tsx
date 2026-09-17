@@ -23,6 +23,11 @@ export function SendCodeButton({
       minH={INPUT_HEIGHT}
       disabled={disabled}
       loading={sending}
+      accessibilityLabel={
+        remaining > 0
+          ? `${t("auth.sendCode")} ${formatCountdown(remaining)}`
+          : t("auth.sendCode")
+      }
       onPress={onPress}
     >
       {remaining > 0 ? formatCountdown(remaining) : t("auth.sendCode")}

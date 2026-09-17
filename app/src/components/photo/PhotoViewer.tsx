@@ -225,6 +225,7 @@ function ViewerContent({
                   items="center"
                   justify="center"
                   pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessible
                   accessibilityRole="button"
                   accessibilityLabel={i18n.t("a11y.close")}
                   onPress={onClose}

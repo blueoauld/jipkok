@@ -32,6 +32,7 @@ function MoodChip({
       items="center"
       justify="center"
       overflow="hidden"
+      accessible
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={emoji}

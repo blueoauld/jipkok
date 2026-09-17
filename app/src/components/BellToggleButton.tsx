@@ -54,6 +54,7 @@ export function BellToggleButton({
     <HeaderIconButton
       icon={enabled ? BellIcon : BellSlashIcon}
       label={label}
+      selected={enabled}
       onPress={toggle.isPending ? undefined : () => toggle.mutate(!enabled)}
     />
   );

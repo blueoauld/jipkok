@@ -111,6 +111,7 @@ function SeekBar({
           py={TRACK_HIT_SLOP}
           justify="center"
           onLayout={onLayout}
+          accessible
           accessibilityRole="adjustable"
           accessibilityLabel={i18n.t("a11y.seekBar")}
           accessibilityValue={{
@@ -173,6 +174,7 @@ function SkipButton({
       rounded={PILL_RADIUS}
       bg={OVERLAY_BG}
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
@@ -386,6 +388,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                   items="center"
                   justify="center"
                   pressStyle={{ opacity: PRESS_OPACITY }}
+                  accessible
                   accessibilityRole="button"
                   accessibilityLabel={i18n.t("a11y.close")}
                   onPress={onClose}
@@ -433,6 +436,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     rounded={PILL_RADIUS}
                     bg={OVERLAY_BG}
                     pressStyle={{ opacity: PRESS_OPACITY }}
+                    accessible
                     accessibilityRole="button"
                     accessibilityLabel={
                       isPlaying && !ended

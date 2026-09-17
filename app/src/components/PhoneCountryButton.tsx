@@ -34,6 +34,7 @@ export function PhoneCountryButton({
         variant="secondary"
         minW={COUNTRY_BUTTON_MIN_WIDTH}
         minH={INPUT_HEIGHT}
+        accessibilityLabel={t(COUNTRY_LABEL_KEYS[country])}
         onPress={() => setOpen(true)}
       >
         {country}

@@ -16,7 +16,12 @@ export const REACTION_EMOJI: Record<ChatReactionType, string> = {
   SAD: "😢",
 };
 
-export type ReactionGroup = { emoji: string; count: number; reacted: boolean };
+export type ReactionGroup = {
+  type: ChatReactionType;
+  emoji: string;
+  count: number;
+  reacted: boolean;
+};
 
 // 내 반응이 앞에 오도록 이모지별로 묶는다.
 export function groupReactions(
@@ -31,9 +36,15 @@ export function groupReactions(
 
   for (const reaction of ordered) {
     const emoji = REACTION_EMOJI[reaction.type];
-    const group = groups.get(emoji) ?? { emoji, count: 0, reacted: false };
+    const group = groups.get(emoji) ?? {
+      type: reaction.type,
+      emoji,
+      count: 0,
+      reacted: false,
+    };
 
     groups.set(emoji, {
+      type: group.type,
       emoji,
       count: group.count + 1,
       reacted: group.reacted || reaction.memberId === myMemberId,

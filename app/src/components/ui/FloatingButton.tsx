@@ -22,6 +22,7 @@ export function FloatingButton({
       items="center"
       justify="center"
       pressStyle={{ bg: "$blue600" }}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}

@@ -121,6 +121,7 @@ function Content({
             pressStyle={{
               bg: type === myReaction ? "$blue100" : "$greyOpacity100",
             }}
+            accessible
             accessibilityRole="button"
             accessibilityLabel={i18n.t(`a11y.reaction${type}`)}
             accessibilityState={{ selected: type === myReaction }}
@@ -151,6 +152,7 @@ function Content({
               px={MENU_ITEM_PADDING_X}
               items="center"
               pressStyle={{ bg: "$greyOpacity100" }}
+              accessible
               accessibilityRole="button"
               onPress={onPress}
             >

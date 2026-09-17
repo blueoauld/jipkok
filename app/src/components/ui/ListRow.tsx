@@ -1,5 +1,9 @@
 import type { Icon } from "phosphor-react-native";
 import type { ReactNode } from "react";
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme, XStack, YStack } from "tamagui";
 
@@ -60,6 +64,11 @@ export function ListRow({
   withArrow = false,
   horizontalPadding = "medium",
   verticalPadding = LIST_ROW_VERTICAL_PADDING.medium,
+  accessible,
+  selectionRole,
+  selected,
+  accessibilityActions,
+  onAccessibilityAction,
   onPress,
   children,
 }: {
@@ -68,6 +77,11 @@ export function ListRow({
   withArrow?: boolean;
   horizontalPadding?: keyof typeof LIST_ROW_PADDING_X;
   verticalPadding?: number;
+  accessible?: boolean;
+  selectionRole?: "radio" | "checkbox";
+  selected?: boolean;
+  accessibilityActions?: AccessibilityActionInfo[];
+  onAccessibilityAction?: (event: AccessibilityActionEvent) => void;
   onPress?: () => void;
   children: ReactNode;
 }) {
@@ -84,7 +98,13 @@ export function ListRow({
         onPress ? { bg: "$greyOpacity100", scale: ROW_PRESS_SCALE } : undefined
       }
       transition={TRANSITION}
-      accessibilityRole={onPress ? "button" : undefined}
+      accessible={accessible ?? onPress !== undefined}
+      accessibilityRole={selectionRole ?? (onPress ? "button" : undefined)}
+      accessibilityState={
+        selected === undefined ? undefined : { checked: selected }
+      }
+      accessibilityActions={accessibilityActions}
+      onAccessibilityAction={onAccessibilityAction}
       onPress={onPress}
     >
       {left && <XStack mr={LIST_ROW_LEFT_GAP}>{left}</XStack>}

@@ -9,6 +9,23 @@ export const MIN_TAP_SIZE = 44;
 
 export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
 
+export function tapSlop({
+  width = MIN_TAP_SIZE,
+  height = MIN_TAP_SIZE,
+}: {
+  width?: number;
+  height?: number;
+}) {
+  const grow = (size: number) => Math.max(0, (MIN_TAP_SIZE - size) / 2);
+
+  return {
+    left: grow(width),
+    right: grow(width),
+    top: grow(height),
+    bottom: grow(height),
+  };
+}
+
 export const HEADER_ICON_GAP = 8;
 
 // 잠금, 정지, 오류처럼 화면 전체를 차지하는 안내의 아이콘 크기.

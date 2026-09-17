@@ -1,24 +1,31 @@
+import { useTranslation } from "react-i18next";
 import { Text, XStack } from "tamagui";
 
-import type { ChatReactionResponse } from "@/lib/api";
+import type { ChatReactionResponse, ChatReactionType } from "@/lib/api";
 import { groupReactions } from "@/lib/chat/reactions";
-import { PILL_RADIUS, PRESS_OPACITY } from "@/lib/design";
+import { PILL_RADIUS, PRESS_OPACITY, tapSlop } from "@/lib/design";
 
 const CHIP_GAP = 4;
 const CHIP_FONT_SIZE = 12;
 const CHIP_SIZE = 24;
 
+const TAP_SLOP = tapSlop({ width: CHIP_SIZE, height: CHIP_SIZE });
+
 function ReactionChip({
+  type,
   emoji,
   count,
   reacted,
   onPress,
 }: {
+  type: ChatReactionType;
   emoji: string;
   count: number;
   reacted: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <XStack
       height={CHIP_SIZE}
@@ -29,6 +36,11 @@ function ReactionChip({
       rounded={PILL_RADIUS}
       bg={reacted ? "$blue50" : "$greyOpacity100"}
       pressStyle={{ opacity: PRESS_OPACITY }}
+      hitSlop={TAP_SLOP}
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={`${t(`a11y.reaction${type}`)} ${count}`}
+      accessibilityState={{ selected: reacted }}
       onPress={onPress}
     >
       <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "$blue600" : "$grey700"}>
@@ -57,9 +69,10 @@ export function ReactionChips({
       mt={CHIP_GAP}
       gap={CHIP_GAP}
     >
-      {groups.map(({ emoji, count, reacted }) => (
+      {groups.map(({ type, emoji, count, reacted }) => (
         <ReactionChip
           key={emoji}
+          type={type}
           emoji={emoji}
           count={count}
           reacted={reacted}

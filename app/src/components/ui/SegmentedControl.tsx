@@ -65,6 +65,7 @@ export function SegmentedControl<T extends string>({
             height={spec.itemHeight}
             items="center"
             justify="center"
+            accessible
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
             onPress={() => onChange(item.value)}

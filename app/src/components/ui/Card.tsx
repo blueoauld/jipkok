@@ -19,6 +19,7 @@ export function Card({ onPress, children, ...props }: YStackProps) {
       overflow="hidden"
       pressStyle={onPress ? { scale: ROW_PRESS_SCALE } : undefined}
       transition={TRANSITION}
+      accessibilityRole={onPress ? "button" : undefined}
       onPress={onPress}
       {...props}
     >

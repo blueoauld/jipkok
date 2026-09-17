@@ -7,6 +7,7 @@ import {
   BUTTON_SIZES,
   DARK_FILL,
   PRESS_DIM,
+  tapSlop,
 } from "@/lib/design";
 
 // primary는 TDS의 fill primary, secondary는 weak dark, danger는 fill danger, dark는 fill dark다.
@@ -108,6 +109,8 @@ export function Button({
       justify="center"
       overflow="hidden"
       opacity={disabled ? BUTTON_DISABLED_OPACITY : 1}
+      hitSlop={tapSlop({ width: spec.minWidth, height: spec.height })}
+      accessible
       accessibilityRole="button"
       onPress={inactive ? undefined : onPress}
       {...props}

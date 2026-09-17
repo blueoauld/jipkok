@@ -16,6 +16,7 @@ import {
   PRESS_OPACITY,
   TRANSITION,
 } from "@/lib/design";
+import i18n from "@/lib/i18n";
 
 // TDS 텍스트 필드에서 잰 안쪽 여백이다.
 const PADDING_X = 16;
@@ -119,6 +120,9 @@ export function Input({
           items="center"
           justify="center"
           pressStyle={{ opacity: PRESS_OPACITY }}
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel={i18n.t("a11y.clearText")}
           onPress={() => {
             inputRef.current?.clear();
             changeText("");

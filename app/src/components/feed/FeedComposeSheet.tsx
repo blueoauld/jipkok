@@ -29,9 +29,11 @@ const REMOVE_BUTTON_INSET = 12;
 
 function PickerTile({
   icon: Icon,
+  label,
   onPress,
 }: {
   icon: Icon;
+  label: string;
   onPress: () => void;
 }) {
   const theme = useTheme();
@@ -45,7 +47,9 @@ function PickerTile({
       items="center"
       justify="center"
       pressStyle={{ bg: "$grey200" }}
+      accessible
       accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
     >
       <Icon size={PICKER_ICON_SIZE} color={theme.grey600.val} />
@@ -101,6 +105,7 @@ function ComposeForm({
               t={REMOVE_BUTTON_INSET}
               r={REMOVE_BUTTON_INSET}
               bg={DARK_FILL}
+              label={t("a11y.removePhoto")}
               onPress={() => setPhoto(null)}
             >
               <XIcon
@@ -114,9 +119,14 @@ function ComposeForm({
           <XStack gap="$2">
             <PickerTile
               icon={ImagesIcon}
+              label={t("chatRoom.attachAlbum")}
               onPress={() => choose(pickSinglePhoto)}
             />
-            <PickerTile icon={CameraIcon} onPress={() => choose(takePhoto)} />
+            <PickerTile
+              icon={CameraIcon}
+              label={t("chatRoom.attachCamera")}
+              onPress={() => choose(takePhoto)}
+            />
           </XStack>
         )}
 

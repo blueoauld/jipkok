@@ -39,6 +39,7 @@ export function WorryPostSection({
         <XStack gap="$4">
           <WorryCount
             icon={HeartIcon}
+            label={t("a11y.like")}
             value={post.likeCount}
             size={COUNT_ICON_SIZE}
             active={post.likedByMe}
@@ -46,6 +47,7 @@ export function WorryPostSection({
           />
           <WorryCount
             icon={ChatCircleIcon}
+            label={t("a11y.comment")}
             value={post.commentCount}
             size={COUNT_ICON_SIZE}
           />

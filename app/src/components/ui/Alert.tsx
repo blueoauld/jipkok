@@ -14,6 +14,7 @@ import {
   DIALOG_WIDTH,
   PRESS_DIM,
   SCREEN_PADDING,
+  tapSlop,
   TRANSITION,
 } from "@/lib/design";
 
@@ -27,6 +28,11 @@ const SPACING = {
 } as const;
 
 const TEXT_BUTTON_RADIUS = 8;
+
+const CONFIRM_LINE_HEIGHT = 26;
+const CONFIRM_TAP_SLOP = tapSlop({
+  height: CONFIRM_LINE_HEIGHT + SPACING.textButtonY * 2,
+});
 
 export function Alert({
   visible: requested,
@@ -130,6 +136,8 @@ export function Alert({
                   py={SPACING.textButtonY}
                   rounded={TEXT_BUTTON_RADIUS}
                   pressStyle={{ bg: PRESS_DIM }}
+                  hitSlop={CONFIRM_TAP_SLOP}
+                  accessible
                   accessibilityRole="button"
                   onPress={onClose}
                 >

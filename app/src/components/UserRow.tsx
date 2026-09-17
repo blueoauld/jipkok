@@ -72,6 +72,7 @@ function Row({
           gender={gender}
         />
       }
+      accessible={onDelete === undefined}
       right={
         onDelete && (
           <Button

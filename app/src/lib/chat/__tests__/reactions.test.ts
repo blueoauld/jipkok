@@ -12,8 +12,8 @@ describe("groupReactions", () => {
     );
 
     expect(groups).toEqual([
-      { emoji: "❤️", count: 2, reacted: true },
-      { emoji: "👍", count: 1, reacted: false },
+      { type: "HEART", emoji: "❤️", count: 2, reacted: true },
+      { type: "LIKE", emoji: "👍", count: 1, reacted: false },
     ]);
   });
 

@@ -34,6 +34,7 @@ function DateButton({
       items="center"
       justify="center"
       pressStyle={{ bg: "$blue600" }}
+      accessible
       accessibilityRole="button"
       onPress={onPress}
     >

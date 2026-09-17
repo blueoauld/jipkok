@@ -3,7 +3,7 @@ import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
 
 import type { ChatMessageResponse } from "@/lib/api";
-import { isPending } from "@/lib/chat";
+import { isPending, mediaSummary } from "@/lib/chat";
 import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
 import {
   CHAT_BUBBLE_RADIUS,
@@ -41,6 +41,15 @@ export function VideoMessage({
       rounded={CHAT_BUBBLE_RADIUS}
       overflow="hidden"
       pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
+      accessible={!busy}
+      accessibilityRole={busy ? undefined : "imagebutton"}
+      accessibilityLabel={[
+        mediaSummary(message.type),
+        message.durationSeconds != null &&
+          formatDuration(message.durationSeconds),
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onPress={busy ? undefined : () => onPress(message)}
       onLongPress={busy ? undefined : onLongPress}
     >
@@ -156,6 +165,8 @@ function OverlayAction({
       borderWidth={OVERLAY_ACTION_BORDER_WIDTH}
       borderColor={OVERLAY_INK}
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessible
+      accessibilityRole="button"
       onPress={onPress}
     >
       <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
@@ -186,6 +197,9 @@ export function PhotoMessage({
       rounded={CHAT_BUBBLE_RADIUS}
       overflow="hidden"
       pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
+      accessible={!busy}
+      accessibilityRole={busy ? undefined : "imagebutton"}
+      accessibilityLabel={mediaSummary(message.type)}
       onPress={busy ? undefined : () => onPress(message)}
       onLongPress={busy ? undefined : onLongPress}
     >

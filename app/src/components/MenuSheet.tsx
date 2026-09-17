@@ -50,6 +50,7 @@ export function MenuSheet({
             rounded={ROW_PRESS_RADIUS}
             pressStyle={{ bg: "$greyOpacity100", scale: ROW_PRESS_SCALE }}
             transition={TRANSITION}
+            accessible
             accessibilityRole={selected === undefined ? "button" : "radio"}
             accessibilityState={{ checked: selected }}
             onPress={() => {

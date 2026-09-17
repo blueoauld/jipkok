@@ -54,6 +54,7 @@ export function Tab<T extends string>({
                 pt={ITEM_PADDING_TOP}
                 pb={ITEM_PADDING_BOTTOM}
                 justify="center"
+                accessible
                 accessibilityRole="tab"
                 accessibilityState={{ selected }}
                 onPress={() => onChange(item.value)}

@@ -208,6 +208,8 @@ function ReplyMessage({
           items="flex-start"
           gap="$2.5"
           pressStyle={{ opacity: PRESS_OPACITY }}
+          accessible
+          accessibilityRole="button"
           onPress={() => onPressReply(reply.messageId)}
           onLongPress={onLongPress}
         >

@@ -109,8 +109,13 @@ export function MemberActionBar({
       items="center"
       justify="center"
       opacity={pending === key || disabled[key] ? DISABLED_OPACITY : 1}
+      accessible
       accessibilityRole="button"
-      accessibilityLabel={t(`a11y.${key}`)}
+      accessibilityLabel={
+        key === "secretPhoto"
+          ? `${t("a11y.secretPhoto")} ${member.secretPhotoCount}`
+          : t(`a11y.${key}`)
+      }
       accessibilityState={{ selected: filled[key], disabled: disabled[key] }}
       onPress={disabled[key] ? undefined : () => onPress(key)}
     >

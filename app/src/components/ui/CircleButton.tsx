@@ -31,6 +31,7 @@ export function CircleButton({
       items="center"
       justify="center"
       pressStyle={onPress ? { bg: pressBg } : undefined}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}

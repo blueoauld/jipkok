@@ -40,8 +40,15 @@ export const ChatMediaTile = memo(function ChatMediaTile({
       rounded={TILE_RADIUS}
       overflow="hidden"
       pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
+      accessible
       accessibilityRole="imagebutton"
-      accessibilityLabel={mediaSummary(message.type)}
+      accessibilityLabel={[
+        mediaSummary(message.type),
+        message.durationSeconds != null &&
+          formatDuration(message.durationSeconds),
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onPress={() => onPress(message)}
     >
       <Image

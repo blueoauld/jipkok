@@ -1,9 +1,12 @@
 import { Text, type TextProps, YStack } from "tamagui";
 
-import { PRESS_OPACITY } from "@/lib/design";
+import { PRESS_OPACITY, tapSlop } from "@/lib/design";
 
 const DIVIDER_HEIGHT = 14;
 const DIVIDER_GAP = 12;
+
+const LINE_HEIGHT = 26;
+const TAP_SLOP = tapSlop({ height: LINE_HEIGHT });
 
 // TDS TextButton의 기본 모양(clear, medium)이다. 문서 예제에서 글자 17, 굵기 500, grey600을 쟀다.
 export function TextButton(props: TextProps) {
@@ -14,6 +17,7 @@ export function TextButton(props: TextProps) {
       fontWeight="500"
       color="$grey600"
       pressStyle={{ opacity: PRESS_OPACITY }}
+      hitSlop={TAP_SLOP}
       accessibilityRole="button"
       {...props}
     />

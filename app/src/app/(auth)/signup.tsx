@@ -156,6 +156,7 @@ export default function SignupScreen() {
                     key={gender}
                     flex={1}
                     variant={field.value === gender ? "primary" : "secondary"}
+                    accessibilityState={{ selected: field.value === gender }}
                     onPress={() => field.onChange(gender)}
                   >
                     {genderLabel(gender)}

@@ -6,6 +6,7 @@ import { PushPinIcon } from "phosphor-react-native/src/icons/PushPin";
 import { PushPinSlashIcon } from "phosphor-react-native/src/icons/PushPinSlash";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { memo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
@@ -47,17 +48,23 @@ function SwipeAction({
   icon: Icon,
   weight = "fill",
   bg,
+  label,
   onPress,
 }: {
   icon: Icon;
   weight?: IconWeight;
   bg: XStackProps["bg"];
+  label: string;
   onPress: () => void;
 }) {
   const theme = useTheme();
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+    >
       <XStack
         width={ACTION_SIZE}
         height={ACTION_SIZE}
@@ -121,11 +128,38 @@ function Row({
   onMarkRead: (room: ChatRoomResponse) => void;
   onLeave: (room: ChatRoomResponse) => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const swipeable = useRef<SwipeableMethods>(null);
   const avatar = (
     <UserAvatar id={String(room.memberId)} url={room.profileImageUrl} />
   );
+
+  const actions = [
+    { name: "markRead", label: t("component.markRead"), run: onMarkRead },
+    {
+      name: "notification",
+      label: t(
+        room.notificationEnabled
+          ? "a11y.notificationOff"
+          : "a11y.notificationOn",
+      ),
+      run: onToggleNotification,
+    },
+    {
+      name: "pin",
+      label: t(room.pinned ? "a11y.unpin" : "a11y.pin"),
+      run: onTogglePin,
+    },
+    { name: "leave", label: t("chatRoom.leave"), run: onLeave },
+  ];
+
+  const [markRead, notification, pin, leave] = actions;
+
+  const swipe = (action: (typeof actions)[number]) => () => {
+    swipeable.current?.close();
+    action.run(room);
+  };
 
   return (
     <ReanimatedSwipeable
@@ -140,26 +174,20 @@ function Row({
             icon={CheckIcon}
             weight="bold"
             bg="$blue500"
-            onPress={() => {
-              swipeable.current?.close();
-              onMarkRead(room);
-            }}
+            label={markRead.label}
+            onPress={swipe(markRead)}
           />
           <SwipeAction
             icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
             bg="$blue500"
-            onPress={() => {
-              swipeable.current?.close();
-              onToggleNotification(room);
-            }}
+            label={notification.label}
+            onPress={swipe(notification)}
           />
           <SwipeAction
             icon={room.pinned ? PushPinSlashIcon : PushPinIcon}
             bg="$blue500"
-            onPress={() => {
-              swipeable.current?.close();
-              onTogglePin(room);
-            }}
+            label={pin.label}
+            onPress={swipe(pin)}
           />
         </XStack>
       )}
@@ -168,10 +196,8 @@ function Row({
           <SwipeAction
             icon={SignOutIcon}
             bg="$red500"
-            onPress={() => {
-              swipeable.current?.close();
-              onLeave(room);
-            }}
+            label={leave.label}
+            onPress={swipe(leave)}
           />
         </XStack>
       )}
@@ -190,6 +216,18 @@ function Row({
             ) : (
               avatar
             )
+          }
+          selectionRole={selectable ? "checkbox" : undefined}
+          selected={selectable ? selected : undefined}
+          accessibilityActions={
+            selectable
+              ? undefined
+              : actions.map(({ name, label }) => ({ name, label }))
+          }
+          onAccessibilityAction={(event) =>
+            actions
+              .find((action) => action.name === event.nativeEvent.actionName)
+              ?.run(room)
           }
           onPress={() =>
             selectable ? onSelect?.(room) : pushOnce(`/chat/${room.roomId}`)

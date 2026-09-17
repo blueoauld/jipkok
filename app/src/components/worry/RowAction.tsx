@@ -20,6 +20,9 @@ export function RowAction({
     <XStack
       hitSlop={HIT_SLOP}
       pressStyle={disabled ? undefined : { opacity: PRESS_OPACITY }}
+      accessible
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
       onPress={disabled ? undefined : onPress}
     >
       <Text

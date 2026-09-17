@@ -5,12 +5,14 @@ import { PRESS_OPACITY } from "@/lib/design";
 
 export function WorryCount({
   icon: CountIcon,
+  label,
   value,
   size,
   active = false,
   onPress,
 }: {
   icon: Icon;
+  label: string;
   value: number;
   size: number;
   active?: boolean;
@@ -23,6 +25,10 @@ export function WorryCount({
       items="center"
       gap="$1.5"
       pressStyle={onPress ? { opacity: PRESS_OPACITY } : undefined}
+      accessible
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityLabel={`${label} ${value}`}
+      accessibilityState={onPress ? { selected: active } : undefined}
       onPress={onPress}
     >
       <CountIcon

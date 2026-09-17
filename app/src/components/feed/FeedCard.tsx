@@ -60,6 +60,8 @@ function CardButton({
       items="center"
       justify="center"
       pressStyle={{ opacity: PRESS_OPACITY }}
+      accessible
+      accessibilityRole="button"
       {...props}
     >
       {children}

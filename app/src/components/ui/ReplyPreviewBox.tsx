@@ -8,9 +8,15 @@ import {
   INPUT_BAR_PADDING_Y,
   INPUT_RADIUS,
   PRESS_OPACITY,
+  tapSlop,
 } from "@/lib/design";
 
 const CANCEL_ICON_SIZE = 18;
+const CANCEL_BUTTON_SIZE = 32;
+const CANCEL_TAP_SLOP = tapSlop({
+  width: CANCEL_BUTTON_SIZE,
+  height: CANCEL_BUTTON_SIZE,
+});
 const TEXT_GAP = 2;
 
 // 입력줄 위에 뜨는 답장 대상 상자다.
@@ -55,6 +61,8 @@ export function ReplyPreviewBox({
       <XStack
         p="$2"
         pressStyle={{ opacity: PRESS_OPACITY }}
+        hitSlop={CANCEL_TAP_SLOP}
+        accessible
         accessibilityRole="button"
         accessibilityLabel={t("a11y.cancelReply")}
         onPress={onCancel}
