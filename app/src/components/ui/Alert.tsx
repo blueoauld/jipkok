@@ -6,20 +6,20 @@ import { AnimatePresence, Text, XStack, YStack } from "tamagui";
 import { Button } from "@/components/ui/Button";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
+  DIALOG_BUTTON_GAP,
+  DIALOG_BUTTON_PADDING,
   DIALOG_ENTER_SCALE,
   DIALOG_RADIUS,
+  DIALOG_TEXT_PADDING,
   DIALOG_WIDTH,
   PRESS_DIM,
   SCREEN_PADDING,
   TRANSITION,
 } from "@/lib/design";
 
-// TDS 다이얼로그에서 잰 여백이다.
+// TDS 다이얼로그에서 잰 여백이다. 안쪽 여백과 버튼 사이는 design.ts에 있다.
 const SPACING = {
-  content: 22,
   titleGap: 8,
-  actions: 16,
-  buttonGap: 8,
   confirmTop: 20,
   textButtonTop: 14,
   textButtonX: 12,
@@ -86,8 +86,8 @@ export function Alert({
               exitStyle={{ scale: DIALOG_ENTER_SCALE }}
             >
               <YStack
-                px={SPACING.content}
-                pt={SPACING.content}
+                px={DIALOG_TEXT_PADDING}
+                pt={DIALOG_TEXT_PADDING}
                 gap={SPACING.titleGap}
               >
                 <Text fontSize="$6" fontWeight="700" color="$grey800">
@@ -100,10 +100,10 @@ export function Alert({
 
               {confirmLabel ? (
                 <XStack
-                  gap={SPACING.buttonGap}
-                  px={SPACING.actions}
+                  gap={DIALOG_BUTTON_GAP}
+                  px={DIALOG_BUTTON_PADDING}
                   pt={SPACING.confirmTop}
-                  pb={SPACING.actions}
+                  pb={DIALOG_BUTTON_PADDING}
                 >
                   <Button flex={1} variant="secondary" onPress={onClose}>
                     {t("component.close")}
@@ -124,8 +124,8 @@ export function Alert({
                 <XStack
                   self="flex-end"
                   mt={SPACING.textButtonTop}
-                  mr={SPACING.actions}
-                  mb={SPACING.actions}
+                  mr={DIALOG_BUTTON_PADDING}
+                  mb={DIALOG_BUTTON_PADDING}
                   px={SPACING.textButtonX}
                   py={SPACING.textButtonY}
                   rounded={TEXT_BUTTON_RADIUS}

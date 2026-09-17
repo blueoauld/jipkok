@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Dialog, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { PhoneCountryButton } from "@/components/PhoneCountryButton";
 import { Button } from "@/components/ui/Button";
+import { FormDialog, FormDialogTitle } from "@/components/ui/FormDialog";
 import { Input } from "@/components/ui/Input";
-import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
+import { DIALOG_BUTTON_GAP } from "@/lib/design";
 import { maxLengthOf, patternOf, toE164 } from "@/lib/phone";
 import { usePhoneCountry } from "@/lib/phone/store";
 import { CONTACT_BLOCK_MEMO_MAX_LENGTH } from "@/lib/validation";
@@ -46,7 +47,7 @@ function DialogForm({
 
   return (
     <>
-      <Dialog.Title fontSize="$6">{title}</Dialog.Title>
+      <FormDialogTitle>{title}</FormDialogTitle>
 
       <YStack gap="$3">
         <XStack gap="$2" items="flex-start">
@@ -77,7 +78,7 @@ function DialogForm({
         />
       </YStack>
 
-      <XStack gap="$3">
+      <XStack gap={DIALOG_BUTTON_GAP}>
         <Button flex={1} variant="secondary" onPress={onClose}>
           {t("component.close")}
         </Button>
@@ -106,7 +107,7 @@ export function PhoneInputDialog({
   onInvalid: () => void;
 }) {
   return (
-    <RetroFormDialog open={open} onOpenChange={onOpenChange}>
+    <FormDialog open={open} onOpenChange={onOpenChange}>
       <DialogForm
         title={title}
         submitLabel={submitLabel}
@@ -114,6 +115,6 @@ export function PhoneInputDialog({
         onInvalid={onInvalid}
         onClose={() => onOpenChange(false)}
       />
-    </RetroFormDialog>
+    </FormDialog>
   );
 }

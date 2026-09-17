@@ -200,6 +200,13 @@ export const DIALOG_WIDTH = 320;
 
 export const DIALOG_RADIUS = 24;
 
+// TDS 다이얼로그에서 잰 안쪽 여백이다. 글자는 가장자리에서 22, 버튼은 16 안쪽에 두고 버튼 사이는 8이다.
+export const DIALOG_TEXT_PADDING = 22;
+
+export const DIALOG_BUTTON_PADDING = 16;
+
+export const DIALOG_BUTTON_GAP = 8;
+
 export const SHEET_RADIUS = 28;
 
 export const SHEET_PADDING_X = 24;

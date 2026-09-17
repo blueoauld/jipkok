@@ -5,7 +5,8 @@ import { Text, useTheme, XStack } from "tamagui";
 import type { Gender } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
 
-// sm은 회원 행의 가운데 줄이라 TDS ListRow 2RowTypeA 아래 글자(15, 400, grey600)를 따른다.
+// sm은 회원 행의 가운데 줄이라 TDS ListRow 2RowTypeA 아래 글자(15, 400, grey600)를 따르고,
+// md는 프로필 이름 아래 줄이라 TDS Top 부제목(17, 500, grey700)을 따른다.
 const SIZES = {
   sm: {
     fontSize: "$2",
@@ -16,9 +17,9 @@ const SIZES = {
   },
   md: {
     fontSize: "$4",
-    lineHeight: undefined,
-    fontWeight: "400",
-    color: "color12",
+    lineHeight: "$4",
+    fontWeight: "500",
+    color: "grey700",
     icon: 14,
   },
 } as const;

@@ -1,18 +1,40 @@
 import { Fragment, type ReactNode, useState } from "react";
+import { useWindowDimensions } from "react-native";
 import { Dialog, YStack } from "tamagui";
 
-import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useDialogKeyboardOffset } from "@/hooks/useDialogKeyboardOffset";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
+  DIALOG_BUTTON_PADDING,
   DIALOG_ENTER_SCALE,
-  OVERLAY_BG,
-  RETRO_BORDER_WIDTH,
+  DIALOG_RADIUS,
+  DIALOG_TEXT_PADDING,
+  DIALOG_WIDTH,
+  SCREEN_PADDING,
   TRANSITION,
 } from "@/lib/design";
 
-export function RetroFormDialog({
+const FIELD_GAP = 16;
+
+// 입력칸과 버튼은 TDS 다이얼로그의 버튼 자리에 맞추고, 제목 글자만 설명 글자 자리까지 더 들인다.
+export function FormDialogTitle({ children }: { children: string }) {
+  return (
+    <Dialog.Title
+      unstyled
+      px={DIALOG_TEXT_PADDING - DIALOG_BUTTON_PADDING}
+      fontFamily="$body"
+      fontSize="$6"
+      lineHeight="$6"
+      fontWeight="700"
+      color="$grey800"
+    >
+      {children}
+    </Dialog.Title>
+  );
+}
+
+export function FormDialog({
   open,
   onOpenChange,
   children,
@@ -21,6 +43,7 @@ export function RetroFormDialog({
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
 }) {
+  const { width } = useWindowDimensions();
   const keyboardOffset = useDialogKeyboardOffset();
   const visible = useVisibleWhenUnlocked(open);
 
@@ -39,18 +62,17 @@ export function RetroFormDialog({
     <Dialog modal open={visible} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay
-          bg={OVERLAY_BG}
+          bg="$dimmedBackground"
           transition={TRANSITION}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />
 
         <Dialog.Content
-          width="85%"
-          maxW={400}
+          width={Math.min(width - SCREEN_PADDING * 2, DIALOG_WIDTH)}
           p={0}
-          bg="transparent"
-          rounded={0}
+          bg="$floatBackground"
+          rounded={DIALOG_RADIUS}
           borderWidth={0}
           elevation={0}
           shadowOpacity={0}
@@ -59,17 +81,13 @@ export function RetroFormDialog({
           enterStyle={{ opacity: 0, scale: DIALOG_ENTER_SCALE }}
           exitStyle={{ opacity: 0, scale: DIALOG_ENTER_SCALE }}
         >
-          <YStack>
-            <RetroShadow color="$gray12" />
-            <YStack
-              borderWidth={RETRO_BORDER_WIDTH}
-              borderColor="$gray12"
-              bg="$color1"
-              p="$4"
-              gap="$4"
-            >
-              <Fragment key={session.id}>{children}</Fragment>
-            </YStack>
+          <YStack
+            pt={DIALOG_TEXT_PADDING}
+            px={DIALOG_BUTTON_PADDING}
+            pb={DIALOG_BUTTON_PADDING}
+            gap={FIELD_GAP}
+          >
+            <Fragment key={session.id}>{children}</Fragment>
           </YStack>
         </Dialog.Content>
       </Dialog.Portal>

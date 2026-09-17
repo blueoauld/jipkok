@@ -1,11 +1,11 @@
 import { SquaresFourIcon } from "phosphor-react-native/src/icons/SquaresFour";
 import { useTranslation } from "react-i18next";
-import { useTheme, YStack, type YStackProps } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
 import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { FloatingButton } from "@/components/ui/FloatingButton";
-import { SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
+import { SCREEN_PADDING, SCROLL_TO_TOP_SIDE_GAP } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 
 const GRID_ICON_SIZE = 22;
@@ -15,16 +15,14 @@ export function ProfilePhotos({
   secretFrom,
   gridOpen,
   onPressPhoto,
-  pt,
 }: {
   photos: string[];
   secretFrom?: number;
   gridOpen: boolean;
   onPressPhoto: (index: number) => void;
-  pt?: YStackProps["pt"];
 }) {
   return gridOpen ? (
-    <YStack px="$4" pt={pt}>
+    <YStack px={SCREEN_PADDING} pt={SCREEN_PADDING}>
       <PhotoGrid
         photos={photos}
         showPlaceholders

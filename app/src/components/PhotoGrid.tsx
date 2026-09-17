@@ -9,24 +9,26 @@ import { memo } from "react";
 import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { LockBadge } from "@/components/ui/LockBadge";
-import { RetroPressable } from "@/components/ui/RetroPressable";
 import {
+  BADGE_SIZES,
   COVER_IMAGE_STYLE,
+  DARK_FILL,
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
+  PILL_RADIUS,
   PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { MAX_PHOTOS } from "@/lib/photo/picker";
 
 const COLUMNS = 3;
 
+const CELL_RADIUS = 12;
 const CELL_ICON_SIZE = 22;
 
-const BADGE_SIZE = 24;
-const BADGE_ICON_SIZE = 14;
+// 사진 위 버튼은 잠금 배지와 같은 크기의 원이다.
+const OVERLAY_BUTTON_SIZE = BADGE_SIZES.small.height;
+const OVERLAY_ICON_SIZE = 14;
 
 type Cell =
   | { kind: "photo"; uri: string; index: number }
@@ -80,10 +82,9 @@ function OverlayButton({
   return (
     <XStack
       position="absolute"
-      width={BADGE_SIZE}
-      height={BADGE_SIZE}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
+      width={OVERLAY_BUTTON_SIZE}
+      height={OVERLAY_BUTTON_SIZE}
+      rounded={PILL_RADIUS}
       bg={bg}
       items="center"
       justify="center"
@@ -129,60 +130,56 @@ function Grid({
 
               if (cell.kind === "placeholder") {
                 return (
-                  <RetroPressable
+                  <YStack
                     key={`placeholder-${columnIndex}`}
                     flex={1}
-                    shadow="$gray8"
-                    offset={RETRO_SHADOW_OFFSET_SM}
                     aspectRatio={1}
-                    rounded={0}
-                    bg="$color1"
+                    rounded={CELL_RADIUS}
+                    bg="$grey100"
                     items="center"
                     justify="center"
                   >
                     <ImageIcon
                       size={CELL_ICON_SIZE}
-                      color={theme.color12.val}
+                      color={theme.grey400.val}
                     />
-                  </RetroPressable>
+                  </YStack>
                 );
               }
 
               if (cell.kind === "add") {
                 return (
-                  <RetroPressable
+                  <YStack
                     key="add"
                     flex={1}
-                    shadow="$gray8"
-                    offset={RETRO_SHADOW_OFFSET_SM}
                     aspectRatio={1}
-                    rounded={0}
-                    bg="$color1"
-                    pressBg="$gray6"
+                    rounded={CELL_RADIUS}
+                    bg="$grey100"
                     items="center"
                     justify="center"
+                    pressStyle={{ bg: "$grey200" }}
                     onPress={onAdd}
                   >
                     <PlusIcon
                       size={CELL_ICON_SIZE}
                       weight="bold"
-                      color={theme.color12.val}
+                      color={theme.grey600.val}
                     />
-                  </RetroPressable>
+                  </YStack>
                 );
               }
 
               return (
-                <RetroPressable
+                <YStack
                   key={cell.uri}
                   flex={1}
-                  shadow="$gray8"
-                  offset={RETRO_SHADOW_OFFSET_SM}
                   aspectRatio={1}
-                  rounded={0}
+                  rounded={CELL_RADIUS}
                   overflow="hidden"
-                  bg="$gray12"
-                  pressOpacity={PHOTO_PRESS_OPACITY}
+                  bg="$grey100"
+                  pressStyle={
+                    onPressPhoto ? { opacity: PHOTO_PRESS_OPACITY } : undefined
+                  }
                   onPress={
                     onPressPhoto ? () => onPressPhoto(cell.index) : undefined
                   }
@@ -207,9 +204,9 @@ function Grid({
                   )}
 
                   {showPrimaryBadge && cell.index === 0 && (
-                    <OverlayButton t="$2" l="$2" bg="$blue10">
+                    <OverlayButton t="$2" l="$2" bg="$blue500">
                       <CrownSimpleIcon
-                        size={BADGE_ICON_SIZE}
+                        size={OVERLAY_ICON_SIZE}
                         weight="fill"
                         color={theme.onFill.val}
                       />
@@ -220,11 +217,11 @@ function Grid({
                     <OverlayButton
                       t="$2"
                       r="$2"
-                      bg="$red10"
+                      bg={DARK_FILL}
                       onPress={() => onRemove(cell.index)}
                     >
                       <XIcon
-                        size={BADGE_ICON_SIZE}
+                        size={OVERLAY_ICON_SIZE}
                         weight="bold"
                         color={theme.onFill.val}
                       />
@@ -235,13 +232,13 @@ function Grid({
                     <OverlayButton
                       b="$2"
                       l="$2"
-                      bg="$color1"
+                      bg={DARK_FILL}
                       onPress={() => onMove(cell.index, cell.index - 1)}
                     >
                       <CaretLeftIcon
-                        size={BADGE_ICON_SIZE}
+                        size={OVERLAY_ICON_SIZE}
                         weight="bold"
-                        color={theme.color12.val}
+                        color={theme.onFill.val}
                       />
                     </OverlayButton>
                   )}
@@ -250,17 +247,17 @@ function Grid({
                     <OverlayButton
                       b="$2"
                       r="$2"
-                      bg="$color1"
+                      bg={DARK_FILL}
                       onPress={() => onMove(cell.index, cell.index + 1)}
                     >
                       <CaretRightIcon
-                        size={BADGE_ICON_SIZE}
+                        size={OVERLAY_ICON_SIZE}
                         weight="bold"
-                        color={theme.color12.val}
+                        color={theme.onFill.val}
                       />
                     </OverlayButton>
                   )}
-                </RetroPressable>
+                </YStack>
               );
             })}
           </XStack>

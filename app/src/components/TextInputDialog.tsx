@@ -4,7 +4,8 @@ import { Dialog, XStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
+import { FormDialog, FormDialogTitle } from "@/components/ui/FormDialog";
+import { DIALOG_BUTTON_GAP } from "@/lib/design";
 
 function DialogForm({
   title,
@@ -30,7 +31,7 @@ function DialogForm({
 
   return (
     <>
-      <Dialog.Title fontSize="$6">{title}</Dialog.Title>
+      <FormDialogTitle>{title}</FormDialogTitle>
 
       <CountedInput
         valueRef={valueRef}
@@ -45,7 +46,7 @@ function DialogForm({
         autoFocusNative
       />
 
-      <XStack gap="$3">
+      <XStack gap={DIALOG_BUTTON_GAP}>
         <Dialog.Close asChild>
           <Button flex={1} variant="secondary">
             {t("component.close")}
@@ -87,7 +88,7 @@ export function TextInputDialog({
 }) {
   const { t } = useTranslation();
   return (
-    <RetroFormDialog open={open} onOpenChange={onOpenChange}>
+    <FormDialog open={open} onOpenChange={onOpenChange}>
       <DialogForm
         title={title}
         placeholder={placeholder}
@@ -98,6 +99,6 @@ export function TextInputDialog({
         clearable={clearable}
         onSubmit={onSubmit}
       />
-    </RetroFormDialog>
+    </FormDialog>
   );
 }

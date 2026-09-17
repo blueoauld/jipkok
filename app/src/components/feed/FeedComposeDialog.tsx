@@ -11,11 +11,12 @@ import { Dialog, useTheme, XStack, YStack } from "tamagui";
 import { CARD_RATIO } from "@/components/feed/FeedCard";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
+import { FormDialog, FormDialogTitle } from "@/components/ui/FormDialog";
 import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroPressable } from "@/components/ui/RetroPressable";
 import {
   COVER_IMAGE_STYLE,
+  DIALOG_BUTTON_GAP,
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET_SM,
 } from "@/lib/design";
@@ -78,7 +79,7 @@ function ComposeForm({
 
   return (
     <>
-      <Dialog.Title fontSize="$6">{t("feed.composeTitle")}</Dialog.Title>
+      <FormDialogTitle>{t("feed.composeTitle")}</FormDialogTitle>
 
       {photo ? (
         <YStack
@@ -132,7 +133,7 @@ function ComposeForm({
         autoFocusNative
       />
 
-      <XStack gap="$3">
+      <XStack gap={DIALOG_BUTTON_GAP}>
         <Dialog.Close asChild>
           <Button flex={1} variant="secondary" disabled={pending}>
             {t("feed.composeClose")}
@@ -166,11 +167,11 @@ export function FeedComposeDialog({
   onSubmit: (photo: ImagePickerAsset, caption: string) => void;
 }) {
   return (
-    <RetroFormDialog
+    <FormDialog
       open={open}
       onOpenChange={(next) => !pending && onOpenChange(next)}
     >
       <ComposeForm pending={pending} onError={onError} onSubmit={onSubmit} />
-    </RetroFormDialog>
+    </FormDialog>
   );
 }

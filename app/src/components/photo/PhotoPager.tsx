@@ -7,11 +7,7 @@ import { useTheme, XStack, YStack } from "tamagui";
 import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { LockBadge } from "@/components/ui/LockBadge";
-import {
-  IMAGE_TRANSITION,
-  PHOTO_PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
-} from "@/lib/design";
+import { IMAGE_TRANSITION, PHOTO_PRESS_OPACITY } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
 const PHOTO_RATIO = 0.8;
@@ -35,28 +31,14 @@ export function PhotoPager({
 
   if (photos.length === 0) {
     return (
-      <YStack
-        height={height}
-        bg="$color1"
-        borderTopWidth={RETRO_BORDER_WIDTH}
-        borderBottomWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        items="center"
-        justify="center"
-      >
-        <ImageIcon size={PLACEHOLDER_ICON_SIZE} color={theme.color12.val} />
+      <YStack height={height} bg="$grey100" items="center" justify="center">
+        <ImageIcon size={PLACEHOLDER_ICON_SIZE} color={theme.grey400.val} />
       </YStack>
     );
   }
 
   return (
-    <YStack
-      width={width}
-      bg="$gray12"
-      borderTopWidth={RETRO_BORDER_WIDTH}
-      borderBottomWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-    >
+    <YStack width={width} bg="$grey100">
       <PagedPhotos
         photos={photos}
         itemWidth={width}
@@ -66,7 +48,7 @@ export function PhotoPager({
           <XStack
             width={width}
             height={height}
-            bg="$gray12"
+            bg="$grey100"
             pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
             onPress={() => setViewerOpen(true)}
           >

@@ -6,24 +6,25 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
+import { Badge } from "@/components/ui/Badge";
+import { Border } from "@/components/ui/Border";
 import { Glass } from "@/components/ui/Glass";
 import type { MemberDetailResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
 import {
+  BADGE_SIZES,
   bottomBarHeight,
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
-  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
 const ACTION_ICON_SIZE = 28;
 
-const BADGE_SIZE = 18;
-const BADGE_FONT_SIZE = 11;
-const BADGE_OPACITY = 0.9;
+// 배지가 아이콘 오른쪽 위 모서리에 걸치는 거리다.
+const BADGE_OVERHANG = BADGE_SIZES.xsmall.height / 4;
 
 export type MemberActionKey =
   "like" | "favorite" | "note" | "secretPhoto" | "block";
@@ -38,22 +39,11 @@ const ACTIONS: { key: MemberActionKey; icon: Icon }[] = [
 
 function CountBadge({ count }: { count: number }) {
   return (
-    <XStack
-      position="absolute"
-      t={-BADGE_SIZE / 4}
-      r={-BADGE_SIZE / 4}
-      width={BADGE_SIZE}
-      height={BADGE_SIZE}
-      rounded={9999}
-      bg={count > 0 ? "$red10" : "$gray10"}
-      opacity={BADGE_OPACITY}
-      items="center"
-      justify="center"
-    >
-      <Text color="$onFill" fontSize={BADGE_FONT_SIZE} fontWeight="700">
-        {count}
-      </Text>
-    </XStack>
+    <YStack position="absolute" t={-BADGE_OVERHANG} r={-BADGE_OVERHANG}>
+      <Badge size="xsmall" tone={count > 0 ? "red-fill" : "elephant-weak"}>
+        {String(count)}
+      </Badge>
+    </YStack>
   );
 }
 
@@ -144,10 +134,12 @@ export function MemberActionBar({
       r={0}
       height={bottomBarHeight(insets.bottom)}
       pb={insets.bottom}
-      bg="$color1"
-      borderTopWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
+      bg="$background"
     >
+      <YStack position="absolute" t={0} l={0} r={0}>
+        <Border />
+      </YStack>
+
       {items}
     </XStack>
   );

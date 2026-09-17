@@ -3,27 +3,29 @@ import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { Text, YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MemberActionBar } from "@/components/MemberActionBar";
-import { MemberMeta } from "@/components/MemberMeta";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
+import { ProfileHeader } from "@/components/ProfileHeader";
 import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { RelativeTime } from "@/components/ui/RelativeTime";
-import { RetroCard } from "@/components/ui/RetroCard";
+import { Border } from "@/components/ui/Border";
+import { ListHeader } from "@/components/ui/ListHeader";
+import { ListRow } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useAlert } from "@/hooks/useAlert";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { copyText } from "@/lib/clipboard";
-import { SCROLL_TO_TOP_BOTTOM_GAP } from "@/lib/design";
-import { formatDistance } from "@/lib/member";
+import {
+  LIST_ROW_VERTICAL_PADDING,
+  SCROLL_TO_TOP_BOTTOM_GAP,
+} from "@/lib/design";
 import {
   bioCopiedMessage,
   commentCopiedMessage,
@@ -37,6 +39,9 @@ import { pushOnce } from "@/lib/router";
 
 const NOTE_MAX_LENGTH = 100;
 const MEMO_MAX_LENGTH = 100;
+
+// 메모 행 안쪽 여백 8과 합쳐, 글 아래가 다른 묶음의 글 아래 여백(24)과 비슷해지게 한다.
+const MEMO_PADDING_BOTTOM = 16;
 
 export default function MemberProfileScreen() {
   const { t } = useTranslation();
@@ -122,78 +127,53 @@ export default function MemberProfileScreen() {
               paddingBottom: barHeight,
             }}
           >
-            <YStack>
-              <ProfilePhotos
-                photos={member.publicPhotoUrls}
-                gridOpen={photoGridOpen}
-                onPressPhoto={setGridPhotoIndex}
-              />
-            </YStack>
+            <ProfilePhotos
+              photos={member.publicPhotoUrls}
+              gridOpen={photoGridOpen}
+              onPressPhoto={setGridPhotoIndex}
+            />
 
-            <YStack gap="$4" p="$4">
-              <YStack gap="$1">
-                <XStack items="center" justify="space-between" gap="$2">
-                  <Text
-                    flex={1}
-                    numberOfLines={1}
-                    fontSize="$6"
-                    fontWeight="700"
-                    onLongPress={() => copyMemberId(member.memberId)}
-                  >
-                    {member.nickname}
-                  </Text>
+            <ProfileHeader
+              nickname={member.nickname}
+              gender={member.gender}
+              age={member.age}
+              receivedLikeCount={member.receivedLikeCount}
+              locatedAt={member.locatedAt}
+              distance={member.distance}
+              onLongPressNickname={() => copyMemberId(member.memberId)}
+            />
 
-                  {member.locatedAt && <RelativeTime at={member.locatedAt} />}
-                </XStack>
+            <ProfileSection
+              title={t("profile.comment")}
+              body={member.comment}
+              placeholder={profileCommentEmptyMessage()}
+              copiedMessage={commentCopiedMessage()}
+            />
 
-                <XStack items="center" justify="space-between" gap="$2">
-                  <XStack flex={1}>
-                    <MemberMeta
-                      gender={member.gender}
-                      age={member.age}
-                      receivedLikeCount={member.receivedLikeCount}
-                      size="md"
-                    />
-                  </XStack>
+            <ProfileSection
+              title={t("profile.bio")}
+              body={member.bio}
+              placeholder={profileBioEmptyMessage()}
+              copiedMessage={bioCopiedMessage()}
+            />
 
-                  {member.distance != null && (
-                    <Text
-                      theme="gray"
-                      shrink={0}
-                      fontSize="$2"
-                      color="$color11"
-                    >
-                      {formatDistance(member.distance)}
-                    </Text>
-                  )}
-                </XStack>
-              </YStack>
-
-              <ProfileSection
-                title={t("profile.comment")}
-                body={member.comment}
-                placeholder={profileCommentEmptyMessage()}
-                copiedMessage={commentCopiedMessage()}
-              />
-
-              <ProfileSection
-                title={t("profile.bio")}
-                body={member.bio}
-                placeholder={profileBioEmptyMessage()}
-                copiedMessage={bioCopiedMessage()}
-              />
-
-              <YStack gap="$2">
-                <SectionLabel>{t("memberDetail.memoTitle")}</SectionLabel>
-                <RetroCard onPress={() => setMemoOpen(true)}>
-                  <Text
-                    fontSize="$4"
-                    color={member.memo ? undefined : "$color11"}
-                  >
-                    {member.memo || t("memberDetail.memoPlaceholder")}
-                  </Text>
-                </RetroCard>
-              </YStack>
+            <YStack pb={MEMO_PADDING_BOTTOM}>
+              <Border variant="height16" />
+              <ListHeader pb={0}>{t("memberDetail.memoTitle")}</ListHeader>
+              <ListRow
+                horizontalPadding="small"
+                verticalPadding={LIST_ROW_VERTICAL_PADDING.small}
+                withArrow
+                onPress={() => setMemoOpen(true)}
+              >
+                <Text
+                  fontSize="$4"
+                  lineHeight="$4"
+                  color={member.memo ? "$grey700" : "$grey500"}
+                >
+                  {member.memo || t("memberDetail.memoPlaceholder")}
+                </Text>
+              </ListRow>
             </YStack>
           </ScrollView>
 

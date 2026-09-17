@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
-import { MemberMeta } from "@/components/MemberMeta";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
+import { ProfileHeader } from "@/components/ProfileHeader";
 import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
 import { ProfileSection } from "@/components/ProfileSection";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -54,36 +54,28 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
           secretFrom={publicPhotos.length}
           gridOpen={photoGridOpen}
           onPressPhoto={setGridPhotoIndex}
-          pt="$4"
         />
 
-        <YStack gap="$4" p="$4">
-          <YStack gap="$1">
-            <Text fontSize="$6" fontWeight="700">
-              {nickname}
-            </Text>
-            <MemberMeta
-              gender={gender}
-              age={age}
-              receivedLikeCount={receivedLikeCount}
-              size="md"
-            />
-          </YStack>
+        <ProfileHeader
+          nickname={nickname}
+          gender={gender}
+          age={age}
+          receivedLikeCount={receivedLikeCount}
+        />
 
-          <ProfileSection
-            title={t("profile.comment")}
-            body={comment}
-            placeholder={profileCommentEmptyMessage()}
-            copiedMessage={commentCopiedMessage()}
-          />
+        <ProfileSection
+          title={t("profile.comment")}
+          body={comment}
+          placeholder={profileCommentEmptyMessage()}
+          copiedMessage={commentCopiedMessage()}
+        />
 
-          <ProfileSection
-            title={t("profile.bio")}
-            body={bio}
-            placeholder={profileBioEmptyMessage()}
-            copiedMessage={bioCopiedMessage()}
-          />
-        </YStack>
+        <ProfileSection
+          title={t("profile.bio")}
+          body={bio}
+          placeholder={profileBioEmptyMessage()}
+          copiedMessage={bioCopiedMessage()}
+        />
       </ScrollView>
 
       <PhotoGridToggle
