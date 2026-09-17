@@ -244,6 +244,7 @@ export const ko = {
     resend: "재전송",
     cancel: "취소",
     markRead: "읽음",
+    filter: "필터",
     genderLabel: "성별",
     ageLabel: "나이",
     reset: "초기화",

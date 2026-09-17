@@ -10,9 +10,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme, YStack } from "tamagui";
 
-import { RETRO_BORDER_WIDTH } from "@/lib/design";
-
-const TRACK_HEIGHT = 4;
+// TDS 슬라이더에서 잰 값이다. TDS는 값 하나만 고르므로 손잡이를 둘로 늘려 모양만 따른다.
+const HEIGHT = 40;
+const TRACK_HEIGHT = 5;
 const THUMB_SIZE = 24;
 const THUMB_HIT_SLOP = 12;
 
@@ -23,7 +23,7 @@ function Thumb({
   otherPosition,
   isLower,
   width,
-  borderColor,
+  shadow,
   label,
   value,
   min,
@@ -35,7 +35,7 @@ function Thumb({
   otherPosition: SharedValue<number>;
   isLower: boolean;
   width: number;
-  borderColor: string;
+  shadow: string;
   label: string;
   value: number;
   min: number;
@@ -61,7 +61,7 @@ function Thumb({
     });
 
   const style = useAnimatedStyle(() => ({
-    transform: [{ translateX: position.value - THUMB_SIZE / 2 }],
+    transform: [{ translateX: position.value }],
   }));
 
   return (
@@ -75,18 +75,14 @@ function Thumb({
         onAccessibilityAction={(event) =>
           onStep(event.nativeEvent.actionName === "increment" ? 1 : -1)
         }
-        style={[
-          styles.thumb,
-          { borderColor, borderWidth: RETRO_BORDER_WIDTH },
-          style,
-        ]}
+        style={[styles.thumb, { boxShadow: shadow }, style]}
       />
     </GestureDetector>
   );
 }
 
 // 값은 스텝 단위로 스냅하고, 두 손잡이는 서로 넘어가지 못한다(같은 값은 된다).
-export function RetroRangeSlider({
+export function RangeSlider({
   min,
   max,
   values,
@@ -111,7 +107,7 @@ export function RetroRangeSlider({
   const toValue = (ratio: number) => Math.round(min + ratio * span);
 
   const onLayout = (event: LayoutChangeEvent) => {
-    const next = event.nativeEvent.layout.width;
+    const next = event.nativeEvent.layout.width - THUMB_SIZE;
 
     setWidth(next);
     lower.value = toRatio(values[0]) * next;
@@ -167,7 +163,7 @@ export function RetroRangeSlider({
         return;
       }
 
-      const x = Math.min(width, Math.max(0, event.x));
+      const x = Math.min(width, Math.max(0, event.x - THUMB_SIZE / 2));
       const toLower = Math.abs(x - lower.value);
       const toUpper = Math.abs(x - upper.value);
       const pickLower =
@@ -183,19 +179,27 @@ export function RetroRangeSlider({
     });
 
   const rangeStyle = useAnimatedStyle(() => ({
-    left: lower.value,
+    left: THUMB_SIZE / 2 + lower.value,
     width: Math.max(0, upper.value - lower.value),
   }));
 
-  // 손잡이 반쪽만큼 안쪽에서 트랙을 시작해, 양 끝 손잡이가 컨테이너 밖으로 나가지 않는다.
+  const thumbShadow = `0 0 0 1px ${theme.greyOpacity200.val}, 0 8px 8px 0 ${theme.greyOpacity200.val}, 0 2px 3px 0 ${theme.greyOpacity300.val}`;
+
+  // 트랙은 끝까지 깔고 손잡이 중심은 반쪽만큼 안쪽에서만 움직여, 양 끝 손잡이가 컨테이너 밖으로
+  // 나가지 않는다. width와 손잡이 위치는 이 안쪽 구간 기준이다.
   return (
     <GestureDetector gesture={tap}>
-      <YStack height={THUMB_SIZE} justify="center" mx={THUMB_SIZE / 2}>
-        <YStack height={TRACK_HEIGHT} bg="$gray6" onLayout={onLayout}>
+      <YStack height={HEIGHT} justify="center" onLayout={onLayout}>
+        <YStack
+          height={TRACK_HEIGHT}
+          rounded={TRACK_HEIGHT / 2}
+          bg="$grey200"
+          overflow="hidden"
+        >
           <Animated.View
             style={[
               styles.range,
-              { backgroundColor: theme.blue10.val },
+              { backgroundColor: theme.blue400.val },
               rangeStyle,
             ]}
           />
@@ -208,7 +212,7 @@ export function RetroRangeSlider({
               otherPosition={upper}
               isLower
               width={width}
-              borderColor={theme.gray12.val}
+              shadow={thumbShadow}
               label={lowerLabel}
               value={values[0]}
               min={min}
@@ -221,7 +225,7 @@ export function RetroRangeSlider({
               otherPosition={lower}
               isLower={false}
               width={width}
-              borderColor={theme.gray12.val}
+              shadow={thumbShadow}
               label={upperLabel}
               value={values[1]}
               min={min}
@@ -244,10 +248,11 @@ const styles = StyleSheet.create({
   },
   thumb: {
     position: "absolute",
-    top: 0,
+    top: (HEIGHT - THUMB_SIZE) / 2,
     left: 0,
     width: THUMB_SIZE,
     height: THUMB_SIZE,
+    borderRadius: THUMB_SIZE / 2,
     // 손잡이는 다크에서도 흰색이다. 글자색이 아니라 표면이라 토큰으로 두지 않는다.
     backgroundColor: "white",
   },

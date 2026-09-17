@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
+import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
-import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
+import { RangeSlider } from "@/components/ui/RangeSlider";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
-import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
-import { OVERLAY_BG, RETRO_BORDER_WIDTH, TRANSITION } from "@/lib/design";
+import { SCREEN_PADDING, SHEET_PADDING_X } from "@/lib/design";
 import {
   DEFAULT_MEMBER_FILTER,
   isDefaultMemberFilter,
@@ -24,6 +22,11 @@ import {
 } from "@/lib/member";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
 
+// TDS 바텀시트의 두 버튼(BottomSheet.DoubleCTA)에서 잰 값이다.
+const CTA_PADDING_TOP = 36;
+const CTA_PADDING_BOTTOM = 20;
+const CTA_GAP = 8;
+
 function genderFilterOf(gender: MemberFilter["gender"]): GenderFilter {
   return (
     GENDER_FILTERS.find((value) => GENDER_FILTER_VALUES[value] === gender) ??
@@ -37,7 +40,7 @@ const GENDER_FILTER_ITEMS = GENDER_FILTERS.map((value) => ({
 }));
 
 export function MemberFilterSheet({
-  open: requested,
+  open,
   onOpenChange,
   filter,
   onApply,
@@ -48,8 +51,6 @@ export function MemberFilterSheet({
   onApply: (filter: MemberFilter) => void;
 }) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-  const open = useVisibleWhenUnlocked(requested);
   const [gender, setGender] = useState(genderFilterOf(filter.gender));
   const [ages, setAges] = useState<[number, number]>([
     filter.minAge,
@@ -76,8 +77,6 @@ export function MemberFilterSheet({
     onOpenChange(next);
   };
 
-  useCloseOnGoBack(open, () => changeOpen(false));
-
   const draft: MemberFilter = {
     gender: GENDER_FILTER_VALUES[gender],
     minAge: ages[0],
@@ -95,30 +94,12 @@ export function MemberFilterSheet({
   };
 
   return (
-    <Sheet
-      modal
+    <BottomSheet
       open={open}
       onOpenChange={changeOpen}
-      snapPointsMode="fit"
-      dismissOnSnapToBottom
-      transition={TRANSITION}
+      title={t("component.filter")}
     >
-      <Sheet.Overlay
-        bg={OVERLAY_BG}
-        transition={TRANSITION}
-        enterStyle={{ opacity: 0 }}
-        exitStyle={{ opacity: 0 }}
-      />
-
-      <Sheet.Frame
-        bg="$color1"
-        rounded={0}
-        borderTopWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        p="$4"
-        pb={getTokens().space.$6.val + insets.bottom}
-        gap="$4"
-      >
+      <YStack px={SHEET_PADDING_X} gap="$4">
         <YStack gap="$2">
           <SectionLabel>{t("component.genderLabel")}</SectionLabel>
           <SegmentedControl
@@ -136,7 +117,7 @@ export function MemberFilterSheet({
               {formatAgeRange(ages[0], ages[1])}
             </Text>
           </XStack>
-          <RetroRangeSlider
+          <RangeSlider
             min={MIN_AGE}
             max={MAX_AGE}
             values={ages}
@@ -145,21 +126,27 @@ export function MemberFilterSheet({
             onChange={setAges}
           />
         </YStack>
+      </YStack>
 
-        <XStack gap="$3">
-          <Button
-            variant="secondary"
-            flex={1}
-            disabled={isDefaultMemberFilter(draft)}
-            onPress={reset}
-          >
-            {t("component.reset")}
-          </Button>
-          <Button flex={1} onPress={apply}>
-            {t("component.apply")}
-          </Button>
-        </XStack>
-      </Sheet.Frame>
-    </Sheet>
+      <XStack
+        gap={CTA_GAP}
+        px={SCREEN_PADDING}
+        pt={CTA_PADDING_TOP}
+        pb={CTA_PADDING_BOTTOM}
+      >
+        <Button
+          variant="secondary"
+          size="xlarge"
+          flex={1}
+          disabled={isDefaultMemberFilter(draft)}
+          onPress={reset}
+        >
+          {t("component.reset")}
+        </Button>
+        <Button size="xlarge" flex={1} onPress={apply}>
+          {t("component.apply")}
+        </Button>
+      </XStack>
+    </BottomSheet>
   );
 }

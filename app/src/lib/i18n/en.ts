@@ -244,6 +244,7 @@ export const en: typeof ko = {
     resend: "Resend",
     cancel: "Cancel",
     markRead: "Read",
+    filter: "Filter",
     genderLabel: "Gender",
     ageLabel: "Age",
     reset: "Reset",

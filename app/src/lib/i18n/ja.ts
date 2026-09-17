@@ -247,6 +247,7 @@ export const ja: typeof ko = {
     resend: "再送信",
     cancel: "キャンセル",
     markRead: "既読",
+    filter: "フィルター",
     genderLabel: "性別",
     ageLabel: "年齢",
     reset: "リセット",

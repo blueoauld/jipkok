@@ -232,6 +232,7 @@ export const zh: typeof ko = {
     resend: "重新傳送",
     cancel: "取消",
     markRead: "已讀",
+    filter: "篩選",
     genderLabel: "性別",
     ageLabel: "年齡",
     reset: "重設",

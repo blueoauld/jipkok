@@ -1,21 +1,12 @@
-import { useEffect } from "react";
-import { Keyboard } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import { Sheet, Text, useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
-import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
-import { PILL_RADIUS, SHEET_RADIUS, TRANSITION } from "@/lib/design";
+import { BottomSheet } from "@/components/ui/BottomSheet";
+import { SHEET_PADDING_X, TRANSITION } from "@/lib/design";
 
-// TDS 바텀시트와 BottomSheet.Select에서 잰 값이다.
-const SHEET_MARGIN = 10;
-const HANDLE_AREA_HEIGHT = 16;
-const HANDLE_WIDTH = 48;
-const HANDLE_HEIGHT = 4;
+// TDS BottomSheet.Select에서 잰 값이다.
 const LIST_PADDING_TOP = 8;
 const LIST_PADDING_BOTTOM = 16;
-const ROW_PADDING_X = 24;
 const ROW_PADDING_Y = 16;
 const ROW_RADIUS = 12;
 const ROW_PRESSED_SCALE = 0.96;
@@ -34,7 +25,7 @@ export type MenuSheetItem = {
 };
 
 export function MenuSheet({
-  open: requested,
+  open,
   onOpenChange,
   items,
 }: {
@@ -43,94 +34,51 @@ export function MenuSheet({
   items: MenuSheetItem[];
 }) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const open = useVisibleWhenUnlocked(requested);
-
-  // 키보드가 올라와 있으면 시트를 덮는다. 둘은 같이 떠 있을 수 없다.
-  useEffect(() => {
-    if (open) {
-      Keyboard.dismiss();
-    }
-  }, [open]);
-
-  useCloseOnGoBack(open, () => onOpenChange(false));
 
   return (
-    <Sheet
-      modal
-      open={open}
-      onOpenChange={onOpenChange}
-      snapPointsMode="fit"
-      dismissOnSnapToBottom
-      transition={TRANSITION}
-    >
-      <Sheet.Overlay
-        bg="$dimmedBackground"
-        transition={TRANSITION}
-        enterStyle={{ opacity: 0 }}
-        exitStyle={{ opacity: 0 }}
-      />
+    <BottomSheet open={open} onOpenChange={onOpenChange}>
+      <YStack pt={LIST_PADDING_TOP} pb={LIST_PADDING_BOTTOM}>
+        {items.map(({ label, destructive, selected, onPress }) => (
+          <XStack
+            key={label}
+            items="center"
+            px={SHEET_PADDING_X}
+            py={ROW_PADDING_Y}
+            rounded={ROW_RADIUS}
+            pressStyle={{ bg: "$greyOpacity100", scale: ROW_PRESSED_SCALE }}
+            transition={TRANSITION}
+            accessibilityRole={selected === undefined ? "button" : "radio"}
+            accessibilityState={{ checked: selected }}
+            onPress={() => {
+              onOpenChange(false);
+              onPress?.();
+            }}
+          >
+            <Text
+              flex={1}
+              numberOfLines={1}
+              fontSize="$4"
+              fontWeight="500"
+              color={destructive ? "$red500" : "$grey700"}
+            >
+              {label}
+            </Text>
 
-      <Sheet.Frame
-        bg="transparent"
-        px={SHEET_MARGIN}
-        // TDS는 안전영역이 있으면 여백을 더하지 않고 그 높이만큼만 띄운다.
-        pb={insets.bottom || SHEET_MARGIN}
-      >
-        <YStack bg="$layeredBackground" rounded={SHEET_RADIUS}>
-          <YStack height={HANDLE_AREA_HEIGHT} items="center" justify="flex-end">
-            <YStack
-              width={HANDLE_WIDTH}
-              height={HANDLE_HEIGHT}
-              rounded={PILL_RADIUS}
-              bg="$grey200"
-            />
-          </YStack>
-
-          <YStack pt={LIST_PADDING_TOP} pb={LIST_PADDING_BOTTOM}>
-            {items.map(({ label, destructive, selected, onPress }) => (
-              <XStack
-                key={label}
-                items="center"
-                px={ROW_PADDING_X}
-                py={ROW_PADDING_Y}
-                rounded={ROW_RADIUS}
-                pressStyle={{ bg: "$greyOpacity100", scale: ROW_PRESSED_SCALE }}
-                transition={TRANSITION}
-                accessibilityRole={selected === undefined ? "button" : "radio"}
-                accessibilityState={{ checked: selected }}
-                onPress={() => {
-                  onOpenChange(false);
-                  onPress?.();
-                }}
+            {selected !== undefined && (
+              <Svg
+                width={CHECK_ICON_SIZE}
+                height={CHECK_ICON_SIZE}
+                viewBox="0 0 24 24"
               >
-                <Text
-                  flex={1}
-                  numberOfLines={1}
-                  fontSize="$4"
-                  fontWeight="500"
-                  color={destructive ? "$red500" : "$grey700"}
-                >
-                  {label}
-                </Text>
-
-                {selected !== undefined && (
-                  <Svg
-                    width={CHECK_ICON_SIZE}
-                    height={CHECK_ICON_SIZE}
-                    viewBox="0 0 24 24"
-                  >
-                    <Path
-                      d={CHECK_ICON_PATH}
-                      fill={selected ? theme.blue500.val : theme.grey300.val}
-                    />
-                  </Svg>
-                )}
-              </XStack>
-            ))}
-          </YStack>
-        </YStack>
-      </Sheet.Frame>
-    </Sheet>
+                <Path
+                  d={CHECK_ICON_PATH}
+                  fill={selected ? theme.blue500.val : theme.grey300.val}
+                />
+              </Svg>
+            )}
+          </XStack>
+        ))}
+      </YStack>
+    </BottomSheet>
   );
 }
