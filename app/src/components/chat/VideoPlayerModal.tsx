@@ -35,6 +35,7 @@ import {
   OVERLAY_INK,
   PILL_RADIUS,
   PRESS_OPACITY,
+  SCREEN_PADDING,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
@@ -49,6 +50,8 @@ const SKIP_ICON_SIZE = 22;
 const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 16;
 const TRACK_HIT_SLOP = 12;
+// 탐색 막대 선이 띠 위아래 끝에서도 좌우 여백만큼 떨어지도록 누르는 여유만큼 뺀다.
+const SEEK_BAND_PADDING_Y = SCREEN_PADDING - TRACK_HIT_SLOP;
 
 const TIME_UPDATE_INTERVAL = 0.25;
 const CONTROLS_FADE_MILLIS = 150;
@@ -476,7 +479,11 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     bottom: 0,
                   }}
                 >
-                  <YStack px="$4" py="$3" bg={OVERLAY_BG}>
+                  <YStack
+                    px={SCREEN_PADDING}
+                    py={SEEK_BAND_PADDING_Y}
+                    bg={OVERLAY_BG}
+                  >
                     <SeekBar
                       position={seekTarget ?? currentTime}
                       duration={player.duration}

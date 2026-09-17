@@ -110,7 +110,7 @@ export function SearchList<T>({
                   onRetry={query.refetch}
                 />
               ) : query.isFetching ? (
-                <Spinner size="small" />
+                <Spinner size="small" color="$grey500" />
               ) : (
                 <EmptyMessage>{t("component.searchEmpty")}</EmptyMessage>
               )}

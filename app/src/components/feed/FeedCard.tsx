@@ -181,7 +181,7 @@ function Item({
           <Text
             numberOfLines={1}
             color={OVERLAY_INK}
-            fontSize="$5"
+            fontSize="$4"
             fontWeight="600"
             {...TEXT_SHADOW}
           >

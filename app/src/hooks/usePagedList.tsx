@@ -17,7 +17,7 @@ type PagedQuery = {
 function FooterSpinner() {
   return (
     <YStack items="center" py="$4">
-      <Spinner size="small" />
+      <Spinner size="small" color="$grey500" />
     </YStack>
   );
 }

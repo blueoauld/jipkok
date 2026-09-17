@@ -35,7 +35,7 @@ function SettingRow({
               {status}
             </Text>
           )}
-          {pending && <Spinner size="small" />}
+          {pending && <Spinner size="small" color="$grey500" />}
         </>
       }
       withArrow={item.href !== undefined || item.url !== undefined}

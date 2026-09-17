@@ -9,11 +9,14 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { ChatDay } from "@/components/chat/ChatDay";
 import { ChatInputBar } from "@/components/chat/ChatInputBar";
-import { ChatMessageRow } from "@/components/chat/ChatMessageRow";
+import {
+  ChatMessageRow,
+  MESSAGE_GAP_BOTTOM,
+} from "@/components/chat/ChatMessageRow";
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { MessageActionOverlay } from "@/components/chat/MessageActionOverlay";
 import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
@@ -36,10 +39,14 @@ import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound, toReply } from "@/lib/chat";
 import { type ChatRow, toChatRows } from "@/lib/chat/rows";
 import { useDeletedRoomStore } from "@/lib/chat/store";
+import { SCREEN_PADDING } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
 const HIGHLIGHT_MILLIS = 800;
+
+// 끝 말풍선의 아래 여백과 합쳐 입력줄 위가 화면 좌우 여백과 같게 한다.
+const LIST_PADDING_Y = SCREEN_PADDING - MESSAGE_GAP_BOTTOM;
 
 export default function ChatRoomScreen() {
   const { t } = useTranslation();
@@ -47,7 +54,6 @@ export default function ChatRoomScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const roomId = Number(id);
   const validRoom = Number.isInteger(roomId) && roomId > 0;
-  const space = getTokens().space;
 
   const keyboardOffset = useSafeAreaInsets().bottom;
 
@@ -354,7 +360,7 @@ export default function ChatRoomScreen() {
             })
           }
           showsVerticalScrollIndicator={true}
-          contentContainerStyle={{ paddingVertical: space.$3.val }}
+          contentContainerStyle={{ paddingVertical: LIST_PADDING_Y }}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -364,7 +370,7 @@ export default function ChatRoomScreen() {
           ListFooterComponent={
             isFetchingNextPage ? (
               <YStack items="center" py="$4">
-                <Spinner size="small" />
+                <Spinner size="small" color="$grey500" />
               </YStack>
             ) : null
           }

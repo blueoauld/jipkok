@@ -26,7 +26,7 @@ const AVATAR_GAP = BUBBLE_TAIL_OVERHANG + 8;
 const NAME_GAP = 4;
 
 const GROUP_GAP_TOP = 12;
-const MESSAGE_GAP_BOTTOM = 4;
+export const MESSAGE_GAP_BOTTOM = 4;
 
 // 안드로이드는 비율 너비로는 텍스트를 가정 너비로 먼저 재서 긴 글의 말풍선 아래가 빈다.
 // 픽셀로 확정해 주면 최종 너비로 한 번에 잰다.

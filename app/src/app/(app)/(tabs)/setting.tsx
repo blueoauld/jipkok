@@ -5,7 +5,7 @@ import { TranslateIcon } from "phosphor-react-native/src/icons/Translate";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, ScrollView } from "react-native";
-import { getTokens, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
@@ -26,6 +26,7 @@ import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useProfileViewNewCount } from "@/hooks/useProfileViews";
 import { useWithdraw } from "@/hooks/useWithdraw";
 import { api } from "@/lib/api";
+import { LIST_ROW_PADDING_X, LIST_ROW_VERTICAL_PADDING } from "@/lib/design";
 import { APP_VERSION } from "@/lib/device";
 import i18n, {
   currentLocale,
@@ -64,13 +65,16 @@ const LANGUAGE_LABEL_KEYS = {
   en: "setting.languageEn",
 } as const satisfies Record<SupportedLocale, string>;
 
+// 설정 행의 좌우 여백만큼 테마 세그먼트 둘레와 목록 끝을 띄운다. 행 쪽은 행이 가진 위아래 여백을 뺀다.
+const EDGE = LIST_ROW_PADDING_X.medium;
+const EDGE_BESIDE_ROW = EDGE - LIST_ROW_VERTICAL_PADDING.medium;
+
 function versionText(current: string, latest: string) {
   return i18n.t("setting.versionText", { latest, current });
 }
 
 export default function SettingScreen() {
   const { t } = useTranslation();
-  const space = getTokens().space;
   const tabBarOverlay = useTabBarOverlay();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -311,7 +315,7 @@ export default function SettingScreen() {
     <YStack flex={1}>
       <Tabs.Screen options={screenOptions} />
 
-      <YStack px="$4" pt="$4" pb="$3">
+      <YStack px={EDGE} pt={EDGE} pb={EDGE_BESIDE_ROW}>
         <SegmentedControl
           size="small"
           items={THEME_ITEMS}
@@ -324,7 +328,7 @@ export default function SettingScreen() {
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: space.$4.val + tabBarOverlay,
+          paddingBottom: EDGE_BESIDE_ROW + tabBarOverlay,
         }}
       >
         {SECTIONS.map((group, index) => (
