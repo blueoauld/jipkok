@@ -164,7 +164,7 @@ export default function ChatRoomScreen() {
 
   useEffect(() => {
     if (partnerLeft) {
-      show(t("chatRoom.partnerLeft"), () => router.back());
+      show("info", t("chatRoom.partnerLeft"), () => router.back());
     }
   }, [partnerLeft, show, t]);
 

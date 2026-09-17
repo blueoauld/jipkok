@@ -141,15 +141,18 @@ export default function SettingScreen() {
       const detail = versionText(APP_VERSION, latestVersion);
 
       if (!isOutdated(APP_VERSION, latestVersion)) {
-        show(detail);
+        show("info", detail);
         return;
       }
 
       confirm({
+        variant: "info",
         message: detail,
         confirmLabel: t("setting.update"),
         onConfirm: () =>
-          Linking.openURL(storeUrl).catch(() => show(BROWSER_FAILED_MESSAGE)),
+          Linking.openURL(storeUrl).catch(() =>
+            show("error", BROWSER_FAILED_MESSAGE),
+          ),
       });
     },
     onError: showApiError,

@@ -89,19 +89,19 @@ export function useLocationUpdate({ show, showApiError }: AlertApi) {
       const permission = await Location.requestForegroundPermissionsAsync();
 
       if (!permission.granted) {
-        show(DENIED_MESSAGE);
+        show("info", DENIED_MESSAGE);
         return false;
       }
 
       if (!(await enableServices())) {
-        show(SERVICES_OFF_MESSAGE);
+        show("info", SERVICES_OFF_MESSAGE);
         return false;
       }
 
       const coords = await resolveCoords();
 
       if (!coords) {
-        show(FAILED_MESSAGE);
+        show("info", FAILED_MESSAGE);
         return false;
       }
 

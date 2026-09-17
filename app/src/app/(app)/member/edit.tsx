@@ -115,7 +115,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
       setSaved(true);
       await queryClient.invalidateQueries({ queryKey: MY_PROFILE_KEY });
       queryClient.invalidateQueries({ queryKey: FEEDS_KEY });
-      show(t("profileEdit.saved"), () => router.back());
+      show("info", t("profileEdit.saved"), () => router.back());
     },
     onError: showApiError,
   });

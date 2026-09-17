@@ -237,7 +237,7 @@ export default function FeedScreen() {
     mutationFn: api.feeds.report,
     onSuccess: async () => {
       await invalidate();
-      show(reportedMessage());
+      show("info", reportedMessage());
     },
     onError: handlePostError,
   });

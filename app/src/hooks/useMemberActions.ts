@@ -71,7 +71,7 @@ export function useMemberActions(
       queryClient.invalidateQueries({ queryKey: POINT_BALANCE_KEY });
       queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
-      show(t("memberDetail.noteSent"));
+      show("info", t("memberDetail.noteSent"));
     },
     onError: showApiError,
   });
@@ -86,7 +86,7 @@ export function useMemberActions(
       MEMO_AFFECTED_KEYS.forEach((key) =>
         queryClient.invalidateQueries({ queryKey: key }),
       );
-      show(t("memberDetail.memoSaved"));
+      show("info", t("memberDetail.memoSaved"));
     },
     onError: showApiError,
   });
@@ -117,7 +117,7 @@ export function useMemberActions(
     onSuccess: (_data, { listKeys, successMessage }) => {
       queryClient.invalidateQueries({ queryKey });
       invalidateAll(listKeys);
-      show(successMessage);
+      show("info", successMessage);
     },
     onError: showApiError,
   });
@@ -181,7 +181,7 @@ export function useMemberActions(
           loadSecretPhotos.mutate(undefined, {
             onSuccess: (photos) =>
               photos.length === 0
-                ? show(t("memberDetail.secretPhotoEmpty"))
+                ? show("info", t("memberDetail.secretPhotoEmpty"))
                 : openSecretPhotos(),
           });
         }

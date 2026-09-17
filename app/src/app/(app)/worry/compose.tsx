@@ -37,7 +37,7 @@ export default function WorryComposeScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    show(t("worry.compose.notice"));
+    show("info", t("worry.compose.notice"));
   }, [show, t]);
 
   const compose = useMutation({

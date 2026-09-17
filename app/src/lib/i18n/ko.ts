@@ -351,6 +351,11 @@ export const ko = {
     report: "신고",
     reportSubmit: "신고하기",
   },
+  alert: {
+    error: "오류",
+    info: "알림",
+    warning: "경고",
+  },
   lounge: {
     board: { FEED: "피드", WORRY: "고민" },
   },

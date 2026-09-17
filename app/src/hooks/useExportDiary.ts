@@ -18,7 +18,7 @@ export function useExportDiary({ show, showApiError }: AlertApi) {
       exportDiaries((done, total) => setProgress({ done, total })),
     onSuccess: (result) => {
       if (result === "empty") {
-        show(t("setting.exportDiaryEmpty"));
+        show("info", t("setting.exportDiaryEmpty"));
       }
     },
     onError: (error) => {

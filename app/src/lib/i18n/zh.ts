@@ -334,6 +334,11 @@ export const zh: typeof ko = {
     report: "檢舉",
     reportSubmit: "提交檢舉",
   },
+  alert: {
+    error: "錯誤",
+    info: "通知",
+    warning: "警告",
+  },
   lounge: {
     board: { FEED: "動態", WORRY: "煩惱" },
   },

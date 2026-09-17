@@ -100,7 +100,7 @@ export default function ReportScreen() {
         detail: detailRef.current.trim() || null,
         photoKeys: photos.objectKeys,
       }),
-    onSuccess: () => show(reportedMessage(), () => router.back()),
+    onSuccess: () => show("info", reportedMessage(), () => router.back()),
     onError: showApiError,
   });
 

@@ -2,13 +2,23 @@ import { useCallback, useState } from "react";
 
 import { Alert } from "@/components/ui/Alert";
 import { apiErrorMessage } from "@/lib/alert";
+import i18n from "@/lib/i18n";
+
+type AlertVariant = "error" | "info" | "warning";
 
 type AlertState = {
+  variant: AlertVariant;
   message: string;
   confirmLabel?: string;
   destructive?: boolean;
   onConfirm?: () => void;
   onDismiss?: () => void;
+};
+
+const TITLES: Record<AlertVariant, string> = {
+  error: i18n.t("alert.error"),
+  info: i18n.t("alert.info"),
+  warning: i18n.t("alert.warning"),
 };
 
 // 훅이 알림을 띄워야 할 때는 화면의 알림을 넘겨받는다. 화면마다 알림은 하나만 둔다.
@@ -28,13 +38,13 @@ export function useAlert(initial?: AlertState) {
   }, []);
 
   const show = useCallback(
-    (message: string, onDismiss?: () => void) =>
-      present({ message, onDismiss }),
+    (variant: AlertVariant, message: string, onDismiss?: () => void) =>
+      present({ variant, message, onDismiss }),
     [present],
   );
 
   const showApiError = useCallback(
-    (error: unknown) => show(apiErrorMessage(error)),
+    (error: unknown) => show("error", apiErrorMessage(error)),
     [show],
   );
 
@@ -44,13 +54,15 @@ export function useAlert(initial?: AlertState) {
       confirmLabel: string;
       destructive?: boolean;
       onConfirm: () => void;
-    }) => present(options),
+      variant?: AlertVariant;
+    }) => present({ variant: "warning", ...options }),
     [present],
   );
 
   const alertElement = alert && (
     <Alert
       visible={open}
+      title={TITLES[alert.variant]}
       message={alert.message}
       confirmLabel={alert.confirmLabel}
       destructive={alert.destructive}

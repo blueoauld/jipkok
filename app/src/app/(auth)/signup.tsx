@@ -40,6 +40,7 @@ export default function SignupScreen() {
   });
 
   const { alertElement, show, showApiError } = useAlert({
+    variant: "warning",
     message: t("auth.signup.minorNotice"),
   });
 

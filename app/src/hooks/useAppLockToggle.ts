@@ -32,7 +32,7 @@ export function useAppLockToggle({ show }: AlertApi) {
           setEnabled(false);
           showToast("warning", TURNED_OFF_MESSAGE);
         } else {
-          show(UNAVAILABLE_MESSAGE);
+          show("warning", UNAVAILABLE_MESSAGE);
         }
 
         return;

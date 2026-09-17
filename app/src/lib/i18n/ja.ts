@@ -353,6 +353,11 @@ export const ja: typeof ko = {
     report: "通報",
     reportSubmit: "通報する",
   },
+  alert: {
+    error: "エラー",
+    info: "お知らせ",
+    warning: "警告",
+  },
   lounge: {
     board: { FEED: "フィード", WORRY: "悩み" },
   },

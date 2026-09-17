@@ -17,6 +17,7 @@ import {
 // TDS 다이얼로그에서 잰 여백이다.
 const SPACING = {
   content: 22,
+  titleGap: 8,
   actions: 16,
   buttonGap: 8,
   confirmTop: 20,
@@ -29,6 +30,7 @@ const TEXT_BUTTON_RADIUS = 8;
 
 export function Alert({
   visible: requested,
+  title,
   message,
   confirmLabel,
   destructive,
@@ -36,6 +38,7 @@ export function Alert({
   onClose,
 }: {
   visible: boolean;
+  title: string;
   message: string;
   confirmLabel?: string;
   destructive?: boolean;
@@ -82,15 +85,18 @@ export function Alert({
               enterStyle={{ scale: DIALOG_ENTER_SCALE }}
               exitStyle={{ scale: DIALOG_ENTER_SCALE }}
             >
-              <Text
+              <YStack
                 px={SPACING.content}
                 pt={SPACING.content}
-                fontSize="$6"
-                fontWeight="700"
-                color="$grey800"
+                gap={SPACING.titleGap}
               >
-                {message}
-              </Text>
+                <Text fontSize="$6" fontWeight="700" color="$grey800">
+                  {title}
+                </Text>
+                <Text fontSize="$2" fontWeight="500" color="$grey600">
+                  {message}
+                </Text>
+              </YStack>
 
               {confirmLabel ? (
                 <XStack

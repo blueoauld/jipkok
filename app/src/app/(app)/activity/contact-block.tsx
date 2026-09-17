@@ -113,7 +113,7 @@ export default function ContactBlockScreen() {
         title={t("contactBlock.addTitle")}
         submitLabel={t("contactBlock.submit")}
         onSubmit={(phoneNumber, memo) => add.mutate({ phoneNumber, memo })}
-        onInvalid={() => show(t("contactBlock.invalid"))}
+        onInvalid={() => show("warning", t("contactBlock.invalid"))}
       />
 
       {alertElement}

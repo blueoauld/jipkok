@@ -108,7 +108,7 @@ export function useWorryDetailActions(
     mutationFn: () => api.worries.report(postId),
     onSuccess: async () => {
       await invalidateList();
-      show(reportedMessage(), () => router.back());
+      show("info", reportedMessage(), () => router.back());
     },
     onError: showApiError,
   });
@@ -147,7 +147,7 @@ export function useWorryDetailActions(
     mutationFn: (commentId: number) => api.worries.reportComment(commentId),
     onSuccess: async () => {
       await invalidateComments();
-      show(reportedMessage());
+      show("info", reportedMessage());
     },
     onError: showApiError,
   });
