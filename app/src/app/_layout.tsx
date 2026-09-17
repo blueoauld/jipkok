@@ -19,19 +19,13 @@ import { initializeCrashReporting } from "@/lib/crash";
 import { initializePerformanceMonitoring } from "@/lib/performance";
 import { QueryProvider } from "@/lib/query";
 import { useReviewStore } from "@/lib/review/store";
-import { useAccentColor, useThemeBackgroundColor } from "@/lib/theme/accent";
-import {
-  type ColorScheme,
-  colorScheme,
-  useThemeStore,
-} from "@/lib/theme/store";
+import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
 import { tamaguiConfig } from "@/tamagui.config";
 
 export { AppErrorBoundary as ErrorBoundary } from "@/components/AppErrorBoundary";
 
 export default function RootLayout() {
-  const mode = useThemeStore((state) => state.mode);
-  const scheme = colorScheme(mode);
+  const scheme = useThemeStore((state) => state.mode);
 
   useEffect(() => {
     Appearance.setColorScheme(scheme);
@@ -134,12 +128,10 @@ function NavigationTheme({
   scheme,
   children,
 }: {
-  scheme: ColorScheme;
+  scheme: ThemeMode;
   children: ReactNode;
 }) {
   const theme = useTheme();
-  const accent = useAccentColor();
-  const background = useThemeBackgroundColor();
   const base = scheme === "dark" ? DarkTheme : DefaultTheme;
 
   const navigationTheme = useMemo(
@@ -147,14 +139,14 @@ function NavigationTheme({
       ...base,
       colors: {
         ...base.colors,
-        primary: accent,
-        background,
-        card: background,
+        primary: theme.blue10.val,
+        background: theme.background.val,
+        card: theme.background.val,
         text: theme.color.val,
         border: theme.borderColor.val,
       },
     }),
-    [accent, background, base, theme],
+    [base, theme],
   );
 
   return <ThemeProvider value={navigationTheme}>{children}</ThemeProvider>;

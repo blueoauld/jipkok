@@ -18,7 +18,6 @@ import {
   RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
-import { useAccentColor } from "@/lib/theme/accent";
 
 const ACTION_ICON_SIZE = 28;
 
@@ -78,12 +77,11 @@ export function MemberActionBar({
     secretPhoto: member.secretPhotoGrantedToMe,
     block: member.blockedByMe,
   };
-  const accent = useAccentColor();
 
   const colors: Record<MemberActionKey, string> = {
     like: theme.red10.val,
     favorite: FAVORITE_COLOR,
-    note: accent,
+    note: theme.blue10.val,
     secretPhoto: theme.green10.val,
     block: theme.red10.val,
   };

@@ -390,7 +390,7 @@ export const ja: typeof ko = {
     on: "オン",
     off: "オフ",
     confirm: "確認",
-    theme: { blue: "ブルー", pink: "ピンク", dark: "ダーク" },
+    theme: { light: "ライト", dark: "ダーク" },
   },
   lock: {
     title: "アプリロック",

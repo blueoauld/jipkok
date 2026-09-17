@@ -13,7 +13,6 @@ import {
   SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
-import { useAccent, useThemeBackground } from "@/lib/theme/accent";
 
 const GLASS_TEXT_PADDING = 16;
 
@@ -26,8 +25,6 @@ function DateButton({
   today: string;
   onPress: () => void;
 }) {
-  const accent = useAccent();
-
   // 목록이 아래로 흐르는 자리라 iOS 26에서는 유리 캡슐로 띄운다.
   if (GLASS_ENABLED) {
     return (
@@ -56,7 +53,7 @@ function DateButton({
 
   return (
     <XStack
-      theme={accent}
+      theme="blue"
       height={FLOATING_BUTTON_SIZE}
       px="$4"
       borderWidth={RETRO_BORDER_WIDTH}
@@ -85,7 +82,6 @@ export function FeedDatePicker({
   onChange: (date: Date) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const background = useThemeBackground();
   const selected = toDateParam(date);
   const tabBarOverlay = useTabBarOverlay();
 
@@ -113,7 +109,7 @@ export function FeedDatePicker({
             pt="$2"
             // 떠 있는 탭 바가 이 위에 얹히므로 마지막 줄이 가리지 않게 그만큼 더 비운다.
             pb={getTokens().space.$4.val + tabBarOverlay}
-            bg={background}
+            bg="$background"
             borderTopWidth={RETRO_BORDER_WIDTH}
             borderColor="$gray12"
           >

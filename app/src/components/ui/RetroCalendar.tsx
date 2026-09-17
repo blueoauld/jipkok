@@ -9,7 +9,6 @@ import {
 import { Text, useTheme, YStack } from "tamagui";
 
 import i18n from "@/lib/i18n";
-import { useAccentToken } from "@/lib/theme/accent";
 
 const DAY_SIZE = 36;
 const DOT_SIZE = 4;
@@ -44,7 +43,6 @@ function CalendarDay({
     maxDate !== undefined && date !== undefined && date.dateString > maxDate;
   const disabled = state === "disabled" || beyondMax;
   const today = state === "today" && !beyondMax;
-  const accent = useAccentToken();
   const weight = disabled ? "400" : selected || today ? "700" : "500";
 
   return (
@@ -53,7 +51,7 @@ function CalendarDay({
       height={DAY_SIZE}
       items="center"
       justify="center"
-      bg={selected ? accent : "transparent"}
+      bg={selected ? "$blue10" : "transparent"}
       onPress={disabled ? undefined : () => onPress?.(date)}
     >
       {marking?.emoji ? (
@@ -70,7 +68,7 @@ function CalendarDay({
               : disabled
                 ? "$color8"
                 : today
-                  ? accent
+                  ? "$blue10"
                   : "$color12"
           }
         >
@@ -85,7 +83,7 @@ function CalendarDay({
           width={DOT_SIZE}
           height={DOT_SIZE}
           rounded={DOT_SIZE / 2}
-          bg={selected ? "$onFill" : accent}
+          bg={selected ? "$onFill" : "$blue10"}
         />
       )}
     </YStack>

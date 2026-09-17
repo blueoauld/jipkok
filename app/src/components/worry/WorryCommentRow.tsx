@@ -9,7 +9,6 @@ import { RowAction } from "@/components/worry/RowAction";
 import { useContentTranslation } from "@/hooks/useContentTranslation";
 import type { WorryCommentResponse } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
-import { useAccentToken } from "@/lib/theme/accent";
 import { commentLabel, deletedCommentLabel } from "@/lib/worry";
 
 const REPLY_ROW_ICON_SIZE = 18;
@@ -31,7 +30,6 @@ export const WorryCommentRow = memo(function WorryCommentRow({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const accentToken = useAccentToken();
   const active = comment.status === "ACTIVE";
   const reply = comment.parentId != null;
   const copyTarget = active ? comment.content : null;
@@ -65,7 +63,7 @@ export const WorryCommentRow = memo(function WorryCommentRow({
           <Text
             fontSize="$2"
             fontWeight="700"
-            color={comment.byAuthor ? accentToken : "$color12"}
+            color={comment.byAuthor ? "$blue10" : "$color12"}
           >
             {commentLabel(comment)}
           </Text>

@@ -3,7 +3,6 @@ import { getTokens, XStack, YStack } from "tamagui";
 
 import { RetroButton } from "@/components/ui/RetroButton";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import { useThemeBackground } from "@/lib/theme/accent";
 
 export function ChatSelectionBar({
   count,
@@ -17,7 +16,6 @@ export function ChatSelectionBar({
   onLeave: () => void;
 }) {
   const { t } = useTranslation();
-  const background = useThemeBackground();
   const disabled = count === 0 || pending;
   const tabBarOverlay = useTabBarOverlay();
 
@@ -27,7 +25,7 @@ export function ChatSelectionBar({
       px="$4"
       pt="$4"
       pb={getTokens().space.$4.val + tabBarOverlay}
-      bg={background}
+      bg="$background"
     >
       <XStack gap="$3">
         <RetroButton flex={1} disabled={disabled} onPress={onMarkRead}>

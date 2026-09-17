@@ -20,7 +20,6 @@ import {
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { MAX_PHOTOS } from "@/lib/photo/picker";
-import { useAccentToken } from "@/lib/theme/accent";
 
 const COLUMNS = 3;
 
@@ -117,7 +116,6 @@ function Grid({
   secretFrom?: number;
 }) {
   const theme = useTheme();
-  const accent = useAccentToken();
 
   return (
     <YStack gap="$2">
@@ -209,7 +207,7 @@ function Grid({
                   )}
 
                   {showPrimaryBadge && cell.index === 0 && (
-                    <OverlayButton t="$2" l="$2" bg={accent}>
+                    <OverlayButton t="$2" l="$2" bg="$blue10">
                       <CrownSimpleIcon
                         size={BADGE_ICON_SIZE}
                         weight="fill"

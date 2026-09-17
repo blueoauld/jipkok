@@ -14,7 +14,6 @@ import { formatClockTime } from "@/lib/date";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { openWebPage } from "@/lib/support";
-import { useAccentToken } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
@@ -37,12 +36,10 @@ function BubbleFrame({
   children: ReactNode;
   onLongPress: () => void;
 }) {
-  const accent = useAccentToken();
-
   return (
     <YStack
       shrink={1}
-      bg={mine ? accent : "$color1"}
+      bg={mine ? "$blue10" : "$color1"}
       borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"
       minH={MIN_HEIGHT}

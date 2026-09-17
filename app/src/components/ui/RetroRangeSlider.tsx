@@ -11,7 +11,6 @@ import Animated, {
 import { useTheme, YStack } from "tamagui";
 
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
-import { useAccentColor } from "@/lib/theme/accent";
 
 const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 24;
@@ -103,7 +102,6 @@ export function RetroRangeSlider({
   onChange: (values: [number, number]) => void;
 }) {
   const theme = useTheme();
-  const accent = useAccentColor();
   const [width, setWidth] = useState(0);
   const lower = useSharedValue(0);
   const upper = useSharedValue(0);
@@ -195,7 +193,11 @@ export function RetroRangeSlider({
       <YStack height={THUMB_SIZE} justify="center" mx={THUMB_SIZE / 2}>
         <YStack height={TRACK_HEIGHT} bg="$gray6" onLayout={onLayout}>
           <Animated.View
-            style={[styles.range, { backgroundColor: accent }, rangeStyle]}
+            style={[
+              styles.range,
+              { backgroundColor: theme.blue10.val },
+              rangeStyle,
+            ]}
           />
         </YStack>
 

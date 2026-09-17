@@ -5,7 +5,6 @@ import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { DiaryMood } from "@/lib/api";
 import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
 import { DIARY_MOODS, moodEmoji } from "@/lib/diary";
-import { useAccent } from "@/lib/theme/accent";
 
 const CHIP_SIZE = 44;
 const EMOJI_FONT_SIZE = 24;
@@ -19,12 +18,11 @@ function MoodChip({
   selected: boolean;
   onPress: () => void;
 }) {
-  const accent = useAccent();
   const emoji = moodEmoji(mood) ?? "";
 
   return (
     <RetroPressable
-      theme={selected ? accent : "gray"}
+      theme={selected ? "blue" : "gray"}
       shadow="$gray8"
       offset={RETRO_SHADOW_OFFSET_SM}
       width={CHIP_SIZE}

@@ -18,7 +18,6 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
-import { useAccent, useThemeBackground } from "@/lib/theme/accent";
 import { CHAT_MESSAGE_MAX_LENGTH } from "@/lib/validation";
 
 const ICON_SIZE = 22;
@@ -54,8 +53,6 @@ export function ChatInputBar({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const background = useThemeBackground();
-  const accent = useAccent();
   const space = getTokens().space;
   const barPadding = space.$3.val;
   const barHPadding = space.$4.val;
@@ -81,7 +78,7 @@ export function ChatInputBar({
   };
 
   return (
-    <YStack bg={background}>
+    <YStack bg="$background">
       {reply && (
         <YStack
           theme="gray"
@@ -177,7 +174,7 @@ export function ChatInputBar({
 
         <RetroPressable
           shadow="$gray8"
-          theme={accent}
+          theme="blue"
           width={FLOATING_BUTTON_SIZE}
           height={FLOATING_BUTTON_SIZE}
           bg={sendable ? "$color10" : "$gray8"}
@@ -202,7 +199,7 @@ export function ChatInputBar({
         l={0}
         r={0}
         height={KEYBOARD_TOP_GAP}
-        bg={background}
+        bg="$background"
       />
     </YStack>
   );

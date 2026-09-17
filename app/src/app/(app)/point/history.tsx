@@ -14,7 +14,6 @@ import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
-import { useAccentToken } from "@/lib/theme/accent";
 
 function Balance() {
   const { t } = useTranslation();
@@ -39,7 +38,6 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   const { t } = useTranslation();
   const { type, amount, balanceAfter, recordedAt } = history;
   const earned = amount > 0;
-  const accent = useAccentToken();
 
   return (
     <RetroCard>
@@ -58,7 +56,7 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
           <Text
             fontSize="$4"
             fontWeight="700"
-            color={earned ? "$red10" : accent}
+            color={earned ? "$red10" : "$blue10"}
           >
             {formatAmount(amount)}
           </Text>

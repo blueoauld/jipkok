@@ -2,8 +2,6 @@ import { defaultConfig } from "@tamagui/config/v5";
 import { animations } from "@tamagui/config/v5-reanimated";
 import { createTamagui } from "tamagui";
 
-const PINK_BACKGROUND = "#FAEAF1";
-
 // 테마 색 채움 위의 흰 글씨다. useTheme()는 현재 서브테마의 키만 보므로 모든 테마에 넣는다.
 const ON_FILL = "white";
 
@@ -37,15 +35,10 @@ export const tamaguiConfig = createTamagui({
   },
   themes: {
     ...baseThemes,
-    light: {
-      ...baseThemes.light,
-      background: "#EAF1FA",
-      backgroundPink: PINK_BACKGROUND,
-    },
+    light: { ...baseThemes.light, background: "#FFFFFF" },
     dark: {
       ...baseThemes.dark,
       background: DARK_BACKGROUND,
-      backgroundPink: DARK_BACKGROUND,
       ...DARK_INK_THEME,
       gray12: DARK_INK,
       color1: DARK_SURFACE,

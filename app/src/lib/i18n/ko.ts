@@ -388,7 +388,7 @@ export const ko = {
     on: "켜짐",
     off: "꺼짐",
     confirm: "확인",
-    theme: { blue: "블루", pink: "핑크", dark: "다크" },
+    theme: { light: "라이트", dark: "다크" },
   },
   lock: {
     title: "앱 잠금",

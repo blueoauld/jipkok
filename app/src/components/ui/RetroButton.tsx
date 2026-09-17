@@ -2,24 +2,22 @@ import { Button, type ButtonProps, YStack, type YStackProps } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
-import { useAccent } from "@/lib/theme/accent";
 
 // flat은 그림자 없이 눌러도 가라앉지 않는다. 알럿처럼 이미 떠 있는 상자 안의 버튼에 쓴다.
 export function RetroButton({
-  theme,
+  theme = "blue",
   flex,
   disabled,
   shadow = "$gray12",
   flat = false,
   ...buttonProps
 }: ButtonProps & { shadow?: YStackProps["bg"]; flat?: boolean }) {
-  const accent = useAccent();
   // 회색 버튼은 중간 회색 위 흰 글씨라 대비가 4:1에 못 미친다. 옅은 표면에 잉크색으로 간다.
   // 비활성도 같은 표면에 회색 글씨다. 버튼째 투명하게 하면 밝은 배경에서 글자가 사라진다.
   const muted = theme === "gray" || disabled;
 
   return (
-    <YStack theme={disabled ? "gray" : (theme ?? accent)} flex={flex}>
+    <YStack theme={disabled ? "gray" : theme} flex={flex}>
       {!flat && <RetroShadow color={disabled ? "$gray8" : shadow} />}
       <Button
         size="$4"

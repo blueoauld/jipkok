@@ -3,7 +3,6 @@ import { Text, XStack } from "tamagui";
 import type { ChatReactionResponse } from "@/lib/api";
 import { groupReactions } from "@/lib/chat/reactions";
 import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
-import { useAccentToken } from "@/lib/theme/accent";
 
 const CHIP_GAP = 2;
 const CHIP_FONT_SIZE = 12;
@@ -20,8 +19,6 @@ function ReactionChip({
   reacted: boolean;
   onPress: () => void;
 }) {
-  const accent = useAccentToken();
-
   return (
     <XStack
       height={CHIP_SIZE}
@@ -31,7 +28,7 @@ function ReactionChip({
       justify="center"
       borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"
-      bg={reacted ? accent : "$color1"}
+      bg={reacted ? "$blue10" : "$color1"}
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >

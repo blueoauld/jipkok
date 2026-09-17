@@ -32,7 +32,6 @@ import {
 import { GLASS_ENABLED } from "@/lib/glass";
 import i18n from "@/lib/i18n";
 import { pushOnce } from "@/lib/router";
-import { useAccentColor } from "@/lib/theme/accent";
 
 const ICON_SIZE = 28;
 const TAB_ITEM_PADDING = 5;
@@ -106,7 +105,6 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const accent = useAccentColor();
   const unreadCount = useChatUnreadCount();
   const chatSelecting = useChatSelectionStore((state) => state.active);
   const selectedCount = useChatSelectionStore((state) => state.selected.size);
@@ -122,7 +120,7 @@ export default function TabsLayout() {
         headerLeftContainerStyle: { paddingLeft: HEADER_EDGE_PADDING },
         headerRightContainerStyle: { paddingRight: HEADER_EDGE_PADDING },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: accent,
+        tabBarActiveTintColor: theme.blue10.val,
         tabBarInactiveTintColor: theme.color12.val,
         // 유리 바만 띄운다. 덮이는 만큼은 useTabBarOverlay가 비운다.
         tabBarStyle: GLASS_ENABLED

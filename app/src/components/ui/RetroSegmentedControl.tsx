@@ -2,7 +2,6 @@ import { getTokens, Text, XStack, YStack } from "tamagui";
 
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { RETRO_BORDER_WIDTH } from "@/lib/design";
-import { useAccent } from "@/lib/theme/accent";
 
 export type SegmentedItem<T extends string> = {
   value: T;
@@ -18,7 +17,6 @@ export function RetroSegmentedControl<T extends string>({
   value: T;
   onChange: (value: T) => void;
 }) {
-  const accent = useAccent();
   const paddingY = getTokens().space["$1.5"].val + RETRO_BORDER_WIDTH;
 
   return (
@@ -31,7 +29,7 @@ export function RetroSegmentedControl<T extends string>({
           return (
             <XStack
               key={item.value}
-              theme={selected ? accent : undefined}
+              theme={selected ? "blue" : undefined}
               flex={1}
               mr={index === items.length - 1 ? -RETRO_BORDER_WIDTH : 0}
               py={paddingY}

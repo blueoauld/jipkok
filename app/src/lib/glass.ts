@@ -5,7 +5,7 @@ import {
 import { createContext } from "react";
 
 import { OVERLAY_INK } from "@/lib/design";
-import { colorScheme, useThemeStore } from "@/lib/theme/store";
+import { useThemeStore } from "@/lib/theme/store";
 
 // 일부 iOS 26 베타에는 API가 빠져 있어 두 검사를 모두 통과해야 크래시를 피한다.
 export const GLASS_ENABLED =
@@ -21,5 +21,5 @@ const PHOTO_GLASS = {
 } as const;
 
 export function usePhotoGlass() {
-  return PHOTO_GLASS[colorScheme(useThemeStore((state) => state.mode))];
+  return PHOTO_GLASS[useThemeStore((state) => state.mode)];
 }

@@ -13,7 +13,6 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { api, type LoginRequest } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
-import { useAccent } from "@/lib/theme/accent";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -30,7 +29,6 @@ export default function LoginScreen() {
   }, [phoneNumber, setValue]);
 
   const { alertElement, showApiError } = useRetroAlert();
-  const accent = useAccent();
 
   const login = useMutation({
     mutationFn: api.auth.login,
@@ -71,7 +69,7 @@ export default function LoginScreen() {
         <XStack justify="center" items="center" gap="$3" mt="$2">
           <Link href="/signup" asChild>
             <Text
-              theme={accent}
+              theme="blue"
               color="$color10"
               fontSize="$4"
               textDecorationLine="underline"
@@ -87,7 +85,7 @@ export default function LoginScreen() {
 
           <Link href="/password" asChild>
             <Text
-              theme={accent}
+              theme="blue"
               color="$color10"
               fontSize="$4"
               textDecorationLine="underline"

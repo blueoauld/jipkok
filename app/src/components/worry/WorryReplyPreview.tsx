@@ -9,7 +9,6 @@ import {
   RETRO_BORDER_WIDTH,
   RETRO_SHADOW_OFFSET,
 } from "@/lib/design";
-import { useThemeBackground } from "@/lib/theme/accent";
 import { commentLabel } from "@/lib/worry";
 
 const CANCEL_ICON_SIZE = 18;
@@ -24,10 +23,9 @@ export function WorryReplyPreview({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const background = useThemeBackground();
 
   return (
-    <YStack px="$4" pt="$3" bg={background}>
+    <YStack px="$4" pt="$3" bg="$background">
       {/* 그림자가 아래로 넘치므로 그만큼 띄워야 입력줄에 안 가린다. */}
       <YStack theme="gray" mb={RETRO_SHADOW_OFFSET}>
         <RetroShadow color="$gray8" />

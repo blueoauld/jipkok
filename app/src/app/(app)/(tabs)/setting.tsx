@@ -49,7 +49,7 @@ import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
 import { showToast } from "@/lib/toast/store";
 import { isOutdated } from "@/lib/version";
 
-const THEME_MODES: ThemeMode[] = ["blue", "pink", "dark"];
+const THEME_MODES: ThemeMode[] = ["light", "dark"];
 
 const THEME_ITEMS = THEME_MODES.map((value) => ({
   value,

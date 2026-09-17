@@ -18,7 +18,6 @@ import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
 import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
-import { useAccent } from "@/lib/theme/accent";
 import {
   PASSWORD_CONFIRM_RULES,
   PASSWORD_RULES,
@@ -44,8 +43,6 @@ export default function SignupScreen() {
     variant: "warning",
     message: t("auth.signup.minorNotice"),
   });
-
-  const accent = useAccent();
 
   const openLegal = (url: string) => openWebPage(url, show);
 
@@ -93,7 +90,7 @@ export default function SignupScreen() {
 
             <XStack justify="center" items="center" gap="$2" pt="$3">
               <Text
-                theme={accent}
+                theme="blue"
                 color="$color10"
                 fontSize="$4"
                 textDecorationLine="underline"
@@ -106,7 +103,7 @@ export default function SignupScreen() {
                 |
               </Text>
               <Text
-                theme={accent}
+                theme="blue"
                 color="$color10"
                 fontSize="$4"
                 textDecorationLine="underline"
@@ -177,7 +174,7 @@ export default function SignupScreen() {
                   <RetroButton
                     key={gender}
                     flex={1}
-                    theme={field.value === gender ? accent : "gray"}
+                    theme={field.value === gender ? "blue" : "gray"}
                     onPress={() => field.onChange(gender)}
                   >
                     {genderLabel(gender)}

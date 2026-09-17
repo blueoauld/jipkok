@@ -16,13 +16,11 @@ import {
   shouldRetryUnlock,
 } from "@/lib/lock";
 import { useAppLocked, useAppLockStore } from "@/lib/lock/store";
-import { useThemeBackgroundColor } from "@/lib/theme/accent";
 import { showToast } from "@/lib/toast/store";
 
 function LockScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const background = useThemeBackgroundColor();
   const unlock = useAppLockStore((state) => state.unlock);
   const setEnabled = useAppLockStore((state) => state.setEnabled);
   const [authenticating, setAuthenticating] = useState(false);
@@ -85,7 +83,12 @@ function LockScreen() {
   }, [attempt]);
 
   return (
-    <YStack style={[StyleSheet.absoluteFill, { backgroundColor: background }]}>
+    <YStack
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: theme.background.val },
+      ]}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <StatusScreen
           icon={

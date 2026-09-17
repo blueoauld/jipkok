@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { XStack, YStack } from "tamagui";
 
-import { useAccentToken } from "@/lib/theme/accent";
-
 const WEEKS = 13;
 const DAYS_PER_WEEK = 7;
 const CELL_GAP = 3;
@@ -36,7 +34,6 @@ export function AttendanceGrass({
   days: string[];
 }) {
   const { t } = useTranslation();
-  const accent = useAccentToken();
 
   const attended = new Set(days);
   const todayDate = parseDay(today);
@@ -71,7 +68,7 @@ export function AttendanceGrass({
                 key={week}
                 flex={1}
                 aspectRatio={1}
-                bg={attended.has(toKey(date)) ? accent : "$gray5"}
+                bg={attended.has(toKey(date)) ? "$blue10" : "$gray5"}
                 opacity={date > todayDate ? 0 : 1}
               />
             );

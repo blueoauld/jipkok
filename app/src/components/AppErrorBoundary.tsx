@@ -9,13 +9,11 @@ import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { reportError } from "@/lib/crash";
 import { STATUS_ICON_SIZE } from "@/lib/design";
 import i18n from "@/lib/i18n";
-import { useThemeBackground } from "@/lib/theme/accent";
-import { colorScheme, useThemeStore } from "@/lib/theme/store";
+import { useThemeStore } from "@/lib/theme/store";
 import { tamaguiConfig } from "@/tamagui.config";
 
 export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  const mode = useThemeStore((state) => state.mode);
-  const scheme = colorScheme(mode);
+  const scheme = useThemeStore((state) => state.mode);
 
   useEffect(() => {
     reportError("render", error);
@@ -32,10 +30,9 @@ export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 
 function Content({ onRetry }: { onRetry: () => Promise<void> }) {
   const theme = useTheme();
-  const background = useThemeBackground();
 
   return (
-    <YStack flex={1} bg={background}>
+    <YStack flex={1} bg="$background">
       <SafeAreaView style={{ flex: 1 }}>
         <StatusScreen
           icon={<WarningIcon size={STATUS_ICON_SIZE} color={theme.red10.val} />}

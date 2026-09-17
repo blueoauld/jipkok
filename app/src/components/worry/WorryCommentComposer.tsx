@@ -6,7 +6,6 @@ import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroInput } from "@/components/ui/RetroInput";
 import type { WorryCommentResponse } from "@/lib/api";
 import { KEYBOARD_OVERLAP } from "@/lib/design";
-import { useThemeBackground } from "@/lib/theme/accent";
 import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
 
 const SUBMIT_BUTTON_WIDTH = 80;
@@ -21,7 +20,6 @@ export function WorryCommentComposer({
   onSubmit: (content: string) => Promise<unknown>;
 }) {
   const { t } = useTranslation();
-  const background = useThemeBackground();
   const [content, setContent] = useState("");
 
   const trimmed = content.trim();
@@ -34,7 +32,7 @@ export function WorryCommentComposer({
       mb={-KEYBOARD_OVERLAP}
       gap="$3"
       items="center"
-      bg={background}
+      bg="$background"
     >
       <YStack flex={1}>
         {/* 답글 대상이 바뀔 때 입력창을 새로 띄워 키보드를 함께 연다. */}

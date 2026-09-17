@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, YStack } from "tamagui";
 
 import { FORM_FOOTER_HEIGHT, KEYBOARD_OVERLAP } from "@/lib/design";
-import { useThemeBackground } from "@/lib/theme/accent";
 
 type ScrollMode = ComponentProps<typeof KeyboardAwareScrollView>["mode"];
 
@@ -27,7 +26,6 @@ export function FormScreen({
   children: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
-  const background = useThemeBackground();
   const [footerHeight, setFooterHeight] = useState(FORM_FOOTER_HEIGHT);
 
   const measureFooter = useCallback(
@@ -56,7 +54,7 @@ export function FormScreen({
           pt="$4"
           pb={getTokens().space.$4.val + KEYBOARD_OVERLAP}
           mb={-KEYBOARD_OVERLAP}
-          bg={background}
+          bg="$background"
           onLayout={measureFooter}
         >
           {footer}

@@ -20,7 +20,6 @@ import { formatUnreadCount, mediaSummary } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
-import { useAccentToken } from "@/lib/theme/accent";
 
 const MUTE_ICON_SIZE = 14;
 const PIN_ICON_SIZE = 14;
@@ -71,7 +70,6 @@ function SwipeAction({
 }
 
 function SelectBox({ selected }: { selected: boolean }) {
-  const accent = useAccentToken();
   const theme = useTheme();
 
   return (
@@ -81,7 +79,7 @@ function SelectBox({ selected }: { selected: boolean }) {
       height={SELECT_BOX_SIZE}
       borderWidth={RETRO_BORDER_WIDTH}
       borderColor="$gray12"
-      bg={selected ? accent : "transparent"}
+      bg={selected ? "$blue10" : "transparent"}
       items="center"
       justify="center"
     >
@@ -116,7 +114,6 @@ function Row({
   onLeave: (room: ChatRoomResponse) => void;
 }) {
   const theme = useTheme();
-  const accent = useAccentToken();
   const swipeable = useRef<SwipeableMethods>(null);
 
   return (
@@ -131,7 +128,7 @@ function Row({
           <XStack self="center" pr="$3" gap="$2">
             <SwipeAction
               icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
-              bg={accent}
+              bg="$blue10"
               onPress={() => {
                 swipeable.current?.close();
                 onToggleNotification(room);

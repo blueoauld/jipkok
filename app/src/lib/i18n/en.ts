@@ -387,7 +387,7 @@ export const en: typeof ko = {
     on: "On",
     off: "Off",
     confirm: "OK",
-    theme: { blue: "Blue", pink: "Pink", dark: "Dark" },
+    theme: { light: "Light", dark: "Dark" },
   },
   lock: {
     title: "App lock",

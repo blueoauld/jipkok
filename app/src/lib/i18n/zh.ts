@@ -371,7 +371,7 @@ export const zh: typeof ko = {
     on: "開啟",
     off: "關閉",
     confirm: "確認",
-    theme: { blue: "藍色", pink: "粉紅", dark: "深色" },
+    theme: { light: "淺色", dark: "深色" },
   },
   lock: {
     title: "應用程式鎖定",

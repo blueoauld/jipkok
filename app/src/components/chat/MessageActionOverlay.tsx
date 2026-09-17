@@ -12,7 +12,6 @@ import {
 import { REACTION_EMOJI, REACTION_TYPES } from "@/lib/chat/reactions";
 import { MIN_TAP_SIZE, OVERLAY_BG, RETRO_BORDER_WIDTH } from "@/lib/design";
 import i18n from "@/lib/i18n";
-import { useAccent } from "@/lib/theme/accent";
 
 const EMOJI_ITEM_SIZE = MIN_TAP_SIZE;
 const EMOJI_FONT_SIZE = 22;
@@ -70,7 +69,6 @@ function Content({
   onSelectReaction,
   onClose,
 }: Props & { target: MessageActionTarget }) {
-  const accent = useAccent();
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
@@ -107,7 +105,7 @@ function Content({
           {REACTION_TYPES.map((type) => (
             <XStack
               key={type}
-              theme={type === myReaction ? accent : undefined}
+              theme={type === myReaction ? "blue" : undefined}
               width={EMOJI_ITEM_SIZE}
               height={EMOJI_ITEM_SIZE}
               items="center"
