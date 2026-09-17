@@ -1,10 +1,11 @@
 import { Text, XStack } from "tamagui";
 
-import { BADGE_SIZES } from "@/lib/design";
+import { BADGE_SIZES, DARK_FILL } from "@/lib/design";
 
 // TDS 배지의 색 조합이다. 약한 배지는 글자색의 16% 면을 깐다.
 const TONES = {
   "red-fill": { bg: "$red500", color: "$onFill" },
+  "elephant-fill": { bg: DARK_FILL, color: "$onFill" },
   "elephant-weak": { bg: "$elephantBadgeBackground", color: "$grey700" },
 } as const;
 

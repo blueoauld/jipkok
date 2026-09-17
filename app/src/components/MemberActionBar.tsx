@@ -40,7 +40,7 @@ const ACTIONS: { key: MemberActionKey; icon: Icon }[] = [
 function CountBadge({ count }: { count: number }) {
   return (
     <YStack position="absolute" t={-BADGE_OVERHANG} r={-BADGE_OVERHANG}>
-      <Badge size="xsmall" tone={count > 0 ? "red-fill" : "elephant-weak"}>
+      <Badge size="xsmall" tone={count > 0 ? "red-fill" : "elephant-fill"}>
         {String(count)}
       </Badge>
     </YStack>
