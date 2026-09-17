@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Dialog, XStack, YStack } from "tamagui";
 
 import { PhoneCountryButton } from "@/components/PhoneCountryButton";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { maxLengthOf, patternOf, toE164 } from "@/lib/phone";
@@ -78,13 +78,13 @@ function DialogForm({
       </YStack>
 
       <XStack gap="$3">
-        <RetroButton flex={1} theme="gray" onPress={onClose}>
+        <Button flex={1} variant="secondary" onPress={onClose}>
           {t("component.close")}
-        </RetroButton>
+        </Button>
 
-        <RetroButton flex={1} disabled={!valid} onPress={submit}>
+        <Button flex={1} disabled={!valid} onPress={submit}>
           {submitLabel}
-        </RetroButton>
+        </Button>
       </XStack>
     </>
   );

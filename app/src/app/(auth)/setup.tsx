@@ -3,11 +3,11 @@ import { router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text } from "tamagui";
+import { Text } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
@@ -50,8 +50,9 @@ export default function SetupScreen() {
       <FormScreen
         scrollMode="layout"
         footer={
-          <RetroButton
-            disabled={setupProfile.isPending}
+          <Button
+            size="xlarge"
+            loading={setupProfile.isPending}
             onPress={handleSubmit((values) =>
               setupProfile.mutate({
                 nickname: values.nickname.trim(),
@@ -60,12 +61,8 @@ export default function SetupScreen() {
               }),
             )}
           >
-            {setupProfile.isPending ? (
-              <Spinner color="$color11" />
-            ) : (
-              t("auth.setup.submit")
-            )}
-          </RetroButton>
+            {t("auth.setup.submit")}
+          </Button>
         }
       >
         <ControlledInput

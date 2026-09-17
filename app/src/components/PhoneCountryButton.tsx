@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { COUNTRY_BUTTON_MIN_WIDTH } from "@/lib/design";
 import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
 
@@ -30,14 +30,13 @@ export function PhoneCountryButton({
 
   return (
     <>
-      <RetroButton
-        theme="purple"
-        shadow="$gray8"
+      <Button
+        variant="secondary"
         minW={COUNTRY_BUTTON_MIN_WIDTH}
         onPress={() => setOpen(true)}
       >
         {country}
-      </RetroButton>
+      </Button>
 
       <MenuSheet open={open} onOpenChange={setOpen} items={items} />
     </>

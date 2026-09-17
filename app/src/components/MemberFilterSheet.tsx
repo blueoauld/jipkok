@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTokens, Sheet, Text, XStack, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { RetroRangeSlider } from "@/components/ui/RetroRangeSlider";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -147,17 +147,17 @@ export function MemberFilterSheet({
         </YStack>
 
         <XStack gap="$3">
-          <RetroButton
-            theme="gray"
+          <Button
+            variant="secondary"
             flex={1}
             disabled={isDefaultMemberFilter(draft)}
             onPress={reset}
           >
             {t("component.reset")}
-          </RetroButton>
-          <RetroButton flex={1} onPress={apply}>
+          </Button>
+          <Button flex={1} onPress={apply}>
             {t("component.apply")}
-          </RetroButton>
+          </Button>
         </XStack>
       </Sheet.Frame>
     </Sheet>

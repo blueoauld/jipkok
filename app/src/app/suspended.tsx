@@ -3,9 +3,9 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, useTheme, YStack } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -58,29 +58,25 @@ export default function SuspendedScreen() {
         }
       >
         <YStack width="100%" gap="$4">
-          <RetroButton
+          <Button
             onPress={() =>
               openSupportMail(t("suspended.mailTitle"), profile?.memberId, show)
             }
           >
             {t("setting.menu.contact")}
-          </RetroButton>
+          </Button>
 
-          <RetroButton
-            theme="gray"
-            disabled={loggingOut}
+          <Button
+            variant="secondary"
+            loading={loggingOut}
             onPress={() => logout()}
           >
-            {loggingOut ? (
-              <Spinner color="$color12" />
-            ) : (
-              t("setting.menu.logout")
-            )}
-          </RetroButton>
+            {t("setting.menu.logout")}
+          </Button>
 
-          <RetroButton theme="red" onPress={confirmWithdraw}>
+          <Button variant="danger" onPress={confirmWithdraw}>
             {t("setting.menu.withdraw")}
-          </RetroButton>
+          </Button>
         </YStack>
       </StatusScreen>
 

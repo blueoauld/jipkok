@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, XStack } from "tamagui";
 
+import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 
 function DialogForm({
@@ -47,15 +47,15 @@ function DialogForm({
 
       <XStack gap="$3">
         <Dialog.Close asChild>
-          <RetroButton flex={1} theme="gray">
+          <Button flex={1} variant="secondary">
             {t("component.close")}
-          </RetroButton>
+          </Button>
         </Dialog.Close>
 
         <Dialog.Close asChild>
-          <RetroButton flex={1} onPress={() => onSubmit(valueRef.current)}>
+          <Button flex={1} onPress={() => onSubmit(valueRef.current)}>
             {submitLabel}
-          </RetroButton>
+          </Button>
         </Dialog.Close>
       </XStack>
     </>

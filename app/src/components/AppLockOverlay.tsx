@@ -3,9 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppState, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, useTheme, YStack } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { useAppLock } from "@/hooks/useAppLock";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
@@ -100,9 +100,9 @@ function LockScreen() {
           }
         >
           <YStack width="100%">
-            <RetroButton disabled={authenticating} onPress={attempt}>
-              {authenticating ? <Spinner color="$color11" /> : t("lock.unlock")}
-            </RetroButton>
+            <Button loading={authenticating} onPress={attempt}>
+              {t("lock.unlock")}
+            </Button>
           </YStack>
         </StatusScreen>
       </SafeAreaView>

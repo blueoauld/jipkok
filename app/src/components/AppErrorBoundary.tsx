@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
 import { reportError } from "@/lib/crash";
 import { STATUS_ICON_SIZE } from "@/lib/design";
@@ -41,9 +41,9 @@ function Content({ onRetry }: { onRetry: () => Promise<void> }) {
             <StatusDescription>{i18n.t("crash.description")}</StatusDescription>
           }
         >
-          <RetroButton onPress={() => void onRetry()}>
+          <Button onPress={() => void onRetry()}>
             {i18n.t("component.retry")}
-          </RetroButton>
+          </Button>
         </StatusScreen>
       </SafeAreaView>
     </YStack>

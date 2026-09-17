@@ -8,8 +8,8 @@ import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -120,13 +120,14 @@ export default function ReportScreen() {
 
       <FormScreen
         footer={
-          <RetroButton
-            theme="red"
+          <Button
+            size="xlarge"
+            variant="danger"
             disabled={!reason || busy}
             onPress={() => reason && report.mutate(reason)}
           >
             {t("action.reportSubmit")}
-          </RetroButton>
+          </Button>
         }
       >
         <YStack gap="$2">

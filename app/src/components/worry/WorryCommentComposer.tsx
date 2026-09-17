@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getTokens, Spinner, XStack, YStack } from "tamagui";
+import { getTokens, XStack, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { RetroInput } from "@/components/ui/RetroInput";
 import type { WorryCommentResponse } from "@/lib/api";
 import { KEYBOARD_OVERLAP } from "@/lib/design";
@@ -49,10 +49,10 @@ export function WorryCommentComposer({
           maxLength={WORRY_COMMENT_MAX_LENGTH}
         />
       </YStack>
-      <RetroButton
-        shadow="$gray8"
+      <Button
         width={SUBMIT_BUTTON_WIDTH}
-        disabled={!trimmed || pending}
+        disabled={!trimmed}
+        loading={pending}
         onPress={() => {
           setContent("");
           // 실패를 기다리는 동안 다음 댓글을 적고 있었을 수 있다. 빈 칸만 되돌린다.
@@ -61,12 +61,8 @@ export function WorryCommentComposer({
           );
         }}
       >
-        {pending ? (
-          <Spinner size="small" color="$color11" />
-        ) : (
-          t("worry.detail.submit")
-        )}
-      </RetroButton>
+        {t("worry.detail.submit")}
+      </Button>
     </XStack>
   );
 }

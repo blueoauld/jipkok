@@ -13,9 +13,9 @@ import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MemberFilterSheet } from "@/components/MemberFilterSheet";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { TextInputDialog } from "@/components/TextInputDialog";
+import { Button } from "@/components/ui/Button";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroSegmentedControl } from "@/components/ui/RetroSegmentedControl";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { UserRow } from "@/components/UserRow";
@@ -187,9 +187,9 @@ export default function MainScreen() {
             filtered ? (
               <YStack items="center" gap="$4" py="$8">
                 <EmptyMessage>{t("main.filterEmpty")}</EmptyMessage>
-                <RetroButton onPress={() => applyFilter(DEFAULT_MEMBER_FILTER)}>
+                <Button onPress={() => applyFilter(DEFAULT_MEMBER_FILTER)}>
                   {t("main.resetFilter")}
-                </RetroButton>
+                </Button>
               </YStack>
             ) : (
               <ListEmpty>{memberEmptyMessage()}</ListEmpty>

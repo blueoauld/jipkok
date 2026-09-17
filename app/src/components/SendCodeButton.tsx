@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Spinner } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { formatCountdown } from "@/lib/date";
 import { SEND_CODE_BUTTON_MIN_WIDTH } from "@/lib/design";
 
@@ -19,18 +18,13 @@ export function SendCodeButton({
   const { t } = useTranslation();
 
   return (
-    <RetroButton
+    <Button
       minW={SEND_CODE_BUTTON_MIN_WIDTH}
       disabled={disabled}
+      loading={sending}
       onPress={onPress}
     >
-      {sending ? (
-        <Spinner color="$color11" />
-      ) : remaining > 0 ? (
-        formatCountdown(remaining)
-      ) : (
-        t("auth.sendCode")
-      )}
-    </RetroButton>
+      {remaining > 0 ? formatCountdown(remaining) : t("auth.sendCode")}
+    </Button>
   );
 }

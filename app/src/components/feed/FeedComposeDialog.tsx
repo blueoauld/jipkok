@@ -6,11 +6,11 @@ import { ImagesIcon } from "phosphor-react-native/src/icons/Images";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Dialog, Spinner, useTheme, XStack, YStack } from "tamagui";
+import { Dialog, useTheme, XStack, YStack } from "tamagui";
 
 import { CARD_RATIO } from "@/components/feed/FeedCard";
+import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { RetroFormDialog } from "@/components/ui/RetroFormDialog";
 import { RetroPressable } from "@/components/ui/RetroPressable";
@@ -134,22 +134,19 @@ function ComposeForm({
 
       <XStack gap="$3">
         <Dialog.Close asChild>
-          <RetroButton flex={1} theme="gray" disabled={pending}>
+          <Button flex={1} variant="secondary" disabled={pending}>
             {t("feed.composeClose")}
-          </RetroButton>
+          </Button>
         </Dialog.Close>
 
-        <RetroButton
+        <Button
           flex={1}
-          disabled={!photo || pending}
+          disabled={!photo}
+          loading={pending}
           onPress={() => photo && onSubmit(photo, captionRef.current)}
         >
-          {pending ? (
-            <Spinner size="small" color="$color11" />
-          ) : (
-            t("feed.composeSubmit")
-          )}
-        </RetroButton>
+          {t("feed.composeSubmit")}
+        </Button>
       </XStack>
     </>
   );

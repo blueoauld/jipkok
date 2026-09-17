@@ -22,7 +22,7 @@ export const HEADER_GLASS_GAP = 8;
 // 잠금, 정지, 오류처럼 화면 전체를 차지하는 안내의 아이콘 크기.
 export const STATUS_ICON_SIZE = 56;
 
-// 스피너, 남은 초, "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다. 고정 폭이 아니라
+// 남은 초와 "전송"이 번갈아 들어가도 폭이 흔들리지 않을 만큼이다. 고정 폭이 아니라
 // 최소 폭인 이유는 글씨 크기를 키운 사용자에게 글자가 잘리면 안 되기 때문이다.
 export const SEND_CODE_BUTTON_MIN_WIDTH = 80;
 
@@ -94,13 +94,51 @@ export function floatingBarStyle(bottomInset: number) {
   } as const;
 }
 
-// 토스 디자인 시스템(TDS) 컴포넌트에서 잰 높이와 모서리다. 높이마다 모서리가 정해져 있어 짝으로 둔다.
+// 토스 디자인 시스템(TDS) 버튼에서 잰 크기별 치수다. 높이는 최소 높이라 큰 글씨에서는 늘어난다.
 export const BUTTON_SIZES = {
-  small: { height: 32, radius: 8 },
-  medium: { height: 38, radius: 10 },
-  large: { height: 48, radius: 14 },
-  xlarge: { height: 56, radius: 16 },
+  small: {
+    height: 32,
+    radius: 8,
+    paddingX: 10,
+    paddingY: 2,
+    minWidth: 52,
+    fontSize: "$1",
+    dotSize: 5,
+    dotGap: 3,
+  },
+  medium: {
+    height: 38,
+    radius: 10,
+    paddingX: 16,
+    paddingY: 2,
+    minWidth: 64,
+    fontSize: "$2",
+    dotSize: 5,
+    dotGap: 4,
+  },
+  large: {
+    height: 48,
+    radius: 14,
+    paddingX: 16,
+    paddingY: 2,
+    minWidth: 80,
+    fontSize: "$4",
+    dotSize: 8,
+    dotGap: 5,
+  },
+  xlarge: {
+    height: 56,
+    radius: 16,
+    paddingX: 28,
+    paddingY: 15,
+    minWidth: 96,
+    fontSize: "$4",
+    dotSize: 8,
+    dotGap: 7,
+  },
 } as const;
+
+export const BUTTON_DISABLED_OPACITY = 0.3;
 
 export const INPUT_HEIGHT = 56;
 

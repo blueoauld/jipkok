@@ -5,11 +5,11 @@ import { usePreventRemove } from "expo-router/build/react-navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { FormScreen } from "@/components/FormScreen";
+import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
@@ -73,19 +73,17 @@ export default function WorryComposeScreen() {
 
       <FormScreen
         footer={
-          <RetroButton
-            disabled={empty || !category || compose.isPending}
+          <Button
+            size="xlarge"
+            disabled={empty || !category}
+            loading={compose.isPending}
             onPress={() =>
               category &&
               compose.mutate({ category, content: contentRef.current.trim() })
             }
           >
-            {compose.isPending ? (
-              <Spinner color="$color11" />
-            ) : (
-              t("worry.compose.submit")
-            )}
-          </RetroButton>
+            {t("worry.compose.submit")}
+          </Button>
         }
       >
         <YStack gap="$2">

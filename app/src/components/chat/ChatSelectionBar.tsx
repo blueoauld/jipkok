@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { getTokens, XStack, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 
 export function ChatSelectionBar({
@@ -28,13 +28,13 @@ export function ChatSelectionBar({
       bg="$background"
     >
       <XStack gap="$3">
-        <RetroButton flex={1} disabled={disabled} onPress={onMarkRead}>
+        <Button flex={1} disabled={disabled} onPress={onMarkRead}>
           {t("component.markRead")}
-        </RetroButton>
+        </Button>
 
-        <RetroButton flex={1} theme="red" disabled={disabled} onPress={onLeave}>
+        <Button flex={1} variant="danger" disabled={disabled} onPress={onLeave}>
           {t("action.leave")}
-        </RetroButton>
+        </Button>
       </XStack>
     </YStack>
   );

@@ -7,13 +7,13 @@ import { type RefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
+import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { RetroButton } from "@/components/ui/RetroButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
@@ -126,7 +126,6 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     : secretPhotos.progress;
 
   useLoadingOverlay(uploading, progress.done, progress.total);
-  const busy = save.isPending || uploading;
 
   // 사진은 고르는 즉시 올라가므로 저장 없이 나가면 그 변경까지 조용히 버려진다. 한 번 묻는다.
   const dirty =
@@ -165,13 +164,14 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
     <>
       <FormScreen
         footer={
-          <RetroButton disabled={busy} onPress={submit}>
-            {save.isPending ? (
-              <Spinner color="$color11" />
-            ) : (
-              t("profileEdit.save")
-            )}
-          </RetroButton>
+          <Button
+            size="xlarge"
+            disabled={uploading}
+            loading={save.isPending}
+            onPress={submit}
+          >
+            {t("profileEdit.save")}
+          </Button>
         }
       >
         <YStack gap="$2">

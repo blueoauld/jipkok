@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Modal, Platform, Text as NativeText } from "react-native";
 import { AnimatePresence, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { RetroShadow } from "@/components/ui/RetroShadow";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
@@ -118,27 +118,26 @@ export function RetroAlert({
 
                   {confirmLabel ? (
                     <XStack p="$4" gap="$3">
-                      <RetroButton flat flex={1} theme="gray" onPress={onClose}>
+                      <Button flex={1} variant="secondary" onPress={onClose}>
                         {t("component.close")}
-                      </RetroButton>
+                      </Button>
 
-                      <RetroButton
-                        flat
+                      <Button
                         flex={1}
-                        theme={destructive ? "red" : undefined}
+                        variant={destructive ? "danger" : "primary"}
                         onPress={() => {
                           onClose();
                           onConfirm?.();
                         }}
                       >
                         {confirmLabel}
-                      </RetroButton>
+                      </Button>
                     </XStack>
                   ) : (
                     <XStack justify="flex-end" p="$4">
-                      <RetroButton flat theme="gray" onPress={onClose}>
+                      <Button variant="secondary" onPress={onClose}>
                         {t("component.confirm")}
-                      </RetroButton>
+                      </Button>
                     </XStack>
                   )}
                 </YStack>

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Text, YStack } from "tamagui";
 
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 
 export function ErrorState({
   message,
@@ -17,7 +17,7 @@ export function ErrorState({
         {message}
       </Text>
 
-      <RetroButton onPress={onRetry}>{t("component.retry")}</RetroButton>
+      <Button onPress={onRetry}>{t("component.retry")}</Button>
     </YStack>
   );
 }

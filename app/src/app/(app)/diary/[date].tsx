@@ -11,7 +11,6 @@ import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner } from "tamagui";
 
 import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
 import { DiaryMoodPicker } from "@/components/diary/DiaryMoodPicker";
@@ -19,7 +18,7 @@ import { DiaryReader } from "@/components/diary/DiaryReader";
 import { FormScreen } from "@/components/FormScreen";
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { MenuSheet } from "@/components/MenuSheet";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { RetroInput } from "@/components/ui/RetroInput";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { DIARIES_KEY, useDiaryMonth } from "@/hooks/useDiaries";
@@ -131,12 +130,14 @@ function DiaryEditor({
 
       <FormScreen
         footer={
-          <RetroButton
-            disabled={empty || !dirty || pending}
+          <Button
+            size="xlarge"
+            disabled={empty || !dirty}
+            loading={pending}
             onPress={() => write.mutate()}
           >
-            {write.isPending ? <Spinner color="$color11" /> : t("action.save")}
-          </RetroButton>
+            {t("action.save")}
+          </Button>
         }
       >
         <DiaryMoodPicker value={mood} onChange={setMood} />

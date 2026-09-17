@@ -3,13 +3,12 @@ import { router } from "expo-router";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { SendCodeButton } from "@/components/SendCodeButton";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { api, type ResetPasswordRequest } from "@/lib/api";
@@ -54,16 +53,13 @@ export default function PasswordScreen() {
       <FormScreen
         scrollMode="layout"
         footer={
-          <RetroButton
-            disabled={reset.isPending}
+          <Button
+            size="xlarge"
+            loading={reset.isPending}
             onPress={handleSubmit((values) => reset.mutate(values))}
           >
-            {reset.isPending ? (
-              <Spinner color="$color11" />
-            ) : (
-              t("auth.password.submit")
-            )}
-          </RetroButton>
+            {t("auth.password.submit")}
+          </Button>
         }
       >
         <PhoneNumberField

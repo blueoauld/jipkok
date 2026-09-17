@@ -3,14 +3,14 @@ import { router } from "expo-router";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, XStack } from "tamagui";
+import { Text, XStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { SendCodeButton } from "@/components/SendCodeButton";
-import { RetroButton } from "@/components/ui/RetroButton";
+import { Button } from "@/components/ui/Button";
 import { useRetroAlert } from "@/hooks/useRetroAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
@@ -77,16 +77,13 @@ export default function SignupScreen() {
         scrollMode="layout"
         footer={
           <>
-            <RetroButton
-              disabled={signup.isPending}
+            <Button
+              size="xlarge"
+              loading={signup.isPending}
               onPress={handleSubmit((values) => signup.mutate(values))}
             >
-              {signup.isPending ? (
-                <Spinner color="$color11" />
-              ) : (
-                t("auth.signup.submit")
-              )}
-            </RetroButton>
+              {t("auth.signup.submit")}
+            </Button>
 
             <XStack justify="center" items="center" gap="$2" pt="$3">
               <Text
@@ -171,14 +168,14 @@ export default function SignupScreen() {
             <FormField error={fieldState.error?.message}>
               <XStack gap="$3">
                 {GENDERS.map((gender) => (
-                  <RetroButton
+                  <Button
                     key={gender}
                     flex={1}
-                    theme={field.value === gender ? "blue" : "gray"}
+                    variant={field.value === gender ? "primary" : "secondary"}
                     onPress={() => field.onChange(gender)}
                   >
                     {genderLabel(gender)}
-                  </RetroButton>
+                  </Button>
                 ))}
               </XStack>
             </FormField>
