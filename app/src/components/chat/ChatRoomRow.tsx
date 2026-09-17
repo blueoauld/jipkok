@@ -12,7 +12,7 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
-import { RetroBadge } from "@/components/ui/RetroBadge";
+import { Badge } from "@/components/ui/Badge";
 import { RetroCard } from "@/components/ui/RetroCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
@@ -32,7 +32,7 @@ const SELECT_BOX_SIZE = 22;
 const SELECT_ICON_SIZE = 14;
 
 function UnreadBadge({ count }: { count: number }) {
-  return <RetroBadge>{formatUnreadCount(count)}</RetroBadge>;
+  return <Badge>{formatUnreadCount(count)}</Badge>;
 }
 
 function SwipeAction({

@@ -152,6 +152,10 @@ export const SEGMENT_ITEM_HEIGHT = 40;
 
 export const SEGMENT_ITEM_RADIUS = 10;
 
+export const BADGE_HEIGHT = 24;
+
+export const BADGE_RADIUS = 11;
+
 // TDS에는 카드가 없어서 가장 큰 버튼과 같은 모서리로 정했다.
 export const CARD_RADIUS = 16;
 

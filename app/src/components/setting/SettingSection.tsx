@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Spinner, Text, useTheme, YStack } from "tamagui";
 
-import { RetroBadge } from "@/components/ui/RetroBadge";
+import { Badge } from "@/components/ui/Badge";
 import { RetroListPanel, RetroListRow } from "@/components/ui/RetroListPanel";
 import {
   PROFILE_VIEW_HREF,
@@ -36,7 +36,7 @@ function SettingRow({
       <Text flex={1} numberOfLines={1} fontSize="$4">
         {t(labelKey)}
       </Text>
-      {hasNew && <RetroBadge>N</RetroBadge>}
+      {hasNew && <Badge>N</Badge>}
       {status && !pending && (
         <Text theme="gray" color="$color11" fontSize="$2">
           {status}
