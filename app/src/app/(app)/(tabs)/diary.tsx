@@ -13,7 +13,7 @@ import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRowTopSpacer } from "@/components/ui/ListRow";
-import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
+import { type DayMarking, MonthCalendar } from "@/components/ui/MonthCalendar";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useDiaryMonth } from "@/hooks/useDiaries";
@@ -113,7 +113,7 @@ export default function DiaryScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <RetroCalendar
+            <MonthCalendar
               initialDate={today}
               minDate={profile?.signupDate}
               maxDate={today}
@@ -123,9 +123,9 @@ export default function DiaryScreen() {
             />
 
             <Text
-              theme="gray"
-              color="$color11"
               fontSize="$2"
+              lineHeight="$2"
+              color="$grey600"
               px={LIST_ROW_PADDING_X.small}
             >
               {t("diary.notice")}

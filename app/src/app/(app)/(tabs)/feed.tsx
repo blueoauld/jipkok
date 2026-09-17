@@ -15,7 +15,7 @@ import { FlatList, RefreshControl } from "react-native";
 import { YStack } from "tamagui";
 
 import { FeedCard } from "@/components/feed/FeedCard";
-import { FeedComposeDialog } from "@/components/feed/FeedComposeDialog";
+import { FeedComposeSheet } from "@/components/feed/FeedComposeSheet";
 import { FeedDatePicker } from "@/components/feed/FeedDatePicker";
 import { FeedNotificationButton } from "@/components/feed/FeedNotificationButton";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -424,7 +424,7 @@ export default function FeedScreen() {
         />
       )}
 
-      <FeedComposeDialog
+      <FeedComposeSheet
         open={composeOpen}
         pending={compose.isPending}
         onError={showApiError}

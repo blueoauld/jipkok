@@ -8,12 +8,15 @@ import {
 } from "react-native-calendars";
 import { Text, useTheme, YStack } from "tamagui";
 
+import { PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";
 
 const DAY_SIZE = 36;
 const DOT_SIZE = 4;
 const DOT_BOTTOM = 3;
 const EMOJI_FONT_SIZE = 22;
+const MONTH_FONT_SIZE = 17;
+const WEEKDAY_FONT_SIZE = 13;
 
 // 이모지가 있는 날은 숫자 대신 이모지를 그리고 점은 생략한다.
 export type DayMarking = {
@@ -49,9 +52,10 @@ function CalendarDay({
     <YStack
       width={DAY_SIZE}
       height={DAY_SIZE}
+      rounded={PILL_RADIUS}
       items="center"
       justify="center"
-      bg={selected ? "$blue10" : "transparent"}
+      bg={selected ? "$blue500" : "transparent"}
       onPress={disabled ? undefined : () => onPress?.(date)}
     >
       {marking?.emoji ? (
@@ -66,10 +70,10 @@ function CalendarDay({
             selected
               ? "$onFill"
               : disabled
-                ? "$color8"
+                ? "$grey300"
                 : today
-                  ? "$blue10"
-                  : "$color12"
+                  ? "$blue500"
+                  : "$grey800"
           }
         >
           {date?.day}
@@ -83,14 +87,14 @@ function CalendarDay({
           width={DOT_SIZE}
           height={DOT_SIZE}
           rounded={DOT_SIZE / 2}
-          bg={selected ? "$onFill" : "$blue10"}
+          bg={selected ? "$onFill" : "$blue500"}
         />
       )}
     </YStack>
   );
 }
 
-export function RetroCalendar(
+export function MonthCalendar(
   props: Pick<
     CalendarProps,
     | "initialDate"
@@ -118,11 +122,13 @@ export function RetroCalendar(
       dayComponent={dayComponent}
       theme={{
         calendarBackground: "transparent",
-        monthTextColor: theme.color12.val,
+        monthTextColor: theme.grey800.val,
+        textMonthFontSize: MONTH_FONT_SIZE,
         textMonthFontWeight: "700",
-        textSectionTitleColor: theme.color11.val,
-        arrowColor: theme.color12.val,
-        disabledArrowColor: theme.color8.val,
+        textSectionTitleColor: theme.grey500.val,
+        textDayHeaderFontSize: WEEKDAY_FONT_SIZE,
+        arrowColor: theme.grey700.val,
+        disabledArrowColor: theme.grey300.val,
       }}
     />
   );

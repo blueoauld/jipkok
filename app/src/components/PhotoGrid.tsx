@@ -6,17 +6,15 @@ import { ImageIcon } from "phosphor-react-native/src/icons/Image";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { memo } from "react";
-import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { LockBadge } from "@/components/ui/LockBadge";
+import { PhotoOverlayButton } from "@/components/ui/PhotoOverlayButton";
 import {
-  BADGE_SIZES,
   COVER_IMAGE_STYLE,
   DARK_FILL,
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
-  PILL_RADIUS,
-  PRESS_OPACITY,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { MAX_PHOTOS } from "@/lib/photo/picker";
@@ -26,8 +24,6 @@ const COLUMNS = 3;
 const CELL_RADIUS = 12;
 const CELL_ICON_SIZE = 22;
 
-// 사진 위 버튼은 잠금 배지와 같은 크기의 원이다.
-const OVERLAY_BUTTON_SIZE = BADGE_SIZES.small.height;
 const OVERLAY_ICON_SIZE = 14;
 
 type Cell =
@@ -67,34 +63,6 @@ function toRows(
   }
 
   return rows;
-}
-
-function OverlayButton({
-  children,
-  bg,
-  onPress,
-  ...position
-}: {
-  children: React.ReactNode;
-  bg: XStackProps["bg"];
-  onPress?: () => void;
-} & XStackProps) {
-  return (
-    <XStack
-      position="absolute"
-      width={OVERLAY_BUTTON_SIZE}
-      height={OVERLAY_BUTTON_SIZE}
-      rounded={PILL_RADIUS}
-      bg={bg}
-      items="center"
-      justify="center"
-      pressStyle={onPress ? { opacity: PRESS_OPACITY } : undefined}
-      onPress={onPress}
-      {...position}
-    >
-      {children}
-    </XStack>
-  );
 }
 
 function Grid({
@@ -204,17 +172,17 @@ function Grid({
                   )}
 
                   {showPrimaryBadge && cell.index === 0 && (
-                    <OverlayButton t="$2" l="$2" bg="$blue500">
+                    <PhotoOverlayButton t="$2" l="$2" bg="$blue500">
                       <CrownSimpleIcon
                         size={OVERLAY_ICON_SIZE}
                         weight="fill"
                         color={theme.onFill.val}
                       />
-                    </OverlayButton>
+                    </PhotoOverlayButton>
                   )}
 
                   {onRemove && (
-                    <OverlayButton
+                    <PhotoOverlayButton
                       t="$2"
                       r="$2"
                       bg={DARK_FILL}
@@ -225,11 +193,11 @@ function Grid({
                         weight="bold"
                         color={theme.onFill.val}
                       />
-                    </OverlayButton>
+                    </PhotoOverlayButton>
                   )}
 
                   {onMove && cell.index > 0 && (
-                    <OverlayButton
+                    <PhotoOverlayButton
                       b="$2"
                       l="$2"
                       bg={DARK_FILL}
@@ -240,11 +208,11 @@ function Grid({
                         weight="bold"
                         color={theme.onFill.val}
                       />
-                    </OverlayButton>
+                    </PhotoOverlayButton>
                   )}
 
                   {onMove && cell.index < photos.length - 1 && (
-                    <OverlayButton
+                    <PhotoOverlayButton
                       b="$2"
                       r="$2"
                       bg={DARK_FILL}
@@ -255,7 +223,7 @@ function Grid({
                         weight="bold"
                         color={theme.onFill.val}
                       />
-                    </OverlayButton>
+                    </PhotoOverlayButton>
                   )}
                 </YStack>
               );

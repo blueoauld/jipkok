@@ -6,16 +6,9 @@ import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import {
-  getTokens,
-  Text,
-  useTheme,
-  XStack,
-  type XStackProps,
-  YStack,
-} from "tamagui";
+import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { RetroPressable } from "@/components/ui/RetroPressable";
+import { PhotoOverlayButton } from "@/components/ui/PhotoOverlayButton";
 import {
   type DiaryDraftAttachment,
   draftDurationSeconds,
@@ -25,56 +18,23 @@ import {
 import { mediaSummary } from "@/lib/chat";
 import {
   COVER_IMAGE_STYLE,
+  DARK_FILL,
   IMAGE_TRANSITION,
   OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
-  PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
-  RETRO_SHADOW_OFFSET_SM,
+  PILL_RADIUS,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { formatDuration } from "@/lib/video";
 
 const TILE_SIZE = 96;
+// 프로필 사진 격자 칸과 같은 모서리다.
+const TILE_RADIUS = 12;
 const ADD_ICON_SIZE = 22;
 const PLAY_ICON_SIZE = 24;
-const BADGE_SIZE = 24;
-const BADGE_ICON_SIZE = 14;
-const DURATION_INSET = 4;
-
-function OverlayButton({
-  label,
-  bg,
-  onPress,
-  children,
-  ...position
-}: {
-  label: string;
-  bg: XStackProps["bg"];
-  onPress: () => void;
-  children: React.ReactNode;
-} & XStackProps) {
-  return (
-    <XStack
-      position="absolute"
-      width={BADGE_SIZE}
-      height={BADGE_SIZE}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg={bg}
-      items="center"
-      justify="center"
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      {...position}
-    >
-      {children}
-    </XStack>
-  );
-}
+const OVERLAY_ICON_SIZE = 14;
+const DURATION_INSET = 6;
 
 function Tile({
   item,
@@ -96,15 +56,13 @@ function Tile({
   const durationSeconds = draftDurationSeconds(item);
 
   return (
-    <RetroPressable
+    <YStack
       width={TILE_SIZE}
       height={TILE_SIZE}
-      shadow="$gray8"
-      offset={RETRO_SHADOW_OFFSET_SM}
-      rounded={0}
+      rounded={TILE_RADIUS}
       overflow="hidden"
-      bg="$gray12"
-      pressOpacity={PHOTO_PRESS_OPACITY}
+      bg="$grey100"
+      pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
       accessibilityRole="imagebutton"
       accessibilityLabel={mediaSummary(video ? "VIDEO" : "PHOTO")}
       onPress={onPress}
@@ -127,11 +85,12 @@ function Tile({
               position="absolute"
               t={DURATION_INSET}
               l={DURATION_INSET}
-              px="$1"
+              px="$1.5"
               py={1}
+              rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+              <Text fontSize="$1" color={OVERLAY_INK} fontWeight="600">
                 {formatDuration(durationSeconds)}
               </Text>
             </XStack>
@@ -140,53 +99,53 @@ function Tile({
       )}
 
       {onRemove && (
-        <OverlayButton
+        <PhotoOverlayButton
           t="$2"
           r="$2"
-          bg="$red10"
+          bg={DARK_FILL}
           label={t("diary.removeAttachment")}
           onPress={onRemove}
         >
           <XIcon
-            size={BADGE_ICON_SIZE}
+            size={OVERLAY_ICON_SIZE}
             weight="bold"
             color={theme.onFill.val}
           />
-        </OverlayButton>
+        </PhotoOverlayButton>
       )}
 
       {onMoveLeft && (
-        <OverlayButton
+        <PhotoOverlayButton
           b="$2"
           l="$2"
-          bg="$color1"
+          bg={DARK_FILL}
           label={t("diary.moveLeft")}
           onPress={onMoveLeft}
         >
           <CaretLeftIcon
-            size={BADGE_ICON_SIZE}
+            size={OVERLAY_ICON_SIZE}
             weight="bold"
-            color={theme.color12.val}
+            color={theme.onFill.val}
           />
-        </OverlayButton>
+        </PhotoOverlayButton>
       )}
 
       {onMoveRight && (
-        <OverlayButton
+        <PhotoOverlayButton
           b="$2"
           r="$2"
-          bg="$color1"
+          bg={DARK_FILL}
           label={t("diary.moveRight")}
           onPress={onMoveRight}
         >
           <CaretRightIcon
-            size={BADGE_ICON_SIZE}
+            size={OVERLAY_ICON_SIZE}
             weight="bold"
-            color={theme.color12.val}
+            color={theme.onFill.val}
           />
-        </OverlayButton>
+        </PhotoOverlayButton>
       )}
-    </RetroPressable>
+    </YStack>
   );
 }
 
@@ -205,18 +164,13 @@ export function DiaryAttachmentStrip({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const space = getTokens().space;
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      contentContainerStyle={{
-        gap: space.$3.val,
-        paddingRight: RETRO_SHADOW_OFFSET_SM,
-        paddingBottom: RETRO_SHADOW_OFFSET_SM,
-      }}
+      contentContainerStyle={{ gap: getTokens().space.$2.val }}
     >
       {items.map((item, index) => (
         <Tile
@@ -236,16 +190,14 @@ export function DiaryAttachmentStrip({
       ))}
 
       {onAdd && (
-        <RetroPressable
+        <YStack
           width={TILE_SIZE}
           height={TILE_SIZE}
-          shadow="$gray8"
-          offset={RETRO_SHADOW_OFFSET_SM}
-          rounded={0}
-          bg="$color1"
-          pressBg="$gray6"
+          rounded={TILE_RADIUS}
+          bg="$grey100"
           items="center"
           justify="center"
+          pressStyle={{ bg: "$grey200" }}
           accessibilityRole="button"
           accessibilityLabel={t("diary.addAttachment")}
           onPress={onAdd}
@@ -253,9 +205,9 @@ export function DiaryAttachmentStrip({
           <PlusIcon
             size={ADD_ICON_SIZE}
             weight="bold"
-            color={theme.color12.val}
+            color={theme.grey600.val}
           />
-        </RetroPressable>
+        </YStack>
       )}
     </ScrollView>
   );

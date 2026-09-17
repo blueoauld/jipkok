@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { getTokens, Text } from "tamagui";
+import { Text } from "tamagui";
 
 import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
-import { RetroCard } from "@/components/ui/RetroCard";
 import type { DiaryDraftAttachment } from "@/hooks/useDiaryAttachments";
 import { useDiaryAttachmentViewer } from "@/hooks/useDiaryAttachmentViewer";
 import type { DiaryResponse } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
+import { SCREEN_PADDING } from "@/lib/design";
 
 export function DiaryReader({ diary }: { diary: DiaryResponse }) {
   const { t } = useTranslation();
@@ -23,13 +23,12 @@ export function DiaryReader({ diary }: { diary: DiaryResponse }) {
   );
   const viewer = useDiaryAttachmentViewer(items);
   const content = diary.content ?? "";
-  const gutter = getTokens().space.$4.val;
 
   return (
     <>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: gutter, gap: gutter }}
+        contentContainerStyle={{ padding: SCREEN_PADDING, gap: SCREEN_PADDING }}
         showsVerticalScrollIndicator={false}
       >
         {items.length > 0 && (
@@ -37,9 +36,14 @@ export function DiaryReader({ diary }: { diary: DiaryResponse }) {
         )}
 
         {content.length > 0 && (
-          <RetroCard onLongPress={() => copyText(content, t("diary.copied"))}>
-            <Text fontSize="$4">{content}</Text>
-          </RetroCard>
+          <Text
+            fontSize="$4"
+            lineHeight="$4"
+            color="$grey800"
+            onLongPress={() => copyText(content, t("diary.copied"))}
+          >
+            {content}
+          </Text>
         )}
       </ScrollView>
 

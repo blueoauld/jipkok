@@ -30,10 +30,6 @@ export const COUNTRY_BUTTON_MIN_WIDTH = 70;
 
 export const RETRO_BORDER_WIDTH = 2;
 
-export const RETRO_SHADOW_OFFSET = 4;
-
-export const RETRO_SHADOW_OFFSET_SM = 2;
-
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
 // 사진, 영상, 어두운 오버레이 위의 글자와 아이콘 색이다. 테마를 타지 않는다.

@@ -1,20 +1,23 @@
 import { useState } from "react";
-import { getTokens, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
+import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Glass } from "@/components/ui/Glass";
-import { RetroCalendar } from "@/components/ui/RetroCalendar";
+import { MonthCalendar } from "@/components/ui/MonthCalendar";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import {
   FLOATING_BUTTON_SIZE,
-  OVERLAY_BG,
+  PILL_RADIUS,
   PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
   SCROLL_TO_TOP_BOTTOM_GAP,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
 const GLASS_TEXT_PADDING = 16;
+// 달력 라이브러리가 좌우에 5씩 여백을 두므로 그만큼 덜 띄워 시트 안쪽 여백에 맞춘다.
+const CALENDAR_PADDING_X = 11;
+const CALENDAR_PADDING_BOTTOM = 16;
 
 function DateButton({
   date,
@@ -53,15 +56,13 @@ function DateButton({
 
   return (
     <XStack
-      theme="blue"
       height={FLOATING_BUTTON_SIZE}
-      px="$4"
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg="$color10"
+      px={GLASS_TEXT_PADDING}
+      rounded={PILL_RADIUS}
+      bg="$blue500"
       items="center"
       justify="center"
-      pressStyle={{ bg: "$color11" }}
+      pressStyle={{ bg: "$blue600" }}
       accessibilityRole="button"
       onPress={onPress}
     >
@@ -97,35 +98,20 @@ export function FeedDatePicker({
         <DateButton date={date} today={today} onPress={() => setOpen(true)} />
       </XStack>
 
-      {open && (
-        <>
-          <YStack fullscreen bg={OVERLAY_BG} onPress={() => setOpen(false)} />
-
-          <YStack
-            position="absolute"
-            b={0}
-            l={0}
-            r={0}
-            pt="$2"
-            // 떠 있는 탭 바가 이 위에 얹히므로 마지막 줄이 가리지 않게 그만큼 더 비운다.
-            pb={getTokens().space.$4.val + tabBarOverlay}
-            bg="$background"
-            borderTopWidth={RETRO_BORDER_WIDTH}
-            borderColor="$gray12"
-          >
-            <RetroCalendar
-              initialDate={selected}
-              maxDate={today}
-              markedDates={{ [selected]: { selected: true } }}
-              showSixWeeks
-              onDayPress={(day) => {
-                setOpen(false);
-                onChange(fromDateParam(day.dateString));
-              }}
-            />
-          </YStack>
-        </>
-      )}
+      <BottomSheet open={open} onOpenChange={setOpen}>
+        <YStack px={CALENDAR_PADDING_X} pb={CALENDAR_PADDING_BOTTOM}>
+          <MonthCalendar
+            initialDate={selected}
+            maxDate={today}
+            markedDates={{ [selected]: { selected: true } }}
+            showSixWeeks
+            onDayPress={(day) => {
+              setOpen(false);
+              onChange(fromDateParam(day.dateString));
+            }}
+          />
+        </YStack>
+      </BottomSheet>
     </>
   );
 }

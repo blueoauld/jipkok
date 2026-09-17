@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, XStack, YStack } from "tamagui";
 
-import { BottomSheet } from "@/components/ui/BottomSheet";
+import { BottomSheet, BottomSheetButtons } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel } from "@/components/ui/FieldLabel";
 import { RangeSlider } from "@/components/ui/RangeSlider";
@@ -10,7 +10,6 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   FIELD_TEXT_GAP,
   FIELD_TEXT_INSET,
-  SCREEN_PADDING,
   SHEET_PADDING_X,
 } from "@/lib/design";
 import {
@@ -26,11 +25,6 @@ import {
   genderFilterLabel,
 } from "@/lib/member";
 import { MAX_AGE, MIN_AGE } from "@/lib/validation";
-
-// TDS 바텀시트의 두 버튼(BottomSheet.DoubleCTA)에서 잰 값이다.
-const CTA_PADDING_TOP = 36;
-const CTA_PADDING_BOTTOM = 20;
-const CTA_GAP = 8;
 
 function genderFilterOf(gender: MemberFilter["gender"]): GenderFilter {
   return (
@@ -138,12 +132,7 @@ export function MemberFilterSheet({
         </YStack>
       </YStack>
 
-      <XStack
-        gap={CTA_GAP}
-        px={SCREEN_PADDING}
-        pt={CTA_PADDING_TOP}
-        pb={CTA_PADDING_BOTTOM}
-      >
+      <BottomSheetButtons>
         <Button
           variant="secondary"
           size="xlarge"
@@ -156,7 +145,7 @@ export function MemberFilterSheet({
         <Button size="xlarge" flex={1} onPress={apply}>
           {t("component.apply")}
         </Button>
-      </XStack>
+      </BottomSheetButtons>
     </BottomSheet>
   );
 }
