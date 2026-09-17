@@ -1,12 +1,14 @@
 import { ScrollView } from "react-native";
-import { Text, XStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
-import { RetroPressable } from "@/components/ui/RetroPressable";
 import type { DiaryMood } from "@/lib/api";
-import { RETRO_SHADOW_OFFSET_SM } from "@/lib/design";
+import { BUTTON_SIZES, DARK_FILL, PRESS_DIM } from "@/lib/design";
 import { DIARY_MOODS, moodEmoji } from "@/lib/diary";
 
-const CHIP_SIZE = 44;
+// 이모지를 크게 넣으려고 Button 대신 직접 그린다. 크기와 모서리는 TDS large 버튼, 색과 눌림은
+// 고민 카테고리 칩(Button)과 같다.
+const CHIP_SIZE = BUTTON_SIZES.large.height;
+const CHIP_RADIUS = BUTTON_SIZES.large.radius;
 const EMOJI_FONT_SIZE = 24;
 
 function MoodChip({
@@ -21,16 +23,15 @@ function MoodChip({
   const emoji = moodEmoji(mood) ?? "";
 
   return (
-    <RetroPressable
-      theme={selected ? "blue" : "gray"}
-      shadow="$gray8"
-      offset={RETRO_SHADOW_OFFSET_SM}
+    <XStack
+      group
       width={CHIP_SIZE}
       height={CHIP_SIZE}
-      bg={selected ? "$color10" : "$color1"}
-      pressBg={selected ? "$color11" : "$color3"}
+      rounded={CHIP_RADIUS}
+      bg={selected ? DARK_FILL : "$greyOpacity100"}
       items="center"
       justify="center"
+      overflow="hidden"
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={emoji}
@@ -39,7 +40,15 @@ function MoodChip({
       <Text fontSize={EMOJI_FONT_SIZE} lineHeight={CHIP_SIZE}>
         {emoji}
       </Text>
-    </RetroPressable>
+
+      <YStack
+        fullscreen
+        bg={PRESS_DIM}
+        opacity={0}
+        pointerEvents="none"
+        $group-press={{ opacity: 1 }}
+      />
+    </XStack>
   );
 }
 
@@ -57,7 +66,7 @@ export function DiaryMoodPicker({
       showsHorizontalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <XStack gap="$2" pr={RETRO_SHADOW_OFFSET_SM} pb={RETRO_SHADOW_OFFSET_SM}>
+      <XStack gap="$2">
         {DIARY_MOODS.map((mood) => (
           <MoodChip
             key={mood}

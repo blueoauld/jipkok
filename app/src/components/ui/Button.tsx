@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 import { Animated } from "react-native";
 import { Text, XStack, type XStackProps, YStack } from "tamagui";
 
-import { BUTTON_DISABLED_OPACITY, BUTTON_SIZES, PRESS_DIM } from "@/lib/design";
+import {
+  BUTTON_DISABLED_OPACITY,
+  BUTTON_SIZES,
+  DARK_FILL,
+  PRESS_DIM,
+} from "@/lib/design";
 
-// primary는 TDS의 fill primary, secondary는 weak dark, danger는 fill danger다.
+// primary는 TDS의 fill primary, secondary는 weak dark, danger는 fill danger, dark는 fill dark다.
 const VARIANTS = {
   primary: { bg: "$blue500", color: "$onFill" },
   secondary: { bg: "$greyOpacity100", color: "$grey700" },
   danger: { bg: "$red500", color: "$onFill" },
+  dark: { bg: DARK_FILL, color: "$onFill" },
 } as const;
 
 type ButtonColor = (typeof VARIANTS)[keyof typeof VARIANTS]["color"];
