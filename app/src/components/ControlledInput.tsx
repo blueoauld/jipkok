@@ -36,6 +36,7 @@ export function ControlledInput<T extends FieldValues>({
         >
           <Input
             value={field.value ?? ""}
+            error={fieldState.error !== undefined}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
             {...inputProps}
