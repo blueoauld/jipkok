@@ -93,3 +93,49 @@ export function floatingBarStyle(bottomInset: number) {
     height: FLOATING_BAR_HEIGHT,
   } as const;
 }
+
+// 토스 디자인 시스템(TDS) 컴포넌트에서 잰 높이와 모서리다. 높이마다 모서리가 정해져 있어 짝으로 둔다.
+export const BUTTON_SIZES = {
+  small: { height: 32, radius: 8 },
+  medium: { height: 38, radius: 10 },
+  large: { height: 48, radius: 14 },
+  xlarge: { height: 56, radius: 16 },
+} as const;
+
+export const INPUT_HEIGHT = 56;
+
+export const INPUT_RADIUS = 14;
+
+export const SEGMENT_HEIGHT = 48;
+
+export const SEGMENT_RADIUS = 14;
+
+export const SEGMENT_ITEM_HEIGHT = 40;
+
+export const SEGMENT_ITEM_RADIUS = 10;
+
+// TDS에는 카드가 없어서 가장 큰 버튼과 같은 모서리로 정했다.
+export const CARD_RADIUS = 16;
+
+export const DIALOG_RADIUS = 24;
+
+export const SHEET_RADIUS = 28;
+
+export const PILL_RADIUS = 9999;
+
+// 화면 좌우 여백이다. space $4(18)는 요소 사이 간격에도 쓰여서 값을 바꾸지 않고 따로 둔다.
+export const SCREEN_PADDING = 20;
+
+export const LIST_ROW_VERTICAL_PADDING = {
+  small: 8,
+  medium: 12,
+  large: 16,
+  xlarge: 24,
+} as const;
+
+// 흰 화면에서 묶음과 묶음 사이를 가르는 회색 띠의 높이다.
+export const SECTION_DIVIDER_HEIGHT = 16;
+
+export const PRESS_DIM = "rgba(0, 0, 0, 0.1)";
+
+export const FLOATING_SHADOW = "0 2px 30px rgba(0, 27, 55, 0.1)";
