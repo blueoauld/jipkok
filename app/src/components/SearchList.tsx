@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, type ListRenderItem } from "react-native";
+import {
+  FlatList,
+  type FlatListProps,
+  type ListRenderItem,
+} from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { Spinner, YStack } from "tamagui";
 
@@ -32,6 +36,8 @@ export function SearchList<T>({
   items,
   keyExtractor,
   renderItem,
+  ItemSeparatorComponent,
+  layout,
 }: {
   hint: string;
   placeholder?: string;
@@ -42,10 +48,12 @@ export function SearchList<T>({
   items: T[] | undefined;
   keyExtractor: (item: T) => string;
   renderItem: ListRenderItem<T>;
+  ItemSeparatorComponent?: FlatListProps<T>["ItemSeparatorComponent"];
+  layout?: "cards" | "rows";
 }) {
   const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
-  const paged = usePagedList(query);
+  const paged = usePagedList(query, 0, layout);
 
   const submit = () => {
     const next = keyword.trim();
@@ -86,6 +94,7 @@ export function SearchList<T>({
           data={items}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
+          ItemSeparatorComponent={ItemSeparatorComponent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={true}
           ListEmptyComponent={

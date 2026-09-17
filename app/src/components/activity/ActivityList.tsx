@@ -1,10 +1,12 @@
-import { useMemo } from "react";
 import { FlatList } from "react-native";
-import { getTokens } from "tamagui";
 
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { UserRow } from "@/components/UserRow";
+import {
+  UserRow,
+  UserRowSeparator,
+  UserRowTopSpacer,
+} from "@/components/UserRow";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
@@ -20,14 +22,7 @@ export function ActivityList({
   onDelete?: (memberId: number) => void;
 }) {
   const { members, error } = query;
-  const paged = usePagedList(query);
-  const contentStyle = useMemo(
-    () => ({
-      ...paged.contentContainerStyle,
-      paddingTop: getTokens().space.$4.val,
-    }),
-    [paged.contentContainerStyle],
-  );
+  const paged = usePagedList(query, 0, "rows");
 
   if (!members) {
     return (
@@ -47,8 +42,9 @@ export function ActivityList({
       renderItem={({ item }) => (
         <UserRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
       )}
+      ListHeaderComponent={UserRowTopSpacer}
+      ItemSeparatorComponent={UserRowSeparator}
       showsVerticalScrollIndicator={true}
-      contentContainerStyle={contentStyle}
       ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
     />
   );

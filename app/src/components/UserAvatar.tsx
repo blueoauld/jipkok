@@ -4,9 +4,12 @@ import { useState } from "react";
 import { useTheme, YStack } from "tamagui";
 
 import type { Gender } from "@/lib/api";
-import { IMAGE_TRANSITION, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { IMAGE_TRANSITION } from "@/lib/design";
 
-const SIZE = 64;
+export const USER_AVATAR_SIZE = 64;
+
+// 모서리는 TDS ListRow의 Square 이미지(52, 모서리 12)와 같은 비율로 둥글린다.
+const RADIUS_RATIO = 12 / 52;
 const ICON_RATIO = 0.5;
 
 const GENDER_BG = {
@@ -17,7 +20,7 @@ const GENDER_BG = {
 export function UserAvatar({
   id,
   url,
-  size = SIZE,
+  size = USER_AVATAR_SIZE,
   gender,
 }: {
   id: string;
@@ -34,9 +37,9 @@ export function UserAvatar({
       shrink={0}
       width={size}
       height={size}
-      rounded={0}
+      rounded={size * RADIUS_RATIO}
       overflow="hidden"
-      bg={gender ? GENDER_BG[gender] : "$gray6"}
+      bg={gender ? GENDER_BG[gender] : "$grey100"}
       items="center"
       justify="center"
     >
@@ -52,14 +55,6 @@ export function UserAvatar({
       ) : (
         <UserIcon size={size * ICON_RATIO} color={theme.color12.val} />
       )}
-
-      <YStack
-        fullscreen
-        rounded={0}
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        pointerEvents="none"
-      />
     </YStack>
   );
 }

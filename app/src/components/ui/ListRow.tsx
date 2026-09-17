@@ -5,6 +5,7 @@ import { useTheme, XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import {
+  LIST_ROW_LEFT_GAP,
   LIST_ROW_PADDING_X,
   LIST_ROW_VERTICAL_PADDING,
   ROW_PRESS_RADIUS,
@@ -14,7 +15,6 @@ import {
 
 // TDS ListRow에서 잰 값이다.
 const MIN_HEIGHT = 44;
-const LEFT_GAP = 12;
 const RIGHT_GAP = 16;
 const ICON_BOX_SIZE = 30;
 const ICON_SIZE = 24;
@@ -47,6 +47,7 @@ export function ListRow({
   right,
   withArrow = false,
   divider = false,
+  horizontalPadding = "medium",
   onPress,
   children,
 }: {
@@ -54,6 +55,7 @@ export function ListRow({
   right?: ReactNode;
   withArrow?: boolean;
   divider?: boolean;
+  horizontalPadding?: keyof typeof LIST_ROW_PADDING_X;
   onPress?: () => void;
   children: ReactNode;
 }) {
@@ -64,7 +66,7 @@ export function ListRow({
       <XStack
         items="center"
         minH={MIN_HEIGHT}
-        px={LIST_ROW_PADDING_X}
+        px={LIST_ROW_PADDING_X[horizontalPadding]}
         py={LIST_ROW_VERTICAL_PADDING.medium}
         rounded={ROW_PRESS_RADIUS}
         pressStyle={
@@ -76,7 +78,7 @@ export function ListRow({
         accessibilityRole={onPress ? "button" : undefined}
         onPress={onPress}
       >
-        {left && <XStack mr={LEFT_GAP}>{left}</XStack>}
+        {left && <XStack mr={LIST_ROW_LEFT_GAP}>{left}</XStack>}
 
         <XStack flex={1} items="center" gap={RIGHT_GAP}>
           <YStack flex={1}>{children}</YStack>

@@ -5,9 +5,22 @@ import { Text, useTheme, XStack } from "tamagui";
 import type { Gender } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
 
+// sm은 회원 행의 가운데 줄이라 TDS ListRow 2RowTypeA 아래 글자(15, 400, grey600)를 따른다.
 const SIZES = {
-  sm: { fontSize: "$3", icon: 13 },
-  md: { fontSize: "$4", icon: 14 },
+  sm: {
+    fontSize: "$2",
+    lineHeight: "$2",
+    fontWeight: "400",
+    color: "grey600",
+    icon: 14,
+  },
+  md: {
+    fontSize: "$4",
+    lineHeight: undefined,
+    fontWeight: "400",
+    color: "color12",
+    icon: 14,
+  },
 } as const;
 
 export function MemberMeta({
@@ -23,18 +36,30 @@ export function MemberMeta({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { fontSize, icon } = SIZES[size];
+  const { fontSize, lineHeight, fontWeight, color, icon } = SIZES[size];
 
   return (
     <XStack items="center">
-      <Text fontSize={fontSize}>
+      <Text
+        fontSize={fontSize}
+        lineHeight={lineHeight}
+        fontWeight={fontWeight}
+        color={`$${color}`}
+      >
         {t("component.metaLine", { gender: genderLabel(gender), age })}
       </Text>
 
       <XStack items="center" gap="$1">
-        <HeartIcon size={icon} weight="fill" color={theme.color12.val} />
+        <HeartIcon size={icon} weight="fill" color={theme[color].val} />
 
-        <Text fontSize={fontSize}>{receivedLikeCount}</Text>
+        <Text
+          fontSize={fontSize}
+          lineHeight={lineHeight}
+          fontWeight={fontWeight}
+          color={`$${color}`}
+        >
+          {receivedLikeCount}
+        </Text>
       </XStack>
     </XStack>
   );

@@ -18,7 +18,11 @@ import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { Tab } from "@/components/ui/Tab";
-import { UserRow } from "@/components/UserRow";
+import {
+  UserRow,
+  UserRowSeparator,
+  UserRowTopSpacer,
+} from "@/components/UserRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
@@ -87,7 +91,7 @@ export default function MainScreen() {
   });
   const { members, error, refetch: refetchMembers } = memberList;
   const tabBarOverlay = useTabBarOverlay();
-  const paged = usePagedList(memberList, tabBarOverlay);
+  const paged = usePagedList(memberList, tabBarOverlay, "rows");
 
   useLoadingOverlay(updateComment.isPending);
   const { update: updateLocation, refresh: refreshLocation } = location;
@@ -171,6 +175,8 @@ export default function MainScreen() {
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
+          ListHeaderComponent={UserRowTopSpacer}
+          ItemSeparatorComponent={UserRowSeparator}
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}

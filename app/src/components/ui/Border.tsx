@@ -17,7 +17,7 @@ export function Border({
   return (
     <YStack
       height={HAIRLINE_HEIGHT}
-      ml={variant === "padding24" ? LIST_ROW_PADDING_X : 0}
+      ml={variant === "padding24" ? LIST_ROW_PADDING_X.medium : 0}
       bg="$hairline"
     />
   );

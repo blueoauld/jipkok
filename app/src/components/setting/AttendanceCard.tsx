@@ -12,7 +12,10 @@ export function AttendanceCard() {
   const { data, isError, refetch } = useAttendanceDays();
 
   return (
-    <YStack px={LIST_ROW_PADDING_X} py={LIST_ROW_VERTICAL_PADDING.xlarge}>
+    <YStack
+      px={LIST_ROW_PADDING_X.medium}
+      py={LIST_ROW_VERTICAL_PADDING.xlarge}
+    >
       {data ? (
         <AttendanceGrass today={data.today} days={data.days} />
       ) : isError ? (

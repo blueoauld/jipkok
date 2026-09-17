@@ -187,7 +187,12 @@ export const PILL_RADIUS = 9999;
 // 화면 좌우 여백이다. space $4(18)는 요소 사이 간격에도 쓰여서 값을 바꾸지 않고 따로 둔다.
 export const SCREEN_PADDING = 20;
 
-export const LIST_ROW_PADDING_X = 24;
+export const LIST_ROW_PADDING_X = {
+  small: 20,
+  medium: 24,
+} as const;
+
+export const LIST_ROW_LEFT_GAP = 12;
 
 export const LIST_ROW_VERTICAL_PADDING = {
   small: 8,
