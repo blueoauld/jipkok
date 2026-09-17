@@ -10,22 +10,23 @@ import { useTranslation } from "react-i18next";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { LockBadge } from "@/components/ui/LockBadge";
-import { PhotoOverlayButton } from "@/components/ui/PhotoOverlayButton";
+import {
+  PHOTO_OVERLAY_ICON_SIZE,
+  PhotoOverlayButton,
+} from "@/components/ui/PhotoOverlayButton";
 import {
   COVER_IMAGE_STYLE,
   DARK_FILL,
   IMAGE_TRANSITION,
   PHOTO_PRESS_OPACITY,
+  PHOTO_TILE_RADIUS,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { MAX_PHOTOS } from "@/lib/photo/picker";
 
 const COLUMNS = 3;
 
-const CELL_RADIUS = 12;
 const CELL_ICON_SIZE = 22;
-
-const OVERLAY_ICON_SIZE = 14;
 
 type Cell =
   | { kind: "photo"; uri: string; index: number }
@@ -104,7 +105,7 @@ function Grid({
                     key={`placeholder-${columnIndex}`}
                     flex={1}
                     aspectRatio={1}
-                    rounded={CELL_RADIUS}
+                    rounded={PHOTO_TILE_RADIUS}
                     bg="$grey100"
                     items="center"
                     justify="center"
@@ -123,7 +124,7 @@ function Grid({
                     key="add"
                     flex={1}
                     aspectRatio={1}
-                    rounded={CELL_RADIUS}
+                    rounded={PHOTO_TILE_RADIUS}
                     bg="$grey100"
                     items="center"
                     justify="center"
@@ -150,7 +151,7 @@ function Grid({
                   key={cell.uri}
                   flex={1}
                   aspectRatio={1}
-                  rounded={CELL_RADIUS}
+                  rounded={PHOTO_TILE_RADIUS}
                   overflow="hidden"
                   bg="$grey100"
                   pressStyle={
@@ -191,7 +192,7 @@ function Grid({
                       label={t("a11y.primaryPhoto")}
                     >
                       <CrownSimpleIcon
-                        size={OVERLAY_ICON_SIZE}
+                        size={PHOTO_OVERLAY_ICON_SIZE}
                         weight="fill"
                         color={theme.onFill.val}
                       />
@@ -207,7 +208,7 @@ function Grid({
                       onPress={() => onRemove(cell.index)}
                     >
                       <XIcon
-                        size={OVERLAY_ICON_SIZE}
+                        size={PHOTO_OVERLAY_ICON_SIZE}
                         weight="bold"
                         color={theme.onFill.val}
                       />
@@ -223,7 +224,7 @@ function Grid({
                       onPress={() => onMove(cell.index, cell.index - 1)}
                     >
                       <CaretLeftIcon
-                        size={OVERLAY_ICON_SIZE}
+                        size={PHOTO_OVERLAY_ICON_SIZE}
                         weight="bold"
                         color={theme.onFill.val}
                       />
@@ -239,7 +240,7 @@ function Grid({
                       onPress={() => onMove(cell.index, cell.index + 1)}
                     >
                       <CaretRightIcon
-                        size={OVERLAY_ICON_SIZE}
+                        size={PHOTO_OVERLAY_ICON_SIZE}
                         weight="bold"
                         color={theme.onFill.val}
                       />

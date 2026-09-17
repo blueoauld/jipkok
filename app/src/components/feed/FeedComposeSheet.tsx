@@ -12,7 +12,10 @@ import { CARD_RATIO } from "@/components/feed/FeedCard";
 import { BottomSheet, BottomSheetButtons } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
-import { PhotoOverlayButton } from "@/components/ui/PhotoOverlayButton";
+import {
+  PHOTO_OVERLAY_ICON_SIZE,
+  PhotoOverlayButton,
+} from "@/components/ui/PhotoOverlayButton";
 import {
   CARD_RADIUS,
   COVER_IMAGE_STYLE,
@@ -24,7 +27,6 @@ import { pickSinglePhoto, takePhoto } from "@/lib/photo/picker";
 const CAPTION_MAX_LENGTH = 30;
 
 const PICKER_ICON_SIZE = 40;
-const REMOVE_ICON_SIZE = 14;
 const REMOVE_BUTTON_INSET = 12;
 
 function PickerTile({
@@ -109,7 +111,7 @@ function ComposeForm({
               onPress={() => setPhoto(null)}
             >
               <XIcon
-                size={REMOVE_ICON_SIZE}
+                size={PHOTO_OVERLAY_ICON_SIZE}
                 weight="bold"
                 color={theme.onFill.val}
               />

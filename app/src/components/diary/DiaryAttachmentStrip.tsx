@@ -8,7 +8,10 @@ import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
 
-import { PhotoOverlayButton } from "@/components/ui/PhotoOverlayButton";
+import {
+  PHOTO_OVERLAY_ICON_SIZE,
+  PhotoOverlayButton,
+} from "@/components/ui/PhotoOverlayButton";
 import {
   type DiaryDraftAttachment,
   draftDurationSeconds,
@@ -23,17 +26,15 @@ import {
   OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
+  PHOTO_TILE_RADIUS,
   PILL_RADIUS,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { formatDuration } from "@/lib/video";
 
 const TILE_SIZE = 96;
-// 프로필 사진 격자 칸과 같은 모서리다.
-const TILE_RADIUS = 12;
 const ADD_ICON_SIZE = 22;
 const PLAY_ICON_SIZE = 24;
-const OVERLAY_ICON_SIZE = 14;
 const DURATION_INSET = 6;
 
 function Tile({
@@ -59,7 +60,7 @@ function Tile({
     <YStack
       width={TILE_SIZE}
       height={TILE_SIZE}
-      rounded={TILE_RADIUS}
+      rounded={PHOTO_TILE_RADIUS}
       overflow="hidden"
       bg="$grey100"
       pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
@@ -113,7 +114,7 @@ function Tile({
           onPress={onRemove}
         >
           <XIcon
-            size={OVERLAY_ICON_SIZE}
+            size={PHOTO_OVERLAY_ICON_SIZE}
             weight="bold"
             color={theme.onFill.val}
           />
@@ -129,7 +130,7 @@ function Tile({
           onPress={onMoveLeft}
         >
           <CaretLeftIcon
-            size={OVERLAY_ICON_SIZE}
+            size={PHOTO_OVERLAY_ICON_SIZE}
             weight="bold"
             color={theme.onFill.val}
           />
@@ -145,7 +146,7 @@ function Tile({
           onPress={onMoveRight}
         >
           <CaretRightIcon
-            size={OVERLAY_ICON_SIZE}
+            size={PHOTO_OVERLAY_ICON_SIZE}
             weight="bold"
             color={theme.onFill.val}
           />
@@ -199,7 +200,7 @@ export function DiaryAttachmentStrip({
         <YStack
           width={TILE_SIZE}
           height={TILE_SIZE}
-          rounded={TILE_RADIUS}
+          rounded={PHOTO_TILE_RADIUS}
           bg="$grey100"
           items="center"
           justify="center"

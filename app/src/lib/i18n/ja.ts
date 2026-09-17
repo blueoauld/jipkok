@@ -318,7 +318,6 @@ export const ja: typeof ko = {
       nicknamePlaceholder: "ニックネーム",
       birthYearPlaceholder: "生年",
       bioPlaceholder: "自己紹介",
-      bioTooLong: "自己紹介が長すぎます。",
     },
   },
   chat: {

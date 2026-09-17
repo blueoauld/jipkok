@@ -301,7 +301,6 @@ export const zh: typeof ko = {
       nicknamePlaceholder: "暱稱",
       birthYearPlaceholder: "出生年份",
       bioPlaceholder: "自我介紹",
-      bioTooLong: "自我介紹太長了。",
     },
   },
   chat: {

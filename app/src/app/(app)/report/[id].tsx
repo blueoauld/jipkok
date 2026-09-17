@@ -19,6 +19,7 @@ import {
   FIELD_TEXT_GAP,
   LIST_ROW_EVEN_PADDING_Y,
   SCREEN_PADDING,
+  SHORT_CONTENT_INPUT_ROWS,
 } from "@/lib/design";
 import { reportedMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
@@ -84,7 +85,7 @@ function DetailField({ valueRef }: { valueRef: RefObject<string> }) {
     <CountedInput
       valueRef={valueRef}
       multiline
-      rows={7}
+      rows={SHORT_CONTENT_INPUT_ROWS}
       textAlignVertical="top"
       placeholder={t("report.detailPlaceholder")}
       maxLength={REPORT_DETAIL_MAX_LENGTH}

@@ -315,7 +315,6 @@ export const ko = {
       nicknamePlaceholder: "닉네임",
       birthYearPlaceholder: "출생연도",
       bioPlaceholder: "자기소개",
-      bioTooLong: "자기소개가 너무 깁니다.",
     },
   },
   chat: {

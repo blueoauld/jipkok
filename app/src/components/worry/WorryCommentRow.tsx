@@ -66,7 +66,7 @@ export const WorryCommentRow = memo(function WorryCommentRow({
           >
             {commentLabel(comment)}
           </Text>
-          <RelativeTime at={comment.createdAt} fontSize="$1" color="$grey500" />
+          <RelativeTime at={comment.createdAt} />
         </XStack>
 
         {active ? (

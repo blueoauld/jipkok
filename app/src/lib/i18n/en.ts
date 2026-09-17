@@ -316,7 +316,6 @@ export const en: typeof ko = {
       nicknamePlaceholder: "Nickname",
       birthYearPlaceholder: "Birth year",
       bioPlaceholder: "Bio",
-      bioTooLong: "That bio is too long.",
     },
   },
   chat: {

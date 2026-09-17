@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { useTheme, XStack, YStack } from "tamagui";
 
-import { PagedPhotos, PhotoDots } from "@/components/photo/PagedPhotos";
+import { PagedPhotos } from "@/components/photo/PagedPhotos";
+import { PhotoDots } from "@/components/photo/PhotoDots";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { LockBadge } from "@/components/ui/LockBadge";
 import { IMAGE_TRANSITION, PHOTO_PRESS_OPACITY } from "@/lib/design";

@@ -41,7 +41,7 @@ function CalendarDay({
   maxDate,
   onPress,
 }: CalendarDayProps & { maxDate?: string }) {
-  const selected = state === "selected" || Boolean(marking?.selected);
+  const selected = Boolean(marking?.selected);
   // 라이브러리는 maxDate보다 today를 먼저 보고, today는 기기 날짜다. 한국보다 앞선
   // 시간대에서는 아직 오지 않은 날이 눌리는 오늘로 그려지므로 여기서 한 번 더 막는다.
   const beyondMax =

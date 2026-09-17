@@ -128,7 +128,7 @@ function Row({
           receivedLikeCount={receivedLikeCount}
         />
 
-        {time && <RelativeTime at={time} fontSize="$1" color="$grey500" />}
+        {time && <RelativeTime at={time} />}
       </XStack>
 
       <XStack items="center" justify="space-between" gap="$2">

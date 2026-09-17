@@ -10,8 +10,6 @@ import { WorryPostHeader } from "@/components/worry/WorryPostHeader";
 import type { WorryPostResponse } from "@/lib/api";
 
 const CONTENT_MAX_LINES = 3;
-const COUNT_ICON_SIZE = 18;
-
 function Item({
   worry,
   onPress,
@@ -39,13 +37,11 @@ function Item({
           icon={HeartIcon}
           label={t("a11y.like")}
           value={worry.likeCount}
-          size={COUNT_ICON_SIZE}
         />
         <WorryCount
           icon={ChatCircleIcon}
           label={t("a11y.comment")}
           value={worry.commentCount}
-          size={COUNT_ICON_SIZE}
         />
       </XStack>
     </Card>

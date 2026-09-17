@@ -5,11 +5,7 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { MonthCalendar } from "@/components/ui/MonthCalendar";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
-import {
-  FLOATING_BUTTON_SIZE,
-  PILL_RADIUS,
-  SCREEN_PADDING,
-} from "@/lib/design";
+import { PILL_RADIUS, ROUND_BUTTON_SIZE, SCREEN_PADDING } from "@/lib/design";
 
 const BUTTON_PADDING_X = 16;
 // 달력 라이브러리가 좌우에 5씩 여백을 두므로 그만큼 덜 띄워 시트 안쪽 여백에 맞춘다.
@@ -27,7 +23,7 @@ function DateButton({
 }) {
   return (
     <XStack
-      height={FLOATING_BUTTON_SIZE}
+      height={ROUND_BUTTON_SIZE}
       px={BUTTON_PADDING_X}
       rounded={PILL_RADIUS}
       bg="$blue500"

@@ -3,18 +3,18 @@ import { Text, useTheme, XStack } from "tamagui";
 
 import { PRESS_OPACITY } from "@/lib/design";
 
+const ICON_SIZE = 18;
+
 export function WorryCount({
   icon: CountIcon,
   label,
   value,
-  size,
   active = false,
   onPress,
 }: {
   icon: Icon;
   label: string;
   value: number;
-  size: number;
   active?: boolean;
   onPress?: () => void;
 }) {
@@ -32,7 +32,7 @@ export function WorryCount({
       onPress={onPress}
     >
       <CountIcon
-        size={size}
+        size={ICON_SIZE}
         weight={active ? "fill" : "bold"}
         color={active ? theme.red500.val : theme.grey600.val}
       />

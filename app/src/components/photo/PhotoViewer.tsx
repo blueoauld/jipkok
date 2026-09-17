@@ -20,7 +20,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { Gallery, type VerticalPullOptions } from "react-native-zoom-toolkit";
 import { XStack, YStack } from "tamagui";
 
-import { PhotoDots } from "@/components/photo/PagedPhotos";
+import { PhotoDots } from "@/components/photo/PhotoDots";
 import {
   DISMISS_DURATION,
   shouldDismiss,
@@ -35,6 +35,7 @@ import {
   OVERLAY_INK,
   PILL_RADIUS,
   PRESS_OPACITY,
+  VIEWER_BG,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { photoCacheKey } from "@/lib/photo";
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: "black",
+    backgroundColor: VIEWER_BG,
   },
   header: {
     position: "absolute",

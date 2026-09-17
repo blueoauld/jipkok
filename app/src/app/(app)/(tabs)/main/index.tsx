@@ -97,7 +97,7 @@ export default function MainScreen() {
     [],
   );
 
-  // 위치가 없으면 서버가 최근순으로 주므로 세그먼트를 되돌리지 않는다.
+  // 위치가 없으면 서버가 최근순으로 주므로 탭을 되돌리지 않는다.
   const changeSort = useCallback(
     async (next: MemberListSort) => {
       setSort(next);

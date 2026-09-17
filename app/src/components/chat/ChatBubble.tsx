@@ -56,7 +56,6 @@ function BubbleFrame({
       shrink={1}
       rounded={CHAT_BUBBLE_RADIUS}
       bg={mine ? "$blue500" : "$grey200"}
-      justify="center"
       onLongPress={onLongPress}
     >
       {children}
@@ -189,7 +188,7 @@ function ReplyMessage({
   replyName,
   reply,
   content,
-  onPressReply,
+  onPressQuote,
   onLongPress,
 }: {
   mine: boolean;
@@ -197,7 +196,7 @@ function ReplyMessage({
   replyName: string;
   reply: ReplyMessageResponse;
   content: string;
-  onPressReply: (messageId: number) => void;
+  onPressQuote: (messageId: number) => void;
   onLongPress: () => void;
 }) {
   return (
@@ -210,7 +209,7 @@ function ReplyMessage({
           pressStyle={{ opacity: PRESS_OPACITY }}
           accessible
           accessibilityRole="button"
-          onPress={() => onPressReply(reply.messageId)}
+          onPress={() => onPressQuote(reply.messageId)}
           onLongPress={onLongPress}
         >
           <ReplyPreviewThumbnail reply={reply} />
@@ -244,14 +243,14 @@ function ReplyMessage({
   );
 }
 
-export function ChatBubbleContent({
+function ChatBubbleContent({
   message,
   mine,
   tail,
   replyName,
   onPressPhoto,
   onPressVideo,
-  onPressReply,
+  onPressQuote,
   onLongPress,
 }: {
   message: ChatMessageResponse;
@@ -260,7 +259,7 @@ export function ChatBubbleContent({
   replyName: string;
   onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
-  onPressReply: (messageId: number) => void;
+  onPressQuote: (messageId: number) => void;
   onLongPress: () => void;
 }) {
   if (message.type === "VIDEO") {
@@ -292,7 +291,7 @@ export function ChatBubbleContent({
         replyName={replyName}
         reply={message.replyMessage}
         content={message.content ?? ""}
-        onPressReply={onPressReply}
+        onPressQuote={onPressQuote}
         onLongPress={onLongPress}
       />
     );
@@ -317,7 +316,7 @@ export function ChatBubble({
   myMemberId,
   onPressPhoto,
   onPressVideo,
-  onPressReply,
+  onPressQuote,
   onOpenActions,
 }: {
   message: ChatMessageResponse;
@@ -328,7 +327,7 @@ export function ChatBubble({
   myMemberId: number;
   onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
-  onPressReply: (messageId: number) => void;
+  onPressQuote: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
 }) {
   const bubbleRef = useRef<View>(null);
@@ -373,7 +372,7 @@ export function ChatBubble({
             replyName={replyName}
             onPressPhoto={onPressPhoto}
             onPressVideo={onPressVideo}
-            onPressReply={onPressReply}
+            onPressQuote={onPressQuote}
             onLongPress={openActions}
           />
         </View>

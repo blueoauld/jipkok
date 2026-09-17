@@ -11,8 +11,6 @@ import type { WorryPostResponse } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
 import { SCREEN_PADDING } from "@/lib/design";
 
-const COUNT_ICON_SIZE = 18;
-
 export function WorryPostSection({
   post,
   onToggleLike,
@@ -41,7 +39,6 @@ export function WorryPostSection({
             icon={HeartIcon}
             label={t("a11y.like")}
             value={post.likeCount}
-            size={COUNT_ICON_SIZE}
             active={post.likedByMe}
             onPress={onToggleLike}
           />
@@ -49,7 +46,6 @@ export function WorryPostSection({
             icon={ChatCircleIcon}
             label={t("a11y.comment")}
             value={post.commentCount}
-            size={COUNT_ICON_SIZE}
           />
         </XStack>
 

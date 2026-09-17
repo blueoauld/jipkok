@@ -12,6 +12,7 @@ import { useAlert } from "@/hooks/useAlert";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import { api } from "@/lib/api";
+import { SHORT_CONTENT_INPUT_ROWS } from "@/lib/design";
 import {
   BIO_MAX_LENGTH,
   BIRTH_YEAR_LENGTH,
@@ -88,19 +89,13 @@ export default function SetupScreen() {
         <ControlledInput
           control={control}
           name="bio"
-          rules={{
-            maxLength: {
-              value: BIO_MAX_LENGTH,
-              message: t("auth.setup.bioTooLong"),
-            },
-          }}
           renderRight={(value) => (
             <Text fontSize="$1" color="$grey600">
               {`${value.length} / ${BIO_MAX_LENGTH}`}
             </Text>
           )}
           multiline
-          rows={7}
+          rows={SHORT_CONTENT_INPUT_ROWS}
           textAlignVertical="top"
           placeholder={t("auth.setup.bioPlaceholder")}
           maxLength={BIO_MAX_LENGTH}

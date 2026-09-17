@@ -28,7 +28,7 @@ import {
 } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
-const STATUS_ICON_SIZE = 14;
+const ROW_STATUS_ICON_SIZE = 14;
 
 const ACTION_SIZE = MIN_TAP_SIZE;
 const ACTION_ICON_SIZE = 22;
@@ -247,7 +247,7 @@ function Row({
 
               {room.pinned && (
                 <PushPinIcon
-                  size={STATUS_ICON_SIZE}
+                  size={ROW_STATUS_ICON_SIZE}
                   weight="fill"
                   color={theme.grey400.val}
                 />
@@ -255,7 +255,7 @@ function Row({
 
               {!room.notificationEnabled && (
                 <BellSlashIcon
-                  size={STATUS_ICON_SIZE}
+                  size={ROW_STATUS_ICON_SIZE}
                   weight="fill"
                   color={theme.grey400.val}
                 />

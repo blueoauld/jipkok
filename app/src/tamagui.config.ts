@@ -116,7 +116,7 @@ export const tamaguiConfig = createTamagui({
   fonts: {
     ...defaultConfig.fonts,
     // $1, $2, $4, $6, $8은 TDS Typography 7, 6, 5, 4, 2다.
-    // true는 크기를 안 준 글자의 기본값이라 $4와 같게 둔다.
+    // true는 Tamagui 부품이 크기를 안 받았을 때 쓰는 기본값이라 $4와 같게 둔다.
     body: {
       ...bodyFont,
       size: { ...bodyFont.size, 1: 13, 2: 15, 4: 17, 6: 20, 8: 26, true: 17 },

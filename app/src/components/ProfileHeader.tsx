@@ -59,9 +59,7 @@ export function ProfileHeader({
           )}
         </XStack>
 
-        {locatedAt && (
-          <RelativeTime at={locatedAt} fontSize="$1" color="$grey500" />
-        )}
+        {locatedAt && <RelativeTime at={locatedAt} />}
       </XStack>
 
       <XStack items="center" justify="space-between" gap="$2">

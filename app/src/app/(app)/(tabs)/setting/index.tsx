@@ -9,7 +9,7 @@ import { YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
-import { AttendanceCard } from "@/components/setting/AttendanceCard";
+import { AttendanceSection } from "@/components/setting/AttendanceSection";
 import { SettingSection } from "@/components/setting/SettingSection";
 import { Border } from "@/components/ui/Border";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
@@ -346,7 +346,7 @@ export default function SettingScreen() {
             {group.attendance && (
               <>
                 <Border variant="height16" />
-                <AttendanceCard />
+                <AttendanceSection />
               </>
             )}
           </YStack>

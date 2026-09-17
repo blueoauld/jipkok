@@ -189,7 +189,7 @@ export default function ChatRoomScreen() {
 
   useChatRoomEffects(roomId, messages, partnerId);
 
-  const handlePressReply = useCallback(
+  const handlePressQuote = useCallback(
     (messageId: number) => {
       const index = rowsRef.current.findIndex(
         (row) => row.kind === "message" && row.message.messageId === messageId,
@@ -345,7 +345,7 @@ export default function ChatRoomScreen() {
                 onPressAvatar={handlePressAvatar}
                 onPressPhoto={media.openViewer}
                 onPressVideo={media.playVideo}
-                onPressReply={handlePressReply}
+                onPressQuote={handlePressQuote}
                 onOpenActions={actions.open}
                 onReply={handleReply}
                 myMemberId={myMemberId}

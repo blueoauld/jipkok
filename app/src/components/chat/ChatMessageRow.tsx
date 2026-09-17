@@ -93,7 +93,7 @@ function Row({
   onPressAvatar,
   onPressPhoto,
   onPressVideo,
-  onPressReply,
+  onPressQuote,
   onOpenActions,
   onReply,
   myMemberId,
@@ -110,7 +110,7 @@ function Row({
   onPressAvatar: () => void;
   onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
-  onPressReply: (messageId: number) => void;
+  onPressQuote: (messageId: number) => void;
   onOpenActions: (message: ChatMessageResponse, frame: MessageFrame) => void;
   onReply: (message: ChatMessageResponse) => void;
   myMemberId: number;
@@ -183,7 +183,7 @@ function Row({
                   myMemberId={myMemberId}
                   onPressPhoto={onPressPhoto}
                   onPressVideo={onPressVideo}
-                  onPressReply={onPressReply}
+                  onPressQuote={onPressQuote}
                   onOpenActions={onOpenActions}
                 />
               </Blink>

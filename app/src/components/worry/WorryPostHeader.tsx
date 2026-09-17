@@ -16,7 +16,7 @@ export function WorryPostHeader({ post }: { post: WorryPostResponse }) {
           {post.mine ? t("worry.detail.mine") : t("worry.detail.anonymous")}
         </Text>
       </XStack>
-      <RelativeTime at={post.createdAt} fontSize="$1" color="$grey500" />
+      <RelativeTime at={post.createdAt} />
     </XStack>
   );
 }

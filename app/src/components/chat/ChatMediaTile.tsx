@@ -10,12 +10,11 @@ import {
   OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
+  PHOTO_TILE_RADIUS,
   PILL_RADIUS,
 } from "@/lib/design";
 import { formatDuration } from "@/lib/video";
 
-// 프로필 사진 격자 칸과 같은 모서리다.
-const TILE_RADIUS = 12;
 const PLAY_ICON_SIZE = 28;
 const DURATION_INSET = 6;
 
@@ -37,7 +36,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
     <YStack
       width={size}
       height={size}
-      rounded={TILE_RADIUS}
+      rounded={PHOTO_TILE_RADIUS}
       overflow="hidden"
       pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
       accessible

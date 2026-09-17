@@ -7,7 +7,7 @@ export const PHOTO_PRESS_OPACITY = 0.8;
 // 애플이 권하는 최소 탭 영역이다. 손가락이 닿는 면이라 더 줄이지 말 것.
 export const MIN_TAP_SIZE = 44;
 
-export const FLOATING_BUTTON_SIZE = MIN_TAP_SIZE;
+export const ROUND_BUTTON_SIZE = MIN_TAP_SIZE;
 
 export function tapSlop({
   width = MIN_TAP_SIZE,
@@ -39,6 +39,9 @@ export const COUNTRY_BUTTON_MIN_WIDTH = 70;
 
 export const OVERLAY_BG = "rgba(0, 0, 0, 0.6)";
 
+// 사진과 영상을 화면 가득 띄우는 뷰어의 바탕색이다. 테마를 타지 않는다.
+export const VIEWER_BG = "black";
+
 // 사진, 영상, 어두운 오버레이 위의 글자와 아이콘 색이다. 테마를 타지 않는다.
 // 테마 색 채움 위의 흰 글씨는 이게 아니라 테마 토큰 $onFill이다.
 export const OVERLAY_INK = "white";
@@ -49,7 +52,7 @@ export const TRANSITION = "quickLessBouncy";
 // 다이얼로그가 나타나고 사라질 때 시작하는 크기다.
 export const DIALOG_ENTER_SCALE = 0.95;
 
-// 폼 화면 아래 고정 버튼이 스크롤 내용을 가리지 않게 띄우는 높이다.
+// 폼 화면 아래 고정 버튼 줄의 높이를 재기 전에 쓰는 초깃값이다.
 export const FORM_FOOTER_HEIGHT = 80;
 
 // TDS 하단 고정 버튼(BottomCTA)에서 잰 값이다. 버튼 줄 위 흐림 띠 높이, 버튼 아래 여백, 두 버튼 사이다.
@@ -154,6 +157,9 @@ export const INPUT_RADIUS = 14;
 // 고민과 일기처럼 긴 글을 쓰는 입력칸의 줄 수다. 두 화면의 입력칸 높이를 같게 둔다.
 export const CONTENT_INPUT_ROWS = 10;
 
+// 자기소개와 신고 내용처럼 짧게 쓰는 입력칸의 줄 수다.
+export const SHORT_CONTENT_INPUT_ROWS = 7;
+
 // 채팅과 댓글처럼 화면 아래에 붙는 입력줄의 여백이다.
 export const INPUT_BAR_PADDING_X = 12;
 
@@ -210,8 +216,12 @@ export const CARD_RADIUS = 16;
 
 export const CARD_PADDING = 20;
 
-// 사진 칸 모서리 비율이다. TDS ListRow의 Square 이미지(52에 모서리 12)에서 가져왔다.
+// 프로필 사진과 목록 썸네일처럼 크기가 제각각인 정사각형 이미지의 모서리 비율이다.
+// TDS ListRow의 Square 이미지(52에 모서리 12)에서 가져왔다.
 export const SQUARE_IMAGE_RADIUS_RATIO = 12 / 52;
+
+// 사진과 동영상을 격자나 줄로 늘어놓는 칸의 모서리다.
+export const PHOTO_TILE_RADIUS = 12;
 
 // TDS Bubble의 모서리다. 사진과 동영상 말풍선도 같게 둔다.
 export const CHAT_BUBBLE_RADIUS = 16;

@@ -21,7 +21,7 @@ import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type MyProfileResponse } from "@/lib/api";
-import { FIELD_TEXT_GAP } from "@/lib/design";
+import { FIELD_TEXT_GAP, SHORT_CONTENT_INPUT_ROWS } from "@/lib/design";
 import { profileErrorMessage } from "@/lib/message";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { uploadProfilePhoto } from "@/lib/photo";
@@ -55,7 +55,7 @@ function BioField({
     <CountedInput
       valueRef={valueRef}
       multiline
-      rows={7}
+      rows={SHORT_CONTENT_INPUT_ROWS}
       textAlignVertical="top"
       defaultValue={initialValue}
       placeholder={t("auth.setup.bioPlaceholder")}

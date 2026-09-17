@@ -36,6 +36,7 @@ import {
   PILL_RADIUS,
   PRESS_OPACITY,
   SCREEN_PADDING,
+  VIEWER_BG,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
@@ -47,6 +48,7 @@ const PLAY_ICON_SIZE = 28;
 const SKIP_BUTTON_SIZE = 48;
 const SKIP_ICON_SIZE = 22;
 
+const TRACK_BG = "rgba(255, 255, 255, 0.35)";
 const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 16;
 const TRACK_HIT_SLOP = 12;
@@ -130,7 +132,7 @@ function SeekBar({
             onSeek(Math.min(duration, Math.max(0, position + step)));
           }}
         >
-          <YStack height={TRACK_HEIGHT} bg="rgba(255, 255, 255, 0.35)">
+          <YStack height={TRACK_HEIGHT} bg={TRACK_BG}>
             <YStack
               height={TRACK_HEIGHT}
               width={width * ratio}
@@ -512,7 +514,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: "black",
+    backgroundColor: VIEWER_BG,
   },
 });
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { XStack } from "tamagui";
 
-import { FLOATING_BUTTON_SIZE, PILL_RADIUS } from "@/lib/design";
+import { PILL_RADIUS, ROUND_BUTTON_SIZE } from "@/lib/design";
 
 const TONES = {
   grey: { bg: "$grey100", pressBg: "$grey200" },
@@ -24,8 +24,8 @@ export function CircleButton({
 
   return (
     <XStack
-      width={FLOATING_BUTTON_SIZE}
-      height={FLOATING_BUTTON_SIZE}
+      width={ROUND_BUTTON_SIZE}
+      height={ROUND_BUTTON_SIZE}
       rounded={PILL_RADIUS}
       bg={bg}
       items="center"

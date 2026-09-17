@@ -8,6 +8,8 @@ const SIZE = BADGE_SIZES.small.height;
 
 const TAP_SLOP = tapSlop({ width: SIZE, height: SIZE });
 
+export const PHOTO_OVERLAY_ICON_SIZE = 14;
+
 export function PhotoOverlayButton({
   label,
   bg,
