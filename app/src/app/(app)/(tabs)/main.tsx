@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Tab } from "@/components/ui/Tab";
 import { UserRow } from "@/components/UserRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
@@ -162,13 +162,7 @@ export default function MainScreen() {
     <YStack flex={1}>
       <Tabs.Screen options={screenOptions} />
 
-      <YStack px="$4" pt="$4" pb="$3">
-        <SegmentedControl
-          items={SORT_ITEMS}
-          value={sort}
-          onChange={changeSort}
-        />
-      </YStack>
+      <Tab items={SORT_ITEMS} value={sort} onChange={changeSort} />
 
       {members ? (
         <FlatList

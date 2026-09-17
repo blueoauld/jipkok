@@ -25,7 +25,7 @@ import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Tab } from "@/components/ui/Tab";
 import { WorryCard } from "@/components/worry/WorryCard";
 import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
 import { useAlert } from "@/hooks/useAlert";
@@ -329,16 +329,10 @@ export default function FeedScreen() {
     <YStack flex={1}>
       <Tabs.Screen options={screenOptions} />
 
-      <YStack px="$4" pt="$4" pb="$3">
-        <SegmentedControl
-          items={BOARD_ITEMS}
-          value={board}
-          onChange={changeBoard}
-        />
-      </YStack>
+      <Tab items={BOARD_ITEMS} value={board} onChange={changeBoard} />
 
       {board === "WORRY" && (
-        <YStack pb="$3">
+        <YStack px="$4" pt="$3" pb="$3">
           <WorryCategoryFilter
             value={worryCategory}
             onChange={changeWorryCategory}

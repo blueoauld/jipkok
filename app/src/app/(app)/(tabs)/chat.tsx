@@ -8,7 +8,7 @@ import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Tab } from "@/components/ui/Tab";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
@@ -81,18 +81,16 @@ export default function ChatScreen() {
 
   return (
     <YStack flex={1}>
-      <YStack px="$4" pt="$4" pb="$3">
-        <SegmentedControl
-          items={FILTER_ITEMS}
-          value={filter}
-          onChange={(next) => {
-            setFilter(next);
-            clearSelected();
-            listRef.current?.scrollToOffset({ offset: 0, animated: false });
-            scrollTop.reset();
-          }}
-        />
-      </YStack>
+      <Tab
+        items={FILTER_ITEMS}
+        value={filter}
+        onChange={(next) => {
+          setFilter(next);
+          clearSelected();
+          listRef.current?.scrollToOffset({ offset: 0, animated: false });
+          scrollTop.reset();
+        }}
+      />
 
       {rooms ? (
         <FlatList

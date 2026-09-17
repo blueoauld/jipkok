@@ -1,14 +1,17 @@
 import { XStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
-import { Tab, type TabItem } from "@/components/ui/Tab";
+import {
+  SegmentedControl,
+  type SegmentedItem,
+} from "@/components/ui/SegmentedControl";
 import type { WorryCategory } from "@/lib/api";
 import i18n from "@/lib/i18n";
 import { WORRY_CATEGORIES, worryCategoryLabel } from "@/lib/worry";
 
 const ALL = "ALL";
 
-const FILTER_ITEMS: TabItem<WorryCategory | typeof ALL>[] = [
+const FILTER_ITEMS: SegmentedItem<WorryCategory | typeof ALL>[] = [
   { value: ALL, label: i18n.t("component.all") },
   ...WORRY_CATEGORIES.map((category) => ({
     value: category,
@@ -25,7 +28,8 @@ export function WorryCategoryFilter({
   onChange: (category: WorryCategory | null) => void;
 }) {
   return (
-    <Tab
+    <SegmentedControl
+      alignment="fluid"
       items={FILTER_ITEMS}
       value={value ?? ALL}
       onChange={(next) => onChange(next === ALL ? null : next)}
