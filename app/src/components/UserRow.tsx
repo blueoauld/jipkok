@@ -15,7 +15,11 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { LIST_ROW_LEFT_GAP, LIST_ROW_PADDING_X } from "@/lib/design";
+import {
+  LIST_ROW_LEFT_GAP,
+  LIST_ROW_PADDING_X,
+  LIST_ROW_SEPARATOR_HEIGHT,
+} from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -24,6 +28,14 @@ const FAVORITE_ICON_SIZE = 14;
 
 // 글자 세 줄의 높이다. 이름은 $4 줄높이 26, 아래 두 줄은 $2 줄높이 23이다.
 const TEXT_HEIGHT = 26 + 23 * 2;
+
+// 사진이 글자 세 줄보다 낮아 행 안에서 위아래로 뜨는 거리다.
+const AVATAR_FLOAT = (TEXT_HEIGHT - USER_AVATAR_SIZE) / 2;
+
+// 사진 사이 세로 간격이 사진 왼쪽 여백과 같아지는 행 위아래 여백이다. 사진 사이에는 뜬 거리와 행 위아래
+// 여백이 두 번씩, 선이 한 번 들어간다.
+const ROW_PADDING_Y =
+  (LIST_ROW_PADDING_X.small - LIST_ROW_SEPARATOR_HEIGHT) / 2 - AVATAR_FLOAT;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 
@@ -36,10 +48,11 @@ export function UserRowSeparator() {
   );
 }
 
-// 사진이 글자 세 줄보다 낮아 행 안에서 위아래로 뜨므로, 행 사이 흰 공간에는 뜬 만큼이 두 번 들어간다.
-// 목록 맨 위에도 뜬 만큼을 더해 첫 사진 위 공간을 이와 맞춘다.
+// 목록 맨 위에도 뜬 거리를 더해 첫 사진 위 공간을 사진 사이 간격과 맞춘다.
 export function UserRowTopSpacer() {
-  return <ListRowTopSpacer extra={(TEXT_HEIGHT - USER_AVATAR_SIZE) / 2} />;
+  return (
+    <ListRowTopSpacer verticalPadding={ROW_PADDING_Y} extra={AVATAR_FLOAT} />
+  );
 }
 
 function Row({
@@ -70,6 +83,7 @@ function Row({
   return (
     <ListRow
       horizontalPadding="small"
+      verticalPadding={ROW_PADDING_Y}
       left={
         <UserAvatar
           id={String(memberId)}
