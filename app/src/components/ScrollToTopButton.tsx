@@ -5,7 +5,6 @@ import { useTheme, XStack } from "tamagui";
 import { FloatingButton } from "@/components/ui/FloatingButton";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { SCREEN_PADDING } from "@/lib/design";
-import { GLASS_ENABLED } from "@/lib/glass";
 
 const ICON_SIZE = 22;
 
@@ -31,11 +30,7 @@ export function ScrollToTopButton({
       b={tabBarOverlay + SCREEN_PADDING}
     >
       <FloatingButton label={t("a11y.scrollToTop")} onPress={onPress}>
-        <CaretUpIcon
-          size={ICON_SIZE}
-          weight="bold"
-          color={GLASS_ENABLED ? theme.grey900.val : theme.onFill.val}
-        />
+        <CaretUpIcon size={ICON_SIZE} weight="bold" color={theme.onFill.val} />
       </FloatingButton>
     </XStack>
   );

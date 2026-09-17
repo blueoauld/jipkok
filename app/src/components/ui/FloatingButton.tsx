@@ -5,8 +5,8 @@ import { Glass } from "@/components/ui/Glass";
 import { FLOATING_BUTTON_SIZE, PILL_RADIUS, PRESS_OPACITY } from "@/lib/design";
 import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 
-// 내용 위에 떠 있는 원형 버튼이다. iOS 26에서는 유리, 그 밖에서는 그림자 없는 파란 원이라 아이콘은
-// 흰색으로 넘긴다. 사진 위에 놓이면 overPhoto로 밝은 유리에 고정한다.
+// 내용 위에 떠 있는 원형 버튼이다. 그림자 없는 파란 원이라 아이콘은 흰색으로 넘긴다. iOS 26에서 사진 위에
+// 놓이면(overPhoto) 사진이 비치는 유리로 띄우고 아이콘은 usePhotoGlass의 잉크로 넘긴다.
 export function FloatingButton({
   label,
   overPhoto = false,
@@ -20,7 +20,7 @@ export function FloatingButton({
 }) {
   const photoGlass = usePhotoGlass();
 
-  if (!GLASS_ENABLED) {
+  if (!GLASS_ENABLED || !overPhoto) {
     return (
       <XStack
         width={FLOATING_BUTTON_SIZE}
@@ -54,7 +54,7 @@ export function FloatingButton({
           alignItems: "center",
           justifyContent: "center",
         }}
-        tintColor={overPhoto ? photoGlass.tint : undefined}
+        tintColor={photoGlass.tint}
         isInteractive
       >
         {children}

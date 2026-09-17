@@ -7,7 +7,6 @@ import { Text as NativeText } from "react-native";
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { Card } from "@/components/ui/Card";
-import { Glass } from "@/components/ui/Glass";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
 import {
@@ -19,7 +18,6 @@ import {
   PILL_RADIUS,
   PRESS_OPACITY,
 } from "@/lib/design";
-import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 import { pushOnce } from "@/lib/router";
 
 export const CARD_RATIO = 2;
@@ -45,36 +43,13 @@ const SLOT_STYLE = {
   ...TEXT_SHADOW,
 } as const;
 
-// 사진 위 버튼은 iOS 26에서 유리로 띄운다. 그 밖에서는 반투명한 검정 원이다.
-// chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가는 알약이고, 아니면 아이콘 하나짜리 원이다.
+// 사진 위 버튼은 반투명한 검정 원이다. chip은 닉네임처럼 글이 들어가 폭이 내용을 따라가는 알약이고,
+// 아니면 아이콘 하나짜리 원이다.
 function CardButton({
   chip = false,
   children,
   ...props
 }: XStackProps & { chip?: boolean }) {
-  const photoGlass = usePhotoGlass();
-
-  if (GLASS_ENABLED) {
-    return (
-      <XStack pressStyle={{ opacity: PRESS_OPACITY }} {...props}>
-        <Glass
-          style={{
-            height: CARD_ICON_BUTTON_SIZE,
-            width: chip ? undefined : CARD_ICON_BUTTON_SIZE,
-            borderRadius: CARD_ICON_BUTTON_SIZE / 2,
-            paddingHorizontal: chip ? CHIP_PADDING_X : 0,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          tintColor={photoGlass.tint}
-          isInteractive
-        >
-          {children}
-        </Glass>
-      </XStack>
-    );
-  }
-
   return (
     <XStack
       minH={CARD_ICON_BUTTON_SIZE}
@@ -107,8 +82,6 @@ function Item({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const photoGlass = usePhotoGlass();
-  const ink = GLASS_ENABLED ? photoGlass.ink : OVERLAY_INK;
 
   return (
     <Card
@@ -136,7 +109,7 @@ function Item({
           <Text
             shrink={1}
             numberOfLines={1}
-            color={ink}
+            color={OVERLAY_INK}
             fontSize="$4"
             fontWeight="600"
           >
@@ -152,7 +125,11 @@ function Item({
             accessibilityLabel={t("a11y.report")}
             onPress={() => onReport(post.postId)}
           >
-            <SirenIcon size={CARD_ICON_SIZE} weight="bold" color={ink} />
+            <SirenIcon
+              size={CARD_ICON_SIZE}
+              weight="bold"
+              color={OVERLAY_INK}
+            />
           </CardButton>
         </YStack>
       )}
@@ -167,7 +144,7 @@ function Item({
           <HeartIcon
             size={CARD_ICON_SIZE}
             weight={post.likedByMe ? "fill" : "bold"}
-            color={post.likedByMe ? theme.red500.val : ink}
+            color={post.likedByMe ? theme.red500.val : OVERLAY_INK}
           />
         </CardButton>
       </YStack>
