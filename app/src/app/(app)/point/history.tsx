@@ -7,7 +7,7 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { ListRow, ListRowSeparator } from "@/components/ui/ListRow";
+import { ListRow } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
@@ -109,7 +109,6 @@ export default function PointHistoryScreen() {
             data={histories}
             keyExtractor={(history) => String(history.historyId)}
             renderItem={({ item }) => <HistoryRow history={item} />}
-            ItemSeparatorComponent={ListRowSeparator}
             showsVerticalScrollIndicator={true}
             ListEmptyComponent={
               <ListEmpty>{t("point.history.emptyMessage")}</ListEmpty>

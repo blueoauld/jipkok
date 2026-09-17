@@ -230,8 +230,6 @@ export const LIST_ROW_VERTICAL_PADDING = {
   xlarge: 24,
 } as const;
 
-export const LIST_ROW_SEPARATOR_HEIGHT = 1;
-
 // TDS 목록 행을 누르면 모서리 12인 옅은 회색 면이 깔리며 이만큼 줄어든다.
 export const ROW_PRESS_RADIUS = 12;
 

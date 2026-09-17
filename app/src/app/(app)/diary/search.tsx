@@ -5,7 +5,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { DiaryRow } from "@/components/diary/DiaryRow";
 import { SearchList } from "@/components/SearchList";
-import { ListRowSeparator } from "@/components/ui/ListRow";
 import { useDiarySearch } from "@/hooks/useDiarySearch";
 import { pushOnce } from "@/lib/router";
 import {
@@ -42,7 +41,6 @@ export default function DiarySearchScreen() {
         onSubmit={setSubmitted}
         keyExtractor={(diary) => diary.entryDate}
         renderItem={({ item }) => <DiaryRow diary={item} onPress={openEntry} />}
-        ItemSeparatorComponent={ListRowSeparator}
         layout="rows"
       />
     </SafeAreaView>

@@ -11,11 +11,7 @@ import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
 import { Button } from "@/components/ui/Button";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import {
-  ListRow,
-  ListRowSeparator,
-  ListRowTopSpacer,
-} from "@/components/ui/ListRow";
+import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
 import {
@@ -117,7 +113,6 @@ export default function ContactBlockScreen() {
             <ContactBlockRow block={item} onRemove={remove.mutate} />
           )}
           ListHeaderComponent={Notice}
-          ItemSeparatorComponent={ListRowSeparator}
           ListEmptyComponent={<ListEmpty>{t("contactBlock.empty")}</ListEmpty>}
         />
       ) : (

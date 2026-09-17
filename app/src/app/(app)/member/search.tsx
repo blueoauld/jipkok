@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchList } from "@/components/SearchList";
-import { UserRow, UserRowSeparator } from "@/components/UserRow";
+import { UserRow } from "@/components/UserRow";
 import { useMemberSearch } from "@/hooks/useMemberSearch";
 import { MIN_KEYWORD_LENGTH } from "@/lib/validation";
 
@@ -30,7 +30,6 @@ export default function MemberSearchScreen() {
         items={search.members}
         keyExtractor={(member) => String(member.memberId)}
         renderItem={({ item }) => <UserRow member={item} />}
-        ItemSeparatorComponent={UserRowSeparator}
         layout="rows"
       />
     </SafeAreaView>

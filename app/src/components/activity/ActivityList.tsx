@@ -2,11 +2,7 @@ import { FlatList } from "react-native";
 
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
-import {
-  UserRow,
-  UserRowSeparator,
-  UserRowTopSpacer,
-} from "@/components/UserRow";
+import { UserRow, UserRowTopSpacer } from "@/components/UserRow";
 import type { MemberListQuery } from "@/hooks/useMemberList";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { MemberSummaryResponse } from "@/lib/api";
@@ -43,7 +39,6 @@ export function ActivityList({
         <UserRow member={item} at={timeOf?.(item)} onDelete={onDelete} />
       )}
       ListHeaderComponent={UserRowTopSpacer}
-      ItemSeparatorComponent={UserRowSeparator}
       showsVerticalScrollIndicator={true}
       ListEmptyComponent={<ListEmpty>{memberEmptyMessage()}</ListEmpty>}
     />

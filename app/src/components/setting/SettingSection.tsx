@@ -12,14 +12,12 @@ import {
 function SettingRow({
   item,
   pending,
-  divider,
   hasNew,
   status,
   onPress,
 }: {
   item: SettingItem;
   pending: boolean;
-  divider: boolean;
   hasNew: boolean;
   status?: string;
   onPress?: () => void;
@@ -41,7 +39,6 @@ function SettingRow({
         </>
       }
       withArrow={item.href !== undefined || item.url !== undefined}
-      divider={divider}
       onPress={onPress}
     >
       <Text numberOfLines={1} fontSize="$4" fontWeight="500" color="$grey700">
@@ -68,12 +65,11 @@ export function SettingSection({
 
   return (
     <YStack>
-      {items.map((item, index) => (
+      {items.map((item) => (
         <SettingRow
           key={item.labelKey}
           item={item}
           pending={item.action === pendingAction}
-          divider={index < items.length - 1}
           hasNew={item.href === PROFILE_VIEW_HREF && profileViewCount > 0}
           status={
             item.action === "appLock"

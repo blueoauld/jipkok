@@ -18,11 +18,7 @@ import { EmptyMessage } from "@/components/ui/EmptyMessage";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { Tab } from "@/components/ui/Tab";
-import {
-  UserRow,
-  UserRowSeparator,
-  UserRowTopSpacer,
-} from "@/components/UserRow";
+import { UserRow, UserRowTopSpacer } from "@/components/UserRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
@@ -176,7 +172,6 @@ export default function MainScreen() {
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item }) => <UserRow member={item} />}
           ListHeaderComponent={UserRowTopSpacer}
-          ItemSeparatorComponent={UserRowSeparator}
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}

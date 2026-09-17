@@ -12,7 +12,7 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MenuSheet } from "@/components/MenuSheet";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { ListRowSeparator, ListRowTopSpacer } from "@/components/ui/ListRow";
+import { ListRowTopSpacer } from "@/components/ui/ListRow";
 import { type DayMarking, RetroCalendar } from "@/components/ui/RetroCalendar";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
@@ -109,7 +109,6 @@ export default function DiaryScreen() {
         data={rows}
         keyExtractor={(diary) => diary.entryDate}
         renderItem={({ item }) => <DiaryRow diary={item} onPress={openEntry} />}
-        ItemSeparatorComponent={ListRowSeparator}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={

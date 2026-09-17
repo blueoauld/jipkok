@@ -6,20 +6,12 @@ import { Text, XStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
 import { Button } from "@/components/ui/Button";
-import {
-  ListRow,
-  ListRowSeparator,
-  ListRowTopSpacer,
-} from "@/components/ui/ListRow";
+import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import {
-  LIST_ROW_LEFT_GAP,
-  LIST_ROW_PADDING_X,
-  LIST_ROW_SEPARATOR_HEIGHT,
-} from "@/lib/design";
+import { LIST_ROW_PADDING_X } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -33,20 +25,10 @@ const TEXT_HEIGHT = 26 + 23 * 2;
 const AVATAR_FLOAT = (TEXT_HEIGHT - USER_AVATAR_SIZE) / 2;
 
 // 사진 사이 세로 간격이 사진 왼쪽 여백과 같아지는 행 위아래 여백이다. 사진 사이에는 뜬 거리와 행 위아래
-// 여백이 두 번씩, 선이 한 번 들어간다.
-const ROW_PADDING_Y =
-  (LIST_ROW_PADDING_X.small - LIST_ROW_SEPARATOR_HEIGHT) / 2 - AVATAR_FLOAT;
+// 여백이 두 번씩 들어간다.
+const ROW_PADDING_Y = LIST_ROW_PADDING_X.small / 2 - AVATAR_FLOAT;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
-
-// 행 사이 선은 사진을 건너 글자 시작에 맞춰 들여쓴다.
-export function UserRowSeparator() {
-  return (
-    <ListRowSeparator
-      inset={LIST_ROW_PADDING_X.small + USER_AVATAR_SIZE + LIST_ROW_LEFT_GAP}
-    />
-  );
-}
 
 // 목록 맨 위에도 뜬 거리를 더해 첫 사진 위 공간을 사진 사이 간격과 맞춘다.
 export function UserRowTopSpacer() {
