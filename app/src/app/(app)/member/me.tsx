@@ -78,11 +78,9 @@ function Profile({ profile }: { profile: MyProfileResponse }) {
         />
       </ScrollView>
 
-      <PhotoGridToggle
-        open={photoGridOpen}
-        bottom={SCREEN_PADDING}
-        onPress={togglePhotoGrid}
-      />
+      <YStack position="absolute" r={SCREEN_PADDING} b={SCREEN_PADDING}>
+        <PhotoGridToggle open={photoGridOpen} onPress={togglePhotoGrid} />
+      </YStack>
 
       <PhotoViewer
         photos={photoUrls}

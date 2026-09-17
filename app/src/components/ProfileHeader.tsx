@@ -10,7 +10,8 @@ import { formatDistance } from "@/lib/member";
 const PADDING_Y = 24;
 const SUBTITLE_GAP = 4;
 
-// 프로필 사진 아래 이름 영역이다. 시간과 거리는 목록 행처럼 각 줄 오른쪽 끝에 둔다.
+// 프로필 사진 아래 이름 영역이다. 메모는 회원 목록처럼 닉네임 옆에 한 줄로 두고, 시간과 거리는 목록 행처럼
+// 각 줄 오른쪽 끝에 둔다.
 export function ProfileHeader({
   nickname,
   gender,
@@ -18,6 +19,7 @@ export function ProfileHeader({
   receivedLikeCount,
   locatedAt,
   distance,
+  memo,
   onLongPressNickname,
 }: {
   nickname: string;
@@ -26,22 +28,36 @@ export function ProfileHeader({
   receivedLikeCount: number;
   locatedAt?: string | null;
   distance?: number | null;
+  memo?: string | null;
   onLongPressNickname?: () => void;
 }) {
   return (
     <YStack px={SCREEN_PADDING} py={PADDING_Y} gap={SUBTITLE_GAP}>
       <XStack items="center" justify="space-between" gap="$2">
-        <Text
-          flex={1}
-          numberOfLines={1}
-          fontSize="$6"
-          lineHeight="$6"
-          fontWeight="700"
-          color="$grey800"
-          onLongPress={onLongPressNickname}
-        >
-          {nickname}
-        </Text>
+        <XStack flex={1} items="center" gap="$1.5">
+          <Text
+            shrink={0}
+            fontSize="$6"
+            lineHeight="$6"
+            fontWeight="700"
+            color="$grey800"
+            onLongPress={onLongPressNickname}
+          >
+            {nickname}
+          </Text>
+
+          {memo && (
+            <Text
+              shrink={1}
+              numberOfLines={1}
+              fontSize="$2"
+              lineHeight="$2"
+              color="$grey600"
+            >
+              {memo}
+            </Text>
+          )}
+        </XStack>
 
         {locatedAt && (
           <RelativeTime at={locatedAt} fontSize="$1" color="$grey500" />

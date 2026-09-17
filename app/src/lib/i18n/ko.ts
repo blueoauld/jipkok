@@ -489,7 +489,6 @@ export const ko = {
     noteTitle: "쪽지",
     noteSubmit: "전송",
     memoTitle: "메모",
-    memoPlaceholder: "나만 보는 메모를 남길 수 있습니다.",
     memoSaved: "메모를 저장했습니다.",
   },
   profile: {

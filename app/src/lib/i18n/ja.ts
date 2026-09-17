@@ -491,7 +491,6 @@ export const ja: typeof ko = {
     noteTitle: "レター",
     noteSubmit: "送信",
     memoTitle: "メモ",
-    memoPlaceholder: "自分だけが見られるメモを残せます。",
     memoSaved: "メモを保存しました。",
   },
   profile: {

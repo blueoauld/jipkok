@@ -1,9 +1,10 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { DotsThreeIcon } from "phosphor-react-native/src/icons/DotsThree";
+import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { Text, YStack } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MemberActionBar } from "@/components/MemberActionBar";
@@ -13,16 +14,14 @@ import { ProfileHeader } from "@/components/ProfileHeader";
 import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
 import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { Border } from "@/components/ui/Border";
-import { ListHeader } from "@/components/ui/ListHeader";
-import { ListRow } from "@/components/ui/ListRow";
+import { FloatingButton } from "@/components/ui/FloatingButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { copyText } from "@/lib/clipboard";
-import { LIST_ROW_VERTICAL_PADDING, SCREEN_PADDING } from "@/lib/design";
+import { SCREEN_PADDING } from "@/lib/design";
 import {
   bioCopiedMessage,
   commentCopiedMessage,
@@ -37,11 +36,12 @@ import { pushOnce } from "@/lib/router";
 const NOTE_MAX_LENGTH = 100;
 const MEMO_MAX_LENGTH = 100;
 
-// 메모 행 안쪽 여백 8과 합쳐, 글 아래가 다른 묶음의 글 아래 여백(24)과 비슷해지게 한다.
-const MEMO_PADDING_BOTTOM = 16;
+const MEMO_ICON_SIZE = 22;
+const FLOATING_BUTTON_GAP = 12;
 
 export default function MemberProfileScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const memberId = Number(id);
   const barHeight = useBottomBarHeight();
@@ -137,6 +137,7 @@ export default function MemberProfileScreen() {
               receivedLikeCount={member.receivedLikeCount}
               locatedAt={member.locatedAt}
               distance={member.distance}
+              memo={member.memo}
               onLongPressNickname={() => copyMemberId(member.memberId)}
             />
 
@@ -153,25 +154,6 @@ export default function MemberProfileScreen() {
               placeholder={profileBioEmptyMessage()}
               copiedMessage={bioCopiedMessage()}
             />
-
-            <YStack pb={MEMO_PADDING_BOTTOM}>
-              <Border variant="height16" />
-              <ListHeader pb={0}>{t("memberDetail.memoTitle")}</ListHeader>
-              <ListRow
-                horizontalPadding="small"
-                verticalPadding={LIST_ROW_VERTICAL_PADDING.small}
-                withArrow
-                onPress={() => setMemoOpen(true)}
-              >
-                <Text
-                  fontSize="$4"
-                  lineHeight="$4"
-                  color={member.memo ? "$grey700" : "$grey500"}
-                >
-                  {member.memo || t("memberDetail.memoPlaceholder")}
-                </Text>
-              </ListRow>
-            </YStack>
           </ScrollView>
 
           <MemberActionBar
@@ -180,11 +162,21 @@ export default function MemberProfileScreen() {
             onPress={handleAction}
           />
 
-          <PhotoGridToggle
-            open={photoGridOpen}
-            bottom={barHeight + SCREEN_PADDING}
-            onPress={togglePhotoGrid}
-          />
+          <YStack
+            position="absolute"
+            r={SCREEN_PADDING}
+            b={barHeight + SCREEN_PADDING}
+            gap={FLOATING_BUTTON_GAP}
+          >
+            <PhotoGridToggle open={photoGridOpen} onPress={togglePhotoGrid} />
+
+            <FloatingButton
+              label={t("memberDetail.memoTitle")}
+              onPress={() => setMemoOpen(true)}
+            >
+              <NotePencilIcon size={MEMO_ICON_SIZE} color={theme.onFill.val} />
+            </FloatingButton>
+          </YStack>
         </>
       ) : (
         <ScreenState

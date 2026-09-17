@@ -470,7 +470,6 @@ export const zh: typeof ko = {
     noteTitle: "私訊",
     noteSubmit: "傳送",
     memoTitle: "備註",
-    memoPlaceholder: "可以留下只有自己看得到的備註。",
     memoSaved: "已儲存備註。",
   },
   profile: {

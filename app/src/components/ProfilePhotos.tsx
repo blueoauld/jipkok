@@ -6,7 +6,6 @@ import { PhotoPager } from "@/components/photo/PhotoPager";
 import { PhotoGrid } from "@/components/PhotoGrid";
 import { FloatingButton } from "@/components/ui/FloatingButton";
 import { SCREEN_PADDING } from "@/lib/design";
-import { GLASS_ENABLED, usePhotoGlass } from "@/lib/glass";
 
 const GRID_ICON_SIZE = 22;
 
@@ -37,26 +36,21 @@ export function ProfilePhotos({
 
 export function PhotoGridToggle({
   open,
-  bottom,
   onPress,
 }: {
   open: boolean;
-  bottom: number;
   onPress: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const photoGlass = usePhotoGlass();
 
   return (
-    <YStack position="absolute" r={SCREEN_PADDING} b={bottom}>
-      <FloatingButton label={t("a11y.photoGrid")} overPhoto onPress={onPress}>
-        <SquaresFourIcon
-          size={GRID_ICON_SIZE}
-          weight={open ? "fill" : "regular"}
-          color={GLASS_ENABLED ? photoGlass.ink : theme.onFill.val}
-        />
-      </FloatingButton>
-    </YStack>
+    <FloatingButton label={t("a11y.photoGrid")} onPress={onPress}>
+      <SquaresFourIcon
+        size={GRID_ICON_SIZE}
+        weight={open ? "fill" : "regular"}
+        color={theme.onFill.val}
+      />
+    </FloatingButton>
   );
 }

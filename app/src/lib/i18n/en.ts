@@ -489,7 +489,6 @@ export const en: typeof ko = {
     noteTitle: "Note",
     noteSubmit: "Send",
     memoTitle: "Memo",
-    memoPlaceholder: "Leave a memo only you can see.",
     memoSaved: "Memo saved.",
   },
   profile: {
