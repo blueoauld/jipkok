@@ -140,6 +140,9 @@ export const INPUT_HEIGHT = 56;
 
 export const INPUT_RADIUS = 14;
 
+// 고민과 일기처럼 긴 글을 쓰는 입력칸의 줄 수다. 두 화면의 입력칸 높이를 같게 둔다.
+export const CONTENT_INPUT_ROWS = 10;
+
 // 채팅과 댓글처럼 화면 아래에 붙는 입력줄의 여백이다.
 export const INPUT_BAR_PADDING_X = 12;
 

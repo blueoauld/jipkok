@@ -27,6 +27,7 @@ import { useDiaryAttachments } from "@/hooks/useDiaryAttachments";
 import { useDiaryAttachmentViewer } from "@/hooks/useDiaryAttachmentViewer";
 import { api, type DiaryMood, type DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam, toMonthParam } from "@/lib/date";
+import { CONTENT_INPUT_ROWS } from "@/lib/design";
 import { moodEmoji } from "@/lib/diary";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 import { showToast } from "@/lib/toast/store";
@@ -35,8 +36,6 @@ import {
   DIARY_ATTACHMENTS_MAX,
   DIARY_CONTENT_MAX_LENGTH,
 } from "@/lib/validation";
-
-const ROWS = 14;
 
 function DiaryEditor({
   entryDate,
@@ -156,7 +155,7 @@ function DiaryEditor({
 
         <Input
           multiline
-          rows={ROWS}
+          rows={CONTENT_INPUT_ROWS}
           textAlignVertical="top"
           placeholder={t("diary.placeholder")}
           maxLength={DIARY_CONTENT_MAX_LENGTH}

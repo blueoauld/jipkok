@@ -15,7 +15,7 @@ import { WorryCategoryPicker } from "@/components/worry/WorryCategoryChips";
 import { useAlert } from "@/hooks/useAlert";
 import { WORRY_LIST_KEY } from "@/hooks/useWorryPosts";
 import { api, type WorryCategory } from "@/lib/api";
-import { FIELD_TEXT_GAP } from "@/lib/design";
+import { CONTENT_INPUT_ROWS, FIELD_TEXT_GAP } from "@/lib/design";
 import { showToast } from "@/lib/toast/store";
 import { WORRY_CONTENT_MAX_LENGTH } from "@/lib/validation";
 
@@ -95,7 +95,7 @@ export default function WorryComposeScreen() {
         <CountedInput
           valueRef={contentRef}
           multiline
-          rows={10}
+          rows={CONTENT_INPUT_ROWS}
           textAlignVertical="top"
           placeholder={t("common.contentPlaceholder")}
           maxLength={WORRY_CONTENT_MAX_LENGTH}
