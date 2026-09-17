@@ -7,7 +7,7 @@ import {
   IMAGE_TRANSITION,
   OVERLAY_BG,
   OVERLAY_INK,
-  RETRO_BORDER_WIDTH,
+  SQUARE_IMAGE_RADIUS_RATIO,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 
@@ -26,7 +26,12 @@ export function ReplyPreviewThumbnail({
   }
 
   return (
-    <YStack width={SIZE} height={SIZE}>
+    <YStack
+      width={SIZE}
+      height={SIZE}
+      rounded={SIZE * SQUARE_IMAGE_RADIUS_RATIO}
+      overflow="hidden"
+    >
       <Image
         source={{
           uri: reply.previewUrl,
@@ -37,9 +42,7 @@ export function ReplyPreviewThumbnail({
         style={{
           width: SIZE,
           height: SIZE,
-          borderWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.gray12.val,
-          backgroundColor: theme.gray12.val,
+          backgroundColor: theme.grey100.val,
         }}
       />
 

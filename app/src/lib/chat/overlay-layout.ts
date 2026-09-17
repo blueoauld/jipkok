@@ -1,6 +1,4 @@
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
-
-const GAP = 6 + RETRO_SHADOW_OFFSET;
+const GAP = 8;
 const EDGE_MARGIN = 8;
 
 export type MessageFrame = {

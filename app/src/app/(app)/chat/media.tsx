@@ -14,6 +14,7 @@ import { useChatMediaPlayback } from "@/hooks/useChatMediaPlayback";
 import { useChatRoomMedia } from "@/hooks/useChatRoomMedia";
 import { usePagedList } from "@/hooks/usePagedList";
 import type { ChatMessageResponse } from "@/lib/api";
+import { SCREEN_PADDING } from "@/lib/design";
 
 const COLUMNS = 3;
 
@@ -32,7 +33,7 @@ export default function ChatMediaScreen() {
   const { width } = useWindowDimensions();
   const { padding, gap, tileSize } = useMemo(() => {
     const space = getTokens().space;
-    const padding = space.$4.val;
+    const padding = SCREEN_PADDING;
     const gap = space.$2.val;
 
     return {

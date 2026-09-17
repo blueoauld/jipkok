@@ -1,19 +1,22 @@
 import { Text, XStack } from "tamagui";
 
 import { formatFullDate } from "@/lib/date";
-import { RETRO_BORDER_WIDTH } from "@/lib/design";
+import { PILL_RADIUS } from "@/lib/design";
+
+const PADDING_Y = 16;
+const PILL_PADDING_X = 12;
+const PILL_PADDING_Y = 4;
 
 export function ChatDay({ date }: { date: Date }) {
   return (
-    <XStack justify="center" py="$3">
+    <XStack justify="center" py={PADDING_Y}>
       <XStack
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        bg="$color1"
-        px="$3"
-        py="$1"
+        rounded={PILL_RADIUS}
+        bg="$greyOpacity100"
+        px={PILL_PADDING_X}
+        py={PILL_PADDING_Y}
       >
-        <Text fontSize="$2" fontWeight="600" color="$color12">
+        <Text fontSize="$1" lineHeight="$1" color="$grey600">
           {formatFullDate(date)}
         </Text>
       </XStack>

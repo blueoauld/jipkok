@@ -33,8 +33,8 @@ import {
   MIN_TAP_SIZE,
   OVERLAY_BG,
   OVERLAY_INK,
+  PILL_RADIUS,
   PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
@@ -139,9 +139,8 @@ function SeekBar({
             l={width * ratio - THUMB_SIZE / 2}
             width={THUMB_SIZE}
             height={THUMB_SIZE}
+            rounded={PILL_RADIUS}
             bg={OVERLAY_INK}
-            borderWidth={RETRO_BORDER_WIDTH}
-            borderColor="$gray12"
           />
         </YStack>
       </GestureDetector>
@@ -168,9 +167,8 @@ function SkipButton({
       height={SKIP_BUTTON_SIZE}
       items="center"
       justify="center"
+      rounded={PILL_RADIUS}
       bg={OVERLAY_BG}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor={OVERLAY_INK}
       pressStyle={{ opacity: PRESS_OPACITY }}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -428,9 +426,8 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
                     height={PLAY_BUTTON_SIZE}
                     items="center"
                     justify="center"
+                    rounded={PILL_RADIUS}
                     bg={OVERLAY_BG}
-                    borderWidth={RETRO_BORDER_WIDTH}
-                    borderColor={OVERLAY_INK}
                     pressStyle={{ opacity: PRESS_OPACITY }}
                     accessibilityRole="button"
                     accessibilityLabel={

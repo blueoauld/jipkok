@@ -13,17 +13,19 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme, XStack, YStack } from "tamagui";
 
-import { ChatBubble } from "@/components/chat/ChatBubble";
+import { BUBBLE_TAIL_OVERHANG, ChatBubble } from "@/components/chat/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending } from "@/lib/chat";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
-import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { PILL_RADIUS, PRESS_OPACITY, SCREEN_PADDING } from "@/lib/design";
 
 const AVATAR_SIZE = 36;
+// 묶음의 마지막 말풍선 꼬리가 사진 쪽으로 나오므로 그만큼 더 띄운다.
+const AVATAR_GAP = BUBBLE_TAIL_OVERHANG + 8;
 
-const GROUP_GAP_TOP = 8;
-const MESSAGE_GAP_BOTTOM = 2;
+const GROUP_GAP_TOP = 12;
+const MESSAGE_GAP_BOTTOM = 4;
 
 // 안드로이드는 비율 너비로는 텍스트를 가정 너비로 먼저 재서 긴 글의 말풍선 아래가 빈다.
 // 픽셀로 확정해 주면 최종 너비로 한 번에 잰다.
@@ -67,13 +69,12 @@ function ReplyAction() {
       <XStack
         width={REPLY_ACTION_SIZE}
         height={REPLY_ACTION_SIZE}
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
-        bg="$color1"
+        rounded={PILL_RADIUS}
+        bg="$grey100"
         items="center"
         justify="center"
       >
-        <ArrowBendUpLeftIcon size={REPLY_ICON_SIZE} color={theme.color12.val} />
+        <ArrowBendUpLeftIcon size={REPLY_ICON_SIZE} color={theme.grey700.val} />
       </XStack>
     </YStack>
   );
@@ -131,7 +132,11 @@ function Row({
           onReply(message);
         }}
       >
-        <XStack px="$3" justify={mine ? "flex-end" : "flex-start"} gap="$2">
+        <XStack
+          px={SCREEN_PADDING}
+          justify={mine ? "flex-end" : "flex-start"}
+          gap={AVATAR_GAP}
+        >
           {!mine &&
             (grouped ? (
               <YStack width={AVATAR_SIZE} />

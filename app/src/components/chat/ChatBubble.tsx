@@ -1,17 +1,19 @@
 import { type ReactNode, useRef } from "react";
 import { View } from "react-native";
-import { Text, type TextProps, XStack, YStack } from "tamagui";
+import Svg, { Path } from "react-native-svg";
+import { Text, type TextProps, useTheme, XStack, YStack } from "tamagui";
 
 import { PhotoMessage, VideoMessage } from "@/components/chat/ChatMediaMessage";
 import { ReactionChips } from "@/components/chat/ChatReactionChips";
 import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
+import { Button } from "@/components/ui/Button";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isSingleEmoji, replySummary } from "@/lib/chat";
 import { splitLinks } from "@/lib/chat/links";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { useUploadState } from "@/lib/chat/upload-store";
 import { formatClockTime } from "@/lib/date";
-import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { CHAT_BUBBLE_RADIUS, PRESS_OPACITY } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { openWebPage } from "@/lib/support";
 import { showToast } from "@/lib/toast/store";
@@ -19,34 +21,72 @@ import { showToast } from "@/lib/toast/store";
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 
-const MIN_HEIGHT = 36;
-
-const H_PADDING = 10;
+// TDS Bubble에서 잰 값이다. 꼬리는 말풍선 아래 모서리에서 바깥으로 5만큼 나간다.
+const PADDING_X = 14;
+const PADDING_Y = 12;
 const FONT_SIZE = 16;
+const LINE_HEIGHT = 24;
 const EMOJI_FONT_SIZE = 40;
+const TAIL_WIDTH = 13;
+const TAIL_HEIGHT = 17;
+export const BUBBLE_TAIL_OVERHANG = 5;
+const TAIL_PATH =
+  "M11.992 17c1.102.007 1.404-1.512.383-1.926-2.652-1.078-4.503-3.718-4.521-6.63V0h-2v.892C5.854 5.405 3.8 9.56.386 12.206c-.559.433-.504 1.293.105 1.652C3.898 15.865 7.922 16.974 11.992 17z";
 
-const SECTION_GAP = 6;
+const SECTION_GAP = 8;
+
+// 시각과 말풍선 사이다. 꼬리가 말풍선 밖으로 나오는 만큼을 더 띄운다.
+const TIME_GAP = BUBBLE_TAIL_OVERHANG + 4;
 
 function BubbleFrame({
   mine,
+  tail,
   children,
   onLongPress,
 }: {
   mine: boolean;
+  tail: boolean;
   children: ReactNode;
   onLongPress: () => void;
 }) {
+  const theme = useTheme();
+
   return (
     <YStack
       shrink={1}
-      bg={mine ? "$blue10" : "$color1"}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      minH={MIN_HEIGHT}
+      rounded={CHAT_BUBBLE_RADIUS}
+      bg={mine ? "$blue500" : "$grey200"}
       justify="center"
       onLongPress={onLongPress}
     >
       {children}
+
+      {tail && (
+        <Svg
+          width={TAIL_WIDTH}
+          height={TAIL_HEIGHT}
+          viewBox={`0 0 ${TAIL_WIDTH} ${TAIL_HEIGHT}`}
+          style={
+            mine
+              ? {
+                  position: "absolute",
+                  bottom: 0,
+                  right: -BUBBLE_TAIL_OVERHANG,
+                }
+              : {
+                  position: "absolute",
+                  bottom: 0,
+                  left: -BUBBLE_TAIL_OVERHANG,
+                  transform: [{ scaleX: -1 }],
+                }
+          }
+        >
+          <Path
+            d={TAIL_PATH}
+            fill={mine ? theme.blue500.val : theme.grey200.val}
+          />
+        </Svg>
+      )}
     </YStack>
   );
 }
@@ -91,10 +131,14 @@ function BodyText({
   large?: boolean;
   onLongPress: () => void;
 }) {
-  const color = mine ? "$onFill" : "$color12";
+  const color = mine ? "$onFill" : "$grey800";
 
   return (
-    <Text fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE} color={color}>
+    <Text
+      fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE}
+      lineHeight={large ? undefined : LINE_HEIGHT}
+      color={color}
+    >
       {splitLinks(content).map((segment, index) =>
         segment.url ? (
           <LinkText
@@ -115,16 +159,18 @@ function BodyText({
 
 function TextMessage({
   mine,
+  tail,
   content,
   onLongPress,
 }: {
   mine: boolean;
+  tail: boolean;
   content: string;
   onLongPress: () => void;
 }) {
   return (
-    <BubbleFrame mine={mine} onLongPress={onLongPress}>
-      <YStack px={H_PADDING} py={H_PADDING}>
+    <BubbleFrame mine={mine} tail={tail} onLongPress={onLongPress}>
+      <YStack px={PADDING_X} py={PADDING_Y}>
         <BodyText
           mine={mine}
           content={content}
@@ -138,6 +184,7 @@ function TextMessage({
 
 function ReplyMessage({
   mine,
+  tail,
   replyName,
   reply,
   content,
@@ -145,6 +192,7 @@ function ReplyMessage({
   onLongPress,
 }: {
   mine: boolean;
+  tail: boolean;
   replyName: string;
   reply: ReplyMessageResponse;
   content: string;
@@ -152,8 +200,8 @@ function ReplyMessage({
   onLongPress: () => void;
 }) {
   return (
-    <BubbleFrame mine={mine} onLongPress={onLongPress}>
-      <YStack px={H_PADDING} py={10} gap={SECTION_GAP}>
+    <BubbleFrame mine={mine} tail={tail} onLongPress={onLongPress}>
+      <YStack px={PADDING_X} py={PADDING_Y} gap={SECTION_GAP}>
         {/* 인용부에도 길게 누르기를 달아야 액션 메뉴가 열린다. 없으면 원문으로 튄다. */}
         <XStack
           items="flex-start"
@@ -166,17 +214,17 @@ function ReplyMessage({
 
           <YStack shrink={1} gap={2}>
             <Text
-              fontSize="$2"
+              fontSize="$1"
               fontWeight="600"
-              color={mine ? "$onFill" : "$color12"}
+              color={mine ? "$onFill" : "$grey800"}
               numberOfLines={1}
             >
               {i18n.t("component.replyTo", { name: replyName })}
             </Text>
 
             <Text
-              fontSize="$2"
-              color={mine ? QUOTE_TEXT_ON_BLUE : "$color11"}
+              fontSize="$1"
+              color={mine ? QUOTE_TEXT_ON_BLUE : "$grey600"}
               numberOfLines={2}
             >
               {replySummary(reply)}
@@ -184,7 +232,7 @@ function ReplyMessage({
           </YStack>
         </XStack>
 
-        <YStack height={1} bg={mine ? QUOTE_LINE_ON_BLUE : "$color8"} />
+        <YStack height={1} bg={mine ? QUOTE_LINE_ON_BLUE : "$greyOpacity200"} />
 
         <BodyText mine={mine} content={content} onLongPress={onLongPress} />
       </YStack>
@@ -195,6 +243,7 @@ function ReplyMessage({
 export function ChatBubbleContent({
   message,
   mine,
+  tail,
   replyName,
   onPressPhoto,
   onPressVideo,
@@ -203,6 +252,7 @@ export function ChatBubbleContent({
 }: {
   message: ChatMessageResponse;
   mine: boolean;
+  tail: boolean;
   replyName: string;
   onPressPhoto: (message: ChatMessageResponse) => void;
   onPressVideo: (message: ChatMessageResponse) => void;
@@ -234,6 +284,7 @@ export function ChatBubbleContent({
     return (
       <ReplyMessage
         mine={mine}
+        tail={tail}
         replyName={replyName}
         reply={message.replyMessage}
         content={message.content ?? ""}
@@ -246,6 +297,7 @@ export function ChatBubbleContent({
   return (
     <TextMessage
       mine={mine}
+      tail={tail}
       content={message.content ?? ""}
       onLongPress={onLongPress}
     />
@@ -285,8 +337,8 @@ export function ChatBubble({
   const time = (
     <Text
       shrink={0}
-      fontSize="$2"
-      color="$color11"
+      fontSize="$1"
+      color="$grey500"
       mb={2}
       opacity={showTime ? 1 : 0}
       accessibilityElementsHidden={!showTime}
@@ -303,14 +355,16 @@ export function ChatBubble({
         shrink={1}
         self={mine ? "flex-end" : "flex-start"}
         items="flex-end"
-        gap="$1.5"
+        gap={TIME_GAP}
       >
         {mine && time}
 
         <View ref={bubbleRef} collapsable={false} style={{ flexShrink: 1 }}>
+          {/* 시각이 붙는 묶음의 마지막 말풍선에만 꼬리를 단다. */}
           <ChatBubbleContent
             message={message}
             mine={mine}
+            tail={showTime}
             replyName={replyName}
             onPressPhoto={onPressPhoto}
             onPressVideo={onPressVideo}
@@ -336,45 +390,19 @@ export function ChatBubble({
           self={mine ? "flex-end" : "flex-start"}
           items="center"
           gap="$2"
-          mt="$1"
+          mt="$1.5"
         >
-          <Text fontSize="$2" color="$red10" fontWeight="600">
+          <Text fontSize="$1" color="$red500" fontWeight="600">
             {i18n.t("component.sendFailed")}
           </Text>
-          <FailedAction
-            label={i18n.t("component.resend")}
-            onPress={upload.retry}
-          />
-          <FailedAction
-            label={i18n.t("action.delete")}
-            onPress={upload.cancel}
-          />
+          <Button size="small" variant="secondary" onPress={upload.retry}>
+            {i18n.t("component.resend")}
+          </Button>
+          <Button size="small" variant="secondary" onPress={upload.cancel}>
+            {i18n.t("action.delete")}
+          </Button>
         </XStack>
       )}
     </YStack>
-  );
-}
-
-function FailedAction({
-  label,
-  onPress,
-}: {
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <XStack
-      px="$2"
-      py={2}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      pressStyle={{ opacity: PRESS_OPACITY }}
-      accessibilityRole="button"
-      onPress={onPress}
-    >
-      <Text fontSize="$2" fontWeight="600" color="$color12">
-        {label}
-      </Text>
-    </XStack>
   );
 }

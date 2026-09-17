@@ -43,6 +43,7 @@ export default function ChatSearchScreen() {
             onLeave={confirmLeave}
           />
         )}
+        layout="rows"
       />
 
       {alertElement}

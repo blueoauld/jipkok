@@ -13,22 +13,31 @@ import ReanimatedSwipeable, {
 import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { Badge } from "@/components/ui/Badge";
-import { RetroCard } from "@/components/ui/RetroCard";
+import { ListRow } from "@/components/ui/ListRow";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount, mediaSummary } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
-import { RETRO_BORDER_WIDTH, RETRO_SHADOW_OFFSET } from "@/lib/design";
+import {
+  DARK_FILL,
+  LIST_ROW_EVEN_PADDING_Y,
+  LIST_ROW_LEFT_GAP,
+  LIST_ROW_PADDING_X,
+  MIN_TAP_SIZE,
+  PILL_RADIUS,
+} from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 
-const MUTE_ICON_SIZE = 14;
-const PIN_ICON_SIZE = 14;
+const STATUS_ICON_SIZE = 14;
 
-const ACTION_SIZE = 46;
+const ACTION_SIZE = MIN_TAP_SIZE;
 const ACTION_ICON_SIZE = 22;
+const ACTION_GAP = 8;
 const ACTION_FRICTION = 2;
 
+// TDS Checkbox 원형에서 잰 값이다. 안 고르면 grey300 테두리만, 고르면 blue500 채움에 흰 체크다.
 const SELECT_BOX_SIZE = 22;
+const SELECT_BORDER_WIDTH = 2;
 const SELECT_ICON_SIZE = 14;
 
 function UnreadBadge({ count }: { count: number }) {
@@ -53,8 +62,7 @@ function SwipeAction({
       <XStack
         width={ACTION_SIZE}
         height={ACTION_SIZE}
-        borderWidth={RETRO_BORDER_WIDTH}
-        borderColor="$gray12"
+        rounded={PILL_RADIUS}
         bg={bg}
         items="center"
         justify="center"
@@ -77,9 +85,10 @@ function SelectBox({ selected }: { selected: boolean }) {
       shrink={0}
       width={SELECT_BOX_SIZE}
       height={SELECT_BOX_SIZE}
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg={selected ? "$blue10" : "transparent"}
+      rounded={PILL_RADIUS}
+      borderWidth={selected ? 0 : SELECT_BORDER_WIDTH}
+      borderColor="$grey300"
+      bg={selected ? "$blue500" : "transparent"}
       items="center"
       justify="center"
     >
@@ -115,128 +124,143 @@ function Row({
 }) {
   const theme = useTheme();
   const swipeable = useRef<SwipeableMethods>(null);
+  const avatar = (
+    <UserAvatar id={String(room.memberId)} url={room.profileImageUrl} />
+  );
 
   return (
-    <YStack mr={-RETRO_SHADOW_OFFSET} mb={-RETRO_SHADOW_OFFSET}>
-      <ReanimatedSwipeable
-        ref={swipeable}
-        enabled={!selectable}
-        friction={ACTION_FRICTION}
-        overshootLeft={false}
-        overshootRight={false}
-        renderLeftActions={() => (
-          <XStack self="center" pr="$3" gap="$2">
-            <SwipeAction
-              icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
-              bg="$blue10"
-              onPress={() => {
-                swipeable.current?.close();
-                onToggleNotification(room);
-              }}
-            />
-            <SwipeAction
-              icon={room.pinned ? PushPinSlashIcon : PushPinIcon}
-              bg="$gray10"
-              onPress={() => {
-                swipeable.current?.close();
-                onTogglePin(room);
-              }}
-            />
-          </XStack>
-        )}
-        renderRightActions={() => (
-          <XStack self="center" pl="$3" gap="$2">
-            <SwipeAction
-              icon={CheckIcon}
-              weight="bold"
-              bg="$green10"
-              onPress={() => {
-                swipeable.current?.close();
-                onMarkRead(room);
-              }}
-            />
-            <SwipeAction
-              icon={SignOutIcon}
-              bg="$red10"
-              onPress={() => {
-                swipeable.current?.close();
-                onLeave(room);
-              }}
-            />
-          </XStack>
-        )}
-      >
-        <YStack pr={RETRO_SHADOW_OFFSET} pb={RETRO_SHADOW_OFFSET}>
-          <RetroCard
-            onPress={() =>
-              selectable ? onSelect?.(room) : pushOnce(`/chat/${room.roomId}`)
-            }
-          >
-            <XStack gap="$3" items="center">
-              {selectable && <SelectBox selected={selected} />}
+    <ReanimatedSwipeable
+      ref={swipeable}
+      enabled={!selectable}
+      friction={ACTION_FRICTION}
+      overshootLeft={false}
+      overshootRight={false}
+      renderLeftActions={() => (
+        <XStack self="center" pl={LIST_ROW_PADDING_X.small} gap={ACTION_GAP}>
+          <SwipeAction
+            icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
+            bg="$blue500"
+            onPress={() => {
+              swipeable.current?.close();
+              onToggleNotification(room);
+            }}
+          />
+          <SwipeAction
+            icon={room.pinned ? PushPinSlashIcon : PushPinIcon}
+            bg={DARK_FILL}
+            onPress={() => {
+              swipeable.current?.close();
+              onTogglePin(room);
+            }}
+          />
+        </XStack>
+      )}
+      renderRightActions={() => (
+        <XStack self="center" pr={LIST_ROW_PADDING_X.small} gap={ACTION_GAP}>
+          <SwipeAction
+            icon={CheckIcon}
+            weight="bold"
+            bg="$green500"
+            onPress={() => {
+              swipeable.current?.close();
+              onMarkRead(room);
+            }}
+          />
+          <SwipeAction
+            icon={SignOutIcon}
+            bg="$red500"
+            onPress={() => {
+              swipeable.current?.close();
+              onLeave(room);
+            }}
+          />
+        </XStack>
+      )}
+    >
+      {/* 밀어서 드러나는 버튼이 닫힌 행 뒤로 비치지 않게 면을 깐다. */}
+      <YStack bg="$background">
+        <ListRow
+          horizontalPadding="small"
+          verticalPadding={LIST_ROW_EVEN_PADDING_Y}
+          left={
+            selectable ? (
+              <XStack items="center" gap={LIST_ROW_LEFT_GAP}>
+                <SelectBox selected={selected} />
+                {avatar}
+              </XStack>
+            ) : (
+              avatar
+            )
+          }
+          onPress={() =>
+            selectable ? onSelect?.(room) : pushOnce(`/chat/${room.roomId}`)
+          }
+        >
+          <XStack items="center" justify="space-between" gap="$2">
+            <XStack flex={1} items="center" gap="$1.5">
+              <Text
+                shrink={0}
+                fontSize="$4"
+                lineHeight="$4"
+                fontWeight="500"
+                color="$grey800"
+              >
+                {room.nickname}
+              </Text>
 
-              <UserAvatar
-                id={String(room.memberId)}
-                url={room.profileImageUrl}
-              />
+              {room.pinned && (
+                <PushPinIcon
+                  size={STATUS_ICON_SIZE}
+                  weight="fill"
+                  color={theme.grey400.val}
+                />
+              )}
 
-              <YStack flex={1} gap="$2">
-                <XStack items="center" justify="space-between" gap="$2">
-                  <XStack flex={1} items="center" gap="$1.5">
-                    <Text shrink={0} fontSize="$4" fontWeight="600">
-                      {room.nickname}
-                    </Text>
+              {!room.notificationEnabled && (
+                <BellSlashIcon
+                  size={STATUS_ICON_SIZE}
+                  weight="fill"
+                  color={theme.grey400.val}
+                />
+              )}
 
-                    {room.pinned && (
-                      <PushPinIcon
-                        size={PIN_ICON_SIZE}
-                        weight="fill"
-                        color={theme.gray9.val}
-                      />
-                    )}
-
-                    {!room.notificationEnabled && (
-                      <BellSlashIcon
-                        size={MUTE_ICON_SIZE}
-                        weight="fill"
-                        color={theme.gray9.val}
-                      />
-                    )}
-
-                    {room.memo && (
-                      <Text
-                        shrink={1}
-                        numberOfLines={1}
-                        fontSize="$2"
-                        color="$color11"
-                      >
-                        {room.memo}
-                      </Text>
-                    )}
-                  </XStack>
-
-                  <Text theme="gray" shrink={0} fontSize="$2" color="$color11">
-                    {formatChatTime(room.lastMessageAt)}
-                  </Text>
-                </XStack>
-
-                <XStack items="center" justify="space-between" gap="$2">
-                  <Text flex={1} numberOfLines={2} fontSize="$2">
-                    {room.lastMessageType === "TEXT"
-                      ? room.lastMessageContent
-                      : mediaSummary(room.lastMessageType)}
-                  </Text>
-
-                  {room.unreadCount > 0 && (
-                    <UnreadBadge count={room.unreadCount} />
-                  )}
-                </XStack>
-              </YStack>
+              {room.memo && (
+                <Text
+                  shrink={1}
+                  numberOfLines={1}
+                  fontSize="$2"
+                  lineHeight="$2"
+                  color="$grey600"
+                >
+                  {room.memo}
+                </Text>
+              )}
             </XStack>
-          </RetroCard>
-        </YStack>
-      </ReanimatedSwipeable>
-    </YStack>
+
+            <Text shrink={0} fontSize="$1" color="$grey500">
+              {formatChatTime(room.lastMessageAt)}
+            </Text>
+          </XStack>
+
+          {/* 한 줄로 두어 행 높이가 사진 높이로 같아지고, 사진 사이가 늘 좌우 여백과 같다. */}
+          <XStack items="center" justify="space-between" gap="$2">
+            <Text
+              flex={1}
+              numberOfLines={1}
+              fontSize="$2"
+              lineHeight="$2"
+              color="$grey600"
+            >
+              {room.lastMessageType === "TEXT"
+                ? room.lastMessageContent
+                : mediaSummary(room.lastMessageType)}
+            </Text>
+
+            {room.unreadCount > 0 && <UnreadBadge count={room.unreadCount} />}
+          </XStack>
+        </ListRow>
+      </YStack>
+    </ReanimatedSwipeable>
   );
 }
 

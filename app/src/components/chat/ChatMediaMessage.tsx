@@ -6,19 +6,21 @@ import type { ChatMessageResponse } from "@/lib/api";
 import { isPending } from "@/lib/chat";
 import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
 import {
+  CHAT_BUBBLE_RADIUS,
   IMAGE_TRANSITION,
   OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
+  PILL_RADIUS,
   PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
 } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
 
 const PHOTO_SIZE = 200;
 const PLAY_ICON_SIZE = 40;
-const DURATION_INSET = 6;
+const DURATION_INSET = 8;
+const OVERLAY_ACTION_BORDER_WIDTH = 1;
 
 export function VideoMessage({
   message,
@@ -36,6 +38,8 @@ export function VideoMessage({
 
   return (
     <YStack
+      rounded={CHAT_BUBBLE_RADIUS}
+      overflow="hidden"
       pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
       onPress={busy ? undefined : () => onPress(message)}
       onLongPress={busy ? undefined : onLongPress}
@@ -48,9 +52,7 @@ export function VideoMessage({
         style={{
           width: PHOTO_SIZE,
           height: PHOTO_SIZE,
-          borderWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.gray12.val,
-          backgroundColor: theme.gray12.val,
+          backgroundColor: theme.grey100.val,
         }}
       />
 
@@ -71,8 +73,9 @@ export function VideoMessage({
               position="absolute"
               b={DURATION_INSET}
               r={DURATION_INSET}
-              px="$1.5"
+              px="$2"
               py={2}
+              rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
               <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
@@ -149,7 +152,8 @@ function OverlayAction({
     <XStack
       px="$3"
       py="$1.5"
-      borderWidth={RETRO_BORDER_WIDTH}
+      rounded={PILL_RADIUS}
+      borderWidth={OVERLAY_ACTION_BORDER_WIDTH}
       borderColor={OVERLAY_INK}
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
@@ -179,6 +183,8 @@ export function PhotoMessage({
 
   return (
     <YStack
+      rounded={CHAT_BUBBLE_RADIUS}
+      overflow="hidden"
       pressStyle={busy ? undefined : { opacity: PHOTO_PRESS_OPACITY }}
       onPress={busy ? undefined : () => onPress(message)}
       onLongPress={busy ? undefined : onLongPress}
@@ -191,9 +197,7 @@ export function PhotoMessage({
         style={{
           width: PHOTO_SIZE,
           height: PHOTO_SIZE,
-          borderWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.gray12.val,
-          backgroundColor: theme.gray12.val,
+          backgroundColor: theme.grey100.val,
         }}
       />
 

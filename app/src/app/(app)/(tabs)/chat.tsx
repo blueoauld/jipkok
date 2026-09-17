@@ -7,6 +7,7 @@ import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { ListEmpty } from "@/components/ui/ListEmpty";
+import { ListRowTopSpacer } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { Tab } from "@/components/ui/Tab";
 import { useAlert } from "@/hooks/useAlert";
@@ -20,6 +21,7 @@ import {
 } from "@/hooks/useScrollToTopVisible";
 import type { ChatRoomResponse } from "@/lib/api";
 import { useChatSelectionStore } from "@/lib/chat/store";
+import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 
@@ -54,7 +56,7 @@ export default function ChatScreen() {
   const tabBarOverlay = useTabBarOverlay();
   const selecting = useChatSelectionStore((state) => state.active);
   // 셀렉션 바가 흐름 안에서 그 자리를 이미 차지하므로 목록까지 비우면 두 번 센다.
-  const paged = usePagedList(chatRooms, selecting ? 0 : tabBarOverlay);
+  const paged = usePagedList(chatRooms, selecting ? 0 : tabBarOverlay, "rows");
 
   const selected = useChatSelectionStore((state) => state.selected);
   const toggleSelected = useChatSelectionStore((state) => state.toggle);
@@ -111,6 +113,9 @@ export default function ChatScreen() {
               onLeave={confirmLeave}
             />
           )}
+          ListHeaderComponent={
+            <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
+          }
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}

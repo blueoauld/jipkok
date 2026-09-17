@@ -196,6 +196,9 @@ export const CARD_PADDING = 20;
 // 사진 칸 모서리 비율이다. TDS ListRow의 Square 이미지(52에 모서리 12)에서 가져왔다.
 export const SQUARE_IMAGE_RADIUS_RATIO = 12 / 52;
 
+// TDS Bubble의 모서리다. 사진과 동영상 말풍선도 같게 둔다.
+export const CHAT_BUBBLE_RADIUS = 16;
+
 export const DIALOG_WIDTH = 320;
 
 export const DIALOG_RADIUS = 24;

@@ -1,7 +1,6 @@
 import { layoutActionOverlay } from "@/lib/chat/overlay-layout";
-import { RETRO_SHADOW_OFFSET } from "@/lib/design";
 
-const GAP = 6 + RETRO_SHADOW_OFFSET;
+const GAP = 8;
 const EDGE = 8;
 
 const window = { width: 400, height: 800 };

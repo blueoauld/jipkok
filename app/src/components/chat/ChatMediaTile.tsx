@@ -10,12 +10,14 @@ import {
   OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
-  RETRO_BORDER_WIDTH,
+  PILL_RADIUS,
 } from "@/lib/design";
 import { formatDuration } from "@/lib/video";
 
+// 프로필 사진 격자 칸과 같은 모서리다.
+const TILE_RADIUS = 12;
 const PLAY_ICON_SIZE = 28;
-const DURATION_INSET = 4;
+const DURATION_INSET = 6;
 
 export const ChatMediaTile = memo(function ChatMediaTile({
   message,
@@ -35,6 +37,8 @@ export const ChatMediaTile = memo(function ChatMediaTile({
     <YStack
       width={size}
       height={size}
+      rounded={TILE_RADIUS}
+      overflow="hidden"
       pressStyle={{ opacity: PHOTO_PRESS_OPACITY }}
       accessibilityRole="imagebutton"
       accessibilityLabel={mediaSummary(message.type)}
@@ -48,9 +52,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
         style={{
           width: size,
           height: size,
-          borderWidth: RETRO_BORDER_WIDTH,
-          borderColor: theme.gray12.val,
-          backgroundColor: theme.gray12.val,
+          backgroundColor: theme.grey100.val,
         }}
       />
 
@@ -65,8 +67,9 @@ export const ChatMediaTile = memo(function ChatMediaTile({
               position="absolute"
               b={DURATION_INSET}
               r={DURATION_INSET}
-              px="$1"
+              px="$1.5"
               py={1}
+              rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
               <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">

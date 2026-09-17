@@ -2,9 +2,9 @@ import { Text, XStack } from "tamagui";
 
 import type { ChatReactionResponse } from "@/lib/api";
 import { groupReactions } from "@/lib/chat/reactions";
-import { PRESS_OPACITY, RETRO_BORDER_WIDTH } from "@/lib/design";
+import { PILL_RADIUS, PRESS_OPACITY } from "@/lib/design";
 
-const CHIP_GAP = 2;
+const CHIP_GAP = 4;
 const CHIP_FONT_SIZE = 12;
 const CHIP_SIZE = 24;
 
@@ -23,16 +23,15 @@ function ReactionChip({
     <XStack
       height={CHIP_SIZE}
       width={count === 1 ? CHIP_SIZE : undefined}
-      px={count === 1 ? 0 : "$1.5"}
+      px={count === 1 ? 0 : "$2"}
       items="center"
       justify="center"
-      borderWidth={RETRO_BORDER_WIDTH}
-      borderColor="$gray12"
-      bg={reacted ? "$blue10" : "$color1"}
+      rounded={PILL_RADIUS}
+      bg={reacted ? "$blue50" : "$greyOpacity100"}
       pressStyle={{ opacity: PRESS_OPACITY }}
       onPress={onPress}
     >
-      <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "$onFill" : "$color12"}>
+      <Text fontSize={CHIP_FONT_SIZE} color={reacted ? "$blue600" : "$grey700"}>
         {count === 1 ? emoji : `${emoji} ${count}`}
       </Text>
     </XStack>
