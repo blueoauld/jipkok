@@ -19,7 +19,6 @@ import type { ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount, mediaSummary } from "@/lib/chat";
 import { formatChatTime } from "@/lib/date";
 import {
-  DARK_FILL,
   LIST_ROW_EVEN_PADDING_Y,
   LIST_ROW_LEFT_GAP,
   LIST_ROW_PADDING_X,
@@ -138,6 +137,15 @@ function Row({
       renderLeftActions={() => (
         <XStack self="center" pl={LIST_ROW_PADDING_X.small} gap={ACTION_GAP}>
           <SwipeAction
+            icon={CheckIcon}
+            weight="bold"
+            bg="$blue500"
+            onPress={() => {
+              swipeable.current?.close();
+              onMarkRead(room);
+            }}
+          />
+          <SwipeAction
             icon={room.notificationEnabled ? BellSlashIcon : BellIcon}
             bg="$blue500"
             onPress={() => {
@@ -147,7 +155,7 @@ function Row({
           />
           <SwipeAction
             icon={room.pinned ? PushPinSlashIcon : PushPinIcon}
-            bg={DARK_FILL}
+            bg="$blue500"
             onPress={() => {
               swipeable.current?.close();
               onTogglePin(room);
@@ -156,16 +164,7 @@ function Row({
         </XStack>
       )}
       renderRightActions={() => (
-        <XStack self="center" pr={LIST_ROW_PADDING_X.small} gap={ACTION_GAP}>
-          <SwipeAction
-            icon={CheckIcon}
-            weight="bold"
-            bg="$green500"
-            onPress={() => {
-              swipeable.current?.close();
-              onMarkRead(room);
-            }}
-          />
+        <XStack self="center" pr={LIST_ROW_PADDING_X.small}>
           <SwipeAction
             icon={SignOutIcon}
             bg="$red500"
