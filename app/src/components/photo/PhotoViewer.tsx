@@ -1,48 +1,32 @@
 import { Image, type ImageLoadEventData } from "expo-image";
-import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useCallback, useState } from "react";
 import type { ScaledSize } from "react-native";
-import {
-  Modal,
-  StatusBar,
-  StyleSheet,
-  useWindowDimensions,
-} from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StyleSheet, useWindowDimensions } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { Gallery, type VerticalPullOptions } from "react-native-zoom-toolkit";
-import { XStack, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { PhotoDots } from "@/components/photo/PhotoDots";
+import {
+  ViewerCloseButton,
+  ViewerModal,
+  ViewerRoot,
+} from "@/components/ui/Viewer";
 import {
   DISMISS_DURATION,
   shouldDismiss,
   useDismissStyles,
 } from "@/hooks/useDismissGesture";
 import { useSecretPhotoCapture } from "@/hooks/useSecretPhotoCapture";
-import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
-import {
-  IMAGE_TRANSITION,
-  MIN_TAP_SIZE,
-  OVERLAY_BG,
-  OVERLAY_INK,
-  PILL_RADIUS,
-  PRESS_OPACITY,
-  VIEWER_BG,
-} from "@/lib/design";
-import i18n from "@/lib/i18n";
+import { IMAGE_TRANSITION } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
-
-const CLOSE_BUTTON_SIZE = MIN_TAP_SIZE;
-
-const CLOSE_ICON_SIZE = 22;
 
 const CHROME_DURATION = 200;
 
@@ -52,7 +36,7 @@ const MAX_SCALE = 3;
 export function PhotoViewer({
   photos,
   initialIndex,
-  open: requested,
+  open,
   secret = false,
   onClose,
 }: {
@@ -62,24 +46,15 @@ export function PhotoViewer({
   secret?: boolean;
   onClose: () => void;
 }) {
-  const open = useVisibleWhenUnlocked(requested);
-
   return (
-    <Modal
-      visible={open}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      {open ? (
-        <ViewerContent
-          photos={photos}
-          initialIndex={initialIndex}
-          secret={secret}
-          onClose={onClose}
-        />
-      ) : null}
-    </Modal>
+    <ViewerModal open={open} onClose={onClose}>
+      <ViewerContent
+        photos={photos}
+        initialIndex={initialIndex}
+        secret={secret}
+        onClose={onClose}
+      />
+    </ViewerModal>
   );
 }
 
@@ -186,74 +161,48 @@ function ViewerContent({
   const chromePointerEvents = chromeVisible ? "auto" : "none";
 
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView style={styles.root}>
-        <StatusBar barStyle="light-content" />
+    <ViewerRoot backdropStyle={pull.backdropStyle}>
+      <Animated.View style={[styles.root, contentStyle]}>
+        <Gallery
+          data={photos}
+          keyExtractor={(photo, photoIndex) =>
+            `${photoIndex}-${photoCacheKey(photo)}`
+          }
+          initialIndex={initialIndex}
+          maxScale={MAX_SCALE}
+          tapOnEdgeToItem={false}
+          renderItem={renderPhoto}
+          onTap={toggleChrome}
+          onIndexChange={setIndex}
+          onVerticalPull={onVerticalPull}
+        />
+      </Animated.View>
 
-        <Animated.View style={[styles.backdrop, pull.backdropStyle]} />
-
-        <Animated.View style={[styles.root, contentStyle]}>
-          <Gallery
-            data={photos}
-            keyExtractor={(photo, photoIndex) =>
-              `${photoIndex}-${photoCacheKey(photo)}`
-            }
-            initialIndex={initialIndex}
-            maxScale={MAX_SCALE}
-            tapOnEdgeToItem={false}
-            renderItem={renderPhoto}
-            onTap={toggleChrome}
-            onIndexChange={setIndex}
-            onVerticalPull={onVerticalPull}
-          />
+      <Animated.View
+        style={[StyleSheet.absoluteFill, pull.chromeStyle]}
+        pointerEvents="box-none"
+      >
+        <Animated.View
+          style={[styles.header, chromeStyle]}
+          pointerEvents={chromePointerEvents}
+        >
+          <SafeAreaView edges={["top"]}>
+            <ViewerCloseButton onClose={onClose} />
+          </SafeAreaView>
         </Animated.View>
 
         <Animated.View
-          style={[StyleSheet.absoluteFill, pull.chromeStyle]}
-          pointerEvents="box-none"
+          style={[styles.dots, chromeStyle]}
+          pointerEvents={chromePointerEvents}
         >
-          <Animated.View
-            style={[styles.header, chromeStyle]}
-            pointerEvents={chromePointerEvents}
-          >
-            <SafeAreaView edges={["top"]}>
-              <XStack p="$2">
-                <XStack
-                  width={CLOSE_BUTTON_SIZE}
-                  height={CLOSE_BUTTON_SIZE}
-                  rounded={PILL_RADIUS}
-                  bg={OVERLAY_BG}
-                  items="center"
-                  justify="center"
-                  pressStyle={{ opacity: PRESS_OPACITY }}
-                  accessible
-                  accessibilityRole="button"
-                  accessibilityLabel={i18n.t("a11y.close")}
-                  onPress={onClose}
-                >
-                  <XIcon
-                    size={CLOSE_ICON_SIZE}
-                    weight="bold"
-                    color={OVERLAY_INK}
-                  />
-                </XStack>
-              </XStack>
-            </SafeAreaView>
-          </Animated.View>
-
-          <Animated.View
-            style={[styles.dots, chromeStyle]}
-            pointerEvents={chromePointerEvents}
-          >
-            <SafeAreaView edges={["bottom"]}>
-              <YStack pb="$6" items="center">
-                <PhotoDots count={photos.length} index={index} />
-              </YStack>
-            </SafeAreaView>
-          </Animated.View>
+          <SafeAreaView edges={["bottom"]}>
+            <YStack pb="$6" items="center">
+              <PhotoDots count={photos.length} index={index} />
+            </YStack>
+          </SafeAreaView>
         </Animated.View>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+      </Animated.View>
+    </ViewerRoot>
   );
 }
 
@@ -285,14 +234,6 @@ function fitToScreen(event: ImageLoadEventData, screen: ScaledSize) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  backdrop: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: VIEWER_BG,
   },
   header: {
     position: "absolute",

@@ -1,10 +1,9 @@
-import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Spinner, useTheme, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
-import { CircleButton } from "@/components/ui/CircleButton";
 import { PillInput } from "@/components/ui/PillInput";
+import { SendButton } from "@/components/ui/SendButton";
 import type { WorryCommentResponse } from "@/lib/api";
 import {
   INPUT_BAR_GAP,
@@ -13,8 +12,6 @@ import {
   KEYBOARD_OVERLAP,
 } from "@/lib/design";
 import { WORRY_COMMENT_MAX_LENGTH } from "@/lib/validation";
-
-const ICON_SIZE = 22;
 
 export function WorryCommentComposer({
   replyTo,
@@ -26,7 +23,6 @@ export function WorryCommentComposer({
   onSubmit: (content: string) => Promise<unknown>;
 }) {
   const { t } = useTranslation();
-  const theme = useTheme();
   const [content, setContent] = useState("");
 
   const trimmed = content.trim();
@@ -64,21 +60,12 @@ export function WorryCommentComposer({
         maxLength={WORRY_COMMENT_MAX_LENGTH}
       />
 
-      <CircleButton
+      <SendButton
         label={t("worry.detail.submit")}
-        tone={sendable ? "blue" : "grey"}
-        onPress={sendable ? submit : undefined}
-      >
-        {pending ? (
-          <Spinner size="small" color="$grey500" />
-        ) : (
-          <PaperPlaneRightIcon
-            size={ICON_SIZE}
-            weight="fill"
-            color={sendable ? theme.onFill.val : theme.grey400.val}
-          />
-        )}
-      </CircleButton>
+        sendable={sendable}
+        pending={pending}
+        onPress={submit}
+      />
     </XStack>
   );
 }

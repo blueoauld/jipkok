@@ -1,8 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { router, Stack, useNavigation } from "expo-router";
-// expo-router가 usePreventRemove를 공개 export하지 않아 내장된 react-navigation에서 가져온다.
-import { usePreventRemove } from "expo-router/build/react-navigation";
+import { router, Stack } from "expo-router";
 import { type RefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -17,6 +15,7 @@ import { CountedInput } from "@/components/ui/CountedInput";
 import { FieldLabel } from "@/components/ui/FieldLabel";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
+import { useConfirmLeave } from "@/hooks/useConfirmLeave";
 import { FEEDS_KEY } from "@/hooks/useFeedPosts";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
@@ -76,7 +75,6 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
   const queryClient = useQueryClient();
   const { alertElement, show, showApiError, confirm } = useAlert();
-  const navigation = useNavigation();
   const [bioDirty, setBioDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const publicPhotos = useUploadPhotos(
@@ -143,16 +141,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
 
   // 올리는 중에도 물어야 한다. objectKeys는 한 장씩 끝날 때마다 늘어나므로 그때까지는
   // dirty가 아직 false이고, 저장 없이 나가면 적어 둔 것과 올라간 사진이 함께 버려진다.
-  usePreventRemove(
-    (dirty || uploading) && !saved && !save.isPending,
-    ({ data }) =>
-      confirm({
-        message: t("common.leaveUnsaved"),
-        confirmLabel: t("action.leave"),
-        destructive: true,
-        onConfirm: () => navigation.dispatch(data.action),
-      }),
-  );
+  useConfirmLeave((dirty || uploading) && !saved && !save.isPending, confirm);
 
   const submit = handleSubmit((values) =>
     save.mutate({

@@ -1,4 +1,3 @@
-import { PaperPlaneRightIcon } from "phosphor-react-native/src/icons/PaperPlaneRight";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,6 +8,7 @@ import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import { CircleButton } from "@/components/ui/CircleButton";
 import { PillInput } from "@/components/ui/PillInput";
 import { ReplyPreviewBox } from "@/components/ui/ReplyPreviewBox";
+import { SendButton } from "@/components/ui/SendButton";
 import type { ChatMessageResponse } from "@/lib/api";
 import { replySummary, toReply } from "@/lib/chat";
 import { useChatDraftStore } from "@/lib/chat/draft-store";
@@ -108,17 +108,7 @@ export function ChatInputBar({
           multiline
         />
 
-        <CircleButton
-          label={t("a11y.send")}
-          tone={sendable ? "blue" : "grey"}
-          onPress={sendable ? send : undefined}
-        >
-          <PaperPlaneRightIcon
-            size={ICON_SIZE}
-            weight="fill"
-            color={sendable ? theme.onFill.val : theme.grey400.val}
-          />
-        </CircleButton>
+        <SendButton label={t("a11y.send")} sendable={sendable} onPress={send} />
       </XStack>
 
       <YStack

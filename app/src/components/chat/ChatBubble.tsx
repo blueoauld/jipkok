@@ -1,22 +1,20 @@
-import { type ReactNode, useRef } from "react";
+import { useRef } from "react";
 import { View } from "react-native";
-import Svg, { Path } from "react-native-svg";
-import { Text, type TextProps, useTheme, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 
+import { BubbleFrame } from "@/components/chat/ChatBubbleFrame";
+import { BodyText } from "@/components/chat/ChatBubbleText";
 import { PhotoMessage, VideoMessage } from "@/components/chat/ChatMediaMessage";
 import { ReactionChips } from "@/components/chat/ChatReactionChips";
 import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import { Button } from "@/components/ui/Button";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isSingleEmoji, replySummary } from "@/lib/chat";
-import { splitLinks } from "@/lib/chat/links";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { useUploadState } from "@/lib/chat/upload-store";
 import { formatClockTime } from "@/lib/date";
-import { CHAT_BUBBLE_RADIUS, PRESS_OPACITY } from "@/lib/design";
+import { PRESS_OPACITY } from "@/lib/design";
 import i18n from "@/lib/i18n";
-import { openWebPage } from "@/lib/support";
-import { showToast } from "@/lib/toast/store";
 
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
@@ -25,137 +23,10 @@ const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 // 뒤집어 위 모서리에 단다. 꼬리는 모서리에서 바깥으로 5만큼 나간다.
 const PADDING_X = 14;
 const PADDING_Y = 12;
-const FONT_SIZE = 16;
-const LINE_HEIGHT = 24;
-const EMOJI_FONT_SIZE = 40;
-const TAIL_WIDTH = 13;
-const TAIL_HEIGHT = 17;
-export const BUBBLE_TAIL_OVERHANG = 5;
-const TAIL_PATH =
-  "M11.992 17c1.102.007 1.404-1.512.383-1.926-2.652-1.078-4.503-3.718-4.521-6.63V0h-2v.892C5.854 5.405 3.8 9.56.386 12.206c-.559.433-.504 1.293.105 1.652C3.898 15.865 7.922 16.974 11.992 17z";
 
 const SECTION_GAP = 8;
 
 const TIME_GAP = 4;
-
-function BubbleFrame({
-  mine,
-  tail,
-  children,
-  onLongPress,
-}: {
-  mine: boolean;
-  tail: boolean;
-  children: ReactNode;
-  onLongPress: () => void;
-}) {
-  const theme = useTheme();
-
-  return (
-    <YStack
-      shrink={1}
-      rounded={CHAT_BUBBLE_RADIUS}
-      bg={mine ? "$blue500" : "$grey200"}
-      onLongPress={onLongPress}
-    >
-      {children}
-
-      {tail && (
-        <Svg
-          width={TAIL_WIDTH}
-          height={TAIL_HEIGHT}
-          viewBox={`0 0 ${TAIL_WIDTH} ${TAIL_HEIGHT}`}
-          style={
-            mine
-              ? {
-                  position: "absolute",
-                  top: 0,
-                  right: -BUBBLE_TAIL_OVERHANG,
-                  transform: [{ scaleY: -1 }],
-                }
-              : {
-                  position: "absolute",
-                  top: 0,
-                  left: -BUBBLE_TAIL_OVERHANG,
-                  transform: [{ scaleX: -1 }, { scaleY: -1 }],
-                }
-          }
-        >
-          <Path
-            d={TAIL_PATH}
-            fill={mine ? theme.blue500.val : theme.grey200.val}
-          />
-        </Svg>
-      )}
-    </YStack>
-  );
-}
-
-const openLink = (url: string) =>
-  openWebPage(url, (_variant, message) => showToast("error", message));
-
-// 링크 위에서 길게 눌러도 말풍선 메뉴가 떠야 하므로 onLongPress를 같이 받는다.
-// Tamagui Text는 중첩돼도 부모 색을 물려받지 않아 색을 따로 준다.
-function LinkText({
-  url,
-  color,
-  children,
-  onLongPress,
-}: {
-  url: string;
-  color: TextProps["color"];
-  children: string;
-  onLongPress: () => void;
-}) {
-  return (
-    <Text
-      color={color}
-      textDecorationLine="underline"
-      accessibilityRole="link"
-      onPress={() => openLink(url)}
-      onLongPress={onLongPress}
-    >
-      {children}
-    </Text>
-  );
-}
-
-function BodyText({
-  mine,
-  content,
-  large = false,
-  onLongPress,
-}: {
-  mine: boolean;
-  content: string;
-  large?: boolean;
-  onLongPress: () => void;
-}) {
-  const color = mine ? "$onFill" : "$grey800";
-
-  return (
-    <Text
-      fontSize={large ? EMOJI_FONT_SIZE : FONT_SIZE}
-      lineHeight={large ? undefined : LINE_HEIGHT}
-      color={color}
-    >
-      {splitLinks(content).map((segment, index) =>
-        segment.url ? (
-          <LinkText
-            key={index}
-            url={segment.url}
-            color={color}
-            onLongPress={onLongPress}
-          >
-            {segment.text}
-          </LinkText>
-        ) : (
-          segment.text
-        ),
-      )}
-    </Text>
-  );
-}
 
 function TextMessage({
   mine,

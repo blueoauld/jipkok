@@ -1,10 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { SignOutIcon } from "phosphor-react-native/src/icons/SignOut";
 import { TranslateIcon } from "phosphor-react-native/src/icons/Translate";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -13,43 +12,24 @@ import { AttendanceSection } from "@/components/setting/AttendanceSection";
 import { SettingSection } from "@/components/setting/SettingSection";
 import { Border } from "@/components/ui/Border";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { useAdReward } from "@/hooks/useAdReward";
 import { useAlert } from "@/hooks/useAlert";
-import { useAppLockToggle } from "@/hooks/useAppLockToggle";
-import { ATTENDANCE_DAYS_KEY } from "@/hooks/useAttendanceDays";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import { useExportDiary } from "@/hooks/useExportDiary";
 import { useInterstitialGate } from "@/hooks/useInterstitialGate";
-import { useLogout } from "@/hooks/useLogout";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { useProfileViewNewCount } from "@/hooks/useProfileViews";
-import { useWithdraw } from "@/hooks/useWithdraw";
-import { api } from "@/lib/api";
+import { useSettingActions } from "@/hooks/useSettingActions";
 import { LIST_ROW_PADDING_X, LIST_ROW_VERTICAL_PADDING } from "@/lib/design";
-import { APP_VERSION } from "@/lib/device";
 import i18n, {
   currentLocale,
   SUPPORTED_LOCALES,
   type SupportedLocale,
 } from "@/lib/i18n";
 import { useLocaleStore } from "@/lib/i18n/store";
-import { useLoadingOverlay } from "@/lib/overlay/store";
 import { reloadApp } from "@/lib/reload";
 import { pushOnce } from "@/lib/router";
-import {
-  SECTIONS,
-  type SettingAction,
-  type SettingItem,
-} from "@/lib/setting/menu";
-import {
-  BROWSER_FAILED_MESSAGE,
-  openSupportMail,
-  openWebPage,
-} from "@/lib/support";
+import { SECTIONS, type SettingItem } from "@/lib/setting/menu";
+import { openWebPage } from "@/lib/support";
 import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
-import { showToast } from "@/lib/toast/store";
-import { isOutdated } from "@/lib/version";
 
 const THEME_MODES: ThemeMode[] = ["light", "dark"];
 
@@ -69,14 +49,9 @@ const LANGUAGE_LABEL_KEYS = {
 const EDGE = LIST_ROW_PADDING_X.medium;
 const EDGE_BESIDE_ROW = EDGE - LIST_ROW_VERTICAL_PADDING.medium;
 
-function versionText(current: string, latest: string) {
-  return i18n.t("setting.versionText", { latest, current });
-}
-
 export default function SettingScreen() {
   const { t } = useTranslation();
   const tabBarOverlay = useTabBarOverlay();
-  const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
 
@@ -103,133 +78,12 @@ export default function SettingScreen() {
     });
   };
 
-  const { logout, loggingOut } = useLogout({ show, showApiError, confirm });
-  const adReward = useAdReward();
-  const appLock = useAppLockToggle({ show, showApiError, confirm });
   const gate = useInterstitialGate();
-
-  const {
-    exportDiary,
-    exporting,
-    progress: exportProgress,
-  } = useExportDiary({ show, showApiError, confirm });
-
-  // 첨부를 내려받는 동안은 항목 스피너 대신 진행 숫자가 있는 오버레이를 띄운다.
-  useLoadingOverlay(
-    loggingOut || exportProgress.total > 0,
-    exportProgress.done,
-    exportProgress.total,
-  );
-
-  const earnAttendanceReward = useMutation({
-    mutationFn: api.attendances.checkIn,
-    onSuccess: (reward) => {
-      if (!reward.earned) {
-        showToast("warning", t("setting.alreadyEarned"));
-        return;
-      }
-
-      queryClient.setQueryData(POINT_BALANCE_KEY, reward.balance);
-      queryClient.invalidateQueries({ queryKey: POINT_HISTORIES_KEY });
-      queryClient.invalidateQueries({ queryKey: ATTENDANCE_DAYS_KEY });
-      showToast(
-        "info",
-        t("setting.rewarded", { amount: reward.amount.toLocaleString() }),
-      );
-    },
-    onError: showApiError,
-  });
-
-  const checkVersion = useMutation({
-    mutationFn: api.app.latestVersion,
-    onSuccess: ({ latestVersion, storeUrl }) => {
-      const detail = versionText(APP_VERSION, latestVersion);
-
-      if (!isOutdated(APP_VERSION, latestVersion)) {
-        show("info", detail);
-        return;
-      }
-
-      confirm({
-        variant: "info",
-        message: detail,
-        confirmLabel: t("setting.update"),
-        onConfirm: () =>
-          Linking.openURL(storeUrl).catch(() =>
-            show("error", BROWSER_FAILED_MESSAGE),
-          ),
-      });
-    },
-    onError: showApiError,
-  });
-
-  const pendingAction: SettingAction | null = earnAttendanceReward.isPending
-    ? "attendanceReward"
-    : checkVersion.isPending
-      ? "version"
-      : appLock.pending
-        ? "appLock"
-        : exporting
-          ? "exportDiary"
-          : !adReward.ready && !adReward.unavailable
-            ? "adReward"
-            : null;
-
-  const handleAction = useCallback(
-    (action: SettingAction) => {
-      if (action === "contact" || action === "suggest") {
-        openSupportMail(
-          action === "contact"
-            ? t("setting.menu.contact")
-            : t("setting.menu.suggest"),
-          profile?.memberId,
-          show,
-        );
-        return;
-      }
-
-      if (action === "adReward") {
-        void adReward.watch();
-        return;
-      }
-
-      if (action === "appLock") {
-        appLock.toggle();
-        return;
-      }
-
-      if (action === "version") {
-        if (!checkVersion.isPending) {
-          checkVersion.mutate();
-        }
-
-        return;
-      }
-
-      if (action === "exportDiary") {
-        if (!exporting) {
-          exportDiary();
-        }
-
-        return;
-      }
-
-      if (action === "attendanceReward" && !earnAttendanceReward.isPending) {
-        earnAttendanceReward.mutate();
-      }
-    },
-    [
-      adReward,
-      appLock,
-      checkVersion,
-      earnAttendanceReward,
-      exportDiary,
-      exporting,
-      profile?.memberId,
-      show,
-      t,
-    ],
-  );
+  const { pendingAction, appLockEnabled, run, logout, confirmWithdraw } =
+    useSettingActions({
+      alert: { show, showApiError, confirm },
+      memberId: profile?.memberId,
+    });
 
   const handlePress = useCallback(
     (item: SettingItem) => {
@@ -237,9 +91,9 @@ export default function SettingScreen() {
         const action = item.action;
 
         if (item.gated) {
-          gate.run(() => handleAction(action));
+          gate.run(() => run(action));
         } else {
-          handleAction(action);
+          run(action);
         }
 
         return;
@@ -261,10 +115,8 @@ export default function SettingScreen() {
 
       pushOnce(item.href);
     },
-    [gate, handleAction, show],
+    [gate, run, show],
   );
-
-  const { confirmWithdraw } = useWithdraw({ show, showApiError, confirm });
 
   const accountMenu: MenuSheetItem[] = [
     {
@@ -339,7 +191,7 @@ export default function SettingScreen() {
               items={group.items}
               pendingAction={pendingAction}
               profileViewCount={profileViewCount}
-              appLockEnabled={appLock.enabled}
+              appLockEnabled={appLockEnabled}
               onItemPress={handlePress}
             />
 

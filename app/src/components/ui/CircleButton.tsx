@@ -8,7 +8,7 @@ const TONES = {
   blue: { bg: "$blue500", pressBg: "$blue600" },
 } as const;
 
-// 입력줄 양옆에 놓는 둥근 아이콘 버튼이다. 누를 수 없을 때는 눌림 색을 넣지 않는다.
+// 입력줄 양옆과 내용 위에 떠 있는 자리에 놓는 둥근 아이콘 버튼이다. 누를 수 없을 때는 눌림 색을 넣지 않는다.
 export function CircleButton({
   label,
   tone,

@@ -13,7 +13,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { Text, useTheme, XStack, YStack } from "tamagui";
 
-import { BUBBLE_TAIL_OVERHANG, ChatBubble } from "@/components/chat/ChatBubble";
+import { ChatBubble } from "@/components/chat/ChatBubble";
+import { BUBBLE_TAIL_OVERHANG } from "@/components/chat/ChatBubbleFrame";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending } from "@/lib/chat";

@@ -1,10 +1,3 @@
-import {
-  type InfiniteData,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import * as Haptics from "expo-haptics";
-import type { ImagePickerAsset } from "expo-image-picker";
 import { Stack } from "expo-router";
 import { FunnelSimpleIcon } from "phosphor-react-native/src/icons/FunnelSimple";
 import { MagnifyingGlassIcon } from "phosphor-react-native/src/icons/MagnifyingGlass";
@@ -30,7 +23,8 @@ import { WorryCard } from "@/components/worry/WorryCard";
 import { WorryCategoryFilter } from "@/components/worry/WorryCategoryChips";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
-import { feedPostsKey, FEEDS_KEY, useFeedPosts } from "@/hooks/useFeedPosts";
+import { useFeedPostActions } from "@/hooks/useFeedPostActions";
+import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -40,13 +34,9 @@ import {
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
 import { useWorryPosts } from "@/hooks/useWorryPosts";
-import { APP_EVENT, logAppEvent } from "@/lib/analytics";
 import {
-  api,
-  type FeedPostPage,
   type FeedPostResponse,
   type FeedSort,
-  isApiError,
   type WorryCategory,
   type WorryPostResponse,
   type WorrySort,
@@ -54,12 +44,7 @@ import {
 import { fromDateParam, koreaDateParam } from "@/lib/date";
 import { type LoungeBoard, useFeedFilterStore } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
-import { reportedMessage } from "@/lib/message";
-import { useLoadingOverlay } from "@/lib/overlay/store";
-import { mapPages } from "@/lib/paging";
-import { uploadFeedPhoto } from "@/lib/photo";
 import { pushOnce } from "@/lib/router";
-import { showToast } from "@/lib/toast/store";
 
 const BOARDS: LoungeBoard[] = ["FEED", "WORRY"];
 
@@ -82,11 +67,8 @@ const WORRY_SORT_ITEMS = WORRY_SORTS.map((value) => ({
   label: i18n.t(`feed.worrySort.${value}`),
 }));
 
-const STALE_POST_CODES = new Set(["FEED_002", "FEED_003"]);
-
 export default function FeedScreen() {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const { data: profile } = useMyProfile();
   const [composeOpen, setComposeOpen] = useState(false);
   const { alertElement, show, showApiError, confirm } = useAlert();
@@ -140,11 +122,11 @@ export default function FeedScreen() {
 
   const worryRefresh = usePullRefresh(refetchWorries);
 
-  const queryKey = feedPostsKey(date, sort);
-  const invalidate = useCallback(
-    () => queryClient.invalidateQueries({ queryKey: FEEDS_KEY }),
-    [queryClient],
-  );
+  const actions = useFeedPostActions({
+    queryKey: feedPostsKey(date, sort),
+    alert: { show, showApiError, confirm },
+    onComposed: () => setComposeOpen(false),
+  });
 
   const feedRefresh = usePullRefresh(refetchFeed);
 
@@ -177,115 +159,6 @@ export default function FeedScreen() {
     },
     [scrollWorriesToTop, setWorryCategory],
   );
-
-  // 지워졌거나 이미 신고한 글이면 화면의 글이 낡은 것이므로 목록을 다시 받는다.
-  const handlePostError = useCallback(
-    (mutationError: unknown) => {
-      if (
-        isApiError(mutationError) &&
-        STALE_POST_CODES.has(mutationError.code)
-      ) {
-        invalidate();
-      }
-
-      showApiError(mutationError);
-    },
-    [invalidate, showApiError],
-  );
-
-  const setLiked = useCallback(
-    (key: string[], postId: number, liked: boolean) =>
-      queryClient.setQueryData<InfiniteData<FeedPostPage>>(key, (current) =>
-        mapPages(current, (items) =>
-          items.map((item) =>
-            item.postId === postId ? { ...item, likedByMe: liked } : item,
-          ),
-        ),
-      ),
-    [queryClient],
-  );
-
-  const toggleLike = useMutation({
-    mutationFn: (post: FeedPostResponse) =>
-      post.likedByMe
-        ? api.feeds.cancelLike(post.postId)
-        : api.feeds.like(post.postId),
-    // 아직 한 번도 받지 못한 키를 cancelQueries로 끊으면 그 쿼리가 pending으로 굳어
-    // 아무도 다시 받지 않는다. 캐시가 없으면 낙관적 패치도 어차피 무의미하다.
-    onMutate: async (post) => {
-      if (!queryClient.getQueryData(queryKey)) {
-        return undefined;
-      }
-
-      await queryClient.cancelQueries({ queryKey });
-      setLiked(queryKey, post.postId, !post.likedByMe);
-
-      return { key: queryKey, liked: post.likedByMe };
-    },
-    // 되돌릴 때는 onMutate가 잡아둔 키를 쓴다. 그 사이 날짜나 정렬이 바뀌었으면 렌더
-    // 시점 queryKey는 다른 목록을 가리킨다. 목록 전체가 아니라 이 글만 되돌린다.
-    onError: (mutationError, post, context) => {
-      if (context) {
-        setLiked(context.key, post.postId, context.liked);
-      }
-
-      handlePostError(mutationError);
-    },
-  });
-
-  const report = useMutation({
-    mutationFn: api.feeds.report,
-    onSuccess: async () => {
-      await invalidate();
-      show("info", reportedMessage());
-    },
-    onError: handlePostError,
-  });
-
-  const { mutate: toggleLikeMutate } = toggleLike;
-  const { mutate: reportMutate } = report;
-
-  const handleToggleLike = useCallback(
-    (post: FeedPostResponse) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      toggleLikeMutate(post);
-    },
-    [toggleLikeMutate],
-  );
-
-  const handleReport = useCallback(
-    (postId: number) =>
-      confirm({
-        message: t("feed.reportConfirm"),
-        confirmLabel: t("action.report"),
-        destructive: true,
-        onConfirm: () => reportMutate(postId),
-      }),
-    [confirm, reportMutate, t],
-  );
-
-  const compose = useMutation({
-    mutationFn: async ({
-      photo,
-      caption,
-    }: {
-      photo: ImagePickerAsset;
-      caption: string;
-    }) => {
-      const objectKey = await uploadFeedPhoto(photo);
-
-      await api.feeds.create({ objectKey, caption: caption.trim() || null });
-    },
-    onSuccess: async () => {
-      logAppEvent(APP_EVENT.feedPostCreated);
-      setComposeOpen(false);
-      await invalidate();
-      showToast("info", t("feed.posted"));
-    },
-    onError: showApiError,
-  });
-
-  useLoadingOverlay(report.isPending);
 
   const screenOptions = useMemo(
     () => ({
@@ -382,8 +255,8 @@ export default function FeedScreen() {
               post={item}
               mine={item.memberId === profile?.memberId}
               onPressPhoto={setViewerUrl}
-              onReport={handleReport}
-              onToggleLike={handleToggleLike}
+              onReport={actions.report}
+              onToggleLike={actions.toggleLike}
             />
           )}
           showsVerticalScrollIndicator={true}
@@ -427,10 +300,12 @@ export default function FeedScreen() {
 
       <FeedComposeSheet
         open={composeOpen}
-        pending={compose.isPending}
+        pending={actions.compose.isPending}
         onError={showApiError}
         onOpenChange={setComposeOpen}
-        onSubmit={(photo, caption) => compose.mutate({ photo, caption })}
+        onSubmit={(photo, caption) =>
+          actions.compose.mutate({ photo, caption })
+        }
       />
 
       <PhotoViewer

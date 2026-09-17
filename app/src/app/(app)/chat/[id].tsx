@@ -21,7 +21,7 @@ import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { MessageActionOverlay } from "@/components/chat/MessageActionOverlay";
 import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
-import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { MenuSheet } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
@@ -29,8 +29,8 @@ import { useAlert } from "@/hooks/useAlert";
 import { useChatMedia } from "@/hooks/useChatMedia";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
-import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRoomEffects } from "@/hooks/useChatRoomEffects";
+import { useChatRoomMenus } from "@/hooks/useChatRoomMenus";
 import { forgetRoom } from "@/hooks/useChatSocket";
 import { useMessageActions } from "@/hooks/useMessageActions";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -228,52 +228,16 @@ export default function ChatRoomScreen() {
     [],
   );
 
-  const { confirmLeave } = useChatRoomActions({ show, showApiError, confirm });
-
-  const attachItems: MenuSheetItem[] = [
-    { label: t("chatRoom.attachAlbum"), onPress: media.pick },
-    { label: t("chatRoom.attachCamera"), onPress: media.capture },
-    { label: t("chatRoom.attachVideo"), onPress: media.captureVideo },
-  ];
-
-  const menuItems: MenuSheetItem[] = [
-    {
-      label: t("chatRoom.profile"),
-      onPress: () => {
-        if (room) {
-          pushOnce(`/member/${room.memberId}`);
-        }
-      },
+  const { attachItems, menuItems } = useChatRoomMenus({
+    room,
+    roomId,
+    attach: {
+      album: media.pick,
+      camera: media.capture,
+      video: media.captureVideo,
     },
-    {
-      label: t("chatMedia.title"),
-      onPress: () => pushOnce(`/chat/media?roomId=${roomId}`),
-    },
-    {
-      label: t("chatRoom.leave"),
-      onPress: () => {
-        if (room) {
-          confirmLeave(room, () => router.back());
-        }
-      },
-    },
-    {
-      label: t("action.reportSubmit"),
-      destructive: true,
-      onPress: () => {
-        if (room) {
-          pushOnce({
-            pathname: "/report/[id]",
-            params: {
-              id: String(room.memberId),
-              roomId: String(roomId),
-              nickname: room.nickname,
-            },
-          });
-        }
-      },
-    },
-  ];
+    alert: { show, showApiError, confirm },
+  });
 
   const nameOf = (senderId?: number) =>
     senderId === myMemberId ? t("chatRoom.me") : (room?.nickname ?? "");

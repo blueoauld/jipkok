@@ -10,11 +10,11 @@ import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { MemberActionBar } from "@/components/MemberActionBar";
 import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
 import { PhotoViewer } from "@/components/photo/PhotoViewer";
+import { ProfileBody } from "@/components/ProfileBody";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { PhotoGridToggle, ProfilePhotos } from "@/components/ProfilePhotos";
-import { ProfileSection } from "@/components/ProfileSection";
 import { TextInputDialog } from "@/components/TextInputDialog";
-import { FloatingButton } from "@/components/ui/FloatingButton";
+import { CircleButton } from "@/components/ui/CircleButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
@@ -22,15 +22,8 @@ import { useMemberActions } from "@/hooks/useMemberActions";
 import { useMemberDetail } from "@/hooks/useMemberDetail";
 import { copyText } from "@/lib/clipboard";
 import { SCREEN_PADDING } from "@/lib/design";
-import {
-  bioCopiedMessage,
-  commentCopiedMessage,
-  profileBioEmptyMessage,
-  profileCommentEmptyMessage,
-  profileErrorMessage,
-} from "@/lib/message";
+import { profileErrorMessage } from "@/lib/message";
 import { useNoteStore } from "@/lib/note/store";
-import { usePhotoGridStore } from "@/lib/photo/grid-store";
 import { pushOnce } from "@/lib/router";
 
 const NOTE_MAX_LENGTH = 100;
@@ -47,14 +40,11 @@ export default function MemberProfileScreen() {
   const barHeight = useBottomBarHeight();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [gridPhotoIndex, setGridPhotoIndex] = useState<number | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const [memoOpen, setMemoOpen] = useState(false);
   const [secretPhotoOpen, setSecretPhotoOpen] = useState(false);
 
   const { alertElement, show, showApiError, confirm } = useAlert();
-  const photoGridOpen = usePhotoGridStore((state) => state.open);
-  const togglePhotoGrid = usePhotoGridStore((state) => state.toggle);
   const noteContent = useNoteStore((state) => state.content);
   const setNoteContent = useNoteStore((state) => state.setContent);
 
@@ -124,11 +114,7 @@ export default function MemberProfileScreen() {
               paddingBottom: barHeight,
             }}
           >
-            <ProfilePhotos
-              photos={member.publicPhotoUrls}
-              gridOpen={photoGridOpen}
-              onPressPhoto={setGridPhotoIndex}
-            />
+            <ProfilePhotos photos={member.publicPhotoUrls} />
 
             <ProfileHeader
               nickname={member.nickname}
@@ -141,19 +127,7 @@ export default function MemberProfileScreen() {
               onLongPressNickname={() => copyMemberId(member.memberId)}
             />
 
-            <ProfileSection
-              title={t("profile.comment")}
-              body={member.comment}
-              placeholder={profileCommentEmptyMessage()}
-              copiedMessage={commentCopiedMessage()}
-            />
-
-            <ProfileSection
-              title={t("profile.bio")}
-              body={member.bio}
-              placeholder={profileBioEmptyMessage()}
-              copiedMessage={bioCopiedMessage()}
-            />
+            <ProfileBody comment={member.comment} bio={member.bio} />
           </ScrollView>
 
           <MemberActionBar
@@ -168,14 +142,15 @@ export default function MemberProfileScreen() {
             b={barHeight + SCREEN_PADDING}
             gap={FLOATING_BUTTON_GAP}
           >
-            <PhotoGridToggle open={photoGridOpen} onPress={togglePhotoGrid} />
+            <PhotoGridToggle />
 
-            <FloatingButton
+            <CircleButton
+              tone="blue"
               label={t("memberDetail.memoTitle")}
               onPress={() => setMemoOpen(true)}
             >
               <NotePencilIcon size={MEMO_ICON_SIZE} color={theme.onFill.val} />
-            </FloatingButton>
+            </CircleButton>
           </YStack>
         </>
       ) : (
@@ -209,13 +184,6 @@ export default function MemberProfileScreen() {
         defaultValue={member?.memo ?? ""}
         clearable
         onSubmit={updateMemo}
-      />
-
-      <PhotoViewer
-        photos={member?.publicPhotoUrls ?? []}
-        initialIndex={gridPhotoIndex ?? 0}
-        open={gridPhotoIndex !== null}
-        onClose={() => setGridPhotoIndex(null)}
       />
 
       <PhotoViewer

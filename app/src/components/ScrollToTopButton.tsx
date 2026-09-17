@@ -2,7 +2,7 @@ import { CaretUpIcon } from "phosphor-react-native/src/icons/CaretUp";
 import { useTranslation } from "react-i18next";
 import { useTheme, XStack } from "tamagui";
 
-import { FloatingButton } from "@/components/ui/FloatingButton";
+import { CircleButton } from "@/components/ui/CircleButton";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { SCREEN_PADDING } from "@/lib/design";
 
@@ -29,9 +29,9 @@ export function ScrollToTopButton({
       r={SCREEN_PADDING}
       b={tabBarOverlay + SCREEN_PADDING}
     >
-      <FloatingButton label={t("a11y.scrollToTop")} onPress={onPress}>
+      <CircleButton tone="blue" label={t("a11y.scrollToTop")} onPress={onPress}>
         <CaretUpIcon size={ICON_SIZE} weight="bold" color={theme.onFill.val} />
-      </FloatingButton>
+      </CircleButton>
     </XStack>
   );
 }
