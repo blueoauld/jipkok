@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormField } from "@/components/FormField";
@@ -11,11 +11,11 @@ import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { SendCodeButton } from "@/components/SendCodeButton";
 import { Button } from "@/components/ui/Button";
+import { TextButton, TextButtonDivider } from "@/components/ui/TextButton";
 import { useAlert } from "@/hooks/useAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
-import { PRESS_OPACITY } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import {
@@ -85,30 +85,14 @@ export default function SignupScreen() {
               {t("auth.signup.submit")}
             </Button>
 
-            <XStack justify="center" items="center" gap="$2" pt="$3">
-              <Text
-                theme="blue"
-                color="$color10"
-                fontSize="$4"
-                textDecorationLine="underline"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                onPress={() => openLegal(PRIVACY_URL)}
-              >
+            <XStack justify="center" items="center" pt="$3">
+              <TextButton onPress={() => openLegal(PRIVACY_URL)}>
                 {t("legal.privacy")}
-              </Text>
-              <Text theme="gray" color="$color8" fontSize="$4">
-                |
-              </Text>
-              <Text
-                theme="blue"
-                color="$color10"
-                fontSize="$4"
-                textDecorationLine="underline"
-                pressStyle={{ opacity: PRESS_OPACITY }}
-                onPress={() => openLegal(TERMS_URL)}
-              >
+              </TextButton>
+              <TextButtonDivider />
+              <TextButton onPress={() => openLegal(TERMS_URL)}>
                 {t("legal.terms")}
-              </Text>
+              </TextButton>
             </XStack>
           </>
         }

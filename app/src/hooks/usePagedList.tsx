@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getTokens, Spinner, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LIST_ROW_EVEN_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
@@ -58,7 +58,7 @@ export function usePagedList(
     fetchNextPage,
   }: PagedQuery,
   bottomInset = 0,
-  layout: "retro" | "cards" | "rows" = "retro",
+  layout?: "cards" | "rows",
 ) {
   const contentContainerStyle = useMemo(() => {
     // 행은 좌우 여백과 누름 면을 스스로 가지므로 목록에는 간격을 두지 않는다. 아래만 행 위아래 여백 하나를
@@ -77,14 +77,8 @@ export function usePagedList(
       };
     }
 
-    const space = getTokens().space;
-
-    return {
-      paddingTop: space.$2.val,
-      paddingBottom: space.$4.val + bottomInset,
-      paddingHorizontal: space.$4.val,
-      gap: space.$4.val,
-    };
+    // 채팅 미디어 격자처럼 모양을 주지 않는 목록은 부르는 쪽이 여백을 직접 둔다.
+    return undefined;
   }, [bottomInset, layout]);
 
   // 내용만 비우면 스크롤 지시자가 그 여백까지 흘러내린다. 자동 보정은 안전 영역을 한 번

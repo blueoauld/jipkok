@@ -35,7 +35,9 @@ function Content({ onRetry }: { onRetry: () => Promise<void> }) {
     <YStack flex={1} bg="$background">
       <SafeAreaView style={{ flex: 1 }}>
         <StatusScreen
-          icon={<WarningIcon size={STATUS_ICON_SIZE} color={theme.red10.val} />}
+          icon={
+            <WarningIcon size={STATUS_ICON_SIZE} color={theme.red500.val} />
+          }
           title={i18n.t("crash.title")}
           description={
             <StatusDescription>{i18n.t("crash.description")}</StatusDescription>

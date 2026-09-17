@@ -4,6 +4,7 @@ import { XStack, YStack } from "tamagui";
 const WEEKS = 13;
 const DAYS_PER_WEEK = 7;
 const CELL_GAP = 3;
+const CELL_RADIUS = 4;
 
 // 날짜는 서버가 주는 한국 시간 기준이라 기기 시간대와 섞이지 않게 문자열로만 다룬다.
 function parseDay(day: string) {
@@ -68,7 +69,8 @@ export function AttendanceGrass({
                 key={week}
                 flex={1}
                 aspectRatio={1}
-                bg={attended.has(toKey(date)) ? "$blue10" : "$gray5"}
+                rounded={CELL_RADIUS}
+                bg={attended.has(toKey(date)) ? "$blue500" : "$grey200"}
                 opacity={date > todayDate ? 0 : 1}
               />
             );

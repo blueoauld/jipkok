@@ -42,7 +42,7 @@ export function HeaderSoloIconButton({
       accessibilityLabel={label}
       onPress={onPress}
     >
-      <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />
+      <Icon size={ICON_SIZE} weight={weight} color={theme.grey900.val} />
     </XStack>
   );
 }

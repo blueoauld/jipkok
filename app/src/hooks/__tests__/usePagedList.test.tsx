@@ -2,16 +2,16 @@ import { renderHook } from "@testing-library/react-native";
 
 import { usePagedList } from "@/hooks/usePagedList";
 
-// tamagui는 jest가 변환하지 않는 ESM이라 목록 여백에 쓰는 토큰만 대신 채운다.
-jest.mock("tamagui", () => {
-  const space = { val: 8 };
+// tamagui는 jest가 변환하지 않는 ESM이라 목록 끝에 그리는 부품을 비운다. ErrorState는 Tamagui 바벨
+// 플러그인이 글자를 펼치면서 @tamagui/core를 직접 불러오게 바꾸므로 따로 비운다.
+jest.mock("tamagui", () => ({
+  Spinner: () => null,
+  YStack: () => null,
+}));
 
-  return {
-    getTokens: () => ({ space: { $2: space, $4: space } }),
-    Spinner: () => null,
-    YStack: () => null,
-  };
-});
+jest.mock("@/components/ui/ErrorState", () => ({
+  ErrorState: () => null,
+}));
 
 function setup(query: {
   hasNextPage: boolean;

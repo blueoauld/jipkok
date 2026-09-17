@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, XStack } from "tamagui";
+import { Text, useTheme, XStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,6 @@ import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
-import { FAVORITE_COLOR } from "@/lib/color";
 import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
@@ -46,6 +45,7 @@ function Row({
   onDelete?: (memberId: number) => void;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const {
     memberId,
     nickname,
@@ -103,7 +103,7 @@ function Row({
           <StarIcon
             size={FAVORITE_ICON_SIZE}
             weight="fill"
-            color={FAVORITE_COLOR}
+            color={theme.yellow500.val}
           />
         )}
 

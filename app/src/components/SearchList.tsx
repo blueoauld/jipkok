@@ -44,7 +44,7 @@ export function SearchList<T>({
   items: T[] | undefined;
   keyExtractor: (item: T) => string;
   renderItem: ListRenderItem<T>;
-  layout?: "retro" | "cards" | "rows";
+  layout: "cards" | "rows";
 }) {
   const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
@@ -65,11 +65,11 @@ export function SearchList<T>({
 
   return (
     <>
-      {/* 행 목록은 첫 행 위 여백과 합쳐 검색창 아래도 좌우 여백과 같아지게 한다. */}
+      {/* 카드 목록은 목록 위 여백만으로, 행 목록은 첫 행 위 여백과 합쳐 검색창 아래도 좌우 여백과 같게 한다. */}
       <YStack
         px={SCREEN_PADDING}
         pt={SCREEN_PADDING}
-        pb={layout === "rows" ? LIST_ROW_EVEN_PADDING_Y : "$3"}
+        pb={layout === "rows" ? LIST_ROW_EVEN_PADDING_Y : 0}
         bg="$background"
       >
         <Input

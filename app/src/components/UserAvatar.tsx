@@ -9,10 +9,12 @@ import { IMAGE_TRANSITION, SQUARE_IMAGE_RADIUS_RATIO } from "@/lib/design";
 export const USER_AVATAR_SIZE = 64;
 const ICON_RATIO = 0.5;
 
-const GENDER_BG = {
-  MALE: "$blue6",
-  FEMALE: "$pink6",
-} as const satisfies Record<Gender, string>;
+const GENDER_COLORS = {
+  MALE: { bg: "$blue50", icon: "blue400" },
+  FEMALE: { bg: "$red50", icon: "red400" },
+} as const satisfies Record<Gender, { bg: string; icon: string }>;
+
+const NO_GENDER_COLORS = { bg: "$grey100", icon: "grey400" } as const;
 
 export function UserAvatar({
   id,
@@ -28,6 +30,7 @@ export function UserAvatar({
   const theme = useTheme();
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const failed = !!url && failedUrl === url;
+  const colors = gender ? GENDER_COLORS[gender] : NO_GENDER_COLORS;
 
   return (
     <YStack
@@ -36,7 +39,7 @@ export function UserAvatar({
       height={size}
       rounded={size * SQUARE_IMAGE_RADIUS_RATIO}
       overflow="hidden"
-      bg={gender ? GENDER_BG[gender] : "$grey100"}
+      bg={colors.bg}
       items="center"
       justify="center"
     >
@@ -50,7 +53,7 @@ export function UserAvatar({
           onError={() => setFailedUrl(url)}
         />
       ) : (
-        <UserIcon size={size * ICON_RATIO} color={theme.color12.val} />
+        <UserIcon size={size * ICON_RATIO} color={theme[colors.icon].val} />
       )}
     </YStack>
   );

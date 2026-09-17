@@ -46,7 +46,7 @@ function DateButton({
           }}
           isInteractive
         >
-          <Text fontSize="$4" fontWeight="600" color="$color">
+          <Text fontSize="$4" fontWeight="600" color="$grey900">
             {formatDateLabel(date, today)}
           </Text>
         </Glass>

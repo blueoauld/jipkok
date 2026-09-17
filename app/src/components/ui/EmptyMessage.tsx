@@ -3,7 +3,7 @@ import { Text } from "tamagui";
 
 export function EmptyMessage({ children }: { children: ReactNode }) {
   return (
-    <Text theme="gray" color="$color11" fontSize="$4">
+    <Text color="$grey600" fontSize="$4">
       {children}
     </Text>
   );

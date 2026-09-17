@@ -34,7 +34,7 @@ export function ScrollToTopButton({
         <CaretUpIcon
           size={ICON_SIZE}
           weight="bold"
-          color={GLASS_ENABLED ? theme.color.val : theme.onFill.val}
+          color={GLASS_ENABLED ? theme.grey900.val : theme.onFill.val}
         />
       </FloatingButton>
     </XStack>

@@ -37,7 +37,7 @@ export default function SuspendedScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusScreen
-        icon={<ProhibitIcon size={STATUS_ICON_SIZE} color={theme.red10.val} />}
+        icon={<ProhibitIcon size={STATUS_ICON_SIZE} color={theme.red500.val} />}
         title={t("suspended.title")}
         description={
           suspension && (

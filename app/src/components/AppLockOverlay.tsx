@@ -92,7 +92,7 @@ function LockScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusScreen
           icon={
-            <LockKeyIcon size={STATUS_ICON_SIZE} color={theme.color12.val} />
+            <LockKeyIcon size={STATUS_ICON_SIZE} color={theme.grey900.val} />
           }
           title={t("lock.title")}
           description={

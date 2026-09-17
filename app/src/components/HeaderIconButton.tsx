@@ -32,7 +32,7 @@ export function HeaderIconButton({
       onPress={onPress}
     >
       <GlassSurface size={HEADER_GLASS_SIZE}>
-        <Icon size={ICON_SIZE} weight={weight} color={theme.color.val} />
+        <Icon size={ICON_SIZE} weight={weight} color={theme.grey900.val} />
       </GlassSurface>
     </XStack>
   );

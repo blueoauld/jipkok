@@ -87,23 +87,6 @@ const TDS_COLORS = {
 
 type TdsColors = Record<keyof typeof TDS_COLORS, string>;
 
-type Level = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-
-type Twelve<T> = readonly [T, T, T, T, T, T, T, T, T, T, T, T];
-
-type Slot = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-
-// Tamagui 팔레트 12칸에 넣을 TDS 단계다. 앱은 1을 면, 3을 눌린 면, 8을 비활성, 10을 채움,
-// 11을 채움 눌림이나 보조 글자, 12를 기본 글자로 쓴다.
-const LEVELS: Twelve<Level> = [
-  50, 50, 100, 100, 200, 200, 300, 400, 500, 500, 600, 900,
-];
-
-// 노랑은 앱에서 9를 채움, 10을 눌림으로 쓴다.
-const YELLOW_LEVELS: Twelve<Level> = [
-  50, 50, 100, 100, 200, 200, 300, 400, 500, 600, 700, 900,
-];
-
 function tdsColors(scheme: "light" | "dark") {
   const index = scheme === "light" ? 0 : 1;
 
@@ -112,54 +95,13 @@ function tdsColors(scheme: "light" | "dark") {
   ) as TdsColors;
 }
 
-function palette<P extends string>(
-  prefix: P,
-  hue: "grey" | "blue" | "red" | "green" | "yellow",
-  colors: TdsColors,
-  levels = LEVELS,
-) {
-  return Object.fromEntries(
-    levels.map((level, index) => [
-      `${prefix}${index + 1}`,
-      colors[`${hue}${level}` as const],
-    ]),
-  ) as Record<`${P}${Slot}`, string>;
-}
-
 // 서브테마와 컴포넌트 테마는 만들어질 때 부모 테마의 키를 물려받으므로 루트 두 테마에만 넣는다.
 function rootTheme(colors: TdsColors) {
   return {
     ...colors,
-    ...palette("color", "grey", colors),
-    ...palette("gray", "grey", colors),
-    ...palette("blue", "blue", colors),
-    ...palette("red", "red", colors),
-    ...palette("green", "green", colors),
-    ...palette("yellow", "yellow", colors, YELLOW_LEVELS),
     color: colors.grey900,
-    color1: colors.layeredBackground,
-    gray1: colors.layeredBackground,
     borderColor: colors.hairlineBorder,
     onFill: ON_FILL,
-  };
-}
-
-function greyTheme(colors: TdsColors) {
-  return {
-    ...palette("color", "grey", colors),
-    color: colors.grey900,
-    color1: colors.layeredBackground,
-    background: colors.background,
-    borderColor: colors.hairlineBorder,
-  };
-}
-
-// 색 서브테마 안의 글자도 기본 글자색을 쓴다.
-function hueTheme(hue: "blue" | "red", colors: TdsColors) {
-  return {
-    ...palette("color", hue, colors),
-    color: colors.grey900,
-    color12: colors.grey900,
   };
 }
 
@@ -197,27 +139,6 @@ export const tamaguiConfig = createTamagui({
     ...defaultConfig.themes,
     light: { ...defaultConfig.themes.light, ...rootTheme(lightColors) },
     dark: { ...defaultConfig.themes.dark, ...rootTheme(darkColors) },
-    light_gray: {
-      ...defaultConfig.themes.light_gray,
-      ...greyTheme(lightColors),
-    },
-    dark_gray: { ...defaultConfig.themes.dark_gray, ...greyTheme(darkColors) },
-    light_blue: {
-      ...defaultConfig.themes.light_blue,
-      ...hueTheme("blue", lightColors),
-    },
-    dark_blue: {
-      ...defaultConfig.themes.dark_blue,
-      ...hueTheme("blue", darkColors),
-    },
-    light_red: {
-      ...defaultConfig.themes.light_red,
-      ...hueTheme("red", lightColors),
-    },
-    dark_red: {
-      ...defaultConfig.themes.dark_red,
-      ...hueTheme("red", darkColors),
-    },
   },
 });
 

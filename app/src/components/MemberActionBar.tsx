@@ -12,10 +12,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Border } from "@/components/ui/Border";
 import { Glass } from "@/components/ui/Glass";
 import type { MemberDetailResponse } from "@/lib/api";
-import { FAVORITE_COLOR } from "@/lib/color";
 import {
   BADGE_SIZES,
   bottomBarHeight,
+  DISABLED_OPACITY,
   FLOATING_BAR_RADIUS,
   floatingBarStyle,
 } from "@/lib/design";
@@ -69,11 +69,11 @@ export function MemberActionBar({
   };
 
   const colors: Record<MemberActionKey, string> = {
-    like: theme.red10.val,
-    favorite: FAVORITE_COLOR,
-    note: theme.blue10.val,
-    secretPhoto: theme.green10.val,
-    block: theme.red10.val,
+    like: theme.red500.val,
+    favorite: theme.yellow500.val,
+    note: theme.blue500.val,
+    secretPhoto: theme.green500.val,
+    block: theme.red500.val,
   };
 
   const disabled: Record<MemberActionKey, boolean> = {
@@ -92,7 +92,7 @@ export function MemberActionBar({
       height="100%"
       items="center"
       justify="center"
-      opacity={pending === key || disabled[key] ? 0.4 : 1}
+      opacity={pending === key || disabled[key] ? DISABLED_OPACITY : 1}
       accessibilityRole="button"
       accessibilityLabel={t(`a11y.${key}`)}
       accessibilityState={{ selected: filled[key], disabled: disabled[key] }}
@@ -102,7 +102,7 @@ export function MemberActionBar({
         <Icon
           size={ACTION_ICON_SIZE}
           weight={filled[key] && key !== "block" ? "fill" : "regular"}
-          color={filled[key] ? colors[key] : theme.color12.val}
+          color={filled[key] ? colors[key] : theme.grey900.val}
         />
 
         {key === "secretPhoto" && (

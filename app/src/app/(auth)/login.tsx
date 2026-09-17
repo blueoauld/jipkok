@@ -4,15 +4,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { PhoneNumberField } from "@/components/PhoneNumberField";
 import { Button } from "@/components/ui/Button";
+import { TextButton, TextButtonDivider } from "@/components/ui/TextButton";
 import { useAlert } from "@/hooks/useAlert";
 import { api, type LoginRequest } from "@/lib/api";
-import { PRESS_OPACITY } from "@/lib/design";
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -63,33 +63,15 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
 
-        <XStack justify="center" items="center" gap="$3" mt="$2">
+        <XStack justify="center" items="center" mt="$2">
           <Link href="/signup" asChild>
-            <Text
-              theme="blue"
-              color="$color10"
-              fontSize="$4"
-              textDecorationLine="underline"
-              pressStyle={{ opacity: PRESS_OPACITY }}
-            >
-              {t("auth.login.signup")}
-            </Text>
+            <TextButton>{t("auth.login.signup")}</TextButton>
           </Link>
 
-          <Text theme="gray" color="$color8" fontSize="$4">
-            |
-          </Text>
+          <TextButtonDivider />
 
           <Link href="/password" asChild>
-            <Text
-              theme="blue"
-              color="$color10"
-              fontSize="$4"
-              textDecorationLine="underline"
-              pressStyle={{ opacity: PRESS_OPACITY }}
-            >
-              {t("auth.login.findPassword")}
-            </Text>
+            <TextButton>{t("auth.login.findPassword")}</TextButton>
           </Link>
         </XStack>
       </FormScreen>
