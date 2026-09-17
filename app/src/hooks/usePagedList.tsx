@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { getTokens, Spinner, YStack } from "tamagui";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { SCREEN_PADDING } from "@/lib/design";
+import { LIST_ROW_EVEN_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
 import { listErrorMessage } from "@/lib/message";
 
 const END_REACHED_THRESHOLD = 0.5;
@@ -61,11 +61,10 @@ export function usePagedList(
   layout: "retro" | "cards" | "rows" = "retro",
 ) {
   const contentContainerStyle = useMemo(() => {
-    const space = getTokens().space;
-
-    // 행은 좌우 여백과 누름 면을 스스로 가지므로 목록에는 여백과 간격을 두지 않는다.
+    // 행은 좌우 여백과 누름 면을 스스로 가지므로 목록에는 간격을 두지 않는다. 아래만 행 위아래 여백 하나를
+    // 더해 마지막 행 아래가 행 사이와 같게 한다.
     if (layout === "rows") {
-      return { paddingBottom: space.$4.val + bottomInset };
+      return { paddingBottom: LIST_ROW_EVEN_PADDING_Y + bottomInset };
     }
 
     // 카드 바깥은 좌우, 위아래, 카드 사이를 모두 화면 좌우 여백만큼 띄운다.
@@ -77,6 +76,8 @@ export function usePagedList(
         gap: SCREEN_PADDING,
       };
     }
+
+    const space = getTokens().space;
 
     return {
       paddingTop: space.$2.val,

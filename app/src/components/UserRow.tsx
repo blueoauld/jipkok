@@ -11,7 +11,7 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { FAVORITE_COLOR } from "@/lib/color";
-import { LIST_ROW_PADDING_X } from "@/lib/design";
+import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
 import { pushOnce } from "@/lib/router";
 
@@ -24,9 +24,8 @@ const TEXT_HEIGHT = 26 + 23 * 2;
 // 사진이 글자 세 줄보다 낮아 행 안에서 위아래로 뜨는 거리다.
 const AVATAR_FLOAT = (TEXT_HEIGHT - USER_AVATAR_SIZE) / 2;
 
-// 사진 사이 세로 간격이 사진 왼쪽 여백과 같아지는 행 위아래 여백이다. 사진 사이에는 뜬 거리와 행 위아래
-// 여백이 두 번씩 들어간다.
-const ROW_PADDING_Y = LIST_ROW_PADDING_X.small / 2 - AVATAR_FLOAT;
+// 사진 사이 세로 간격이 사진 왼쪽 여백과 같아지도록, 글자 행의 위아래 여백에서 사진이 뜬 거리를 뺀다.
+const ROW_PADDING_Y = LIST_ROW_EVEN_PADDING_Y - AVATAR_FLOAT;
 
 type RowMember = MemberSummaryResponse & Partial<MemberListItemResponse>;
 

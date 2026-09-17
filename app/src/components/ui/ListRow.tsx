@@ -26,13 +26,13 @@ const ARROW_GAP = 4;
 const ARROW_OVERHANG = 8;
 
 // 목록 맨 위 빈칸이다. 행 사이에는 선 없이 아래 여백과 위 여백이 붙으므로, 첫 행 위 공간을 이와 맞추려고
-// 여백 하나만큼 띄운다. 행 위아래 여백을 바꾼 목록은 같은 값을 넘기고, 행 안에서 위아래로 뜨는 요소가
-// 있으면 뜬 만큼을 extra로 더한다. 탭이나 헤더 바로 아래에서 시작하는 목록의 ListHeaderComponent로 넣는다.
+// 목록의 행과 같은 위아래 여백만큼 띄운다. 행 안에서 위아래로 뜨는 요소가 있으면 뜬 만큼을 extra로 더한다.
+// 탭이나 헤더 바로 아래에서 시작하는 목록의 ListHeaderComponent로 넣는다.
 export function ListRowTopSpacer({
-  verticalPadding = LIST_ROW_VERTICAL_PADDING.medium,
+  verticalPadding,
   extra = 0,
 }: {
-  verticalPadding?: number;
+  verticalPadding: number;
   extra?: number;
 }) {
   return <YStack height={verticalPadding + extra} />;

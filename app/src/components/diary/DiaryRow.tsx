@@ -4,7 +4,11 @@ import { Text, useTheme } from "tamagui";
 import { ListRow } from "@/components/ui/ListRow";
 import type { DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam } from "@/lib/date";
-import { IMAGE_TRANSITION, SQUARE_IMAGE_RADIUS_RATIO } from "@/lib/design";
+import {
+  IMAGE_TRANSITION,
+  LIST_ROW_EVEN_PADDING_Y,
+  SQUARE_IMAGE_RADIUS_RATIO,
+} from "@/lib/design";
 import { moodEmoji } from "@/lib/diary";
 import { photoCacheKey } from "@/lib/photo";
 
@@ -25,6 +29,7 @@ export function DiaryRow({
   return (
     <ListRow
       horizontalPadding="small"
+      verticalPadding={LIST_ROW_EVEN_PADDING_Y}
       right={
         coverUri && (
           <Image

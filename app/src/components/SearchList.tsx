@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Input } from "@/components/ui/Input";
 import { usePagedList } from "@/hooks/usePagedList";
 import { apiErrorMessage } from "@/lib/alert";
+import { LIST_ROW_EVEN_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
 import { NICKNAME_MAX_LENGTH } from "@/lib/validation";
 
 type SearchQuery = {
@@ -64,7 +65,13 @@ export function SearchList<T>({
 
   return (
     <>
-      <YStack px="$4" pt="$4" pb="$3" bg="$background">
+      {/* 행 목록은 첫 행 위 여백과 합쳐 검색창 아래도 좌우 여백과 같아지게 한다. */}
+      <YStack
+        px={SCREEN_PADDING}
+        pt={SCREEN_PADDING}
+        pb={layout === "rows" ? LIST_ROW_EVEN_PADDING_Y : "$3"}
+        bg="$background"
+      >
         <Input
           value={keyword}
           onChangeText={setKeyword}

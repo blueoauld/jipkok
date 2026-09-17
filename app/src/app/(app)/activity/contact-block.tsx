@@ -20,8 +20,12 @@ import {
   useRemoveContactBlock,
 } from "@/hooks/useContactBlocks";
 import type { ContactBlockResponse } from "@/lib/api";
+import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import { listErrorMessage } from "@/lib/message";
 import { toDomestic } from "@/lib/phone";
+
+// 마지막 행 아래도 행 사이처럼 좌우 여백만큼 비도록 행 위아래 여백 하나를 더한다.
+const LIST_STYLE = { paddingBottom: LIST_ROW_EVEN_PADDING_Y };
 
 function ContactBlockRow({
   block,
@@ -35,6 +39,7 @@ function ContactBlockRow({
   return (
     <ListRow
       horizontalPadding="small"
+      verticalPadding={LIST_ROW_EVEN_PADDING_Y}
       right={
         <Button
           size="small"
@@ -67,8 +72,11 @@ function Notice() {
 
   return (
     <>
-      <ListRowTopSpacer />
-      <ListRow horizontalPadding="small">
+      <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
+      <ListRow
+        horizontalPadding="small"
+        verticalPadding={LIST_ROW_EVEN_PADDING_Y}
+      >
         <Text fontSize="$2" lineHeight="$2" color="$grey600">
           {t("contactBlock.notice")}
         </Text>
@@ -113,6 +121,7 @@ export default function ContactBlockScreen() {
             <ContactBlockRow block={item} onRemove={remove.mutate} />
           )}
           ListHeaderComponent={Notice}
+          contentContainerStyle={LIST_STYLE}
           ListEmptyComponent={<ListEmpty>{t("contactBlock.empty")}</ListEmpty>}
         />
       ) : (

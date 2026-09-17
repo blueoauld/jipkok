@@ -7,12 +7,13 @@ import { Text, XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { ListRow } from "@/components/ui/ListRow";
+import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
 import { formatDateTime } from "@/lib/date";
+import { LIST_ROW_EVEN_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
 import { formatAmount, pointTypeLabel } from "@/lib/point";
 
 function Balance() {
@@ -22,6 +23,7 @@ function Balance() {
   return (
     <ListRow
       horizontalPadding="small"
+      verticalPadding={SCREEN_PADDING}
       right={
         <Text fontSize="$6" lineHeight="$6" fontWeight="700" color="$grey800">
           {data === undefined ? "-" : data.toLocaleString()}
@@ -41,7 +43,10 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   const earned = amount > 0;
 
   return (
-    <ListRow horizontalPadding="small">
+    <ListRow
+      horizontalPadding="small"
+      verticalPadding={LIST_ROW_EVEN_PADDING_Y}
+    >
       <XStack items="center" justify="space-between" gap="$2">
         <Text
           flex={1}
@@ -109,6 +114,9 @@ export default function PointHistoryScreen() {
             data={histories}
             keyExtractor={(history) => String(history.historyId)}
             renderItem={({ item }) => <HistoryRow history={item} />}
+            ListHeaderComponent={
+              <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
+            }
             showsVerticalScrollIndicator={true}
             ListEmptyComponent={
               <ListEmpty>{t("point.history.emptyMessage")}</ListEmpty>

@@ -230,6 +230,10 @@ export const LIST_ROW_VERTICAL_PADDING = {
   xlarge: 24,
 } as const;
 
+// 좌우 여백 small의 절반인 행 위아래 여백이다. 행 사이에는 이 여백이 두 번 들어가므로, 목록 맨 위 빈칸과 맨 아래
+// 여백도 이 값으로 두면 행 둘레가 상하좌우 모두 좌우 여백과 같아진다.
+export const LIST_ROW_EVEN_PADDING_Y = LIST_ROW_PADDING_X.small / 2;
+
 // TDS 목록 행을 누르면 모서리 12인 옅은 회색 면이 깔리며 이만큼 줄어든다.
 export const ROW_PRESS_RADIUS = 12;
 

@@ -5,7 +5,7 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
-import { getTokens, Text, YStack } from "tamagui";
+import { Text, YStack } from "tamagui";
 
 import { DiaryRow } from "@/components/diary/DiaryRow";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -20,7 +20,7 @@ import { useDiaryMonth } from "@/hooks/useDiaries";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { koreaDateParam, toMonthParam } from "@/lib/date";
-import { LIST_ROW_PADDING_X } from "@/lib/design";
+import { LIST_ROW_EVEN_PADDING_Y, LIST_ROW_PADDING_X } from "@/lib/design";
 import { moodEmoji } from "@/lib/diary";
 import { type DiarySort, useDiaryFilterStore } from "@/lib/filter/store";
 import i18n from "@/lib/i18n";
@@ -97,7 +97,7 @@ export default function DiaryScreen() {
   }, [diaries, sort]);
   const tabBarOverlay = useTabBarOverlay();
   const contentStyle = useMemo(
-    () => ({ paddingBottom: getTokens().space.$4.val + tabBarOverlay }),
+    () => ({ paddingBottom: LIST_ROW_EVEN_PADDING_Y + tabBarOverlay }),
     [tabBarOverlay],
   );
 
@@ -131,7 +131,7 @@ export default function DiaryScreen() {
               {t("diary.notice")}
             </Text>
 
-            <ListRowTopSpacer />
+            <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
           </>
         }
         ListEmptyComponent={
