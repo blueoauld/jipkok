@@ -327,9 +327,9 @@ export default function SettingScreen() {
           paddingBottom: space.$4.val + tabBarOverlay,
         }}
       >
-        {SECTIONS.map((group) => (
+        {SECTIONS.map((group, index) => (
           <YStack key={group.key}>
-            <Border variant="height16" />
+            {index > 0 && <Border variant="height16" />}
             <SettingSection
               items={group.items}
               pendingAction={pendingAction}
