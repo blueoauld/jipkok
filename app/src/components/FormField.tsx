@@ -18,7 +18,7 @@ export function FormField({
 
       {(error || right) && (
         <XStack justify="space-between" gap="$2" px={FIELD_TEXT_INSET}>
-          <Text flex={1} fontSize="$1" color="$red600">
+          <Text flex={1} fontSize="$1" lineHeight="$1" color="$red600">
             {error}
           </Text>
           {right}

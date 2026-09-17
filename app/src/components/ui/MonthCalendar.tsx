@@ -11,6 +11,7 @@ import { Text, useTheme, YStack } from "tamagui";
 import { formatFullDate, fromDateParam } from "@/lib/date";
 import { PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";
+import { useThemeStore } from "@/lib/theme/store";
 
 const DAY_SIZE = 36;
 const DOT_SIZE = 4;
@@ -117,6 +118,7 @@ export function MonthCalendar(
   >,
 ) {
   const theme = useTheme();
+  const scheme = useThemeStore((state) => state.mode);
   const { maxDate } = props;
   const dayComponent = useCallback(
     (dayProps: CalendarDayProps) => (
@@ -127,6 +129,7 @@ export function MonthCalendar(
 
   return (
     <Calendar
+      key={scheme}
       {...props}
       monthFormat={i18n.t("component.monthFormat")}
       dayComponent={dayComponent}

@@ -227,6 +227,7 @@ function ReplyMessage({
 
             <Text
               fontSize="$1"
+              lineHeight="$1"
               color={mine ? QUOTE_TEXT_ON_BLUE : "$grey600"}
               numberOfLines={2}
             >

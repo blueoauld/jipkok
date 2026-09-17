@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import { XStack, YStack } from "tamagui";
 
-import { OVERLAY_INK, PILL_RADIUS } from "@/lib/design";
+import { OVERLAY_BG, OVERLAY_INK, PILL_RADIUS } from "@/lib/design";
 
 const DOT_SIZE = 6;
 
@@ -54,7 +54,14 @@ export function PhotoDots({ count, index }: { count: number; index: number }) {
   }
 
   return (
-    <XStack justify="center" gap="$2">
+    <XStack
+      self="center"
+      px="$3"
+      py="$2"
+      rounded={PILL_RADIUS}
+      bg={OVERLAY_BG}
+      gap="$2"
+    >
       {Array.from({ length: count }, (_, dotIndex) => (
         <YStack
           key={dotIndex}

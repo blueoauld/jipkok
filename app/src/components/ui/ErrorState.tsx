@@ -13,7 +13,7 @@ export function ErrorState({
   const { t } = useTranslation();
   return (
     <YStack items="center" gap="$4">
-      <Text color="$grey600" fontSize="$4" text="center">
+      <Text color="$grey600" fontSize="$4" lineHeight="$4" text="center">
         {message}
       </Text>
 

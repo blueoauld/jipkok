@@ -246,11 +246,7 @@ function ViewerContent({
           >
             <SafeAreaView edges={["bottom"]}>
               <YStack pb="$6" items="center">
-                {photos.length > 1 && (
-                  <XStack px="$3" py="$2" rounded={PILL_RADIUS} bg={OVERLAY_BG}>
-                    <PhotoDots count={photos.length} index={index} />
-                  </XStack>
-                )}
+                <PhotoDots count={photos.length} index={index} />
               </YStack>
             </SafeAreaView>
           </Animated.View>

@@ -96,10 +96,20 @@ export function Alert({
                 pt={DIALOG_TEXT_PADDING}
                 gap={SPACING.titleGap}
               >
-                <Text fontSize="$6" fontWeight="700" color="$grey800">
+                <Text
+                  fontSize="$6"
+                  lineHeight="$6"
+                  fontWeight="700"
+                  color="$grey800"
+                >
                   {title}
                 </Text>
-                <Text fontSize="$2" fontWeight="500" color="$grey600">
+                <Text
+                  fontSize="$2"
+                  lineHeight="$2"
+                  fontWeight="500"
+                  color="$grey600"
+                >
                   {message}
                 </Text>
               </YStack>

@@ -18,7 +18,7 @@ export function StatusScreen({
       {icon}
 
       <YStack gap="$2" items="center">
-        <Text fontSize="$6" fontWeight="700" text="center">
+        <Text fontSize="$6" lineHeight="$6" fontWeight="700" text="center">
           {title}
         </Text>
 
@@ -32,7 +32,7 @@ export function StatusScreen({
 
 export function StatusDescription({ children }: { children: ReactNode }) {
   return (
-    <Text color="$grey600" fontSize="$4" text="center">
+    <Text color="$grey600" fontSize="$4" lineHeight="$4" text="center">
       {children}
     </Text>
   );

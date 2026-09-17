@@ -124,7 +124,13 @@ export function ToastHost() {
             >
               <ToastIcon icon={ICONS[toast.variant]} />
 
-              <Text shrink={1} fontSize="$2" fontWeight="600" color="$onFill">
+              <Text
+                shrink={1}
+                fontSize="$2"
+                lineHeight="$2"
+                fontWeight="600"
+                color="$onFill"
+              >
                 {toast.message}
               </Text>
             </XStack>
