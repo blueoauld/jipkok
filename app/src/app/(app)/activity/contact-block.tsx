@@ -1,16 +1,21 @@
+import * as Haptics from "expo-haptics";
 import { Stack } from "expo-router";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTokens, Text, XStack, YStack } from "tamagui";
+import { Text } from "tamagui";
 
 import { HeaderSoloIconButton } from "@/components/HeaderSoloIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
+import { Button } from "@/components/ui/Button";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroCard } from "@/components/ui/RetroCard";
-import { RetroDeleteButton } from "@/components/ui/RetroDeleteButton";
+import {
+  ListRow,
+  ListRowSeparator,
+  ListRowTopSpacer,
+} from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
 import {
@@ -29,22 +34,50 @@ function ContactBlockRow({
   block: ContactBlockResponse;
   onRemove: (contactBlockId: number) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <RetroCard>
-      <XStack items="center" justify="space-between" gap="$3">
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight="600">
-            {toDomestic(block.phoneNumber)}
-          </Text>
-          {block.memo && (
-            <Text theme="gray" color="$color11" fontSize="$2" numberOfLines={1}>
-              {block.memo}
-            </Text>
-          )}
-        </YStack>
-        <RetroDeleteButton onPress={() => onRemove(block.contactBlockId)} />
-      </XStack>
-    </RetroCard>
+    <ListRow
+      horizontalPadding="small"
+      right={
+        <Button
+          size="small"
+          variant="secondary"
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onRemove(block.contactBlockId);
+          }}
+        >
+          {t("action.delete")}
+        </Button>
+      }
+    >
+      <Text fontSize="$4" lineHeight="$4" fontWeight="500" color="$grey800">
+        {toDomestic(block.phoneNumber)}
+      </Text>
+
+      {block.memo && (
+        <Text numberOfLines={1} fontSize="$2" lineHeight="$2" color="$grey600">
+          {block.memo}
+        </Text>
+      )}
+    </ListRow>
+  );
+}
+
+// 안내 문구도 행과 같은 여백의 행으로 두고, 맨 위 빈칸으로 헤더 아래 공간을 행 사이 공간과 맞춘다.
+function Notice() {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <ListRowTopSpacer />
+      <ListRow horizontalPadding="small">
+        <Text fontSize="$2" lineHeight="$2" color="$grey600">
+          {t("contactBlock.notice")}
+        </Text>
+      </ListRow>
+    </>
   );
 }
 
@@ -71,14 +104,6 @@ export default function ContactBlockScreen() {
     }),
     [openAdd, t],
   );
-  const contentStyle = useMemo(() => {
-    const space = getTokens().space;
-
-    return {
-      padding: space.$4.val,
-      gap: space.$4.val,
-    };
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -91,12 +116,8 @@ export default function ContactBlockScreen() {
           renderItem={({ item }) => (
             <ContactBlockRow block={item} onRemove={remove.mutate} />
           )}
-          contentContainerStyle={contentStyle}
-          ListHeaderComponent={
-            <Text theme="gray" color="$color11" fontSize="$2">
-              {t("contactBlock.notice")}
-            </Text>
-          }
+          ListHeaderComponent={Notice}
+          ItemSeparatorComponent={ListRowSeparator}
           ListEmptyComponent={<ListEmpty>{t("contactBlock.empty")}</ListEmpty>}
         />
       ) : (

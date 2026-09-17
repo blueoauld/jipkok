@@ -5,10 +5,10 @@ import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 
+import { Border } from "@/components/ui/Border";
 import { ListEmpty } from "@/components/ui/ListEmpty";
-import { RetroCard } from "@/components/ui/RetroCard";
+import { ListRow, ListRowSeparator } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
@@ -20,17 +20,18 @@ function Balance() {
   const { data } = usePointBalance();
 
   return (
-    <YStack mx="$4">
-      <RetroCard p="$4">
-        <XStack items="center" justify="space-between" gap="$3">
-          <SectionLabel>{t("point.history.balance")}</SectionLabel>
-
-          <Text fontSize="$6" fontWeight="700">
-            {data === undefined ? "-" : data.toLocaleString()}
-          </Text>
-        </XStack>
-      </RetroCard>
-    </YStack>
+    <ListRow
+      horizontalPadding="small"
+      right={
+        <Text fontSize="$6" lineHeight="$6" fontWeight="700" color="$grey800">
+          {data === undefined ? "-" : data.toLocaleString()}
+        </Text>
+      }
+    >
+      <Text fontSize="$4" lineHeight="$4" fontWeight="500" color="$grey800">
+        {t("point.history.balance")}
+      </Text>
+    </ListRow>
   );
 }
 
@@ -40,35 +41,48 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
   const earned = amount > 0;
 
   return (
-    <RetroCard>
-      <XStack items="center" gap="$3">
-        <YStack flex={1} gap="$1">
-          <Text numberOfLines={1} fontSize="$4" fontWeight="500">
-            {pointTypeLabel(type)}
-          </Text>
+    <ListRow horizontalPadding="small">
+      <XStack items="center" justify="space-between" gap="$2">
+        <Text
+          flex={1}
+          numberOfLines={1}
+          fontSize="$4"
+          lineHeight="$4"
+          fontWeight="500"
+          color="$grey800"
+        >
+          {pointTypeLabel(type)}
+        </Text>
 
-          <Text theme="gray" color="$color11" fontSize="$2">
-            {formatDateTime(recordedAt)}
-          </Text>
-        </YStack>
-
-        <YStack shrink={0} items="flex-end" gap="$1">
-          <Text
-            fontSize="$4"
-            fontWeight="700"
-            color={earned ? "$red10" : "$blue10"}
-          >
-            {formatAmount(amount)}
-          </Text>
-
-          <Text theme="gray" color="$color11" fontSize="$2">
-            {t("point.history.balanceAfter", {
-              balance: balanceAfter.toLocaleString(),
-            })}
-          </Text>
-        </YStack>
+        <Text
+          shrink={0}
+          fontSize="$4"
+          lineHeight="$4"
+          fontWeight="700"
+          color={earned ? "$red500" : "$blue500"}
+        >
+          {formatAmount(amount)}
+        </Text>
       </XStack>
-    </RetroCard>
+
+      <XStack items="center" justify="space-between" gap="$2">
+        <Text
+          flex={1}
+          numberOfLines={1}
+          fontSize="$2"
+          lineHeight="$2"
+          color="$grey600"
+        >
+          {formatDateTime(recordedAt)}
+        </Text>
+
+        <Text shrink={0} fontSize="$1" color="$grey500">
+          {t("point.history.balanceAfter", {
+            balance: balanceAfter.toLocaleString(),
+          })}
+        </Text>
+      </XStack>
+    </ListRow>
   );
 }
 
@@ -78,15 +92,16 @@ export default function PointHistoryScreen() {
 
   const query = usePointHistories();
   const { histories, error } = query;
-  const paged = usePagedList(query);
+  const paged = usePagedList(query, 0, "rows");
   const balance = usePointBalance();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <Stack.Screen options={screenOptions} />
 
-      <YStack flex={1} gap="$4" pt="$4">
+      <YStack flex={1}>
         <Balance />
+        <Border variant="height16" />
 
         {histories ? (
           <FlatList
@@ -94,11 +109,8 @@ export default function PointHistoryScreen() {
             data={histories}
             keyExtractor={(history) => String(history.historyId)}
             renderItem={({ item }) => <HistoryRow history={item} />}
+            ItemSeparatorComponent={ListRowSeparator}
             showsVerticalScrollIndicator={true}
-            contentContainerStyle={{
-              ...paged.contentContainerStyle,
-              paddingTop: 0,
-            }}
             ListEmptyComponent={
               <ListEmpty>{t("point.history.emptyMessage")}</ListEmpty>
             }
