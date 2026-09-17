@@ -334,6 +334,7 @@ export default function ChatRoomScreen() {
                 showTime={item.showTime}
                 replyName={replyNameOf(item.message)}
                 partnerId={room.memberId}
+                partnerName={room.nickname}
                 partnerImageUrl={room.profileImageUrl ?? null}
                 onPressAvatar={handlePressAvatar}
                 onPressPhoto={media.openViewer}

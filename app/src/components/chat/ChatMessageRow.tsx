@@ -11,7 +11,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { useTheme, XStack, YStack } from "tamagui";
+import { Text, useTheme, XStack, YStack } from "tamagui";
 
 import { BUBBLE_TAIL_OVERHANG, ChatBubble } from "@/components/chat/ChatBubble";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -20,9 +20,10 @@ import { isPending } from "@/lib/chat";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
 import { PILL_RADIUS, PRESS_OPACITY, SCREEN_PADDING } from "@/lib/design";
 
-const AVATAR_SIZE = 36;
-// 묶음의 마지막 말풍선 꼬리가 사진 쪽으로 나오므로 그만큼 더 띄운다.
+const AVATAR_SIZE = 40;
+// 묶음의 첫 말풍선 꼬리가 사진 쪽으로 나오므로 그만큼 더 띄운다.
 const AVATAR_GAP = BUBBLE_TAIL_OVERHANG + 8;
+const NAME_GAP = 4;
 
 const GROUP_GAP_TOP = 12;
 const MESSAGE_GAP_BOTTOM = 4;
@@ -87,6 +88,7 @@ function Row({
   showTime,
   replyName,
   partnerId,
+  partnerName,
   partnerImageUrl,
   onPressAvatar,
   onPressPhoto,
@@ -103,6 +105,7 @@ function Row({
   showTime: boolean;
   replyName: string;
   partnerId: number;
+  partnerName: string;
   partnerImageUrl: string | null;
   onPressAvatar: () => void;
   onPressPhoto: (message: ChatMessageResponse) => void;
@@ -153,21 +156,36 @@ function Row({
               </YStack>
             ))}
 
-          <XStack shrink={1} maxW={bubbleMaxWidth}>
-            <Blink active={highlighted}>
-              <ChatBubble
-                message={message}
-                mine={mine}
-                showTime={showTime}
-                replyName={replyName}
-                myMemberId={myMemberId}
-                onPressPhoto={onPressPhoto}
-                onPressVideo={onPressVideo}
-                onPressReply={onPressReply}
-                onOpenActions={onOpenActions}
-              />
-            </Blink>
-          </XStack>
+          {/* 상대 묶음의 첫 말풍선은 사진 옆 이름 줄 아래에서 시작한다. */}
+          <YStack shrink={1} gap={NAME_GAP}>
+            {!mine && !grouped && (
+              <Text
+                numberOfLines={1}
+                fontSize="$1"
+                lineHeight="$1"
+                color="$grey700"
+              >
+                {partnerName}
+              </Text>
+            )}
+
+            <XStack shrink={1} maxW={bubbleMaxWidth}>
+              <Blink active={highlighted}>
+                <ChatBubble
+                  message={message}
+                  mine={mine}
+                  tail={!grouped}
+                  showTime={showTime}
+                  replyName={replyName}
+                  myMemberId={myMemberId}
+                  onPressPhoto={onPressPhoto}
+                  onPressVideo={onPressVideo}
+                  onPressReply={onPressReply}
+                  onOpenActions={onOpenActions}
+                />
+              </Blink>
+            </XStack>
+          </YStack>
         </XStack>
       </ReanimatedSwipeable>
     </YStack>

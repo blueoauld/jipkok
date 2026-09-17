@@ -21,7 +21,8 @@ import { showToast } from "@/lib/toast/store";
 const QUOTE_TEXT_ON_BLUE = "rgba(255, 255, 255, 0.7)";
 const QUOTE_LINE_ON_BLUE = "rgba(255, 255, 255, 0.35)";
 
-// TDS Bubble에서 잰 값이다. 꼬리는 말풍선 아래 모서리에서 바깥으로 5만큼 나간다.
+// TDS Bubble에서 잰 값이다. TDS는 꼬리를 아래 모서리에 달지만, 상대 사진과 이름 쪽을 가리키도록 위아래를
+// 뒤집어 위 모서리에 단다. 꼬리는 모서리에서 바깥으로 5만큼 나간다.
 const PADDING_X = 14;
 const PADDING_Y = 12;
 const FONT_SIZE = 16;
@@ -35,8 +36,7 @@ const TAIL_PATH =
 
 const SECTION_GAP = 8;
 
-// 시각과 말풍선 사이다. 꼬리가 말풍선 밖으로 나오는 만큼을 더 띄운다.
-const TIME_GAP = BUBBLE_TAIL_OVERHANG + 4;
+const TIME_GAP = 4;
 
 function BubbleFrame({
   mine,
@@ -70,14 +70,15 @@ function BubbleFrame({
             mine
               ? {
                   position: "absolute",
-                  bottom: 0,
+                  top: 0,
                   right: -BUBBLE_TAIL_OVERHANG,
+                  transform: [{ scaleY: -1 }],
                 }
               : {
                   position: "absolute",
-                  bottom: 0,
+                  top: 0,
                   left: -BUBBLE_TAIL_OVERHANG,
-                  transform: [{ scaleX: -1 }],
+                  transform: [{ scaleX: -1 }, { scaleY: -1 }],
                 }
           }
         >
@@ -307,6 +308,7 @@ export function ChatBubbleContent({
 export function ChatBubble({
   message,
   mine,
+  tail,
   showTime,
   replyName,
   myMemberId,
@@ -317,6 +319,7 @@ export function ChatBubble({
 }: {
   message: ChatMessageResponse;
   mine: boolean;
+  tail: boolean;
   showTime: boolean;
   replyName: string;
   myMemberId: number;
@@ -360,11 +363,10 @@ export function ChatBubble({
         {mine && time}
 
         <View ref={bubbleRef} collapsable={false} style={{ flexShrink: 1 }}>
-          {/* 시각이 붙는 묶음의 마지막 말풍선에만 꼬리를 단다. */}
           <ChatBubbleContent
             message={message}
             mine={mine}
-            tail={showTime}
+            tail={tail}
             replyName={replyName}
             onPressPhoto={onPressPhoto}
             onPressVideo={onPressVideo}
