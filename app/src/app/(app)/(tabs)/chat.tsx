@@ -21,7 +21,7 @@ import {
 } from "@/hooks/useScrollToTopVisible";
 import type { ChatRoomResponse } from "@/lib/api";
 import { useChatSelectionStore } from "@/lib/chat/store";
-import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
+import { BOTTOM_CTA_FADE_HEIGHT, LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { useLoadingOverlay } from "@/lib/overlay/store";
 
@@ -55,8 +55,12 @@ export default function ChatScreen() {
   const { rooms, error } = chatRooms;
   const tabBarOverlay = useTabBarOverlay();
   const selecting = useChatSelectionStore((state) => state.active);
-  // 셀렉션 바가 흐름 안에서 그 자리를 이미 차지하므로 목록까지 비우면 두 번 센다.
-  const paged = usePagedList(chatRooms, selecting ? 0 : tabBarOverlay, "rows");
+  // 고르는 중에는 흐름 안의 셀렉션 바가 탭 바에 덮이는 만큼을 이미 품으므로, 바 위로 겹치는 흐림 띠만큼만 비운다.
+  const paged = usePagedList(
+    chatRooms,
+    selecting ? BOTTOM_CTA_FADE_HEIGHT : tabBarOverlay,
+    "rows",
+  );
 
   const selected = useChatSelectionStore((state) => state.selected);
   const toggleSelected = useChatSelectionStore((state) => state.toggle);

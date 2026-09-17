@@ -38,6 +38,13 @@ export const DIALOG_ENTER_SCALE = 0.95;
 // 폼 화면 아래 고정 버튼이 스크롤 내용을 가리지 않게 띄우는 높이다.
 export const FORM_FOOTER_HEIGHT = 80;
 
+// TDS 하단 고정 버튼(BottomCTA)에서 잰 값이다. 버튼 줄 위 흐림 띠 높이, 버튼 아래 여백, 두 버튼 사이다.
+export const BOTTOM_CTA_FADE_HEIGHT = 36;
+
+export const BOTTOM_CTA_PADDING_BOTTOM = 20;
+
+export const BOTTOM_CTA_GAP = 8;
+
 // 키보드 위에 붙는 줄을 이만큼 겹쳐야 둘 사이에 실선 같은 틈이 안 보인다.
 export const KEYBOARD_OVERLAP = 2;
 
