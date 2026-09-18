@@ -33,7 +33,6 @@ class OpenAiReplyGenerator(
         messages = aiPromptBuilder.build(context),
         maxChars = ChatMessage.CONTENT_MAX_LENGTH,
         maxTokens = REPLY_MAX_TOKENS,
-        temperature = REPLY_TEMPERATURE,
         language = context.language,
         aiMemberId = context.ai.id,
     )
@@ -42,7 +41,6 @@ class OpenAiReplyGenerator(
         messages = aiPromptBuilder.buildGreeting(context),
         maxChars = ChatMessage.CONTENT_MAX_LENGTH,
         maxTokens = REPLY_MAX_TOKENS,
-        temperature = REPLY_TEMPERATURE,
         language = context.partner.locale,
         aiMemberId = context.ai.id,
     )
@@ -51,7 +49,6 @@ class OpenAiReplyGenerator(
         messages = aiPromptBuilder.buildSummary(context),
         maxChars = AiRoomMemory.SUMMARY_MAX_CHARS,
         maxTokens = SUMMARY_MAX_TOKENS,
-        temperature = SUMMARY_TEMPERATURE,
         language = null,
         aiMemberId = context.ai.id,
     )
@@ -61,19 +58,18 @@ class OpenAiReplyGenerator(
         messages: List<Message>,
         maxChars: Int,
         maxTokens: Int,
-        temperature: Double,
         language: MemberLocale?,
         aiMemberId: Long,
     ): AiReply? {
         val cacheKey = cacheKeyOf(aiMemberId)
-        val first = request(messages, maxChars, maxTokens, temperature, cacheKey) ?: return null
+        val first = request(messages, maxChars, maxTokens, cacheKey) ?: return null
 
         if (language == null || matchesLanguage(first.content, language)) {
             return first
         }
 
         log.info { "AI 응답의 언어가 어긋나 다시 만든다. aiMemberId=$aiMemberId language=$language" }
-        val second = request(messages, maxChars, maxTokens, temperature, cacheKey) ?: return first
+        val second = request(messages, maxChars, maxTokens, cacheKey) ?: return first
 
         return second.copy(
             promptTokens = first.promptTokens + second.promptTokens,
@@ -83,16 +79,15 @@ class OpenAiReplyGenerator(
         )
     }
 
+    // 온도는 주지 않는다. gpt-5 계열은 기본값 1만 받고 다른 값을 주면 400으로 거절한다.
     private fun request(
         messages: List<Message>,
         maxChars: Int,
         maxTokens: Int,
-        temperature: Double,
         cacheKey: String,
     ): AiReply? {
         val options = OpenAiChatOptions.builder()
             .maxCompletionTokens(maxTokens)
-            .temperature(temperature)
             .promptCacheKey(cacheKey)
 
         if (aiChatProperties.model.isNotBlank()) {
@@ -119,9 +114,5 @@ class OpenAiReplyGenerator(
         const val REPLY_MAX_TOKENS = 300
         const val SUMMARY_MAX_TOKENS = 800
         const val CACHE_KEY_PREFIX = "ai-"
-
-        // 사람 같은 말투를 남기되 다른 언어 글자가 튀지 않을 만큼 낮춘다. 요약은 사실 정리라 더 낮다.
-        const val REPLY_TEMPERATURE = 0.7
-        const val SUMMARY_TEMPERATURE = 0.3
     }
 }
