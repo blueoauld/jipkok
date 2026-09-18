@@ -23,9 +23,7 @@ class AiReplySchedulerTest {
 
     private val aiMemoryService = mockk<AiMemoryService>(relaxed = true)
 
-    private val context = mockk<AiReplyContext> {
-        every { lastMessageId } returns 40L
-    }
+    private val context = mockk<AiReplyContext>()
 
     private val scheduler = AiReplyScheduler(
         aiReplyJobService,
@@ -52,7 +50,7 @@ class AiReplySchedulerTest {
         scheduler.run()
 
         // then
-        verify { aiReplyJobService.complete(job, 40L, REPLY) }
+        verify { aiReplyJobService.complete(job, context, REPLY) }
         verify { aiMemoryService.refreshIfNeeded(1L, context) }
     }
 

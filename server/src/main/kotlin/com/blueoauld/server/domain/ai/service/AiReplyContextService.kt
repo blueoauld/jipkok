@@ -22,8 +22,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.random.Random
 
 private val log = KotlinLogging.logger {}
 
@@ -87,7 +89,7 @@ class AiReplyContextService(
             return AiReplyDecision.Postpone(persona.nextActiveStart(now).plus(persona.randomReplyDelay()))
         }
 
-        limitDrop(room.id, persona)?.let { return it }
+        limitPostpone(room.id, persona, now)?.let { return it }
 
         val silentDays = if (job.kind == AiReplyKind.NUDGE) {
             Duration.between(messages.last().createdAt, now).toDays()
@@ -103,7 +105,9 @@ class AiReplyContextService(
         )
     }
 
-    private fun limitDrop(roomId: Long, persona: AiPersona): AiReplyDecision.Drop? {
+    // 한도는 한국 날짜로 초기화되므로 작업을 버리지 않고 다음 날 활동 시작 뒤로 미룬다. 실행할 때 대화를 다시 읽어
+    // 그동안 쌓인 말에 답하게 되고, 밀린 방들이 한꺼번에 나가지 않도록 한 시간 안에 흩는다.
+    private fun limitPostpone(roomId: Long, persona: AiPersona, now: Instant): AiReplyDecision.Postpone? {
         val today = clock.today()
         val dayStart = today.atStartOfDay(KOREA).toInstant()
 
@@ -114,7 +118,7 @@ class AiReplyContextService(
         )
 
         if (roomCount >= ROOM_DAILY_LIMIT) {
-            return AiReplyDecision.Drop("방의 하루 응답 한도에 닿았다.")
+            return postponeToNextDay(persona, now, today)
         }
 
         val aiCount = aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
@@ -124,7 +128,7 @@ class AiReplyContextService(
         )
 
         if (aiCount >= persona.dailyReplyLimit) {
-            return AiReplyDecision.Drop("AI의 하루 응답 한도에 닿았다.")
+            return postponeToNextDay(persona, now, today)
         }
 
         val globalCount = aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, dayStart)
@@ -132,10 +136,17 @@ class AiReplyContextService(
         if (globalCount >= GLOBAL_DAILY_LIMIT) {
             alertGlobalLimit(today)
 
-            return AiReplyDecision.Drop("전체 하루 응답 한도에 닿았다.")
+            return postponeToNextDay(persona, now, today)
         }
 
         return null
+    }
+
+    private fun postponeToNextDay(persona: AiPersona, now: Instant, today: LocalDate): AiReplyDecision.Postpone {
+        val tomorrow = today.plusDays(1).atStartOfDay(KOREA).toInstant()
+        val start = maxOf(tomorrow, persona.nextActiveStart(now))
+
+        return AiReplyDecision.Postpone(start.plusSeconds(Random.nextLong(LIMIT_SPREAD.seconds + 1)))
     }
 
     private fun alertGlobalLimit(today: LocalDate) {
@@ -148,5 +159,7 @@ class AiReplyContextService(
 
         const val ROOM_DAILY_LIMIT = 100L
         const val GLOBAL_DAILY_LIMIT = 2000L
+
+        val LIMIT_SPREAD: Duration = Duration.ofHours(1)
     }
 }

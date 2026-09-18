@@ -213,7 +213,7 @@ class AiReplyContextServiceTest {
     }
 
     @Test
-    fun `방의 하루 응답 한도에 닿으면 버린다`() {
+    fun `방의 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
@@ -228,11 +228,13 @@ class AiReplyContextServiceTest {
         val decision = service(DAYTIME).decide(job())
 
         // then
-        assertThat(decision).isInstanceOf(AiReplyDecision.Drop::class.java)
+        assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
+        assertThat((decision as AiReplyDecision.Postpone).dueAt)
+            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     @Test
-    fun `AI의 하루 응답 한도에 닿으면 버린다`() {
+    fun `AI의 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
@@ -246,11 +248,13 @@ class AiReplyContextServiceTest {
         val decision = service(DAYTIME).decide(job())
 
         // then
-        assertThat(decision).isInstanceOf(AiReplyDecision.Drop::class.java)
+        assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
+        assertThat((decision as AiReplyDecision.Postpone).dueAt)
+            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     @Test
-    fun `전체 하루 응답 한도에 닿으면 버린다`() {
+    fun `전체 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, DAY_START)
@@ -261,7 +265,9 @@ class AiReplyContextServiceTest {
         val decision = service(DAYTIME).decide(job())
 
         // then
-        assertThat(decision).isInstanceOf(AiReplyDecision.Drop::class.java)
+        assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
+        assertThat((decision as AiReplyDecision.Postpone).dueAt)
+            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     private fun service(now: Instant) = AiReplyContextService(
@@ -319,5 +325,6 @@ class AiReplyContextServiceTest {
         private val DAYTIME: Instant = Instant.parse("2026-09-15T12:00:00+09:00")
         private val NIGHT: Instant = Instant.parse("2026-09-15T03:00:00+09:00")
         private val DAY_START: Instant = Instant.parse("2026-09-15T00:00:00+09:00")
+        private val NEXT_DAY_START: Instant = Instant.parse("2026-09-16T08:00:00+09:00")
     }
 }

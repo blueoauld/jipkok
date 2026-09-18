@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReply
+import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
 import com.blueoauld.server.domain.ai.entity.AiReplyLog
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
@@ -99,7 +100,7 @@ class AiReplyJobService(
     }
 
     @Transactional
-    fun complete(job: AiReplyJob, repliedMessageId: Long, reply: AiReply) {
+    fun complete(job: AiReplyJob, context: AiReplyContext, reply: AiReply) {
         val room = chatRoomRepository.findById(job.roomId).orElse(null)
 
         if (room == null) {
@@ -107,7 +108,7 @@ class AiReplyJobService(
             return
         }
 
-        chatRoomMemberRepository.markRead(room.id, job.aiMemberId, repliedMessageId)
+        chatRoomMemberRepository.markRead(room.id, job.aiMemberId, context.lastMessageId)
         val sent = chatMessageService.append(
             room = room,
             senderId = job.aiMemberId,
@@ -128,6 +129,8 @@ class AiReplyJobService(
                 cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = job.kind,
+                language = context.language,
+                regenerated = reply.regenerated,
             ),
         )
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)

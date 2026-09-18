@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiReply
+import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.projection.AiNudgeCandidateRow
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
@@ -15,6 +16,7 @@ import com.blueoauld.server.domain.chat.event.ChatMessageSentEvent
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.chat.service.ChatMessageService
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -117,7 +119,7 @@ class AiReplyJobServiceTest {
         every { aiReplyLogRepository.save(any()) } answers { firstArg() }
 
         // when
-        service.complete(job(), MESSAGE_ID, reply())
+        service.complete(job(), context(), reply())
 
         // then
         verifyOrder {
@@ -133,11 +135,28 @@ class AiReplyJobServiceTest {
                         it.messageId == 77L &&
                         it.promptTokens == 120 &&
                         it.completionTokens == 8 &&
-                        it.model == "test-model"
+                        it.model == "test-model" &&
+                        it.language == MemberLocale.KO &&
+                        !it.regenerated
                 },
             )
             aiReplyJobRepository.deleteIfUnchanged(ROOM_ID, MESSAGE_ID)
         }
+    }
+
+    @Test
+    fun `언어가 어긋나 다시 만든 답이면 로그에 표시한다`() {
+        // given
+        val room = ChatRoom.of(USER_ID, AI_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+        every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 79L, senderId = AI_ID)
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
+
+        // when
+        service.complete(job(), context(), reply().copy(regenerated = true))
+
+        // then
+        verify { aiReplyLogRepository.save(match { it.regenerated }) }
     }
 
     @Test
@@ -176,7 +195,7 @@ class AiReplyJobServiceTest {
         every { aiReplyLogRepository.save(any()) } answers { firstArg() }
 
         // when
-        service.complete(job(kind = AiReplyKind.NUDGE), MESSAGE_ID, reply())
+        service.complete(job(kind = AiReplyKind.NUDGE), context(), reply())
 
         // then
         verify { aiReplyLogRepository.save(match { it.kind == AiReplyKind.NUDGE && it.messageId == 78L }) }
@@ -188,7 +207,7 @@ class AiReplyJobServiceTest {
         every { chatRoomRepository.findById(ROOM_ID) } returns Optional.empty()
 
         // when
-        service.complete(job(), MESSAGE_ID, reply())
+        service.complete(job(), context(), reply())
 
         // then
         verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
@@ -218,6 +237,11 @@ class AiReplyJobServiceTest {
         imageUrl = null,
         createdAt = NOW,
     )
+
+    private fun context() = mockk<AiReplyContext> {
+        every { lastMessageId } returns MESSAGE_ID
+        every { language } returns MemberLocale.KO
+    }
 
     private fun reply() = AiReply(
         content = "안녕!",

@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.entity
 
 import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -49,6 +50,14 @@ class AiReplyLog(
     @Enumerated(EnumType.STRING)
     @Column(name = "kind", nullable = false, updatable = false)
     val kind: AiReplyKind = AiReplyKind.REPLY,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "language", updatable = false, length = LANGUAGE_MAX_LENGTH)
+    val language: MemberLocale? = null,
+
+    // 언어가 어긋나 다시 만든 답이다. 프롬프트나 모델을 손봐야 하는지 보는 근거다.
+    @Column(name = "regenerated", nullable = false, updatable = false)
+    val regenerated: Boolean = false,
 ) {
 
     @Id
@@ -64,5 +73,6 @@ class AiReplyLog(
     companion object {
 
         const val MODEL_MAX_LENGTH = 100
+        const val LANGUAGE_MAX_LENGTH = 10
     }
 }

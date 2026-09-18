@@ -70,6 +70,8 @@ class AiMemoryService(
                 cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = AiReplyKind.SUMMARY,
+                language = context.language,
+                regenerated = reply.regenerated,
             ),
         )
     }

@@ -1,0 +1,3 @@
+ALTER TABLE ai_reply_log
+    ADD COLUMN language    VARCHAR(10),
+    ADD COLUMN regenerated BOOLEAN NOT NULL DEFAULT FALSE;

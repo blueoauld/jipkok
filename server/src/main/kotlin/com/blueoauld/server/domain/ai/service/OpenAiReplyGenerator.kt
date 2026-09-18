@@ -79,6 +79,7 @@ class OpenAiReplyGenerator(
             promptTokens = first.promptTokens + second.promptTokens,
             completionTokens = first.completionTokens + second.completionTokens,
             cachedTokens = first.cachedTokens + second.cachedTokens,
+            regenerated = true,
         )
     }
 

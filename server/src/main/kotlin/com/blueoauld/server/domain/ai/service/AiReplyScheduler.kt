@@ -45,7 +45,7 @@ class AiReplyScheduler(
                 if (reply == null) {
                     aiReplyJobService.drop(job)
                 } else {
-                    aiReplyJobService.complete(job, decision.context.lastMessageId, reply)
+                    aiReplyJobService.complete(job, decision.context, reply)
                     aiMemoryService.refreshIfNeeded(job.roomId, decision.context)
                 }
             }

@@ -7,4 +7,5 @@ data class AiReply(
     val completionTokens: Int,
     val cachedTokens: Int,
     val model: String?,
+    val regenerated: Boolean = false,
 )

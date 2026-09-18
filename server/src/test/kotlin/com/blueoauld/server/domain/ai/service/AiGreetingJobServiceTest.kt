@@ -12,6 +12,7 @@ import com.blueoauld.server.domain.chat.dto.response.ChatMessageResponse
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.chat.service.ChatNoteService
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -41,7 +42,10 @@ class AiGreetingJobServiceTest {
 
     private val ai = mockk<Member> { every { id } returns AI_ID }
 
-    private val member = mockk<Member> { every { id } returns USER_ID }
+    private val member = mockk<Member> {
+        every { id } returns USER_ID
+        every { locale } returns MemberLocale.KO
+    }
 
     @Test
     fun `가입 후 10분이 지난 회원을 찾아 10분에서 2시간 사이 시각으로 예약한다`() {

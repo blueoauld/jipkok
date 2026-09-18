@@ -58,6 +58,8 @@ class AiGreetingJobService(
                 cachedTokens = reply.cachedTokens,
                 model = reply.model,
                 kind = AiReplyKind.GREETING,
+                language = context.partner.locale,
+                regenerated = reply.regenerated,
             ),
         )
         aiGreetingJobRepository.findById(job.memberId)
