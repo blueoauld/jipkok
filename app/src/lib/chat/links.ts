@@ -1,4 +1,4 @@
-export type TextSegment = { text: string; url?: string };
+type TextSegment = { text: string; url?: string };
 
 // http(s)와 www.로 시작하는 것만 링크로 본다. 전화번호와 맨 도메인은 일부러 뺀다.
 // 일본어와 중국어는 링크 뒤에 띄어쓰기 없이 문장부호가 붙으므로 처음부터 먹지 않는다.

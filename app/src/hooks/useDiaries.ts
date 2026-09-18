@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 
 export const DIARIES_KEY = ["diaries"];
 
-export function diaryMonthKey(month: string) {
+function diaryMonthKey(month: string) {
   return [...DIARIES_KEY, month];
 }
 

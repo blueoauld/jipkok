@@ -11,7 +11,7 @@ const RULES: Record<
   TW: { dialCode: "+886", pattern: /^09\d{8}$/, maxLength: 10 },
 };
 
-export function dialCodeOf(country: PhoneCountry) {
+function dialCodeOf(country: PhoneCountry) {
   return RULES[country].dialCode;
 }
 

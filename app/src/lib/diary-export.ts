@@ -11,14 +11,14 @@ const ZIP_MIME_TYPE = "application/zip";
 
 const EXTENSION_BY_TYPE = { PHOTO: "webp", VIDEO: "mp4" } as const;
 
-export type DiaryExportProgress = (done: number, total: number) => void;
+type DiaryExportProgress = (done: number, total: number) => void;
 
-export type DiaryExportDownload = {
+type DiaryExportDownload = {
   url: string;
   path: string;
 };
 
-export type DiaryExportPlan = {
+type DiaryExportPlan = {
   text: string;
   downloads: DiaryExportDownload[];
 };

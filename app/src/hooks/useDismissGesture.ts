@@ -17,7 +17,7 @@ import { TRANSITION } from "@/lib/design";
 // 시트, 다이얼로그와 같은 스프링으로 되돌아간다.
 const SPRING = animations.animations[TRANSITION];
 
-export const DISMISS_DISTANCE = 120;
+const DISMISS_DISTANCE = 120;
 
 const DISMISS_VELOCITY = 800;
 

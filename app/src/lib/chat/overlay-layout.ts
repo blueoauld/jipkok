@@ -8,7 +8,7 @@ export type MessageFrame = {
   height: number;
 };
 
-export type OverlayLayout = {
+type OverlayLayout = {
   barTop: number;
   menuTop: number;
   side: { left: number } | { right: number };

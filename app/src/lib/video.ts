@@ -31,7 +31,7 @@ const TOO_LARGE_MESSAGE = i18n.t("media.videoTooLarge", {
   megabytes: VIDEO_MAX_BYTES / 1024 / 1024,
 });
 
-export type VideoKeys = { objectKey: string; thumbnailKey: string };
+type VideoKeys = { objectKey: string; thumbnailKey: string };
 
 // RN은 네이티브 NSError를 domain/code/userInfo로 실어 준다. 압축기가 감싼 문구 뒤의 진짜 원인.
 function nativeErrorDetail(error: unknown) {

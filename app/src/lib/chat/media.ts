@@ -17,7 +17,7 @@ const SAVE_FAILED_MESSAGE = {
   video: i18n.t("media.videoSaveFailed"),
 };
 
-export type MediaKind = keyof typeof SAVED_MESSAGE;
+type MediaKind = keyof typeof SAVED_MESSAGE;
 
 export async function copyMessage(content: string) {
   await copyText(content, COPIED_MESSAGE);

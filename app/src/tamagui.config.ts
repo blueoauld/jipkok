@@ -146,7 +146,7 @@ export const tamaguiConfig = createTamagui({
 
 export default tamaguiConfig;
 
-export type Conf = typeof tamaguiConfig;
+type Conf = typeof tamaguiConfig;
 
 declare module "tamagui" {
   interface TamaguiCustomConfig extends Conf {}

@@ -11,7 +11,7 @@ import { mapPages, useFlatItems } from "@/lib/paging";
 
 type Page = InfiniteData<MemberSummaryPage>;
 
-export type RelationKind = "likes" | "favorites" | "blocks" | "secretPhotos";
+type RelationKind = "likes" | "favorites" | "blocks" | "secretPhotos";
 
 export function relationKey(kind: RelationKind) {
   return [kind];

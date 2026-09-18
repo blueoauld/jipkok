@@ -16,7 +16,7 @@ export const REACTION_EMOJI: Record<ChatReactionType, string> = {
   SAD: "😢",
 };
 
-export type ReactionGroup = {
+type ReactionGroup = {
   type: ChatReactionType;
   emoji: string;
   count: number;

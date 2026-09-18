@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 
-export type LoadingProgress = { done: number; total: number };
+type LoadingProgress = { done: number; total: number };
 
 type LoadingOverlayState = {
   visible: boolean;

@@ -48,7 +48,7 @@ export type SettingItem = {
   gated?: boolean;
 };
 
-export type SettingGroup = {
+type SettingGroup = {
   key: string;
   items: SettingItem[];
   attendance?: boolean;
