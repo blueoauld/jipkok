@@ -13,6 +13,8 @@ spring:
     ai:
         openai:
             api-key: ${OPENAI_API_KEY:}
+            timeout: 30s
+            max-retries: 1
             chat:
                 model: gpt-5.6-luna
 
@@ -44,6 +46,11 @@ spring:
 
     lifecycle:
         timeout-per-shutdown-phase: 20s
+
+    task:
+        scheduling:
+            pool:
+                size: 4
 
     jackson:
         default-property-inclusion: non_null
