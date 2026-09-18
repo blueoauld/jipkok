@@ -17,6 +17,7 @@ import { WindowInsetsProvider } from "@/hooks/useWindowInsets";
 import { initializeAds } from "@/lib/ads";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeCrashReporting } from "@/lib/crash";
+import { CONTENT_MAX_WIDTH } from "@/lib/design";
 import { initializePerformanceMonitoring } from "@/lib/performance";
 import { QueryProvider } from "@/lib/query";
 import { useReviewStore } from "@/lib/review/store";
@@ -49,11 +50,13 @@ export default function RootLayout() {
                   <CrashReporting />
                   <Performance />
                   <Review />
-                  <YStack flex={1}>
-                    <Stack screenOptions={{ headerShown: false }} />
-                    <LoadingOverlay />
-                    <ToastHost />
-                    <AppLockOverlay />
+                  <YStack flex={1} bg="$background" items="center">
+                    <YStack flex={1} width="100%" maxW={CONTENT_MAX_WIDTH}>
+                      <Stack screenOptions={{ headerShown: false }} />
+                      <LoadingOverlay />
+                      <ToastHost />
+                      <AppLockOverlay />
+                    </YStack>
                   </YStack>
                 </NavigationTheme>
               </Theme>

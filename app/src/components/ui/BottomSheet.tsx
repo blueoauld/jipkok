@@ -7,6 +7,7 @@ import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { useWindowInsets } from "@/hooks/useWindowInsets";
 import {
+  CONTENT_MAX_WIDTH,
   PILL_RADIUS,
   SCREEN_PADDING,
   SHEET_PADDING_X,
@@ -118,7 +119,13 @@ export function BottomSheet({
       />
 
       <Sheet.Frame bg="transparent" px={SHEET_MARGIN} pb={bottomPadding}>
-        <YStack bg="$layeredBackground" rounded={SHEET_RADIUS}>
+        <YStack
+          width="100%"
+          maxW={CONTENT_MAX_WIDTH}
+          self="center"
+          bg="$layeredBackground"
+          rounded={SHEET_RADIUS}
+        >
           <YStack height={HANDLE_AREA_HEIGHT} items="center" justify="flex-end">
             <YStack
               width={HANDLE_WIDTH}

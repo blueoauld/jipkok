@@ -247,6 +247,10 @@ export const PILL_RADIUS = 9999;
 // 화면 좌우 여백이다. space $4(18)는 요소 사이 간격에도 쓰여서 값을 바꾸지 않고 따로 둔다.
 export const SCREEN_PADDING = 20;
 
+// 태블릿에서 내용이 늘어나는 한계다. 한 열짜리 화면을 폭 전체로 펴면 행의 왼쪽 라벨과 오른쪽 값이
+// 너무 멀어지고 글줄이 길어져 읽기 어렵다. 넘는 폭은 양옆 빈 자리로 둔다.
+export const CONTENT_MAX_WIDTH = 720;
+
 export const LIST_ROW_PADDING_X = {
   small: 20,
   medium: 24,
