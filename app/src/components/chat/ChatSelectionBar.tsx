@@ -3,6 +3,7 @@ import { XStack, YStack } from "tamagui";
 
 import { BottomCTAFade } from "@/components/ui/BottomCTAFade";
 import { Button } from "@/components/ui/Button";
+import { bottomSpacing } from "@/hooks/useBottomBar";
 import { useWindowInsets } from "@/hooks/useWindowInsets";
 import {
   BOTTOM_CTA_PADDING_BOTTOM,
@@ -26,10 +27,10 @@ export function ChatSelectionBar({
   const insets = useWindowInsets();
 
   return (
-    // 고르는 동안에는 탭 바를 숨기므로 화면 바닥에 붙는다. 버튼 아래는 안전영역과 아래 여백 중 큰 값이다.
+    // 고르는 동안에는 탭 바를 숨기므로 화면 바닥에 붙는다.
     <YStack
       px={SCREEN_PADDING}
-      pb={Math.max(BOTTOM_CTA_PADDING_BOTTOM, insets.bottom)}
+      pb={bottomSpacing(insets.bottom, BOTTOM_CTA_PADDING_BOTTOM)}
       bg="$background"
     >
       <BottomCTAFade />

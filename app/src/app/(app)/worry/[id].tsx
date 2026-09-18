@@ -24,13 +24,14 @@ import { WorryCommentRow } from "@/components/worry/WorryCommentRow";
 import { WorryPostSection } from "@/components/worry/WorryPostSection";
 import { WorryReplyPreview } from "@/components/worry/WorryReplyPreview";
 import { useAlert } from "@/hooks/useAlert";
+import { useExtraBottomSpacing } from "@/hooks/useBottomBar";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePullRefresh } from "@/hooks/usePullRefresh";
 import { useWorryComments } from "@/hooks/useWorryComments";
 import { useWorryDetailActions } from "@/hooks/useWorryDetailActions";
 import { worryDetailKey } from "@/hooks/useWorryPosts";
 import { api, type WorryCommentResponse } from "@/lib/api";
-import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
+import { INPUT_BAR_PADDING_Y, LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
 
 // 한 장이 20개이므로 1000개까지는 끝까지 받는다.
 const MAX_DRAIN_PAGES = 50;
@@ -40,6 +41,7 @@ export default function WorryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const insets = useSafeAreaInsets();
+  const extraBottom = useExtraBottomSpacing(INPUT_BAR_PADDING_Y);
   const { alertElement, show, showApiError, confirm } = useAlert();
 
   const detail = useQuery({
@@ -200,7 +202,9 @@ export default function WorryDetailScreen() {
             />
           </YStack>
 
-          <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
+          <KeyboardStickyView
+            offset={{ closed: 0, opened: insets.bottom + extraBottom }}
+          >
             {replyTo && (
               <WorryReplyPreview
                 replyTo={replyTo}
@@ -208,11 +212,13 @@ export default function WorryDetailScreen() {
               />
             )}
 
-            <WorryCommentComposer
-              replyTo={replyTo}
-              pending={submittingComment}
-              onSubmit={handleSubmitComment}
-            />
+            <YStack pb={extraBottom}>
+              <WorryCommentComposer
+                replyTo={replyTo}
+                pending={submittingComment}
+                onSubmit={handleSubmitComment}
+              />
+            </YStack>
           </KeyboardStickyView>
         </>
       ) : (

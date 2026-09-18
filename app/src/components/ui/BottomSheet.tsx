@@ -3,6 +3,7 @@ import { Keyboard, Platform } from "react-native";
 import { Sheet, XStack, YStack } from "tamagui";
 
 import { Text } from "@/components/ui/Text";
+import { bottomSpacing } from "@/hooks/useBottomBar";
 import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { useWindowInsets } from "@/hooks/useWindowInsets";
@@ -56,16 +57,14 @@ function useKeyboardVisible(enabled: boolean) {
   return visible;
 }
 
-// 시트 아래 여백이다. 안드로이드 시스템 바는 불투명한 띠라 그 위에 딱 붙으면 시트가 바에 얹힌 것처럼
-// 보이므로 바 높이에 좌우와 같은 여백을 더한다. 시트를 키보드 높이만큼 올릴 때도 그 높이에는 시스템 바가
-// 빠져 있어 같은 값을 쓴다. iOS는 홈 인디케이터가 앱 배경 위에 떠 있어 TDS처럼 그 높이만큼만 띄우고,
-// 키보드 높이에는 안전영역이 들어 있어 좌우 여백만 둔다.
+// 시트를 키보드 높이만큼 올릴 때는 그 높이에 iOS만 안전영역이 들어 있어, 안드로이드만 시스템 바를 더한다.
+// 키보드가 없을 때는 화면 아래에 붙는 것들과 같은 규칙을 쓴다.
 function bottomPaddingOf(bottomInset: number, keyboardVisible: boolean) {
-  if (Platform.OS === "android") {
-    return bottomInset + SHEET_MARGIN;
+  if (!keyboardVisible) {
+    return bottomSpacing(bottomInset, SHEET_MARGIN);
   }
 
-  return keyboardVisible ? SHEET_MARGIN : bottomInset || SHEET_MARGIN;
+  return Platform.OS === "android" ? bottomInset + SHEET_MARGIN : SHEET_MARGIN;
 }
 
 // dismissible이 거짓이면 끌어내리거나 뒤를 눌러도 닫히지 않는다. 입력칸이 있는 시트는

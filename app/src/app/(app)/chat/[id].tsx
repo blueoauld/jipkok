@@ -26,6 +26,7 @@ import { PhotoViewer } from "@/components/photo/PhotoViewer";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { useAlert } from "@/hooks/useAlert";
+import { useExtraBottomSpacing } from "@/hooks/useBottomBar";
 import { useChatMedia } from "@/hooks/useChatMedia";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatRoom } from "@/hooks/useChatRoom";
@@ -39,7 +40,7 @@ import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, isRoomNotFound, toReply } from "@/lib/chat";
 import { type ChatRow, toChatRows } from "@/lib/chat/rows";
 import { useDeletedRoomStore } from "@/lib/chat/store";
-import { SCREEN_PADDING } from "@/lib/design";
+import { INPUT_BAR_PADDING_Y, SCREEN_PADDING } from "@/lib/design";
 import { pushOnce } from "@/lib/router";
 import { showToast } from "@/lib/toast/store";
 
@@ -56,6 +57,7 @@ export default function ChatRoomScreen() {
   const validRoom = Number.isInteger(roomId) && roomId > 0;
 
   const keyboardOffset = useSafeAreaInsets().bottom;
+  const extraBottom = useExtraBottomSpacing(INPUT_BAR_PADDING_Y);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [attachOpen, setAttachOpen] = useState(false);
@@ -353,8 +355,9 @@ export default function ChatRoomScreen() {
         />
       )}
 
-      <KeyboardStickyView offset={{ opened: keyboardOffset }}>
+      <KeyboardStickyView offset={{ opened: keyboardOffset + extraBottom }}>
         <YStack
+          pb={extraBottom}
           onLayout={(event) =>
             setInputBarHeight(event.nativeEvent.layout.height)
           }

@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { YStack } from "tamagui";
 
 import { BottomCTAFade } from "@/components/ui/BottomCTAFade";
+import { useExtraBottomSpacing } from "@/hooks/useBottomBar";
 import {
   BOTTOM_CTA_FADE_HEIGHT,
   BOTTOM_CTA_PADDING_BOTTOM,
@@ -34,9 +35,10 @@ export function FormScreen({
 }) {
   const insets = useSafeAreaInsets();
   const [footerHeight, setFooterHeight] = useState(FORM_FOOTER_HEIGHT);
-  // 화면은 SafeAreaView가 이미 안전영역만큼 띄워 둔다. 버튼 아래는 TDS처럼 안전영역과 아래 여백 중
-  // 큰 값이어야 하므로, 겹치는 만큼 하단 영역을 안전영역 안으로 내린다.
-  const safeAreaOverlap = Math.min(insets.bottom, BOTTOM_CTA_PADDING_BOTTOM);
+  // 화면은 SafeAreaView가 이미 안전영역만큼 띄워 둔다. 안전영역이 아래 여백을 대신하는 만큼 하단 영역을
+  // 안전영역 안으로 내리고, 안전영역 위에 더 둘 몫만 남긴다.
+  const extraBottom = useExtraBottomSpacing(BOTTOM_CTA_PADDING_BOTTOM);
+  const safeAreaOverlap = BOTTOM_CTA_PADDING_BOTTOM - extraBottom;
 
   const measureFooter = useCallback(
     (event: LayoutChangeEvent) =>
