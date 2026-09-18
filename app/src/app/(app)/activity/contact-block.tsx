@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import { Stack } from "expo-router";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { useCallback, useMemo, useState } from "react";
@@ -8,9 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
-import { Button } from "@/components/ui/Button";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
+import { RowDeleteButton } from "@/components/ui/RowDeleteButton";
 import { ScreenState } from "@/components/ui/ScreenState";
 import { Text } from "@/components/ui/Text";
 import { useAlert } from "@/hooks/useAlert";
@@ -34,24 +33,11 @@ function ContactBlockRow({
   block: ContactBlockResponse;
   onRemove: (contactBlockId: number) => void;
 }) {
-  const { t } = useTranslation();
-
   return (
     <ListRow
       horizontalPadding="small"
       verticalPadding={LIST_ROW_EVEN_PADDING_Y}
-      right={
-        <Button
-          size="small"
-          variant="secondary"
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onRemove(block.contactBlockId);
-          }}
-        >
-          {t("action.delete")}
-        </Button>
-      }
+      right={<RowDeleteButton onPress={() => onRemove(block.contactBlockId)} />}
     >
       <Text preset="label" color="$grey800">
         {toDomestic(block.phoneNumber)}

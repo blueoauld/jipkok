@@ -28,6 +28,25 @@ export type MenuSheetItem = {
   onPress?: () => void;
 };
 
+// 하나만 고르는 시트의 항목이다. 고른 값에 체크가 붙도록 selected를 늘 채운다.
+export function choiceItems<T extends string>({
+  values,
+  selected,
+  label,
+  onSelect,
+}: {
+  values: readonly T[];
+  selected: T;
+  label: (value: T) => string;
+  onSelect: (value: T) => void;
+}): MenuSheetItem[] {
+  return values.map((value) => ({
+    label: label(value),
+    selected: value === selected,
+    onPress: () => onSelect(value),
+  }));
+}
+
 export function MenuSheet({
   open,
   onOpenChange,

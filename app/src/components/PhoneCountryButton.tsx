@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import { choiceItems, MenuSheet } from "@/components/MenuSheet";
 import { Button } from "@/components/ui/Button";
 import { COUNTRY_BUTTON_MIN_WIDTH, INPUT_HEIGHT } from "@/lib/design";
 import { type PhoneCountry, SUPPORTED_COUNTRIES } from "@/lib/phone/country";
@@ -22,11 +22,12 @@ export function PhoneCountryButton({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  const items: MenuSheetItem[] = SUPPORTED_COUNTRIES.map((value) => ({
-    label: t(COUNTRY_LABEL_KEYS[value]),
-    selected: value === country,
-    onPress: () => onChange(value),
-  }));
+  const items = choiceItems({
+    values: SUPPORTED_COUNTRIES,
+    selected: country,
+    label: (value) => t(COUNTRY_LABEL_KEYS[value]),
+    onSelect: onChange,
+  });
 
   return (
     <>

@@ -1,13 +1,11 @@
-import * as Haptics from "expo-haptics";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { memo } from "react";
-import { useTranslation } from "react-i18next";
 import { useTheme, XStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
-import { Button } from "@/components/ui/Button";
 import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { RowDeleteButton } from "@/components/ui/RowDeleteButton";
 import { Text } from "@/components/ui/Text";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
@@ -45,7 +43,6 @@ function Row({
   at?: string;
   onDelete?: (memberId: number) => void;
 }) {
-  const { t } = useTranslation();
   const theme = useTheme();
   const {
     memberId,
@@ -74,20 +71,7 @@ function Row({
         />
       }
       accessible={onDelete === undefined}
-      right={
-        onDelete && (
-          <Button
-            size="small"
-            variant="secondary"
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              onDelete(memberId);
-            }}
-          >
-            {t("action.delete")}
-          </Button>
-        )
-      }
+      right={onDelete && <RowDeleteButton onPress={() => onDelete(memberId)} />}
       onPress={() => pushOnce(`/member/${memberId}`)}
     >
       <XStack items="center" gap="$1.5">

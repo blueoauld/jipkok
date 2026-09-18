@@ -7,7 +7,11 @@ import { ScrollView } from "react-native";
 import { YStack } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
-import { MenuSheet, type MenuSheetItem } from "@/components/MenuSheet";
+import {
+  choiceItems,
+  MenuSheet,
+  type MenuSheetItem,
+} from "@/components/MenuSheet";
 import { AttendanceSection } from "@/components/setting/AttendanceSection";
 import { SettingSection } from "@/components/setting/SettingSection";
 import { Border } from "@/components/ui/Border";
@@ -137,11 +141,12 @@ export default function SettingScreen() {
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const openLanguage = useCallback(() => setLanguageOpen(true), []);
 
-  const languageItems: MenuSheetItem[] = SUPPORTED_LOCALES.map((value) => ({
-    label: t(LANGUAGE_LABEL_KEYS[value]),
-    selected: value === locale,
-    onPress: () => changeLanguage(value),
-  }));
+  const languageItems = choiceItems({
+    values: SUPPORTED_LOCALES,
+    selected: locale,
+    label: (value) => t(LANGUAGE_LABEL_KEYS[value]),
+    onSelect: changeLanguage,
+  });
 
   const screenOptions = useMemo(
     () => ({
