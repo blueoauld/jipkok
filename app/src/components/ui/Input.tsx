@@ -22,9 +22,9 @@ import i18n from "@/lib/i18n";
 const PADDING_X = 16;
 const PADDING_Y = 14;
 
-// 여러 줄은 Tamagui가 rows로 높이를 잡으므로 한 줄일 때만 높이를 고정한다.
+// 여러 줄은 Tamagui가 rows로 높이를 잡으므로 한 줄일 때만 높이를 정한다.
 const SINGLE_LINE_STYLE = {
-  height: INPUT_HEIGHT,
+  minH: INPUT_HEIGHT,
   py: 0,
   textAlignVertical: "center",
   includeFontPadding: false,

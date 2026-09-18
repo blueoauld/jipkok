@@ -142,7 +142,7 @@ function NavigationTheme({
       ...base,
       colors: {
         ...base.colors,
-        primary: theme.blue500.val,
+        primary: theme.grey900.val,
         background: theme.background.val,
         card: theme.background.val,
         text: theme.grey900.val,

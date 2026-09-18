@@ -24,6 +24,7 @@ export function SegmentedControl<T extends string>({
   size?: keyof typeof SEGMENT_SIZES;
 }) {
   const spec = SEGMENT_SIZES[size];
+  const indicatorInset = (spec.height - spec.itemHeight) / 2;
   const [trackWidth, setTrackWidth] = useState(0);
   const itemWidth = (trackWidth - spec.paddingX * 2) / items.length;
   const selectedIndex = Math.max(
@@ -33,7 +34,7 @@ export function SegmentedControl<T extends string>({
 
   return (
     <XStack
-      height={spec.height}
+      minH={spec.height}
       px={spec.paddingX}
       items="center"
       rounded={spec.radius}
@@ -44,10 +45,10 @@ export function SegmentedControl<T extends string>({
       {trackWidth > 0 && (
         <YStack
           position="absolute"
-          t={(spec.height - spec.itemHeight) / 2}
+          t={indicatorInset}
+          b={indicatorInset}
           l={spec.paddingX}
           width={itemWidth}
-          height={spec.itemHeight}
           rounded={spec.itemRadius}
           bg="$segmentedIndicator"
           boxShadow={INDICATOR_SHADOW}
@@ -63,7 +64,7 @@ export function SegmentedControl<T extends string>({
           <XStack
             key={item.value}
             flex={1}
-            height={spec.itemHeight}
+            minH={spec.itemHeight}
             items="center"
             justify="center"
             accessible

@@ -50,7 +50,7 @@ function CountBadge({ count }: { count: number }) {
       t={-BADGE_OVERHANG}
       r={-BADGE_OVERHANG}
       minW={COUNT_BADGE_SIZE}
-      height={COUNT_BADGE_SIZE}
+      minH={COUNT_BADGE_SIZE}
       px={COUNT_BADGE_PADDING_X}
       rounded={PILL_RADIUS}
       bg={count > 0 ? "$red500" : DARK_FILL}

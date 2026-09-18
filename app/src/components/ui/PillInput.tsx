@@ -7,6 +7,7 @@ import { ROUND_BUTTON_SIZE } from "@/lib/design";
 const FONT_SIZE = 16;
 const LINE_HEIGHT = 22;
 const MAX_LINES = 7;
+const MAX_FONT_SCALE = 1.2;
 const PADDING_X = 16;
 // 한 줄일 때 입력칸이 옆의 둥근 버튼과 같은 높이여야 나란히 선다. 버튼 크기가 바뀌면 따라간다.
 const PADDING_Y = (ROUND_BUTTON_SIZE - LINE_HEIGHT) / 2;
@@ -21,6 +22,7 @@ export const PillInput = forwardRef<TextInput, TextInputProps>(
         <TextInput
           ref={ref}
           placeholderTextColor={theme.grey500.val}
+          maxFontSizeMultiplier={MAX_FONT_SCALE}
           multiline={multiline}
           {...props}
           style={[
