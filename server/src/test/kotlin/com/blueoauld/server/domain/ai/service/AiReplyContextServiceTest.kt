@@ -15,6 +15,7 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.MemberRole
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
@@ -93,6 +94,32 @@ class AiReplyContextServiceTest {
         assertThat(context.partner).isSameAs(partner)
         assertThat(context.systemPrompt).isEqualTo("프롬프트")
         assertThat(context.memory).isNull()
+    }
+
+    @Test
+    fun `답할 언어는 계정 언어가 아니라 상대가 쓴 글자로 정한다`() {
+        // given
+        every { partner.locale } returns MemberLocale.EN
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat((decision as AiReplyDecision.Reply).context.language).isEqualTo(MemberLocale.KO)
+    }
+
+    @Test
+    fun `상대가 쓴 글자로 언어를 알 수 없으면 계정 언어를 쓴다`() {
+        // given
+        every { partner.locale } returns MemberLocale.JA
+        every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
+            listOf(message(USER_ID, "ok"), message(AI_ID, "반가워요"))
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat((decision as AiReplyDecision.Reply).context.language).isEqualTo(MemberLocale.JA)
     }
 
     @Test
@@ -261,6 +288,7 @@ class AiReplyContextServiceTest {
 
     private fun member(role: MemberRole) = mockk<Member> {
         every { id } returns if (role == MemberRole.AI) AI_ID else USER_ID
+        every { locale } returns MemberLocale.KO
     }
 
     private fun message(senderId: Long, content: String, createdAt: Instant = DAYTIME) = mockk<ChatMessage> {

@@ -41,6 +41,20 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun `답할 언어는 계정 언어가 아니라 넘겨받은 언어를 따른다`() {
+        // given
+        val context = context().copy(language = MemberLocale.KO)
+
+        // when
+        val text = (builder.build(context).first() as SystemMessage).text!!
+
+        // then
+        assertThat(context.partner.locale).isEqualTo(MemberLocale.JA)
+        assertThat(text).contains("반드시 한국어로 답한다.")
+        assertThat(text).doesNotContain("일본어")
+    }
+
+    @Test
     fun `AI마다 같은 규칙, 페르소나, 자기 프로필이 앞에 오고 상대와 시각은 뒤에 온다`() {
         // when
         val text = (builder.build(context()).first() as SystemMessage).text!!
@@ -87,12 +101,13 @@ class AiPromptBuilderTest {
                 partner = context().partner,
                 previousSummary = "상대는 부산에 산다.",
                 messages = context().messages,
+                language = context().language,
             ),
         )
 
         // then
         assertThat(messages).hasSize(2)
-        assertThat((messages[0] as SystemMessage).text).contains("500자 이내")
+        assertThat((messages[0] as SystemMessage).text).contains("일본어 평서문 한 문단, 500자 이내")
         val user = (messages[1] as UserMessage).text!!
         assertThat(user).contains("[이전 요약]\n상대는 부산에 산다.")
         assertThat(user).contains("상대: 안녕하세요")
@@ -224,6 +239,7 @@ class AiPromptBuilderTest {
             ChatMessage(roomId = 1L, senderId = AI_ID, type = ChatMessageType.TEXT, content = "반가워요"),
             ChatMessage(roomId = 1L, senderId = USER_ID, type = ChatMessageType.PHOTO, objectKey = "chats/9/a.webp"),
         ),
+        language = MemberLocale.JA,
         now = NOW,
     )
 

@@ -96,9 +96,10 @@ class AiReplyContextService(
         }
 
         val memory = aiRoomMemoryRepository.findById(room.id).orElse(null)?.summary
+        val language = detectLanguage(messages, ai.id, partner.locale)
 
         return AiReplyDecision.Reply(
-            AiReplyContext(ai, persona.systemPrompt, partner, messages, now, silentDays, memory),
+            AiReplyContext(ai, persona.systemPrompt, partner, messages, language, now, silentDays, memory),
         )
     }
 

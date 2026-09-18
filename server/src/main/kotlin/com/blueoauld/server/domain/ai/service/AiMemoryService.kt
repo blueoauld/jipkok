@@ -51,6 +51,7 @@ class AiMemoryService(
                 partner = context.partner,
                 previousSummary = memory?.summary,
                 messages = messages,
+                language = context.language,
             ),
         ) ?: return
         val lastMessageId = messages.last().id

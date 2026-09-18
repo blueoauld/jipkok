@@ -11,6 +11,7 @@ import com.blueoauld.server.domain.ai.repository.AiRoomMemoryRepository
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -131,6 +132,7 @@ class AiMemoryServiceTest {
         systemPrompt = "프롬프트",
         partner = partner,
         messages = listOf(message(1L)),
+        language = MemberLocale.KO,
         now = Instant.EPOCH,
     )
 

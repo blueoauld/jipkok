@@ -51,6 +51,7 @@ class AiTestChatService(
             systemPrompt = request.systemPrompt?.trim()?.ifEmpty { null } ?: persona.systemPrompt,
             partner = partner,
             messages = messages,
+            language = detectLanguage(messages, ai.id, request.locale),
             now = clock.instant(),
         )
 

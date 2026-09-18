@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.ai.dto
 
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import java.time.Instant
 
 data class AiReplyContext(
@@ -10,6 +11,7 @@ data class AiReplyContext(
     val systemPrompt: String,
     val partner: Member,
     val messages: List<ChatMessage>,
+    val language: MemberLocale,
     val now: Instant,
     val silentDays: Long? = null,
     val memory: String? = null,

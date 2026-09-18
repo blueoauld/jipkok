@@ -34,6 +34,7 @@ class AiPromptBuilder(
                 ai = context.ai,
                 memory = context.memory,
                 partner = context.partner,
+                language = context.language,
                 now = context.now,
                 situation = nudgeLine(context),
             ),
@@ -47,6 +48,7 @@ class AiPromptBuilder(
                 ai = context.ai,
                 memory = null,
                 partner = context.partner,
+                language = context.partner.locale,
                 now = context.now,
                 situation = greetingLines(context),
             ),
@@ -58,6 +60,7 @@ class AiPromptBuilder(
         ai: Member,
         memory: String?,
         partner: Member,
+        language: MemberLocale,
         now: Instant,
         situation: String,
     ) = """
@@ -84,30 +87,34 @@ class AiPromptBuilder(
         |${partnerProfile(partner)}
         |
         |[지금 상황]
-        |- 반드시 ${LANGUAGE_NAMES.getValue(partner.locale)}로 답한다.
+        |- 반드시 ${LANGUAGE_NAMES.getValue(language)}로 답한다. 다른 언어의 글자를 섞지 않는다.
         |- 지금은 한국 시간 ${TIME_FORMATTER.format(now.atZone(KOREA))}이다.
         |$situation
     """.trimMargin().trimEnd()
 
-    fun buildSummary(context: AiSummaryContext): List<Message> = listOf(
-        SystemMessage(
-            """
-            |너는 채팅 대화를 요약하는 도우미다. '${context.ai.nickname}'(나)와 '${context.partner.nickname}'(상대)의 대화에서
-            |나중에 대화를 이어 갈 때 기억해야 할 것만 남긴다.
-            |
-            |- 상대에 대해 알게 된 사실(직업, 사는 곳, 취미, 일정, 고민, 좋아하고 싫어하는 것), 서로 약속하거나 하기로 한 것,
-            |  대화의 분위기와 마지막 화제를 담는다.
-            |- 이전 요약이 있으면 새 대화를 반영해 하나로 합친다. 더 이상 맞지 않는 내용은 고친다.
-            |- 한국어 평서문 한 문단, ${AiRoomMemory.SUMMARY_MAX_CHARS}자 이내. 제목, 목록, 따옴표, 설명을 붙이지 않는다.
-            """.trimMargin(),
-        ),
-        UserMessage(
-            listOfNotNull(
-                context.previousSummary?.let { "[이전 요약]\n$it" },
-                "[새 대화]\n" + context.messages.joinToString("\n") { transcriptLine(context, it) },
-            ).joinToString("\n\n"),
-        ),
-    )
+    fun buildSummary(context: AiSummaryContext): List<Message> {
+        val language = LANGUAGE_NAMES.getValue(context.language)
+
+        return listOf(
+            SystemMessage(
+                """
+                |너는 채팅 대화를 요약하는 도우미다. '${context.ai.nickname}'(나)와 '${context.partner.nickname}'(상대)의 대화에서
+                |나중에 대화를 이어 갈 때 기억해야 할 것만 남긴다.
+                |
+                |- 상대에 대해 알게 된 사실(직업, 사는 곳, 취미, 일정, 고민, 좋아하고 싫어하는 것), 서로 약속하거나 하기로 한 것,
+                |  대화의 분위기와 마지막 화제를 담는다.
+                |- 이전 요약이 있으면 새 대화를 반영해 하나로 합친다. 더 이상 맞지 않는 내용은 고친다.
+                |- $language 평서문 한 문단, ${AiRoomMemory.SUMMARY_MAX_CHARS}자 이내. 제목, 목록, 따옴표, 설명을 붙이지 않는다.
+                """.trimMargin(),
+            ),
+            UserMessage(
+                listOfNotNull(
+                    context.previousSummary?.let { "[이전 요약]\n$it" },
+                    "[새 대화]\n" + context.messages.joinToString("\n") { transcriptLine(context, it) },
+                ).joinToString("\n\n"),
+            ),
+        )
+    }
 
     private fun memoryBlock(memory: String?): String {
         if (memory == null) {
