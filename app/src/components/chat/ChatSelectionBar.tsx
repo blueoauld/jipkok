@@ -5,8 +5,8 @@ import { BottomCTAFade } from "@/components/ui/BottomCTAFade";
 import { Button } from "@/components/ui/Button";
 import { useWindowInsets } from "@/hooks/useWindowInsets";
 import {
-  BOTTOM_CTA_GAP,
   BOTTOM_CTA_PADDING_BOTTOM,
+  BUTTON_GAP,
   SCREEN_PADDING,
 } from "@/lib/design";
 
@@ -34,7 +34,7 @@ export function ChatSelectionBar({
     >
       <BottomCTAFade />
 
-      <XStack gap={BOTTOM_CTA_GAP}>
+      <XStack gap={BUTTON_GAP}>
         <Button
           flex={1}
           size="xlarge"

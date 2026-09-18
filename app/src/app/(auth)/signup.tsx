@@ -16,6 +16,7 @@ import { useAlert } from "@/hooks/useAlert";
 import { useVerificationCode } from "@/hooks/useVerificationCode";
 import { APP_EVENT, logAppEvent, logSignUp } from "@/lib/analytics";
 import { api, apiErrorCode, type SignupRequest } from "@/lib/api";
+import { BUTTON_GAP } from "@/lib/design";
 import { genderLabel } from "@/lib/member";
 import { openWebPage, PRIVACY_URL, TERMS_URL } from "@/lib/support";
 import {
@@ -149,13 +150,16 @@ export default function SignupScreen() {
           name="gender"
           rules={{ required: t("auth.signup.genderRequired") }}
           render={({ field, fieldState }) => (
-            <FormField error={fieldState.error?.message}>
-              <XStack gap="$3">
+            <FormField
+              label={t("component.genderLabel")}
+              error={fieldState.error?.message}
+            >
+              <XStack gap={BUTTON_GAP}>
                 {GENDERS.map((gender) => (
                   <Button
                     key={gender}
                     flex={1}
-                    variant={field.value === gender ? "primary" : "secondary"}
+                    variant={field.value === gender ? "dark" : "secondary"}
                     accessibilityState={{ selected: field.value === gender }}
                     onPress={() => field.onChange(gender)}
                   >

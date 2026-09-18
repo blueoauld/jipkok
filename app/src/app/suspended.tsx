@@ -3,7 +3,7 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme, YStack } from "tamagui";
+import { useTheme } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
 import { StatusDescription, StatusScreen } from "@/components/ui/StatusScreen";
@@ -57,27 +57,25 @@ export default function SuspendedScreen() {
           )
         }
       >
-        <YStack width="100%" gap="$4">
-          <Button
-            onPress={() =>
-              openSupportMail(t("suspended.mailTitle"), profile?.memberId, show)
-            }
-          >
-            {t("setting.menu.contact")}
-          </Button>
+        <Button
+          onPress={() =>
+            openSupportMail(t("suspended.mailTitle"), profile?.memberId, show)
+          }
+        >
+          {t("setting.menu.contact")}
+        </Button>
 
-          <Button
-            variant="secondary"
-            loading={loggingOut}
-            onPress={() => logout()}
-          >
-            {t("setting.menu.logout")}
-          </Button>
+        <Button
+          variant="secondary"
+          loading={loggingOut}
+          onPress={() => logout()}
+        >
+          {t("setting.menu.logout")}
+        </Button>
 
-          <Button variant="danger" onPress={confirmWithdraw}>
-            {t("setting.menu.withdraw")}
-          </Button>
-        </YStack>
+        <Button variant="danger" onPress={confirmWithdraw}>
+          {t("setting.menu.withdraw")}
+        </Button>
       </StatusScreen>
 
       {alertElement}

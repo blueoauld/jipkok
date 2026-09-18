@@ -53,6 +53,7 @@ function BioField({
   return (
     <CountedInput
       valueRef={valueRef}
+      label={t("profileEdit.bio")}
       multiline
       rows={SHORT_CONTENT_INPUT_ROWS}
       textAlignVertical="top"
@@ -188,6 +189,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         <ControlledInput
           control={control}
           name="nickname"
+          label={t("profileEdit.nickname")}
           rules={NICKNAME_RULES}
           placeholder={t("auth.setup.nicknamePlaceholder")}
           maxLength={NICKNAME_MAX_LENGTH}
@@ -199,6 +201,7 @@ function EditForm({ profile }: { profile: MyProfileResponse }) {
         <ControlledInput
           control={control}
           name="birthYear"
+          label={t("profileEdit.birthYear")}
           rules={BIRTH_YEAR_RULES}
           placeholder={t("auth.setup.birthYearPlaceholder")}
           keyboardType="number-pad"

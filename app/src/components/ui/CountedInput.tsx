@@ -6,18 +6,21 @@ import { Text } from "@/components/ui/Text";
 
 export function CountedInput({
   valueRef,
+  label,
   maxLength,
   defaultValue = "",
   onChangeText,
   ...props
 }: Omit<InputProps, "maxLength"> & {
   valueRef: RefObject<string>;
+  label?: string;
   maxLength: number;
 }) {
   const [length, setLength] = useState(String(defaultValue).length);
 
   return (
     <FormField
+      label={label}
       right={
         <Text preset="caption" color="$grey600">
           {`${length} / ${maxLength}`}

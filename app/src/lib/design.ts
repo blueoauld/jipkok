@@ -55,12 +55,13 @@ export const DIALOG_ENTER_SCALE = 0.95;
 // 폼 화면 아래 고정 버튼 줄의 높이를 재기 전에 쓰는 초깃값이다.
 export const FORM_FOOTER_HEIGHT = 80;
 
-// TDS 하단 고정 버튼(BottomCTA)에서 잰 값이다. 버튼 줄 위 흐림 띠 높이, 버튼 아래 여백, 두 버튼 사이다.
+// TDS 하단 고정 버튼(BottomCTA)에서 잰 값이다. 버튼 줄 위 흐림 띠 높이와 버튼 아래 여백이다.
 export const BOTTOM_CTA_FADE_HEIGHT = 36;
 
 export const BOTTOM_CTA_PADDING_BOTTOM = 20;
 
-export const BOTTOM_CTA_GAP = 8;
+// 나란히 또는 위아래로 놓인 버튼 사이다. TDS 하단 고정 버튼에서 쟀다.
+export const BUTTON_GAP = 8;
 
 // 키보드 위에 붙는 줄을 이만큼 겹쳐야 둘 사이에 실선 같은 틈이 안 보인다.
 export const KEYBOARD_OVERLAP = 2;

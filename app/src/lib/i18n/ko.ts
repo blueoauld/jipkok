@@ -64,6 +64,9 @@ export const ko = {
     save: "저장",
     publicPhotos: "공개 사진",
     secretPhotos: "비밀 사진",
+    nickname: "닉네임",
+    birthYear: "출생연도",
+    bio: "자기소개",
   },
   validation: {
     phoneNumberRequired: "휴대폰 번호를 입력해주시길 바랍니다.",

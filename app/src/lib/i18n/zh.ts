@@ -64,6 +64,9 @@ export const zh: typeof ko = {
     save: "儲存",
     publicPhotos: "公開照片",
     secretPhotos: "私密照片",
+    nickname: "暱稱",
+    birthYear: "出生年",
+    bio: "自我介紹",
   },
   validation: {
     phoneNumberRequired: "請輸入手機號碼。",

@@ -65,6 +65,9 @@ export const en: typeof ko = {
     save: "Save",
     publicPhotos: "Public photos",
     secretPhotos: "Private photos",
+    nickname: "Nickname",
+    birthYear: "Birth year",
+    bio: "Bio",
   },
   validation: {
     phoneNumberRequired: "Enter your phone number.",

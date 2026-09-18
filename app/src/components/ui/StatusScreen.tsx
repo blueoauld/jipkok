@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { YStack } from "tamagui";
 
 import { Text } from "@/components/ui/Text";
+import { BUTTON_GAP } from "@/lib/design";
 
 // 아이콘, 제목, 설명, 버튼이 세로로 놓이는 전체 화면 안내. 잠금, 정지, 오류 화면이 쓴다.
 export function StatusScreen({
@@ -27,7 +28,11 @@ export function StatusScreen({
         {description}
       </YStack>
 
-      {children}
+      {children && (
+        <YStack width="100%" gap={BUTTON_GAP}>
+          {children}
+        </YStack>
+      )}
     </YStack>
   );
 }

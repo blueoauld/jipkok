@@ -99,11 +99,9 @@ function LockScreen() {
             <StatusDescription>{t("lock.description")}</StatusDescription>
           }
         >
-          <YStack width="100%">
-            <Button loading={authenticating} onPress={attempt}>
-              {t("lock.unlock")}
-            </Button>
-          </YStack>
+          <Button loading={authenticating} onPress={attempt}>
+            {t("lock.unlock")}
+          </Button>
         </StatusScreen>
       </SafeAreaView>
     </YStack>

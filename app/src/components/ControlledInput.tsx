@@ -13,6 +13,7 @@ import { Input, type InputProps } from "@/components/ui/Input";
 type ControlledInputProps<T extends FieldValues> = InputProps & {
   control: Control<T>;
   name: FieldPath<T>;
+  label?: string;
   rules?: RegisterOptions<T, FieldPath<T>>;
   renderRight?: (value: string) => ReactNode;
 };
@@ -20,6 +21,7 @@ type ControlledInputProps<T extends FieldValues> = InputProps & {
 export function ControlledInput<T extends FieldValues>({
   control,
   name,
+  label,
   rules,
   renderRight,
   ...inputProps
@@ -31,6 +33,7 @@ export function ControlledInput<T extends FieldValues>({
       rules={rules}
       render={({ field, fieldState }) => (
         <FormField
+          label={label}
           error={fieldState.error?.message}
           right={renderRight?.(field.value ?? "")}
         >

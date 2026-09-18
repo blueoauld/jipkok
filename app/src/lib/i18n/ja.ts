@@ -65,6 +65,9 @@ export const ja: typeof ko = {
     save: "保存",
     publicPhotos: "公開写真",
     secretPhotos: "シークレット写真",
+    nickname: "ニックネーム",
+    birthYear: "生年",
+    bio: "自己紹介",
   },
   validation: {
     phoneNumberRequired: "携帯電話番号を入力してください。",
