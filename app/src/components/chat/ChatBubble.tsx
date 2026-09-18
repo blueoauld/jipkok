@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { View } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { BubbleFrame } from "@/components/chat/ChatBubbleFrame";
 import { BodyText } from "@/components/chat/ChatBubbleText";
@@ -8,6 +8,7 @@ import { PhotoMessage, VideoMessage } from "@/components/chat/ChatMediaMessage";
 import { ReactionChips } from "@/components/chat/ChatReactionChips";
 import { ReplyPreviewThumbnail } from "@/components/chat/ReplyPreviewThumbnail";
 import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 import type { ChatMessageResponse, ReplyMessageResponse } from "@/lib/api";
 import { isSingleEmoji, replySummary } from "@/lib/chat";
 import type { MessageFrame } from "@/lib/chat/overlay-layout";
@@ -87,8 +88,7 @@ function ReplyMessage({
 
           <YStack shrink={1} gap={2}>
             <Text
-              fontSize="$1"
-              fontWeight="600"
+              preset="captionStrong"
               color={mine ? "$onFill" : "$grey800"}
               numberOfLines={1}
             >
@@ -96,8 +96,7 @@ function ReplyMessage({
             </Text>
 
             <Text
-              fontSize="$1"
-              lineHeight="$1"
+              preset="note"
               color={mine ? QUOTE_TEXT_ON_BLUE : "$grey600"}
               numberOfLines={2}
             >
@@ -212,8 +211,8 @@ export function ChatBubble({
   // 시간이 없는 메시지에도 같은 자리를 비워 두어야 묶음 안의 말풍선 너비가 같다.
   const time = (
     <Text
+      preset="caption"
       shrink={0}
-      fontSize="$1"
       color="$grey500"
       mb={2}
       opacity={showTime ? 1 : 0}
@@ -267,7 +266,7 @@ export function ChatBubble({
           gap="$2"
           mt="$1.5"
         >
-          <Text fontSize="$1" color="$red500" fontWeight="600">
+          <Text preset="captionStrong" color="$red500">
             {i18n.t("component.sendFailed")}
           </Text>
           <Button size="small" variant="secondary" onPress={upload.retry}>

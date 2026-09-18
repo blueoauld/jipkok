@@ -6,10 +6,11 @@ import { ProhibitIcon } from "phosphor-react-native/src/icons/Prohibit";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import { Glass } from "@/components/ui/Glass";
+import { Text } from "@/components/ui/Text";
 import type { MemberDetailResponse } from "@/lib/api";
 import {
   bottomBarHeight,

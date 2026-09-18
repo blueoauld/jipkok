@@ -1,7 +1,8 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Keyboard, Platform } from "react-native";
-import { Sheet, Text, XStack, YStack } from "tamagui";
+import { Sheet, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { useCloseOnGoBack } from "@/hooks/useCloseOnGoBack";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import { useWindowInsets } from "@/hooks/useWindowInsets";
@@ -126,12 +127,10 @@ export function BottomSheet({
 
           {title !== undefined && (
             <Text
+              preset="title"
               px={SHEET_PADDING_X}
               pt={HEADER_PADDING_TOP}
               pb={HEADER_PADDING_BOTTOM}
-              fontSize="$6"
-              lineHeight="$6"
-              fontWeight="700"
               color="$grey900"
             >
               {title}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { OVERLAY_INK, PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { formatDuration } from "@/lib/video";
@@ -56,7 +57,7 @@ export function SeekBar({
 
   return (
     <XStack items="center" gap="$3">
-      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+      <Text preset="subStrong" color={OVERLAY_INK}>
         {formatDuration(Math.floor(shown))}
       </Text>
 
@@ -104,7 +105,7 @@ export function SeekBar({
         </YStack>
       </GestureDetector>
 
-      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+      <Text preset="subStrong" color={OVERLAY_INK}>
         {formatDuration(Math.floor(duration))}
       </Text>
     </XStack>

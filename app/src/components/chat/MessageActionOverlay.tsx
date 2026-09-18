@@ -1,7 +1,8 @@
 import { Modal, Pressable, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import type { ChatMessageResponse, ChatReactionType } from "@/lib/api";
 import {
@@ -156,12 +157,7 @@ function Content({
               accessibilityRole="button"
               onPress={onPress}
             >
-              <Text
-                fontSize="$4"
-                lineHeight="$4"
-                fontWeight="500"
-                color="$grey700"
-              >
+              <Text preset="label" color="$grey700">
                 {label}
               </Text>
             </XStack>

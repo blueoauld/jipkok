@@ -5,7 +5,7 @@ import { NotePencilIcon } from "phosphor-react-native/src/icons/NotePencil";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
-import { Text, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { DiaryRow } from "@/components/diary/DiaryRow";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
@@ -16,6 +16,7 @@ import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRowTopSpacer } from "@/components/ui/ListRow";
 import { type DayMarking, MonthCalendar } from "@/components/ui/MonthCalendar";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { Text } from "@/components/ui/Text";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useDiaryMonth } from "@/hooks/useDiaries";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -125,8 +126,7 @@ export default function DiaryScreen() {
             />
 
             <Text
-              fontSize="$2"
-              lineHeight="$2"
+              preset="sub"
               color="$grey600"
               px={LIST_ROW_PADDING_X.small}
               pb={LIST_ROW_PADDING_X.small}

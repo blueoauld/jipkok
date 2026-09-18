@@ -1,7 +1,8 @@
 import Svg, { Path } from "react-native-svg";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { BottomSheet } from "@/components/ui/BottomSheet";
+import { Text } from "@/components/ui/Text";
 import {
   ROW_PRESS_RADIUS,
   ROW_PRESS_SCALE,

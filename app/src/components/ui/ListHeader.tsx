@@ -1,5 +1,6 @@
-import { Text, YStack, type YStackProps } from "tamagui";
+import { YStack, type YStackProps } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { SCREEN_PADDING } from "@/lib/design";
 
 // TDS ListHeader에서 잰 값이다. 제목은 17 굵게 grey800이고, 좌우는 TDS의 24 대신 앱 화면 여백을 따른다.

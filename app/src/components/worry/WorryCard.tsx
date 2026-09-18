@@ -2,9 +2,10 @@ import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
 import { Card } from "@/components/ui/Card";
+import { Text } from "@/components/ui/Text";
 import { WorryCount } from "@/components/worry/WorryCount";
 import { WorryPostHeader } from "@/components/worry/WorryPostHeader";
 import type { WorryPostResponse } from "@/lib/api";
@@ -23,12 +24,7 @@ function Item({
     <Card accessible gap="$2.5" onPress={() => onPress(worry.worryId)}>
       <WorryPostHeader post={worry} />
 
-      <Text
-        numberOfLines={CONTENT_MAX_LINES}
-        fontSize="$4"
-        lineHeight="$4"
-        color="$grey800"
-      >
+      <Text preset="body" numberOfLines={CONTENT_MAX_LINES} color="$grey800">
         {worry.content}
       </Text>
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Animated } from "react-native";
-import { Text, XStack, type XStackProps, YStack } from "tamagui";
+import { XStack, type XStackProps, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import {
   BUTTON_DISABLED_OPACITY,
   BUTTON_SIZES,

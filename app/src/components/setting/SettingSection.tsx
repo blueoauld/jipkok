@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { Spinner, Text, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
 import { Badge } from "@/components/ui/Badge";
 import { ListRow, ListRowIcon } from "@/components/ui/ListRow";
+import { Text } from "@/components/ui/Text";
 import {
   PROFILE_VIEW_HREF,
   type SettingAction,

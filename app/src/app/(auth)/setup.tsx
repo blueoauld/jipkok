@@ -3,11 +3,11 @@ import { router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "tamagui";
 
 import { ControlledInput } from "@/components/ControlledInput";
 import { FormScreen } from "@/components/FormScreen";
 import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 import { useAlert } from "@/hooks/useAlert";
 import { useBlockGoBack } from "@/hooks/useBlockGoBack";
 import { APP_EVENT, logAppEvent } from "@/lib/analytics";
@@ -90,7 +90,7 @@ export default function SetupScreen() {
           control={control}
           name="bio"
           renderRight={(value) => (
-            <Text fontSize="$1" color="$grey600">
+            <Text preset="caption" color="$grey600">
               {`${value.length} / ${BIO_MAX_LENGTH}`}
             </Text>
           )}

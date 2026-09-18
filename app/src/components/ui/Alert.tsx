@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "react-native";
-import { AnimatePresence, Text, XStack, YStack } from "tamagui";
+import { AnimatePresence, XStack, YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 import { useVisibleWhenUnlocked } from "@/hooks/useVisibleWhenUnlocked";
 import {
   DIALOG_BUTTON_GAP,
@@ -96,12 +97,7 @@ export function Alert({
                 pt={DIALOG_TEXT_PADDING}
                 gap={SPACING.titleGap}
               >
-                <Text
-                  fontSize="$6"
-                  lineHeight="$6"
-                  fontWeight="700"
-                  color="$grey800"
-                >
+                <Text preset="title" color="$grey800">
                   {title}
                 </Text>
                 <Text

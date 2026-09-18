@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import type { ChatReactionResponse, ChatReactionType } from "@/lib/api";
 import { groupReactions } from "@/lib/chat/reactions";
 import { PILL_RADIUS, PRESS_OPACITY, tapSlop } from "@/lib/design";

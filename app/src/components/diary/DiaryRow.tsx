@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
-import { Text, useTheme } from "tamagui";
+import { useTheme } from "tamagui";
 
 import { ListRow } from "@/components/ui/ListRow";
+import { Text } from "@/components/ui/Text";
 import type { DiaryResponse } from "@/lib/api";
 import { formatFullDate, fromDateParam } from "@/lib/date";
 import {
@@ -47,13 +48,13 @@ export function DiaryRow({
       }
       onPress={() => onPress(diary.entryDate)}
     >
-      <Text fontSize="$4" lineHeight="$4" fontWeight="500" color="$grey800">
+      <Text preset="label" color="$grey800">
         {emoji ? `${emoji} ` : ""}
         {formatFullDate(fromDateParam(diary.entryDate))}
       </Text>
 
       {diary.content != null && (
-        <Text numberOfLines={2} fontSize="$2" lineHeight="$2" color="$grey600">
+        <Text preset="sub" numberOfLines={2} color="$grey600">
           {diary.content}
         </Text>
       )}

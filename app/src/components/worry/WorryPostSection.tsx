@@ -1,8 +1,9 @@
 import { ChatCircleIcon } from "phosphor-react-native/src/icons/ChatCircle";
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { useTranslation } from "react-i18next";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { RowAction } from "@/components/worry/RowAction";
 import { WorryCount } from "@/components/worry/WorryCount";
 import { WorryPostHeader } from "@/components/worry/WorryPostHeader";
@@ -29,7 +30,7 @@ export function WorryPostSection({
     >
       <WorryPostHeader post={post} />
 
-      <Text fontSize="$4" lineHeight="$4" color="$grey800">
+      <Text preset="body" color="$grey800">
         {translation.contentOf(post.content)}
       </Text>
 

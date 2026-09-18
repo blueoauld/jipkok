@@ -1,5 +1,6 @@
-import { Text, type TextProps } from "tamagui";
+import type { TextProps } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { splitLinks } from "@/lib/chat/links";
 import { openWebPage } from "@/lib/support";
 import { showToast } from "@/lib/toast/store";

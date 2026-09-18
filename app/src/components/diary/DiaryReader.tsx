@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { Text } from "tamagui";
 
 import { DiaryAttachmentStrip } from "@/components/diary/DiaryAttachmentStrip";
+import { Text } from "@/components/ui/Text";
 import type { DiaryDraftAttachment } from "@/hooks/useDiaryAttachments";
 import { useDiaryAttachmentViewer } from "@/hooks/useDiaryAttachmentViewer";
 import type { DiaryResponse } from "@/lib/api";
@@ -37,8 +37,7 @@ export function DiaryReader({ diary }: { diary: DiaryResponse }) {
 
         {content.length > 0 && (
           <Text
-            fontSize="$4"
-            lineHeight="$4"
+            preset="body"
             color="$grey800"
             onLongPress={() => copyText(content, t("diary.copied"))}
           >

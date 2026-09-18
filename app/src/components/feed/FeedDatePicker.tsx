@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { MonthCalendar } from "@/components/ui/MonthCalendar";
+import { Text } from "@/components/ui/Text";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { formatDateLabel, fromDateParam, toDateParam } from "@/lib/date";
 import { PILL_RADIUS, ROUND_BUTTON_SIZE, SCREEN_PADDING } from "@/lib/design";
@@ -34,7 +35,7 @@ function DateButton({
       accessibilityRole="button"
       onPress={onPress}
     >
-      <Text fontSize="$4" fontWeight="600" color="$onFill">
+      <Text preset="bodyStrong" color="$onFill">
         {formatDateLabel(date, today)}
       </Text>
     </XStack>

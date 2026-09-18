@@ -1,7 +1,8 @@
 import { HeartIcon } from "phosphor-react-native/src/icons/Heart";
 import { useTranslation } from "react-i18next";
-import { Text, useTheme, XStack } from "tamagui";
+import { useTheme, XStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import type { Gender } from "@/lib/api";
 import { genderLabel } from "@/lib/member";
 

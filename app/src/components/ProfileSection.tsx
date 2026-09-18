@@ -1,7 +1,8 @@
-import { Text, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import { ListHeader } from "@/components/ui/ListHeader";
+import { Text } from "@/components/ui/Text";
 import { copyText } from "@/lib/clipboard";
 import { SCREEN_PADDING } from "@/lib/design";
 
@@ -27,10 +28,9 @@ export function ProfileSection({
       <Border variant="height16" />
       <ListHeader>{title}</ListHeader>
       <Text
+        preset="body"
         px={SCREEN_PADDING}
         pb={BODY_PADDING_BOTTOM}
-        fontSize="$4"
-        lineHeight="$4"
         color={empty ? "$grey500" : "$grey700"}
         onLongPress={empty ? undefined : () => copyText(body, copiedMessage)}
       >

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { FIELD_TEXT_GAP, FIELD_TEXT_INSET } from "@/lib/design";
 
 export function FormField({
@@ -18,7 +19,7 @@ export function FormField({
 
       {(error || right) && (
         <XStack justify="space-between" gap="$2" px={FIELD_TEXT_INSET}>
-          <Text flex={1} fontSize="$1" lineHeight="$1" color="$red600">
+          <Text preset="note" flex={1} color="$red600">
             {error}
           </Text>
           {right}

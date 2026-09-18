@@ -1,8 +1,9 @@
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import {
   INPUT_BAR_PADDING_X,
   INPUT_BAR_PADDING_Y,
@@ -49,11 +50,11 @@ export function ReplyPreviewBox({
       {thumbnail}
 
       <YStack flex={1} gap={TEXT_GAP}>
-        <Text fontSize="$1" fontWeight="600" color="$grey800">
+        <Text preset="captionStrong" color="$grey800">
           {title}
         </Text>
 
-        <Text fontSize="$1" color="$grey600" numberOfLines={1}>
+        <Text preset="caption" color="$grey600" numberOfLines={1}>
           {summary}
         </Text>
       </YStack>

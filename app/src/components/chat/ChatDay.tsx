@@ -1,5 +1,6 @@
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { formatFullDate } from "@/lib/date";
 import { PILL_RADIUS } from "@/lib/design";
 
@@ -16,7 +17,7 @@ export function ChatDay({ date }: { date: Date }) {
         px={PILL_PADDING_X}
         py={PILL_PADDING_Y}
       >
-        <Text fontSize="$1" lineHeight="$1" color="$grey600">
+        <Text preset="note" color="$grey600">
           {formatFullDate(date)}
         </Text>
       </XStack>

@@ -13,13 +13,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Spinner, Text, XStack, YStack } from "tamagui";
+import { Spinner, XStack, YStack } from "tamagui";
 
 import {
   SEEK_STEP_SECONDS,
   SeekBar,
   TRACK_HIT_SLOP,
 } from "@/components/chat/VideoSeekBar";
+import { Text } from "@/components/ui/Text";
 import {
   ViewerCloseButton,
   ViewerModal,
@@ -212,7 +213,7 @@ function Player({ url, onClose }: { url: string; onClose: () => void }) {
               justify="center"
               pointerEvents="none"
             >
-              <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
+              <Text preset="bodyStrong" color={OVERLAY_INK}>
                 {i18n.t("hook.videoUrlFailed")}
               </Text>
             </YStack>

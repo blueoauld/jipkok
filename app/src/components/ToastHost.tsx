@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { AccessibilityInfo } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Svg, { Circle, Path } from "react-native-svg";
-import { AnimatePresence, Text, useTheme, XStack, YStack } from "tamagui";
+import { AnimatePresence, useTheme, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { useBottomBarHeight } from "@/hooks/useBottomBar";
 import {
   PILL_RADIUS,

@@ -11,10 +11,11 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { BUBBLE_TAIL_OVERHANG } from "@/components/chat/ChatBubbleFrame";
+import { Text } from "@/components/ui/Text";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending } from "@/lib/chat";
@@ -163,12 +164,7 @@ function Row({
           {/* 상대 묶음의 첫 말풍선은 사진 옆 이름 줄 아래에서 시작한다. */}
           <YStack shrink={1} gap={NAME_GAP}>
             {!mine && !grouped && (
-              <Text
-                numberOfLines={1}
-                fontSize="$1"
-                lineHeight="$1"
-                color="$grey700"
-              >
+              <Text preset="note" numberOfLines={1} color="$grey700">
                 {partnerName}
               </Text>
             )}

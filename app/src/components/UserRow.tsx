@@ -2,12 +2,13 @@ import * as Haptics from "expo-haptics";
 import { StarIcon } from "phosphor-react-native/src/icons/Star";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, useTheme, XStack } from "tamagui";
+import { useTheme, XStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
 import { Button } from "@/components/ui/Button";
 import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { Text } from "@/components/ui/Text";
 import { USER_AVATAR_SIZE, UserAvatar } from "@/components/UserAvatar";
 import type { MemberListItemResponse, MemberSummaryResponse } from "@/lib/api";
 import { LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
@@ -90,13 +91,7 @@ function Row({
       onPress={() => pushOnce(`/member/${memberId}`)}
     >
       <XStack items="center" gap="$1.5">
-        <Text
-          shrink={0}
-          fontSize="$4"
-          lineHeight="$4"
-          fontWeight="500"
-          color="$grey800"
-        >
+        <Text preset="label" shrink={0} color="$grey800">
           {nickname}
         </Text>
 
@@ -109,13 +104,7 @@ function Row({
         )}
 
         {memo && (
-          <Text
-            shrink={1}
-            numberOfLines={1}
-            fontSize="$2"
-            lineHeight="$2"
-            color="$grey600"
-          >
+          <Text preset="sub" shrink={1} numberOfLines={1} color="$grey600">
             {memo}
           </Text>
         )}
@@ -132,18 +121,12 @@ function Row({
       </XStack>
 
       <XStack items="center" justify="space-between" gap="$2">
-        <Text
-          flex={1}
-          numberOfLines={1}
-          fontSize="$2"
-          lineHeight="$2"
-          color="$grey600"
-        >
+        <Text preset="sub" flex={1} numberOfLines={1} color="$grey600">
           {comment || EMPTY_COMMENT}
         </Text>
 
         {distance != null && (
-          <Text shrink={0} fontSize="$1" color="$grey500">
+          <Text preset="caption" shrink={0} color="$grey500">
             {formatDistance(distance)}
           </Text>
         )}

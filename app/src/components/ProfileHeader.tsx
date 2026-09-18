@@ -1,7 +1,8 @@
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { MemberMeta } from "@/components/MemberMeta";
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { Text } from "@/components/ui/Text";
 import type { Gender } from "@/lib/api";
 import { SCREEN_PADDING } from "@/lib/design";
 import { formatDistance } from "@/lib/member";
@@ -36,10 +37,8 @@ export function ProfileHeader({
       <XStack items="center" justify="space-between" gap="$2">
         <XStack flex={1} items="center" gap="$1.5">
           <Text
+            preset="title"
             shrink={0}
-            fontSize="$6"
-            lineHeight="$6"
-            fontWeight="700"
             color="$grey800"
             onLongPress={onLongPressNickname}
           >
@@ -47,13 +46,7 @@ export function ProfileHeader({
           </Text>
 
           {memo && (
-            <Text
-              shrink={1}
-              numberOfLines={1}
-              fontSize="$2"
-              lineHeight="$2"
-              color="$grey600"
-            >
+            <Text preset="sub" shrink={1} numberOfLines={1} color="$grey600">
               {memo}
             </Text>
           )}
@@ -73,7 +66,7 @@ export function ProfileHeader({
         </XStack>
 
         {distance != null && (
-          <Text shrink={0} fontSize="$1" color="$grey500">
+          <Text preset="caption" shrink={0} color="$grey500">
             {formatDistance(distance)}
           </Text>
         )}

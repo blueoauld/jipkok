@@ -1,8 +1,8 @@
 import { type RefObject, useState } from "react";
-import { Text } from "tamagui";
 
 import { FormField } from "@/components/FormField";
 import { Input, type InputProps } from "@/components/ui/Input";
+import { Text } from "@/components/ui/Text";
 
 export function CountedInput({
   valueRef,
@@ -19,7 +19,7 @@ export function CountedInput({
   return (
     <FormField
       right={
-        <Text fontSize="$1" color="$grey600">
+        <Text preset="caption" color="$grey600">
           {`${length} / ${maxLength}`}
         </Text>
       }

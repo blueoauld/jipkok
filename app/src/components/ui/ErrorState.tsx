@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Text, YStack } from "tamagui";
+import { YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 
 export function ErrorState({
   message,
@@ -13,7 +14,7 @@ export function ErrorState({
   const { t } = useTranslation();
   return (
     <YStack items="center" gap="$4">
-      <Text color="$grey600" fontSize="$4" lineHeight="$4" text="center">
+      <Text preset="body" color="$grey600" text="center">
         {message}
       </Text>
 

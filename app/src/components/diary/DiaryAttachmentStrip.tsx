@@ -6,12 +6,13 @@ import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { getTokens, Text, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, useTheme, XStack, YStack } from "tamagui";
 
 import {
   PHOTO_OVERLAY_ICON_SIZE,
   PhotoOverlayButton,
 } from "@/components/ui/PhotoOverlayButton";
+import { Text } from "@/components/ui/Text";
 import {
   type DiaryDraftAttachment,
   draftDurationSeconds,
@@ -97,7 +98,7 @@ function Tile({
               rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$1" color={OVERLAY_INK} fontWeight="600">
+              <Text preset="captionStrong" color={OVERLAY_INK}>
                 {formatDuration(durationSeconds)}
               </Text>
             </XStack>

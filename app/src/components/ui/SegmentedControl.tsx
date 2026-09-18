@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { SEGMENT_SIZES, TRANSITION } from "@/lib/design";
 
 // TDS 세그먼트 컨트롤에서 잰 값이다. 크기별 치수는 SEGMENT_SIZES에 있다.

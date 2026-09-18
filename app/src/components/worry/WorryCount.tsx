@@ -1,6 +1,7 @@
 import type { Icon } from "phosphor-react-native";
-import { Text, useTheme, XStack } from "tamagui";
+import { useTheme, XStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { PRESS_OPACITY } from "@/lib/design";
 
 const ICON_SIZE = 18;

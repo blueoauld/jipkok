@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
-import { Spinner, Text, useTheme, XStack, YStack } from "tamagui";
+import { Spinner, useTheme, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, mediaSummary } from "@/lib/chat";
 import { type UploadState, useUploadState } from "@/lib/chat/upload-store";
@@ -87,7 +88,7 @@ export function VideoMessage({
               rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+              <Text preset="subStrong" color={OVERLAY_INK}>
                 {formatDuration(message.durationSeconds)}
               </Text>
             </XStack>
@@ -119,7 +120,7 @@ function UploadOverlay({
     <YStack fullscreen bg={OVERLAY_BG} items="center" justify="center" gap="$2">
       {upload.phase === "failed" ? (
         <>
-          <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
+          <Text preset="bodyStrong" color={OVERLAY_INK}>
             {i18n.t("component.sendFailed")}
           </Text>
 
@@ -136,7 +137,7 @@ function UploadOverlay({
         </>
       ) : (
         <>
-          <Text fontSize="$4" color={OVERLAY_INK} fontWeight="600">
+          <Text preset="bodyStrong" color={OVERLAY_INK}>
             {label}
           </Text>
 
@@ -169,7 +170,7 @@ function OverlayAction({
       accessibilityRole="button"
       onPress={onPress}
     >
-      <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+      <Text preset="subStrong" color={OVERLAY_INK}>
         {label}
       </Text>
     </XStack>

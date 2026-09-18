@@ -3,12 +3,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { Text } from "@/components/ui/Text";
 import { usePagedList } from "@/hooks/usePagedList";
 import { usePointBalance, usePointHistories } from "@/hooks/usePoints";
 import type { PointHistoryResponse } from "@/lib/api";
@@ -25,12 +26,12 @@ function Balance() {
       horizontalPadding="small"
       verticalPadding={SCREEN_PADDING}
       right={
-        <Text fontSize="$6" lineHeight="$6" fontWeight="700" color="$grey800">
+        <Text preset="title" color="$grey800">
           {data === undefined ? "-" : data.toLocaleString()}
         </Text>
       }
     >
-      <Text fontSize="$4" lineHeight="$4" fontWeight="500" color="$grey800">
+      <Text preset="label" color="$grey800">
         {t("point.history.balance")}
       </Text>
     </ListRow>
@@ -48,14 +49,7 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
       verticalPadding={LIST_ROW_EVEN_PADDING_Y}
     >
       <XStack items="center" justify="space-between" gap="$2">
-        <Text
-          flex={1}
-          numberOfLines={1}
-          fontSize="$4"
-          lineHeight="$4"
-          fontWeight="500"
-          color="$grey800"
-        >
+        <Text preset="label" flex={1} numberOfLines={1} color="$grey800">
           {pointTypeLabel(type)}
         </Text>
 
@@ -71,17 +65,11 @@ function HistoryRow({ history }: { history: PointHistoryResponse }) {
       </XStack>
 
       <XStack items="center" justify="space-between" gap="$2">
-        <Text
-          flex={1}
-          numberOfLines={1}
-          fontSize="$2"
-          lineHeight="$2"
-          color="$grey600"
-        >
+        <Text preset="sub" flex={1} numberOfLines={1} color="$grey600">
           {formatDateTime(recordedAt)}
         </Text>
 
-        <Text shrink={0} fontSize="$1" color="$grey500">
+        <Text preset="caption" shrink={0} color="$grey500">
           {t("point.history.balanceAfter", {
             balance: balanceAfter.toLocaleString(),
           })}

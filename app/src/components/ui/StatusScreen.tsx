@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { Text, YStack } from "tamagui";
+import { YStack } from "tamagui";
+
+import { Text } from "@/components/ui/Text";
 
 // 아이콘, 제목, 설명, 버튼이 세로로 놓이는 전체 화면 안내. 잠금, 정지, 오류 화면이 쓴다.
 export function StatusScreen({
@@ -18,7 +20,7 @@ export function StatusScreen({
       {icon}
 
       <YStack gap="$2" items="center">
-        <Text fontSize="$6" lineHeight="$6" fontWeight="700" text="center">
+        <Text preset="title" text="center">
           {title}
         </Text>
 
@@ -32,7 +34,7 @@ export function StatusScreen({
 
 export function StatusDescription({ children }: { children: ReactNode }) {
   return (
-    <Text color="$grey600" fontSize="$4" lineHeight="$4" text="center">
+    <Text preset="body" color="$grey600" text="center">
       {children}
     </Text>
   );

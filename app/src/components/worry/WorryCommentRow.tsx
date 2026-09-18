@@ -1,9 +1,10 @@
 import { ArrowBendDownRightIcon } from "phosphor-react-native/src/icons/ArrowBendDownRight";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { Text } from "@/components/ui/Text";
 import { RowAction } from "@/components/worry/RowAction";
 import { useContentTranslation } from "@/hooks/useContentTranslation";
 import type { WorryCommentResponse } from "@/lib/api";
@@ -70,11 +71,11 @@ export const WorryCommentRow = memo(function WorryCommentRow({
         </XStack>
 
         {active ? (
-          <Text fontSize="$4" lineHeight="$4" color="$grey800">
+          <Text preset="body" color="$grey800">
             {translation.contentOf(comment.content)}
           </Text>
         ) : (
-          <Text fontSize="$4" lineHeight="$4" color="$grey500">
+          <Text preset="body" color="$grey500">
             {deletedCommentLabel(comment)}
           </Text>
         )}

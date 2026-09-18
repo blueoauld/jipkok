@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { Border } from "@/components/ui/Border";
+import { Text } from "@/components/ui/Text";
 import { TRANSITION } from "@/lib/design";
 
 // TDS 탭에서 잰 값이다. 칸은 폭을 똑같이 나누고(TDS는 칸이 4개 이하일 때 이렇게 쓴다), 아래에는

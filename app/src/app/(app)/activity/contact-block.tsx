@@ -5,7 +5,6 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "tamagui";
 
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { PhoneInputDialog } from "@/components/PhoneInputDialog";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { ListEmpty } from "@/components/ui/ListEmpty";
 import { ListRow, ListRowTopSpacer } from "@/components/ui/ListRow";
 import { ScreenState } from "@/components/ui/ScreenState";
+import { Text } from "@/components/ui/Text";
 import { useAlert } from "@/hooks/useAlert";
 import {
   useAddContactBlock,
@@ -53,12 +53,12 @@ function ContactBlockRow({
         </Button>
       }
     >
-      <Text fontSize="$4" lineHeight="$4" fontWeight="500" color="$grey800">
+      <Text preset="label" color="$grey800">
         {toDomestic(block.phoneNumber)}
       </Text>
 
       {block.memo && (
-        <Text numberOfLines={1} fontSize="$2" lineHeight="$2" color="$grey600">
+        <Text preset="sub" numberOfLines={1} color="$grey600">
           {block.memo}
         </Text>
       )}
@@ -77,7 +77,7 @@ function Notice() {
         horizontalPadding="small"
         verticalPadding={LIST_ROW_EVEN_PADDING_Y}
       >
-        <Text fontSize="$2" lineHeight="$2" color="$grey600">
+        <Text preset="sub" color="$grey600">
           {t("contactBlock.notice")}
         </Text>
       </ListRow>

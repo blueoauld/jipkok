@@ -1,5 +1,6 @@
-import { Text, type TextProps, YStack } from "tamagui";
+import { type TextProps, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { PRESS_OPACITY, tapSlop } from "@/lib/design";
 
 const DIVIDER_HEIGHT = 14;
@@ -12,9 +13,7 @@ const TAP_SLOP = tapSlop({ height: LINE_HEIGHT });
 export function TextButton(props: TextProps) {
   return (
     <Text
-      fontSize="$4"
-      lineHeight="$4"
-      fontWeight="500"
+      preset="label"
       color="$grey600"
       pressStyle={{ opacity: PRESS_OPACITY }}
       hitSlop={TAP_SLOP}

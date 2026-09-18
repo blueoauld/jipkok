@@ -1,8 +1,9 @@
 import { Image } from "expo-image";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { memo } from "react";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import type { ChatMessageResponse } from "@/lib/api";
 import { mediaSummary } from "@/lib/chat";
 import {
@@ -78,7 +79,7 @@ export const ChatMediaTile = memo(function ChatMediaTile({
               rounded={PILL_RADIUS}
               bg={OVERLAY_BG}
             >
-              <Text fontSize="$2" color={OVERLAY_INK} fontWeight="600">
+              <Text preset="subStrong" color={OVERLAY_INK}>
                 {formatDuration(message.durationSeconds)}
               </Text>
             </XStack>

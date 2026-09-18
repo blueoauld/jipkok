@@ -6,8 +6,9 @@ import {
   type CalendarProps,
   type DateData,
 } from "react-native-calendars";
-import { Text, useTheme, YStack } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { formatFullDate, fromDateParam } from "@/lib/date";
 import { PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";

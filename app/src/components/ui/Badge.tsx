@@ -1,5 +1,6 @@
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { BADGE_SIZES, DARK_FILL } from "@/lib/design";
 
 // TDS 배지의 색 조합이다. 약한 배지는 글자색의 16% 면을 깐다.

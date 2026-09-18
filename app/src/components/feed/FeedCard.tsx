@@ -4,9 +4,10 @@ import { SirenIcon } from "phosphor-react-native/src/icons/Siren";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text as NativeText } from "react-native";
-import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
+import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { Card } from "@/components/ui/Card";
+import { Text } from "@/components/ui/Text";
 import type { FeedPostResponse } from "@/lib/api";
 import { formatSlotTime } from "@/lib/date";
 import {
@@ -109,11 +110,10 @@ function Item({
           }
         >
           <Text
+            preset="bodyStrong"
             shrink={1}
             numberOfLines={1}
             color={OVERLAY_INK}
-            fontSize="$4"
-            fontWeight="600"
           >
             {post.nickname}
           </Text>
@@ -158,10 +158,9 @@ function Item({
 
         {post.caption && (
           <Text
+            preset="bodyStrong"
             numberOfLines={1}
             color={OVERLAY_INK}
-            fontSize="$4"
-            fontWeight="600"
             {...TEXT_SHADOW}
           >
             {post.caption}

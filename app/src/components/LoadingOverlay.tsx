@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
-import { Spinner, Text, YStack } from "tamagui";
+import { Spinner, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import { OVERLAY_BG, OVERLAY_INK } from "@/lib/design";
 import { useLoadingOverlayStore } from "@/lib/overlay/store";
 

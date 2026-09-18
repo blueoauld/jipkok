@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Text, XStack } from "tamagui";
+import { XStack } from "tamagui";
 
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { Text } from "@/components/ui/Text";
 import { WorryCategoryTag } from "@/components/worry/WorryCategoryTag";
 import type { WorryPostResponse } from "@/lib/api";
 

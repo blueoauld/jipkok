@@ -4,7 +4,7 @@ import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { type RefObject, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, useTheme, XStack, YStack } from "tamagui";
+import { useTheme, XStack, YStack } from "tamagui";
 
 import { FormScreen } from "@/components/FormScreen";
 import { PhotoGrid } from "@/components/PhotoGrid";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { CountedInput } from "@/components/ui/CountedInput";
 import { FieldLabel } from "@/components/ui/FieldLabel";
 import { ListRow } from "@/components/ui/ListRow";
+import { Text } from "@/components/ui/Text";
 import { useAlert } from "@/hooks/useAlert";
 import { useUploadPhotos } from "@/hooks/useUploadPhotos";
 import { api, type ReportReason } from "@/lib/api";
@@ -66,13 +67,7 @@ function ReasonRow({
       selected={selected}
       onPress={onPress}
     >
-      <Text
-        numberOfLines={1}
-        fontSize="$4"
-        lineHeight="$4"
-        fontWeight="500"
-        color="$grey800"
-      >
+      <Text preset="label" numberOfLines={1} color="$grey800">
         {label}
       </Text>
     </ListRow>

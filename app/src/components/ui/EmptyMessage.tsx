@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { Text } from "tamagui";
+
+import { Text } from "@/components/ui/Text";
 
 export function EmptyMessage({ children }: { children: ReactNode }) {
   return (
-    <Text color="$grey600" fontSize="$4" lineHeight="$4">
+    <Text preset="body" color="$grey600">
       {children}
     </Text>
   );

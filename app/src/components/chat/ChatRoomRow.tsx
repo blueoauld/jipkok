@@ -11,10 +11,11 @@ import { Pressable } from "react-native-gesture-handler";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
-import { Text, useTheme, XStack, type XStackProps, YStack } from "tamagui";
+import { useTheme, XStack, type XStackProps, YStack } from "tamagui";
 
 import { Badge } from "@/components/ui/Badge";
 import { ListRow } from "@/components/ui/ListRow";
+import { Text } from "@/components/ui/Text";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { ChatRoomResponse } from "@/lib/api";
 import { formatUnreadCount, mediaSummary } from "@/lib/chat";
@@ -235,13 +236,7 @@ function Row({
         >
           <XStack items="center" justify="space-between" gap="$2">
             <XStack flex={1} items="center" gap="$1.5">
-              <Text
-                shrink={0}
-                fontSize="$4"
-                lineHeight="$4"
-                fontWeight="500"
-                color="$grey800"
-              >
+              <Text preset="label" shrink={0} color="$grey800">
                 {room.nickname}
               </Text>
 
@@ -263,10 +258,9 @@ function Row({
 
               {room.memo && (
                 <Text
+                  preset="sub"
                   shrink={1}
                   numberOfLines={1}
-                  fontSize="$2"
-                  lineHeight="$2"
                   color="$grey600"
                 >
                   {room.memo}
@@ -274,20 +268,14 @@ function Row({
               )}
             </XStack>
 
-            <Text shrink={0} fontSize="$1" color="$grey500">
+            <Text preset="caption" shrink={0} color="$grey500">
               {formatChatTime(room.lastMessageAt)}
             </Text>
           </XStack>
 
           {/* 한 줄로 두어 행 높이가 사진 높이로 같아지고, 사진 사이가 늘 좌우 여백과 같다. */}
           <XStack items="center" justify="space-between" gap="$2">
-            <Text
-              flex={1}
-              numberOfLines={1}
-              fontSize="$2"
-              lineHeight="$2"
-              color="$grey600"
-            >
+            <Text preset="sub" flex={1} numberOfLines={1} color="$grey600">
               {room.lastMessageType === "TEXT"
                 ? room.lastMessageContent
                 : mediaSummary(room.lastMessageType)}

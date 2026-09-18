@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
 import { BottomSheet, BottomSheetButtons } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel } from "@/components/ui/FieldLabel";
 import { RangeSlider } from "@/components/ui/RangeSlider";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Text } from "@/components/ui/Text";
 import {
   FIELD_TEXT_GAP,
   FIELD_TEXT_INSET,

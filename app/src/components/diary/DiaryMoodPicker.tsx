@@ -1,6 +1,7 @@
 import { ScrollView } from "react-native";
-import { Text, XStack, YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 
+import { Text } from "@/components/ui/Text";
 import type { DiaryMood } from "@/lib/api";
 import { BUTTON_SIZES, DARK_FILL, PRESS_DIM } from "@/lib/design";
 import { DIARY_MOODS, moodEmoji } from "@/lib/diary";
