@@ -273,7 +273,5 @@ export const ROW_PRESS_SCALE = 0.96;
 // 흰 화면에서 묶음과 묶음 사이를 가르는 회색 띠의 높이다.
 export const SECTION_DIVIDER_HEIGHT = 16;
 
-export const PRESS_DIM = "rgba(0, 0, 0, 0.1)";
-
 // TDS dark 채움(버튼, elephant 배지)의 색이다. $grey700은 다크에서 밝아지므로 라이트 값을 고정한다.
 export const DARK_FILL = "#4E5968";

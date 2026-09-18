@@ -184,10 +184,12 @@ export default function WorryDetailScreen() {
               }
               ListEmptyComponent={
                 commentsQuery.isPending ? null : commentsError ? (
-                  <ErrorState
-                    message={t("worry.detail.commentError")}
-                    onRetry={() => refetchComments()}
-                  />
+                  <YStack items="center" py="$8">
+                    <ErrorState
+                      message={t("worry.detail.commentError")}
+                      onRetry={() => refetchComments()}
+                    />
+                  </YStack>
                 ) : (
                   <ListEmpty>{t("worry.detail.commentEmpty")}</ListEmpty>
                 )

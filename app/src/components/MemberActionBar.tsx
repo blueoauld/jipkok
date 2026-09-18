@@ -19,6 +19,7 @@ import {
   FLOATING_BAR_RADIUS,
   FLOATING_BAR_STYLE,
   PILL_RADIUS,
+  PRESS_OPACITY,
 } from "@/lib/design";
 import { GLASS_ENABLED } from "@/lib/glass";
 
@@ -34,6 +35,8 @@ const BADGE_OVERHANG = COUNT_BADGE_SIZE / 4;
 
 export type MemberActionKey =
   "like" | "favorite" | "note" | "secretPhoto" | "block";
+
+const MY_STATE_KEYS = new Set<MemberActionKey>(["like", "favorite", "block"]);
 
 const ACTIONS: { key: MemberActionKey; icon: Icon }[] = [
   { key: "like", icon: HeartIcon },
@@ -110,6 +113,7 @@ export function MemberActionBar({
       items="center"
       justify="center"
       opacity={pending === key || disabled[key] ? DISABLED_OPACITY : 1}
+      pressStyle={disabled[key] ? undefined : { opacity: PRESS_OPACITY }}
       accessible
       accessibilityRole="button"
       accessibilityLabel={
@@ -117,7 +121,10 @@ export function MemberActionBar({
           ? `${t("a11y.secretPhoto")} ${member.secretPhotoCount}`
           : t(`a11y.${key}`)
       }
-      accessibilityState={{ selected: filled[key], disabled: disabled[key] }}
+      accessibilityState={{
+        selected: MY_STATE_KEYS.has(key) ? filled[key] : undefined,
+        disabled: disabled[key],
+      }}
       onPress={disabled[key] ? undefined : () => onPress(key)}
     >
       <YStack>

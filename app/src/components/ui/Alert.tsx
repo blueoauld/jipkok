@@ -13,7 +13,6 @@ import {
   DIALOG_RADIUS,
   DIALOG_TEXT_PADDING,
   DIALOG_WIDTH,
-  PRESS_DIM,
   SCREEN_PADDING,
   tapSlop,
   TRANSITION,
@@ -141,7 +140,7 @@ export function Alert({
                   px={SPACING.textButtonX}
                   py={SPACING.textButtonY}
                   rounded={TEXT_BUTTON_RADIUS}
-                  pressStyle={{ bg: PRESS_DIM }}
+                  pressStyle={{ bg: "$pressDim" }}
                   hitSlop={CONFIRM_TAP_SLOP}
                   accessible
                   accessibilityRole="button"

@@ -35,6 +35,7 @@ export const MESSAGE_GAP_BOTTOM = 4;
 const BUBBLE_MAX_WIDTH_RATIO = 0.88;
 
 const REPLY_ACTION_SIZE = 32;
+const REPLY_ACTION_PADDING_X = 12;
 const REPLY_ICON_SIZE = 18;
 const REPLY_FRICTION = 2;
 
@@ -68,7 +69,7 @@ function ReplyAction() {
   const theme = useTheme();
 
   return (
-    <YStack self="center" px="$3">
+    <YStack self="center" px={REPLY_ACTION_PADDING_X}>
       <XStack
         width={REPLY_ACTION_SIZE}
         height={REPLY_ACTION_SIZE}

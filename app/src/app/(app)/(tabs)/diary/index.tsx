@@ -35,6 +35,9 @@ const SORT_ITEMS = SORTS.map((value) => ({
   label: i18n.t(`diary.sort.${value}`),
 }));
 
+// 달력 라이브러리가 주 줄 위아래에 두는 여백이다. 안내 문구 위 간격에서 이만큼을 뺀다.
+const CALENDAR_WEEK_MARGIN = 7;
+
 export default function DiaryScreen() {
   const { t } = useTranslation();
   const today = koreaDateParam(useNow());
@@ -129,6 +132,7 @@ export default function DiaryScreen() {
               preset="sub"
               color="$grey600"
               px={LIST_ROW_PADDING_X.small}
+              pt={LIST_ROW_PADDING_X.small - CALENDAR_WEEK_MARGIN}
               pb={LIST_ROW_PADDING_X.small}
             >
               {t("diary.notice")}

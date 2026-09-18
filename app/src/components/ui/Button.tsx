@@ -7,7 +7,6 @@ import {
   BUTTON_DISABLED_OPACITY,
   BUTTON_SIZES,
   DARK_FILL,
-  PRESS_DIM,
   tapSlop,
 } from "@/lib/design";
 
@@ -138,7 +137,7 @@ export function Button({
       {!inactive && (
         <YStack
           fullscreen
-          bg={PRESS_DIM}
+          bg="$pressDim"
           opacity={0}
           pointerEvents="none"
           $group-press={{ opacity: 1 }}

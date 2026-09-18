@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { Spinner, useTheme, XStack, YStack } from "tamagui";
 
+import { DurationBadge } from "@/components/ui/DurationBadge";
 import { Text } from "@/components/ui/Text";
 import type { ChatMessageResponse } from "@/lib/api";
 import { isPending, mediaSummary } from "@/lib/chat";
@@ -79,19 +80,11 @@ export function VideoMessage({
           </YStack>
 
           {message.durationSeconds != null && (
-            <XStack
-              position="absolute"
+            <DurationBadge
+              seconds={message.durationSeconds}
               b={DURATION_INSET}
               r={DURATION_INSET}
-              px="$2"
-              py={2}
-              rounded={PILL_RADIUS}
-              bg={OVERLAY_BG}
-            >
-              <Text preset="subStrong" color={OVERLAY_INK}>
-                {formatDuration(message.durationSeconds)}
-              </Text>
-            </XStack>
+            />
           )}
         </>
       )}

@@ -6,13 +6,13 @@ import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { XIcon } from "phosphor-react-native/src/icons/X";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { getTokens, useTheme, XStack, YStack } from "tamagui";
+import { getTokens, useTheme, YStack } from "tamagui";
 
+import { DurationBadge } from "@/components/ui/DurationBadge";
 import {
   PHOTO_OVERLAY_ICON_SIZE,
   PhotoOverlayButton,
 } from "@/components/ui/PhotoOverlayButton";
-import { Text } from "@/components/ui/Text";
 import {
   type DiaryDraftAttachment,
   draftDurationSeconds,
@@ -24,11 +24,10 @@ import {
   COVER_IMAGE_STYLE,
   DARK_FILL,
   IMAGE_TRANSITION,
-  OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
   PHOTO_TILE_RADIUS,
-  PILL_RADIUS,
+  SCREEN_PADDING,
 } from "@/lib/design";
 import { photoCacheKey } from "@/lib/photo";
 import { formatDuration } from "@/lib/video";
@@ -89,19 +88,11 @@ function Tile({
           </YStack>
 
           {durationSeconds != null && (
-            <XStack
-              position="absolute"
+            <DurationBadge
+              seconds={durationSeconds}
               t={DURATION_INSET}
               l={DURATION_INSET}
-              px="$1.5"
-              py={1}
-              rounded={PILL_RADIUS}
-              bg={OVERLAY_BG}
-            >
-              <Text preset="captionStrong" color={OVERLAY_INK}>
-                {formatDuration(durationSeconds)}
-              </Text>
-            </XStack>
+            />
           )}
         </>
       )}
@@ -178,7 +169,11 @@ export function DiaryAttachmentStrip({
       horizontal
       showsHorizontalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      contentContainerStyle={{ gap: getTokens().space.$2.val }}
+      style={{ marginHorizontal: -SCREEN_PADDING }}
+      contentContainerStyle={{
+        gap: getTokens().space.$2.val,
+        paddingHorizontal: SCREEN_PADDING,
+      }}
     >
       {items.map((item, index) => (
         <Tile

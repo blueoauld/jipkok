@@ -10,6 +10,8 @@ import { formatDuration } from "@/lib/video";
 
 export const SEEK_STEP_SECONDS = 10;
 
+const TABULAR_NUMS = ["tabular-nums" as const];
+
 const TRACK_BG = "rgba(255, 255, 255, 0.35)";
 const TRACK_HEIGHT = 4;
 const THUMB_SIZE = 16;
@@ -57,7 +59,7 @@ export function SeekBar({
 
   return (
     <XStack items="center" gap="$3">
-      <Text preset="subStrong" color={OVERLAY_INK}>
+      <Text preset="subStrong" color={OVERLAY_INK} fontVariant={TABULAR_NUMS}>
         {formatDuration(Math.floor(shown))}
       </Text>
 
@@ -105,7 +107,7 @@ export function SeekBar({
         </YStack>
       </GestureDetector>
 
-      <Text preset="subStrong" color={OVERLAY_INK}>
+      <Text preset="subStrong" color={OVERLAY_INK} fontVariant={TABULAR_NUMS}>
         {formatDuration(Math.floor(duration))}
       </Text>
     </XStack>

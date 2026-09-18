@@ -1,18 +1,16 @@
 import { Image } from "expo-image";
 import { PlayIcon } from "phosphor-react-native/src/icons/Play";
 import { memo } from "react";
-import { useTheme, XStack, YStack } from "tamagui";
+import { useTheme, YStack } from "tamagui";
 
-import { Text } from "@/components/ui/Text";
+import { DurationBadge } from "@/components/ui/DurationBadge";
 import type { ChatMessageResponse } from "@/lib/api";
 import { mediaSummary } from "@/lib/chat";
 import {
   IMAGE_TRANSITION,
-  OVERLAY_BG,
   OVERLAY_INK,
   PHOTO_PRESS_OPACITY,
   PHOTO_TILE_RADIUS,
-  PILL_RADIUS,
 } from "@/lib/design";
 import { formatDuration } from "@/lib/video";
 
@@ -70,19 +68,11 @@ export const ChatMediaTile = memo(function ChatMediaTile({
           </YStack>
 
           {message.durationSeconds != null && (
-            <XStack
-              position="absolute"
+            <DurationBadge
+              seconds={message.durationSeconds}
               b={DURATION_INSET}
               r={DURATION_INSET}
-              px="$1.5"
-              py={1}
-              rounded={PILL_RADIUS}
-              bg={OVERLAY_BG}
-            >
-              <Text preset="subStrong" color={OVERLAY_INK}>
-                {formatDuration(message.durationSeconds)}
-              </Text>
-            </XStack>
+            />
           )}
         </>
       )}

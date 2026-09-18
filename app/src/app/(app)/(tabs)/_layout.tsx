@@ -14,13 +14,13 @@ import { Border } from "@/components/ui/Border";
 import { useChatUnreadCount } from "@/hooks/useChatUnreadCount";
 import { formatUnreadCount } from "@/lib/chat";
 import { useChatSelectionStore } from "@/lib/chat/store";
-import { BOTTOM_BAR_HEIGHT, bottomBarHeight } from "@/lib/design";
+import { BADGE_SIZES, BOTTOM_BAR_HEIGHT, bottomBarHeight } from "@/lib/design";
 
 const ICON_SIZE = 28;
 const TAB_ITEM_PADDING = 5;
 const TAB_ITEM_MAX_WIDTH = 500;
 
-const BADGE_FONT_SIZE = 11;
+const BADGE_FONT_SIZE = BADGE_SIZES.small.fontSize;
 const BADGE_TOP =
   (BOTTOM_BAR_HEIGHT - TAB_ITEM_PADDING * 2 - ICON_SIZE) / 2 - 3;
 
@@ -96,6 +96,7 @@ export default function TabsLayout() {
               backgroundColor: theme.red500.val,
               color: theme.onFill.val,
               fontSize: BADGE_FONT_SIZE,
+              fontWeight: BADGE_SIZES.small.fontWeight,
             },
             tabBarIcon: ({ color, focused }) => (
               <Icon

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import {
   BUTTON_SIZES,
   PILL_RADIUS,
-  PRESS_DIM,
   SCREEN_PADDING,
   TRANSITION,
 } from "@/lib/design";
@@ -127,7 +126,7 @@ function ArrowButton({
 
         <YStack
           fullscreen
-          bg={PRESS_DIM}
+          bg="$pressDim"
           opacity={0}
           pointerEvents="none"
           $group-press={{ opacity: 1 }}

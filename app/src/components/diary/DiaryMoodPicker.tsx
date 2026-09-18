@@ -3,7 +3,7 @@ import { XStack, YStack } from "tamagui";
 
 import { Text } from "@/components/ui/Text";
 import type { DiaryMood } from "@/lib/api";
-import { BUTTON_SIZES, DARK_FILL, PRESS_DIM } from "@/lib/design";
+import { BUTTON_SIZES, DARK_FILL, SCREEN_PADDING } from "@/lib/design";
 import { DIARY_MOODS, moodEmoji } from "@/lib/diary";
 
 // 이모지를 크게 넣으려고 Button 대신 직접 그린다. 크기와 모서리는 TDS large 버튼, 색과 눌림은
@@ -45,7 +45,7 @@ function MoodChip({
 
       <YStack
         fullscreen
-        bg={PRESS_DIM}
+        bg="$pressDim"
         opacity={0}
         pointerEvents="none"
         $group-press={{ opacity: 1 }}
@@ -67,6 +67,8 @@ export function DiaryMoodPicker({
       horizontal
       showsHorizontalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      style={{ marginHorizontal: -SCREEN_PADDING }}
+      contentContainerStyle={{ paddingHorizontal: SCREEN_PADDING }}
     >
       <XStack gap="$2">
         {DIARY_MOODS.map((mood) => (
