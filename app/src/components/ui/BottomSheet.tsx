@@ -55,10 +55,16 @@ function useKeyboardVisible(enabled: boolean) {
   return visible;
 }
 
-// 키보드 위에는 좌우 여백만큼만 띄운다. 시트는 키보드 이벤트의 높이만큼 올라가는데, 그 높이가
-// iOS는 아래 안전영역을 품고 안드로이드는 아래 시스템 바를 빼고 오므로 안드로이드만 그만큼 더한다.
-function keyboardPadding(bottomInset: number) {
-  return Platform.OS === "android" ? bottomInset + SHEET_MARGIN : SHEET_MARGIN;
+// 시트 아래 여백이다. 안드로이드 시스템 바는 불투명한 띠라 그 위에 딱 붙으면 시트가 바에 얹힌 것처럼
+// 보이므로 바 높이에 좌우와 같은 여백을 더한다. 시트를 키보드 높이만큼 올릴 때도 그 높이에는 시스템 바가
+// 빠져 있어 같은 값을 쓴다. iOS는 홈 인디케이터가 앱 배경 위에 떠 있어 TDS처럼 그 높이만큼만 띄우고,
+// 키보드 높이에는 안전영역이 들어 있어 좌우 여백만 둔다.
+function bottomPaddingOf(bottomInset: number, keyboardVisible: boolean) {
+  if (Platform.OS === "android") {
+    return bottomInset + SHEET_MARGIN;
+  }
+
+  return keyboardVisible ? SHEET_MARGIN : bottomInset || SHEET_MARGIN;
 }
 
 // dismissible이 거짓이면 끌어내리거나 뒤를 눌러도 닫히지 않는다. 입력칸이 있는 시트는
@@ -81,10 +87,7 @@ export function BottomSheet({
   const insets = useWindowInsets();
   const open = useVisibleWhenUnlocked(requested);
   const keyboardVisible = useKeyboardVisible(moveOnKeyboardChange);
-  // 키보드가 없으면 TDS처럼 안전영역이 있을 때 여백을 더하지 않고 그 높이만큼만 띄운다.
-  const bottomPadding = keyboardVisible
-    ? keyboardPadding(insets.bottom)
-    : insets.bottom || SHEET_MARGIN;
+  const bottomPadding = bottomPaddingOf(insets.bottom, keyboardVisible);
 
   // 키보드가 올라와 있으면 시트를 덮는다. 둘은 같이 떠 있을 수 없다.
   useEffect(() => {
