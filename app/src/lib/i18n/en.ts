@@ -57,6 +57,32 @@ export const en: typeof ko = {
     safetyNotice:
       "Under Korea's Juvenile Protection Act, illegal activity in chat such as sharing obscene material or soliciting prostitution may be punished by law. If someone asks for payment or personal information such as a bank account, ID, or card number, it may be phishing or another crime, so never share it.",
   },
+  permissionNotice: {
+    title: "App permissions",
+    description: "Jipkok uses permissions for the features below.",
+    required: "Required permissions",
+    requiredNone: "None",
+    optional: "Optional permissions",
+    location: "Location",
+    locationReason: "To show nearby members sorted by distance",
+    photos: "Photos and videos",
+    photosReason: "To upload or save photos and videos",
+    camera: "Camera",
+    cameraReason: "To take photos and videos",
+    microphone: "Microphone",
+    microphoneReason: "To record sound while filming videos",
+    notifications: "Notifications",
+    notificationsReason: "To let you know about new notes and messages",
+    tracking: "App tracking",
+    trackingReason: "To show ads that match your interests",
+    faceId: "Face ID",
+    faceIdReason: "To unlock the app",
+    optionalNote:
+      "You can use the service without allowing optional permissions. We ask for them when you use the related feature.",
+    settingsNoteAndroid:
+      "You can change permissions in Settings > Apps > Jipkok > Permissions.",
+    settingsNoteIos: "You can change permissions in Settings > Jipkok.",
+  },
   chatMedia: {
     title: "Media gallery",
     emptyMessage: "No photos or videos shared yet.",

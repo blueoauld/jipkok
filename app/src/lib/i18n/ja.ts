@@ -57,6 +57,32 @@ export const ja: typeof ko = {
     safetyNotice:
       "韓国の青少年保護法により、わいせつ物の共有や売春などの違法行為をチャットで行った場合、法的処罰を受けることがあります。口座番号、身分証番号、カード番号などの決済情報や個人情報を求められた場合は、フィッシングなどの犯罪のおそれがあるため、絶対に教えないでください。",
   },
+  permissionNotice: {
+    title: "アプリのアクセス権限について",
+    description: "Jipkokは以下の機能のためにアクセス権限を使用します。",
+    required: "必須のアクセス権限",
+    requiredNone: "なし",
+    optional: "任意のアクセス権限",
+    location: "位置情報",
+    locationReason: "近くのメンバーを距離順に表示するとき",
+    photos: "写真と動画",
+    photosReason: "写真や動画を投稿または保存するとき",
+    camera: "カメラ",
+    cameraReason: "写真や動画を撮影するとき",
+    microphone: "マイク",
+    microphoneReason: "動画の撮影中に音声を録音するとき",
+    notifications: "通知",
+    notificationsReason: "新しいレターやメッセージをお知らせするとき",
+    tracking: "アプリのトラッキング",
+    trackingReason: "興味に合った広告を表示するとき",
+    faceId: "Face ID",
+    faceIdReason: "アプリのロックを解除するとき",
+    optionalNote:
+      "任意のアクセス権限は許可しなくてもサービスを利用でき、その機能を使うときに許可を求めます。",
+    settingsNoteAndroid:
+      "アクセス権限は端末の設定 > アプリ > Jipkok > 権限から変更できます。",
+    settingsNoteIos: "アクセス権限は設定 > Jipkokから変更できます。",
+  },
   chatMedia: {
     title: "メディア一覧",
     emptyMessage: "やり取りした写真と動画がありません。",

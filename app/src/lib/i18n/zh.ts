@@ -56,6 +56,32 @@ export const zh: typeof ko = {
     safetyNotice:
       "依據韓國《青少年保護法》，在聊天室中散布淫穢內容、從事性交易等違法行為，可能受到法律處罰。若有人向您索取帳戶號碼、身分證字號、信用卡號碼等付款資訊或個人資料，可能是網路釣魚等犯罪，請絕對不要提供。",
   },
+  permissionNotice: {
+    title: "應用程式存取權限說明",
+    description: "Jipkok 會為以下功能使用存取權限。",
+    required: "必要存取權限",
+    requiredNone: "無",
+    optional: "選擇性存取權限",
+    location: "位置",
+    locationReason: "依距離顯示附近的會員時",
+    photos: "相片和影片",
+    photosReason: "上傳或儲存相片和影片時",
+    camera: "相機",
+    cameraReason: "拍攝相片和影片時",
+    microphone: "麥克風",
+    microphoneReason: "拍攝影片並錄製聲音時",
+    notifications: "通知",
+    notificationsReason: "通知新的私訊和訊息時",
+    tracking: "App 追蹤",
+    trackingReason: "顯示符合興趣的廣告時",
+    faceId: "Face ID",
+    faceIdReason: "解除應用程式鎖定時",
+    optionalNote:
+      "即使不允許選擇性存取權限，仍可使用服務，使用相關功能時會再詢問是否允許。",
+    settingsNoteAndroid:
+      "可在手機設定 > 應用程式 > Jipkok > 權限中變更存取權限。",
+    settingsNoteIos: "可在設定 > Jipkok 中變更存取權限。",
+  },
   chatMedia: {
     title: "媒體總覽",
     emptyMessage: "尚無分享的照片與影片。",

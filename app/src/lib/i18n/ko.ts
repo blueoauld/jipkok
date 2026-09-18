@@ -56,6 +56,32 @@ export const ko = {
     safetyNotice:
       "청소년 보호법상 음란물, 성매매 등 불법행위가 채팅방에서 이루어질 경우 법적 처벌을 받을 수 있습니다. 계좌번호, 주민등록번호, 카드번호 같은 결제정보나 개인정보를 요구받으면 피싱 등 범죄일 수 있으니 절대 알려 주지 마시기 바랍니다.",
   },
+  permissionNotice: {
+    title: "앱 접근권한 안내",
+    description: "집콕은 아래 기능을 위해 접근권한을 사용합니다.",
+    required: "필수 접근권한",
+    requiredNone: "없음",
+    optional: "선택 접근권한",
+    location: "위치",
+    locationReason: "가까운 회원을 거리순으로 보여 줄 때",
+    photos: "사진 및 동영상",
+    photosReason: "사진과 동영상을 올리거나 저장할 때",
+    camera: "카메라",
+    cameraReason: "사진과 동영상을 찍을 때",
+    microphone: "마이크",
+    microphoneReason: "동영상을 찍으며 소리를 녹음할 때",
+    notifications: "알림",
+    notificationsReason: "새 쪽지와 메시지를 알려 줄 때",
+    tracking: "앱 추적",
+    trackingReason: "관심사에 맞는 광고를 보여 줄 때",
+    faceId: "Face ID",
+    faceIdReason: "앱 잠금을 풀 때",
+    optionalNote:
+      "선택 접근권한은 허용하지 않아도 서비스를 이용할 수 있으며, 해당 기능을 쓸 때 허용 여부를 묻습니다.",
+    settingsNoteAndroid:
+      "접근권한은 휴대폰 설정 > 애플리케이션 > 집콕 > 권한에서 바꿀 수 있습니다.",
+    settingsNoteIos: "접근권한은 설정 > 집콕에서 바꿀 수 있습니다.",
+  },
   chatMedia: {
     title: "미디어 모아보기",
     emptyMessage: "주고받은 사진과 동영상이 없습니다.",

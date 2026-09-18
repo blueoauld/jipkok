@@ -8,6 +8,7 @@ import { TamaguiProvider, Theme, useTheme, YStack } from "tamagui";
 
 import { AppLockOverlay } from "@/components/AppLockOverlay";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { PermissionNoticeOverlay } from "@/components/PermissionNoticeOverlay";
 import { ToastHost } from "@/components/ToastHost";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -19,6 +20,7 @@ import { initializeAnalytics } from "@/lib/analytics";
 import { initializeCrashReporting } from "@/lib/crash";
 import { CONTENT_MAX_WIDTH } from "@/lib/design";
 import { initializePerformanceMonitoring } from "@/lib/performance";
+import { usePermissionNoticeStore } from "@/lib/permission/store";
 import { QueryProvider } from "@/lib/query";
 import { useReviewStore } from "@/lib/review/store";
 import { type ThemeMode, useThemeStore } from "@/lib/theme/store";
@@ -53,6 +55,7 @@ export default function RootLayout() {
                   <YStack flex={1} bg="$background" items="center">
                     <YStack flex={1} width="100%" maxW={CONTENT_MAX_WIDTH}>
                       <Stack screenOptions={{ headerShown: false }} />
+                      <PermissionNoticeOverlay />
                       <LoadingOverlay />
                       <ToastHost />
                       <AppLockOverlay />
@@ -87,9 +90,14 @@ function Push() {
 }
 
 function Ads() {
+  const permissionNoticeSeen = usePermissionNoticeStore((state) => state.seen);
+
+  // 앱 추적 권한 팝업이 권한 안내보다 먼저 뜨지 않게 안내를 닫은 뒤에 시작한다.
   useEffect(() => {
-    initializeAds();
-  }, []);
+    if (permissionNoticeSeen) {
+      initializeAds();
+    }
+  }, [permissionNoticeSeen]);
 
   return null;
 }
