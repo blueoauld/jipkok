@@ -52,6 +52,9 @@ export const zh: typeof ko = {
     attachAlbum: "相簿",
     attachCamera: "拍照",
     attachVideo: "錄影",
+    safetyNoticeTitle: "警告",
+    safetyNotice:
+      "依據韓國《青少年保護法》，在聊天室中散布淫穢內容、從事性交易等違法行為，可能受到法律處罰。若有人向您索取帳戶號碼、身分證字號、信用卡號碼等付款資訊或個人資料，可能是網路釣魚等犯罪，請絕對不要提供。",
   },
   chatMedia: {
     title: "媒體總覽",

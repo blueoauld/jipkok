@@ -52,6 +52,9 @@ export const ko = {
     attachAlbum: "앨범",
     attachCamera: "사진 촬영",
     attachVideo: "동영상 촬영",
+    safetyNoticeTitle: "경고문",
+    safetyNotice:
+      "청소년 보호법상 음란물, 성매매 등 불법행위가 채팅방에서 이루어질 경우 법적 처벌을 받을 수 있습니다. 계좌번호, 주민등록번호, 카드번호 같은 결제정보나 개인정보를 요구받으면 피싱 등 범죄일 수 있으니 절대 알려 주지 마시기 바랍니다.",
   },
   chatMedia: {
     title: "미디어 모아보기",

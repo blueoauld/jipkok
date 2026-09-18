@@ -17,6 +17,7 @@ import {
   ChatMessageRow,
   MESSAGE_GAP_BOTTOM,
 } from "@/components/chat/ChatMessageRow";
+import { ChatSafetyNotice } from "@/components/chat/ChatSafetyNotice";
 import { ChatScrollView } from "@/components/chat/ChatScrollView";
 import { MessageActionOverlay } from "@/components/chat/MessageActionOverlay";
 import { VideoPlayerModal } from "@/components/chat/VideoPlayerModal";
@@ -333,12 +334,15 @@ export default function ChatRoomScreen() {
               fetchNextPage();
             }
           }}
+          // 뒤집힌 목록이라 꼬리가 화면 맨 위, 곧 대화가 시작되는 자리다.
           ListFooterComponent={
             isFetchingNextPage ? (
               <YStack items="center" py="$4">
                 <Spinner size="small" color="$grey500" />
               </YStack>
-            ) : null
+            ) : hasNextPage ? null : (
+              <ChatSafetyNotice />
+            )
           }
           ListEmptyComponent={
             <ListEmpty>{t("chatRoom.emptyMessage")}</ListEmpty>

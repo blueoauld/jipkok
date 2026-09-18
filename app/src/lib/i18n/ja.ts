@@ -53,6 +53,9 @@ export const ja: typeof ko = {
     attachAlbum: "アルバム",
     attachCamera: "写真を撮る",
     attachVideo: "動画を撮る",
+    safetyNoticeTitle: "警告",
+    safetyNotice:
+      "韓国の青少年保護法により、わいせつ物の共有や売春などの違法行為をチャットで行った場合、法的処罰を受けることがあります。口座番号、身分証番号、カード番号などの決済情報や個人情報を求められた場合は、フィッシングなどの犯罪のおそれがあるため、絶対に教えないでください。",
   },
   chatMedia: {
     title: "メディア一覧",

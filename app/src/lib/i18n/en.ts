@@ -53,6 +53,9 @@ export const en: typeof ko = {
     attachAlbum: "Album",
     attachCamera: "Take photo",
     attachVideo: "Record video",
+    safetyNoticeTitle: "Warning",
+    safetyNotice:
+      "Under Korea's Juvenile Protection Act, illegal activity in chat such as sharing obscene material or soliciting prostitution may be punished by law. If someone asks for payment or personal information such as a bank account, ID, or card number, it may be phishing or another crime, so never share it.",
   },
   chatMedia: {
     title: "Media gallery",
