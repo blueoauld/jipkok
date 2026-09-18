@@ -30,9 +30,7 @@ export function Section({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="border-l-4 border-accent pl-2.5 text-lg font-bold">
-        {title}
-      </h2>
+      <h2 className="text-lg font-bold tracking-tight">{title}</h2>
       <div className="flex flex-col gap-3 [&_li]:pl-1 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:pl-5">
         {children}
       </div>
@@ -44,10 +42,10 @@ export function Section({
 export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   return (
     <>
-      <div className="retro-panel hidden overflow-x-auto sm:block">
+      <div className="card hidden overflow-x-auto sm:block">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b-2 border-ink bg-subtle">
+            <tr className="border-b border-border bg-subtle">
               {head.map((cell) => (
                 <th key={cell} className="px-3 py-2.5 font-bold">
                   {cell}
@@ -76,7 +74,7 @@ export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
       </div>
 
       {/* Section 이 안의 ul 을 글머리표 목록으로 꾸며서 여기서는 ul 을 쓰지 않는다. */}
-      <div className="retro-panel flex flex-col text-sm sm:hidden">
+      <div className="card flex flex-col text-sm sm:hidden">
         {rows.map(([title, ...details], rowIndex) => (
           <div
             key={rowIndex}

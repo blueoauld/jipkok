@@ -7,40 +7,42 @@ export const contentType = "image/png";
 
 export default function OpengraphImage() {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 28,
+        background: "#ffffff",
+        color: "#191f28",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 24,
-          background: "#007aff",
-          color: "#ffffff",
+          width: 96,
+          height: 8,
+          borderRadius: 999,
+          background: "#3182f6",
+        }}
+      />
+      <div
+        style={{
+          display: "flex",
+          fontSize: 112,
+          fontWeight: 700,
+          letterSpacing: -2,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            border: "6px solid #111111",
-            background: "#ffffff",
-            color: "#111111",
-            padding: "24px 48px",
-            boxShadow: "12px 12px 0 0 #111111",
-            fontSize: 96,
-            fontWeight: 700,
-            letterSpacing: 4,
-          }}
-        >
-          JIPKOK.EXE
-        </div>
-        <div style={{ display: "flex", fontSize: 36, fontWeight: 600 }}>
-          jipkok.app
-        </div>
+        Jipkok
       </div>
-    ),
+      <div style={{ display: "flex", fontSize: 36, color: "#6b7684" }}>
+        Start a conversation with someone nearby
+      </div>
+    </div>,
     size,
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
 
@@ -33,12 +34,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <header className="border-b-2 border-ink bg-accent">
+        <header className="border-b border-border">
           <Link
             href="/"
-            className="inline-block px-4 py-2.5 font-mono text-sm font-bold tracking-wide text-white"
+            className="mx-auto flex w-full max-w-2xl items-center gap-2 px-6 py-4"
           >
-            JIPKOK.EXE
+            <Image
+              src="/logo.png"
+              alt=""
+              width={24}
+              height={24}
+              className="size-6"
+            />
+            <span className="text-base font-bold tracking-tight">Jipkok</span>
           </Link>
         </header>
 

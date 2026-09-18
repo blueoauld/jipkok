@@ -20,10 +20,8 @@ export default function Home() {
             height={56}
             className="size-14"
           />
-          <h1 className="text-3xl font-bold tracking-tight text-accent">
-            Jipkok
-          </h1>
-          <p className="text-base leading-7 font-medium">
+          <h1 className="text-4xl font-bold tracking-tight">Jipkok</h1>
+          <p className="text-base leading-7 text-muted">
             Browse the people nearby and
             <br />
             say hello with a single note.
