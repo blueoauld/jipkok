@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 import { ScrollView } from "react-native";
-import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useTheme, XStack, YStack } from "tamagui";
 
 import { Button } from "@/components/ui/Button";
+import { ChevronIcon } from "@/components/ui/ChevronIcon";
 import {
   BUTTON_SIZES,
   PILL_RADIUS,
@@ -21,9 +22,6 @@ const FADE_OUT_WIDTH = 28;
 const FADE_WIDTH = ARROW_ZONE + FADE_OUT_WIDTH;
 const FADE_SOLID_RATIO = ARROW_ZONE / FADE_WIDTH;
 const ARROW_ICON_SIZE = 16;
-// TDS 세그먼트 fluid의 왼쪽 꺾쇠 아이콘이다. 오른쪽은 좌우로 뒤집어 쓴다.
-const ARROW_ICON_PATH =
-  "m4.069 8c0-.23.087-.46.263-.636l4.5-4.5c.226-.235.561-.331.877-.248.316.082.562.328.644.644.082.315-.012.651-.248.877l-3.864 3.864 3.864 3.864c.235.226.33.562.248.877-.082.316-.328.562-.644.644-.316.083-.651-.013-.877-.248l-4.5-4.5c-.168-.169-.263-.398-.263-.636";
 const EDGE_TOLERANCE = 1;
 
 export type ChipItem<T extends string> = {
@@ -111,18 +109,11 @@ function ArrowButton({
         justify="center"
         onPress={onPress}
       >
-        <Svg
-          width={ARROW_ICON_SIZE}
-          height={ARROW_ICON_SIZE}
-          viewBox="0 0 16 16"
-          style={side === "right" ? { transform: [{ scaleX: -1 }] } : undefined}
-        >
-          <Path
-            d={ARROW_ICON_PATH}
-            fill={theme.grey700.val}
-            fillRule="evenodd"
-          />
-        </Svg>
+        <ChevronIcon
+          side={side}
+          size={ARROW_ICON_SIZE}
+          color={theme.grey700.val}
+        />
 
         <YStack
           fullscreen

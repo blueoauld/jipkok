@@ -8,12 +8,14 @@ import {
 } from "react-native-calendars";
 import { useTheme, YStack } from "tamagui";
 
+import { ChevronIcon } from "@/components/ui/ChevronIcon";
 import { Text } from "@/components/ui/Text";
 import { formatFullDate, fromDateParam } from "@/lib/date";
 import { PILL_RADIUS } from "@/lib/design";
 import i18n from "@/lib/i18n";
 import { useThemeStore } from "@/lib/theme/store";
 
+const ARROW_ICON_SIZE = 20;
 const DAY_SIZE = 36;
 const DOT_SIZE = 4;
 const DOT_BOTTOM = 3;
@@ -127,6 +129,17 @@ export function MonthCalendar(
     ),
     [maxDate],
   );
+  // 라이브러리 화살표 그림은 iOS와 안드로이드가 서로 다른 파일이라 모양이 갈린다.
+  const renderArrow = useCallback(
+    (direction: "left" | "right") => (
+      <ChevronIcon
+        side={direction}
+        size={ARROW_ICON_SIZE}
+        color={theme.grey700.val}
+      />
+    ),
+    [theme],
+  );
 
   return (
     <Calendar
@@ -134,6 +147,7 @@ export function MonthCalendar(
       {...props}
       monthFormat={i18n.t("component.monthFormat")}
       dayComponent={dayComponent}
+      renderArrow={renderArrow}
       theme={{
         calendarBackground: "transparent",
         monthTextColor: theme.grey800.val,
@@ -141,8 +155,6 @@ export function MonthCalendar(
         textMonthFontWeight: "700",
         textSectionTitleColor: theme.grey500.val,
         textDayHeaderFontSize: WEEKDAY_FONT_SIZE,
-        arrowColor: theme.grey700.val,
-        disabledArrowColor: theme.grey300.val,
       }}
     />
   );
