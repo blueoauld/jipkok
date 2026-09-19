@@ -2,10 +2,7 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NativeAd } from "react-native-google-mobile-ads";
 
-import { whenAdsReady } from "@/lib/ads";
-
-const REFRESH_AFTER = 60_000;
-const EXPIRE_AFTER = 3_600_000;
+import { AD_EXPIRE_AFTER, AD_RENEW_AFTER, whenAdsReady } from "@/lib/ads";
 
 type LoadedAd = { ad: NativeAd; loadedAt: number };
 
@@ -82,16 +79,16 @@ export function useScreenNativeAd(unitId: string, enabled: boolean) {
       const now = Date.now();
       const next = slot.take();
 
-      if (next && now - next.loadedAt < EXPIRE_AFTER) {
+      if (next && now - next.loadedAt < AD_EXPIRE_AFTER) {
         setShown(next);
       } else {
         next?.ad.destroy();
         setShown((current) =>
-          current && now - current.loadedAt < EXPIRE_AFTER ? current : null,
+          current && now - current.loadedAt < AD_EXPIRE_AFTER ? current : null,
         );
       }
 
-      if (enabledRef.current && !slot.loadedWithin(REFRESH_AFTER)) {
+      if (enabledRef.current && !slot.loadedWithin(AD_RENEW_AFTER)) {
         slot.load();
       }
     }, [unitId]),

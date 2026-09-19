@@ -60,6 +60,11 @@ export const LIST_AD_INTERVAL = 5;
 
 export const MEMBER_LIST_AD_INTERVAL = 10;
 
+// AdMob은 받은 지 한 시간이 넘은 네이티브 광고를 보여 주지 말라고 안내한다.
+export const AD_EXPIRE_AFTER = 3_600_000;
+
+export const AD_RENEW_AFTER = 60_000;
+
 export function listAdAfter<T>(
   ads: readonly T[],
   index: number,

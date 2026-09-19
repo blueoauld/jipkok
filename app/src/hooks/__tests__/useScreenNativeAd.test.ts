@@ -13,6 +13,8 @@ jest.mock("react-native-google-mobile-ads", () => ({
 const mockReady = jest.fn();
 
 jest.mock("@/lib/ads", () => ({
+  AD_EXPIRE_AFTER: 3_600_000,
+  AD_RENEW_AFTER: 60_000,
   whenAdsReady: () => mockReady(),
 }));
 

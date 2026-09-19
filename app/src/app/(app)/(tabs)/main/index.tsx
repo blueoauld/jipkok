@@ -99,7 +99,7 @@ export default function MainScreen() {
     onError: showApiError,
   });
   const { members, error, refetch: refetchMembers } = memberList;
-  const ads = useListNativeAds(
+  const { ads, renew: renewAds } = useListNativeAds(
     MEMBER_LIST_ADS,
     members?.length ?? 0,
     `${sort}:${gender}:${minAge}:${maxAge}`,
@@ -133,10 +133,11 @@ export default function MainScreen() {
   }, [refreshLocation]);
 
   const { refreshing, onRefresh } = usePullRefresh(
-    useCallback(
-      () => Promise.all([refreshLocation(), refetchMembers()]),
-      [refetchMembers, refreshLocation],
-    ),
+    useCallback(() => {
+      renewAds();
+
+      return Promise.all([refreshLocation(), refetchMembers()]);
+    }, [refetchMembers, refreshLocation, renewAds]),
   );
 
   const openFilter = useCallback(() => setFilterOpen(true), []);

@@ -124,18 +124,24 @@ export default function FeedScreen() {
   } = worryFeed;
   const pagedWorries = usePagedList(worryFeed, tabBarOverlay, "cards");
 
-  const feedAds = useListNativeAds(
+  const { ads: feedAds, renew: renewFeedAds } = useListNativeAds(
     { aspectRatio: FEED_AD_ASPECT },
     board === "FEED" ? (posts?.length ?? 0) : 0,
     `${storedDate ?? today}:${sort}`,
   );
-  const worryAds = useListNativeAds(
+  const { ads: worryAds, renew: renewWorryAds } = useListNativeAds(
     { aspectRatio: WORRY_AD_ASPECT },
     board === "WORRY" ? (worryPosts?.length ?? 0) : 0,
     `${worrySort}:${worryCategory}`,
   );
 
-  const worryRefresh = usePullRefresh(refetchWorries);
+  const worryRefresh = usePullRefresh(
+    useCallback(() => {
+      renewWorryAds();
+
+      return refetchWorries();
+    }, [refetchWorries, renewWorryAds]),
+  );
 
   const actions = useFeedPostActions({
     queryKey: feedPostsKey(date, sort),
@@ -143,7 +149,13 @@ export default function FeedScreen() {
     onComposed: () => setComposeOpen(false),
   });
 
-  const feedRefresh = usePullRefresh(refetchFeed);
+  const feedRefresh = usePullRefresh(
+    useCallback(() => {
+      renewFeedAds();
+
+      return refetchFeed();
+    }, [refetchFeed, renewFeedAds]),
+  );
 
   const scrollToTop = useCallback(
     () => listRef.current?.scrollToOffset({ offset: 0, animated: false }),
