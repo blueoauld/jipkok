@@ -29,7 +29,11 @@ export function ScrollToTopButton({
       r={SCREEN_PADDING}
       b={tabBarOverlay + SCREEN_PADDING}
     >
-      <CircleButton tone="blue" label={t("a11y.scrollToTop")} onPress={onPress}>
+      <CircleButton
+        tone="translucentBlue"
+        label={t("a11y.scrollToTop")}
+        onPress={onPress}
+      >
         <CaretUpIcon size={ICON_SIZE} weight="bold" color={theme.onFill.val} />
       </CircleButton>
     </XStack>

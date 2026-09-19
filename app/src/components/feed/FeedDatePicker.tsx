@@ -27,10 +27,10 @@ function DateButton({
       height={ROUND_BUTTON_SIZE}
       px={BUTTON_PADDING_X}
       rounded={PILL_RADIUS}
-      bg="$blue500"
+      bg="$blue500Translucent"
       items="center"
       justify="center"
-      pressStyle={{ bg: "$blue600" }}
+      pressStyle={{ bg: "$blue600Translucent" }}
       accessible
       accessibilityRole="button"
       onPress={onPress}

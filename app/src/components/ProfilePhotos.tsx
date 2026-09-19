@@ -54,7 +54,11 @@ export function PhotoGridToggle() {
   const toggle = usePhotoGridStore((state) => state.toggle);
 
   return (
-    <CircleButton tone="blue" label={t("a11y.photoGrid")} onPress={toggle}>
+    <CircleButton
+      tone="translucentBlue"
+      label={t("a11y.photoGrid")}
+      onPress={toggle}
+    >
       <SquaresFourIcon
         size={GRID_ICON_SIZE}
         weight={open ? "fill" : "regular"}

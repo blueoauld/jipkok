@@ -85,6 +85,8 @@ export const TDS_COLORS = {
   ],
   // 눌렀을 때 면 위에 덮는 막이다. 어두운 화면에서는 검정이 안 보이므로 흰 막을 덮는다.
   pressDim: ["rgba(0, 0, 0, 0.1)", "rgba(255, 255, 255, 0.12)"],
+  blue500Translucent: ["rgba(49, 130, 246, 0.85)", "rgba(52, 133, 250, 0.85)"],
+  blue600Translucent: ["rgba(34, 114, 235, 0.85)", "rgba(68, 155, 255, 0.85)"],
 } as const;
 
 type TdsColors = Record<keyof typeof TDS_COLORS, string>;

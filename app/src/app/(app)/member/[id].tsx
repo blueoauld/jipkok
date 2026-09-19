@@ -145,7 +145,7 @@ export default function MemberProfileScreen() {
             <PhotoGridToggle />
 
             <CircleButton
-              tone="blue"
+              tone="translucentBlue"
               label={t("memberDetail.memoTitle")}
               onPress={() => setMemoOpen(true)}
             >

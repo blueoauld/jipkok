@@ -20,6 +20,11 @@ const NATIVE_AD_UNIT_IDS = {
   android: "ca-app-pub-5005991782528987/6698198847",
 };
 
+const CHAT_NATIVE_AD_UNIT_IDS = {
+  ios: "ca-app-pub-5005991782528987/2823814273",
+  android: "ca-app-pub-5005991782528987/6687037664",
+};
+
 export const REWARDED_AD_UNIT_ID = __DEV__
   ? TestIds.REWARDED
   : Platform.select({ ...REWARDED_AD_UNIT_IDS, default: TestIds.REWARDED });
@@ -35,7 +40,9 @@ export const NATIVE_AD_UNIT_ID = __DEV__
   ? TestIds.NATIVE
   : Platform.select({ ...NATIVE_AD_UNIT_IDS, default: TestIds.NATIVE });
 
-export const CHAT_NATIVE_AD_UNIT_ID = TestIds.NATIVE;
+export const CHAT_NATIVE_AD_UNIT_ID = __DEV__
+  ? TestIds.NATIVE
+  : Platform.select({ ...CHAT_NATIVE_AD_UNIT_IDS, default: TestIds.NATIVE });
 
 export const LIST_AD_INTERVAL = 5;
 
