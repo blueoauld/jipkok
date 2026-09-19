@@ -147,11 +147,29 @@ class AiPromptBuilder(
         (if (message.senderId == context.ai.id) "나: " else "상대: ") + textOf(message)
 
     private fun replyLines(context: AiReplyContext): String {
-        val days = context.silentDays
-            ?: return listOfNotNull(firstReplyLine(context), lateLine(context), NO_REPLY_LINE).joinToString("\n")
+        val days = context.silentDays ?: return listOfNotNull(
+            firstReplyLine(context),
+            lateLine(context),
+            repeatedPhrasesLine(context),
+            NO_REPLY_LINE,
+        ).joinToString("\n")
 
         return "- 네가 마지막으로 말한 뒤 상대가 ${days}일째 답이 없다. 지난 대화에 이어서 부담 없이 먼저 가볍게 말을 건다. " +
             "한 문장으로 하고, 답이 없었던 것을 탓하거나 재촉하지 않는다."
+    }
+
+    private fun repeatedPhrasesLine(context: AiReplyContext): String? {
+        val recent = context.messages
+            .filter { it.senderId == context.ai.id }
+            .takeLast(REPEAT_WATCH_MESSAGES)
+            .mapNotNull { it.content }
+        val used = REPEAT_WATCHED_PHRASES.filter { phrase -> recent.any { phrase in it } }
+
+        if (used.isEmpty()) {
+            return null
+        }
+
+        return "- 최근에 이미 ${used.joinToString(", ") { "'$it'" }} 같은 말을 했으니 다시 쓰지 않는다."
     }
 
     private fun firstReplyLine(context: AiReplyContext): String? {
@@ -303,6 +321,7 @@ class AiPromptBuilder(
 
         private const val METERS_PER_KILOMETER = 1000.0
         private const val EMPTY_FIELD = "없음"
+        private const val REPEAT_WATCH_MESSAGES = 10
         private const val NO_REPLY_LINE =
             "- 상대 말이 '네', 'ㅎㅎ', '고마워요'처럼 맞장구뿐이라 더 할 말이 없으면 답하지 않는다. " +
                 "서로 작별 인사를 한 뒤에 온 맞장구에는 특히 답하지 않는다. 답하지 않을 때는 ${NO_REPLY}만 쓴다."
@@ -311,6 +330,17 @@ class AiPromptBuilder(
             DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm", Locale.KOREAN)
         private val MESSAGE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd HH:mm")
         private val IMAGE_MIME_TYPE: MimeType = MimeType("image", "*")
+        private val REPEAT_WATCHED_PHRASES = listOf(
+            "푹 쉬",
+            "무리하지",
+            "챙겨 먹",
+            "챙겨 드",
+            "따뜻한",
+            "조심히",
+            "좋은 밤",
+            "좋은 꿈",
+            "잘 자",
+        )
         private val TIME_NOTE_AFTER: Duration = Duration.ofHours(1)
 
         private val LANGUAGE_NAMES = mapOf(

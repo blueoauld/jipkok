@@ -77,6 +77,25 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun `AI가 최근에 이미 쓴 돌봄 문구는 다시 쓰지 말라고 짚고 상대가 쓴 말은 세지 않는다`() {
+        // given
+        val messages = listOf(
+            message(AI_ID, "오늘은 푹 쉬세요", NOW),
+            message(USER_ID, "네", NOW),
+            message(AI_ID, "밥은 꼭 챙겨 먹어요", NOW),
+            message(USER_ID, "무리하지 마세요", NOW),
+        )
+
+        // when
+        val repeated = systemText(context().copy(messages = messages))
+        val fresh = systemText(context())
+
+        // then
+        assertThat(repeated).contains("- 최근에 이미 '푹 쉬', '챙겨 먹' 같은 말을 했으니 다시 쓰지 않는다.")
+        assertThat(fresh).doesNotContain("최근에 이미")
+    }
+
+    @Test
     fun `넘겨받은 사진은 그 메시지에만 이미지로 붙인다`() {
         // given
         val photo = mockk<ChatMessage> {
