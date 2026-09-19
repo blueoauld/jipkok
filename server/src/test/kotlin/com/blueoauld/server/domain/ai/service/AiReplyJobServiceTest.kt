@@ -145,6 +145,31 @@ class AiReplyJobServiceTest {
     }
 
     @Test
+    fun `답하지 않기로 했으면 받은 메시지까지 읽음 처리하고 무응답 로그만 남긴 뒤 작업을 지운다`() {
+        // given
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
+
+        // when
+        service.skip(job(), context(), reply().copy(content = AiPromptBuilder.NO_REPLY, skipped = true))
+
+        // then
+        verifyOrder {
+            chatRoomMemberRepository.markRead(ROOM_ID, AI_ID, MESSAGE_ID)
+            aiReplyLogRepository.save(
+                match {
+                    it.kind == AiReplyKind.SKIP &&
+                        it.messageId == MESSAGE_ID &&
+                        it.promptTokens == 120 &&
+                        it.completionTokens == 8 &&
+                        it.language == MemberLocale.KO
+                },
+            )
+            aiReplyJobRepository.deleteIfUnchanged(ROOM_ID, MESSAGE_ID)
+        }
+        verify(exactly = 0) { chatMessageService.append(any(), any(), any()) }
+    }
+
+    @Test
     fun `언어가 어긋나 다시 만든 답이면 로그에 표시한다`() {
         // given
         val room = ChatRoom.of(USER_ID, AI_ID)

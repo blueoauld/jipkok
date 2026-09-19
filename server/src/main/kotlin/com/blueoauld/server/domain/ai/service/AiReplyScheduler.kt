@@ -42,11 +42,13 @@ class AiReplyScheduler(
             is AiReplyDecision.Reply -> {
                 val reply = aiReplyGenerator.generate(decision.context)
 
-                if (reply == null) {
-                    aiReplyJobService.drop(job)
-                } else {
-                    aiReplyJobService.complete(job, decision.context, reply)
-                    aiMemoryService.refreshIfNeeded(job.roomId, decision.context)
+                when {
+                    reply == null -> aiReplyJobService.drop(job)
+                    reply.skipped -> aiReplyJobService.skip(job, decision.context, reply)
+                    else -> {
+                        aiReplyJobService.complete(job, decision.context, reply)
+                        aiMemoryService.refreshIfNeeded(job.roomId, decision.context)
+                    }
                 }
             }
         }

@@ -35,6 +35,7 @@ class OpenAiReplyGenerator(
         maxTokens = REPLY_MAX_TOKENS,
         language = context.language,
         aiMemberId = context.ai.id,
+        noReplyAllowed = true,
     )
 
     override fun greet(context: AiGreetingContext): AiReply? = call(
@@ -53,30 +54,37 @@ class OpenAiReplyGenerator(
         aiMemberId = context.ai.id,
     )
 
-    // 다른 언어 글자가 섞여 나오면 한 번만 다시 만들어 보고, 그래도 어긋나면 나온 대로 쓴다.
     private fun call(
         messages: List<Message>,
         maxChars: Int,
         maxTokens: Int,
         language: MemberLocale?,
         aiMemberId: Long,
+        noReplyAllowed: Boolean = false,
     ): AiReply? {
         val cacheKey = cacheKeyOf(aiMemberId)
-        val first = request(messages, maxChars, maxTokens, cacheKey) ?: return null
+        val first = request(messages, maxChars, maxTokens, cacheKey, noReplyAllowed) ?: return null
 
-        if (language == null || matchesLanguage(first.content, language)) {
+        if (language == null || first.skipped || matchesLanguage(first.content, language)) {
             return first
         }
 
         log.info { "AI 응답의 언어가 어긋나 다시 만든다. aiMemberId=$aiMemberId language=$language" }
-        val second = request(messages, maxChars, maxTokens, cacheKey) ?: return first
-
-        return second.copy(
+        val second = request(messages, maxChars, maxTokens, cacheKey, noReplyAllowed)
+        val reply = second?.copy(
             promptTokens = first.promptTokens + second.promptTokens,
             completionTokens = first.completionTokens + second.completionTokens,
             cachedTokens = first.cachedTokens + second.cachedTokens,
             regenerated = true,
-        )
+        ) ?: first
+
+        if (reply.skipped || matchesLanguage(reply.content, language)) {
+            return reply
+        }
+
+        log.info { "다시 만든 AI 응답도 언어가 어긋나 다른 언어가 나온 곳에서 자른다. aiMemberId=$aiMemberId language=$language" }
+
+        return cutAtForeign(reply.content, language)?.let { reply.copy(content = it) }
     }
 
     // 온도는 주지 않는다. gpt-5 계열은 기본값 1만 받고 다른 값을 주면 400으로 거절한다.
@@ -85,6 +93,7 @@ class OpenAiReplyGenerator(
         maxChars: Int,
         maxTokens: Int,
         cacheKey: String,
+        noReplyAllowed: Boolean,
     ): AiReply? {
         val options = OpenAiChatOptions.builder()
             .maxCompletionTokens(maxTokens)
@@ -104,6 +113,7 @@ class OpenAiReplyGenerator(
             completionTokens = usage.completionTokens,
             cachedTokens = usage.cacheReadInputTokens?.toInt() ?: 0,
             model = response.metadata.model.take(AiReplyLog.MODEL_MAX_LENGTH),
+            skipped = noReplyAllowed && AiPromptBuilder.NO_REPLY in content,
         )
     }
 

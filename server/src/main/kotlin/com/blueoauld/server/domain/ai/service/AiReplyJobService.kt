@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
 import com.blueoauld.server.domain.ai.entity.AiReplyLog
+import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyLogRepository
@@ -119,21 +120,32 @@ class AiReplyJobService(
                 content = reply.content,
             ),
         )
+        saveLog(job, context, reply, sent.messageId, job.kind)
+        aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
+    }
+
+    @Transactional
+    fun skip(job: AiReplyJob, context: AiReplyContext, reply: AiReply) {
+        chatRoomMemberRepository.markRead(job.roomId, job.aiMemberId, context.lastMessageId)
+        saveLog(job, context, reply, context.lastMessageId, AiReplyKind.SKIP)
+        aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
+    }
+
+    private fun saveLog(job: AiReplyJob, context: AiReplyContext, reply: AiReply, messageId: Long, kind: AiReplyKind) {
         aiReplyLogRepository.save(
             AiReplyLog(
                 aiMemberId = job.aiMemberId,
-                roomId = room.id,
-                messageId = sent.messageId,
+                roomId = job.roomId,
+                messageId = messageId,
                 promptTokens = reply.promptTokens,
                 completionTokens = reply.completionTokens,
                 cachedTokens = reply.cachedTokens,
                 model = reply.model,
-                kind = job.kind,
+                kind = kind,
                 language = context.language,
                 regenerated = reply.regenerated,
             ),
         )
-        aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
     }
 
     companion object {

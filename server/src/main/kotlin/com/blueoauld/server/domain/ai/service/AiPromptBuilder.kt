@@ -17,8 +17,10 @@ import org.springframework.ai.chat.messages.SystemMessage
 import org.springframework.ai.chat.messages.UserMessage
 import org.springframework.stereotype.Component
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @Component
@@ -36,10 +38,10 @@ class AiPromptBuilder(
                 partner = context.partner,
                 language = context.language,
                 now = context.now,
-                situation = nudgeLine(context),
+                situation = replyLines(context),
             ),
         ),
-    ) + trim(context.messages).map { toMessage(context, it) }
+    ) + history(context)
 
     fun buildGreeting(context: AiGreetingContext): List<Message> = listOf(
         SystemMessage(
@@ -127,11 +129,23 @@ class AiPromptBuilder(
     private fun transcriptLine(context: AiSummaryContext, message: ChatMessage) =
         (if (message.senderId == context.ai.id) "나: " else "상대: ") + textOf(message)
 
-    private fun nudgeLine(context: AiReplyContext): String {
-        val days = context.silentDays ?: return ""
+    private fun replyLines(context: AiReplyContext): String {
+        val days = context.silentDays ?: return listOfNotNull(lateLine(context), NO_REPLY_LINE).joinToString("\n")
 
         return "- 네가 마지막으로 말한 뒤 상대가 ${days}일째 답이 없다. 지난 대화에 이어서 부담 없이 먼저 가볍게 말을 건다. " +
             "한 문장으로 하고, 답이 없었던 것을 탓하거나 재촉하지 않는다."
+    }
+
+    private fun lateLine(context: AiReplyContext): String? {
+        val at = context.lastPartnerMessageAt ?: return null
+        val elapsed = Duration.between(at, context.now)
+
+        if (elapsed < TIME_NOTE_AFTER) {
+            return null
+        }
+
+        return "- 상대의 마지막 말은 ${describeElapsed(elapsed)} 전인 ${MESSAGE_TIME_FORMATTER.format(at.atZone(KOREA))}에 왔고, " +
+            "너는 지금 그걸 봤다. 지금 시각에 맞게 답한다."
     }
 
     private fun greetingLines(context: AiGreetingContext) =
@@ -192,6 +206,26 @@ class AiPromptBuilder(
         return kept.ifEmpty { messages.takeLast(1) }
     }
 
+    private fun history(context: AiReplyContext): List<Message> {
+        val kept = trim(context.messages)
+
+        return kept.flatMapIndexed { index, message ->
+            listOfNotNull(
+                kept.getOrNull(index - 1)?.let { gapNote(it, message) },
+                toMessage(context, message),
+            )
+        }
+    }
+
+    private fun gapNote(previous: ChatMessage, message: ChatMessage): Message? {
+        val gap = Duration.between(previous.createdAt, message.createdAt)
+
+        return if (gap < TIME_NOTE_AFTER) null else SystemMessage("(${describeElapsed(gap)} 뒤)")
+    }
+
+    private fun describeElapsed(duration: Duration) =
+        if (duration.toDays() >= 1) "${duration.toDays()}일" else "${duration.toHours()}시간"
+
     private fun toMessage(context: AiReplyContext, message: ChatMessage): Message {
         val text = textOf(message)
 
@@ -208,13 +242,20 @@ class AiPromptBuilder(
 
         const val PHOTO_PLACEHOLDER = "[사진]"
         const val VIDEO_PLACEHOLDER = "[동영상]"
+        const val NO_REPLY = "[무응답]"
         const val CONTEXT_MAX_CHARS = 1500
         const val MESSAGE_MAX_CHARS = 300
         const val BIO_MAX_CHARS = 200
 
         private const val METERS_PER_KILOMETER = 1000.0
+        private const val NO_REPLY_LINE =
+            "- 상대 말이 '네', 'ㅎㅎ', '고마워요'처럼 맞장구뿐이라 더 할 말이 없으면 답하지 않는다. " +
+                "서로 작별 인사를 한 뒤에 온 맞장구에는 특히 답하지 않는다. 답하지 않을 때는 ${NO_REPLY}만 쓴다."
 
-        private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        private val TIME_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm", Locale.KOREAN)
+        private val MESSAGE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd HH:mm")
+        private val TIME_NOTE_AFTER: Duration = Duration.ofHours(1)
 
         private val LANGUAGE_NAMES = mapOf(
             MemberLocale.KO to "한국어",

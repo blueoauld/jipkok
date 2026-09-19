@@ -15,6 +15,7 @@ data class AiReplyContext(
     val now: Instant,
     val silentDays: Long? = null,
     val memory: String? = null,
+    val lastPartnerMessageAt: Instant? = null,
 ) {
 
     val lastMessageId: Long

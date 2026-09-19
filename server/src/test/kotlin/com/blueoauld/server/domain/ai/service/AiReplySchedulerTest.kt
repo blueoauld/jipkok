@@ -70,6 +70,22 @@ class AiReplySchedulerTest {
     }
 
     @Test
+    fun `답하지 않기로 했으면 보내지 않고 무응답으로 처리한다`() {
+        // given
+        val skipped = REPLY.copy(content = AiPromptBuilder.NO_REPLY, skipped = true)
+        every { aiReplyContextService.decide(job) } returns AiReplyDecision.Reply(context)
+        every { aiReplyGenerator.generate(context) } returns skipped
+
+        // when
+        scheduler.run()
+
+        // then
+        verify { aiReplyJobService.skip(job, context, skipped) }
+        verify(exactly = 0) { aiReplyJobService.complete(any(), any(), any()) }
+        verify(exactly = 0) { aiMemoryService.refreshIfNeeded(any(), any()) }
+    }
+
+    @Test
     fun `미루라고 하면 그 시각으로 미룬다`() {
         // given
         every { aiReplyContextService.decide(job) } returns AiReplyDecision.Postpone(NOW.plusSeconds(600))

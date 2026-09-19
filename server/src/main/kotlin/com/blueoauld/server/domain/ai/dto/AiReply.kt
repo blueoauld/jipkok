@@ -8,4 +8,5 @@ data class AiReply(
     val cachedTokens: Int,
     val model: String?,
     val regenerated: Boolean = false,
+    val skipped: Boolean = false,
 )

@@ -123,6 +123,20 @@ class AiReplyContextServiceTest {
     }
 
     @Test
+    fun `상대가 마지막으로 말한 시각을 문맥에 담는다`() {
+        // given
+        val partnerAt = DAYTIME.minus(7, ChronoUnit.HOURS)
+        every { chatMessageRepository.findByRoomIdAndIdLessThanOrderByIdDesc(ROOM_ID, Long.MAX_VALUE, any()) } returns
+            listOf(message(USER_ID, "잘자요", partnerAt), message(AI_ID, "먼저 잘게", DAYTIME.minus(8, ChronoUnit.HOURS)))
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat((decision as AiReplyDecision.Reply).context.lastPartnerMessageAt).isEqualTo(partnerAt)
+    }
+
+    @Test
     fun `방에 대화 기억이 있으면 문맥에 담는다`() {
         // given
         every { aiRoomMemoryRepository.findById(ROOM_ID) } returns

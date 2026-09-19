@@ -17,6 +17,7 @@ import org.springframework.ai.chat.messages.AssistantMessage
 import org.springframework.ai.chat.messages.SystemMessage
 import org.springframework.ai.chat.messages.UserMessage
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 
@@ -37,7 +38,41 @@ class AiPromptBuilderTest {
         assertThat(system.text).contains("상대를 부를 때는 '바다'만 쓰고, 너 자신을 그 닉네임으로 부르지 않는다.")
         assertThat(system.text).contains("상대의 코멘트: 산책 좋아해요")
         assertThat(system.text).contains("반드시 일본어로 답한다.")
-        assertThat(system.text).contains("2026-09-15 12:30")
+        assertThat(system.text).contains("지금은 한국 시간 2026-09-15 (화) 12:30이다.")
+    }
+
+    @Test
+    fun `상대의 마지막 말이 한 시간 넘게 지났으면 언제 왔고 지금 봤다는 것을 넣는다`() {
+        // when
+        val late = systemText(context().copy(lastPartnerMessageAt = NOW.minus(Duration.ofMinutes(379))))
+        val recent = systemText(context().copy(lastPartnerMessageAt = NOW.minus(Duration.ofMinutes(59))))
+        val nudge = systemText(context().copy(silentDays = 4, lastPartnerMessageAt = NOW.minus(Duration.ofDays(5))))
+
+        // then
+        assertThat(late).contains("상대의 마지막 말은 6시간 전인 09-15 06:11에 왔고, 너는 지금 그걸 봤다.")
+        assertThat(late.indexOf("상대의 마지막 말은")).isLessThan(late.indexOf(AiPromptBuilder.NO_REPLY))
+        assertThat(recent).doesNotContain("상대의 마지막 말은")
+        assertThat(nudge).doesNotContain("상대의 마지막 말은")
+    }
+
+    @Test
+    fun `대화 사이가 한 시간 넘게 비면 그 자리에 흐른 시간을 시스템 메시지로 넣는다`() {
+        // given
+        val start = NOW.minus(Duration.ofDays(2))
+        val messages = listOf(
+            message(USER_ID, "잘자요", start),
+            message(AI_ID, "잘 자요", start.plus(Duration.ofMinutes(30))),
+            message(USER_ID, "일어났어?", start.plus(Duration.ofHours(8))),
+            message(USER_ID, "뭐해", start.plus(Duration.ofDays(1)).plus(Duration.ofHours(8))),
+        )
+
+        // when
+        val built = builder.build(context().copy(messages = messages)).drop(1)
+
+        // then
+        assertThat(built.map { it.text }).containsExactly("잘자요", "잘 자요", "(7시간 뒤)", "일어났어?", "(1일 뒤)", "뭐해")
+        assertThat(built[2]).isInstanceOf(SystemMessage::class.java)
+        assertThat(built[4]).isInstanceOf(SystemMessage::class.java)
     }
 
     @Test
@@ -75,9 +110,21 @@ class AiPromptBuilderTest {
 
         // then
         assertThat(plain).doesNotContain("먼저 가볍게 말을 건다")
-        assertThat(plain).endsWith("이다.")
         assertThat(nudge).contains("상대가 3일째 답이 없다")
         assertThat(nudge).contains("먼저 가볍게 말을 건다")
+    }
+
+    @Test
+    fun `답장 프롬프트에만 맞장구에는 답하지 않고 표시만 쓰라는 지시가 붙는다`() {
+        // when
+        val plain = systemText(context())
+        val nudge = systemText(context().copy(silentDays = 3))
+        val greeting = (builder.buildGreeting(greetingContext(distanceMeters = null)).single() as SystemMessage).text!!
+
+        // then
+        assertThat(plain).endsWith("답하지 않을 때는 ${AiPromptBuilder.NO_REPLY}만 쓴다.")
+        assertThat(nudge).doesNotContain(AiPromptBuilder.NO_REPLY)
+        assertThat(greeting).doesNotContain(AiPromptBuilder.NO_REPLY)
     }
 
     @Test
@@ -220,6 +267,15 @@ class AiPromptBuilderTest {
         // then
         assertThat(text).contains("상대는 위치를 공개하지 않았으니 거리나 동네 이야기는 꺼내지 않는다.")
         assertThat(text).doesNotContain("km")
+    }
+
+    private fun systemText(context: AiReplyContext) = (builder.build(context).first() as SystemMessage).text!!
+
+    private fun message(senderId: Long, content: String, createdAt: Instant) = mockk<ChatMessage> {
+        every { this@mockk.senderId } returns senderId
+        every { type } returns ChatMessageType.TEXT
+        every { this@mockk.content } returns content
+        every { this@mockk.createdAt } returns createdAt
     }
 
     private fun greetingContext(distanceMeters: Double?) = AiGreetingContext(
