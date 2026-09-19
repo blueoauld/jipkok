@@ -9,9 +9,13 @@ import { useListNativeAds } from "@/hooks/useListNativeAds";
 jest.mock("react-native-google-mobile-ads", () => ({
   NativeAd: { createForAdRequest: jest.fn() },
 }));
+
+const mockReady = jest.fn(() => Promise.resolve());
+
 jest.mock("@/lib/ads", () => ({
   NATIVE_AD_UNIT_ID: "unit",
   LIST_AD_INTERVAL: 5,
+  whenAdsReady: () => mockReady(),
 }));
 
 const createAd = jest.mocked(NativeAd.createForAdRequest);
@@ -172,5 +176,43 @@ describe("useListNativeAds", () => {
     expect(createAd).toHaveBeenCalledTimes(3);
     expect(result.current).toHaveLength(2);
     await unmount();
+  });
+
+  it("광고 준비가 끝나기 전에는 요청하지 않는다", async () => {
+    let ready: () => void = () => undefined;
+    mockReady.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        ready = resolve;
+      }),
+    );
+    createAd.mockImplementation(async () => fakeAd());
+
+    const { result, unmount } = await render(5);
+    await flush();
+
+    expect(createAd).not.toHaveBeenCalled();
+
+    await act(async () => ready());
+    await flush();
+
+    expect(createAd).toHaveBeenCalledTimes(1);
+    expect(result.current).toHaveLength(1);
+    await unmount();
+  });
+
+  it("준비를 기다리는 사이 화면에서 빠지면 요청하지 않는다", async () => {
+    let ready: () => void = () => undefined;
+    mockReady.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        ready = resolve;
+      }),
+    );
+
+    const { unmount } = await render(5);
+    await unmount();
+    await act(async () => ready());
+    await flush();
+
+    expect(createAd).not.toHaveBeenCalled();
   });
 });

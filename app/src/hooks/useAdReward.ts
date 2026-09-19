@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { useRewardedAd } from "react-native-google-mobile-ads";
 
 import { isAdReady, useAdReload } from "@/hooks/useAdReload";
+import { useAdsReadyEffect } from "@/hooks/useAdsReadyEffect";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { POINT_BALANCE_KEY, POINT_HISTORIES_KEY } from "@/hooks/usePoints";
 import { REWARDED_AD_UNIT_ID } from "@/lib/ads";
@@ -91,9 +92,7 @@ export function useAdReward() {
   });
   const { reload, givenUp } = useAdReload(error, load);
 
-  useEffect(() => {
-    reload();
-  }, [reload]);
+  useAdsReadyEffect(reload);
 
   useEffect(() => {
     if (isClosed) {

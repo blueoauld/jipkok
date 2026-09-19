@@ -78,8 +78,22 @@ async function requestTracking() {
   }
 }
 
+let markAdsReady: () => void = () => undefined;
+
+const adsReady = new Promise<void>((resolve) => {
+  markAdsReady = resolve;
+});
+
+export function whenAdsReady() {
+  return adsReady;
+}
+
 export async function initializeAds() {
-  await AdsConsent.gatherConsent().catch(() => undefined);
-  await requestTracking().catch(() => undefined);
-  await mobileAds().initialize();
+  try {
+    await AdsConsent.gatherConsent().catch(() => undefined);
+    await requestTracking().catch(() => undefined);
+    await mobileAds().initialize();
+  } finally {
+    markAdsReady();
+  }
 }

@@ -2,57 +2,100 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NativeAd } from "react-native-google-mobile-ads";
 
+import { whenAdsReady } from "@/lib/ads";
+
 const REFRESH_AFTER = 60_000;
+const EXPIRE_AFTER = 3_600_000;
 
 type LoadedAd = { ad: NativeAd; loadedAt: number };
 
+function createAdSlot(unitId: string) {
+  let pending: LoadedAd | null = null;
+  let loading = false;
+  let lastLoadedAt = -Infinity;
+
+  return {
+    load() {
+      if (loading || pending) {
+        return;
+      }
+
+      loading = true;
+
+      whenAdsReady()
+        .then(() => NativeAd.createForAdRequest(unitId))
+        .then((ad) => {
+          if (ad.mediaContent?.hasVideoContent) {
+            ad.destroy();
+            return;
+          }
+
+          lastLoadedAt = Date.now();
+          pending = { ad, loadedAt: lastLoadedAt };
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          loading = false;
+        });
+    },
+    take() {
+      const next = pending;
+      pending = null;
+
+      return next;
+    },
+    loadedWithin: (duration: number) => Date.now() - lastLoadedAt < duration,
+  };
+}
+
+const slots = new Map<string, ReturnType<typeof createAdSlot>>();
+
+function slotFor(unitId: string) {
+  let slot = slots.get(unitId);
+
+  if (!slot) {
+    slot = createAdSlot(unitId);
+    slots.set(unitId, slot);
+  }
+
+  return slot;
+}
+
+export function prefetchScreenNativeAd(unitId: string) {
+  slotFor(unitId).load();
+}
+
+// 보는 중에 광고가 끼어들어 목록이 밀리지 않도록, 받아 둔 광고는 화면에 들어올 때만 꺼내 보여 준다.
 export function useScreenNativeAd(unitId: string, enabled: boolean) {
-  const [loaded, setLoaded] = useState<LoadedAd | null>(null);
-  const loading = useRef(false);
-  const mounted = useRef(true);
+  const [shown, setShown] = useState<LoadedAd | null>(null);
+  const enabledRef = useRef(enabled);
 
   useEffect(() => {
-    mounted.current = true;
+    enabledRef.current = enabled;
+  }, [enabled]);
 
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => () => loaded?.ad.destroy(), [loaded]);
-
-  const load = useCallback(() => {
-    if (loading.current) {
-      return;
-    }
-
-    loading.current = true;
-
-    NativeAd.createForAdRequest(unitId)
-      .then((ad) => {
-        if (!mounted.current || ad.mediaContent?.hasVideoContent) {
-          ad.destroy();
-          return;
-        }
-
-        setLoaded({ ad, loadedAt: Date.now() });
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        loading.current = false;
-      });
-  }, [unitId]);
+  useEffect(() => () => shown?.ad.destroy(), [shown]);
 
   useFocusEffect(
     useCallback(() => {
-      if (
-        enabled &&
-        (loaded === null || Date.now() - loaded.loadedAt >= REFRESH_AFTER)
-      ) {
-        load();
+      const slot = slotFor(unitId);
+      const now = Date.now();
+      const next = slot.take();
+
+      if (next && now - next.loadedAt < EXPIRE_AFTER) {
+        setShown(next);
+      } else {
+        next?.ad.destroy();
+        setShown((current) =>
+          current && now - current.loadedAt < EXPIRE_AFTER ? current : null,
+        );
       }
-    }, [enabled, load, loaded]),
+
+      if (enabledRef.current && !slot.loadedWithin(REFRESH_AFTER)) {
+        slot.load();
+      }
+    }, [unitId]),
   );
 
-  return enabled ? (loaded?.ad ?? null) : null;
+  return enabled ? (shown?.ad ?? null) : null;
 }

@@ -4,7 +4,7 @@ import {
   type NativeMediaAspectRatio,
 } from "react-native-google-mobile-ads";
 
-import { LIST_AD_INTERVAL, NATIVE_AD_UNIT_ID } from "@/lib/ads";
+import { LIST_AD_INTERVAL, NATIVE_AD_UNIT_ID, whenAdsReady } from "@/lib/ads";
 
 type ListAdOptions = {
   unitId?: string;
@@ -35,10 +35,15 @@ function createAdPool({
     loading = true;
     const started = generation;
 
-    NativeAd.createForAdRequest(unitId, { aspectRatio })
+    whenAdsReady()
+      .then(() =>
+        started === generation
+          ? NativeAd.createForAdRequest(unitId, { aspectRatio })
+          : null,
+      )
       .then((ad) => {
-        if (started !== generation) {
-          ad.destroy();
+        if (ad === null || started !== generation) {
+          ad?.destroy();
           return;
         }
 

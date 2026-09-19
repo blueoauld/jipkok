@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useInterstitialAd } from "react-native-google-mobile-ads";
 
 import { isAdReady, useAdReload } from "@/hooks/useAdReload";
+import { useAdsReadyEffect } from "@/hooks/useAdsReadyEffect";
 import { INTERSTITIAL_AD_UNIT_ID } from "@/lib/ads";
 import { pushOnce } from "@/lib/router";
 
@@ -20,9 +21,7 @@ export function useInterstitialGate() {
     action?.();
   }, []);
 
-  useEffect(() => {
-    reload();
-  }, [reload]);
+  useAdsReadyEffect(reload);
 
   useEffect(() => {
     if (isClosed) {

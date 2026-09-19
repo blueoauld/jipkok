@@ -7,7 +7,10 @@ import { pushOnce } from "@/lib/router";
 jest.mock("react-native-google-mobile-ads", () => ({
   useInterstitialAd: jest.fn(),
 }));
-jest.mock("@/lib/ads", () => ({ INTERSTITIAL_AD_UNIT_ID: "unit" }));
+jest.mock("@/lib/ads", () => ({
+  INTERSTITIAL_AD_UNIT_ID: "unit",
+  whenAdsReady: () => Promise.resolve(),
+}));
 jest.mock("@/lib/router", () => ({ pushOnce: jest.fn() }));
 
 const useAd = jest.mocked(useInterstitialAd);
