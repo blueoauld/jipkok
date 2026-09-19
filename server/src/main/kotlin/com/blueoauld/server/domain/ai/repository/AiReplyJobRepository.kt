@@ -66,13 +66,14 @@ interface AiReplyJobRepository : JpaRepository<AiReplyJob, Long> {
           and u.role <> 'AI'
           and m.sender_id = p.member_id
           and m.created_at between :oldest and :threshold
+          and exists (select 1 from chat_message um where um.room_id = r.id and um.sender_id = u.id)
           and not exists (select 1 from ai_reply_job j where j.room_id = r.id)
           and not exists (
             select 1 from ai_reply_log l
             where l.room_id = r.id
               and l.kind = 'NUDGE'
-              and l.message_id > coalesce(
-                (select max(pm.id) from chat_message pm where pm.room_id = r.id and pm.sender_id <> p.member_id), 0)
+              and l.message_id >
+                (select max(pm.id) from chat_message pm where pm.room_id = r.id and pm.sender_id = u.id)
           )
         order by m.created_at
         limit :size

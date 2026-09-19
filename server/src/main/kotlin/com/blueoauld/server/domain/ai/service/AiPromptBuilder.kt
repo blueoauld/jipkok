@@ -200,9 +200,10 @@ class AiPromptBuilder(
 
     private fun greetingTopic(partner: Member) =
         if (partner.comment == null && partner.bio == null) {
-            "상대 프로필에 코멘트와 자기소개가 없으니 가볍게 인사하고, 가벼운 질문 하나로 끝낸다."
+            "상대 프로필에 코멘트와 자기소개가 없으니 짧게 인사만 하거나 가벼운 질문 하나를 붙인다."
         } else {
-            "상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며 가볍게 인사하고, 가벼운 질문 하나로 끝낸다."
+            "짧게 인사만 해도 되고, 상대 프로필에서 눈에 띄는 게 있으면 자연스럽게 짚어도 된다. " +
+                "'코멘트', '자기소개'처럼 앱의 칸 이름은 말하지 않고, 질문은 많아야 하나다."
         }
 
     private fun describeDistance(meters: Double?): String {

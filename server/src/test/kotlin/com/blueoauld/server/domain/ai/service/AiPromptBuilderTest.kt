@@ -351,7 +351,8 @@ class AiPromptBuilderTest {
         assertThat(text).contains("상대의 닉네임은 '바다'이고 31세 남자다.")
         assertThat(text).contains("상대는 너와 약 2km 거리에 있다.")
         assertThat(text).contains("네가 먼저 쪽지를 보내는 참이다")
-        assertThat(text).contains("상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며")
+        assertThat(text).contains("짧게 인사만 해도 되고, 상대 프로필에서 눈에 띄는 게 있으면 자연스럽게 짚어도 된다.")
+        assertThat(text).contains("'코멘트', '자기소개'처럼 앱의 칸 이름은 말하지 않고, 질문은 많아야 하나다.")
         assertThat(text).contains("새로 가입했다는 것을 아는 척하지 않는다")
         assertThat(text).doesNotContain("[지난 대화 기억]")
         assertThat(text).doesNotContain("답이 없다")
@@ -367,8 +368,8 @@ class AiPromptBuilderTest {
         val text = (builder.buildGreeting(context).single() as SystemMessage).text!!
 
         // then
-        assertThat(text).contains("상대 프로필에 코멘트와 자기소개가 없으니 가볍게 인사하고, 가벼운 질문 하나로 끝낸다.")
-        assertThat(text).doesNotContain("중 하나를 자연스럽게 언급하며")
+        assertThat(text).contains("상대 프로필에 코멘트와 자기소개가 없으니 짧게 인사만 하거나 가벼운 질문 하나를 붙인다.")
+        assertThat(text).doesNotContain("눈에 띄는 게 있으면")
     }
 
     @Test

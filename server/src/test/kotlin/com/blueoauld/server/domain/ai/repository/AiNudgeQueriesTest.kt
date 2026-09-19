@@ -87,6 +87,21 @@ class AiNudgeQueriesTest {
     }
 
     @Test
+    fun `상대가 한 번도 말하지 않은 먼저 인사 방은 후보가 아니다`() {
+        // given
+        val ai = saveAi()
+        val partner = savePartner("+821077770031")
+        val room = chatRoomRepository.saveAndFlush(ChatRoom.of(partner.id, ai.id)).id
+        setLastMessage(room, saveMessage(room, ai.id, daysAgo = 3))
+
+        // when
+        val rows = aiReplyJobRepository.findNudgeCandidates(oldest(), threshold(), 10)
+
+        // then
+        assertThat(rows).isEmpty()
+    }
+
+    @Test
     fun `말을 건 뒤 상대가 답하고 다시 조용해지면 다시 후보가 된다`() {
         // given
         val ai = saveAi()
@@ -129,16 +144,18 @@ class AiNudgeQueriesTest {
         return member
     }
 
+    private fun savePartner(phoneNumber: String): Member = memberRepository.saveAndFlush(
+        Member(
+            phoneNumber = phoneNumber,
+            password = "encoded-password",
+            gender = Gender.MALE,
+            nickname = phoneNumber.takeLast(10),
+            birthYear = 1995,
+        ),
+    )
+
     private fun saveRoom(ai: Member, partnerPhone: String, lastSenderIsAi: Boolean, daysAgo: Long): Long {
-        val partner = memberRepository.saveAndFlush(
-            Member(
-                phoneNumber = partnerPhone,
-                password = "encoded-password",
-                gender = Gender.MALE,
-                nickname = partnerPhone.takeLast(10),
-                birthYear = 1995,
-            ),
-        )
+        val partner = savePartner(partnerPhone)
         val room = chatRoomRepository.saveAndFlush(ChatRoom.of(partner.id, ai.id))
         saveMessage(room.id, partner.id, daysAgo = daysAgo + 1)
         val last = saveMessage(room.id, if (lastSenderIsAi) ai.id else partner.id, daysAgo)
