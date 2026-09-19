@@ -35,6 +35,8 @@ export const NATIVE_AD_UNIT_ID = __DEV__
   ? TestIds.NATIVE
   : Platform.select({ ...NATIVE_AD_UNIT_IDS, default: TestIds.NATIVE });
 
+export const CHAT_NATIVE_AD_UNIT_ID = TestIds.NATIVE;
+
 export const LIST_AD_INTERVAL = 5;
 
 export function listAdAfter<T>(ads: readonly T[], index: number) {

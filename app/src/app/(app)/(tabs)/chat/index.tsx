@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
+import { ChatListAdCard } from "@/components/ad/ChatListAdCard";
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import {
@@ -23,10 +24,12 @@ import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useChatRoomActions } from "@/hooks/useChatRoomActions";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { usePagedList } from "@/hooks/usePagedList";
+import { useScreenNativeAd } from "@/hooks/useScreenNativeAd";
 import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
+import { CHAT_NATIVE_AD_UNIT_ID } from "@/lib/ads";
 import type { ChatRoomResponse } from "@/lib/api";
 import { useChatSelectionStore } from "@/lib/chat/store";
 import { BOTTOM_CTA_FADE_HEIGHT, LIST_ROW_EVEN_PADDING_Y } from "@/lib/design";
@@ -62,6 +65,10 @@ export default function ChatScreen() {
   } = useChatRoomActions({ show, showApiError, confirm });
   const chatRooms = useChatRooms(unreadOnly);
   const { rooms, error } = chatRooms;
+  const ad = useScreenNativeAd(
+    CHAT_NATIVE_AD_UNIT_ID,
+    (rooms?.length ?? 0) > 0,
+  );
   const tabBarOverlay = useTabBarOverlay();
   const selecting = useChatSelectionStore((state) => state.active);
   // 고르는 중에는 탭 바를 숨기고 셀렉션 바가 흐름 안에서 바닥을 차지하므로, 바 위로 겹치는 흐림 띠만큼만 비운다.
@@ -150,7 +157,11 @@ export default function ChatScreen() {
             />
           )}
           ListHeaderComponent={
-            <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
+            ad && !selecting ? (
+              <ChatListAdCard ad={ad} />
+            ) : (
+              <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
+            )
           }
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
