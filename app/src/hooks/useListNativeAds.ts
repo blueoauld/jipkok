@@ -1,6 +1,13 @@
 import { useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { AppState } from "react-native";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { AppState, type ViewToken } from "react-native";
 import {
   NativeAd,
   type NativeMediaAspectRatio,
@@ -14,6 +21,11 @@ import {
   whenAdsReady,
 } from "@/lib/ads";
 
+const VIEWABILITY_CONFIG = {
+  itemVisiblePercentThreshold: 1,
+  minimumViewTime: 0,
+};
+
 type ListAdOptions = {
   unitId?: string;
   aspectRatio?: NativeMediaAspectRatio;
@@ -23,6 +35,8 @@ type ListAdOptions = {
 
 type LoadedAd = { ad: NativeAd; loadedAt: number };
 
+type SlotAds = readonly (NativeAd | undefined)[];
+
 function createAdPool({
   unitId = NATIVE_AD_UNIT_ID,
   aspectRatio,
@@ -30,6 +44,8 @@ function createAdPool({
 }: ListAdOptions) {
   let loaded: LoadedAd[] = [];
   let ads: NativeAd[] = [];
+  let displayed: SlotAds = [];
+  let owned = new Set<NativeAd>();
   let wanted = 0;
   let loading = false;
   let generation = 0;
@@ -39,9 +55,16 @@ function createAdPool({
 
   const notify = () => listeners.forEach((listener) => listener());
 
-  function publish(next: LoadedAd[]) {
-    loaded = next;
-    ads = next.map((entry) => entry.ad);
+  // 바꿔 받은 광고라도 화면에 남아 있는 동안은 해제하지 않는다.
+  function sweep() {
+    const kept = new Set<NativeAd>(ads);
+    displayed.forEach((ad) => ad && kept.add(ad));
+    owned.forEach((ad) => {
+      if (!kept.has(ad)) {
+        ad.destroy();
+      }
+    });
+    owned = kept;
   }
 
   const staleIndex = () =>
@@ -54,15 +77,12 @@ function createAdPool({
     const entry = { ad, loadedAt: Date.now() };
     const stale = staleIndex();
 
-    if (stale < 0) {
-      publish([...loaded, entry]);
-    } else {
-      loaded[stale].ad.destroy();
-      publish(
-        loaded.map((current, index) => (index === stale ? entry : current)),
-      );
-    }
-
+    loaded =
+      stale < 0
+        ? [...loaded, entry]
+        : loaded.map((current, index) => (index === stale ? entry : current));
+    ads = loaded.map((current) => current.ad);
+    sweep();
     notify();
   }
 
@@ -138,10 +158,13 @@ function createAdPool({
     loading = false;
     failedAt = 0;
     renewBefore = -Infinity;
+    owned.forEach((ad) => ad.destroy());
+    owned = new Set();
+    displayed = [];
 
     if (loaded.length > 0) {
-      loaded.forEach((entry) => entry.ad.destroy());
-      publish([]);
+      loaded = [];
+      ads = [];
     }
   }
 
@@ -157,6 +180,10 @@ function createAdPool({
       renewOlderThan(AD_EXPIRE_AFTER);
       loadNext();
     },
+    display(next: SlotAds) {
+      displayed = next;
+      sweep();
+    },
     renewOlderThan,
     reset() {
       clear();
@@ -167,14 +194,35 @@ function createAdPool({
   };
 }
 
+// 광고 칸은 앞 항목 아래에 붙으므로, 그 뒤로 보이는 항목이 있으면 새 광고를 끼우지 않고 이전 것을 둔다.
+// 끼우면 아래 항목이 밀린다. 칸이 화면 아래로 벗어나거나 화면에 다시 들어올 때 끼운다.
+function slotAds(
+  shown: SlotAds,
+  loaded: readonly NativeAd[],
+  lastVisibleIndex: number,
+  interval: number,
+): SlotAds {
+  const next = loaded.map((ad, slot) =>
+    (slot + 1) * interval - 1 >= lastVisibleIndex ? ad : shown[slot],
+  );
+
+  return next.length === shown.length &&
+    next.every((ad, index) => ad === shown[index])
+    ? shown
+    : next;
+}
+
 export function useListNativeAds(
   options: ListAdOptions,
   itemCount: number,
   listKey: string,
 ) {
+  const interval = options.interval ?? LIST_AD_INTERVAL;
   const [pool] = useState(() => createAdPool(options));
-  const ads = useSyncExternalStore(pool.subscribe, pool.getAds);
-  const wanted = Math.floor(itemCount / (options.interval ?? LIST_AD_INTERVAL));
+  const loaded = useSyncExternalStore(pool.subscribe, pool.getAds);
+  const [ads, setAds] = useState<SlotAds>([]);
+  const lastVisibleIndex = useRef(-1);
+  const wanted = Math.floor(itemCount / interval);
 
   useEffect(() => () => pool.destroy(), [pool]);
 
@@ -186,13 +234,28 @@ export function useListNativeAds(
     pool.want(wanted);
   }, [pool, wanted]);
 
+  useEffect(() => {
+    setAds((shown) =>
+      slotAds(shown, loaded, lastVisibleIndex.current, interval),
+    );
+  }, [interval, loaded]);
+
+  useEffect(() => {
+    pool.display(ads);
+  }, [pool, ads]);
+
   useFocusEffect(
     useCallback(() => {
-      pool.renewOlderThan(AD_EXPIRE_AFTER);
+      const enter = () => {
+        setAds(pool.getAds());
+        pool.renewOlderThan(AD_EXPIRE_AFTER);
+      };
+
+      enter();
 
       const subscription = AppState.addEventListener("change", (state) => {
         if (state === "active") {
-          pool.renewOlderThan(AD_EXPIRE_AFTER);
+          enter();
         }
       });
 
@@ -200,7 +263,25 @@ export function useListNativeAds(
     }, [pool]),
   );
 
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      lastVisibleIndex.current = viewableItems.reduce(
+        (last, item) => Math.max(last, item.index ?? -1),
+        -1,
+      );
+      setAds((shown) =>
+        slotAds(shown, pool.getAds(), lastVisibleIndex.current, interval),
+      );
+    },
+    [interval, pool],
+  );
+
+  const viewability = useMemo(
+    () => ({ onViewableItemsChanged, viewabilityConfig: VIEWABILITY_CONFIG }),
+    [onViewableItemsChanged],
+  );
+
   const renew = useCallback(() => pool.renewOlderThan(AD_RENEW_AFTER), [pool]);
 
-  return { ads, renew };
+  return { ads, renew, viewability };
 }

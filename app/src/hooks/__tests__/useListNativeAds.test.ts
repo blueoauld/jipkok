@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { AppState, type AppStateStatus } from "react-native";
+import { AppState, type AppStateStatus, type ViewToken } from "react-native";
 import {
   NativeAd,
   type NativeMediaAspectRatio,
@@ -53,6 +53,32 @@ async function flush() {
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
+}
+
+function visibleUpTo(last: number) {
+  return {
+    viewableItems: Array.from(
+      { length: last + 1 },
+      (_, index) =>
+        ({
+          index,
+          isViewable: true,
+          item: null,
+          key: String(index),
+        }) as ViewToken,
+    ),
+  };
+}
+
+function waitForReady() {
+  let ready: () => void = () => undefined;
+  mockReady.mockReturnValueOnce(
+    new Promise<void>((resolve) => {
+      ready = resolve;
+    }),
+  );
+
+  return () => act(async () => ready());
 }
 
 function setNow(time: number) {
@@ -330,5 +356,79 @@ describe("useListNativeAds", () => {
     expect(result.current.ads).toEqual([old]);
     expect(old.destroy).not.toHaveBeenCalled();
     await unmount();
+  });
+
+  it("광고 칸 뒤로 보이는 항목이 있으면 새 광고를 끼우지 않고, 칸이 화면 아래로 벗어나면 끼운다", async () => {
+    const ad = fakeAd();
+    createAd.mockResolvedValueOnce(ad);
+    const ready = waitForReady();
+
+    const { result, unmount } = await render(7);
+    await act(async () =>
+      result.current.viewability.onViewableItemsChanged(visibleUpTo(6)),
+    );
+    await ready();
+    await flush();
+
+    expect(createAd).toHaveBeenCalledTimes(1);
+    expect(result.current.ads[0]).toBeUndefined();
+
+    await act(async () =>
+      result.current.viewability.onViewableItemsChanged(visibleUpTo(3)),
+    );
+
+    expect(result.current.ads[0]).toBe(ad);
+    await unmount();
+  });
+
+  it("화면에 다시 들어올 때는 받아 둔 광고를 모두 끼운다", async () => {
+    const ad = fakeAd();
+    createAd.mockResolvedValueOnce(ad);
+    const ready = waitForReady();
+
+    const { result, unmount } = await render(7);
+    await act(async () =>
+      result.current.viewability.onViewableItemsChanged(visibleUpTo(6)),
+    );
+    await ready();
+    await flush();
+
+    expect(result.current.ads[0]).toBeUndefined();
+
+    await focusAt(1_000);
+
+    expect(result.current.ads[0]).toBe(ad);
+    await unmount();
+  });
+
+  it("보이는 칸의 광고를 새로 받으면 이전 광고를 두었다가, 칸이 화면 아래로 벗어나면 바꾸고 해제한다", async () => {
+    const old = fakeAd();
+    const fresh = fakeAd();
+    createAd.mockResolvedValueOnce(old).mockResolvedValueOnce(fresh);
+
+    const { result, unmount } = await render(7);
+    await flush();
+    await act(async () =>
+      result.current.viewability.onViewableItemsChanged(visibleUpTo(6)),
+    );
+    setNow(60_000);
+    await act(async () => result.current.renew());
+    await flush();
+
+    expect(createAd).toHaveBeenCalledTimes(2);
+    expect(result.current.ads[0]).toBe(old);
+    expect(old.destroy).not.toHaveBeenCalled();
+
+    await act(async () =>
+      result.current.viewability.onViewableItemsChanged(visibleUpTo(3)),
+    );
+    await flush();
+
+    expect(result.current.ads[0]).toBe(fresh);
+    expect(old.destroy).toHaveBeenCalledTimes(1);
+
+    await unmount();
+
+    expect(fresh.destroy).toHaveBeenCalledTimes(1);
   });
 });

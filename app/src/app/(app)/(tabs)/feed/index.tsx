@@ -124,12 +124,20 @@ export default function FeedScreen() {
   } = worryFeed;
   const pagedWorries = usePagedList(worryFeed, tabBarOverlay, "cards");
 
-  const { ads: feedAds, renew: renewFeedAds } = useListNativeAds(
+  const {
+    ads: feedAds,
+    renew: renewFeedAds,
+    viewability: feedAdViewability,
+  } = useListNativeAds(
     { aspectRatio: FEED_AD_ASPECT },
     board === "FEED" ? (posts?.length ?? 0) : 0,
     `${storedDate ?? today}:${sort}`,
   );
-  const { ads: worryAds, renew: renewWorryAds } = useListNativeAds(
+  const {
+    ads: worryAds,
+    renew: renewWorryAds,
+    viewability: worryAdViewability,
+  } = useListNativeAds(
     { aspectRatio: WORRY_AD_ASPECT },
     board === "WORRY" ? (worryPosts?.length ?? 0) : 0,
     `${worrySort}:${worryCategory}`,
@@ -245,6 +253,7 @@ export default function FeedScreen() {
         worryPosts ? (
           <FlatList
             {...pagedWorries}
+            {...worryAdViewability}
             ref={worryListRef}
             data={worryPosts}
             keyExtractor={(worry) => String(worry.worryId)}
@@ -281,6 +290,7 @@ export default function FeedScreen() {
       ) : posts ? (
         <FlatList
           {...paged}
+          {...feedAdViewability}
           ref={listRef}
           data={posts}
           keyExtractor={(post) => String(post.postId)}

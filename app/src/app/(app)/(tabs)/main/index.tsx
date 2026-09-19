@@ -99,7 +99,11 @@ export default function MainScreen() {
     onError: showApiError,
   });
   const { members, error, refetch: refetchMembers } = memberList;
-  const { ads, renew: renewAds } = useListNativeAds(
+  const {
+    ads,
+    renew: renewAds,
+    viewability: adViewability,
+  } = useListNativeAds(
     MEMBER_LIST_ADS,
     members?.length ?? 0,
     `${sort}:${gender}:${minAge}:${maxAge}`,
@@ -187,6 +191,7 @@ export default function MainScreen() {
       {members ? (
         <FlatList
           {...paged}
+          {...adViewability}
           ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
