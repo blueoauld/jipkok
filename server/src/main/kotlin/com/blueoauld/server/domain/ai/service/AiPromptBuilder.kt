@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.ai.entity.AiRoomMemory
@@ -34,6 +35,7 @@ class AiPromptBuilder(
             systemPrompt(
                 persona = context.systemPrompt,
                 ai = context.ai,
+                aiPhotos = context.aiPhotos,
                 memory = context.memory,
                 partner = context.partner,
                 language = context.language,
@@ -48,6 +50,7 @@ class AiPromptBuilder(
             systemPrompt(
                 persona = context.systemPrompt,
                 ai = context.ai,
+                aiPhotos = context.aiPhotos,
                 memory = null,
                 partner = context.partner,
                 language = context.partner.locale,
@@ -60,6 +63,7 @@ class AiPromptBuilder(
     private fun systemPrompt(
         persona: String,
         ai: Member,
+        aiPhotos: AiPhotoCounts,
         memory: String?,
         partner: Member,
         language: MemberLocale,
@@ -89,7 +93,7 @@ class AiPromptBuilder(
         |$persona
         |
         |[너 자신]
-        |${selfProfile(ai)}
+        |${selfProfile(ai, aiPhotos)}
         |${memoryBlock(memory)}
         |[대화 상대]
         |${partnerProfile(partner)}
@@ -191,11 +195,22 @@ class AiPromptBuilder(
         }
     }
 
-    private fun selfProfile(ai: Member) = profileOf(
+    private fun selfProfile(ai: Member, photos: AiPhotoCounts) = profileOf(
         member = ai,
         subject = "너의",
         intro = "너의 닉네임은 '${ai.nickname}'이고 ${describe(ai)}다.",
-    )
+    ) + "\n" + photoLine(photos)
+
+    private fun photoLine(photos: AiPhotoCounts): String {
+        val profile = if (photos.publicCount == 0) "프로필 사진 없음" else "프로필 사진 ${photos.publicCount}장"
+
+        if (photos.secretCount == 0) {
+            return "너의 사진: $profile, 비밀사진 없음"
+        }
+
+        return "너의 사진: $profile, 비밀사진 ${photos.secretCount}장. 비밀사진은 네가 따로 공개해 준 사람만 볼 수 있고 " +
+            "다른 사람에게는 잠긴 채 장수만 보인다. 너는 아직 아무에게도 공개하지 않았다."
+    }
 
     private fun partnerProfile(partner: Member) = profileOf(
         member = partner,

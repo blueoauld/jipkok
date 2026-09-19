@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.request.AiTestChatRequest
@@ -10,6 +11,7 @@ import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.chat.entity.type.ChatMessageType
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.member.repository.getMember
 import com.blueoauld.server.global.exception.BusinessException
@@ -23,6 +25,7 @@ class AiTestChatService(
 
     private val aiPersonaRepository: AiPersonaRepository,
     private val memberRepository: MemberRepository,
+    private val memberPhotoRepository: MemberPhotoRepository,
     private val aiReplyGenerator: AiReplyGenerator,
     private val clock: Clock,
 ) {
@@ -53,6 +56,7 @@ class AiTestChatService(
             messages = messages,
             language = detectLanguage(messages, ai.id, request.locale),
             now = clock.instant(),
+            aiPhotos = AiPhotoCounts.of(memberPhotoRepository.findAllByMemberId(ai.id)),
         )
 
         val reply = aiReplyGenerator.generate(context) ?: throw BusinessException(ErrorCode.AI_REPLY_UNAVAILABLE)

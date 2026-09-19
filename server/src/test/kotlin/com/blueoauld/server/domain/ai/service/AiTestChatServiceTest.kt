@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.request.AiTestChatMessage
@@ -8,8 +9,11 @@ import com.blueoauld.server.domain.ai.dto.request.AiTestChatRole
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.global.exception.BusinessException
 import com.blueoauld.server.global.exception.ErrorCode
@@ -31,11 +35,14 @@ class AiTestChatServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val memberPhotoRepository = mockk<MemberPhotoRepository>()
+
     private val aiReplyGenerator = mockk<AiReplyGenerator>()
 
     private val service = AiTestChatService(
         aiPersonaRepository,
         memberRepository,
+        memberPhotoRepository,
         aiReplyGenerator,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
@@ -49,6 +56,8 @@ class AiTestChatServiceTest {
     fun setUp() {
         every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona())
         every { memberRepository.findById(AI_ID) } returns Optional.of(ai)
+        every { memberPhotoRepository.findAllByMemberId(AI_ID) } returns
+            listOf(mockk<MemberPhoto> { every { visibility } returns PhotoVisibility.SECRET })
     }
 
     @Test
@@ -68,6 +77,7 @@ class AiTestChatServiceTest {
         assertThat(context.captured.partner.birthYear).isEqualTo(2026 - AiTestChatService.PARTNER_AGE)
         assertThat(context.captured.messages.map { it.senderId }).containsExactly(0L, AI_ID, 0L)
         assertThat(context.captured.messages.map { it.content }).containsExactly("안녕", "반가워", "뭐해?")
+        assertThat(context.captured.aiPhotos).isEqualTo(AiPhotoCounts(publicCount = 0, secretCount = 1))
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
@@ -15,8 +16,11 @@ import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.domain.member.entity.type.MemberRole
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -46,6 +50,8 @@ class AiReplyContextServiceTest {
     private val chatMessageRepository = mockk<ChatMessageRepository>()
 
     private val memberRepository = mockk<MemberRepository>()
+
+    private val memberPhotoRepository = mockk<MemberPhotoRepository>()
 
     private val memberSuspensionService = mockk<MemberSuspensionService>()
 
@@ -80,6 +86,8 @@ class AiReplyContextServiceTest {
         } returns 0
         every { aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, any()) } returns 0
         every { aiRoomMemoryRepository.findById(ROOM_ID) } returns Optional.empty()
+        every { memberPhotoRepository.findAllByMemberId(AI_ID) } returns
+            listOf(photo(PhotoVisibility.PUBLIC), photo(PhotoVisibility.SECRET), photo(PhotoVisibility.SECRET))
     }
 
     @Test
@@ -94,6 +102,7 @@ class AiReplyContextServiceTest {
         assertThat(context.partner).isSameAs(partner)
         assertThat(context.systemPrompt).isEqualTo("프롬프트")
         assertThat(context.memory).isNull()
+        assertThat(context.aiPhotos).isEqualTo(AiPhotoCounts(publicCount = 1, secretCount = 2))
     }
 
     @Test
@@ -292,9 +301,14 @@ class AiReplyContextServiceTest {
         chatRoomMemberRepository,
         chatMessageRepository,
         memberRepository,
+        memberPhotoRepository,
         memberSuspensionService,
         Clock.fixed(now, ZoneOffset.UTC),
     )
+
+    private fun photo(visibility: PhotoVisibility) = mockk<MemberPhoto> {
+        every { this@mockk.visibility } returns visibility
+    }
 
     private fun persona(enabled: Boolean = true) = AiPersona(
         memberId = AI_ID,

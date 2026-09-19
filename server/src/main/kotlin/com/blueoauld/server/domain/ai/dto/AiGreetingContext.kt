@@ -10,4 +10,5 @@ data class AiGreetingContext(
     val partner: Member,
     val now: Instant,
     val distanceMeters: Double?,
+    val aiPhotos: AiPhotoCounts = AiPhotoCounts.NONE,
 )

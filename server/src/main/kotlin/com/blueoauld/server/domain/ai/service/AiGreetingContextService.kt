@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiGreetingDecision
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.entity.AiGreetingJob
 import com.blueoauld.server.domain.ai.entity.type.AiGreetingState
 import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
@@ -9,6 +10,7 @@ import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.member.entity.Member
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -26,6 +28,7 @@ class AiGreetingContextService(
     private val aiGreetingJobRepository: AiGreetingJobRepository,
     private val aiPersonaRepository: AiPersonaRepository,
     private val memberRepository: MemberRepository,
+    private val memberPhotoRepository: MemberPhotoRepository,
     private val memberSuspensionService: MemberSuspensionService,
     private val contactBlockRepository: ContactBlockRepository,
     private val clock: Clock,
@@ -83,7 +86,14 @@ class AiGreetingContextService(
         }
 
         return AiGreetingDecision.Send(
-            AiGreetingContext(ai, persona.systemPrompt, member, now, candidate.distanceMeters),
+            AiGreetingContext(
+                ai = ai,
+                systemPrompt = persona.systemPrompt,
+                partner = member,
+                now = now,
+                distanceMeters = candidate.distanceMeters,
+                aiPhotos = AiPhotoCounts.of(memberPhotoRepository.findAllByMemberId(ai.id)),
+            ),
         )
     }
 

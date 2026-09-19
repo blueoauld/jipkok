@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.chat.entity.ChatMessage
@@ -163,6 +164,26 @@ class AiPromptBuilderTest {
         assertThat(user).contains("상대: 안녕하세요")
         assertThat(user).contains("나: 반가워요")
         assertThat(user).contains("상대: " + AiPromptBuilder.PHOTO_PLACEHOLDER)
+    }
+
+    @Test
+    fun `자기 프로필에 사진 장수와 비밀사진이 누구에게 보이는지 넣는다`() {
+        // given
+        val secretOnly = AiPhotoCounts(publicCount = 0, secretCount = 1)
+        val greetingWithSecret = greetingContext(distanceMeters = null).copy(aiPhotos = secretOnly)
+
+        // when
+        val withSecret = systemText(context().copy(aiPhotos = AiPhotoCounts(publicCount = 3, secretCount = 2)))
+        val withoutSecret = systemText(context().copy(aiPhotos = AiPhotoCounts(publicCount = 1, secretCount = 0)))
+        val greeting = (builder.buildGreeting(greetingWithSecret).single() as SystemMessage).text!!
+
+        // then
+        assertThat(withSecret).contains("너의 사진: 프로필 사진 3장, 비밀사진 2장. 비밀사진은 네가 따로 공개해 준 사람만 볼 수 있고")
+        assertThat(withSecret).contains("너는 아직 아무에게도 공개하지 않았다.")
+        assertThat(withSecret.indexOf("너의 사진:")).isLessThan(withSecret.indexOf("[대화 상대]"))
+        assertThat(withoutSecret).contains("너의 사진: 프로필 사진 1장, 비밀사진 없음")
+        assertThat(withoutSecret).doesNotContain("잠긴 채")
+        assertThat(greeting).contains("너의 사진: 프로필 사진 없음, 비밀사진 1장.")
     }
 
     @Test

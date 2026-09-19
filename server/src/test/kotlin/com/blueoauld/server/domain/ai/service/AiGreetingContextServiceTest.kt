@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingDecision
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.projection.AiGreetingCandidateRow
 import com.blueoauld.server.domain.ai.entity.AiGreetingJob
 import com.blueoauld.server.domain.ai.entity.AiPersona
@@ -9,7 +10,10 @@ import com.blueoauld.server.domain.ai.repository.AiGreetingJobRepository
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.block.repository.ContactBlockRepository
 import com.blueoauld.server.domain.member.entity.Member
+import com.blueoauld.server.domain.member.entity.MemberPhoto
 import com.blueoauld.server.domain.member.entity.type.Gender
+import com.blueoauld.server.domain.member.entity.type.PhotoVisibility
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -33,6 +37,8 @@ class AiGreetingContextServiceTest {
 
     private val memberRepository = mockk<MemberRepository>()
 
+    private val memberPhotoRepository = mockk<MemberPhotoRepository>()
+
     private val memberSuspensionService = mockk<MemberSuspensionService>()
 
     private val contactBlockRepository = mockk<ContactBlockRepository>()
@@ -53,6 +59,8 @@ class AiGreetingContextServiceTest {
             listOf(candidate(AI_ID, 1200.0))
         every { contactBlockRepository.existsBetween(AI_ID, USER_ID) } returns false
         every { aiPersonaRepository.findById(AI_ID) } returns Optional.of(persona())
+        every { memberPhotoRepository.findAllByMemberId(any()) } returns
+            listOf(photo(PhotoVisibility.PUBLIC), photo(PhotoVisibility.SECRET))
     }
 
     @Test
@@ -68,6 +76,7 @@ class AiGreetingContextServiceTest {
         assertThat(context.systemPrompt).isEqualTo("프롬프트")
         assertThat(context.distanceMeters).isEqualTo(1200.0)
         assertThat(context.now).isEqualTo(NOW)
+        assertThat(context.aiPhotos).isEqualTo(AiPhotoCounts(publicCount = 1, secretCount = 1))
     }
 
     @Test
@@ -215,10 +224,15 @@ class AiGreetingContextServiceTest {
         aiGreetingJobRepository,
         aiPersonaRepository,
         memberRepository,
+        memberPhotoRepository,
         memberSuspensionService,
         contactBlockRepository,
         Clock.fixed(now, ZoneOffset.UTC),
     )
+
+    private fun photo(visibility: PhotoVisibility) = mockk<MemberPhoto> {
+        every { this@mockk.visibility } returns visibility
+    }
 
     private fun job() = AiGreetingJob(memberId = USER_ID, dueAt = NOW)
 

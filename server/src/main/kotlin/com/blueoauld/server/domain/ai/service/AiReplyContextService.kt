@@ -1,5 +1,6 @@
 package com.blueoauld.server.domain.ai.service
 
+import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
@@ -11,6 +12,7 @@ import com.blueoauld.server.domain.ai.repository.AiRoomMemoryRepository
 import com.blueoauld.server.domain.chat.repository.ChatMessageRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomMemberRepository
 import com.blueoauld.server.domain.chat.repository.ChatRoomRepository
+import com.blueoauld.server.domain.member.repository.MemberPhotoRepository
 import com.blueoauld.server.domain.member.repository.MemberRepository
 import com.blueoauld.server.domain.suspension.entity.type.SuspensionType
 import com.blueoauld.server.domain.suspension.service.MemberSuspensionService
@@ -39,6 +41,7 @@ class AiReplyContextService(
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageRepository: ChatMessageRepository,
     private val memberRepository: MemberRepository,
+    private val memberPhotoRepository: MemberPhotoRepository,
     private val memberSuspensionService: MemberSuspensionService,
     private val clock: Clock,
 ) {
@@ -112,6 +115,7 @@ class AiReplyContextService(
                 silentDays = silentDays,
                 memory = memory,
                 lastPartnerMessageAt = lastPartnerMessageAt,
+                aiPhotos = AiPhotoCounts.of(memberPhotoRepository.findAllByMemberId(ai.id)),
             ),
         )
     }
