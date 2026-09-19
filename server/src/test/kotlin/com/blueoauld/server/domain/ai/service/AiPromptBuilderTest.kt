@@ -181,6 +181,19 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun `오늘 마지막 답이면 대화를 마치라고 하고 답하지 않는 선택지는 뺀다`() {
+        // when
+        val last = systemText(context().copy(lastReplyToday = true))
+        val plain = systemText(context())
+
+        // then
+        assertThat(last).contains("- 오늘은 이 답을 끝으로 더 답할 수 없다. 지금 시각과 네 일과에 맞는 이유로 대화를 자연스럽게 마치고, 새로 묻지 않는다.")
+        assertThat(last).contains("대화를 마칠 때는 답 끝에 [자리 비움 N분]을 붙인다.")
+        assertThat(last).doesNotContain(AiPromptBuilder.NO_REPLY)
+        assertThat(plain).doesNotContain("오늘은 이 답을 끝으로")
+    }
+
+    @Test
     fun `대화 기억이 있으면 자기 프로필 뒤, 상대 프로필 앞에 넣는다`() {
         // when
         val text = (builder.build(context().copy(memory = "상대는 부산에 산다.")).first() as SystemMessage).text!!

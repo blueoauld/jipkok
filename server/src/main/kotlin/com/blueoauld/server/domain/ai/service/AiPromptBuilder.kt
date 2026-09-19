@@ -151,8 +151,9 @@ class AiPromptBuilder(
             firstReplyLine(context),
             lateLine(context),
             repeatedPhrasesLine(context),
+            LAST_REPLY_LINE.takeIf { context.lastReplyToday },
             AWAY_LINE,
-            NO_REPLY_LINE,
+            NO_REPLY_LINE.takeUnless { context.lastReplyToday },
         ).joinToString("\n")
 
         return "- 네가 마지막으로 말한 뒤 상대가 ${days}일째 답이 없다. 지난 대화에 이어서 부담 없이 먼저 가볍게 말을 건다. " +
@@ -324,6 +325,8 @@ class AiPromptBuilder(
         private const val METERS_PER_KILOMETER = 1000.0
         private const val EMPTY_FIELD = "없음"
         private const val REPEAT_WATCH_MESSAGES = 10
+        private const val LAST_REPLY_LINE =
+            "- 오늘은 이 답을 끝으로 더 답할 수 없다. 지금 시각과 네 일과에 맞는 이유로 대화를 자연스럽게 마치고, 새로 묻지 않는다."
         private const val AWAY_LINE =
             "- 자거나 수업, 회의, 출근처럼 한동안 답할 수 없어 대화를 마칠 때는 답 끝에 [자리 비움 N분]을 붙인다. " +
                 "N은 돌아올 때까지 걸릴 분이다."

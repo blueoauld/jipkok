@@ -99,7 +99,14 @@ class AiReplyContextService(
             return AiReplyDecision.Postpone(persona.nextActiveStart(now).plus(persona.randomReplyDelay()))
         }
 
-        limitPostpone(room.id, persona, now)?.let { return it }
+        val today = clock.today()
+        val roomCount = aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+            room.id,
+            AiReplyKind.SUMMARY,
+            startOf(today),
+        )
+
+        limitPostpone(roomCount, persona, today)?.let { return it }
 
         val silentDays = if (job.kind == AiReplyKind.NUDGE) {
             Duration.between(messages.last().createdAt, now).toDays()
@@ -123,26 +130,19 @@ class AiReplyContextService(
                 memory = memory,
                 lastPartnerMessageAt = lastPartnerMessageAt,
                 aiPhotos = AiPhotoCounts.of(memberPhotoRepository.findAllByMemberId(ai.id)),
+                lastReplyToday = roomCount >= ROOM_DAILY_LIMIT - 1,
             ),
         )
     }
 
-    // 한도는 한국 날짜로 초기화되므로 작업을 버리지 않고 다음 날 활동 시작 뒤로 미룬다. 실행할 때 대화를 다시 읽어
+    // 한도는 한국 날짜로 초기화되므로 작업을 버리지 않고 자정 뒤 처음 활동하는 때로 미룬다. 실행할 때 대화를 다시 읽어
     // 그동안 쌓인 말에 답하게 되고, 밀린 방들이 한꺼번에 나가지 않도록 한 시간 안에 흩는다.
-    private fun limitPostpone(roomId: Long, persona: AiPersona, now: Instant): AiReplyDecision.Postpone? {
-        val today = clock.today()
-        val dayStart = today.atStartOfDay(KOREA).toInstant()
-
-        val roomCount = aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
-            roomId,
-            AiReplyKind.SUMMARY,
-            dayStart,
-        )
-
+    private fun limitPostpone(roomCount: Long, persona: AiPersona, today: LocalDate): AiReplyDecision.Postpone? {
         if (roomCount >= ROOM_DAILY_LIMIT) {
-            return postponeToNextDay(persona, now, today)
+            return postponeToNextDay(persona, today)
         }
 
+        val dayStart = startOf(today)
         val aiCount = aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
             persona.memberId,
             AiReplyKind.SUMMARY,
@@ -150,7 +150,7 @@ class AiReplyContextService(
         )
 
         if (aiCount >= persona.dailyReplyLimit) {
-            return postponeToNextDay(persona, now, today)
+            return postponeToNextDay(persona, today)
         }
 
         val globalCount = aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, dayStart)
@@ -158,18 +158,20 @@ class AiReplyContextService(
         if (globalCount >= GLOBAL_DAILY_LIMIT) {
             alertGlobalLimit(today)
 
-            return postponeToNextDay(persona, now, today)
+            return postponeToNextDay(persona, today)
         }
 
         return null
     }
 
-    private fun postponeToNextDay(persona: AiPersona, now: Instant, today: LocalDate): AiReplyDecision.Postpone {
-        val tomorrow = today.plusDays(1).atStartOfDay(KOREA).toInstant()
-        val start = maxOf(tomorrow, persona.nextActiveStart(now))
+    private fun postponeToNextDay(persona: AiPersona, today: LocalDate): AiReplyDecision.Postpone {
+        val midnight = startOf(today.plusDays(1))
+        val start = if (persona.isActiveAt(midnight)) midnight else persona.nextActiveStart(midnight)
 
         return AiReplyDecision.Postpone(start.plusSeconds(Random.nextLong(LIMIT_SPREAD.seconds + 1)))
     }
+
+    private fun startOf(day: LocalDate): Instant = day.atStartOfDay(KOREA).toInstant()
 
     private fun alertGlobalLimit(today: LocalDate) {
         if (globalLimitAlertedOn.getAndSet(today) != today) {

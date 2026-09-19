@@ -107,6 +107,26 @@ class AiReplyContextServiceTest {
         assertThat(context.systemPrompt).isEqualTo("프롬프트")
         assertThat(context.memory).isNull()
         assertThat(context.aiPhotos).isEqualTo(AiPhotoCounts(publicCount = 1, secretCount = 2))
+        assertThat(context.lastReplyToday).isFalse()
+    }
+
+    @Test
+    fun `방의 하루 응답 한도 전 마지막 답이면 문맥에 오늘 마지막 답이라고 담는다`() {
+        // given
+        every {
+            aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+                ROOM_ID,
+                AiReplyKind.SUMMARY,
+                DAY_START,
+            )
+        } returns
+            AiReplyContextService.ROOM_DAILY_LIMIT - 1
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat((decision as AiReplyDecision.Reply).context.lastReplyToday).isTrue()
     }
 
     @Test
@@ -271,7 +291,7 @@ class AiReplyContextServiceTest {
     }
 
     @Test
-    fun `방의 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
+    fun `방의 하루 응답 한도에 닿으면 자정 뒤 처음 활동하는 때로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
@@ -288,11 +308,35 @@ class AiReplyContextServiceTest {
         // then
         assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
         assertThat((decision as AiReplyDecision.Postpone).dueAt)
-            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
+            .isBetween(NEXT_MIDNIGHT, NEXT_MIDNIGHT.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     @Test
-    fun `AI의 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
+    fun `활동 시간이 자정 전에 끝나면 한도에 닿았을 때 다음 날 활동 시작 뒤로 미룬다`() {
+        // given
+        every { aiPersonaRepository.findById(AI_ID) } returns
+            Optional.of(persona(activeStartHour = 9, activeEndHour = 23))
+        every {
+            aiReplyLogRepository.countByRoomIdAndKindNotAndCreatedAtGreaterThanEqual(
+                ROOM_ID,
+                AiReplyKind.SUMMARY,
+                DAY_START,
+            )
+        } returns
+            AiReplyContextService.ROOM_DAILY_LIMIT
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        val start = Instant.parse("2026-09-16T09:00:00+09:00")
+        assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
+        assertThat((decision as AiReplyDecision.Postpone).dueAt)
+            .isBetween(start, start.plus(AiReplyContextService.LIMIT_SPREAD))
+    }
+
+    @Test
+    fun `AI의 하루 응답 한도에 닿으면 자정 뒤 처음 활동하는 때로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByAiMemberIdAndKindNotAndCreatedAtGreaterThanEqual(
@@ -308,11 +352,11 @@ class AiReplyContextServiceTest {
         // then
         assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
         assertThat((decision as AiReplyDecision.Postpone).dueAt)
-            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
+            .isBetween(NEXT_MIDNIGHT, NEXT_MIDNIGHT.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     @Test
-    fun `전체 하루 응답 한도에 닿으면 다음 날 활동 시작 뒤로 미룬다`() {
+    fun `전체 하루 응답 한도에 닿으면 자정 뒤 처음 활동하는 때로 미룬다`() {
         // given
         every {
             aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, DAY_START)
@@ -325,7 +369,7 @@ class AiReplyContextServiceTest {
         // then
         assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
         assertThat((decision as AiReplyDecision.Postpone).dueAt)
-            .isBetween(NEXT_DAY_START, NEXT_DAY_START.plus(AiReplyContextService.LIMIT_SPREAD))
+            .isBetween(NEXT_MIDNIGHT, NEXT_MIDNIGHT.plus(AiReplyContextService.LIMIT_SPREAD))
     }
 
     private fun service(now: Instant) = AiReplyContextService(
@@ -356,12 +400,18 @@ class AiReplyContextServiceTest {
         awayUntil = awayUntil,
     )
 
-    private fun persona(enabled: Boolean = true) = AiPersona(
+    private fun persona(
+        enabled: Boolean = true,
+        activeStartHour: Int = AiPersona.DEFAULT_ACTIVE_START_HOUR,
+        activeEndHour: Int = AiPersona.DEFAULT_ACTIVE_END_HOUR,
+    ) = AiPersona(
         memberId = AI_ID,
         enabled = enabled,
         systemPrompt = "프롬프트",
         replyDelayMinSeconds = 10,
         replyDelayMaxSeconds = 20,
+        activeStartHour = activeStartHour,
+        activeEndHour = activeEndHour,
         dailyReplyLimit = 3,
         nextLocationRefreshAt = DAYTIME,
     )
@@ -399,6 +449,6 @@ class AiReplyContextServiceTest {
         private val DAYTIME: Instant = Instant.parse("2026-09-15T12:00:00+09:00")
         private val NIGHT: Instant = Instant.parse("2026-09-15T03:00:00+09:00")
         private val DAY_START: Instant = Instant.parse("2026-09-15T00:00:00+09:00")
-        private val NEXT_DAY_START: Instant = Instant.parse("2026-09-16T08:00:00+09:00")
+        private val NEXT_MIDNIGHT: Instant = Instant.parse("2026-09-16T00:00:00+09:00")
     }
 }

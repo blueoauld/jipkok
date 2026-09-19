@@ -17,6 +17,7 @@ data class AiReplyContext(
     val memory: String? = null,
     val lastPartnerMessageAt: Instant? = null,
     val aiPhotos: AiPhotoCounts = AiPhotoCounts.NONE,
+    val lastReplyToday: Boolean = false,
 ) {
 
     val lastMessageId: Long
