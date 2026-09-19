@@ -18,6 +18,7 @@ export const en: typeof ko = {
     bioCopied: "Bio copied.",
     contentPlaceholder: "Write here",
     leaveUnsaved: "Leave without saving?",
+    ad: "Ad",
   },
   crash: {
     title: "Something went wrong.",

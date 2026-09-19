@@ -17,6 +17,7 @@ export const zh: typeof ko = {
     bioCopied: "已複製自我介紹。",
     contentPlaceholder: "輸入內容",
     leaveUnsaved: "要不儲存就離開嗎？",
+    ad: "廣告",
   },
   crash: {
     title: "發生問題了。",

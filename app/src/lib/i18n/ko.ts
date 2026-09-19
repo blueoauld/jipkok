@@ -16,6 +16,7 @@ export const ko = {
     bioCopied: "자기소개를 복사했습니다.",
     contentPlaceholder: "내용 입력",
     leaveUnsaved: "저장하지 않고 나갈까요?",
+    ad: "광고",
   },
   crash: {
     title: "문제가 발생했습니다.",

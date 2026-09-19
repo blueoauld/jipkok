@@ -18,6 +18,7 @@ export const ja: typeof ko = {
     bioCopied: "自己紹介をコピーしました。",
     contentPlaceholder: "内容を入力",
     leaveUnsaved: "保存せずに戻りますか？",
+    ad: "広告",
   },
   crash: {
     title: "問題が発生しました。",

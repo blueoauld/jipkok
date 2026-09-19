@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { YStack } from "tamagui";
 
+import { FEED_AD_ASPECT, FeedAdCard } from "@/components/ad/FeedAdCard";
+import { WORRY_AD_ASPECT, WorryAdCard } from "@/components/ad/WorryAdCard";
 import { FeedCard } from "@/components/feed/FeedCard";
 import { FeedComposeSheet } from "@/components/feed/FeedComposeSheet";
 import { FeedDatePicker } from "@/components/feed/FeedDatePicker";
@@ -25,6 +27,7 @@ import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
 import { useFeedPostActions } from "@/hooks/useFeedPostActions";
 import { feedPostsKey, useFeedPosts } from "@/hooks/useFeedPosts";
+import { useListNativeAds } from "@/hooks/useListNativeAds";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useNow } from "@/hooks/useNow";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -34,6 +37,7 @@ import {
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
 import { useWorryPosts } from "@/hooks/useWorryPosts";
+import { listAdAfter } from "@/lib/ads";
 import {
   type FeedPostResponse,
   type FeedSort,
@@ -119,6 +123,17 @@ export default function FeedScreen() {
     refetch: refetchWorries,
   } = worryFeed;
   const pagedWorries = usePagedList(worryFeed, tabBarOverlay, "cards");
+
+  const feedAds = useListNativeAds(
+    FEED_AD_ASPECT,
+    board === "FEED" ? (posts?.length ?? 0) : 0,
+    `${storedDate ?? today}:${sort}`,
+  );
+  const worryAds = useListNativeAds(
+    WORRY_AD_ASPECT,
+    board === "WORRY" ? (worryPosts?.length ?? 0) : 0,
+    `${worrySort}:${worryCategory}`,
+  );
 
   const worryRefresh = usePullRefresh(refetchWorries);
 
@@ -221,9 +236,16 @@ export default function FeedScreen() {
             ref={worryListRef}
             data={worryPosts}
             keyExtractor={(worry) => String(worry.worryId)}
-            renderItem={({ item }) => (
-              <WorryCard worry={item} onPress={openWorryDetail} />
-            )}
+            renderItem={({ item, index }) => {
+              const ad = listAdAfter(worryAds, index);
+
+              return (
+                <>
+                  <WorryCard worry={item} onPress={openWorryDetail} />
+                  {ad && <WorryAdCard ad={ad} />}
+                </>
+              );
+            }}
             showsVerticalScrollIndicator={true}
             onScroll={worryScrollTop.onScroll}
             scrollEventThrottle={SCROLL_EVENT_THROTTLE}
@@ -250,15 +272,22 @@ export default function FeedScreen() {
           ref={listRef}
           data={posts}
           keyExtractor={(post) => String(post.postId)}
-          renderItem={({ item }) => (
-            <FeedCard
-              post={item}
-              mine={item.memberId === profile?.memberId}
-              onPressPhoto={setViewerUrl}
-              onReport={actions.report}
-              onToggleLike={actions.toggleLike}
-            />
-          )}
+          renderItem={({ item, index }) => {
+            const ad = listAdAfter(feedAds, index);
+
+            return (
+              <>
+                <FeedCard
+                  post={item}
+                  mine={item.memberId === profile?.memberId}
+                  onPressPhoto={setViewerUrl}
+                  onReport={actions.report}
+                  onToggleLike={actions.toggleLike}
+                />
+                {ad && <FeedAdCard ad={ad} />}
+              </>
+            );
+          }}
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}
           scrollEventThrottle={SCROLL_EVENT_THROTTLE}
