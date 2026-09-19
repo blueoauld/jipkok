@@ -124,7 +124,7 @@ class AiReplyJobService(
             ),
         )
         aiReplyBubbleService.enqueue(room.id, job.aiMemberId, bubbles.drop(1))
-        saveLog(job, context, reply, sent.messageId, job.kind)
+        saveLog(job, context, reply, sent.messageId, job.kind, awayUntilOf(reply))
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
     }
 
@@ -135,7 +135,18 @@ class AiReplyJobService(
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
     }
 
-    private fun saveLog(job: AiReplyJob, context: AiReplyContext, reply: AiReply, messageId: Long, kind: AiReplyKind) {
+    private fun awayUntilOf(reply: AiReply): Instant? = reply.awayMinutes?.let {
+        clock.instant().plus(Duration.ofMinutes(it).coerceIn(AWAY_MIN, AWAY_MAX))
+    }
+
+    private fun saveLog(
+        job: AiReplyJob,
+        context: AiReplyContext,
+        reply: AiReply,
+        messageId: Long,
+        kind: AiReplyKind,
+        awayUntil: Instant? = null,
+    ) {
         aiReplyLogRepository.save(
             AiReplyLog(
                 aiMemberId = job.aiMemberId,
@@ -148,6 +159,7 @@ class AiReplyJobService(
                 kind = kind,
                 language = context.language,
                 regenerated = reply.regenerated,
+                awayUntil = awayUntil,
             ),
         )
     }
@@ -157,6 +169,8 @@ class AiReplyJobService(
         const val BATCH_SIZE = 20
         const val NUDGE_BATCH_SIZE = 20
 
+        val AWAY_MIN: Duration = Duration.ofMinutes(5)
+        val AWAY_MAX: Duration = Duration.ofHours(12)
         val NUDGE_AFTER: Duration = Duration.ofDays(2)
         val NUDGE_WINDOW: Duration = Duration.ofDays(14)
         val NUDGE_SPREAD: Duration = Duration.ofHours(1)

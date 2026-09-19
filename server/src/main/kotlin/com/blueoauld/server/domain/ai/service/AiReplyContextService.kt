@@ -87,6 +87,13 @@ class AiReplyContextService(
         }
 
         val now = clock.instant()
+        val awayUntil = aiReplyLogRepository
+            .findTopByRoomIdAndKindNotOrderByCreatedAtDesc(room.id, AiReplyKind.SUMMARY)
+            ?.awayUntil
+
+        if (awayUntil != null && now < awayUntil) {
+            return AiReplyDecision.Postpone(awayUntil.plus(persona.randomReplyDelay()))
+        }
 
         if (!persona.isActiveAt(now)) {
             return AiReplyDecision.Postpone(persona.nextActiveStart(now).plus(persona.randomReplyDelay()))

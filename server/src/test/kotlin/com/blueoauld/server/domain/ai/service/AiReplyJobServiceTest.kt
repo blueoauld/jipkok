@@ -5,6 +5,7 @@ import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.projection.AiNudgeCandidateRow
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.AiReplyLog
 import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
 import com.blueoauld.server.domain.ai.repository.AiReplyJobRepository
@@ -24,6 +25,7 @@ import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.*
@@ -162,6 +164,30 @@ class AiReplyJobServiceTest {
         verify { chatMessageService.append(room, AI_ID, match { it.content == "헐 진짜?" }) }
         verify { aiReplyBubbleService.enqueue(room.id, AI_ID, listOf("나도 방금 일어났어", "오늘 뭐 해?")) }
         verify(exactly = 1) { aiReplyLogRepository.save(match { it.messageId == 80L }) }
+    }
+
+    @Test
+    fun `자리를 비운다고 한 답은 돌아올 시각을 5분에서 12시간 사이로 잘라 로그에 남긴다`() {
+        // given
+        val room = ChatRoom.of(USER_ID, AI_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+        every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 81L, senderId = AI_ID)
+        val saved = mutableListOf<AiReplyLog>()
+        every { aiReplyLogRepository.save(capture(saved)) } answers { firstArg() }
+
+        // when
+        service.complete(job(), context(), reply().copy(awayMinutes = 50))
+        service.complete(job(), context(), reply().copy(awayMinutes = 2000))
+        service.complete(job(), context(), reply().copy(awayMinutes = 1))
+        service.complete(job(), context(), reply())
+
+        // then
+        assertThat(saved.map { it.awayUntil }).containsExactly(
+            NOW.plus(Duration.ofMinutes(50)),
+            NOW.plus(AiReplyJobService.AWAY_MAX),
+            NOW.plus(AiReplyJobService.AWAY_MIN),
+            null,
+        )
     }
 
     @Test

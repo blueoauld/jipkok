@@ -4,6 +4,7 @@ import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
 import com.blueoauld.server.domain.ai.dto.AiReplyDecision
 import com.blueoauld.server.domain.ai.entity.AiPersona
 import com.blueoauld.server.domain.ai.entity.AiReplyJob
+import com.blueoauld.server.domain.ai.entity.AiReplyLog
 import com.blueoauld.server.domain.ai.entity.AiRoomMemory
 import com.blueoauld.server.domain.ai.entity.type.AiReplyKind
 import com.blueoauld.server.domain.ai.repository.AiPersonaRepository
@@ -85,6 +86,9 @@ class AiReplyContextServiceTest {
             )
         } returns 0
         every { aiReplyLogRepository.countByKindNotAndCreatedAtGreaterThanEqual(AiReplyKind.SUMMARY, any()) } returns 0
+        every {
+            aiReplyLogRepository.findTopByRoomIdAndKindNotOrderByCreatedAtDesc(ROOM_ID, AiReplyKind.SUMMARY)
+        } returns null
         every { aiRoomMemoryRepository.findById(ROOM_ID) } returns Optional.empty()
         every { memberPhotoRepository.findAllByMemberId(AI_ID) } returns
             listOf(photo(PhotoVisibility.PUBLIC), photo(PhotoVisibility.SECRET), photo(PhotoVisibility.SECRET))
@@ -129,6 +133,37 @@ class AiReplyContextServiceTest {
 
         // then
         assertThat((decision as AiReplyDecision.Reply).context.language).isEqualTo(MemberLocale.JA)
+    }
+
+    @Test
+    fun `AI가 마지막 답에서 자리를 비운다고 했으면 돌아올 시각 뒤 응답 지연 안으로 미룬다`() {
+        // given
+        val awayUntil = DAYTIME.plus(30, ChronoUnit.MINUTES)
+        every {
+            aiReplyLogRepository.findTopByRoomIdAndKindNotOrderByCreatedAtDesc(ROOM_ID, AiReplyKind.SUMMARY)
+        } returns log(awayUntil)
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat(decision).isInstanceOf(AiReplyDecision.Postpone::class.java)
+        assertThat((decision as AiReplyDecision.Postpone).dueAt)
+            .isBetween(awayUntil.plusSeconds(10), awayUntil.plusSeconds(20))
+    }
+
+    @Test
+    fun `돌아올 시각이 지났으면 답한다`() {
+        // given
+        every {
+            aiReplyLogRepository.findTopByRoomIdAndKindNotOrderByCreatedAtDesc(ROOM_ID, AiReplyKind.SUMMARY)
+        } returns log(DAYTIME.minus(1, ChronoUnit.MINUTES))
+
+        // when
+        val decision = service(DAYTIME).decide(job())
+
+        // then
+        assertThat(decision).isInstanceOf(AiReplyDecision.Reply::class.java)
     }
 
     @Test
@@ -309,6 +344,17 @@ class AiReplyContextServiceTest {
     private fun photo(visibility: PhotoVisibility) = mockk<MemberPhoto> {
         every { this@mockk.visibility } returns visibility
     }
+
+    private fun log(awayUntil: Instant) = AiReplyLog(
+        aiMemberId = AI_ID,
+        roomId = ROOM_ID,
+        messageId = 1L,
+        promptTokens = 0,
+        completionTokens = 0,
+        cachedTokens = 0,
+        model = null,
+        awayUntil = awayUntil,
+    )
 
     private fun persona(enabled: Boolean = true) = AiPersona(
         memberId = AI_ID,

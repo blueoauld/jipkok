@@ -1,0 +1,2 @@
+ALTER TABLE ai_reply_log
+    ADD COLUMN away_until TIMESTAMP(6) WITH TIME ZONE;

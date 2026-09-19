@@ -77,6 +77,17 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun `답장 프롬프트에만 자리를 비울 때 표시를 붙이라는 지시가 들어간다`() {
+        // when
+        val plain = systemText(context())
+        val nudge = systemText(context().copy(silentDays = 3))
+
+        // then
+        assertThat(plain).contains("대화를 마칠 때는 답 끝에 [자리 비움 N분]을 붙인다.")
+        assertThat(nudge).doesNotContain("[자리 비움")
+    }
+
+    @Test
     fun `AI가 최근에 이미 쓴 돌봄 문구는 다시 쓰지 말라고 짚고 상대가 쓴 말은 세지 않는다`() {
         // given
         val messages = listOf(

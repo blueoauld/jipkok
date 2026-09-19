@@ -20,6 +20,8 @@ interface AiReplyLogRepository : JpaRepository<AiReplyLog, Long> {
 
     fun countByKindNotAndCreatedAtGreaterThanEqual(kind: AiReplyKind, start: Instant): Long
 
+    fun findTopByRoomIdAndKindNotOrderByCreatedAtDesc(roomId: Long, kind: AiReplyKind): AiReplyLog?
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from AiReplyLog l where l.createdAt < :threshold")
     fun deleteAllByCreatedAtBefore(@Param("threshold") threshold: Instant): Int

@@ -9,4 +9,5 @@ data class AiReply(
     val model: String?,
     val regenerated: Boolean = false,
     val skipped: Boolean = false,
+    val awayMinutes: Long? = null,
 )

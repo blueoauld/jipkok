@@ -58,6 +58,9 @@ class AiReplyLog(
     // 언어가 어긋나 다시 만든 답이다. 프롬프트나 모델을 손봐야 하는지 보는 근거다.
     @Column(name = "regenerated", nullable = false, updatable = false)
     val regenerated: Boolean = false,
+
+    @Column(name = "away_until", updatable = false)
+    val awayUntil: Instant? = null,
 ) {
 
     @Id

@@ -50,7 +50,7 @@ class OpenAiReplyGenerator(
         maxTokens = REPLY_MAX_TOKENS,
         language = context.language,
         aiMemberId = context.ai.id,
-        noReplyAllowed = true,
+        withReplyMarkers = true,
     )
 
     private fun imageOf(context: AiReplyContext): AiPromptImage? {
@@ -83,17 +83,17 @@ class OpenAiReplyGenerator(
         maxTokens: Int,
         language: MemberLocale?,
         aiMemberId: Long,
-        noReplyAllowed: Boolean = false,
+        withReplyMarkers: Boolean = false,
     ): AiReply? {
         val cacheKey = cacheKeyOf(aiMemberId)
-        val first = request(messages, maxChars, maxTokens, cacheKey, noReplyAllowed) ?: return null
+        val first = request(messages, maxChars, maxTokens, cacheKey, withReplyMarkers) ?: return null
 
         if (language == null || first.skipped || matchesLanguage(first.content, language)) {
             return first
         }
 
         log.info { "AI 응답의 언어가 어긋나 다시 만든다. aiMemberId=$aiMemberId language=$language" }
-        val second = request(messages, maxChars, maxTokens, cacheKey, noReplyAllowed)
+        val second = request(messages, maxChars, maxTokens, cacheKey, withReplyMarkers)
         val reply = second?.copy(
             promptTokens = first.promptTokens + second.promptTokens,
             completionTokens = first.completionTokens + second.completionTokens,
@@ -116,7 +116,7 @@ class OpenAiReplyGenerator(
         maxChars: Int,
         maxTokens: Int,
         cacheKey: String,
-        noReplyAllowed: Boolean,
+        withReplyMarkers: Boolean,
     ): AiReply? {
         val options = OpenAiChatOptions.builder()
             .maxCompletionTokens(maxTokens)
@@ -127,7 +127,8 @@ class OpenAiReplyGenerator(
         }
 
         val response = chatClient.prompt().messages(messages).options(options).call().chatResponse() ?: return null
-        val content = response.result?.output?.text?.trim()?.take(maxChars)?.ifEmpty { null } ?: return null
+        val text = response.result?.output?.text?.trim()?.take(maxChars)?.ifEmpty { null } ?: return null
+        val content = (if (withReplyMarkers) removeAwayMarker(text) else text).ifEmpty { null } ?: return null
         val usage = response.metadata.usage
 
         return AiReply(
@@ -136,7 +137,8 @@ class OpenAiReplyGenerator(
             completionTokens = usage.completionTokens,
             cachedTokens = usage.cacheReadInputTokens?.toInt() ?: 0,
             model = response.metadata.model.take(AiReplyLog.MODEL_MAX_LENGTH),
-            skipped = noReplyAllowed && AiPromptBuilder.NO_REPLY in content,
+            skipped = withReplyMarkers && AiPromptBuilder.NO_REPLY in content,
+            awayMinutes = if (withReplyMarkers) awayMinutesOf(text) else null,
         )
     }
 
