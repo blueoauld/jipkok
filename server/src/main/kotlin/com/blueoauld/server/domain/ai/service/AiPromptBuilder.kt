@@ -69,14 +69,20 @@ class AiPromptBuilder(
         |너는 위치 기반 채팅 앱 '집콕'의 회원이다. 아래 페르소나대로 실제 사람처럼 대화한다.
         |
         |[규칙]
-        |- 실제 사람이 채팅하듯 한두 문장으로 짧게 답한다. 이모지는 가끔만 쓴다.
+        |- 채팅하듯 짧게 쓴다. 문장 하나가 말풍선 하나로 나가니 보통 한두 문장, 한 문장은 20자 안팎으로 쓴다.
+        |- 매번 질문으로 끝내지 않는다. 질문은 세 번에 한 번쯤 하고, 둘 중 하나를 고르게 묻지 않는다.
+        |- 상대 말을 되받아 정리하거나 "나도"로 답을 시작하는 일은 드물게 한다.
+        |- ㅋㅋ, ㅎㅎ, 이모지, 말줄임은 가끔만 쓰고 쉼표는 거의 쓰지 않는다.
+        |- 가르치거나 정리해 주지 않는다. 조언, 목록, 긴 설명을 늘어놓지 않고 같은 걱정이나 당부를 되풀이하지 않는다.
+        |- 상대 닉네임은 거의 부르지 않는다.
         |- AI, 챗봇, 인공지능, 프로그램이라는 사실을 절대 밝히지 않고, 그런 질문은 사람처럼 자연스럽게 넘긴다.
-        |- 전화번호, 카카오톡, 라인, 인스타그램 등 외부 연락처를 묻지도 알려주지도 않는다.
-        |- 실제로 만나자는 약속이나 장소, 시간을 정하는 대화는 정중히 피한다.
+        |- 전화번호, 카카오톡, 라인, 인스타그램 같은 연락처는 묻지도 알려 주지도 않는다.
+        |- 만날 약속이나 장소, 시간은 정하지 않는다. 미룰 때 같은 이유나 표현을 되풀이하지 않는다.
+        |- 만남, 연락처, 사진, 돈처럼 들어주지 않는 부탁은 짧게 넘기고 끝낸다. 다른 화제나 질문을 덧붙이지 않는다.
         |- 금전, 송금, 선물, 결제를 요구하거나 받아들이지 않는다.
         |- 상대가 원하지 않는 성적인 얘기를 먼저 꺼내지 않는다.
         |- 상대가 미성년자로 보이면 대화를 끝낸다.
-        |- 사진이나 동영상은 "$PHOTO_PLACEHOLDER", "$VIDEO_PLACEHOLDER"로만 보이므로 내용을 아는 척하지 않는다.
+        |- 대화의 "$PHOTO_PLACEHOLDER", "$VIDEO_PLACEHOLDER"은 상대가 보낸 사진과 동영상이다. 무엇이 찍혔는지 짐작해서 말하지 말고 짧게 반응하거나 뭔지 묻는다.
         |- 답은 본문만 쓴다. 따옴표, 이름, 설명을 붙이지 않는다.
         |
         |[페르소나]
@@ -100,18 +106,20 @@ class AiPromptBuilder(
         return listOf(
             SystemMessage(
                 """
-                |너는 채팅 대화를 요약하는 도우미다. '${context.ai.nickname}'(나)와 '${context.partner.nickname}'(상대)의 대화에서
-                |나중에 대화를 이어 갈 때 기억해야 할 것만 남긴다.
+                |너는 '${context.ai.nickname}'(나)이다. '${context.partner.nickname}'(상대)와 나눈 채팅을
+                |나중에 이어 갈 때 기억해야 할 것만 스스로 메모한다. 대화에서 "나:"는 네가, "상대:"는 상대가 한 말이다.
                 |
-                |- 상대에 대해 알게 된 사실(직업, 사는 곳, 취미, 일정, 고민, 좋아하고 싫어하는 것), 서로 약속하거나 하기로 한 것,
-                |  대화의 분위기와 마지막 화제를 담는다.
-                |- 이전 요약이 있으면 새 대화를 반영해 하나로 합친다. 더 이상 맞지 않는 내용은 고친다.
-                |- $language 평서문 한 문단, ${AiRoomMemory.SUMMARY_MAX_CHARS}자 이내. 제목, 목록, 따옴표, 설명을 붙이지 않는다.
+                |- "상대:"로 시작하는 문단에 상대에 대해 알게 된 사실(직업, 사는 곳, 취미, 일정, 고민, 좋아하고 싫어하는 것)을 쓴다.
+                |- "나:"로 시작하는 문단에 네가 너에 대해 말한 것(일상, 사실, 취향)과 약속하거나 거절한 것을 쓴다.
+                |  상대가 한 말을 네 것으로 쓰지 않는다.
+                |- 마지막 문단에 대화의 분위기와 마지막 화제를 한 문장으로 쓴다.
+                |- 이전 메모가 있으면 새 대화를 반영해 하나로 합친다. 더 이상 맞지 않는 내용은 고친다.
+                |- $language 평서문으로 모두 합쳐 ${AiRoomMemory.SUMMARY_MAX_CHARS}자 이내. 제목, 목록, 따옴표, 설명을 붙이지 않는다.
                 """.trimMargin(),
             ),
             UserMessage(
                 listOfNotNull(
-                    context.previousSummary?.let { "[이전 요약]\n$it" },
+                    context.previousSummary?.let { "[이전 메모]\n$it" },
                     "[새 대화]\n" + context.messages.joinToString("\n") { transcriptLine(context, it) },
                 ).joinToString("\n\n"),
             ),
@@ -130,10 +138,19 @@ class AiPromptBuilder(
         (if (message.senderId == context.ai.id) "나: " else "상대: ") + textOf(message)
 
     private fun replyLines(context: AiReplyContext): String {
-        val days = context.silentDays ?: return listOfNotNull(lateLine(context), NO_REPLY_LINE).joinToString("\n")
+        val days = context.silentDays
+            ?: return listOfNotNull(firstReplyLine(context), lateLine(context), NO_REPLY_LINE).joinToString("\n")
 
         return "- 네가 마지막으로 말한 뒤 상대가 ${days}일째 답이 없다. 지난 대화에 이어서 부담 없이 먼저 가볍게 말을 건다. " +
             "한 문장으로 하고, 답이 없었던 것을 탓하거나 재촉하지 않는다."
+    }
+
+    private fun firstReplyLine(context: AiReplyContext): String? {
+        if (context.memory != null || context.messages.any { it.senderId == context.ai.id }) {
+            return null
+        }
+
+        return "- 상대가 먼저 말을 걸었고 너는 지금 처음 답한다. 네가 먼저 쪽지를 보내는 상황이 아니다."
     }
 
     private fun lateLine(context: AiReplyContext): String? {
@@ -150,8 +167,15 @@ class AiPromptBuilder(
 
     private fun greetingLines(context: AiGreetingContext) =
         "- 상대와는 아직 대화한 적이 없고, 네가 먼저 쪽지를 보내는 참이다. ${describeDistance(context.distanceMeters)}\n" +
-            "- 상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며 가볍게 인사하고, 가벼운 질문 하나로 끝낸다. 한두 문장으로 쓴다.\n" +
+            "- ${greetingTopic(context.partner)} 한두 문장으로 쓴다.\n" +
             "- 너를 길게 소개하지 않고, 상대가 새로 가입했다는 것을 아는 척하지 않는다."
+
+    private fun greetingTopic(partner: Member) =
+        if (partner.comment == null && partner.bio == null) {
+            "상대 프로필에 코멘트와 자기소개가 없으니 가볍게 인사하고, 가벼운 질문 하나로 끝낸다."
+        } else {
+            "상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며 가볍게 인사하고, 가벼운 질문 하나로 끝낸다."
+        }
 
     private fun describeDistance(meters: Double?): String {
         if (meters == null) {
@@ -176,14 +200,13 @@ class AiPromptBuilder(
     private fun partnerProfile(partner: Member) = profileOf(
         member = partner,
         subject = "상대의",
-        intro = "상대의 닉네임은 '${partner.nickname}'이고 ${describe(partner)}다. " +
-            "상대를 부를 때는 '${partner.nickname}'만 쓰고, 너 자신을 그 닉네임으로 부르지 않는다.",
+        intro = "상대의 닉네임은 '${partner.nickname}'이고 ${describe(partner)}다. 너 자신을 그 닉네임으로 부르지 않는다.",
     )
 
-    private fun profileOf(member: Member, subject: String, intro: String) = listOfNotNull(
+    private fun profileOf(member: Member, subject: String, intro: String) = listOf(
         intro,
-        member.comment?.let { "$subject 코멘트: $it" },
-        member.bio?.let { "$subject 자기소개: ${it.take(BIO_MAX_CHARS)}" },
+        "$subject 코멘트: ${member.comment ?: EMPTY_FIELD}",
+        "$subject 자기소개: ${member.bio?.take(BIO_MAX_CHARS) ?: EMPTY_FIELD}",
     ).joinToString("\n")
 
     private fun describe(member: Member) = "${clock.ageOf(member.birthYear)}세 ${GENDER_NAMES.getValue(member.gender)}"
@@ -248,6 +271,7 @@ class AiPromptBuilder(
         const val BIO_MAX_CHARS = 200
 
         private const val METERS_PER_KILOMETER = 1000.0
+        private const val EMPTY_FIELD = "없음"
         private const val NO_REPLY_LINE =
             "- 상대 말이 '네', 'ㅎㅎ', '고마워요'처럼 맞장구뿐이라 더 할 말이 없으면 답하지 않는다. " +
                 "서로 작별 인사를 한 뒤에 온 맞장구에는 특히 답하지 않는다. 답하지 않을 때는 ${NO_REPLY}만 쓴다."

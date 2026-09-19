@@ -34,8 +34,7 @@ class AiPromptBuilderTest {
         val system = messages.first() as SystemMessage
         assertThat(system.text).contains("밝고 장난기 많은 성격")
         assertThat(system.text).contains("너의 닉네임은 '루나'이고 28세 여자다.")
-        assertThat(system.text).contains("상대의 닉네임은 '바다'이고 31세 남자다.")
-        assertThat(system.text).contains("상대를 부를 때는 '바다'만 쓰고, 너 자신을 그 닉네임으로 부르지 않는다.")
+        assertThat(system.text).contains("상대의 닉네임은 '바다'이고 31세 남자다. 너 자신을 그 닉네임으로 부르지 않는다.")
         assertThat(system.text).contains("상대의 코멘트: 산책 좋아해요")
         assertThat(system.text).contains("반드시 일본어로 답한다.")
         assertThat(system.text).contains("지금은 한국 시간 2026-09-15 (화) 12:30이다.")
@@ -140,7 +139,7 @@ class AiPromptBuilderTest {
     }
 
     @Test
-    fun `요약 프롬프트는 이전 요약과 화자를 구분한 새 대화를 담는다`() {
+    fun `요약 프롬프트는 AI 자신의 메모로 상대와 나를 나눠 쓰게 하고 이전 메모와 화자를 구분한 새 대화를 담는다`() {
         // when
         val messages = builder.buildSummary(
             AiSummaryContext(
@@ -154,12 +153,45 @@ class AiPromptBuilderTest {
 
         // then
         assertThat(messages).hasSize(2)
-        assertThat((messages[0] as SystemMessage).text).contains("일본어 평서문 한 문단, 500자 이내")
+        val system = (messages[0] as SystemMessage).text!!
+        assertThat(system).contains("너는 '루나'(나)이다. '바다'(상대)와 나눈 채팅을")
+        assertThat(system).contains("\"상대:\"로 시작하는 문단")
+        assertThat(system).contains("\"나:\"로 시작하는 문단")
+        assertThat(system).contains("일본어 평서문으로 모두 합쳐 500자 이내")
         val user = (messages[1] as UserMessage).text!!
-        assertThat(user).contains("[이전 요약]\n상대는 부산에 산다.")
+        assertThat(user).contains("[이전 메모]\n상대는 부산에 산다.")
         assertThat(user).contains("상대: 안녕하세요")
         assertThat(user).contains("나: 반가워요")
         assertThat(user).contains("상대: " + AiPromptBuilder.PHOTO_PLACEHOLDER)
+    }
+
+    @Test
+    fun `비어 있는 코멘트와 자기소개는 없음으로 적는다`() {
+        // given
+        val partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = null, bio = null)
+
+        // when
+        val text = systemText(context().copy(partner = partner))
+
+        // then
+        assertThat(text).contains("너의 코멘트: 없음\n너의 자기소개: 없음")
+        assertThat(text).contains("상대의 코멘트: 없음\n상대의 자기소개: 없음")
+    }
+
+    @Test
+    fun `AI가 아직 말한 적 없는 방이면 상대가 먼저 말을 걸었다고 알리고 아니면 알리지 않는다`() {
+        // given
+        val partnerOnly = context().messages.filter { it.senderId == USER_ID }
+
+        // when
+        val first = systemText(context().copy(messages = partnerOnly))
+        val remembered = systemText(context().copy(messages = partnerOnly, memory = "상대는 부산에 산다."))
+        val continued = systemText(context())
+
+        // then
+        assertThat(first).contains("상대가 먼저 말을 걸었고 너는 지금 처음 답한다.")
+        assertThat(remembered).doesNotContain("상대가 먼저 말을 걸었고")
+        assertThat(continued).doesNotContain("상대가 먼저 말을 걸었고")
     }
 
     @Test
@@ -245,9 +277,24 @@ class AiPromptBuilderTest {
         assertThat(text).contains("상대의 닉네임은 '바다'이고 31세 남자다.")
         assertThat(text).contains("상대는 너와 약 2km 거리에 있다.")
         assertThat(text).contains("네가 먼저 쪽지를 보내는 참이다")
+        assertThat(text).contains("상대 프로필의 닉네임, 코멘트, 자기소개 중 하나를 자연스럽게 언급하며")
         assertThat(text).contains("새로 가입했다는 것을 아는 척하지 않는다")
         assertThat(text).doesNotContain("[지난 대화 기억]")
         assertThat(text).doesNotContain("답이 없다")
+    }
+
+    @Test
+    fun `첫 쪽지 프롬프트는 상대 코멘트와 자기소개가 없으면 프로필을 언급하라고 하지 않는다`() {
+        // given
+        val partner = member(USER_ID, "바다", Gender.MALE, 1995, comment = null, locale = MemberLocale.JA)
+        val context = greetingContext(distanceMeters = null).copy(partner = partner)
+
+        // when
+        val text = (builder.buildGreeting(context).single() as SystemMessage).text!!
+
+        // then
+        assertThat(text).contains("상대 프로필에 코멘트와 자기소개가 없으니 가볍게 인사하고, 가벼운 질문 하나로 끝낸다.")
+        assertThat(text).doesNotContain("중 하나를 자연스럽게 언급하며")
     }
 
     @Test
