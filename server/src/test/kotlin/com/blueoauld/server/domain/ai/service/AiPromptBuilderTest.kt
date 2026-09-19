@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
+import com.blueoauld.server.domain.ai.dto.AiPromptImage
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.chat.entity.ChatMessage
@@ -73,6 +74,28 @@ class AiPromptBuilderTest {
         assertThat(built.map { it.text }).containsExactly("잘자요", "잘 자요", "(7시간 뒤)", "일어났어?", "(1일 뒤)", "뭐해")
         assertThat(built[2]).isInstanceOf(SystemMessage::class.java)
         assertThat(built[4]).isInstanceOf(SystemMessage::class.java)
+    }
+
+    @Test
+    fun `넘겨받은 사진은 그 메시지에만 이미지로 붙인다`() {
+        // given
+        val photo = mockk<ChatMessage> {
+            every { id } returns PHOTO_MESSAGE_ID
+            every { senderId } returns USER_ID
+            every { type } returns ChatMessageType.PHOTO
+            every { createdAt } returns NOW
+        }
+        val messages = listOf(message(USER_ID, "이거 봐", NOW), photo)
+        val image = AiPromptImage(PHOTO_MESSAGE_ID, IMAGE_URL)
+
+        // when
+        val built = builder.build(context().copy(messages = messages), image).drop(1)
+
+        // then
+        val withImage = built.last() as UserMessage
+        assertThat(withImage.text).isEqualTo(AiPromptBuilder.PHOTO_PLACEHOLDER)
+        assertThat(withImage.media.map { it.data }).containsExactly(IMAGE_URL)
+        assertThat((built.first() as UserMessage).media).isEmpty()
     }
 
     @Test
@@ -340,6 +363,7 @@ class AiPromptBuilderTest {
     private fun systemText(context: AiReplyContext) = (builder.build(context).first() as SystemMessage).text!!
 
     private fun message(senderId: Long, content: String, createdAt: Instant) = mockk<ChatMessage> {
+        every { id } returns 0L
         every { this@mockk.senderId } returns senderId
         every { type } returns ChatMessageType.TEXT
         every { this@mockk.content } returns content
@@ -390,6 +414,8 @@ class AiPromptBuilderTest {
 
         private const val AI_ID = 5L
         private const val USER_ID = 9L
+        private const val PHOTO_MESSAGE_ID = 7L
+        private const val IMAGE_URL = "https://photos.example.com/chats/9/a.webp"
         private val NOW: Instant = Instant.parse("2026-09-15T12:30:00+09:00")
     }
 }

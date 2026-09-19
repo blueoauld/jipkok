@@ -2,6 +2,7 @@ package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
 import com.blueoauld.server.domain.ai.dto.AiPhotoCounts
+import com.blueoauld.server.domain.ai.dto.AiPromptImage
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
 import com.blueoauld.server.domain.ai.entity.AiRoomMemory
@@ -16,7 +17,10 @@ import org.springframework.ai.chat.messages.AssistantMessage
 import org.springframework.ai.chat.messages.Message
 import org.springframework.ai.chat.messages.SystemMessage
 import org.springframework.ai.chat.messages.UserMessage
+import org.springframework.ai.content.Media
 import org.springframework.stereotype.Component
+import org.springframework.util.MimeType
+import java.net.URI
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -30,7 +34,7 @@ class AiPromptBuilder(
     private val clock: Clock,
 ) {
 
-    fun build(context: AiReplyContext): List<Message> = listOf(
+    fun build(context: AiReplyContext, image: AiPromptImage? = null): List<Message> = listOf(
         SystemMessage(
             systemPrompt(
                 persona = context.systemPrompt,
@@ -43,7 +47,7 @@ class AiPromptBuilder(
                 situation = replyLines(context),
             ),
         ),
-    ) + history(context)
+    ) + history(context, image)
 
     fun buildGreeting(context: AiGreetingContext): List<Message> = listOf(
         SystemMessage(
@@ -86,7 +90,8 @@ class AiPromptBuilder(
         |- 금전, 송금, 선물, 결제를 요구하거나 받아들이지 않는다.
         |- 상대가 원하지 않는 성적인 얘기를 먼저 꺼내지 않는다.
         |- 상대가 미성년자로 보이면 대화를 끝낸다.
-        |- 대화의 "$PHOTO_PLACEHOLDER", "$VIDEO_PLACEHOLDER"은 상대가 보낸 사진과 동영상이다. 무엇이 찍혔는지 짐작해서 말하지 말고 짧게 반응하거나 뭔지 묻는다.
+        |- 대화의 "$PHOTO_PLACEHOLDER", "$VIDEO_PLACEHOLDER"은 상대가 보낸 사진과 동영상이다. 이미지가 함께 있으면 본 대로 짧게 반응하고,
+        |  없으면 무엇이 찍혔는지 짐작해서 말하지 말고 짧게 반응하거나 뭔지 묻는다.
         |- 답은 본문만 쓴다. 따옴표, 이름, 설명을 붙이지 않는다.
         |
         |[페르소나]
@@ -244,13 +249,13 @@ class AiPromptBuilder(
         return kept.ifEmpty { messages.takeLast(1) }
     }
 
-    private fun history(context: AiReplyContext): List<Message> {
+    private fun history(context: AiReplyContext, image: AiPromptImage?): List<Message> {
         val kept = trim(context.messages)
 
         return kept.flatMapIndexed { index, message ->
             listOfNotNull(
                 kept.getOrNull(index - 1)?.let { gapNote(it, message) },
-                toMessage(context, message),
+                toMessage(context, message, image?.takeIf { it.messageId == message.id }),
             )
         }
     }
@@ -264,10 +269,21 @@ class AiPromptBuilder(
     private fun describeElapsed(duration: Duration) =
         if (duration.toDays() >= 1) "${duration.toDays()}일" else "${duration.toHours()}시간"
 
-    private fun toMessage(context: AiReplyContext, message: ChatMessage): Message {
+    private fun toMessage(context: AiReplyContext, message: ChatMessage, image: AiPromptImage?): Message {
         val text = textOf(message)
 
-        return if (message.senderId == context.ai.id) AssistantMessage(text) else UserMessage(text)
+        if (message.senderId == context.ai.id) {
+            return AssistantMessage(text)
+        }
+
+        if (image == null) {
+            return UserMessage(text)
+        }
+
+        return UserMessage.builder()
+            .text(text)
+            .media(Media(IMAGE_MIME_TYPE, URI.create(image.url)))
+            .build()
     }
 
     private fun textOf(message: ChatMessage) = when (message.type) {
@@ -294,6 +310,7 @@ class AiPromptBuilder(
         private val TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm", Locale.KOREAN)
         private val MESSAGE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd HH:mm")
+        private val IMAGE_MIME_TYPE: MimeType = MimeType("image", "*")
         private val TIME_NOTE_AFTER: Duration = Duration.ofHours(1)
 
         private val LANGUAGE_NAMES = mapOf(

@@ -6,4 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class AiChatProperties(
 
     val model: String = "",
+    val apiKey: String = "",
 )

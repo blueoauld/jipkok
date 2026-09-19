@@ -96,6 +96,7 @@ admob:
 
 ai-chat:
     model: ${AI_CHAT_MODEL:}
+    api-key: ${spring.ai.openai.api-key:}
 
 google-translate:
     api-key: ${GOOGLE_TRANSLATE_API_KEY:}

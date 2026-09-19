@@ -1,6 +1,7 @@
 package com.blueoauld.server.domain.ai.service
 
 import com.blueoauld.server.domain.ai.dto.AiGreetingContext
+import com.blueoauld.server.domain.ai.dto.AiPromptImage
 import com.blueoauld.server.domain.ai.dto.AiReply
 import com.blueoauld.server.domain.ai.dto.AiReplyContext
 import com.blueoauld.server.domain.ai.dto.AiSummaryContext
@@ -9,6 +10,7 @@ import com.blueoauld.server.domain.ai.entity.AiRoomMemory
 import com.blueoauld.server.domain.chat.entity.ChatMessage
 import com.blueoauld.server.domain.member.entity.type.MemberLocale
 import com.blueoauld.server.global.properties.AiChatProperties
+import com.blueoauld.server.global.storage.service.PhotoStorage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.messages.Message
@@ -25,18 +27,39 @@ class OpenAiReplyGenerator(
     chatClientBuilder: ChatClient.Builder,
     private val aiChatProperties: AiChatProperties,
     private val aiPromptBuilder: AiPromptBuilder,
+    private val photoStorage: PhotoStorage,
+    private val openAiImageModerator: OpenAiImageModerator,
 ) : AiReplyGenerator {
 
     private val chatClient = chatClientBuilder.build()
 
-    override fun generate(context: AiReplyContext): AiReply? = call(
-        messages = aiPromptBuilder.build(context),
+    override fun generate(context: AiReplyContext): AiReply? {
+        val image = imageOf(context)
+
+        if (image != null) {
+            runCatching { return reply(context, image) }
+                .onFailure { log.warn(it) { "사진을 넣은 AI 응답을 만들지 못해 사진 없이 다시 만든다. aiMemberId=${context.ai.id}" } }
+        }
+
+        return reply(context, image = null)
+    }
+
+    private fun reply(context: AiReplyContext, image: AiPromptImage?) = call(
+        messages = aiPromptBuilder.build(context, image),
         maxChars = ChatMessage.CONTENT_MAX_LENGTH,
         maxTokens = REPLY_MAX_TOKENS,
         language = context.language,
         aiMemberId = context.ai.id,
         noReplyAllowed = true,
     )
+
+    private fun imageOf(context: AiReplyContext): AiPromptImage? {
+        val message = imageMessageOf(context) ?: return null
+        val objectKey = imageObjectKeyOf(message) ?: return null
+        val url = photoStorage.createSignedViewUrl(objectKey)
+
+        return if (openAiImageModerator.isSafe(url)) AiPromptImage(message.id, url) else null
+    }
 
     override fun greet(context: AiGreetingContext): AiReply? = call(
         messages = aiPromptBuilder.buildGreeting(context),
