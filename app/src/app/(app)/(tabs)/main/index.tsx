@@ -193,6 +193,7 @@ export default function MainScreen() {
           {...paged}
           {...adViewability}
           ref={listRef}
+          removeClippedSubviews
           data={members}
           keyExtractor={(member) => String(member.memberId)}
           renderItem={({ item, index }) => {

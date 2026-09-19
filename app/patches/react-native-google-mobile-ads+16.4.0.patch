@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-google-mobile-ads/ios/RNGoogleMobileAds/RNGoogleMobileAdsNativeView.mm b/node_modules/react-native-google-mobile-ads/ios/RNGoogleMobileAds/RNGoogleMobileAdsNativeView.mm
+index b997241..29b6000 100644
+--- a/node_modules/react-native-google-mobile-ads/ios/RNGoogleMobileAds/RNGoogleMobileAdsNativeView.mm
++++ b/node_modules/react-native-google-mobile-ads/ios/RNGoogleMobileAds/RNGoogleMobileAdsNativeView.mm
+@@ -188,9 +188,11 @@ - (void)reloadAd {
+   if (_debouncedReload != nil) {
+     dispatch_block_cancel(_debouncedReload);
+   }
++  __weak RNGoogleMobileAdsNativeView *weakSelf = self;
+   _debouncedReload = dispatch_block_create(DISPATCH_BLOCK_NO_QOS_CLASS, ^{
+-    if (_nativeAd != nil) {
+-      _nativeAdView.nativeAd = _nativeAd;
++    RNGoogleMobileAdsNativeView *strongSelf = weakSelf;
++    if (strongSelf != nil && strongSelf->_nativeAd != nil) {
++      strongSelf->_nativeAdView.nativeAd = strongSelf->_nativeAd;
+     }
+   });
+   dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC);
+@@ -198,6 +200,7 @@ - (void)reloadAd {
+ }
+ 
+ - (void)dealloc {
++  _nativeAdView.nativeAd = nil;
+   _nativeAdView = nil;
+   if (_debouncedReload != nil) {
+     dispatch_block_cancel(_debouncedReload);

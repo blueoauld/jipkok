@@ -255,6 +255,7 @@ export default function FeedScreen() {
             {...pagedWorries}
             {...worryAdViewability}
             ref={worryListRef}
+            removeClippedSubviews
             data={worryPosts}
             keyExtractor={(worry) => String(worry.worryId)}
             renderItem={({ item, index }) => {
@@ -292,6 +293,7 @@ export default function FeedScreen() {
           {...paged}
           {...feedAdViewability}
           ref={listRef}
+          removeClippedSubviews
           data={posts}
           keyExtractor={(post) => String(post.postId)}
           renderItem={({ item, index }) => {
