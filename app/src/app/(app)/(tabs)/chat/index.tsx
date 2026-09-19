@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { YStack } from "tamagui";
 
-import { ChatListAdCard } from "@/components/ad/ChatListAdCard";
+import { RowListAdCard } from "@/components/ad/RowListAdCard";
 import { ChatRoomRow } from "@/components/chat/ChatRoomRow";
 import { ChatSelectionBar } from "@/components/chat/ChatSelectionBar";
 import {
@@ -158,7 +158,7 @@ export default function ChatScreen() {
           )}
           ListHeaderComponent={
             ad && !selecting ? (
-              <ChatListAdCard ad={ad} />
+              <RowListAdCard ad={ad} atTop />
             ) : (
               <ListRowTopSpacer verticalPadding={LIST_ROW_EVEN_PADDING_Y} />
             )

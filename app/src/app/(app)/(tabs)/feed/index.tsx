@@ -125,12 +125,12 @@ export default function FeedScreen() {
   const pagedWorries = usePagedList(worryFeed, tabBarOverlay, "cards");
 
   const feedAds = useListNativeAds(
-    FEED_AD_ASPECT,
+    { aspectRatio: FEED_AD_ASPECT },
     board === "FEED" ? (posts?.length ?? 0) : 0,
     `${storedDate ?? today}:${sort}`,
   );
   const worryAds = useListNativeAds(
-    WORRY_AD_ASPECT,
+    { aspectRatio: WORRY_AD_ASPECT },
     board === "WORRY" ? (worryPosts?.length ?? 0) : 0,
     `${worrySort}:${worryCategory}`,
   );

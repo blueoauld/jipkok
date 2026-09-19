@@ -6,7 +6,18 @@ import {
 
 import { LIST_AD_INTERVAL, NATIVE_AD_UNIT_ID } from "@/lib/ads";
 
-function createAdPool(aspectRatio: NativeMediaAspectRatio) {
+type ListAdOptions = {
+  unitId?: string;
+  aspectRatio?: NativeMediaAspectRatio;
+  interval?: number;
+  imageOnly?: boolean;
+};
+
+function createAdPool({
+  unitId = NATIVE_AD_UNIT_ID,
+  aspectRatio,
+  imageOnly = false,
+}: ListAdOptions) {
   let ads: NativeAd[] = [];
   let wanted = 0;
   let loading = false;
@@ -24,10 +35,16 @@ function createAdPool(aspectRatio: NativeMediaAspectRatio) {
     loading = true;
     const started = generation;
 
-    NativeAd.createForAdRequest(NATIVE_AD_UNIT_ID, { aspectRatio })
+    NativeAd.createForAdRequest(unitId, { aspectRatio })
       .then((ad) => {
         if (started !== generation) {
           ad.destroy();
+          return;
+        }
+
+        if (imageOnly && ad.mediaContent?.hasVideoContent) {
+          ad.destroy();
+          failedAt = wanted;
           return;
         }
 
@@ -79,13 +96,13 @@ function createAdPool(aspectRatio: NativeMediaAspectRatio) {
 }
 
 export function useListNativeAds(
-  aspectRatio: NativeMediaAspectRatio,
+  options: ListAdOptions,
   itemCount: number,
   listKey: string,
 ) {
-  const [pool] = useState(() => createAdPool(aspectRatio));
+  const [pool] = useState(() => createAdPool(options));
   const ads = useSyncExternalStore(pool.subscribe, pool.getAds);
-  const wanted = Math.floor(itemCount / LIST_AD_INTERVAL);
+  const wanted = Math.floor(itemCount / (options.interval ?? LIST_AD_INTERVAL));
 
   useEffect(() => () => pool.destroy(), [pool]);
 

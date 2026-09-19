@@ -25,6 +25,11 @@ const CHAT_NATIVE_AD_UNIT_IDS = {
   android: "ca-app-pub-5005991782528987/6687037664",
 };
 
+const MEMBER_LIST_NATIVE_AD_UNIT_IDS = {
+  ios: "ca-app-pub-5005991782528987/2884358177",
+  android: "ca-app-pub-5005991782528987/5510521518",
+};
+
 export const REWARDED_AD_UNIT_ID = __DEV__
   ? TestIds.REWARDED
   : Platform.select({ ...REWARDED_AD_UNIT_IDS, default: TestIds.REWARDED });
@@ -44,14 +49,25 @@ export const CHAT_NATIVE_AD_UNIT_ID = __DEV__
   ? TestIds.NATIVE
   : Platform.select({ ...CHAT_NATIVE_AD_UNIT_IDS, default: TestIds.NATIVE });
 
+export const MEMBER_LIST_NATIVE_AD_UNIT_ID = __DEV__
+  ? TestIds.NATIVE
+  : Platform.select({
+      ...MEMBER_LIST_NATIVE_AD_UNIT_IDS,
+      default: TestIds.NATIVE,
+    });
+
 export const LIST_AD_INTERVAL = 5;
 
-export function listAdAfter<T>(ads: readonly T[], index: number) {
+export const MEMBER_LIST_AD_INTERVAL = 10;
+
+export function listAdAfter<T>(
+  ads: readonly T[],
+  index: number,
+  interval = LIST_AD_INTERVAL,
+) {
   const count = index + 1;
 
-  return count % LIST_AD_INTERVAL === 0
-    ? ads[count / LIST_AD_INTERVAL - 1]
-    : undefined;
+  return count % interval === 0 ? ads[count / interval - 1] : undefined;
 }
 
 async function requestTracking() {

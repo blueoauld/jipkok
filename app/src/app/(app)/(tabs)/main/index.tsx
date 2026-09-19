@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { YStack } from "tamagui";
 
+import { RowListAdCard } from "@/components/ad/RowListAdCard";
 import { HeaderIconButton } from "@/components/HeaderIconButton";
 import { HeaderIconGroup } from "@/components/HeaderIconGroup";
 import { MemberFilterSheet } from "@/components/MemberFilterSheet";
@@ -21,6 +22,7 @@ import { Tab } from "@/components/ui/Tab";
 import { UserRow, UserRowTopSpacer } from "@/components/UserRow";
 import { useAlert } from "@/hooks/useAlert";
 import { useTabBarOverlay } from "@/hooks/useBottomBar";
+import { useListNativeAds } from "@/hooks/useListNativeAds";
 import { useLocationUpdate } from "@/hooks/useLocationUpdate";
 import { MEMBERS_KEY, useMembers } from "@/hooks/useMembers";
 import { MY_PROFILE_KEY, useMyProfile } from "@/hooks/useMyProfile";
@@ -30,6 +32,11 @@ import {
   SCROLL_EVENT_THROTTLE,
   useScrollToTopVisible,
 } from "@/hooks/useScrollToTopVisible";
+import {
+  listAdAfter,
+  MEMBER_LIST_AD_INTERVAL,
+  MEMBER_LIST_NATIVE_AD_UNIT_ID,
+} from "@/lib/ads";
 import { api } from "@/lib/api";
 import {
   DEFAULT_MEMBER_FILTER,
@@ -52,6 +59,12 @@ const SORT_ITEMS = SORTS.map((value) => ({
 }));
 
 const COMMENT_MAX_LENGTH = 100;
+
+const MEMBER_LIST_ADS = {
+  unitId: MEMBER_LIST_NATIVE_AD_UNIT_ID,
+  interval: MEMBER_LIST_AD_INTERVAL,
+  imageOnly: true,
+};
 
 export default function MainScreen() {
   const { t } = useTranslation();
@@ -86,6 +99,11 @@ export default function MainScreen() {
     onError: showApiError,
   });
   const { members, error, refetch: refetchMembers } = memberList;
+  const ads = useListNativeAds(
+    MEMBER_LIST_ADS,
+    members?.length ?? 0,
+    `${sort}:${gender}:${minAge}:${maxAge}`,
+  );
   const tabBarOverlay = useTabBarOverlay();
   const paged = usePagedList(memberList, tabBarOverlay, "rows");
 
@@ -171,7 +189,16 @@ export default function MainScreen() {
           ref={listRef}
           data={members}
           keyExtractor={(member) => String(member.memberId)}
-          renderItem={({ item }) => <UserRow member={item} />}
+          renderItem={({ item, index }) => {
+            const ad = listAdAfter(ads, index, MEMBER_LIST_AD_INTERVAL);
+
+            return (
+              <>
+                <UserRow member={item} />
+                {ad && <RowListAdCard ad={ad} />}
+              </>
+            );
+          }}
           ListHeaderComponent={UserRowTopSpacer}
           showsVerticalScrollIndicator={true}
           onScroll={scrollTop.onScroll}

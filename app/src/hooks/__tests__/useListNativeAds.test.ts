@@ -18,8 +18,11 @@ const createAd = jest.mocked(NativeAd.createForAdRequest);
 
 const LANDSCAPE = 2 as NativeMediaAspectRatio;
 
-function fakeAd() {
-  return { destroy: jest.fn() } as unknown as NativeAd;
+function fakeAd(hasVideoContent = false) {
+  return {
+    destroy: jest.fn(),
+    mediaContent: { hasVideoContent },
+  } as unknown as NativeAd;
 }
 
 async function flush() {
@@ -28,10 +31,14 @@ async function flush() {
   });
 }
 
-function render(count: number, listKey = "a") {
+function render(
+  count: number,
+  listKey = "a",
+  options: Parameters<typeof useListNativeAds>[0] = { aspectRatio: LANDSCAPE },
+) {
   return renderHook(
     (props: { count: number; listKey: string }) =>
-      useListNativeAds(LANDSCAPE, props.count, props.listKey),
+      useListNativeAds(options, props.count, props.listKey),
     { initialProps: { count, listKey } },
   );
 }
@@ -49,6 +56,47 @@ describe("useListNativeAds", () => {
 
     expect(createAd).toHaveBeenCalledTimes(2);
     expect(createAd).toHaveBeenCalledWith("unit", { aspectRatio: LANDSCAPE });
+    expect(result.current).toHaveLength(2);
+    await unmount();
+  });
+
+  it("광고 단위와 간격을 주면 그 단위로 간격마다 받는다", async () => {
+    createAd.mockImplementation(async () => fakeAd());
+
+    const { result, unmount } = await render(25, "a", {
+      unitId: "member-unit",
+      interval: 10,
+    });
+    await flush();
+
+    expect(createAd).toHaveBeenCalledTimes(2);
+    expect(createAd).toHaveBeenCalledWith("member-unit", {
+      aspectRatio: undefined,
+    });
+    expect(result.current).toHaveLength(2);
+    await unmount();
+  });
+
+  it("이미지만 받는 목록이면 동영상 광고는 해제하고 항목이 더 늘 때까지 다시 요청하지 않는다", async () => {
+    const video = fakeAd(true);
+    createAd
+      .mockResolvedValueOnce(video)
+      .mockImplementation(async () => fakeAd());
+
+    const { result, rerender, unmount } = await render(10, "a", {
+      interval: 10,
+      imageOnly: true,
+    });
+    await flush();
+
+    expect(video.destroy).toHaveBeenCalledTimes(1);
+    expect(createAd).toHaveBeenCalledTimes(1);
+    expect(result.current).toHaveLength(0);
+
+    await rerender({ count: 20, listKey: "a" });
+    await flush();
+
+    expect(createAd).toHaveBeenCalledTimes(3);
     expect(result.current).toHaveLength(2);
     await unmount();
   });

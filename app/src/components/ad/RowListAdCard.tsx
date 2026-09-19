@@ -31,13 +31,13 @@ const AD_CHOICES_INSET = 6;
 
 const CONTENT_PADDING = 10;
 
-function Item({ ad }: { ad: NativeAd }) {
+function Item({ ad, atTop = false }: { ad: NativeAd; atTop?: boolean }) {
   const { t } = useTranslation();
 
   return (
     <YStack
       px={LIST_ROW_PADDING_X.small}
-      pt={LIST_ROW_PADDING_X.small}
+      pt={atTop ? LIST_ROW_PADDING_X.small : LIST_ROW_EVEN_PADDING_Y}
       pb={LIST_ROW_EVEN_PADDING_Y}
     >
       <YStack p={AD_CHOICES_INSET} rounded={CARD_RADIUS} bg="$grey100">
@@ -83,4 +83,4 @@ function Item({ ad }: { ad: NativeAd }) {
   );
 }
 
-export const ChatListAdCard = memo(Item);
+export const RowListAdCard = memo(Item);
