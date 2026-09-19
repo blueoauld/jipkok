@@ -33,10 +33,13 @@ class AiGreetingJobServiceTest {
 
     private val chatNoteService = mockk<ChatNoteService>()
 
+    private val aiReplyBubbleService = mockk<AiReplyBubbleService>(relaxed = true)
+
     private val service = AiGreetingJobService(
         aiGreetingJobRepository,
         aiReplyLogRepository,
         chatNoteService,
+        aiReplyBubbleService,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -94,6 +97,22 @@ class AiGreetingJobServiceTest {
         assertThat(job.aiMemberId).isEqualTo(AI_ID)
         assertThat(job.roomId).isEqualTo(3L)
         assertThat(job.sentAt).isEqualTo(NOW)
+    }
+
+    @Test
+    fun `여러 문장이면 첫 말풍선만 쪽지로 보내고 나머지는 그 방에 예약한다`() {
+        // given
+        val job = job()
+        every { aiGreetingJobRepository.findById(USER_ID) } returns Optional.of(job)
+        every { chatNoteService.send(AI_ID, USER_ID, "안녕하세요!") } returns response(roomId = 3L, messageId = 77L)
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
+
+        // when
+        service.complete(job, context(), reply("안녕하세요! 러닝 좋아하세요?"))
+
+        // then
+        verify { chatNoteService.send(AI_ID, USER_ID, "안녕하세요!") }
+        verify { aiReplyBubbleService.enqueue(3L, AI_ID, listOf("러닝 좋아하세요?")) }
     }
 
     @Test

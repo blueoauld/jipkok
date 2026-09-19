@@ -84,6 +84,18 @@ class AiTestChatServiceTest {
     }
 
     @Test
+    fun `답은 실제로 나갈 말풍선을 줄바꿈으로 이어 돌려준다`() {
+        // given
+        every { aiReplyGenerator.generate(any()) } returns REPLY.copy(content = "산책 중이야. 날씨 좋다.")
+
+        // when
+        val reply = service.chat(AI_ID, request(systemPrompt = null, locale = MemberLocale.KO))
+
+        // then
+        assertThat(reply.content).isEqualTo("산책 중이야\n날씨 좋다")
+    }
+
+    @Test
     fun `답을 만들 수 없으면 예외를 던진다`() {
         // given
         every { aiReplyGenerator.generate(any()) } returns null

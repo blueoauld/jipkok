@@ -42,6 +42,8 @@ class AiReplyJobServiceTest {
 
     private val chatMessageService = mockk<ChatMessageService>()
 
+    private val aiReplyBubbleService = mockk<AiReplyBubbleService>(relaxed = true)
+
     private val service = AiReplyJobService(
         aiReplyJobRepository,
         aiReplyLogRepository,
@@ -49,6 +51,7 @@ class AiReplyJobServiceTest {
         chatRoomRepository,
         chatRoomMemberRepository,
         chatMessageService,
+        aiReplyBubbleService,
         Clock.fixed(NOW, ZoneOffset.UTC),
     )
 
@@ -142,6 +145,23 @@ class AiReplyJobServiceTest {
             )
             aiReplyJobRepository.deleteIfUnchanged(ROOM_ID, MESSAGE_ID)
         }
+    }
+
+    @Test
+    fun `여러 문장이면 첫 말풍선만 바로 보내고 나머지는 예약하며 로그는 첫 말풍선 기준으로 하나만 남긴다`() {
+        // given
+        val room = ChatRoom.of(USER_ID, AI_ID)
+        every { chatRoomRepository.findById(ROOM_ID) } returns Optional.of(room)
+        every { chatMessageService.append(room, AI_ID, any()) } returns response(messageId = 80L, senderId = AI_ID)
+        every { aiReplyLogRepository.save(any()) } answers { firstArg() }
+
+        // when
+        service.complete(job(), context(), reply().copy(content = "헐 진짜? 나도 방금 일어났어. 오늘 뭐 해?"))
+
+        // then
+        verify { chatMessageService.append(room, AI_ID, match { it.content == "헐 진짜?" }) }
+        verify { aiReplyBubbleService.enqueue(room.id, AI_ID, listOf("나도 방금 일어났어", "오늘 뭐 해?")) }
+        verify(exactly = 1) { aiReplyLogRepository.save(match { it.messageId == 80L }) }
     }
 
     @Test

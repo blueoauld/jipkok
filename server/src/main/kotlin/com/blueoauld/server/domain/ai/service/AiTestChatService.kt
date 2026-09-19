@@ -55,7 +55,9 @@ class AiTestChatService(
             now = clock.instant(),
         )
 
-        return aiReplyGenerator.generate(context) ?: throw BusinessException(ErrorCode.AI_REPLY_UNAVAILABLE)
+        val reply = aiReplyGenerator.generate(context) ?: throw BusinessException(ErrorCode.AI_REPLY_UNAVAILABLE)
+
+        return reply.copy(content = splitBubbles(reply.content).joinToString("\n"))
     }
 
     companion object {

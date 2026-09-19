@@ -23,6 +23,7 @@ class AiGreetingJobService(
     private val aiGreetingJobRepository: AiGreetingJobRepository,
     private val aiReplyLogRepository: AiReplyLogRepository,
     private val chatNoteService: ChatNoteService,
+    private val aiReplyBubbleService: AiReplyBubbleService,
     private val clock: Clock,
 ) {
 
@@ -46,7 +47,9 @@ class AiGreetingJobService(
 
     @Transactional
     fun complete(job: AiGreetingJob, context: AiGreetingContext, reply: AiReply) {
-        val sent = chatNoteService.send(context.ai.id, job.memberId, reply.content)
+        val bubbles = splitBubbles(reply.content)
+        val sent = chatNoteService.send(context.ai.id, job.memberId, bubbles.first())
+        aiReplyBubbleService.enqueue(sent.roomId, context.ai.id, bubbles.drop(1))
 
         aiReplyLogRepository.save(
             AiReplyLog(

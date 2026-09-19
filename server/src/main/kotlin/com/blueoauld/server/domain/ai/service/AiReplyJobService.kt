@@ -31,6 +31,7 @@ class AiReplyJobService(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatRoomMemberRepository: ChatRoomMemberRepository,
     private val chatMessageService: ChatMessageService,
+    private val aiReplyBubbleService: AiReplyBubbleService,
     private val clock: Clock,
 ) {
 
@@ -109,6 +110,8 @@ class AiReplyJobService(
             return
         }
 
+        val bubbles = splitBubbles(reply.content)
+
         chatRoomMemberRepository.markRead(room.id, job.aiMemberId, context.lastMessageId)
         val sent = chatMessageService.append(
             room = room,
@@ -117,9 +120,10 @@ class AiReplyJobService(
                 roomId = room.id,
                 senderId = job.aiMemberId,
                 type = ChatMessageType.TEXT,
-                content = reply.content,
+                content = bubbles.first(),
             ),
         )
+        aiReplyBubbleService.enqueue(room.id, job.aiMemberId, bubbles.drop(1))
         saveLog(job, context, reply, sent.messageId, job.kind)
         aiReplyJobRepository.deleteIfUnchanged(job.roomId, job.lastMessageId)
     }
